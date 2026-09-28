@@ -178,7 +178,12 @@ export default function PagesPage() {
   }, [newName]);
 
   const landingPages = useMemo(() => {
-    return pages.filter((p) => p.template !== "locked-pdf");
+    const list = pages.filter((p) => p.template !== "locked-pdf");
+    return [...list].sort((a, b) => {
+      const timeA = new Date(a.updatedAt || a.createdAt || 0).getTime();
+      const timeB = new Date(b.updatedAt || b.createdAt || 0).getTime();
+      return timeB - timeA;
+    });
   }, [pages]);
 
   const liveCount = useMemo(() => landingPages.filter((p) => p.status === "live").length, [landingPages]);
@@ -205,17 +210,19 @@ export default function PagesPage() {
   }, [landingPages, search, statusFilter]);
 
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
-  const totalPagesCount = Math.ceil(filtered.length / itemsPerPage) || 1;
+  const [itemsPerPage, setItemsPerPage] = useState<number | "all">("all");
+  const effectivePageSize = itemsPerPage === "all" ? (filtered.length || 1) : itemsPerPage;
+  const totalPagesCount = itemsPerPage === "all" ? 1 : Math.ceil(filtered.length / effectivePageSize) || 1;
 
   const paginatedItems = useMemo(() => {
-    const start = (currentPage - 1) * itemsPerPage;
-    return filtered.slice(start, start + itemsPerPage);
-  }, [filtered, currentPage]);
+    if (itemsPerPage === "all") return filtered;
+    const start = (currentPage - 1) * effectivePageSize;
+    return filtered.slice(start, start + effectivePageSize);
+  }, [filtered, currentPage, itemsPerPage, effectivePageSize]);
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [search, statusFilter]);
+  }, [search, statusFilter, itemsPerPage]);
 
   const activePage = useMemo(() => {
     if (!selectedPageId) return filtered[0] || landingPages[0] || null;
@@ -703,34 +710,60 @@ export default function PagesPage() {
               )}
             </AnimatePresence>
 
-            {totalPagesCount > 1 && (
-              <div className="flex items-center justify-between bg-white dark:bg-[#141417] p-3 rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 text-xs shadow-xs">
+            {filtered.length > 0 && (
+              <div className="flex flex-wrap items-center justify-between gap-3 bg-white dark:bg-[#141417] p-3 rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 text-xs shadow-xs">
                 <p className="text-zinc-500 dark:text-zinc-400 text-[11px] font-medium">
-                  Showing <span className="font-bold text-zinc-900 dark:text-white">{(currentPage - 1) * itemsPerPage + 1}</span> to{" "}
-                  <span className="font-bold text-zinc-900 dark:text-white">{Math.min(currentPage * itemsPerPage, filtered.length)}</span> of{" "}
-                  <span className="font-bold text-zinc-900 dark:text-white">{filtered.length}</span> lead magnets
+                  Showing{" "}
+                  <span className="font-bold text-zinc-900 dark:text-white">
+                    {itemsPerPage === "all" ? filtered.length : Math.min(filtered.length, (currentPage - 1) * (itemsPerPage as number) + 1)}
+                  </span>
+                  {itemsPerPage !== "all" && (
+                    <>
+                      {" "}to <span className="font-bold text-zinc-900 dark:text-white">{Math.min(currentPage * (itemsPerPage as number), filtered.length)}</span>
+                    </>
+                  )}{" "}
+                  of <span className="font-bold text-zinc-900 dark:text-white">{filtered.length}</span> lead magnets
                 </p>
 
                 <div className="flex items-center gap-2">
-                  <button
-                    disabled={currentPage === 1}
-                    onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
-                    className="px-3 py-1.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-[#1C1C20] text-zinc-700 dark:text-zinc-300 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-zinc-100 dark:hover:bg-zinc-800 font-semibold transition"
-                  >
-                    Previous
-                  </button>
+                  <div className="flex items-center gap-1 bg-zinc-100 dark:bg-zinc-800/60 p-0.5 rounded-xl text-[11px]">
+                    <span className="text-[10px] text-zinc-500 px-1.5 font-medium">Show:</span>
+                    {([10, 25, 50, "all"] as const).map((size) => (
+                      <button
+                        key={size}
+                        onClick={() => setItemsPerPage(size)}
+                        className={`px-2 py-0.5 rounded-lg font-semibold transition ${
+                          itemsPerPage === size
+                            ? "bg-white dark:bg-[#1C1C20] text-[#0066B2] dark:text-[#38BDF8] shadow-xs"
+                            : "text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200"
+                        }`}
+                      >
+                        {size === "all" ? "All" : size}
+                      </button>
+                    ))}
+                  </div>
 
-                  <span className="text-[11px] font-bold text-zinc-700 dark:text-zinc-300 px-1">
-                    {currentPage} / {totalPagesCount}
-                  </span>
-
-                  <button
-                    disabled={currentPage === totalPagesCount}
-                    onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPagesCount))}
-                    className="px-3 py-1.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-[#1C1C20] text-zinc-700 dark:text-zinc-300 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-zinc-100 dark:hover:bg-zinc-800 font-semibold transition"
-                  >
-                    Next
-                  </button>
+                  {itemsPerPage !== "all" && totalPagesCount > 1 && (
+                    <div className="flex items-center gap-1.5 ml-2">
+                      <button
+                        disabled={currentPage === 1}
+                        onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
+                        className="px-2.5 py-1 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-[#1C1C20] text-zinc-700 dark:text-zinc-300 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-zinc-100 dark:hover:bg-zinc-800 font-semibold transition text-[11px]"
+                      >
+                        Previous
+                      </button>
+                      <span className="text-[11px] font-bold text-zinc-700 dark:text-zinc-300 px-1">
+                        {currentPage} / {totalPagesCount}
+                      </span>
+                      <button
+                        disabled={currentPage === totalPagesCount}
+                        onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPagesCount))}
+                        className="px-2.5 py-1 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-[#1C1C20] text-zinc-700 dark:text-zinc-300 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-zinc-100 dark:hover:bg-zinc-800 font-semibold transition text-[11px]"
+                      >
+                        Next
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
             )}

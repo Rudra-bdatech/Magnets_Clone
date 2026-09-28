@@ -307,9 +307,14 @@ export default function LockedPdfPage() {
     });
   }, []);
 
-  // Filter ONLY for pages that are explicitly Locked PDFs
+  // Filter ONLY for pages that are explicitly Locked PDFs (sorted newest first)
   const lockedPdfPages = useMemo(() => {
-    return pages.filter((p) => p.template === "locked-pdf");
+    const list = pages.filter((p) => p.template === "locked-pdf");
+    return [...list].sort((a, b) => {
+      const timeA = new Date(a.updatedAt || a.createdAt || 0).getTime();
+      const timeB = new Date(b.updatedAt || b.createdAt || 0).getTime();
+      return timeB - timeA;
+    });
   }, [pages]);
 
   // Saved Locked PDFs for bottom cards grid

@@ -81,11 +81,11 @@ const userFilter = { userEmail: normEmail };
 
 const [account, pages, leads, sequences, integrations, resources] = await Promise.all([
   AccountModel.findOne({ email: normEmail }).select("-password").lean(),
-  MagnetPageModel.find(pageFilter).lean(),
-  LeadModel.find(userFilter).lean(),
-  SequenceModel.find(userFilter).lean(),
+  MagnetPageModel.find(pageFilter).sort({ updatedAt: -1, createdAt: -1, _id: -1 }).lean(),
+  LeadModel.find(userFilter).sort({ signedUpAt: -1, createdAt: -1, _id: -1 }).lean(),
+  SequenceModel.find(userFilter).sort({ updatedAt: -1, createdAt: -1, _id: -1 }).lean(),
   IntegrationModel.find(userFilter).lean(),
-  ResourceModel.find({ userEmail: normEmail, isPageAsset: { $ne: true }, type: { $ne: "page_asset" } }).lean(),
+  ResourceModel.find({ userEmail: normEmail, isPageAsset: { $ne: true }, type: { $ne: "page_asset" } }).sort({ uploadedAt: -1, createdAt: -1, _id: -1 }).lean(),
 ]);
 
 let finalLeads = leads;
@@ -98,7 +98,7 @@ if (pages.length > 0) {
       { pageId: { $in: pageIds } },
       { page: { $in: pageNames } },
     ],
-  }).lean();
+  }).sort({ signedUpAt: -1, createdAt: -1, _id: -1 }).lean();
   finalLeads = fallbackLeads;
 }
 

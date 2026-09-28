@@ -22,6 +22,7 @@ export interface MagnetPage {
   cta: string;
   deliverable: string;
   updatedAt: string;
+  createdAt?: string;
   publishedAt: string | null;
   template: "classic" | "video" | "quiz" | "locked-pdf";
   accent: string;
