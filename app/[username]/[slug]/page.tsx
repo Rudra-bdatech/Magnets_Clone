@@ -173,13 +173,13 @@ export default async function MagnetPageRoute({
       pageDoc = await MagnetPageModel.findOne({
         userEmail: accountDoc.email.trim().toLowerCase(),
         $or: [{ id: params.slug }, { slug: params.slug }]
-      }).lean();
+      }).sort({ _id: -1 }).lean();
     }
 
     if (!pageDoc) {
       pageDoc = await MagnetPageModel.findOne({
         $or: [{ id: params.slug }, { slug: params.slug }]
-      }).lean();
+      }).sort({ _id: -1 }).lean();
     }
   } catch (err) {
     console.warn("MongoDB connection fallback in MagnetPageRoute:", err);

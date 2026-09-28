@@ -272,19 +272,12 @@ export async function handleAddLead(data: any, req: Request, normEmail: string |
           // Resolve the direct download URL so the email button skips the thank-you page
           let directDownloadUrl: string | null = null;
 
-          // 1. Direct assetUrl on the page doc
-          if (foundPageDoc?.assetUrl && foundPageDoc.assetUrl.trim()) {
+          // 1. Look up the specific resource from emailBody or pageDoc first
+          if (targetResourceId) {
+            directDownloadUrl = `${appUrl}/r/${targetResourceId}`;
+          } else if (foundPageDoc?.assetUrl && foundPageDoc.assetUrl.trim()) {
+            // 2. Direct assetUrl on the page doc
             directDownloadUrl = foundPageDoc.assetUrl.trim();
-          }
-
-          // 2. Look up the specific resource record
-          if (!directDownloadUrl && targetResourceId) {
-            try {
-              const specificRes = await ResourceModel.findOne({ id: targetResourceId }).lean() as any;
-              if (specificRes) {
-                directDownloadUrl = specificRes.url || specificRes.fileUrl || `${appUrl}/r/${specificRes.id}`;
-              }
-            } catch (_) {}
           }
 
           // 3. Fallback: latest resource for this account

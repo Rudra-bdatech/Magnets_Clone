@@ -212,15 +212,16 @@ export default function ThankYouAnimatedContent({
     e.preventDefault();
     setDownloading(true);
     const targetUrl = downloadUrl || `/r/${magnetSlug}`;
-    const cleanFilename = deliverableName ? `${deliverableName.replace(/[^a-z0-9.-]/gi, "_")}` : "resource-file";
 
     try {
       setDownloadCompleted(true);
       const link = document.createElement("a");
       link.href = targetUrl;
-      link.setAttribute("download", cleanFilename);
       link.setAttribute("target", "_blank");
       link.setAttribute("rel", "noopener noreferrer");
+      if (deliverableName && /\.[a-z0-9]+$/i.test(deliverableName)) {
+        link.setAttribute("download", deliverableName);
+      }
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);

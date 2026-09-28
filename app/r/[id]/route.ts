@@ -48,7 +48,7 @@ export async function GET(
     if (!resource) {
       const page = await MagnetPageModel.findOne({
         $or: [{ id: resourceId }, { slug: resourceId }],
-      }).lean();
+      }).sort({ _id: -1 }).lean();
 
       if (page) {
         linkedPage = page;

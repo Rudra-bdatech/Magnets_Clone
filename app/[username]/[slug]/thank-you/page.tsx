@@ -16,23 +16,28 @@ export default async function ThankYouPage({
   let accountDoc: any = null;
   let pageDoc: any = null;
   let downloadUrl: string | null = null;
+  let resolvedDeliverableName = "Resource Access";
 
   try {
     await dbConnect();
     const escapedUsername = decodedUsername.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
 
-    // Execute Account and MagnetPage lookup in parallel to eliminate sequential database roundtrips
-    const [foundAccount, foundPage] = await Promise.all([
-      escapedUsername
-        ? AccountModel.findOne({ username: { $regex: new RegExp(`^${escapedUsername}$`, "i") } }).lean()
-        : null,
-      MagnetPageModel.findOne({
-        $or: [{ id: params.slug }, { slug: params.slug }],
-      }).lean(),
-    ]);
+    accountDoc = escapedUsername
+      ? await AccountModel.findOne({ username: { $regex: new RegExp(`^${escapedUsername}$`, "i") } }).lean()
+      : null;
 
-    accountDoc = foundAccount;
-    pageDoc = foundPage;
+    if (accountDoc && accountDoc.email) {
+      pageDoc = await MagnetPageModel.findOne({
+        userEmail: accountDoc.email.trim().toLowerCase(),
+        $or: [{ id: params.slug }, { slug: params.slug }],
+      }).sort({ _id: -1 }).lean();
+    }
+
+    if (!pageDoc) {
+      pageDoc = await MagnetPageModel.findOne({
+        $or: [{ id: params.slug }, { slug: params.slug }],
+      }).sort({ _id: -1 }).lean();
+    }
 
     const cleanUserEmail = pageDoc?.userEmail ? pageDoc.userEmail.trim().toLowerCase() : null;
 
@@ -43,12 +48,9 @@ export default async function ThankYouPage({
       accountDoc = await AccountModel.findOne({}).lean();
     }
 
-    // 1. Check direct assetUrl on page doc
-    if (pageDoc?.assetUrl && pageDoc.assetUrl.trim()) {
-      downloadUrl = pageDoc.assetUrl.trim();
-    }
+    resolvedDeliverableName = pageDoc?.deliverable || pageDoc?.name || "Resource Access";
 
-    // 2. Check candidate resource ID from query param, pageDoc, or emailBody
+    // 1. Check candidate resource ID from emailBody, query param, or pageDoc first
     let candidateResId = (searchParams.res || pageDoc?.resourceId || "").trim();
     if (!candidateResId && pageDoc?.emailBody) {
       const match = pageDoc.emailBody.match(/\/r\/([a-zA-Z0-9_-]+)/);
@@ -58,16 +60,21 @@ export default async function ThankYouPage({
     }
 
     if (candidateResId) {
+      downloadUrl = `/r/${candidateResId}`;
       const specificRes = await ResourceModel.findOne({ id: candidateResId }).lean();
-      if (specificRes) {
-        downloadUrl = specificRes.url || (specificRes.fileUrl ? specificRes.fileUrl : `/r/${specificRes.id}`);
+      if (specificRes && specificRes.name) {
+        resolvedDeliverableName = specificRes.name;
       }
-    }
-
-    // 3. Fallback to latest account resource if no specific asset was bound
-    if (!downloadUrl && cleanUserEmail) {
+    } else if (pageDoc?.assetUrl && pageDoc.assetUrl.trim()) {
+      // 2. Direct assetUrl on page doc if not a raw broken cloudinary link
+      downloadUrl = pageDoc.assetUrl.trim();
+    } else if (cleanUserEmail) {
+      // 3. Fallback to latest account resource if no specific asset was bound
       const resourceDoc = await ResourceModel.findOne({ userEmail: cleanUserEmail }).sort({ uploadedAt: -1 }).lean();
-      if (resourceDoc && resourceDoc.url) {
+      if (resourceDoc && resourceDoc.id) {
+        downloadUrl = `/r/${resourceDoc.id}`;
+        if (resourceDoc.name) resolvedDeliverableName = resourceDoc.name;
+      } else if (resourceDoc && resourceDoc.url) {
         downloadUrl = resourceDoc.url;
       }
     }
@@ -132,7 +139,7 @@ export default async function ThankYouPage({
         <ThankYouAnimatedContent
           subscriberName={subscriberName}
           subscriberEmail={subscriberEmail}
-          deliverableName={pageDoc.deliverable || pageDoc.name || "Resource Access"}
+          deliverableName={resolvedDeliverableName}
           downloadUrl={downloadUrl}
           customAnswer={customAnswer}
           aiPersonalizedOutput={aiPersonalizedOutput}
