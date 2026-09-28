@@ -72,6 +72,7 @@ export async function handleSaveAccount(data: any, authEmail: string | null) {
   let account;
   if (existing) {
     existing.name = data.name || existing.name;
+    existing.brandName = data.brandName !== undefined ? data.brandName : existing.brandName;
     existing.username = data.username || existing.username;
     existing.brandColor = data.brandColor || existing.brandColor;
     existing.logo = data.logo !== undefined ? data.logo : existing.logo;

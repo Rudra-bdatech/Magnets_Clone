@@ -523,7 +523,7 @@ export default function SequenceEditor() {
     setGeneratingAiBodyForId(id);
     const emailIndex = emailsWithBody.findIndex((e) => e.id === id);
     const pageTitle = attachedPage?.name || "this resource";
-    const brandName = account?.name || "Our Team";
+    const brandName = account?.brandName || account?.name || "Our Team";
 
     setTimeout(() => {
       let aiBody = "";

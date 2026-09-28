@@ -65,7 +65,7 @@ export default async function PdfViewerPage({ params, searchParams }: Props) {
   }
 
   const page = pageDoc as MagnetPage;
-  const businessName = accountDoc?.name || "LeadMagnets";
+  const businessName = accountDoc?.brandName || accountDoc?.name || "LeadMagnets";
   const brandColor = accountDoc?.brandColor || "#0066B2";
 
   const pdfFreePages: number =

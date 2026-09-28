@@ -78,7 +78,6 @@ export default function WorkspaceSetupPage() {
     "newsletter": true,
     "analytics-tracking": true,
     "branding-preview": true,
-    "email-auth": false,
   });
 
   const toggle = (key: string) =>

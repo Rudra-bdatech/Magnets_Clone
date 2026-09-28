@@ -23,17 +23,14 @@ export async function GET() {
     }
 
     let nextAuthImage: string | null = null;
-    // Fallback to NextAuth session if custom app token is missing or invalid
-    if (!email) {
-      const nextAuthSession = await getServerSession(authOptions);
-      if (nextAuthSession?.user?.email) {
-        if (!email) {
-          email = nextAuthSession.user.email.trim().toLowerCase();
-          name = nextAuthSession.user.name || undefined;
-        }
-        if (nextAuthSession.user.image) {
-          nextAuthImage = nextAuthSession.user.image;
-        }
+    const nextAuthSession = await getServerSession(authOptions);
+    if (nextAuthSession?.user?.email) {
+      if (!email) {
+        email = nextAuthSession.user.email.trim().toLowerCase();
+        name = nextAuthSession.user.name || undefined;
+      }
+      if (nextAuthSession.user.image) {
+        nextAuthImage = nextAuthSession.user.image;
       }
     }
 

@@ -94,7 +94,7 @@ export default async function ThankYouPage({
   const themeMode = (accountDoc?.themeMode as "light" | "dark") || "light";
   const brandColor = accountDoc?.brandColor || "#0066B2";
   const logo = accountDoc?.logo || null;
-  const businessName = accountDoc?.name || "LeadMagnets";
+  const businessName = accountDoc?.brandName || accountDoc?.name || "LeadMagnets";
 
   const subscriberEmail = searchParams.email ? decodeURIComponent(searchParams.email) : "";
   const subscriberName = searchParams.name ? decodeURIComponent(searchParams.name) : "";

@@ -273,7 +273,7 @@ export default async function MagnetPageRoute({
   const brandColor = accountDoc?.brandColor || "#0066B2";
   const logo = accountDoc?.logo || null;
   const highlightIntensity = accountDoc?.highlightIntensity ?? 100;
-  const businessName = accountDoc?.name || "BDA";
+  const businessName = accountDoc?.brandName || accountDoc?.name || "BDA";
 
   return (
     <main

@@ -152,6 +152,7 @@ export default function DashboardShell({
   };
 
   const [mounted, setMounted] = useState(false);
+  const [avatarError, setAvatarError] = useState(false);
   const [navigatingTarget, setNavigatingTarget] = useState<string | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const [hoveredNavHref, setHoveredNavHref] = useState<string | null>(null);
@@ -178,6 +179,7 @@ export default function DashboardShell({
       const loaded = loadAccount();
       if (loaded) {
         setCurrentAccount(loaded);
+        setAvatarError(false);
       }
     };
 
@@ -211,6 +213,7 @@ export default function DashboardShell({
               if (data.user) {
                 localStorage.setItem("currentUserAccount", JSON.stringify(data.user));
                 setCurrentAccount(data.user);
+                setAvatarError(false);
               }
               setIsAuthenticated(true);
             } else {
@@ -244,7 +247,7 @@ export default function DashboardShell({
     email: activeEmail,
     plan: rawAccount?.plan || "Free",
     brandColor: rawAccount?.brandColor || "#0066B2",
-    avatar: rawAccount?.avatar || (rawAccount?.logo && !rawAccount.logo.includes("googleusercontent.com") ? rawAccount.logo : null),
+    avatar: rawAccount?.avatar || null,
   };
 
   if (mounted && isAuthenticated === false) {
@@ -521,10 +524,11 @@ export default function DashboardShell({
                 onClick={() => setShowProfileMenu(!showProfileMenu)}
                 className="flex w-full items-center justify-between gap-2.5 rounded-xl p-2 text-left hover:bg-[#E2F0FD] transition dark:hover:bg-[#25252A]"
               >
-                {displayAccount.avatar ? (
+                {displayAccount.avatar && !avatarError ? (
                   <img
                     src={displayAccount.avatar}
                     alt={displayAccount.name}
+                    onError={() => setAvatarError(true)}
                     className="h-8 w-8 shrink-0 rounded-full object-cover border border-[#0066B2]/40"
                   />
                 ) : (
@@ -728,10 +732,11 @@ export default function DashboardShell({
                   onClick={() => setShowDrawerProfileMenu(!showDrawerProfileMenu)}
                   className="flex w-full items-center justify-between gap-2.5 rounded-xl p-2 text-left hover:bg-[#E2F0FD] transition dark:hover:bg-[#25252A] cursor-pointer"
                 >
-                  {displayAccount.avatar ? (
+                  {displayAccount.avatar && !avatarError ? (
                     <img
                       src={displayAccount.avatar}
                       alt={displayAccount.name}
+                      onError={() => setAvatarError(true)}
                       className="h-8 w-8 shrink-0 rounded-full object-cover border border-[#0066B2]/40"
                     />
                   ) : (

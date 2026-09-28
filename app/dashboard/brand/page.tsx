@@ -87,7 +87,7 @@ export default function BrandPage() {
 
     if (localAccount) {
       setAccount(localAccount);
-      setBusinessName(localAccount.name || "");
+      setBusinessName(localAccount.brandName || localAccount.name || "");
       setBrandColor(localAccount.brandColor || "#0066B2");
       setThemeMode(localAccount.themeMode || "light");
       setHighlightIntensity(localAccount.highlightIntensity ?? 100);
@@ -109,7 +109,7 @@ export default function BrandPage() {
       if (!isMounted) return;
       if (data && data.account) {
         setAccount(data.account);
-        setBusinessName(data.account.name || "");
+        setBusinessName(data.account.brandName || data.account.name || "");
         setBrandColor(data.account.brandColor || "#0066B2");
         setThemeMode(data.account.themeMode || "light");
         setHighlightIntensity(data.account.highlightIntensity ?? 100);
@@ -159,9 +159,9 @@ export default function BrandPage() {
     const currentUserEmail = (typeof window !== "undefined" ? localStorage.getItem("currentUserEmail") : null) || account?.email || "";
 
     const updatedAccount: Account = {
-      ...(account || { email: currentUserEmail, name: businessName.trim(), username: "user", plan: "Free" as const, joinedAt: "Just now" }),
+      ...(account || { email: currentUserEmail, name: "User", username: "user", plan: "Free" as const, joinedAt: "Just now" }),
       email: currentUserEmail,
-      name: businessName.trim(),
+      brandName: businessName.trim(),
       brandColor: brandColor.trim(),
       themeMode,
       highlightIntensity,
@@ -243,8 +243,9 @@ export default function BrandPage() {
   }, []);
 
   const hasUnsavedChanges = useMemo(() => {
+    const currentBrandName = account?.brandName ?? account?.name ?? "";
     return (
-      businessName !== (account?.name || "") ||
+      businessName !== currentBrandName ||
       brandColor !== (account?.brandColor || "#0066B2") ||
       themeMode !== (account?.themeMode || "light") ||
       highlightIntensity !== (account?.highlightIntensity ?? 100) ||

@@ -3,6 +3,7 @@ import mongoose, { Schema } from "mongoose";
 // Account Schema
 const AccountSchema = new Schema({
   name: { type: String, required: true },
+  brandName: { type: String, default: "" },
   email: { type: String, required: true, unique: true, lowercase: true, trim: true },
   username: { type: String, required: true, unique: true },
   password: { type: String, default: "" },

@@ -221,6 +221,15 @@ function OnboardingContent() {
       });
 
       if (res.ok) {
+        if (businessName.trim() && normUserEmail) {
+          try {
+            await fetch("/api/data", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ action: "saveAccount", data: { email: normUserEmail, brandName: businessName.trim() }, email: normUserEmail }),
+            });
+          } catch (_) { }
+        }
         if (typeof window !== "undefined") {
           const existingPages = JSON.parse(localStorage.getItem("currentUserPages") || "[]");
           const updatedPages = [newPage, ...existingPages.filter((p: any) => p.id !== pageId)];

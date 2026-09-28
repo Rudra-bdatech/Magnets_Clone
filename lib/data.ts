@@ -121,6 +121,7 @@ export interface Sequence {
 
 export interface Account {
   name: string;
+  brandName?: string;
   email: string;
   username: string;
   password?: string;
