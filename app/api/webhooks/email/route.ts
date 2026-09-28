@@ -1,7 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 import { dbConnect } from "@/lib/mongodb";
 import { LeadModel, SequenceModel, MagnetPageModel, EmailEventModel } from "@/lib/models";
-import crypto from "crypto";
+import crypto, { timingSafeEqual, createHash } from "crypto";
+
+function safeCompare(a: string, b: string): boolean {
+  try {
+    const bufA = Buffer.from(createHash("sha256").update(String(a)).digest("hex"));
+    const bufB = Buffer.from(createHash("sha256").update(String(b)).digest("hex"));
+    return bufA.length === bufB.length && timingSafeEqual(bufA, bufB);
+  } catch {
+    return false;
+  }
+}
 
 export const dynamic = "force-dynamic";
 
@@ -17,7 +27,7 @@ export async function POST(req: NextRequest) {
     const querySecret = req.nextUrl.searchParams.get("secret");
     const configuredSecret = process.env.EMAIL_WEBHOOK_SECRET || process.env.CRON_SECRET;
 
-    if (configuredSecret && querySecret && querySecret !== configuredSecret) {
+    if (configuredSecret && (!querySecret || !safeCompare(querySecret, configuredSecret))) {
       return NextResponse.json({ error: "Unauthorized webhook" }, { status: 401 });
     }
 
