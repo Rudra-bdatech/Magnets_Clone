@@ -528,17 +528,23 @@ export default function SequenceTab({
                           disabled={!sequenceEnabled}
                           title="Text Align"
                           onClick={() => setActiveMenu((m) => m === "align" ? null : "align")}
-                          className={`flex items-center gap-1 px-1.5 py-1 rounded hover:bg-zinc-200 dark:hover:bg-zinc-800 transition cursor-pointer ${activeMenu === "align" ? "bg-zinc-200 dark:bg-zinc-800" : ""} disabled:opacity-50`}
+                          className={`flex items-center gap-1 px-1.5 py-1 rounded hover:bg-zinc-200 dark:hover:bg-zinc-800 transition cursor-pointer ${activeMenu === "align" || editor?.isActive({ textAlign: "center" }) || editor?.isActive({ textAlign: "right" }) ? "bg-[#0066B2]/20 text-[#0066B2] dark:text-[#38BDF8]" : ""} disabled:opacity-50`}
                         >
-                          <AlignLeft className="h-3.5 w-3.5" />
+                          {editor?.isActive({ textAlign: "right" }) ? (
+                            <AlignRight className="h-3.5 w-3.5" />
+                          ) : editor?.isActive({ textAlign: "center" }) ? (
+                            <AlignCenter className="h-3.5 w-3.5" />
+                          ) : (
+                            <AlignLeft className="h-3.5 w-3.5" />
+                          )}
                           <ChevronDown className="h-3 w-3 text-zinc-400" />
                         </button>
                         {activeMenu === "align" && (
                           <div className="absolute left-0 top-full pt-1 z-50">
                             <div className={`w-32 rounded-lg border shadow-lg p-1 flex flex-col ${(account?.themeMode || "light") === "dark" ? "border-[#27272A] bg-[#1E1E24] text-white" : "border-zinc-200 bg-white text-zinc-800"}`}>
-                              <button type="button" onClick={() => { editor?.chain().focus().setTextAlign("left").run(); setActiveMenu(null); }} className="flex items-center gap-2 px-2.5 py-1.5 text-xs rounded hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer"><AlignLeft className="h-3.5 w-3.5" /> Left</button>
-                              <button type="button" onClick={() => { editor?.chain().focus().setTextAlign("center").run(); setActiveMenu(null); }} className="flex items-center gap-2 px-2.5 py-1.5 text-xs rounded hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer"><AlignCenter className="h-3.5 w-3.5" /> Center</button>
-                              <button type="button" onClick={() => { editor?.chain().focus().setTextAlign("right").run(); setActiveMenu(null); }} className="flex items-center gap-2 px-2.5 py-1.5 text-xs rounded hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer"><AlignRight className="h-3.5 w-3.5" /> Right</button>
+                              <button type="button" onClick={() => { editor?.chain().focus().setTextAlign("left").run(); setActiveMenu(null); }} className={`flex items-center gap-2 px-2.5 py-1.5 text-xs rounded hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer ${!editor?.isActive({ textAlign: "center" }) && !editor?.isActive({ textAlign: "right" }) ? "font-bold text-[#0066B2] dark:text-[#38BDF8]" : ""}`}><AlignLeft className="h-3.5 w-3.5" /> Left</button>
+                              <button type="button" onClick={() => { editor?.chain().focus().setTextAlign("center").run(); setActiveMenu(null); }} className={`flex items-center gap-2 px-2.5 py-1.5 text-xs rounded hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer ${editor?.isActive({ textAlign: "center" }) ? "font-bold text-[#0066B2] dark:text-[#38BDF8]" : ""}`}><AlignCenter className="h-3.5 w-3.5" /> Center</button>
+                              <button type="button" onClick={() => { editor?.chain().focus().setTextAlign("right").run(); setActiveMenu(null); }} className={`flex items-center gap-2 px-2.5 py-1.5 text-xs rounded hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer ${editor?.isActive({ textAlign: "right" }) ? "font-bold text-[#0066B2] dark:text-[#38BDF8]" : ""}`}><AlignRight className="h-3.5 w-3.5" /> Right</button>
                             </div>
                           </div>
                         )}

@@ -1118,6 +1118,7 @@ textarea {
   border: 1px solid #e2e8f0;
   padding: 10px 14px;
   vertical-align: top;
+  text-align: left;
   box-sizing: border-box;
   position: relative;
   font-size: 14px;
