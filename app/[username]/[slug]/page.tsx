@@ -896,7 +896,7 @@ export default async function MagnetPageRoute({
                 )}
 
                 {page.bullets && page.bullets.length > 0 && (
-                  <div className="space-y-2 pt-2 border-t border-black/10 dark:border-white/10">
+                  <div className="space-y-2 pt-2">
                     <p className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-[#9B9085]">
                       {page.bulletsTitle || "What you will learn"}
                     </p>
