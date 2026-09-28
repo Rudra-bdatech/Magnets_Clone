@@ -139,6 +139,7 @@ const MagnetPageSchema = new Schema({
 
 MagnetPageSchema.index({ userEmail: 1, slug: 1 });
 MagnetPageSchema.index({ userEmail: 1, id: 1 });
+MagnetPageSchema.index({ id: 1 });
 
 // Lead Schema
 const LeadSchema = new Schema({
@@ -165,6 +166,7 @@ LeadSchema.index({ userEmail: 1, pageId: 1 });
 LeadSchema.index({ userEmail: 1, page: 1 });
 LeadSchema.index({ userEmail: 1, email: 1 });
 LeadSchema.index({ userEmail: 1, signedUpAt: -1 });
+LeadSchema.index({ id: 1 });
 
 // Sequence Email Schema
 const SequenceEmailSchema = new Schema({
