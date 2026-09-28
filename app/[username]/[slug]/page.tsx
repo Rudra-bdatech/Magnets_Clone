@@ -280,7 +280,7 @@ export default async function MagnetPageRoute({
 
   return (
     <main
-      className="flex min-h-screen lg:h-screen lg:max-h-screen lg:overflow-hidden flex-col font-sans transition-colors duration-300 relative justify-between"
+      className="flex min-h-screen flex-col font-sans transition-colors duration-300 relative justify-between overflow-x-hidden"
       style={{
         colorScheme: themeMode === "dark" ? "dark" : "light",
         backgroundColor: themeMode === "dark" ? "#0E0E10" : "#FAFAFA",
@@ -820,7 +820,7 @@ export default async function MagnetPageRoute({
                 {/* Bullet list */}
                 {page.bullets && page.bullets.length > 0 && (
                   <div className="space-y-1.5">
-                    {page.bullets.slice(0, 3).map((item, idx) => (
+                    {page.bullets.map((item, idx) => (
                       <div key={idx} className="flex items-start gap-2.5">
                         <div
                           className="flex h-3.5 w-3.5 shrink-0 mt-0.5 items-center justify-center rounded-full"
@@ -867,7 +867,7 @@ export default async function MagnetPageRoute({
           </div>
         ) : (
           /* TEMPLATE 1 / Default: Modern Full-Width Split Layout */
-          <div className="w-full h-full flex flex-col justify-center py-0">
+          <div className="w-full flex-1 flex flex-col justify-center py-4 lg:py-6">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 xl:gap-14 items-center w-full">
               {/* Left Content Column */}
               <div className="lg:col-span-7 space-y-3 lg:space-y-4 xl:space-y-5 lg:pr-2 xl:pr-6">
@@ -889,7 +889,7 @@ export default async function MagnetPageRoute({
                 )}
 
                 {page.pitch && (
-                  <p className={`text-xs sm:text-sm md:text-base leading-relaxed ${themeMode === "dark" ? "text-zinc-400" : "text-zinc-500"
+                  <p className={`text-xs sm:text-sm md:text-base leading-relaxed whitespace-pre-line ${themeMode === "dark" ? "text-zinc-400" : "text-zinc-500"
                     }`}>
                     {page.pitch}
                   </p>
@@ -901,7 +901,7 @@ export default async function MagnetPageRoute({
                       {page.bulletsTitle || "What you will learn"}
                     </p>
                     <ul className="space-y-2">
-                      {page.bullets.slice(0, 3).map((line, idx) => (
+                      {page.bullets.map((line, idx) => (
                         <li key={idx} className="flex items-start gap-3 text-xs sm:text-sm md:text-base">
                           <span
                             className="flex h-4.5 w-4.5 shrink-0 items-center justify-center rounded-full mt-0.5 shadow-xs transition-all duration-300"

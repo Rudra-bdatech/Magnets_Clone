@@ -172,7 +172,7 @@ export default function Template1(props: TemplateProps) {
               />
             ) : (
               pitch && (
-                <p className={`text-xs leading-relaxed ${isDark ? "text-zinc-400" : "text-zinc-500"}`}>
+                <p className={`text-xs leading-relaxed whitespace-pre-line ${isDark ? "text-zinc-400" : "text-zinc-500"}`}>
                   {pitch}
                 </p>
               )
