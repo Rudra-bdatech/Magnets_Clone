@@ -239,6 +239,21 @@ export default function EditLeadMagnetPage() {
         }
       }
     });
+
+    const handleAccountSync = () => {
+      const refreshedAcc = loadAccount();
+      if (refreshedAcc) setAccount(refreshedAcc);
+    };
+
+    window.addEventListener("accountUpdated", handleAccountSync);
+    window.addEventListener("storage", handleAccountSync);
+    window.addEventListener("focus", handleAccountSync);
+
+    return () => {
+      window.removeEventListener("accountUpdated", handleAccountSync);
+      window.removeEventListener("storage", handleAccountSync);
+      window.removeEventListener("focus", handleAccountSync);
+    };
   }, [params.id]);
 
   // Modal & Menu States

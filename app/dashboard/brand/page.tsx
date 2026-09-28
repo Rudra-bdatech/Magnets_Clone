@@ -222,7 +222,30 @@ export default function BrandPage() {
 
       const result = await res.json();
       if (res.ok && result.data?.fileUrl) {
-        setLogo(result.data.fileUrl);
+        const newLogoUrl = result.data.fileUrl;
+        setLogo(newLogoUrl);
+
+        // Auto-persist immediately so reloading or navigating never loses the uploaded logo
+        const currentUserEmail = (typeof window !== "undefined" ? localStorage.getItem("currentUserEmail") : null) || account?.email || "";
+        const updatedAccount: Account = {
+          ...(account || { email: currentUserEmail, name: "User", username: "user", plan: "Free" as const, joinedAt: "Just now" }),
+          email: currentUserEmail,
+          brandName: businessName.trim(),
+          brandColor: brandColor.trim(),
+          themeMode,
+          highlightIntensity,
+          templateId,
+          logo: newLogoUrl,
+        };
+        setAccount(updatedAccount);
+        if (typeof window !== "undefined") {
+          try {
+            localStorage.setItem("currentUserAccount", JSON.stringify(updatedAccount));
+            window.dispatchEvent(new Event("accountUpdated"));
+          } catch (_) {}
+        }
+        await saveAccount(updatedAccount);
+        triggerToast("Logo uploaded and saved successfully!");
       } else {
         alert(result.error || "Failed to upload logo.");
       }
@@ -233,14 +256,34 @@ export default function BrandPage() {
       setUploadingLogo(false);
       if (fileInputRef.current) fileInputRef.current.value = "";
     }
-  }, [account?.email]);
+  }, [account, businessName, brandColor, themeMode, highlightIntensity, templateId, triggerToast]);
 
-  const removeLogo = useCallback(() => {
+  const removeLogo = useCallback(async () => {
     setLogo(null);
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
-  }, []);
+    const currentUserEmail = (typeof window !== "undefined" ? localStorage.getItem("currentUserEmail") : null) || account?.email || "";
+    const updatedAccount: Account = {
+      ...(account || { email: currentUserEmail, name: "User", username: "user", plan: "Free" as const, joinedAt: "Just now" }),
+      email: currentUserEmail,
+      brandName: businessName.trim(),
+      brandColor: brandColor.trim(),
+      themeMode,
+      highlightIntensity,
+      templateId,
+      logo: null,
+    };
+    setAccount(updatedAccount);
+    if (typeof window !== "undefined") {
+      try {
+        localStorage.setItem("currentUserAccount", JSON.stringify(updatedAccount));
+        window.dispatchEvent(new Event("accountUpdated"));
+      } catch (_) {}
+    }
+    await saveAccount(updatedAccount);
+    triggerToast("Logo removed and saved.");
+  }, [account, businessName, brandColor, themeMode, highlightIntensity, templateId, triggerToast]);
 
   const hasUnsavedChanges = useMemo(() => {
     const currentBrandName = account?.brandName ?? account?.name ?? "";

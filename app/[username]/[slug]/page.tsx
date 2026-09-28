@@ -233,9 +233,12 @@ export default async function MagnetPageRoute({
 
   const cleanUserEmail = pageDoc?.userEmail ? pageDoc.userEmail.trim().toLowerCase() : null;
 
-  if (!accountDoc && cleanUserEmail) {
+  if (cleanUserEmail) {
     try {
-      accountDoc = await AccountModel.findOne({ email: cleanUserEmail }).lean();
+      const ownerAccount = await AccountModel.findOne({ email: cleanUserEmail }).lean();
+      if (ownerAccount) {
+        accountDoc = ownerAccount;
+      }
     } catch (_) { }
   }
 
