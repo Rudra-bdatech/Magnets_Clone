@@ -164,10 +164,6 @@ export default function EditLeadMagnetPage() {
     const localResources = loadResources();
     if (localResources && localResources.length > 0) {
       setHostedResources(localResources);
-      const latestResource = localResources[0];
-      if (latestResource?.url) {
-        setEmailBody((prev) => (!prev.includes("http") ? `${prev}\n\n${latestResource.url}` : prev));
-      }
     }
 
     // ── Step 2: ONE database call — fan out all results ──
@@ -177,13 +173,9 @@ export default function EditLeadMagnetPage() {
       // Fan out: account
       if (data.account) setAccount(data.account);
 
-      // Fan out: resources + emailBody
+      // Fan out: resources
       if (data.resources && data.resources.length > 0) {
         setHostedResources(data.resources);
-        const latestResource = data.resources[0];
-        if (latestResource?.url) {
-          setEmailBody((prev) => (!prev.includes("http") ? `${prev}\n\n${latestResource.url}` : prev));
-        }
       }
 
       // Fan out: page data + templateId + form fields
@@ -229,10 +221,24 @@ export default function EditLeadMagnetPage() {
             if (found.pitch) setPitch(found.pitch);
             if (found.bullets) setBullets(found.bullets);
             if (found.imageUrl !== undefined) setImageUrl(found.imageUrl);
+            if (found.emailSubject) setEmailSubject(found.emailSubject);
+            if (found.emailPreviewText) setEmailPreviewText(found.emailPreviewText);
+            if (found.emailBody) setEmailBody(found.emailBody);
             if (found.sequenceEnabled !== undefined) setSequenceEnabled(found.sequenceEnabled);
             if (found.stopOnCall !== undefined) setStopOnCall(found.stopOnCall);
             if (found.sequenceEmails) setSequenceEmails(found.sequenceEmails);
             if (found.customFormFields) setCustomFormFields(found.customFormFields);
+            if (found.afterSignupOption) setAfterSignupOption(found.afterSignupOption);
+            if (found.destinationUrl) setDestinationUrl(found.destinationUrl);
+            if (found.customHeading) setCustomHeading(found.customHeading);
+            if (found.customMessage) setCustomMessage(found.customMessage);
+            if (found.videoUrl) setVideoUrl(found.videoUrl);
+            if (found.buttonLabel) setButtonLabel(found.buttonLabel);
+            if (found.buttonUrl) setButtonUrl(found.buttonUrl);
+            if (found.quizFunnelEnabled !== undefined) setQuizFunnelEnabled(found.quizFunnelEnabled);
+            if (found.customPromptQuestion) setCustomPromptQuestion(found.customPromptQuestion);
+            if (found.customPromptPlaceholder) setCustomPromptPlaceholder(found.customPromptPlaceholder);
+            if (found.enableAiPersonalizedDeliverable !== undefined) setEnableAiPersonalizedDeliverable(found.enableAiPersonalizedDeliverable);
           }
         } else if (data.account?.templateId) {
           setTemplateId(data.account.templateId);
@@ -1058,6 +1064,20 @@ export default function EditLeadMagnetPage() {
         const all = loadPages().map((p) => (p.id === next.id ? next : p));
         savePages(all);
         if (typeof window !== "undefined") window.dispatchEvent(new Event("storage"));
+
+        // Persist directly to backend database
+        const userEmail = account?.email || (typeof window !== "undefined" ? localStorage.getItem("currentUserEmail") : null);
+        if (userEmail && next.id) {
+          fetch("/api/data", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              action: "addPage",
+              data: next,
+              email: userEmail,
+            }),
+          }).catch(() => {});
+        }
       }
       setSaveStatus("autosaved");
     }, 600);
@@ -1102,6 +1122,10 @@ export default function EditLeadMagnetPage() {
         testStarted,
         variantBImage,
         variantBTitle,
+        customPromptQuestion,
+        customPromptPlaceholder,
+        enableAiPersonalizedDeliverable,
+        customFormFields,
         bulletsTitle,
         formTitle,
         formSubtitle,
@@ -1116,6 +1140,18 @@ export default function EditLeadMagnetPage() {
       pageRef.current = next;
       const all = loadPages().map((p) => (p.id === next.id ? next : p));
       savePages(all);
+      const userEmail = account?.email || (typeof window !== "undefined" ? localStorage.getItem("currentUserEmail") : null);
+      if (userEmail && next.id) {
+        fetch("/api/data", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            action: "addPage",
+            data: next,
+            email: userEmail,
+          }),
+        }).catch(() => {});
+      }
     }
   };
 
@@ -1143,11 +1179,62 @@ export default function EditLeadMagnetPage() {
   function update(patch: Partial<MagnetPage>) {
     const current = pageRef.current || page;
     if (!current) return;
-    const next = { ...current, headline, subheadline, pitch, bullets, imageUrl, bulletsTitle, pdfPages: lockedPdfPages, pdfFreePages: lockedPdfFreePages, pdfTitle: lockedPdfTitle, ...patch };
+    const next = {
+      ...current,
+      headline,
+      subheadline,
+      pitch,
+      bullets,
+      imageUrl,
+      emailSubject,
+      emailPreviewText,
+      emailBody,
+      sequenceEnabled,
+      stopOnCall,
+      sequenceEmails,
+      afterSignupOption,
+      destinationUrl,
+      customHeading,
+      customMessage,
+      videoUrl,
+      buttonLabel,
+      buttonUrl,
+      quizFunnelEnabled,
+      hasVariantB,
+      testStarted,
+      variantBImage,
+      variantBTitle,
+      customPromptQuestion,
+      customPromptPlaceholder,
+      enableAiPersonalizedDeliverable,
+      customFormFields,
+      bulletsTitle,
+      formTitle,
+      formSubtitle,
+      formButtonText,
+      cta: formButtonText,
+      pdfPages: lockedPdfPages,
+      pdfFreePages: lockedPdfFreePages,
+      pdfTitle: lockedPdfTitle,
+      template: (templateId as any),
+      ...patch
+    };
     pageRef.current = next;
     setPage(next);
     const all = loadPages().map((p) => (p.id === next.id ? next : p));
     savePages(all);
+    const userEmail = account?.email || (typeof window !== "undefined" ? localStorage.getItem("currentUserEmail") : null);
+    if (userEmail && next.id) {
+      fetch("/api/data", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "addPage",
+          data: next,
+          email: userEmail,
+        }),
+      }).catch(() => {});
+    }
   }
 
   function save() {
@@ -1155,11 +1242,62 @@ export default function EditLeadMagnetPage() {
     window.setTimeout(() => {
       const current = pageRef.current || page;
       if (!current) return;
-      const next = { ...current, headline, subheadline, pitch, bullets, imageUrl, bulletsTitle, pdfPages: lockedPdfPages, pdfFreePages: lockedPdfFreePages, pdfTitle: lockedPdfTitle, updatedAt: "Just now" };
+      const next = {
+        ...current,
+        headline,
+        subheadline,
+        pitch,
+        bullets,
+        imageUrl,
+        emailSubject,
+        emailPreviewText,
+        emailBody,
+        sequenceEnabled,
+        stopOnCall,
+        sequenceEmails,
+        afterSignupOption,
+        destinationUrl,
+        customHeading,
+        customMessage,
+        videoUrl,
+        buttonLabel,
+        buttonUrl,
+        quizFunnelEnabled,
+        hasVariantB,
+        testStarted,
+        variantBImage,
+        variantBTitle,
+        customPromptQuestion,
+        customPromptPlaceholder,
+        enableAiPersonalizedDeliverable,
+        customFormFields,
+        bulletsTitle,
+        formTitle,
+        formSubtitle,
+        formButtonText,
+        cta: formButtonText,
+        pdfPages: lockedPdfPages,
+        pdfFreePages: lockedPdfFreePages,
+        pdfTitle: lockedPdfTitle,
+        template: (templateId as any),
+        updatedAt: "Just now"
+      };
       pageRef.current = next;
       setPage(next);
       const all = loadPages().map((p) => (p.id === next.id ? next : p));
       savePages(all);
+      const userEmail = account?.email || (typeof window !== "undefined" ? localStorage.getItem("currentUserEmail") : null);
+      if (userEmail && next.id) {
+        fetch("/api/data", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            action: "addPage",
+            data: next,
+            email: userEmail,
+          }),
+        }).catch(() => {});
+      }
       setSaving(false);
     }, 400);
   }

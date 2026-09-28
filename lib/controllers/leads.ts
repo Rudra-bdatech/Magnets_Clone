@@ -30,7 +30,19 @@ export async function handleAddLead(data: any, req: Request, normEmail: string |
     if (data.page) query.push({ name: data.page });
     if (data.pageSlug) query.push({ slug: data.pageSlug });
     try {
-      foundPageDoc = await MagnetPageModel.findOne({ $or: query }).lean();
+      if (ownerEmail) {
+        foundPageDoc = await MagnetPageModel.findOne({
+          $and: [
+            { userEmail: { $regex: new RegExp(`^${ownerEmail.trim()}$`, "i") } },
+            { $or: query }
+          ]
+        }).sort({ updatedAt: -1, createdAt: -1, _id: -1 }).lean();
+      }
+      if (!foundPageDoc) {
+        foundPageDoc = await MagnetPageModel.findOne({ $or: query })
+          .sort({ updatedAt: -1, createdAt: -1, _id: -1 })
+          .lean();
+      }
     } catch (_) {}
     if (foundPageDoc) {
       if (foundPageDoc.userEmail) ownerEmail = foundPageDoc.userEmail;
@@ -173,13 +185,8 @@ export async function handleAddLead(data: any, req: Request, normEmail: string |
 
       const existingLead = await LeadModel.findOne(leadQuery).lean();
       if (existingLead) {
-        return NextResponse.json({
-          success: true,
-          lead: existingLead,
-          alreadySubscribed: true,
-          afterSignupOption: foundPageDoc?.afterSignupOption || data.afterSignupOption || "standard",
-          destinationUrl: foundPageDoc?.destinationUrl || data.destinationUrl || "",
-        });
+        createdOrUpdatedLead = existingLead;
+        isUpgradedFromPending = true; // prevent duplicate DB insert, but allow deliverable email to be sent
       }
     }
   }
@@ -319,10 +326,8 @@ export async function handleAddLead(data: any, req: Request, normEmail: string |
             .replace(/\{name\}/gi, recipientDisplayName)
             .replace(/\{email\}/gi, data.email || "");
 
-          // Clean up localhost occurrences and replace any raw /r/ links with the official thank-you page URL
-          rawBody = rawBody
-            .replace(/http:\/\/localhost:3000/g, appUrl)
-            .replace(/https?:\/\/[^\s<]+\/r\/[a-zA-Z0-9_-]+/g, resourceAccessUrl);
+          // Clean up localhost occurrences to production appUrl
+          rawBody = rawBody.replace(/http:\/\/localhost:3000/g, appUrl);
 
           const hasHtmlTags = /<[a-z][\s\S]*>/i.test(rawBody);
           let formattedBodyHtml = hasHtmlTags ? rawBody : rawBody.replace(/\n/g, "<br/>");
