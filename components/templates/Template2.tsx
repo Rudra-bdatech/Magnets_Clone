@@ -49,10 +49,10 @@ export default function Template2(props: TemplateProps) {
   };
 
   return (
-    <div className="w-full max-w-7xl mx-auto py-1">
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 items-center">
+    <div className="w-full mx-auto py-1">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 xl:gap-10 items-stretch">
         {/* Left Panel: Cover Image + Gradient Scrim + Bullets (~60%) */}
-        <div className="lg:col-span-7 relative flex flex-col justify-end p-6 sm:p-8 md:p-10 rounded-3xl overflow-hidden min-h-[380px] sm:min-h-[440px] bg-zinc-900 text-white shadow-2xl border border-black/10 dark:border-white/10 group">
+        <div className="lg:col-span-7 relative flex flex-col justify-end p-6 sm:p-8 md:p-10 rounded-3xl overflow-hidden min-h-[420px] sm:min-h-[480px] lg:min-h-[520px] bg-zinc-900 text-white shadow-2xl border border-black/10 dark:border-white/10 group">
           {imageUrl && imageUrl.trim() !== "" && (
             <img
               src={imageUrl}

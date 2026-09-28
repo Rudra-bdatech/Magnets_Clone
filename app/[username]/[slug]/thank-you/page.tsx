@@ -93,7 +93,7 @@ export default async function ThankYouPage({
       resolvedResources.push({
         id: "direct_asset",
         name: resolvedDeliverableName,
-        url: downloadUrl,
+        url: downloadUrl || pageDoc.assetUrl.trim(),
         type: "pdf",
       });
     } else if (cleanUserEmail) {

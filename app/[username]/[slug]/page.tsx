@@ -331,11 +331,11 @@ export default async function MagnetPageRoute({
       <div className="flex-1 w-full flex flex-col justify-center px-4 sm:px-6 md:px-8 lg:px-10 xl:px-14 pb-3 sm:pb-4">
         {/* Dynamic Multi-Template View Renderer */}
         {((page.template as string) === "template2" || (!page.template && (accountDoc?.templateId as string) === "template2")) ? (
-          /* TEMPLATE 2: Lead Capture Split Panel Layout (Full Screen / No Outer Card) */
-          <div className="w-full max-w-7xl mx-auto">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 items-center">
+          /* TEMPLATE 2: Lead Capture Split Panel Layout (Full Screen / Full Width & Height) */
+          <div className="w-full flex-1 flex flex-col justify-center py-1 lg:py-2">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 xl:gap-14 items-center w-full">
               {/* Left Panel: Cover Image Backdrop + Gradient Scrim + Content Overlay */}
-              <div className="lg:col-span-7 relative flex flex-col justify-end p-6 sm:p-8 md:p-10 rounded-3xl overflow-hidden min-h-[380px] sm:min-h-[440px] bg-zinc-900 text-white shadow-2xl border border-black/10 dark:border-white/10 group">
+              <div className="lg:col-span-7 relative flex flex-col justify-end p-6 sm:p-8 md:p-10 lg:p-12 xl:p-14 rounded-3xl overflow-hidden min-h-[440px] sm:min-h-[500px] lg:min-h-[560px] xl:min-h-[620px] bg-zinc-900 text-white shadow-2xl border border-black/10 dark:border-white/10 group min-w-0">
                 {activeImageUrl && activeImageUrl.trim() !== "" && (
                   <img
                     src={activeImageUrl}
@@ -346,39 +346,46 @@ export default async function MagnetPageRoute({
                 <div className="absolute inset-0 bg-gradient-to-t from-[#0a0c16] via-[#0a0c16]/70 to-transparent pointer-events-none" />
 
                 {/* Left Panel Content */}
-                <div className="relative z-10 space-y-3">
-                  <h1 className={`text-white leading-tight drop-shadow-md ${(activeHeadline?.length || 0) > 60 ? "text-xl sm:text-2xl md:text-3xl font-bold" : (activeHeadline?.length || 0) > 35 ? "text-2xl sm:text-3xl md:text-4xl font-extrabold" : "text-3xl sm:text-4xl md:text-5xl font-black"}`}>
+                <div className="relative z-10 space-y-3 lg:space-y-4 xl:space-y-5 min-w-0">
+                  <h1 className={`text-white leading-[1.08] drop-shadow-md break-words [overflow-wrap:anywhere] ${(activeHeadline?.length || 0) > 60 ? "text-2xl sm:text-3xl md:text-4xl lg:text-[2.2rem] xl:text-[2.6rem] font-bold" : (activeHeadline?.length || 0) > 35 ? "text-3xl sm:text-4xl md:text-5xl lg:text-[2.6rem] xl:text-[3.2rem] font-extrabold" : "text-3xl sm:text-4xl md:text-5xl lg:text-[2.8rem] xl:text-[3.4rem] 2xl:text-[3.8rem] font-black"}`}>
                     {activeHeadline || "Free Resource"}
                   </h1>
                   {page.subheadline && (
-                    <p className="text-sm sm:text-base text-white/85 leading-relaxed drop-shadow">
+                    <p className="text-sm sm:text-base md:text-lg xl:text-xl text-white/90 font-medium leading-relaxed drop-shadow break-words [overflow-wrap:anywhere]">
                       {page.subheadline}
                     </p>
                   )}
                   {page.pitch && (
-                    <p className="text-xs sm:text-sm text-white/75 leading-relaxed">
+                    <p className="text-xs sm:text-sm md:text-base text-white/80 leading-relaxed whitespace-pre-line break-words [overflow-wrap:anywhere]">
                       {page.pitch}
                     </p>
                   )}
 
                   {/* Bullets */}
                   {page.bullets && page.bullets.length > 0 && (
-                    <ul className="space-y-2 pt-2 border-t border-white/15">
-                      {page.bullets.map((b: string, i: number) => (
-                        <li key={i} className="flex items-start gap-2.5 text-xs sm:text-sm text-zinc-100">
-                          <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-400 font-bold border border-emerald-500/30 mt-0.5">
-                            ✓
-                          </span>
-                          <span>{b}</span>
-                        </li>
-                      ))}
-                    </ul>
+                    <div className="space-y-2.5 pt-2 border-t border-white/15 min-w-0">
+                      {page.bulletsTitle && (
+                        <p className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-white/70">
+                          {page.bulletsTitle}
+                        </p>
+                      )}
+                      <ul className="space-y-2 sm:space-y-2.5">
+                        {page.bullets.map((b: string, i: number) => (
+                          <li key={i} className="flex items-start gap-2.5 text-xs sm:text-sm md:text-base text-zinc-100 min-w-0">
+                            <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-400 font-bold border border-emerald-500/30 mt-0.5">
+                              ✓
+                            </span>
+                            <span className="break-words [overflow-wrap:anywhere]">{b}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
                   )}
                 </div>
               </div>
 
               {/* Right Panel: Form */}
-              <div className="lg:col-span-5 flex flex-col justify-center">
+              <div className="lg:col-span-5 w-full flex flex-col justify-center space-y-3 xl:space-y-4 lg:pt-1 xl:pt-2">
                 <MagnetSignupForm
                   cta={page.cta}
                   formTitle={page.formTitle}
@@ -402,6 +409,13 @@ export default async function MagnetPageRoute({
                   afterSignupOption={page.afterSignupOption}
                   destinationUrl={page.destinationUrl}
                 />
+                {page.deliverable && (
+                  <p className={`mt-1.5 flex items-center justify-center gap-1.5 text-[11px] sm:text-xs font-medium ${themeMode === "dark" ? "text-zinc-400" : "text-zinc-600"
+                    }`}>
+                    <GiftIcon className="h-3.5 w-3.5" />
+                    {page.deliverable}
+                  </p>
+                )}
               </div>
             </div>
           </div>
