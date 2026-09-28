@@ -50,6 +50,7 @@ import {
   handleSendTestPipedriveAlert,
   handleSendTestZapierAlert,
   handleSendTestSlackAlert,
+  handleTestCalendarToken,
 } from "@/lib/controllers/integrations";
 import { checkRateLimit } from "@/lib/rate-limit";
 
@@ -292,6 +293,8 @@ export async function POST(req: Request) {
         return handleSendTestZapierAlert(data, normEmail);
       case "sendTestSlackAlert":
         return handleSendTestSlackAlert(data, normEmail);
+      case "testCalendarToken":
+        return handleTestCalendarToken(data, normEmail);
 
       default:
         return NextResponse.json({ error: "Invalid action" }, { status: 400 });

@@ -219,3 +219,89 @@ export async function handleSendTestSlackAlert(data: any, normEmail: string | nu
     return NextResponse.json({ error: err.message || "Failed to reach Slack webhook." }, { status: 500 });
   }
 }
+
+export async function handleTestCalendarToken(data: any, normEmail: string | null) {
+  const provider = data?.provider || "Calendly";
+  const token = data?.token?.trim() || (await AccountModel.findOne({ email: normEmail }))?.calendarToken?.trim();
+
+  if (!token) {
+    return NextResponse.json(
+      { error: "Please enter a personal access token to verify connection." },
+      { status: 400 }
+    );
+  }
+
+  try {
+    if (provider === "Calendly") {
+      const res = await fetch("https://api.calendly.com/users/me", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!res.ok) {
+        return NextResponse.json(
+          {
+            error:
+              "Invalid Calendly token (HTTP " +
+              res.status +
+              "). Please verify your Personal Access Token in Calendly Integrations > API & Webhooks.",
+          },
+          { status: 400 }
+        );
+      }
+
+      const resData = await res.json();
+      const user = resData.resource || {};
+      return NextResponse.json({
+        success: true,
+        provider: "Calendly",
+        name: user.name || "Calendly User",
+        email: user.email || "",
+        message: `Successfully connected to Calendly account (${user.name || user.email || "Active"})!`,
+      });
+    } else if (provider === "Cal.com") {
+      let res = await fetch(`https://api.cal.com/v1/users/me?apiKey=${encodeURIComponent(token)}`);
+      if (!res.ok) {
+        res = await fetch("https://api.cal.com/v2/me", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "cal-api-version": "2024-08-13",
+          },
+        });
+      }
+
+      if (!res.ok) {
+        return NextResponse.json(
+          {
+            error:
+              "Invalid Cal.com API key (HTTP " +
+              res.status +
+              "). Please verify your API key in Cal.com Settings > Developer > API Keys.",
+          },
+          { status: 400 }
+        );
+      }
+
+      const resData = await res.json().catch(() => ({}));
+      const user = resData.user || resData.data || {};
+      return NextResponse.json({
+        success: true,
+        provider: "Cal.com",
+        name: user.name || user.username || "Cal.com User",
+        email: user.email || "",
+        message: `Successfully connected to Cal.com account (${user.name || user.email || "Active"})!`,
+      });
+    } else {
+      return NextResponse.json({ error: "Unsupported calendar provider." }, { status: 400 });
+    }
+  } catch (err: any) {
+    console.error("Calendar test error:", err);
+    return NextResponse.json(
+      { error: err.message || "Failed to reach calendar provider API." },
+      { status: 500 }
+    );
+  }
+}
+
