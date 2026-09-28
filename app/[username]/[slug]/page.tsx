@@ -5,6 +5,7 @@ import MagnetSignupForm from "@/components/magnet-signup-form";
 import AnalyticsAndExitIntent from "@/components/analytics-and-exit-intent";
 import { dbConnect } from "@/lib/mongodb";
 import { MagnetPageModel, AccountModel } from "@/lib/models";
+import { type MagnetPage } from "@/lib/data";
 import { verifySessionToken } from "@/lib/session-token";
 import { Check } from "lucide-react";
 
@@ -280,7 +281,7 @@ export default async function MagnetPageRoute({
 
   return (
     <main
-      className="flex min-h-screen flex-col font-sans transition-colors duration-300 relative justify-between overflow-x-hidden"
+      className="flex min-h-screen flex-col font-sans transition-colors duration-300 relative overflow-x-hidden"
       style={{
         colorScheme: themeMode === "dark" ? "dark" : "light",
         backgroundColor: themeMode === "dark" ? "#0E0E10" : "#FAFAFA",
@@ -311,23 +312,23 @@ export default async function MagnetPageRoute({
           <span>⚠️ Draft Preview Mode — This magnet is not yet published. Only you can view this page.</span>
         </div>
       )}
-      <header className="w-full flex h-12 sm:h-14 items-center justify-center px-6 sm:px-10 relative shrink-0">
+      <header className="w-full flex items-center justify-center pt-3 sm:pt-4 pb-1 sm:pb-2 px-6 sm:px-10 relative shrink-0">
         <div className="flex items-center gap-2.5 sm:gap-3">
-          <div className={`h-8 w-8 sm:h-9 sm:w-9 md:h-10 md:w-10 rounded-xl flex items-center justify-center bg-transparent overflow-hidden shadow-xs ${logo ? "border-none" : "border-2 border-dashed border-[#a1a1aa]/50"}`}>
+          <div className={`h-9 w-9 sm:h-10 sm:w-10 rounded-xl flex items-center justify-center bg-transparent overflow-hidden shadow-xs ${logo ? "border-none" : "border-2 border-dashed border-[#a1a1aa]/50"}`}>
             {logo ? (
               <img src={logo} alt="Logo" className="h-full w-full object-cover" />
             ) : (
               <div className="h-4 w-4 rounded-md border-2 border-dashed border-[#a1a1aa]" />
             )}
           </div>
-          <span className={`text-sm sm:text-base md:text-lg font-black tracking-wider uppercase ${themeMode === "dark" ? "text-white" : "text-zinc-900"}`}>
+          <span className={`text-base sm:text-lg font-black tracking-wider uppercase ${themeMode === "dark" ? "text-white" : "text-zinc-900"}`}>
             {businessName}
           </span>
         </div>
       </header>
 
-      {/* Main full-screen content area filling the screen properly with optimized vertical fit */}
-      <div className="flex-1 w-full flex flex-col justify-center px-4 sm:px-6 md:px-8 lg:px-10 xl:px-14 py-1 md:py-2">
+      {/* Main content area filling the screen properly with balanced vertical spacing */}
+      <div className="flex-1 w-full flex flex-col justify-center px-4 sm:px-6 md:px-8 lg:px-10 xl:px-14 pb-3 sm:pb-4">
         {/* Dynamic Multi-Template View Renderer */}
         {((page.template as string) === "template2" || (!page.template && (accountDoc?.templateId as string) === "template2")) ? (
           /* TEMPLATE 2: Lead Capture Split Panel Layout (Full Screen / No Outer Card) */
@@ -363,7 +364,7 @@ export default async function MagnetPageRoute({
                   {/* Bullets */}
                   {page.bullets && page.bullets.length > 0 && (
                     <ul className="space-y-2 pt-2 border-t border-white/15">
-                      {page.bullets.map((b, i) => (
+                      {page.bullets.map((b: string, i: number) => (
                         <li key={i} className="flex items-start gap-2.5 text-xs sm:text-sm text-zinc-100">
                           <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-400 font-bold border border-emerald-500/30 mt-0.5">
                             ✓
@@ -463,7 +464,7 @@ export default async function MagnetPageRoute({
                 {/* Bullets */}
                 {page.bullets && page.bullets.length > 0 && (
                   <div className="space-y-2 pt-1">
-                    {page.bullets.map((item, idx) => (
+                    {page.bullets.map((item: string, idx: number) => (
                       <div key={idx} className="flex items-center gap-2.5">
                         <div
                           className="h-3.5 w-3.5 shrink-0 rounded-full flex items-center justify-center"
@@ -539,7 +540,7 @@ export default async function MagnetPageRoute({
 
                 {page.bullets && page.bullets.length > 0 && (
                   <div className="space-y-2">
-                    {page.bullets.map((item, idx) => (
+                    {page.bullets.map((item: string, idx: number) => (
                       <div key={idx} className="flex items-center gap-2.5">
                         <div className="flex h-4 w-4 shrink-0 items-center justify-center rounded-md" style={{ background: `${brandColor}18`, border: `1px solid ${brandColor}44` }}>
                           <svg width="7" height="7" viewBox="0 0 7 7" fill="none"><path d="M1 3.5l1.7 1.7L6 1.5" stroke={brandColor} strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" /></svg>
@@ -654,7 +655,7 @@ export default async function MagnetPageRoute({
                   </h3>
                   {page.bullets && page.bullets.length > 0 && (
                     <div className="space-y-1.5">
-                      {page.bullets.map((item, idx) => (
+                      {page.bullets.map((item: string, idx: number) => (
                         <div key={idx} className="flex items-center gap-2.5">
                           <div className="flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded-md" style={{ background: `${brandColor}18`, border: `1px solid ${brandColor}44` }}>
                             <svg width="6" height="6" viewBox="0 0 7 7" fill="none"><path d="M1 3.5l1.7 1.7L6 1.5" stroke={brandColor} strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" /></svg>
@@ -731,7 +732,7 @@ export default async function MagnetPageRoute({
                     </div>
                     {page.bullets && page.bullets.length > 0 && (
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                        {page.bullets.map((item, idx) => (
+                        {page.bullets.map((item: string, idx: number) => (
                           <div key={idx} className="flex items-center gap-2">
                             <div className="flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded-md bg-white/10 border border-white/20">
                               <svg width="6" height="6" viewBox="0 0 7 7" fill="none"><path d="M1 3.5l1.7 1.7L6 1.5" stroke={brandColor} strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" /></svg>
@@ -820,7 +821,7 @@ export default async function MagnetPageRoute({
                 {/* Bullet list */}
                 {page.bullets && page.bullets.length > 0 && (
                   <div className="space-y-1.5">
-                    {page.bullets.map((item, idx) => (
+                    {page.bullets.map((item: string, idx: number) => (
                       <div key={idx} className="flex items-start gap-2.5">
                         <div
                           className="flex h-3.5 w-3.5 shrink-0 mt-0.5 items-center justify-center rounded-full"
@@ -867,10 +868,10 @@ export default async function MagnetPageRoute({
           </div>
         ) : (
           /* TEMPLATE 1 / Default: Modern Full-Width Split Layout */
-          <div className="w-full flex-1 flex flex-col justify-center py-4 lg:py-6">
+          <div className="w-full flex-1 flex flex-col justify-center py-1 lg:py-2">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 xl:gap-14 items-center w-full">
               {/* Left Content Column */}
-              <div className="lg:col-span-7 space-y-3 lg:space-y-4 xl:space-y-5 lg:pr-2 xl:pr-6">
+              <div className="lg:col-span-7 space-y-3 lg:space-y-4 xl:space-y-5 lg:pr-2 xl:pr-6 min-w-0">
                 <span className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-semibold shadow-xs ${themeMode === "dark"
                   ? "border-[#252529] bg-[#161619] text-zinc-300"
                   : "border-zinc-200 bg-zinc-50 text-zinc-700"
@@ -878,31 +879,31 @@ export default async function MagnetPageRoute({
                   <SparklesIcon className="h-3.5 w-3.5 text-brand-orange" />
                   Free resource
                 </span>
-                <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-[2.6rem] xl:text-[3.2rem] 2xl:text-[3.6rem] font-black leading-[1.08] tracking-tight">
+                <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-[2.6rem] xl:text-[3.2rem] 2xl:text-[3.6rem] font-black leading-[1.08] tracking-tight break-words [overflow-wrap:anywhere]">
                   {activeHeadline}
                 </h1>
                 {page.subheadline && (
-                  <p className={`text-sm sm:text-base md:text-lg xl:text-xl font-medium leading-relaxed ${themeMode === "dark" ? "text-zinc-300" : "text-zinc-700"
+                  <p className={`text-sm sm:text-base md:text-lg xl:text-xl font-medium leading-relaxed break-words [overflow-wrap:anywhere] ${themeMode === "dark" ? "text-zinc-300" : "text-zinc-700"
                     }`}>
                     {page.subheadline}
                   </p>
                 )}
 
                 {page.pitch && (
-                  <p className={`text-xs sm:text-sm md:text-base leading-relaxed whitespace-pre-line ${themeMode === "dark" ? "text-zinc-400" : "text-zinc-500"
+                  <p className={`text-xs sm:text-sm md:text-base leading-relaxed whitespace-pre-line break-words [overflow-wrap:anywhere] ${themeMode === "dark" ? "text-zinc-400" : "text-zinc-500"
                     }`}>
                     {page.pitch}
                   </p>
                 )}
 
                 {page.bullets && page.bullets.length > 0 && (
-                  <div className="space-y-3 pt-2">
+                  <div className="space-y-3 pt-2 min-w-0">
                     <p className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-[#9B9085]">
                       {page.bulletsTitle || "What you will learn"}
                     </p>
                     <ul className="space-y-2.5">
-                      {page.bullets.map((line, idx) => (
-                        <li key={idx} className="flex items-center gap-2.5 text-xs sm:text-sm group">
+                      {page.bullets.map((line: string, idx: number) => (
+                        <li key={idx} className="flex items-center gap-2.5 text-xs sm:text-sm group min-w-0">
                           <span
                             className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full transition-all duration-300"
                             style={{
@@ -918,7 +919,7 @@ export default async function MagnetPageRoute({
                           >
                             <Check className="h-3 w-3 text-white stroke-[3px]" />
                           </span>
-                          <span className={themeMode === "dark" ? "text-zinc-300" : "text-zinc-700"}>
+                          <span className={`break-words [overflow-wrap:anywhere] ${themeMode === "dark" ? "text-zinc-300" : "text-zinc-700"}`}>
                             {line}
                           </span>
                         </li>
@@ -929,7 +930,7 @@ export default async function MagnetPageRoute({
               </div>
 
               {/* Right Media Preview & Form Column */}
-              <div className="lg:col-span-5 space-y-3 xl:space-y-4 w-full lg:pt-5 xl:pt-7">
+              <div className="lg:col-span-5 space-y-3 xl:space-y-4 w-full lg:pt-1 xl:pt-2">
                 {/* Media Preview (Crisp proportion) */}
                 {activeImageUrl ? (
                   <div
