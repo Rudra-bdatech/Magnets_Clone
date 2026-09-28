@@ -17,6 +17,7 @@ export default async function ThankYouPage({
   let pageDoc: any = null;
   let downloadUrl: string | null = null;
   let resolvedDeliverableName = "Resource Access";
+  let resolvedResources: Array<{ id: string; name: string; url: string; size?: string; type?: string }> = [];
 
   try {
     await dbConnect();
@@ -50,32 +51,72 @@ export default async function ThankYouPage({
 
     resolvedDeliverableName = pageDoc?.deliverable || pageDoc?.name || "Resource Access";
 
-    // 1. Check candidate resource ID from emailBody, query param, or pageDoc first
-    let candidateResId = (searchParams.res || pageDoc?.resourceId || "").trim();
-    if (!candidateResId && pageDoc?.emailBody) {
-      const match = pageDoc.emailBody.match(/\/r\/([a-zA-Z0-9_-]+)/);
-      if (match && match[1]) {
-        candidateResId = match[1];
+    // 1. Extract ALL resource IDs from emailBody, query param, or pageDoc in order
+    const extractedResIds: string[] = [];
+    if (pageDoc?.emailBody) {
+      const matches = Array.from(pageDoc.emailBody.matchAll(/\/r\/([a-zA-Z0-9_-]+)/gi));
+      for (const m of matches as any[]) {
+        if (m[1] && !extractedResIds.includes(m[1])) {
+          extractedResIds.push(m[1]);
+        }
+      }
+    }
+    if (searchParams.res && !extractedResIds.includes(searchParams.res)) {
+      extractedResIds.push(searchParams.res);
+    }
+    if (pageDoc?.resourceId && !extractedResIds.includes(pageDoc.resourceId)) {
+      extractedResIds.push(pageDoc.resourceId);
+    }
+
+    if (extractedResIds.length > 0) {
+      const resDocs = await ResourceModel.find({ id: { $in: extractedResIds } }).lean();
+      const docMap = new Map(resDocs.map((d: any) => [d.id, d]));
+      
+      for (const rId of extractedResIds) {
+        const found = docMap.get(rId) as any;
+        resolvedResources.push({
+          id: rId,
+          name: found?.name || `Download Resource`,
+          url: `/r/${rId}`,
+          size: found?.size || "",
+          type: found?.type || "pdf",
+        });
       }
     }
 
-    if (candidateResId) {
-      downloadUrl = `/r/${candidateResId}`;
-      const specificRes = await ResourceModel.findOne({ id: candidateResId }).lean();
-      if (specificRes && specificRes.name) {
-        resolvedDeliverableName = specificRes.name;
-      }
+    if (resolvedResources.length > 0) {
+      downloadUrl = resolvedResources[0].url;
+      resolvedDeliverableName = resolvedResources[0].name;
     } else if (pageDoc?.assetUrl && pageDoc.assetUrl.trim()) {
-      // 2. Direct assetUrl on page doc if not a raw broken cloudinary link
+      // Direct assetUrl on page doc
       downloadUrl = pageDoc.assetUrl.trim();
+      resolvedResources.push({
+        id: "direct_asset",
+        name: resolvedDeliverableName,
+        url: downloadUrl,
+        type: "pdf",
+      });
     } else if (cleanUserEmail) {
-      // 3. Fallback to latest account resource if no specific asset was bound
-      const resourceDoc = await ResourceModel.findOne({ userEmail: cleanUserEmail }).sort({ uploadedAt: -1 }).lean();
+      // Fallback to latest account resource if no specific asset was bound
+      const resourceDoc = await ResourceModel.findOne({ userEmail: cleanUserEmail }).sort({ uploadedAt: -1 }).lean() as any;
       if (resourceDoc && resourceDoc.id) {
         downloadUrl = `/r/${resourceDoc.id}`;
         if (resourceDoc.name) resolvedDeliverableName = resourceDoc.name;
+        resolvedResources.push({
+          id: resourceDoc.id,
+          name: resourceDoc.name || resolvedDeliverableName,
+          url: `/r/${resourceDoc.id}`,
+          size: resourceDoc.size || "",
+          type: resourceDoc.type || "pdf",
+        });
       } else if (resourceDoc && resourceDoc.url) {
         downloadUrl = resourceDoc.url;
+        resolvedResources.push({
+          id: "res_url",
+          name: resourceDoc.name || resolvedDeliverableName,
+          url: resourceDoc.url,
+          type: "pdf",
+        });
       }
     }
   } catch (err) {
@@ -141,6 +182,7 @@ export default async function ThankYouPage({
           subscriberEmail={subscriberEmail}
           deliverableName={resolvedDeliverableName}
           downloadUrl={downloadUrl}
+          resources={resolvedResources}
           customAnswer={customAnswer}
           aiPersonalizedOutput={aiPersonalizedOutput}
           brandColor={brandColor}

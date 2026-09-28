@@ -22,11 +22,20 @@ import {
   Clock,
 } from "lucide-react";
 
+export interface DeliverableResourceItem {
+  id: string;
+  name: string;
+  url: string;
+  size?: string;
+  type?: string;
+}
+
 interface ThankYouAnimatedContentProps {
   subscriberName: string;
   subscriberEmail: string;
   deliverableName: string;
   downloadUrl?: string | null;
+  resources?: DeliverableResourceItem[];
   customAnswer?: string | null;
   aiPersonalizedOutput?: string | null;
   brandColor: string;
@@ -127,6 +136,7 @@ export default function ThankYouAnimatedContent({
   subscriberEmail,
   deliverableName,
   downloadUrl,
+  resources = [],
   customAnswer,
   aiPersonalizedOutput,
   brandColor = "#0066B2",
@@ -148,6 +158,9 @@ export default function ThankYouAnimatedContent({
   const [copiedLink, setCopiedLink] = useState(false);
   const [downloading, setDownloading] = useState(false);
   const [downloadCompleted, setDownloadCompleted] = useState(false);
+  const [downloadedResMap, setDownloadedResMap] = useState<Record<string, boolean>>({});
+  const [downloadingResId, setDownloadingResId] = useState<string | null>(null);
+  const [downloadingAll, setDownloadingAll] = useState(false);
   const [showBookingModal, setShowBookingModal] = useState(false);
   const [bookingConfirmed, setBookingConfirmed] = useState(false);
   const [selectedTime, setSelectedTime] = useState("10:00 AM");
@@ -230,6 +243,41 @@ export default function ThankYouAnimatedContent({
     } finally {
       setTimeout(() => setDownloading(false), 1200);
     }
+  };
+
+  const handleDownloadResource = (resItem: DeliverableResourceItem) => {
+    setDownloadingResId(resItem.id);
+    const targetUrl = resItem.url || `/r/${resItem.id}`;
+    try {
+      setDownloadedResMap((prev) => ({ ...prev, [resItem.id]: true }));
+      const link = document.createElement("a");
+      link.href = targetUrl;
+      link.setAttribute("target", "_blank");
+      link.setAttribute("rel", "noopener noreferrer");
+      if (resItem.name && /\.[a-z0-9]+$/i.test(resItem.name)) {
+        link.setAttribute("download", resItem.name);
+      }
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (_) {
+      window.open(targetUrl, "_blank");
+    } finally {
+      setTimeout(() => setDownloadingResId(null), 1000);
+    }
+  };
+
+  const handleDownloadAll = async () => {
+    if (!resources || resources.length === 0) return;
+    setDownloadingAll(true);
+    for (let i = 0; i < resources.length; i++) {
+      const resItem = resources[i];
+      handleDownloadResource(resItem);
+      if (i < resources.length - 1) {
+        await new Promise((r) => setTimeout(r, 450));
+      }
+    }
+    setTimeout(() => setDownloadingAll(false), 1500);
   };
 
   const handleStrategyButtonClick = (e: React.MouseEvent) => {
@@ -501,76 +549,196 @@ export default function ThankYouAnimatedContent({
           </motion.div>
         )}
 
-        {/* Compact Premium Download Box */}
-        <motion.div
-          initial={{ y: 25, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-          className={`rounded-xl border p-5 sm:p-6 space-y-4 backdrop-blur-xl relative overflow-hidden transition-all ${isDark
-              ? "bg-[#111218]/80 border-white/10 text-white shadow-xl"
-              : "bg-white/85 border-zinc-200 text-zinc-900 shadow-md"
-            }`}
-          style={{
-            boxShadow: isDark
-              ? `0 15px 35px -10px ${brandColor}30`
-              : `0 15px 30px -10px ${brandColor}15`,
-          }}
-        >
-          {/* Subtle Top Accent Line */}
-          <div
-            className="absolute top-0 left-0 right-0 h-1"
+        {/* Download Box - Adaptive Single vs Multi-Resource */}
+        {resources && resources.length > 1 ? (
+          <motion.div
+            initial={{ y: 25, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className={`rounded-2xl border p-5 sm:p-6 space-y-4 backdrop-blur-xl relative overflow-hidden transition-all ${isDark
+                ? "bg-[#111218]/80 border-white/10 text-white shadow-xl"
+                : "bg-white/85 border-zinc-200 text-zinc-900 shadow-md"
+              }`}
             style={{
-              background: `linear-gradient(90deg, ${brandColor}, #38BDF8, ${brandColor})`,
+              boxShadow: isDark
+                ? `0 15px 35px -10px ${brandColor}30`
+                : `0 15px 30px -10px ${brandColor}15`,
             }}
-          />
+          >
+            {/* Top Accent Line */}
+            <div
+              className="absolute top-0 left-0 right-0 h-1"
+              style={{
+                background: `linear-gradient(90deg, ${brandColor}, #38BDF8, ${brandColor})`,
+              }}
+            />
 
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Zap className="h-4 w-4 text-sky-400" />
-              <span className="text-xs font-black uppercase tracking-wider text-sky-400">
-                Direct High-Speed Download
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <Zap className="h-4 w-4 text-sky-400" />
+                <span className="text-xs font-black uppercase tracking-wider text-sky-400">
+                  Direct High-Speed Downloads ({resources.length} Files Available)
+                </span>
+              </div>
+
+              <button
+                type="button"
+                onClick={handleDownloadAll}
+                disabled={downloadingAll}
+                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold text-white transition hover:scale-[1.02] active:scale-[0.98] shadow-sm cursor-pointer disabled:opacity-50"
+                style={{ backgroundColor: brandColor }}
+              >
+                {downloadingAll ? (
+                  <Check className="h-3.5 w-3.5 animate-bounce" />
+                ) : (
+                  <Download className="h-3.5 w-3.5" />
+                )}
+                <span>{downloadingAll ? "Downloading All..." : "⚡ Download All Files"}</span>
+              </button>
+            </div>
+
+            {/* List of Resource Cards */}
+            <div className="space-y-2.5 pt-1">
+              {resources.map((resItem, idx) => {
+                const isDownloaded = downloadedResMap[resItem.id];
+                const isDownloading = downloadingResId === resItem.id;
+                return (
+                  <div
+                    key={resItem.id || idx}
+                    className={`rounded-xl border p-3 sm:p-3.5 flex items-center justify-between gap-3 transition-all ${isDark
+                        ? "bg-[#18181C]/90 border-white/10 hover:border-white/20"
+                        : "bg-zinc-50/90 border-zinc-200/80 hover:border-zinc-300"
+                      }`}
+                  >
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div
+                        className="h-10 w-10 rounded-lg flex items-center justify-center shrink-0 shadow-xs text-white font-bold"
+                        style={{
+                          backgroundColor: `${brandColor}25`,
+                          color: brandColor,
+                          border: `1px solid ${brandColor}40`,
+                        }}
+                      >
+                        <FileText className="h-5 w-5" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className={`text-xs sm:text-sm font-bold truncate ${isDark ? "text-white" : "text-zinc-900"}`}>
+                          {resItem.name}
+                        </p>
+                        <p className="text-[11px] text-zinc-400 truncate mt-0.5">
+                          Instant Access · Direct File Download
+                        </p>
+                      </div>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => handleDownloadResource(resItem)}
+                      disabled={isDownloading}
+                      className="shrink-0 px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-sm cursor-pointer hover:scale-[1.02] active:scale-[0.98] border"
+                      style={{
+                        backgroundColor: isDownloaded ? "transparent" : brandColor,
+                        color: isDownloaded ? (isDark ? "#34D399" : "#059669") : "#ffffff",
+                        borderColor: isDownloaded ? (isDark ? "#059669" : "#10B981") : `${brandColor}80`,
+                      }}
+                    >
+                      {isDownloaded ? (
+                        <>
+                          <Check className="h-3.5 w-3.5 text-emerald-400" />
+                          <span>Downloaded</span>
+                        </>
+                      ) : (
+                        <>
+                          <Download className={`h-3.5 w-3.5 ${isDownloading ? "animate-bounce" : ""}`} />
+                          <span>{isDownloading ? "Downloading..." : "Download"}</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+
+            <div className={`mt-3.5 flex items-center justify-between text-xs font-medium pt-2.5 border-t ${isDark ? "text-zinc-400 border-white/10" : "text-zinc-600 border-zinc-200/60"}`}>
+              <span className={`flex items-center gap-1.5 font-semibold ${isDark ? "text-emerald-400" : "text-emerald-600"}`}>
+                <ShieldCheck className="h-4 w-4" /> 100% Virus-Free & Direct Links
+              </span>
+              <span className={`flex items-center gap-1.5 ${isDark ? "text-zinc-400" : "text-zinc-600"}`}>
+                <Lock className="h-3.5 w-3.5" /> SSL Secured
               </span>
             </div>
-          </div>
-
-          {/* Shimmer CTA Download Button */}
-          <div className="flex justify-center w-full pt-1">
-            <button
-              onClick={handleDownloadClick}
-              disabled={downloading}
-              className="w-full max-w-md relative overflow-hidden rounded-xl py-3 px-5 font-bold text-sm text-white shadow-md transition-all duration-200 hover:scale-[1.015] active:scale-[0.985] cursor-pointer flex items-center justify-center gap-2 border border-white/20 select-none"
+          </motion.div>
+        ) : (
+          <motion.div
+            initial={{ y: 25, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className={`rounded-xl border p-5 sm:p-6 space-y-4 backdrop-blur-xl relative overflow-hidden transition-all ${isDark
+                ? "bg-[#111218]/80 border-white/10 text-white shadow-xl"
+                : "bg-white/85 border-zinc-200 text-zinc-900 shadow-md"
+              }`}
+            style={{
+              boxShadow: isDark
+                ? `0 15px 35px -10px ${brandColor}30`
+                : `0 15px 30px -10px ${brandColor}15`,
+            }}
+          >
+            {/* Subtle Top Accent Line */}
+            <div
+              className="absolute top-0 left-0 right-0 h-1"
               style={{
-                backgroundColor: brandColor,
-                boxShadow: `0 4px 14px -3px ${brandColor}60`,
+                background: `linear-gradient(90deg, ${brandColor}, #38BDF8, ${brandColor})`,
               }}
-            >
-              {/* Button Light Shimmer Effect */}
-              <motion.div
-                animate={{ x: ["-100%", "200%"] }}
-                transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
-                className="absolute inset-0 w-1/2 bg-gradient-to-r from-transparent via-white/25 to-transparent skew-x-12 pointer-events-none"
-              />
+            />
 
-              {downloadCompleted ? (
-                <Check className="h-4 w-4 text-emerald-300 shrink-0 pointer-events-none" />
-              ) : (
-                <Download className={`h-4 w-4 shrink-0 pointer-events-none ${downloading ? "animate-bounce" : ""}`} />
-              )}
-              <span className="tracking-wide text-sm font-semibold truncate pointer-events-none">
-                {downloading ? "Preparing Download..." : downloadCompleted ? `File Downloaded ("${deliverableName}")` : `Download "${deliverableName}" Now`}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Zap className="h-4 w-4 text-sky-400" />
+                <span className="text-xs font-black uppercase tracking-wider text-sky-400">
+                  Direct High-Speed Download
+                </span>
+              </div>
+            </div>
+
+            {/* Shimmer CTA Download Button */}
+            <div className="flex justify-center w-full pt-1">
+              <button
+                onClick={handleDownloadClick}
+                disabled={downloading}
+                className="w-full max-w-md relative overflow-hidden rounded-xl py-3 px-5 font-bold text-sm text-white shadow-md transition-all duration-200 hover:scale-[1.015] active:scale-[0.985] cursor-pointer flex items-center justify-center gap-2 border border-white/20 select-none"
+                style={{
+                  backgroundColor: brandColor,
+                  boxShadow: `0 4px 14px -3px ${brandColor}60`,
+                }}
+              >
+                {/* Button Light Shimmer Effect */}
+                <motion.div
+                  animate={{ x: ["-100%", "200%"] }}
+                  transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
+                  className="absolute inset-0 w-1/2 bg-gradient-to-r from-transparent via-white/25 to-transparent skew-x-12 pointer-events-none"
+                />
+
+                {downloadCompleted ? (
+                  <Check className="h-4 w-4 text-emerald-300 shrink-0 pointer-events-none" />
+                ) : (
+                  <Download className={`h-4 w-4 shrink-0 pointer-events-none ${downloading ? "animate-bounce" : ""}`} />
+                )}
+                <span className="tracking-wide text-sm font-semibold truncate pointer-events-none">
+                  {downloading ? "Preparing Download..." : downloadCompleted ? `File Downloaded ("${deliverableName}")` : `Download "${deliverableName}" Now`}
+                </span>
+              </button>
+            </div>
+
+            <div className={`mt-3.5 flex items-center justify-between text-xs font-medium pt-2.5 border-t ${isDark ? "text-zinc-400 border-white/10" : "text-zinc-600 border-zinc-200/60"}`}>
+              <span className={`flex items-center gap-1.5 font-semibold ${isDark ? "text-emerald-400" : "text-emerald-600"}`}>
+                <ShieldCheck className="h-4 w-4" /> 100% Virus-Free & Direct Link
               </span>
-            </button>
-          </div>
-
-          <div className={`mt-3.5 flex items-center justify-between text-xs font-medium pt-2.5 border-t ${isDark ? "text-zinc-400 border-white/10" : "text-zinc-600 border-zinc-200/60"}`}>
-            <span className={`flex items-center gap-1.5 font-semibold ${isDark ? "text-emerald-400" : "text-emerald-600"}`}>
-              <ShieldCheck className="h-4 w-4" /> 100% Virus-Free & Direct Link
-            </span>
-            <span className={`flex items-center gap-1.5 ${isDark ? "text-zinc-400" : "text-zinc-600"}`}>
-              <Lock className="h-3.5 w-3.5" /> SSL Secured
-            </span>
-          </div>
-        </motion.div>
+              <span className={`flex items-center gap-1.5 ${isDark ? "text-zinc-400" : "text-zinc-600"}`}>
+                <Lock className="h-3.5 w-3.5" /> SSL Secured
+              </span>
+            </div>
+          </motion.div>
+        )}
 
         {/* AI Personalized Output Card (If Prompt Output Exists) */}
         {aiPersonalizedOutput && (
