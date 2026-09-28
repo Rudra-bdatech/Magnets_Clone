@@ -312,20 +312,23 @@ export default async function MagnetPageRoute({
           <span>⚠️ Draft Preview Mode — This magnet is not yet published. Only you can view this page.</span>
         </div>
       )}
-      <header className="w-full flex items-center justify-center pt-3 sm:pt-4 pb-1 sm:pb-2 px-6 sm:px-10 relative shrink-0">
-        <div className="flex items-center gap-2.5 sm:gap-3">
-          <div className={`h-9 w-9 sm:h-10 sm:w-10 rounded-xl flex items-center justify-center bg-transparent overflow-hidden shadow-xs ${logo ? "border-none" : "border-2 border-dashed border-[#a1a1aa]/50"}`}>
-            {logo ? (
-              <img src={logo} alt="Logo" className="h-full w-full object-cover" />
-            ) : (
-              <div className="h-4 w-4 rounded-md border-2 border-dashed border-[#a1a1aa]" />
-            )}
+      {/* If template is not template3, show the standard top header */}
+      {((page.template as string) !== "template3" && (!(!page.template && (accountDoc?.templateId as string) === "template3"))) && (
+        <header className="w-full flex items-center justify-center pt-3 sm:pt-4 pb-1 sm:pb-2 px-6 sm:px-10 relative shrink-0">
+          <div className="flex items-center gap-2.5 sm:gap-3">
+            <div className={`h-9 w-9 sm:h-10 sm:w-10 rounded-xl flex items-center justify-center bg-transparent overflow-hidden shadow-xs ${logo ? "border-none" : "border-2 border-dashed border-[#a1a1aa]/50"}`}>
+              {logo ? (
+                <img src={logo} alt="Logo" className="h-full w-full object-cover" />
+              ) : (
+                <div className="h-4 w-4 rounded-md border-2 border-dashed border-[#a1a1aa]" />
+              )}
+            </div>
+            <span className={`text-base sm:text-lg font-black tracking-wider uppercase ${themeMode === "dark" ? "text-white" : "text-zinc-900"}`}>
+              {businessName}
+            </span>
           </div>
-          <span className={`text-base sm:text-lg font-black tracking-wider uppercase ${themeMode === "dark" ? "text-white" : "text-zinc-900"}`}>
-            {businessName}
-          </span>
-        </div>
-      </header>
+        </header>
+      )}
 
       {/* Main content area filling the screen properly with balanced vertical spacing */}
       <div className="flex-1 w-full flex flex-col justify-center px-4 sm:px-6 md:px-8 lg:px-10 xl:px-14 pb-3 sm:pb-4">
@@ -422,30 +425,46 @@ export default async function MagnetPageRoute({
         ) : ((page.template as string) === "template3" || (!page.template && (accountDoc?.templateId as string) === "template3")) ? (
           /* TEMPLATE 3: Aurora Reveal */
           <div className="w-full max-w-7xl mx-auto">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 items-center">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 items-center lg:items-stretch">
               {/* LEFT: Aurora Image Tile */}
-              <div className="col-span-12 lg:col-span-5 flex justify-center">
-                {page.imageUrl && page.imageUrl.trim() !== "" ? (
-                  <div className="rounded-3xl overflow-hidden relative shadow-2xl aspect-[4/5] max-h-[380px] w-full border border-black/5 dark:border-white/5">
+              <div className="col-span-12 lg:col-span-5 relative flex flex-col items-center justify-center min-h-[440px] lg:min-h-full">
+                {/* Brand Logo & Brand Name Centered above picture, aligned with right-side top text */}
+                {(logo || businessName) && (
+                  <div className="lg:absolute lg:top-0 lg:left-0 lg:right-0 flex items-center justify-center gap-2.5 mb-4 lg:mb-0">
+                    <div className={`h-8 w-8 sm:h-9 sm:w-9 rounded-xl flex items-center justify-center bg-transparent overflow-hidden shadow-xs ${logo ? "border-none" : "border-2 border-dashed border-[#a1a1aa]/50"}`}>
+                      {logo ? (
+                        <img src={logo} alt="Logo" className="h-full w-full object-cover" />
+                      ) : (
+                        <div className="h-4 w-4 rounded-md border-2 border-dashed border-[#a1a1aa]" />
+                      )}
+                    </div>
+                    <span className={`text-base sm:text-lg font-black tracking-wider uppercase ${themeMode === "dark" ? "text-white" : "text-zinc-900"}`}>
+                      {businessName}
+                    </span>
+                  </div>
+                )}
+
+                <div className="rounded-3xl overflow-hidden relative shadow-2xl aspect-[4/5] max-h-[380px] w-full border border-black/5 dark:border-white/5">
+                  {page.imageUrl && page.imageUrl.trim() !== "" ? (
                     <img
                       src={page.imageUrl}
                       alt={page.name || "Cover"}
                       className="w-full h-full object-cover"
                     />
-                    <div className="absolute inset-0 pointer-events-none" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.5) 0%, transparent 50%)" }} />
-                  </div>
-                ) : (
-                  <div className="rounded-3xl overflow-hidden relative aspect-[4/5] max-h-[380px] w-full flex items-center justify-center p-4 text-center bg-zinc-900/60 border border-zinc-800">
-                    <div className="flex flex-col items-center gap-2 p-5 rounded-2xl border-2 border-dashed border-zinc-700 bg-zinc-900/80 text-white">
-                      <svg className="h-7 w-7 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2" strokeWidth="2" />
-                        <circle cx="8.5" cy="8.5" r="1.5" />
-                        <polyline points="21 15 16 10 5 21" strokeWidth="2" />
-                      </svg>
-                      <span className="text-xs font-bold text-white">Cover Image</span>
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center p-4 text-center bg-zinc-900/60 border border-zinc-800">
+                      <div className="flex flex-col items-center gap-2 p-5 rounded-2xl border-2 border-dashed border-zinc-700 bg-zinc-900/80 text-white">
+                        <svg className="h-7 w-7 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <rect x="3" y="3" width="18" height="18" rx="2" ry="2" strokeWidth="2" />
+                          <circle cx="8.5" cy="8.5" r="1.5" />
+                          <polyline points="21 15 16 10 5 21" strokeWidth="2" />
+                        </svg>
+                        <span className="text-xs font-bold text-white">Cover Image</span>
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
+                  <div className="absolute inset-0 pointer-events-none" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.5) 0%, transparent 50%)" }} />
+                </div>
               </div>
 
               {/* RIGHT: Editorial Form Panel */}

@@ -263,9 +263,25 @@ const BrandTemplatePreview = memo(function BrandTemplatePreview({
       {/* TEMPLATE 3: Aurora Reveal */}
       {templateId === "template3" && (
         <div className="w-full py-1">
-          <div className="grid grid-cols-12 gap-5 items-center">
+          <div className="grid grid-cols-12 gap-5 items-stretch">
             {/* LEFT: Aurora Image Tile */}
-            <div className="col-span-12 md:col-span-5 flex justify-center">
+            <div className="col-span-12 md:col-span-5 relative flex flex-col items-center justify-center min-h-[360px] md:min-h-full">
+              {/* Brand Logo & Brand Name Centered above picture, aligned with right-side top text */}
+              {(logo || businessName) && (
+                <div className="md:absolute md:top-0 md:left-0 md:right-0 flex items-center justify-center gap-2.5 mb-3 md:mb-0">
+                  <div className={`h-7 w-7 sm:h-8 sm:w-8 rounded-xl flex items-center justify-center bg-transparent overflow-hidden ${logo ? "border-none" : "border border-dashed border-[#a1a1aa]/45"}`}>
+                    {logo ? (
+                      <img src={logo} alt="Logo" className="h-full w-full object-cover" />
+                    ) : (
+                      <div className="h-3.5 w-3.5 rounded-sm border border-dashed border-[#a1a1aa]" />
+                    )}
+                  </div>
+                  <span className={`text-xs sm:text-sm font-black tracking-wider uppercase ${themeMode === "dark" ? "text-white" : "text-black"}`}>
+                    {businessName || "BDA"}
+                  </span>
+                </div>
+              )}
+
               <div className="rounded-2xl sm:rounded-3xl overflow-hidden relative shadow-xl aspect-[4/3] sm:aspect-[4/5] max-h-[260px] sm:max-h-[340px] w-full border border-black/5 dark:border-white/5">
                 {latestPage?.imageUrl && latestPage.imageUrl.trim() !== "" ? (
                   <img

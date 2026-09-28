@@ -38,12 +38,30 @@ export default function Template3(props: TemplateProps) {
   const brandColor = account?.brandColor || "#0066B2";
   const themeMode = account?.themeMode || "light";
   const isDark = themeMode === "dark";
+  const logo = account?.logo || null;
+  const businessName = account?.brandName || account?.name || "";
 
   return (
     <div className="w-full max-w-7xl mx-auto py-1">
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 items-center">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 items-center lg:items-stretch">
         {/* LEFT: Aurora Image Tile (5 cols) */}
-        <div className="col-span-12 lg:col-span-5 flex justify-center">
+        <div className="col-span-12 lg:col-span-5 relative flex flex-col items-center justify-center min-h-[440px] lg:min-h-full">
+          {/* Brand Logo & Brand Name aligned with top of right side content */}
+          {(logo || businessName) && (
+            <div className="lg:absolute lg:top-0 lg:left-0 lg:right-0 flex items-center justify-center gap-2.5 mb-4 lg:mb-0">
+              <div className={`h-8 w-8 sm:h-9 sm:w-9 rounded-xl flex items-center justify-center bg-transparent overflow-hidden shadow-xs ${logo ? "border-none" : "border-2 border-dashed border-[#a1a1aa]/50"}`}>
+                {logo ? (
+                  <img src={logo} alt="Logo" className="h-full w-full object-cover" />
+                ) : (
+                  <div className="h-4 w-4 rounded-md border-2 border-dashed border-[#a1a1aa]" />
+                )}
+              </div>
+              <span className={`text-base sm:text-lg font-black tracking-wider uppercase ${isDark ? "text-white" : "text-zinc-900"}`}>
+                {businessName}
+              </span>
+            </div>
+          )}
+
           <div className="rounded-3xl overflow-hidden relative shadow-2xl aspect-[4/5] max-h-[380px] w-full border border-black/5 dark:border-white/5 group">
           {imageUrl && imageUrl.trim() !== "" && (
             <img

@@ -439,19 +439,21 @@ export default function BrandPage() {
                 >
                   {/* Mock page container */}
                   <div className="p-3.5 sm:p-5 md:p-6">
-                    {/* Header brand name / logo */}
-                    <div className="flex items-center gap-3 mb-5 sm:mb-8 justify-center">
-                      <div className={`h-10 w-10 sm:h-11 sm:w-11 rounded-xl flex items-center justify-center bg-transparent overflow-hidden ${logo ? "border-none" : "border border-dashed border-[#a1a1aa]/45"}`}>
-                        {logo ? (
-                          <img src={logo} alt="Logo" className="h-full w-full object-cover" />
-                        ) : (
-                          <div className="h-5 w-5 rounded-sm border border-dashed border-[#a1a1aa]" />
-                        )}
+                    {/* Header brand name / logo (Hidden for template3) */}
+                    {templateId !== "template3" && (
+                      <div className="flex items-center gap-3 mb-5 sm:mb-8 justify-center">
+                        <div className={`h-10 w-10 sm:h-11 sm:w-11 rounded-xl flex items-center justify-center bg-transparent overflow-hidden ${logo ? "border-none" : "border border-dashed border-[#a1a1aa]/45"}`}>
+                          {logo ? (
+                            <img src={logo} alt="Logo" className="h-full w-full object-cover" />
+                          ) : (
+                            <div className="h-5 w-5 rounded-sm border border-dashed border-[#a1a1aa]" />
+                          )}
+                        </div>
+                        <span className={`text-base font-extrabold tracking-wider uppercase ${themeMode === "dark" ? "text-white" : "text-black"}`}>
+                          {businessName || "BDA"}
+                        </span>
                       </div>
-                      <span className={`text-base font-extrabold tracking-wider uppercase ${themeMode === "dark" ? "text-white" : "text-black"}`}>
-                        {businessName || "BDA"}
-                      </span>
-                    </div>
+                    )}
 
                     {/* Dynamic Animated Template View Container */}
                     <AnimatePresence mode="wait">
