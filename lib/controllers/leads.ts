@@ -307,7 +307,7 @@ export async function handleAddLead(data: any, req: Request, normEmail: string |
 
           let rawBody = (foundPageDoc?.emailBody && foundPageDoc.emailBody.trim())
             ? foundPageDoc.emailBody
-            : `Hey {name},\n\nThank you for requesting ${pageTitle}! Click the button below to access your resource instantly.\n\nEnjoy!`;
+            : `Hey {name},\n\nThank you for requesting ${pageTitle}! Click the link below to access your resource:\n\n${resourceAccessUrl}\n\nEnjoy!`;
 
           const brandColor = ownerAccount?.brandColor || "#0066B2";
           const senderName = ownerAccount?.senderDisplayName || ownerAccount?.name || "LeadMagnets";
@@ -385,41 +385,6 @@ export async function handleAddLead(data: any, req: Request, normEmail: string |
             <!-- Main Lead Body / Message -->
             <div style="color: #334155; font-size: 15px; line-height: 1.65; margin-bottom: 24px;">
               ${formattedBodyHtml}
-            </div>
-
-            <!-- Dedicated Resource Access Card -->
-            <div style="background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%); border: 1px solid #e2e8f0; border-radius: 14px; padding: 22px 20px; margin: 26px 0; text-align: center;">
-              
-              <table cellpadding="0" cellspacing="0" border="0" style="width: 100%; margin-bottom: 16px; text-align: left;">
-                <tr>
-                  <td style="width: 44px; vertical-align: middle;">
-                    <div style="width: 42px; height: 42px; background: linear-gradient(135deg, ${brandColor} 0%, #004d88 100%); border-radius: 10px; text-align: center; line-height: 42px; font-size: 20px; color: #ffffff; box-shadow: 0 2px 8px rgba(0, 102, 178, 0.25);">
-                      📄
-                    </div>
-                  </td>
-                  <td style="padding-left: 12px; vertical-align: middle;">
-                    <div style="font-size: 16px; font-weight: 800; color: #0f172a; line-height: 1.3;">
-                      ${pageTitle}
-                    </div>
-                    <div style="font-size: 12px; color: #64748b; font-weight: 500; margin-top: 2px;">
-                      Instant Access · Free Resource Download
-                    </div>
-                  </td>
-                </tr>
-              </table>
-
-              <!-- Download CTA Button -->
-              <div style="margin-top: 14px;">
-                <a href="${resourceAccessUrl}" style="background: linear-gradient(135deg, ${brandColor} 0%, #004d88 100%); color: #ffffff; padding: 13px 32px; text-decoration: none; border-radius: 10px; font-weight: 700; font-size: 14px; display: inline-block; box-shadow: 0 4px 14px rgba(0, 102, 178, 0.28); letter-spacing: 0.01em;">
-                  📥 Download & Access Resource →
-                </a>
-              </div>
-
-            </div>
-
-            <!-- Fallback Direct Link -->
-            <div style="font-size: 12px; color: #94a3b8; text-align: center; margin-top: 16px; line-height: 1.5;">
-              Button not working? <a href="${resourceAccessUrl}" style="color: ${brandColor}; text-decoration: underline; word-break: break-all;">Click here to access directly</a>
             </div>
 
             <!-- Footer Details -->

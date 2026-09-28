@@ -155,7 +155,7 @@ export default function EmailPreviewModal({
                 className={`text-sm leading-relaxed ${isDark ? "text-zinc-300" : "text-zinc-700"} [&_p]:mb-2 [&_strong]:font-bold [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5`}
                 dangerouslySetInnerHTML={{
                   __html: (() => {
-                    const raw = (emailBody || "Hey {name},\n\nThank you for requesting this resource! Click the button below to get instant access.\n\nEnjoy!")
+                    const raw = (emailBody || "Hey {name},\n\nThank you for requesting this resource! Click the link below to get instant access:\n\nhttps://magnets.bdatech.in/r/sample\n\nEnjoy!")
                       .replace(/\{name\}/g, "Subscriber")
                       .replace(/http:\/\/localhost:3000/g, "https://magnets.bdatech.in");
                     const hasHtml = /<[a-z][\s\S]*>/i.test(raw);
@@ -173,45 +173,6 @@ export default function EmailPreviewModal({
                   })(),
                 }}
               />
-
-              {/* Dedicated Resource Download Card */}
-              <div className={`rounded-xl border p-4 sm:p-5 text-center transition-colors ${isDark ? "border-zinc-800 bg-zinc-900/60" : "border-zinc-200 bg-gradient-to-b from-slate-50 to-slate-100/70"}`}>
-                <div className="flex items-center gap-3 text-left mb-3.5">
-                  <div
-                    style={{ backgroundColor: account?.brandColor || "#0066B2" }}
-                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-lg text-white shadow-sm"
-                  >
-                    📄
-                  </div>
-                  <div>
-                    <div className={`text-base font-bold leading-tight ${isDark ? "text-white" : "text-zinc-900"}`}>
-                      {page?.name || "Lead Magnet Resource"}
-                    </div>
-                    <div className="text-xs text-zinc-500 font-medium mt-0.5">
-                      Instant Access · Free Resource Download
-                    </div>
-                  </div>
-                </div>
-
-                <div className="pt-2">
-                  <a
-                    href="#"
-                    onClick={(e) => e.preventDefault()}
-                    style={{ backgroundColor: account?.brandColor || "#0066B2" }}
-                    className="inline-flex w-full sm:w-auto items-center justify-center gap-2 rounded-xl px-7 py-3 text-sm font-bold text-white shadow-md hover:opacity-90 transition cursor-pointer"
-                  >
-                    <span>📥 Download & Access Resource →</span>
-                  </a>
-                </div>
-              </div>
-
-              {/* Direct Link Fallback */}
-              <p className="text-xs text-zinc-400 text-center">
-                Button not working?{" "}
-                <span className="text-[#0066B2] dark:text-[#38BDF8] underline font-medium cursor-pointer">
-                  Click here to access directly
-                </span>
-              </p>
 
               <hr className={isDark ? "border-zinc-800" : "border-zinc-200"} />
               <p className="text-[11px] text-zinc-400 text-center">
