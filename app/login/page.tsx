@@ -11,7 +11,6 @@ import { Loader2, Sparkles, ArrowRight } from "lucide-react";
 import { safeSetItem, setSessionExpiry } from "@/lib/store";
 
 import GoogleAuthButton from "@/components/ui/google-auth-button";
-import LinkedInAuthButton from "@/components/ui/linkedin-auth-button";
 
 function LoginForm() {
   const router = useRouter();
@@ -91,9 +90,6 @@ function LoginForm() {
       )}
       {/* Continue with Google Button */}
       <GoogleAuthButton callbackUrl={redirectTarget} disabled={loading} />
-
-      {/* Continue with LinkedIn Button */}
-      <LinkedInAuthButton callbackUrl={redirectTarget} disabled={loading} />
 
       <div className="relative my-3 flex items-center justify-center">
         <div className="absolute inset-0 flex items-center">
