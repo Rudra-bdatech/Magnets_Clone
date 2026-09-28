@@ -92,12 +92,6 @@ export async function POST(req: NextRequest) {
       }
 
       let ownerEmail = (pageDoc?.userEmail || "").trim().toLowerCase();
-      if (!ownerEmail) {
-        const primaryAccount = await AccountModel.findOne().lean();
-        if (primaryAccount?.email) {
-          ownerEmail = primaryAccount.email.trim().toLowerCase();
-        }
-      }
       const pageTitle = pageDoc?.name || "Locked PDF Magnet";
       const cleanEmail = email.trim().toLowerCase();
       const leadName = (otpRecord.name || body.name || "").trim() || cleanEmail.split("@")[0];
