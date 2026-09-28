@@ -543,11 +543,11 @@ export default async function MagnetPageRoute({
             </div>
           </div>
         ) : ((page.template as string) === "template4" || (!page.template && (accountDoc?.templateId as string) === "template4")) ? (
-          /* TEMPLATE 4: Neon Orbit */
-          <div className="w-full max-w-7xl mx-auto">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 items-center lg:items-stretch">
+          /* TEMPLATE 4: Neon Orbit (Full Viewport Split Layout) */
+          <div className="w-full flex-1 flex flex-col justify-center pt-4 sm:pt-5 md:pt-6 pb-3 sm:pb-4">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 xl:gap-14 items-center lg:items-stretch w-full">
               {/* LEFT: Copy + Form */}
-              <div className="col-span-12 lg:col-span-6 flex flex-col justify-center space-y-4">
+              <div className="col-span-12 lg:col-span-6 xl:col-span-7 flex flex-col justify-center space-y-4 lg:space-y-5 min-w-0">
                 <div className="flex items-center gap-2">
                   <span className="h-1.5 w-1.5 rounded-full animate-pulse" style={{ backgroundColor: brandColor, boxShadow: `0 0 8px ${brandColor}` }} />
                   <span className={`text-[10px] font-black uppercase tracking-[0.22em] ${themeMode === "dark" ? "text-zinc-400" : "text-zinc-500"}`}>
@@ -555,30 +555,30 @@ export default async function MagnetPageRoute({
                   </span>
                 </div>
 
-                <h1 className={`text-2xl sm:text-3xl lg:text-4xl font-black leading-[1.1] tracking-tight ${themeMode === "dark" ? "text-white" : "text-zinc-900"}`}>
+                <h1 className={`text-3xl sm:text-4xl md:text-5xl lg:text-[2.4rem] xl:text-[3rem] font-black leading-[1.08] tracking-tight break-words [overflow-wrap:anywhere] ${themeMode === "dark" ? "text-white" : "text-zinc-900"}`}>
                   {activeHeadline}
                 </h1>
 
                 {page.subheadline && (
-                  <p className={`text-xs sm:text-sm leading-relaxed line-clamp-2 ${themeMode === "dark" ? "text-zinc-300" : "text-zinc-600"}`}>
+                  <p className={`text-sm sm:text-base md:text-lg font-medium leading-relaxed break-words [overflow-wrap:anywhere] ${themeMode === "dark" ? "text-zinc-300" : "text-zinc-600"}`}>
                     {page.subheadline}
                   </p>
                 )}
 
                 {page.pitch && (
-                  <p className={`text-xs leading-relaxed line-clamp-2 ${themeMode === "dark" ? "text-zinc-400" : "text-zinc-500"}`}>
+                  <p className={`text-xs sm:text-sm md:text-base leading-relaxed whitespace-pre-line break-words [overflow-wrap:anywhere] ${themeMode === "dark" ? "text-zinc-400" : "text-zinc-500"}`}>
                     {page.pitch}
                   </p>
                 )}
 
                 {page.bullets && page.bullets.length > 0 && (
-                  <div className="space-y-2">
+                  <div className="space-y-2.5">
                     {page.bullets.map((item: string, idx: number) => (
                       <div key={idx} className="flex items-center gap-2.5">
                         <div className="flex h-4 w-4 shrink-0 items-center justify-center rounded-md" style={{ background: `${brandColor}18`, border: `1px solid ${brandColor}44` }}>
                           <svg width="7" height="7" viewBox="0 0 7 7" fill="none"><path d="M1 3.5l1.7 1.7L6 1.5" stroke={brandColor} strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" /></svg>
                         </div>
-                        <span className={`text-xs sm:text-sm font-medium ${themeMode === "dark" ? "text-zinc-300" : "text-zinc-600"}`}>{item}</span>
+                        <span className={`text-xs sm:text-sm md:text-base font-medium ${themeMode === "dark" ? "text-zinc-300" : "text-zinc-600"}`}>{item}</span>
                       </div>
                     ))}
                   </div>
@@ -612,7 +612,7 @@ export default async function MagnetPageRoute({
               </div>
 
               {/* RIGHT: Orbital image portal */}
-              <div className="col-span-12 lg:col-span-6 relative flex flex-col items-center justify-center py-6 min-h-[420px] sm:min-h-[480px] lg:min-h-full">
+              <div className="col-span-12 lg:col-span-6 xl:col-span-5 relative flex flex-col items-center justify-center py-6 min-h-[440px] sm:min-h-[500px] lg:min-h-[580px] xl:min-h-[640px]">
                 {/* Brand Logo & Brand Name aligned with top of left side content */}
                 {(logo || businessName) && (
                   <div className="lg:absolute lg:top-0 lg:left-0 lg:right-0 flex items-center justify-center gap-2.5 mb-6 lg:mb-0">
@@ -631,15 +631,15 @@ export default async function MagnetPageRoute({
 
                 <div className="relative flex items-center justify-center w-full">
                   {/* Ambient glow */}
-                  <div className="absolute rounded-full pointer-events-none" style={{ width: "min(92vw, 520px)", height: "min(92vw, 520px)", background: `radial-gradient(circle, ${brandColor}${Math.round((0.15 + (highlightIntensity / 100) * 0.25) * 255).toString(16).padStart(2, '0')} 0%, transparent 70%)`, filter: "blur(32px)" }} />
+                  <div className="absolute rounded-full pointer-events-none" style={{ width: "min(92vw, 560px)", height: "min(92vw, 560px)", background: `radial-gradient(circle, ${brandColor}${Math.round((0.15 + (highlightIntensity / 100) * 0.25) * 255).toString(16).padStart(2, '0')} 0%, transparent 70%)`, filter: "blur(32px)" }} />
                   {/* Outer dashed ring */}
-                  <div className="absolute rounded-full border border-dashed pointer-events-none" style={{ width: "min(84vw, 460px)", height: "min(84vw, 460px)", borderColor: `${brandColor}25` }} />
+                  <div className="absolute rounded-full border border-dashed pointer-events-none" style={{ width: "min(84vw, 500px)", height: "min(84vw, 500px)", borderColor: `${brandColor}25` }} />
                   {/* Mid ring */}
-                  <div className="absolute rounded-full pointer-events-none" style={{ width: "min(74vw, 400px)", height: "min(74vw, 400px)", border: `1px solid ${brandColor}${Math.round((0.18 + (highlightIntensity / 100) * 0.3) * 255).toString(16).padStart(2, '0')}`, boxShadow: `0 0 24px ${brandColor}22` }} />
+                  <div className="absolute rounded-full pointer-events-none" style={{ width: "min(74vw, 440px)", height: "min(74vw, 440px)", border: `1px solid ${brandColor}${Math.round((0.18 + (highlightIntensity / 100) * 0.3) * 255).toString(16).padStart(2, '0')}`, boxShadow: `0 0 24px ${brandColor}22` }} />
                   {/* Inner neon halo */}
-                  <div className="absolute rounded-full pointer-events-none" style={{ width: "min(64vw, 350px)", height: "min(64vw, 350px)", border: `2px solid ${brandColor}${Math.round((0.35 + (highlightIntensity / 100) * 0.5) * 255).toString(16).padStart(2, '0')}`, boxShadow: `0 0 36px ${brandColor}${Math.round((0.2 + (highlightIntensity / 100) * 0.35) * 255).toString(16).padStart(2, '0')}` }} />
+                  <div className="absolute rounded-full pointer-events-none" style={{ width: "min(64vw, 380px)", height: "min(64vw, 380px)", border: `2px solid ${brandColor}${Math.round((0.35 + (highlightIntensity / 100) * 0.5) * 255).toString(16).padStart(2, '0')}`, boxShadow: `0 0 36px ${brandColor}${Math.round((0.2 + (highlightIntensity / 100) * 0.35) * 255).toString(16).padStart(2, '0')}` }} />
                   {/* Circular image */}
-                  <div className="relative rounded-full overflow-hidden z-10" style={{ width: "min(56vw, 310px)", height: "min(56vw, 310px)", border: `3.5px solid ${brandColor}${Math.round((0.5 + (highlightIntensity / 100) * 0.5) * 255).toString(16).padStart(2, '0')}`, boxShadow: `0 0 45px -6px ${brandColor}${Math.round((0.45 + (highlightIntensity / 100) * 0.55) * 255).toString(16).padStart(2, '0')}` }}>
+                  <div className="relative rounded-full overflow-hidden z-10" style={{ width: "min(56vw, 330px)", height: "min(56vw, 330px)", border: `3.5px solid ${brandColor}${Math.round((0.5 + (highlightIntensity / 100) * 0.5) * 255).toString(16).padStart(2, '0')}`, boxShadow: `0 0 45px -6px ${brandColor}${Math.round((0.45 + (highlightIntensity / 100) * 0.55) * 255).toString(16).padStart(2, '0')}` }}>
                     {activeImageUrl && activeImageUrl.trim() !== "" ? (
                       <img
                         src={activeImageUrl}

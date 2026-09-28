@@ -47,10 +47,10 @@ export default function Template4(props: TemplateProps) {
   const businessName = account?.brandName || account?.name || "";
 
   return (
-    <div className="w-full max-w-7xl mx-auto py-1">
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 items-center lg:items-stretch">
+    <div className="w-full flex-1 flex flex-col justify-center pt-4 sm:pt-5 md:pt-6 pb-3 sm:pb-4">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 xl:gap-14 items-center lg:items-stretch w-full">
         {/* LEFT: Copy + Form */}
-        <div className="col-span-12 lg:col-span-6 flex flex-col justify-center space-y-4">
+        <div className="col-span-12 lg:col-span-6 xl:col-span-7 flex flex-col justify-center space-y-4 lg:space-y-5 min-w-0">
           <div className="flex items-center gap-2">
             <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: brandColor }} />
             {isEditor ? (
@@ -277,7 +277,7 @@ export default function Template4(props: TemplateProps) {
         </div>
 
         {/* RIGHT: Orbital image */}
-        <div className="col-span-12 lg:col-span-6 relative flex flex-col items-center justify-center py-6 min-h-[420px] sm:min-h-[480px] lg:min-h-full">
+        <div className="col-span-12 lg:col-span-6 xl:col-span-5 relative flex flex-col items-center justify-center py-6 min-h-[440px] sm:min-h-[500px] lg:min-h-[580px] xl:min-h-[640px]">
           {/* Brand Logo & Brand Name aligned with top of left side content */}
           {(logo || businessName) && (
             <div className="lg:absolute lg:top-0 lg:left-0 lg:right-0 flex items-center justify-center gap-2.5 mb-6 lg:mb-0">
