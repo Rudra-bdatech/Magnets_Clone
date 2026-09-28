@@ -11,6 +11,7 @@ export default function Template3(props: TemplateProps) {
     bullets,
     bulletsTitle,
     formTitle,
+    formSubtitle,
     formButtonText,
     imageUrl,
     customFormFields = [],
@@ -25,6 +26,7 @@ export default function Template3(props: TemplateProps) {
     setPitch,
     setBulletsTitle,
     setFormTitle,
+    setFormSubtitle,
     setBullets,
     setImageUrl,
     setFormButtonText,
@@ -274,35 +276,67 @@ export default function Template3(props: TemplateProps) {
             )}
           </div>
 
-          {/* Divider */}
-          <div className="flex items-center gap-2">
-            <div className="h-px flex-1" style={{ background: `linear-gradient(to right, ${brandColor}44, transparent)` }} />
-            <span className={`text-[9px] font-bold uppercase tracking-widest ${isDark ? "text-zinc-600" : "text-zinc-400"}`}>Sign Up Free</span>
-            <div className="h-px flex-1" style={{ background: `linear-gradient(to left, ${brandColor}44, transparent)` }} />
-          </div>
-
-          {/* Form fields */}
-          <div className="space-y-2">
+          {/* Form Card (Exact match with MagnetSignupForm) */}
+          <div
+            className={`rounded-2xl sm:rounded-3xl border p-5 sm:p-6 transition-all duration-300 backdrop-blur-md relative overflow-hidden shadow-2xl ${
+              isDark ? "text-white" : "text-zinc-900"
+            }`}
+            style={{
+              borderColor: `${brandColor}40`,
+              boxShadow: `0 10px 30px -4px ${brandColor}33`,
+              background: isDark
+                ? `linear-gradient(135deg, ${brandColor}18 0%, rgba(22, 22, 25, 0.95) 60%)`
+                : `linear-gradient(135deg, ${brandColor}10 0%, rgba(255, 255, 255, 0.95) 60%)`
+            }}
+          >
             {isEditor ? (
-              <>
-                <input type="text" value={formTitle || ""} onChange={(e) => setFormTitle?.(e.target.value)} className={`w-full text-center text-xs font-bold bg-transparent outline-none placeholder:text-zinc-400 dark:placeholder:text-zinc-500 ${isDark ? "text-white" : "text-zinc-900"}`} placeholder="Claim Your Copy" />
-                <input type="text" placeholder="Name *" readOnly className={`w-full rounded-xl px-3 py-2 text-xs opacity-60 outline-none border border-zinc-200 dark:border-[#252529] ${isDark ? "bg-[#18181C] text-white placeholder:text-zinc-500" : "bg-white text-zinc-800 placeholder:text-zinc-400"}`} />
-                <input type="email" placeholder="Email *" readOnly className={`w-full rounded-xl px-3 py-2 text-xs opacity-60 outline-none border border-zinc-200 dark:border-[#252529] ${isDark ? "bg-[#18181C] text-white placeholder:text-zinc-500" : "bg-white text-zinc-800 placeholder:text-zinc-400"}`} />
-                {customFormFields.map((field: any) => (
+              <div className="space-y-3">
+                <div className="space-y-1 text-center">
                   <input
-                    key={field.id}
                     type="text"
-                    placeholder={`${field.label || "New Field"}${field.required ? " *" : ""}`}
-                    readOnly
-                    className={`w-full rounded-xl px-3 py-2 text-xs opacity-60 outline-none border border-zinc-200 dark:border-[#252529] ${isDark ? "bg-[#18181C] text-white placeholder:text-zinc-500" : "bg-white text-zinc-800 placeholder:text-zinc-400"}`}
+                    value={formTitle || ""}
+                    onChange={(e) => setFormTitle?.(e.target.value)}
+                    className={`w-full text-center text-lg sm:text-xl font-black bg-transparent outline-none placeholder:text-zinc-400 dark:placeholder:text-zinc-500 ${isDark ? "text-white" : "text-zinc-900"}`}
+                    placeholder="Get instant access"
                   />
-                ))}
+                  <input
+                    type="text"
+                    value={formSubtitle || ""}
+                    onChange={(e) => setFormSubtitle?.(e.target.value)}
+                    className="w-full text-center text-xs text-[#9B9085] bg-transparent outline-none placeholder:text-zinc-500"
+                    placeholder="By opting in you consent to receive this resource by email."
+                  />
+                </div>
+                <div className={customFormFields && customFormFields.length > 0 ? "grid grid-cols-1 sm:grid-cols-2 gap-2.5" : "space-y-2.5"}>
+                  <input
+                    type="text"
+                    placeholder="Name"
+                    readOnly
+                    className={`min-h-11 h-11 w-full rounded-xl px-3.5 py-2.5 text-xs opacity-60 outline-none border border-zinc-200 dark:border-[#252529] ${isDark ? "bg-[#0E0E10] text-white placeholder:text-zinc-500" : "bg-white text-zinc-800 placeholder:text-zinc-400"}`}
+                  />
+                  <input
+                    type="email"
+                    placeholder="Email"
+                    readOnly
+                    className={`min-h-11 h-11 w-full rounded-xl px-3.5 py-2.5 text-xs opacity-60 outline-none border border-zinc-200 dark:border-[#252529] ${isDark ? "bg-[#0E0E10] text-white placeholder:text-zinc-500" : "bg-white text-zinc-800 placeholder:text-zinc-400"}`}
+                  />
+                  {customFormFields.map((field: any) => (
+                    <div key={field.id} className={field.type === "textarea" ? "col-span-1 sm:col-span-2" : ""}>
+                      <input
+                        type="text"
+                        placeholder={`${field.label || "New Field"}${field.required ? " *" : ""}`}
+                        readOnly
+                        className={`min-h-11 h-11 w-full rounded-xl px-3.5 py-2.5 text-xs opacity-60 outline-none border border-zinc-200 dark:border-[#252529] ${isDark ? "bg-[#0E0E10] text-white placeholder:text-zinc-500" : "bg-white text-zinc-800 placeholder:text-zinc-400"}`}
+                      />
+                    </div>
+                  ))}
+                </div>
                 <input
                   type="text"
                   value={formButtonText || ""}
                   onChange={(e) => setFormButtonText?.(e.target.value)}
                   onFocus={(e) => {
-                    if (e.target.value === "Send it to me") {
+                    if (e.target.value === "Get instant access" || e.target.value === "Send it to me") {
                       setFormButtonText?.("");
                     } else {
                       e.target.select();
@@ -310,55 +344,61 @@ export default function Template3(props: TemplateProps) {
                   }}
                   onBlur={(e) => {
                     if (!e.target.value.trim()) {
-                      setFormButtonText?.("Send it to me");
+                      setFormButtonText?.("Get instant access");
                     }
                   }}
-                  placeholder="Send it to me"
-                  className="w-full text-center rounded-xl py-2.5 px-4 text-xs font-extrabold text-white shadow-xl transition duration-150 outline-none border-2 border-transparent hover:border-white/40 focus:border-white cursor-text"
+                  placeholder="Get instant access"
+                  className="w-full text-center rounded-xl py-3 px-4 text-xs font-extrabold text-white shadow-xl transition duration-150 outline-none border-2 border-transparent hover:border-white/40 focus:border-white cursor-text"
                   style={{ backgroundColor: brandColor }}
                 />
-              </>
+              </div>
             ) : (
-              <form onSubmit={onSubmitPublicForm} className="space-y-2">
-                {formTitle && (
-                  <h3 className={`w-full text-center text-xs font-bold ${isDark ? "text-white" : "text-zinc-900"}`}>
-                    {formTitle}
-                  </h3>
-                )}
-                <input
-                  type="text"
-                  required
-                  placeholder="Name *"
-                  value={publicFormValues.name || ""}
-                  onChange={(e) => setPublicFormValues?.({ ...publicFormValues, name: e.target.value })}
-                  className={`w-full rounded-xl px-3 py-2 text-xs outline-none border border-zinc-200 dark:border-[#252529] ${isDark ? "bg-[#18181C] text-white placeholder:text-zinc-500" : "bg-white text-zinc-800 placeholder:text-zinc-400"}`}
-                />
-                <input
-                  type="email"
-                  required
-                  placeholder="Email *"
-                  value={publicFormValues.email || ""}
-                  onChange={(e) => setPublicFormValues?.({ ...publicFormValues, email: e.target.value })}
-                  className={`w-full rounded-xl px-3 py-2 text-xs outline-none border border-zinc-200 dark:border-[#252529] ${isDark ? "bg-[#18181C] text-white placeholder:text-zinc-500" : "bg-white text-zinc-800 placeholder:text-zinc-400"}`}
-                />
-                {customFormFields.map((field: any) => (
+              <form onSubmit={onSubmitPublicForm} className="space-y-3">
+                <div className="space-y-1 text-center">
+                  <p className={`text-lg sm:text-xl font-black text-center tracking-tight ${isDark ? "text-white" : "text-zinc-900"}`}>
+                    {formTitle || "Get instant access"}
+                  </p>
+                  <p className="text-xs text-[#9B9085] text-center leading-normal">
+                    {formSubtitle || "By opting in you consent to receive this resource by email."}
+                  </p>
+                </div>
+                <div className={customFormFields && customFormFields.length > 0 ? "grid grid-cols-1 sm:grid-cols-2 gap-2.5" : "space-y-2.5"}>
                   <input
-                    key={field.id}
                     type="text"
-                    required={field.required}
-                    placeholder={`${field.label}${field.required ? " *" : ""}`}
-                    value={publicFormValues[field.id] || ""}
-                    onChange={(e) => setPublicFormValues?.({ ...publicFormValues, [field.id]: e.target.value })}
-                    className={`w-full rounded-xl px-3 py-2 text-xs outline-none border border-zinc-200 dark:border-[#252529] ${isDark ? "bg-[#18181C] text-white placeholder:text-zinc-500" : "bg-white text-zinc-800 placeholder:text-zinc-400"}`}
+                    required
+                    placeholder="Name"
+                    value={publicFormValues.name || ""}
+                    onChange={(e) => setPublicFormValues?.({ ...publicFormValues, name: e.target.value })}
+                    className={`min-h-11 h-11 w-full rounded-xl px-3.5 py-2.5 text-xs outline-none border border-zinc-200 dark:border-[#252529] ${isDark ? "bg-[#0E0E10] text-white placeholder:text-zinc-500" : "bg-white text-zinc-800 placeholder:text-zinc-400"}`}
                   />
-                ))}
+                  <input
+                    type="email"
+                    required
+                    placeholder="Email"
+                    value={publicFormValues.email || ""}
+                    onChange={(e) => setPublicFormValues?.({ ...publicFormValues, email: e.target.value })}
+                    className={`min-h-11 h-11 w-full rounded-xl px-3.5 py-2.5 text-xs outline-none border border-zinc-200 dark:border-[#252529] ${isDark ? "bg-[#0E0E10] text-white placeholder:text-zinc-500" : "bg-white text-zinc-800 placeholder:text-zinc-400"}`}
+                  />
+                  {customFormFields.map((field: any) => (
+                    <div key={field.id} className={field.type === "textarea" ? "col-span-1 sm:col-span-2" : ""}>
+                      <input
+                        type="text"
+                        required={field.required}
+                        placeholder={`${field.label}${field.required ? " *" : ""}`}
+                        value={publicFormValues[field.id] || ""}
+                        onChange={(e) => setPublicFormValues?.({ ...publicFormValues, [field.id]: e.target.value })}
+                        className={`min-h-11 h-11 w-full rounded-xl px-3.5 py-2.5 text-xs outline-none border border-zinc-200 dark:border-[#252529] ${isDark ? "bg-[#0E0E10] text-white placeholder:text-zinc-500" : "bg-white text-zinc-800 placeholder:text-zinc-400"}`}
+                      />
+                    </div>
+                  ))}
+                </div>
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full text-center rounded-xl py-2.5 px-4 text-xs font-extrabold text-white shadow-xl transition duration-150 outline-none border-2 border-transparent hover:border-white/40 cursor-pointer disabled:opacity-50"
+                  className="w-full text-center rounded-xl py-3 px-4 text-xs font-extrabold text-white shadow-xl transition duration-150 outline-none border-2 border-transparent hover:border-white/40 cursor-pointer disabled:opacity-50"
                   style={{ backgroundColor: brandColor }}
                 >
-                  {isSubmitting ? "Submitting..." : (formButtonText || "Send it to me")}
+                  {isSubmitting ? "Submitting..." : (formButtonText || "Get instant access")}
                 </button>
               </form>
             )}

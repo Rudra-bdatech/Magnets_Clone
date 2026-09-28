@@ -345,54 +345,62 @@ const BrandTemplatePreview = memo(function BrandTemplatePreview({
                 </div>
               )}
 
-              <div className="flex items-center gap-2">
-                <div className="h-px flex-1" style={{ background: `linear-gradient(to right, ${hexWithAlpha(brandColor, 0.27)}, transparent)` }} />
-                <span className={`text-[9px] font-bold uppercase tracking-widest ${themeMode === "dark" ? "text-zinc-600" : "text-zinc-400"}`}>Sign Up Free</span>
-                <div className="h-px flex-1" style={{ background: `linear-gradient(to left, ${hexWithAlpha(brandColor, 0.27)}, transparent)` }} />
-              </div>
-
-              <div className="space-y-2">
-                {latestPage?.formTitle && (
-                  <p className={`w-full text-center text-xs font-bold ${themeMode === "dark" ? "text-white" : "text-zinc-900"}`}>
-                    {latestPage.formTitle}
+              {/* Form Card (Exact match with MagnetSignupForm) */}
+              <div
+                className={`rounded-2xl sm:rounded-3xl border p-5 sm:p-6 transition-all duration-300 backdrop-blur-md relative overflow-hidden shadow-2xl ${
+                  themeMode === "dark" ? "text-white" : "text-zinc-900"
+                }`}
+                style={{
+                  borderColor: hexWithAlpha(brandColor, 0.25),
+                  boxShadow: `0 10px 30px -4px ${hexWithAlpha(brandColor, 0.2)}`,
+                  background:
+                    themeMode === "light"
+                      ? `linear-gradient(135deg, ${hexWithAlpha(brandColor, 0.08)} 0%, rgba(255, 255, 255, 0.95) 60%)`
+                      : `linear-gradient(135deg, ${hexWithAlpha(brandColor, 0.12)} 0%, rgba(22, 22, 25, 0.95) 60%)`
+                }}
+              >
+                <div className="space-y-1 text-center mb-3">
+                  <p className="text-lg sm:text-xl font-black tracking-tight">{latestPage?.formTitle || "Get instant access"}</p>
+                  <p className={`text-xs leading-normal ${themeMode === "dark" ? "text-zinc-400" : "text-[#9B9085]"}`}>
+                    {latestPage?.formSubtitle || "By opting in you consent to receive this resource by email."}
                   </p>
-                )}
-                <input
-                  type="text"
-                  placeholder={latestPage?.namePlaceholder || "Name *"}
-                  readOnly
-                  className="w-full rounded-xl border border-zinc-200 dark:border-[#252529] bg-white dark:bg-[#18181C] px-3.5 py-2.5 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 outline-none transition shadow-xs"
-                />
-                <input
-                  type="email"
-                  placeholder={latestPage?.emailPlaceholder || "Email *"}
-                  readOnly
-                  className="w-full rounded-xl border border-zinc-200 dark:border-[#252529] bg-white dark:bg-[#18181C] px-3.5 py-2.5 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 outline-none transition shadow-xs"
-                />
+                </div>
 
-                {latestPage?.customFormFields && latestPage.customFormFields.length > 0 && (
-                  latestPage.customFormFields.map((field) => (
-                    <input
-                      key={field.id}
-                      type="text"
-                      placeholder={`${field.label}${field.required ? " *" : ""}`}
-                      readOnly
-                      className="w-full rounded-xl border border-zinc-200 dark:border-[#252529] bg-white dark:bg-[#18181C] px-3.5 py-2.5 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 outline-none transition shadow-xs"
-                    />
-                  ))
-                )}
+                <div className={latestPage?.customFormFields && latestPage.customFormFields.length > 0 ? "grid grid-cols-1 sm:grid-cols-2 gap-2.5" : "space-y-2.5"}>
+                  <input
+                    type="text"
+                    placeholder={latestPage?.namePlaceholder || "Name"}
+                    readOnly
+                    className="min-h-11 h-11 w-full rounded-xl border border-zinc-200 dark:border-[#252529] bg-white dark:bg-[#0E0E10] px-3.5 py-2.5 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 outline-none transition shadow-xs"
+                  />
+                  <input
+                    type="email"
+                    placeholder={latestPage?.emailPlaceholder || "Email"}
+                    readOnly
+                    className="min-h-11 h-11 w-full rounded-xl border border-zinc-200 dark:border-[#252529] bg-white dark:bg-[#0E0E10] px-3.5 py-2.5 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 outline-none transition shadow-xs"
+                  />
+
+                  {latestPage?.customFormFields && latestPage.customFormFields.length > 0 && (
+                    latestPage.customFormFields.map((field) => (
+                      <div key={field.id} className={field.type === "textarea" ? "col-span-1 sm:col-span-2" : ""}>
+                        <input
+                          type="text"
+                          placeholder={`${field.label}${field.required ? " *" : ""}`}
+                          readOnly
+                          className="min-h-11 h-11 w-full rounded-xl border border-zinc-200 dark:border-[#252529] bg-white dark:bg-[#0E0E10] px-3.5 py-2.5 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 outline-none transition shadow-xs"
+                        />
+                      </div>
+                    ))
+                  )}
+                </div>
 
                 <button
                   type="button"
-                  className="w-full rounded-xl py-3 px-4 text-xs font-bold text-white shadow-md transition duration-200 hover:opacity-95 mt-2"
+                  className="w-full rounded-xl py-3 px-4 text-xs font-bold text-white shadow-md transition duration-200 hover:opacity-95 mt-3"
                   style={{ backgroundColor: brandColor }}
                 >
-                  {latestPage?.formButtonText || latestPage?.cta || "Get early access"}
+                  {latestPage?.formButtonText || latestPage?.cta || "Get instant access"}
                 </button>
-
-                <p className={`text-center text-[9px] ${themeMode === "dark" ? "text-zinc-600" : "text-zinc-400"}`}>
-                  {latestPage?.formSubtitle || "🔒 No spam · Instant delivery · Unsubscribe anytime"}
-                </p>
               </div>
             </div>
           </div>
