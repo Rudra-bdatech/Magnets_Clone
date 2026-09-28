@@ -748,90 +748,12 @@ export default async function MagnetPageRoute({
               </div>
             </div>
           </div>
-        ) : ((page.template as string) === "template6" || (!page.template && (accountDoc?.templateId as string) === "template6")) ? (
-          /* TEMPLATE 6: Full Bleed Showcase Layout */
-          <div className="relative w-full min-h-[calc(100vh-120px)] flex flex-col justify-center py-4">
-            {/* FULL BACKGROUND IMAGE / GRADIENT */}
-            {activeImageUrl && activeImageUrl.trim() !== "" ? (
-              <img src={activeImageUrl} alt={page.name} className="absolute inset-0 w-full h-full object-cover" />
-            ) : (
-              <div className="absolute inset-0 w-full h-full" style={{ background: `linear-gradient(145deg, ${brandColor}99 0%, #080912 100%)` }} />
-            )}
-
-            {/* DARK SCRIM OVERLAY */}
-            <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-black/95 via-black/80 to-black/50" />
-
-            {/* CONTENT */}
-            <div className="relative z-10 w-full max-w-5xl mx-auto space-y-4 flex-1 flex flex-col justify-center py-4">
-              <div className="space-y-3 max-w-3xl">
-                <h1 className="text-3xl sm:text-4xl md:text-5xl font-black leading-tight tracking-tight text-white drop-shadow-lg">{activeHeadline}</h1>
-                {page.subheadline && (
-                  <p className="text-sm sm:text-base font-medium text-zinc-200 drop-shadow-sm leading-relaxed line-clamp-2">{page.subheadline}</p>
-                )}
-                {page.pitch && (
-                  <p className="text-xs sm:text-sm leading-relaxed text-zinc-300 max-w-2xl line-clamp-2">{page.pitch}</p>
-                )}
-
-                {/* Bullets Section */}
-                {((page.bullets && page.bullets.length > 0) || page.bulletsTitle) && (
-                  <div className="space-y-2 pt-1">
-                    <div className="flex items-center gap-2">
-                      <span className="h-1.5 w-1.5 rounded-full animate-pulse" style={{ backgroundColor: brandColor, boxShadow: `0 0 6px ${brandColor}` }} />
-                      <span className="text-[10px] font-black uppercase tracking-[0.18em] text-zinc-300">
-                        {page.bulletsTitle || "What they will learn"}
-                      </span>
-                    </div>
-                    {page.bullets && page.bullets.length > 0 && (
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                        {page.bullets.map((item: string, idx: number) => (
-                          <div key={idx} className="flex items-center gap-2">
-                            <div className="flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded-md bg-white/10 border border-white/20">
-                              <svg width="6" height="6" viewBox="0 0 7 7" fill="none"><path d="M1 3.5l1.7 1.7L6 1.5" stroke={brandColor} strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                            </div>
-                            <span className="text-xs sm:text-sm font-semibold text-zinc-100">{item}</span>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-
-              {/* SIGNUP FORM */}
-              <div className="pt-1 w-full max-w-2xl">
-                <MagnetSignupForm
-                  cta={page.cta}
-                  formTitle={page.formTitle}
-                  formSubtitle={page.formSubtitle}
-                  formButtonText={page.formButtonText}
-                  deliverable={page.deliverable}
-                  accent={page.accent}
-                  pageId={page.id}
-                  pageName={page.name}
-                  pageSlug={page.slug}
-                  pageOwnerEmail={(page as any).userEmail}
-                  brandColor={brandColor}
-                  highlightIntensity={highlightIntensity}
-                  themeMode={themeMode}
-                  customPromptQuestion={page.customPromptQuestion}
-                  customPromptPlaceholder={page.customPromptPlaceholder}
-                  enableAiPersonalizedDeliverable={page.enableAiPersonalizedDeliverable}
-                  customFormFields={page.customFormFields}
-                  username={params.username}
-                  isVariantB={isVariantB}
-                  layout="horizontal-glass"
-                  afterSignupOption={page.afterSignupOption}
-                  destinationUrl={page.destinationUrl}
-                />
-              </div>
-            </div>
-          </div>
-        ) : ((page.template as string) === "template7" || (!page.template && (accountDoc?.templateId as string) === "template7")) ? (
-          /* TEMPLATE 7: Spotlight Hero */
-          <div className="w-full max-w-7xl mx-auto">
+        ) : ((page.template as string) === "template6" || (page.template as string) === "template7" || (!page.template && ((accountDoc?.templateId as string) === "template6" || (accountDoc?.templateId as string) === "template7"))) ? (
+          /* TEMPLATE 6: Spotlight Hero */
+          <div className="w-full max-w-7xl mx-auto flex-1 flex flex-col justify-center py-2 sm:py-4">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 items-center">
               {/* LEFT: Full-bleed image panel */}
-              <div className="col-span-12 lg:col-span-6 relative overflow-hidden rounded-3xl shadow-2xl aspect-[4/3] max-h-[360px]">
+              <div className="col-span-12 lg:col-span-6 relative overflow-hidden rounded-3xl shadow-2xl aspect-[4/3] max-h-[360px] min-h-[280px]">
                 {activeImageUrl && activeImageUrl.trim() !== "" ? (
                   <img src={activeImageUrl} alt={page.name} className="absolute inset-0 w-full h-full object-cover" />
                 ) : (

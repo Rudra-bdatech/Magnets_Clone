@@ -18,7 +18,6 @@ const TEMPLATE_TABS = [
   { id: "template4", label: "Template 4" },
   { id: "template5", label: "Template 5" },
   { id: "template6", label: "Template 6" },
-  { id: "template7", label: "Template 7" },
 ];
 
 export default function BrandPage() {
