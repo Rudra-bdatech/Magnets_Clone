@@ -374,126 +374,187 @@ export default function Template1(props: TemplateProps) {
 
             {/* Inputs & Form Button */}
             {isEditor ? (
-              <div className="space-y-2 pt-1">
-                <input
-                  type="text"
-                  placeholder="Name"
-                  className={`w-full rounded-md border p-2 text-xs focus:outline-none transition pointer-events-none select-none ${
-                    isDark ? "bg-[#0E0E10] border-[#252529] text-zinc-400" : "border-[#e4e4e7] text-zinc-400"
-                  }`}
-                  readOnly
-                />
-                <input
-                  type="email"
-                  placeholder="Email"
-                  className={`w-full rounded-md border p-2 text-xs focus:outline-none transition pointer-events-none select-none ${
-                    isDark ? "bg-[#0E0E10] border-[#252529] text-zinc-400" : "border-[#e4e4e7] text-zinc-400"
-                  }`}
-                  readOnly
-                />
+              <div className="space-y-3 pt-1">
+                {customFormFields && customFormFields.length > 0 ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                    <input
+                      type="text"
+                      placeholder="Name"
+                      className={`w-full rounded-xl border p-2.5 text-xs focus:outline-none transition pointer-events-none select-none ${
+                        isDark ? "bg-black/40 border-white/10 text-zinc-400" : "bg-white/80 border-black/10 text-zinc-500"
+                      }`}
+                      readOnly
+                    />
+                    <input
+                      type="email"
+                      placeholder="Email"
+                      className={`w-full rounded-xl border p-2.5 text-xs focus:outline-none transition pointer-events-none select-none ${
+                        isDark ? "bg-black/40 border-white/10 text-zinc-400" : "bg-white/80 border-black/10 text-zinc-500"
+                      }`}
+                      readOnly
+                    />
 
-                {customFormFields.map((field: any) => (
-                  <input
-                    key={field.id}
-                    type="text"
-                    placeholder={`${field.label || "New Field"}${field.required ? " *" : ""}`}
-                    readOnly
-                    className={`w-full rounded-md border p-2 text-xs focus:outline-none transition pointer-events-none select-none ${
-                      isDark ? "bg-[#0E0E10] border-[#252529] text-zinc-400" : "border-[#e4e4e7] text-zinc-400"
-                    }`}
-                  />
-                ))}
+                    {customFormFields.map((field: any) => (
+                      <div
+                        key={field.id}
+                        className={field.type === "textarea" ? "col-span-1 sm:col-span-2" : ""}
+                      >
+                        <input
+                          type="text"
+                          placeholder={`${field.label || "New Field"}${field.required ? " *" : ""}`}
+                          readOnly
+                          className={`w-full rounded-xl border p-2.5 text-xs focus:outline-none transition pointer-events-none select-none ${
+                            isDark ? "bg-black/40 border-white/10 text-zinc-400" : "bg-white/80 border-black/10 text-zinc-500"
+                          }`}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    <input
+                      type="text"
+                      placeholder="Name"
+                      className={`w-full rounded-xl border p-2.5 text-xs focus:outline-none transition pointer-events-none select-none ${
+                        isDark ? "bg-black/40 border-white/10 text-zinc-400" : "bg-white/80 border-black/10 text-zinc-500"
+                      }`}
+                      readOnly
+                    />
+                    <input
+                      type="email"
+                      placeholder="Email"
+                      className={`w-full rounded-xl border p-2.5 text-xs focus:outline-none transition pointer-events-none select-none ${
+                        isDark ? "bg-black/40 border-white/10 text-zinc-400" : "bg-white/80 border-black/10 text-zinc-500"
+                      }`}
+                      readOnly
+                    />
+                  </div>
+                )}
 
                 <div className="pt-1">
                   <input
                     type="text"
                     value={formButtonText || ""}
                     onChange={(e) => setFormButtonText?.(e.target.value)}
-                    className="w-full rounded-md py-2.5 px-3 text-xs font-bold text-white text-center shadow-md transition outline-none"
+                    className="w-full rounded-xl py-3 px-3 text-xs font-bold text-white text-center shadow-md transition outline-none cursor-text"
                     style={{ backgroundColor: brandColor }}
                     placeholder="Send it to me"
                   />
                 </div>
               </div>
             ) : (
-              <form onSubmit={onSubmitPublicForm} className="space-y-2 pt-1">
-                <input
-                  type="text"
-                  required
-                  placeholder="Name"
-                  value={publicFormValues.name || ""}
-                  onChange={(e) => setPublicFormValues?.({ ...publicFormValues, name: e.target.value })}
-                  className={`w-full rounded-md border p-2 text-xs focus:outline-none transition ${
-                    isDark
-                      ? "bg-[#0E0E10] border-[#252529] text-white focus:border-zinc-700"
-                      : "border-[#e4e4e7] text-zinc-800 focus:border-[#0066B2]/50"
-                  }`}
-                />
-                <input
-                  type="email"
-                  required
-                  placeholder="Email"
-                  value={publicFormValues.email || ""}
-                  onChange={(e) => setPublicFormValues?.({ ...publicFormValues, email: e.target.value })}
-                  className={`w-full rounded-md border p-2 text-xs focus:outline-none transition ${
-                    isDark
-                      ? "bg-[#0E0E10] border-[#252529] text-white focus:border-zinc-700"
-                      : "border-[#e4e4e7] text-zinc-800 focus:border-[#0066B2]/50"
-                  }`}
-                />
+              <form onSubmit={onSubmitPublicForm} className="space-y-3 pt-1">
+                {customFormFields && customFormFields.length > 0 ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                    <input
+                      type="text"
+                      required
+                      placeholder="Name"
+                      value={publicFormValues.name || ""}
+                      onChange={(e) => setPublicFormValues?.({ ...publicFormValues, name: e.target.value })}
+                      className={`w-full rounded-xl border p-2.5 text-xs focus:outline-none transition ${
+                        isDark
+                          ? "bg-black/40 border-white/10 text-white focus:border-zinc-500"
+                          : "bg-white/80 border-black/10 text-zinc-800 focus:border-[#0066B2]/50"
+                      }`}
+                    />
+                    <input
+                      type="email"
+                      required
+                      placeholder="Email"
+                      value={publicFormValues.email || ""}
+                      onChange={(e) => setPublicFormValues?.({ ...publicFormValues, email: e.target.value })}
+                      className={`w-full rounded-xl border p-2.5 text-xs focus:outline-none transition ${
+                        isDark
+                          ? "bg-black/40 border-white/10 text-white focus:border-zinc-500"
+                          : "bg-white/80 border-black/10 text-zinc-800 focus:border-[#0066B2]/50"
+                      }`}
+                    />
 
-                {customFormFields.map((field: any) => (
-                  <div key={field.id}>
-                    {field.type === "textarea" ? (
-                      <textarea
-                        required={field.required}
-                        placeholder={`${field.label || field.placeholder || "Answer"}${field.required ? " *" : ""}`}
-                        value={publicFormValues[field.id] || ""}
-                        onChange={(e) => setPublicFormValues?.({ ...publicFormValues, [field.id]: e.target.value })}
-                        rows={2}
-                        className={`w-full rounded-md border p-2 text-xs focus:outline-none transition ${
-                          isDark
-                            ? "bg-[#0E0E10] border-[#252529] text-white focus:border-zinc-700"
-                            : "border-[#e4e4e7] text-zinc-800 focus:border-[#0066B2]/50"
-                        }`}
-                      />
-                    ) : field.type === "select" ? (
-                      <select
-                        required={field.required}
-                        value={publicFormValues[field.id] || ""}
-                        onChange={(e) => setPublicFormValues?.({ ...publicFormValues, [field.id]: e.target.value })}
-                        className={`w-full rounded-md border p-2 text-xs focus:outline-none transition ${
-                          isDark
-                            ? "bg-[#0E0E10] border-[#252529] text-white focus:border-zinc-700"
-                            : "border-[#e4e4e7] text-zinc-800 focus:border-[#0066B2]/50"
-                        }`}
+                    {customFormFields.map((field: any) => (
+                      <div
+                        key={field.id}
+                        className={field.type === "textarea" ? "col-span-1 sm:col-span-2" : ""}
                       >
-                        <option value="">{field.label || "Select..."}</option>
-                        {field.options?.map((opt: string) => (
-                          <option key={opt} value={opt}>{opt}</option>
-                        ))}
-                      </select>
-                    ) : (
-                      <input
-                        type={field.type || "text"}
-                        required={field.required}
-                        placeholder={`${field.label || field.placeholder || "Answer"}${field.required ? " *" : ""}`}
-                        value={publicFormValues[field.id] || ""}
-                        onChange={(e) => setPublicFormValues?.({ ...publicFormValues, [field.id]: e.target.value })}
-                        className={`w-full rounded-md border p-2 text-xs focus:outline-none transition ${
-                          isDark
-                            ? "bg-[#0E0E10] border-[#252529] text-white focus:border-zinc-700"
-                            : "border-[#e4e4e7] text-zinc-800 focus:border-[#0066B2]/50"
-                        }`}
-                      />
-                    )}
+                        {field.type === "textarea" ? (
+                          <textarea
+                            required={field.required}
+                            placeholder={`${field.label || field.placeholder || "Answer"}${field.required ? " *" : ""}`}
+                            value={publicFormValues[field.id] || ""}
+                            onChange={(e) => setPublicFormValues?.({ ...publicFormValues, [field.id]: e.target.value })}
+                            rows={2}
+                            className={`w-full rounded-xl border p-2.5 text-xs focus:outline-none transition ${
+                              isDark
+                                ? "bg-black/40 border-white/10 text-white focus:border-zinc-500"
+                                : "bg-white/80 border-black/10 text-zinc-800 focus:border-[#0066B2]/50"
+                            }`}
+                          />
+                        ) : field.type === "select" ? (
+                          <select
+                            required={field.required}
+                            value={publicFormValues[field.id] || ""}
+                            onChange={(e) => setPublicFormValues?.({ ...publicFormValues, [field.id]: e.target.value })}
+                            className={`w-full rounded-xl border p-2.5 text-xs focus:outline-none transition ${
+                              isDark
+                                ? "bg-black/40 border-white/10 text-white focus:border-zinc-500"
+                                : "bg-white/80 border-black/10 text-zinc-800 focus:border-[#0066B2]/50"
+                            }`}
+                          >
+                            <option value="">{field.label || "Select..."}</option>
+                            {field.options?.map((opt: string) => (
+                              <option key={opt} value={opt}>{opt}</option>
+                            ))}
+                          </select>
+                        ) : (
+                          <input
+                            type={field.type || "text"}
+                            required={field.required}
+                            placeholder={`${field.label || field.placeholder || "Answer"}${field.required ? " *" : ""}`}
+                            value={publicFormValues[field.id] || ""}
+                            onChange={(e) => setPublicFormValues?.({ ...publicFormValues, [field.id]: e.target.value })}
+                            className={`w-full rounded-xl border p-2.5 text-xs focus:outline-none transition ${
+                              isDark
+                                ? "bg-black/40 border-white/10 text-white focus:border-zinc-500"
+                                : "bg-white/80 border-black/10 text-zinc-800 focus:border-[#0066B2]/50"
+                            }`}
+                          />
+                        )}
+                      </div>
+                    ))}
                   </div>
-                ))}
+                ) : (
+                  <div className="space-y-2">
+                    <input
+                      type="text"
+                      required
+                      placeholder="Name"
+                      value={publicFormValues.name || ""}
+                      onChange={(e) => setPublicFormValues?.({ ...publicFormValues, name: e.target.value })}
+                      className={`w-full rounded-xl border p-2.5 text-xs focus:outline-none transition ${
+                        isDark
+                          ? "bg-black/40 border-white/10 text-white focus:border-zinc-500"
+                          : "bg-white/80 border-black/10 text-zinc-800 focus:border-[#0066B2]/50"
+                      }`}
+                    />
+                    <input
+                      type="email"
+                      required
+                      placeholder="Email"
+                      value={publicFormValues.email || ""}
+                      onChange={(e) => setPublicFormValues?.({ ...publicFormValues, email: e.target.value })}
+                      className={`w-full rounded-xl border p-2.5 text-xs focus:outline-none transition ${
+                        isDark
+                          ? "bg-black/40 border-white/10 text-white focus:border-zinc-500"
+                          : "bg-white/80 border-black/10 text-zinc-800 focus:border-[#0066B2]/50"
+                      }`}
+                    />
+                  </div>
+                )}
 
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full rounded-md py-2.5 text-xs font-bold text-white shadow-md transition cursor-pointer disabled:opacity-50"
+                  className="w-full rounded-xl py-3 text-xs font-bold text-white shadow-md transition cursor-pointer disabled:opacity-50"
                   style={{ backgroundColor: brandColor }}
                 >
                   {isSubmitting ? "Submitting..." : formButtonText || "Send it to me"}
