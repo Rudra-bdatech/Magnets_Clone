@@ -462,28 +462,28 @@ export default function MagnetSignupForm({
           </form>
         </div>
       ) : (
-        <div className={`rounded-xl border p-4 sm:p-5 text-left transition-all duration-300 backdrop-blur-sm ${themeMode === "dark"
+        <div className={`rounded-2xl border p-5 sm:p-6 lg:p-6 text-left transition-all duration-300 backdrop-blur-sm shadow-xl ${themeMode === "dark"
           ? "text-white"
           : "text-zinc-900"
           }`}
           style={{
             borderColor: `${brandColor}${Math.round((0.15 + ((highlightIntensity ?? 100) / 100) * 0.55) * 255).toString(16).padStart(2, '0')}`,
-            boxShadow: (highlightIntensity ?? 100) > 20 ? `0 8px 24px -4px ${brandColor}${Math.round(((highlightIntensity ?? 100) / 100) * 0.35 * 255).toString(16).padStart(2, '0')}` : "0 2px 8px rgba(0,0,0,0.05)",
+            boxShadow: (highlightIntensity ?? 100) > 20 ? `0 10px 30px -4px ${brandColor}${Math.round(((highlightIntensity ?? 100) / 100) * 0.35 * 255).toString(16).padStart(2, '0')}` : "0 2px 8px rgba(0,0,0,0.05)",
             background: themeMode === "light" || !themeMode
               ? `linear-gradient(135deg, ${brandColor}${Math.round((0.05 + ((highlightIntensity ?? 100) / 100) * 0.25) * 255).toString(16).padStart(2, '0')} 0%, rgba(255, 255, 255, 0.95) 60%)`
               : `linear-gradient(135deg, ${brandColor}${Math.round((0.08 + ((highlightIntensity ?? 100) / 100) * 0.3) * 255).toString(16).padStart(2, '0')} 0%, rgba(22, 22, 25, 0.95) 60%)`
           }}
         >
-          <p className="text-lg sm:text-xl font-extrabold text-center">{formTitle || cta || "Download for free"}</p>
-          <p className="text-xs text-[#9B9085] text-center mt-1 leading-normal">
+          <p className="text-xl sm:text-2xl font-black text-center tracking-tight">{formTitle || cta || "Download for free"}</p>
+          <p className="text-xs sm:text-sm text-[#9B9085] text-center mt-1.5 leading-normal">
             {formSubtitle || "By opting in you consent to receive this resource by email."}
           </p>
           <form
             onSubmit={handleSubmit}
-            className="mt-3 flex flex-col gap-2.5"
+            className="mt-4 flex flex-col gap-3"
           >
             {customFormFields && customFormFields.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <input
                   type="text"
                   value={name}
@@ -491,7 +491,7 @@ export default function MagnetSignupForm({
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Name"
                   style={inputStyle}
-                  className="min-h-10 h-10 w-full rounded-xl border px-3 py-2 text-xs sm:text-sm outline-none transition shadow-xs placeholder:text-zinc-400 focus:border-[#0066B2]"
+                  className="min-h-11 h-11 w-full rounded-xl border px-3.5 py-2.5 text-sm outline-none transition shadow-xs placeholder:text-zinc-400 focus:border-[#0066B2]"
                 />
                 <input
                   type="email"
@@ -501,7 +501,7 @@ export default function MagnetSignupForm({
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="Email"
                   style={inputStyle}
-                  className="min-h-10 h-10 w-full rounded-xl border px-3 py-2 text-xs sm:text-sm outline-none transition shadow-xs placeholder:text-zinc-400 focus:border-[#0066B2]"
+                  className="min-h-11 h-11 w-full rounded-xl border px-3.5 py-2.5 text-sm outline-none transition shadow-xs placeholder:text-zinc-400 focus:border-[#0066B2]"
                 />
                 {customFormFields.map((field) => (
                   <div
@@ -519,7 +519,7 @@ export default function MagnetSignupForm({
                         onChange={(e) => handleCustomFieldChange(field.id, e.target.value)}
                         placeholder={`${field.label}${field.required ? " *" : ""}`}
                         style={inputStyle}
-                        className="min-h-10 h-10 w-full rounded-xl border px-3 py-2 text-xs sm:text-sm outline-none transition shadow-xs placeholder:text-zinc-400 focus:border-[#0066B2]"
+                        className="min-h-11 h-11 w-full rounded-xl border px-3.5 py-2.5 text-sm outline-none transition shadow-xs placeholder:text-zinc-400 focus:border-[#0066B2]"
                       />
                     )}
 
@@ -532,7 +532,7 @@ export default function MagnetSignupForm({
                         onChange={(e) => handleCustomFieldChange(field.id, e.target.value)}
                         placeholder={`${field.label}${field.required ? " *" : ""}`}
                         style={inputStyle}
-                        className="min-h-10 h-10 w-full rounded-xl border px-3 py-2 text-xs sm:text-sm outline-none transition shadow-xs placeholder:text-zinc-400 focus:border-[#0066B2]"
+                        className="min-h-11 h-11 w-full rounded-xl border px-3.5 py-2.5 text-sm outline-none transition shadow-xs placeholder:text-zinc-400 focus:border-[#0066B2]"
                       />
                     )}
 
@@ -545,7 +545,7 @@ export default function MagnetSignupForm({
                         onChange={(e) => handleCustomFieldChange(field.id, e.target.value)}
                         placeholder={`${field.label}${field.required ? " *" : ""}`}
                         style={inputStyle}
-                        className="w-full rounded-xl border px-3 py-2 text-xs sm:text-sm outline-none transition shadow-xs placeholder:text-zinc-400 focus:border-[#0066B2]"
+                        className="w-full rounded-xl border px-3.5 py-2.5 text-sm outline-none transition shadow-xs placeholder:text-zinc-400 focus:border-[#0066B2]"
                       />
                     )}
 
@@ -556,7 +556,7 @@ export default function MagnetSignupForm({
                         disabled={loading}
                         onChange={(e) => handleCustomFieldChange(field.id, e.target.value)}
                         style={inputStyle}
-                        className="min-h-10 h-10 w-full rounded-xl border px-3 py-2 text-xs sm:text-sm outline-none transition shadow-xs placeholder:text-zinc-400 focus:border-[#0066B2]"
+                        className="min-h-11 h-11 w-full rounded-xl border px-3.5 py-2.5 text-sm outline-none transition shadow-xs placeholder:text-zinc-400 focus:border-[#0066B2]"
                       >
                         <option value="">{`${field.label}${field.required ? " *" : ""}`}</option>
                         {(field.options || []).map((opt, idx) => (
@@ -592,7 +592,7 @@ export default function MagnetSignupForm({
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Name"
                   style={inputStyle}
-                  className="min-h-10 h-10 w-full rounded-xl border px-3 py-2 text-xs sm:text-sm outline-none transition shadow-xs placeholder:text-zinc-400 focus:border-[#0066B2]"
+                  className="min-h-11 h-11 w-full rounded-xl border px-3.5 py-2.5 text-sm outline-none transition shadow-xs placeholder:text-zinc-400 focus:border-[#0066B2]"
                 />
                 <input
                   type="email"
@@ -602,7 +602,7 @@ export default function MagnetSignupForm({
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="Email"
                   style={inputStyle}
-                  className="min-h-10 h-10 w-full rounded-xl border px-3 py-2 text-xs sm:text-sm outline-none transition shadow-xs placeholder:text-zinc-400 focus:border-[#0066B2]"
+                  className="min-h-11 h-11 w-full rounded-xl border px-3.5 py-2.5 text-sm outline-none transition shadow-xs placeholder:text-zinc-400 focus:border-[#0066B2]"
                 />
               </>
             )}
@@ -620,13 +620,13 @@ export default function MagnetSignupForm({
                   onChange={(e) => setCustomAnswer(e.target.value)}
                   placeholder={customPromptPlaceholder || "e.g. Scaling outreach, Lead generation"}
                   style={inputStyle}
-                  className="min-h-10 h-10 w-full rounded-xl border px-3 py-2 text-xs sm:text-sm outline-none transition shadow-xs placeholder:text-zinc-400 focus:border-[#0066B2]"
+                  className="min-h-11 h-11 w-full rounded-xl border px-3.5 py-2.5 text-sm outline-none transition shadow-xs placeholder:text-zinc-400 focus:border-[#0066B2]"
                 />
               </div>
             )}
 
             {errorMsg && (
-              <div className="p-2 rounded-lg bg-rose-500/10 border border-rose-500/20 text-xs font-semibold text-rose-500 text-center">
+              <div className="p-2.5 rounded-lg bg-rose-500/10 border border-rose-500/20 text-xs font-semibold text-rose-500 text-center">
                 {errorMsg}
               </div>
             )}
@@ -635,7 +635,7 @@ export default function MagnetSignupForm({
               type="submit"
               disabled={loading}
               style={{ backgroundColor: brandColor }}
-              className="w-full min-h-10 h-10 inline-flex items-center justify-center rounded-xl hover:opacity-90 px-4 py-2 text-xs sm:text-sm font-bold text-white transition-all shadow-md active:scale-98 disabled:opacity-50 cursor-pointer"
+              className="w-full min-h-11 h-11 inline-flex items-center justify-center rounded-xl hover:opacity-90 px-4 py-2.5 text-sm font-black text-white transition-all shadow-md active:scale-98 disabled:opacity-50 cursor-pointer"
             >
               {loading ? "Sending..." : (formButtonText || cta || "Send it to me")}
             </button>

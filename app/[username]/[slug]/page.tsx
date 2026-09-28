@@ -924,11 +924,11 @@ export default async function MagnetPageRoute({
               </div>
 
               {/* Right Media Preview & Form Column */}
-              <div className="lg:col-span-5 space-y-3 xl:space-y-4 w-full">
+              <div className="lg:col-span-5 space-y-3 xl:space-y-4 w-full lg:pt-5 xl:pt-7">
                 {/* Media Preview (Crisp proportion) */}
                 {activeImageUrl ? (
                   <div
-                    className="rounded-2xl border aspect-[16/7.5] max-h-[160px] lg:max-h-[180px] xl:max-h-[210px] w-full flex items-center justify-center transition-all duration-300 relative overflow-hidden shadow-xl"
+                    className="rounded-2xl border aspect-[16/8.5] max-h-[190px] sm:max-h-[220px] lg:max-h-[240px] xl:max-h-[260px] w-full flex items-center justify-center transition-all duration-300 relative overflow-hidden shadow-xl"
                     style={{
                       borderColor: `${brandColor}${Math.round((0.18 + (highlightIntensity / 100) * 0.5) * 255).toString(16).padStart(2, '0')}`,
                     }}
