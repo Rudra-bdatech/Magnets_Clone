@@ -1,8 +1,1 @@
-﻿{
-  "crons": [
-    {
-      "path": "/api/cron/linkedin-sync",
-      "schedule": "*/5 * * * *"
-    }
-  ]
-}
+{}
