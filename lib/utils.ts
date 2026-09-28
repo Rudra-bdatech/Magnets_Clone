@@ -116,3 +116,30 @@ export function formatRelativeTime(dateInput?: string | number | Date | null): s
   return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
 }
 
+/**
+ * Extracts a deterministic numerical timestamp for magnet pages, locked PDFs, or entities.
+ * Hierarchy:
+ * 1. Numeric timestamp embedded in the ID (e.g. page-1727521000000)
+ * 2. parseFlexibleDate on updatedAt or createdAt (ISO strings, date strings)
+ * 3. Fallback to standard Date or 0
+ */
+export function getMagnetSortTimestamp(item: { id?: string; updatedAt?: string; createdAt?: string }): number {
+  if (!item) return 0;
+  // 1. Check ID numeric timestamp (page-1727521...)
+  if (item.id && typeof item.id === "string") {
+    const match = item.id.match(/\d{10,13}/);
+    if (match) {
+      const num = Number(match[0]);
+      if (!isNaN(num) && num > 1e11) return num;
+    }
+  }
+  // 2. Parse updatedAt or createdAt
+  const parsed = parseFlexibleDate(item.updatedAt || item.createdAt);
+  if (parsed) return parsed.getTime();
+
+  // 3. Fallback
+  const d = new Date(item.updatedAt || item.createdAt || 0).getTime();
+  return isNaN(d) ? 0 : d;
+}
+
+

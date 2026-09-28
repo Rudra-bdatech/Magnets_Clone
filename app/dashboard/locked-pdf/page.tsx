@@ -37,6 +37,7 @@ import {
   loadResources,
 } from "@/lib/store";
 import type { Account, MagnetPage } from "@/lib/data";
+import { getMagnetSortTimestamp } from "@/lib/utils";
 
 import type { SequenceEmailItem } from "@/components/leadmagnets/edit/SequenceTab";
 
@@ -311,9 +312,9 @@ export default function LockedPdfPage() {
   const lockedPdfPages = useMemo(() => {
     const list = pages.filter((p) => p.template === "locked-pdf");
     return [...list].sort((a, b) => {
-      const timeA = new Date(a.updatedAt || a.createdAt || 0).getTime();
-      const timeB = new Date(b.updatedAt || b.createdAt || 0).getTime();
-      return timeB - timeA;
+      const diff = getMagnetSortTimestamp(b) - getMagnetSortTimestamp(a);
+      if (diff !== 0) return diff;
+      return String(b.id).localeCompare(String(a.id));
     });
   }, [pages]);
 
@@ -695,7 +696,8 @@ export default function LockedPdfPage() {
       subheadline: "Enter your email to verify and unlock full PDF access instantly.",
       cta: "Verify & Unlock PDF",
       deliverable: "Locked PDF Document",
-      updatedAt: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
+      updatedAt: new Date().toISOString(),
+      createdAt: new Date().toISOString(),
       publishedAt: null,
       template: "locked-pdf",
       accent: account?.brandColor || "#0066B2",
@@ -733,7 +735,8 @@ export default function LockedPdfPage() {
       subheadline: "Enter your email to get instant access.",
       cta: "Get instant access",
       deliverable: "Instant Access",
-      updatedAt: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
+      updatedAt: new Date().toISOString(),
+      createdAt: new Date().toISOString(),
       publishedAt: null,
       template: "classic",
       accent: account?.brandColor || "#0066B2",

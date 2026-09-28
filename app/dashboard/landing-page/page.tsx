@@ -38,6 +38,7 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import DashboardShell from "@/components/dashboard/dashboard-shell";
 import { type MagnetPage, type Account } from "@/lib/data";
 import { loadPages, savePages, loadAccount, syncWithDatabase, deletePage } from "@/lib/store";
+import { getMagnetSortTimestamp } from "@/lib/utils";
 
 interface MagnetCardProps {
   page: MagnetPage;
@@ -180,9 +181,9 @@ export default function PagesPage() {
   const landingPages = useMemo(() => {
     const list = pages.filter((p) => p.template !== "locked-pdf");
     return [...list].sort((a, b) => {
-      const timeA = new Date(a.updatedAt || a.createdAt || 0).getTime();
-      const timeB = new Date(b.updatedAt || b.createdAt || 0).getTime();
-      return timeB - timeA;
+      const diff = getMagnetSortTimestamp(b) - getMagnetSortTimestamp(a);
+      if (diff !== 0) return diff;
+      return String(b.id).localeCompare(String(a.id));
     });
   }, [pages]);
 
@@ -1011,7 +1012,8 @@ export default function PagesPage() {
                       views: 0,
                       signups: 0,
                       conversionRate: 0,
-                      updatedAt: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
+                      updatedAt: new Date().toISOString(),
+                      createdAt: new Date().toISOString(),
                       publishedAt: null,
                       template: (account?.templateId as any) || "template1"
                     };
