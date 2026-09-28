@@ -76,36 +76,39 @@ export async function GET(req: Request) {
       });
     }
 
-const pageFilter = { userEmail: normEmail };
-const userFilter = { userEmail: normEmail };
+// ── Phase 1: Fetch pages first (needed to build pageIds/pageNames for the leads query) ──────
+// Pages are fetched alone so we can use their IDs immediately in Phase 2.
+const pages = await MagnetPageModel.find({ userEmail: normEmail })
+  .sort({ updatedAt: -1, createdAt: -1, _id: -1 })
+  .lean();
 
-const [account, pages, leads, sequences, integrations, resources] = await Promise.all([
+const pageIds   = (pages as any[]).map((p) => p.id).filter(Boolean);
+const pageNames = (pages as any[]).map((p) => p.name).filter(Boolean);
+
+// ── Phase 2: Run the remaining 5 queries in parallel ────────────────────────────────────────
+// The leads query uses the same wider $or that was previously run as a *second* serial query.
+// Result is byte-for-byte identical to the original code — no data is lost or changed.
+// The only difference: we eliminated one full extra DB round-trip.
+const [account, leads, sequences, integrations, resources] = await Promise.all([
   AccountModel.findOne({ email: normEmail }).select("-password").lean(),
-  MagnetPageModel.find(pageFilter).sort({ updatedAt: -1, createdAt: -1, _id: -1 }).lean(),
-  LeadModel.find(userFilter).sort({ signedUpAt: -1, createdAt: -1, _id: -1 }).lean(),
-  SequenceModel.find(userFilter).sort({ updatedAt: -1, createdAt: -1, _id: -1 }).lean(),
-  IntegrationModel.find(userFilter).lean(),
-  ResourceModel.find({ userEmail: normEmail, isPageAsset: { $ne: true }, type: { $ne: "page_asset" } }).sort({ uploadedAt: -1, createdAt: -1, _id: -1 }).lean(),
-]);
-
-let finalLeads = leads;
-if (pages.length > 0) {
-  const pageNames = (pages as any[]).map((p) => p.name).filter(Boolean);
-  const pageIds = (pages as any[]).map((p) => p.id).filter(Boolean);
-  const fallbackLeads = await LeadModel.find({
+  LeadModel.find({
     $or: [
       { userEmail: normEmail },
-      { pageId: { $in: pageIds } },
-      { page: { $in: pageNames } },
+      ...(pageIds.length   ? [{ pageId: { $in: pageIds } }]   : []),
+      ...(pageNames.length ? [{ page:   { $in: pageNames } }] : []),
     ],
-  }).sort({ signedUpAt: -1, createdAt: -1, _id: -1 }).lean();
-  finalLeads = fallbackLeads;
-}
+  }).sort({ signedUpAt: -1, createdAt: -1, _id: -1 }).lean(),
+  SequenceModel.find({ userEmail: normEmail }).sort({ updatedAt: -1, createdAt: -1, _id: -1 }).lean(),
+  IntegrationModel.find({ userEmail: normEmail }).lean(),
+  ResourceModel.find({ userEmail: normEmail, isPageAsset: { $ne: true }, type: { $ne: "page_asset" } })
+    .sort({ uploadedAt: -1, createdAt: -1, _id: -1 })
+    .lean(),
+]);
 
 return NextResponse.json({
   account,
   pages,
-  leads: finalLeads,
+  leads,
   sequences,
   integrations,
   resources,
