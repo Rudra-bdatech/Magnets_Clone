@@ -224,18 +224,20 @@ export async function handleAddLead(data: any, req: Request, normEmail: string |
   }
 
   if (data.pageId) {
-    const page = await MagnetPageModel.findOne({ id: data.pageId });
-    if (page) {
-      page.signups = (page.signups || 0) + 1;
-      if (data.isVariantB) {
-        page.variantBSignups = (page.variantBSignups || 0) + 1;
-      } else {
-        page.variantASignups = (page.variantASignups || 0) + 1;
-      }
-      if (page.views > 0) {
-        page.conversionRate = parseFloat(((page.signups / page.views) * 100).toFixed(1));
-      }
-      await page.save();
+    // Atomic increment — no read-modify-write race condition.
+    const signupInc = data.isVariantB
+      ? { signups: 1, variantBSignups: 1 }
+      : { signups: 1, variantASignups: 1 };
+
+    const updatedPage = await MagnetPageModel.findOneAndUpdate(
+      { id: data.pageId },
+      { $inc: signupInc },
+      { new: true, select: "signups views" }
+    );
+
+    if (updatedPage && updatedPage.views > 0) {
+      const newRate = parseFloat(((updatedPage.signups / updatedPage.views) * 100).toFixed(1));
+      await MagnetPageModel.updateOne({ id: data.pageId }, { $set: { conversionRate: newRate } });
     }
   }
 

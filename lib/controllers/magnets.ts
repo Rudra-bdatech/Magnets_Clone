@@ -113,15 +113,25 @@ export async function handleDeletePage(data: any, normEmail: string | null) {
 }
 
 export async function handleIncrementViews(data: any) {
-  const { pageId } = data;
-  const page = await MagnetPageModel.findOne({ id: pageId });
-  if (page) {
-    page.views = (page.views || 0) + 1;
-    if (page.views > 0) {
-      page.conversionRate = parseFloat(((page.signups / page.views) * 100).toFixed(1));
-    }
-    await page.save();
+  const { pageId, isVariantB } = data;
+
+  // Atomic increment — no read-modify-write race condition.
+  // $inc on views and the correct variant counter happen in a single DB operation.
+  // conversionRate is recalculated server-side from the post-increment values.
+  const variantInc = isVariantB ? { variantBViews: 1 } : { variantAViews: 1 };
+
+  const updated = await MagnetPageModel.findOneAndUpdate(
+    { id: pageId },
+    { $inc: { views: 1, ...variantInc } },
+    { new: true, select: "views signups" } // return updated doc for conversionRate
+  );
+
+  if (updated && updated.views > 0) {
+    const newRate = parseFloat(((updated.signups / updated.views) * 100).toFixed(1));
+    // Second atomic write only for conversionRate (non-critical, no race risk on a float)
+    await MagnetPageModel.updateOne({ id: pageId }, { $set: { conversionRate: newRate } });
   }
+
   return NextResponse.json({ success: true });
 }
 

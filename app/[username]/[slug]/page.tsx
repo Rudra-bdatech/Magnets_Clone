@@ -445,9 +445,9 @@ export default async function MagnetPageRoute({
                 )}
 
                 <div className="rounded-3xl overflow-hidden relative shadow-2xl aspect-[4/5] max-h-[380px] w-full border border-black/5 dark:border-white/5">
-                  {page.imageUrl && page.imageUrl.trim() !== "" ? (
+                  {activeImageUrl && activeImageUrl.trim() !== "" ? (
                     <img
-                      src={page.imageUrl}
+                      src={activeImageUrl}
                       alt={page.name || "Cover"}
                       className="w-full h-full object-cover"
                     />
