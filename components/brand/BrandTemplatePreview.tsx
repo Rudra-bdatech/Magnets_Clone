@@ -461,78 +461,83 @@ const BrandTemplatePreview = memo(function BrandTemplatePreview({
                 </div>
               )}
 
-              <div className="flex items-center gap-2 pt-1">
-                <div className="h-px flex-1" style={{ background: `linear-gradient(to right, ${hexWithAlpha(brandColor, 0.33)}, transparent)` }} />
-                <span className={`text-[8px] font-bold uppercase tracking-widest ${themeMode === "dark" ? "text-zinc-600" : "text-zinc-400"}`}>Secure Sign Up</span>
-                <div className="h-px flex-1" style={{ background: `linear-gradient(to left, ${hexWithAlpha(brandColor, 0.33)}, transparent)` }} />
-              </div>
-
-              <div className="space-y-2">
-                {latestPage?.formTitle && (
-                  <p className={`w-full text-center text-xs font-bold ${themeMode === "dark" ? "text-white" : "text-zinc-900"}`}>
-                    {latestPage.formTitle}
+              <div
+                className={`rounded-2xl border p-4 sm:p-5 text-left transition-all duration-300 backdrop-blur-md shadow-xl ${
+                  themeMode === "dark" ? "bg-[#14141A]/90 text-white" : "bg-white/90 text-zinc-900"
+                }`}
+                style={{
+                  borderColor: `${brandColor}33`,
+                  boxShadow: `0 10px 30px -4px ${brandColor}25`,
+                }}
+              >
+                <div className="space-y-1 text-center mb-3">
+                  <p className={`w-full text-center text-sm sm:text-base font-black ${themeMode === "dark" ? "text-white" : "text-zinc-900"}`}>
+                    {latestPage?.formTitle || "Get instant access"}
                   </p>
-                )}
-                <input
-                  type="text"
-                  placeholder={latestPage?.namePlaceholder || "Name *"}
-                  readOnly
-                  className="w-full rounded-xl border border-zinc-200 dark:border-[#252529] bg-white dark:bg-[#18181C] px-3.5 py-2.5 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 outline-none transition shadow-xs"
-                />
-                <input
-                  type="email"
-                  placeholder={latestPage?.emailPlaceholder || "Email *"}
-                  readOnly
-                  className="w-full rounded-xl border border-zinc-200 dark:border-[#252529] bg-white dark:bg-[#18181C] px-3.5 py-2.5 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 outline-none transition shadow-xs"
-                />
+                  <p className="text-[11px] text-[#9B9085] text-center leading-normal">
+                    {latestPage?.formSubtitle || "By opting in you consent to receive this resource by email."}
+                  </p>
+                </div>
 
-                {latestPage?.customFormFields && latestPage.customFormFields.length > 0 && (
-                  latestPage.customFormFields.map((field) => (
-                    <input
-                      key={field.id}
-                      type="text"
-                      placeholder={`${field.label}${field.required ? " *" : ""}`}
-                      readOnly
-                      className="w-full rounded-xl border border-zinc-200 dark:border-[#252529] bg-white dark:bg-[#18181C] px-3.5 py-2.5 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 outline-none transition shadow-xs"
-                    />
-                  ))
-                )}
+                <div className={latestPage?.customFormFields && latestPage.customFormFields.length > 0 ? "grid grid-cols-1 sm:grid-cols-2 gap-2.5" : "space-y-2.5"}>
+                  <input
+                    type="text"
+                    placeholder={latestPage?.namePlaceholder || "Name *"}
+                    readOnly
+                    className="min-h-10 h-10 w-full rounded-xl border border-zinc-200 dark:border-[#252529] bg-white dark:bg-[#18181C] px-3.5 py-2 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 outline-none transition shadow-xs"
+                  />
+                  <input
+                    type="email"
+                    placeholder={latestPage?.emailPlaceholder || "Email *"}
+                    readOnly
+                    className="min-h-10 h-10 w-full rounded-xl border border-zinc-200 dark:border-[#252529] bg-white dark:bg-[#18181C] px-3.5 py-2 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 outline-none transition shadow-xs"
+                  />
+
+                  {latestPage?.customFormFields && latestPage.customFormFields.length > 0 && (
+                    latestPage.customFormFields.map((field) => (
+                      <div key={field.id} className={field.type === "textarea" ? "col-span-1 sm:col-span-2" : ""}>
+                        <input
+                          type="text"
+                          placeholder={`${field.label}${field.required ? " *" : ""}`}
+                          readOnly
+                          className="min-h-10 h-10 w-full rounded-xl border border-zinc-200 dark:border-[#252529] bg-white dark:bg-[#18181C] px-3.5 py-2 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 outline-none transition shadow-xs"
+                        />
+                      </div>
+                    ))
+                  )}
+                </div>
 
                 <button
                   type="button"
-                  className="w-full rounded-xl py-3 text-xs font-black text-white tracking-wide transition-all duration-200 relative overflow-hidden"
+                  className="w-full rounded-xl py-3 text-xs font-black text-white tracking-wide transition-all duration-200 relative overflow-hidden mt-3"
                   style={{
                     background: `linear-gradient(135deg, ${brandColor} 0%, ${hexWithAlpha(brandColor, 0.8)} 100%)`,
                     boxShadow: `0 6px 26px -4px ${hexWithAlpha(brandColor, 0.5 + intensityRatio * 0.45)}`,
                   }}
                 >
-                  <span className="relative z-10">{latestPage?.formButtonText || latestPage?.cta || "Unlock Free Access →"}</span>
+                  <span className="relative z-10">{latestPage?.formButtonText || latestPage?.cta || "Get instant access"}</span>
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent pointer-events-none" />
                 </button>
-
-                <p className={`text-center text-[9px] ${themeMode === "dark" ? "text-zinc-600" : "text-zinc-400"}`}>
-                  {latestPage?.formSubtitle || "🔒 No spam · Instant delivery · Unsubscribe anytime"}
-                </p>
               </div>
             </div>
 
             {/* RIGHT: Orbital image portal */}
-            <div className="col-span-12 md:col-span-5 flex items-center justify-center relative overflow-hidden py-4" style={{ minHeight: "260px" }}>
+            <div className="col-span-12 md:col-span-5 flex items-center justify-center relative overflow-hidden py-4" style={{ minHeight: "320px" }}>
               <div
                 className="absolute rounded-full pointer-events-none"
                 style={{
-                  width: "280px",
-                  height: "280px",
+                  width: "360px",
+                  height: "360px",
                   background: `radial-gradient(circle, ${hexWithAlpha(brandColor, 0.12 + intensityRatio * 0.2)} 0%, transparent 70%)`,
-                  filter: "blur(24px)",
+                  filter: "blur(28px)",
                 }}
               />
-              <div className="absolute rounded-full border border-dashed pointer-events-none" style={{ width: "250px", height: "250px", borderColor: hexWithAlpha(brandColor, 0.15) }} />
+              <div className="absolute rounded-full border border-dashed pointer-events-none" style={{ width: "320px", height: "320px", borderColor: hexWithAlpha(brandColor, 0.15) }} />
               <div
                 className="absolute rounded-full pointer-events-none"
                 style={{
-                  width: "215px",
-                  height: "215px",
+                  width: "275px",
+                  height: "275px",
                   border: `1px solid ${hexWithAlpha(brandColor, 0.18 + intensityRatio * 0.3)}`,
                   boxShadow: `0 0 20px ${hexWithAlpha(brandColor, 0.1 + intensityRatio * 0.2)}`,
                 }}
@@ -540,8 +545,8 @@ const BrandTemplatePreview = memo(function BrandTemplatePreview({
               <div
                 className="absolute rounded-full pointer-events-none"
                 style={{
-                  width: "180px",
-                  height: "180px",
+                  width: "235px",
+                  height: "235px",
                   border: `2px solid ${hexWithAlpha(brandColor, 0.35 + intensityRatio * 0.5)}`,
                   boxShadow: `0 0 32px ${hexWithAlpha(brandColor, 0.2 + intensityRatio * 0.35)}, inset 0 0 16px ${hexWithAlpha(brandColor, 0.08 + intensityRatio * 0.15)}`,
                 }}
@@ -550,8 +555,8 @@ const BrandTemplatePreview = memo(function BrandTemplatePreview({
               <div
                 className="relative rounded-full overflow-hidden z-10"
                 style={{
-                  width: "155px",
-                  height: "155px",
+                  width: "205px",
+                  height: "205px",
                   border: `3px solid ${hexWithAlpha(brandColor, 0.5 + intensityRatio * 0.5)}`,
                   boxShadow: `0 0 40px -8px ${hexWithAlpha(brandColor, 0.45 + intensityRatio * 0.55)}`,
                 }}

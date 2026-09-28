@@ -547,7 +547,7 @@ export default async function MagnetPageRoute({
           <div className="w-full max-w-7xl mx-auto">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 items-center">
               {/* LEFT: Copy + Form */}
-              <div className="col-span-12 lg:col-span-7 flex flex-col justify-center space-y-4">
+              <div className="col-span-12 lg:col-span-6 flex flex-col justify-center space-y-4">
                 <div className="flex items-center gap-2">
                   <span className="h-1.5 w-1.5 rounded-full animate-pulse" style={{ backgroundColor: brandColor, boxShadow: `0 0 8px ${brandColor}` }} />
                   <span className={`text-[10px] font-black uppercase tracking-[0.22em] ${themeMode === "dark" ? "text-zinc-400" : "text-zinc-500"}`}>
@@ -612,17 +612,17 @@ export default async function MagnetPageRoute({
               </div>
 
               {/* RIGHT: Orbital image portal */}
-              <div className="col-span-12 lg:col-span-5 flex items-center justify-center relative py-4" style={{ minHeight: "300px" }}>
+              <div className="col-span-12 lg:col-span-6 flex items-center justify-center relative py-6 min-h-[380px] sm:min-h-[440px] lg:min-h-[500px]">
                 {/* Ambient glow */}
-                <div className="absolute rounded-full pointer-events-none" style={{ width: "300px", height: "300px", background: `radial-gradient(circle, ${brandColor}${Math.round((0.15 + (highlightIntensity / 100) * 0.25) * 255).toString(16).padStart(2, '0')} 0%, transparent 70%)`, filter: "blur(25px)" }} />
+                <div className="absolute rounded-full pointer-events-none" style={{ width: "min(92vw, 520px)", height: "min(92vw, 520px)", background: `radial-gradient(circle, ${brandColor}${Math.round((0.15 + (highlightIntensity / 100) * 0.25) * 255).toString(16).padStart(2, '0')} 0%, transparent 70%)`, filter: "blur(32px)" }} />
                 {/* Outer dashed ring */}
-                <div className="absolute rounded-full border border-dashed pointer-events-none" style={{ width: "270px", height: "270px", borderColor: `${brandColor}25` }} />
+                <div className="absolute rounded-full border border-dashed pointer-events-none" style={{ width: "min(84vw, 460px)", height: "min(84vw, 460px)", borderColor: `${brandColor}25` }} />
                 {/* Mid ring */}
-                <div className="absolute rounded-full pointer-events-none" style={{ width: "230px", height: "230px", border: `1px solid ${brandColor}${Math.round((0.18 + (highlightIntensity / 100) * 0.3) * 255).toString(16).padStart(2, '0')}`, boxShadow: `0 0 20px ${brandColor}22` }} />
+                <div className="absolute rounded-full pointer-events-none" style={{ width: "min(74vw, 400px)", height: "min(74vw, 400px)", border: `1px solid ${brandColor}${Math.round((0.18 + (highlightIntensity / 100) * 0.3) * 255).toString(16).padStart(2, '0')}`, boxShadow: `0 0 24px ${brandColor}22` }} />
                 {/* Inner neon halo */}
-                <div className="absolute rounded-full pointer-events-none" style={{ width: "190px", height: "190px", border: `2px solid ${brandColor}${Math.round((0.35 + (highlightIntensity / 100) * 0.5) * 255).toString(16).padStart(2, '0')}`, boxShadow: `0 0 32px ${brandColor}${Math.round((0.2 + (highlightIntensity / 100) * 0.35) * 255).toString(16).padStart(2, '0')}` }} />
+                <div className="absolute rounded-full pointer-events-none" style={{ width: "min(64vw, 350px)", height: "min(64vw, 350px)", border: `2px solid ${brandColor}${Math.round((0.35 + (highlightIntensity / 100) * 0.5) * 255).toString(16).padStart(2, '0')}`, boxShadow: `0 0 36px ${brandColor}${Math.round((0.2 + (highlightIntensity / 100) * 0.35) * 255).toString(16).padStart(2, '0')}` }} />
                 {/* Circular image */}
-                <div className="relative rounded-full overflow-hidden z-10" style={{ width: "165px", height: "165px", border: `3px solid ${brandColor}${Math.round((0.5 + (highlightIntensity / 100) * 0.5) * 255).toString(16).padStart(2, '0')}`, boxShadow: `0 0 45px -6px ${brandColor}${Math.round((0.45 + (highlightIntensity / 100) * 0.55) * 255).toString(16).padStart(2, '0')}` }}>
+                <div className="relative rounded-full overflow-hidden z-10" style={{ width: "min(56vw, 310px)", height: "min(56vw, 310px)", border: `3.5px solid ${brandColor}${Math.round((0.5 + (highlightIntensity / 100) * 0.5) * 255).toString(16).padStart(2, '0')}`, boxShadow: `0 0 45px -6px ${brandColor}${Math.round((0.45 + (highlightIntensity / 100) * 0.55) * 255).toString(16).padStart(2, '0')}` }}>
                   {activeImageUrl && activeImageUrl.trim() !== "" ? (
                     <img
                       src={activeImageUrl}

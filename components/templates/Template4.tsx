@@ -12,6 +12,7 @@ export default function Template4(props: TemplateProps) {
     bullets,
     bulletsTitle,
     formTitle,
+    formSubtitle,
     formButtonText,
     imageUrl,
     customFormFields = [],
@@ -28,6 +29,7 @@ export default function Template4(props: TemplateProps) {
     setPitch,
     setBulletsTitle,
     setFormTitle,
+    setFormSubtitle,
     setBullets,
     setImageUrl,
     setFormButtonText,
@@ -46,7 +48,7 @@ export default function Template4(props: TemplateProps) {
     <div className="w-full max-w-7xl mx-auto py-1">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 items-center">
         {/* LEFT: Copy + Form */}
-        <div className="col-span-12 lg:col-span-7 flex flex-col justify-center space-y-4">
+        <div className="col-span-12 lg:col-span-6 flex flex-col justify-center space-y-4">
           <div className="flex items-center gap-2">
             <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: brandColor }} />
             {isEditor ? (
@@ -143,102 +145,142 @@ export default function Template4(props: TemplateProps) {
             </button>
           )}
 
-          {isEditor ? (
-            <div className="space-y-2 pt-2">
-              {formTitle && (
+          <div
+            className={`rounded-2xl border p-5 sm:p-6 text-left transition-all duration-300 backdrop-blur-md shadow-xl ${
+              isDark ? "bg-[#14141A]/90 text-white" : "bg-white/90 text-zinc-900"
+            }`}
+            style={{
+              borderColor: `${brandColor}33`,
+              boxShadow: `0 10px 30px -4px ${brandColor}25`,
+            }}
+          >
+            {isEditor ? (
+              <div className="space-y-3">
+                <div className="space-y-1 text-center">
+                  <input
+                    type="text"
+                    value={formTitle || ""}
+                    onChange={(e) => setFormTitle?.(e.target.value)}
+                    className={`w-full text-center text-base sm:text-lg font-black bg-transparent outline-none placeholder:text-zinc-400 dark:placeholder:text-zinc-500 ${isDark ? "text-white" : "text-zinc-900"}`}
+                    placeholder="Get instant access"
+                  />
+                  <input
+                    type="text"
+                    value={formSubtitle || ""}
+                    onChange={(e) => setFormSubtitle?.(e.target.value)}
+                    className="w-full text-center text-xs text-[#9B9085] bg-transparent outline-none placeholder:text-zinc-500"
+                    placeholder="By opting in you consent to receive this resource by email."
+                  />
+                </div>
+
+                <div className={customFormFields && customFormFields.length > 0 ? "grid grid-cols-1 sm:grid-cols-2 gap-2.5" : "space-y-2.5"}>
+                  <input
+                    type="text"
+                    placeholder="Name *"
+                    readOnly
+                    className="min-h-10 h-10 w-full rounded-xl border border-zinc-200 dark:border-[#252529] bg-white dark:bg-[#18181C] px-3.5 py-2 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 outline-none transition shadow-xs"
+                  />
+                  <input
+                    type="email"
+                    placeholder="Email *"
+                    readOnly
+                    className="min-h-10 h-10 w-full rounded-xl border border-zinc-200 dark:border-[#252529] bg-white dark:bg-[#18181C] px-3.5 py-2 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 outline-none transition shadow-xs"
+                  />
+                  {customFormFields.map((field: any) => (
+                    <div key={field.id} className={field.type === "textarea" ? "col-span-1 sm:col-span-2" : ""}>
+                      <input
+                        type="text"
+                        placeholder={`${field.label || "New Field"}${field.required ? " *" : ""}`}
+                        readOnly
+                        className="min-h-10 h-10 w-full rounded-xl border border-zinc-200 dark:border-[#252529] bg-white dark:bg-[#18181C] px-3.5 py-2 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 outline-none transition shadow-xs"
+                      />
+                    </div>
+                  ))}
+                </div>
+
                 <input
                   type="text"
-                  value={formTitle || ""}
-                  onChange={(e) => setFormTitle?.(e.target.value)}
-                  className={`w-full text-center text-xs font-bold bg-transparent outline-none placeholder:text-zinc-400 dark:placeholder:text-zinc-500 ${isDark ? "text-white" : "text-zinc-900"}`}
-                  placeholder="Claim Your Copy"
+                  value={formButtonText || ""}
+                  onChange={(e) => setFormButtonText?.(e.target.value)}
+                  onFocus={(e) => {
+                    if (e.target.value === "Send it to me" || e.target.value === "Get instant access" || e.target.value === "Unlock Free Access →") {
+                      setFormButtonText?.("");
+                    } else {
+                      e.target.select();
+                    }
+                  }}
+                  onBlur={(e) => {
+                    if (!e.target.value.trim()) {
+                      setFormButtonText?.("Get instant access");
+                    }
+                  }}
+                  placeholder="Get instant access"
+                  className="w-full text-center rounded-xl py-3 px-4 text-xs font-black text-white cursor-text mt-2 outline-none border-2 border-transparent hover:border-white/40 focus:border-white transition duration-150"
+                  style={{ background: `linear-gradient(135deg, ${brandColor} 0%, ${brandColor}cc 100%)`, boxShadow: `0 6px 24px -4px ${brandColor}88` }}
                 />
-              )}
-              <input type="text" placeholder="Name *" readOnly className="w-full rounded-xl border border-zinc-200 dark:border-[#252529] bg-white dark:bg-[#18181C] px-3.5 py-2.5 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 outline-none transition shadow-xs" />
-              <input type="email" placeholder="Email *" readOnly className="w-full rounded-xl border border-zinc-200 dark:border-[#252529] bg-white dark:bg-[#18181C] px-3.5 py-2.5 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 outline-none transition shadow-xs" />
-              {customFormFields.map((field: any) => (
-                <input
-                  key={field.id}
-                  type="text"
-                  placeholder={`${field.label || "New Field"}${field.required ? " *" : ""}`}
-                  readOnly
-                  className="w-full rounded-xl border border-zinc-200 dark:border-[#252529] bg-white dark:bg-[#18181C] px-3.5 py-2.5 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 outline-none transition shadow-xs"
-                />
-              ))}
-              <input
-                type="text"
-                value={formButtonText || ""}
-                onChange={(e) => setFormButtonText?.(e.target.value)}
-                onFocus={(e) => {
-                  if (e.target.value === "Send it to me" || e.target.value === "Unlock Free Access →") {
-                    setFormButtonText?.("");
-                  } else {
-                    e.target.select();
-                  }
-                }}
-                onBlur={(e) => {
-                  if (!e.target.value.trim()) {
-                    setFormButtonText?.("Send it to me");
-                  }
-                }}
-                placeholder="Send it to me"
-                className="w-full text-center rounded-xl py-3 px-4 text-xs font-black text-white cursor-text mt-2 outline-none border-2 border-transparent hover:border-white/40 focus:border-white transition duration-150"
-                style={{ background: `linear-gradient(135deg, ${brandColor} 0%, ${brandColor}cc 100%)`, boxShadow: `0 6px 24px -4px ${brandColor}88` }}
-              />
-            </div>
-          ) : (
-            <form onSubmit={onSubmitPublicForm} className="space-y-2 pt-2">
-              {formTitle && (
-                <h3 className={`w-full text-center text-xs font-bold ${isDark ? "text-white" : "text-zinc-900"}`}>
-                  {formTitle}
-                </h3>
-              )}
-              <input
-                type="text"
-                required
-                placeholder="Name *"
-                value={publicFormValues.name || ""}
-                onChange={(e) => setPublicFormValues?.({ ...publicFormValues, name: e.target.value })}
-                className="w-full rounded-xl border border-zinc-200 dark:border-[#252529] bg-white dark:bg-[#18181C] px-3.5 py-2.5 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 outline-none transition shadow-xs"
-              />
-              <input
-                type="email"
-                required
-                placeholder="Email *"
-                value={publicFormValues.email || ""}
-                onChange={(e) => setPublicFormValues?.({ ...publicFormValues, email: e.target.value })}
-                className="w-full rounded-xl border border-zinc-200 dark:border-[#252529] bg-white dark:bg-[#18181C] px-3.5 py-2.5 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 outline-none transition shadow-xs"
-              />
-              {customFormFields.map((field: any) => (
-                <input
-                  key={field.id}
-                  type="text"
-                  required={field.required}
-                  placeholder={`${field.label}${field.required ? " *" : ""}`}
-                  value={publicFormValues[field.id] || ""}
-                  onChange={(e) => setPublicFormValues?.({ ...publicFormValues, [field.id]: e.target.value })}
-                  className="w-full rounded-xl border border-zinc-200 dark:border-[#252529] bg-white dark:bg-[#18181C] px-3.5 py-2.5 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 outline-none transition shadow-xs"
-                />
-              ))}
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="w-full text-center rounded-xl py-3 px-4 text-xs font-black text-white cursor-pointer mt-2 outline-none border-2 border-transparent hover:border-white/40 transition duration-150 disabled:opacity-50"
-                style={{ background: `linear-gradient(135deg, ${brandColor} 0%, ${brandColor}cc 100%)`, boxShadow: `0 6px 24px -4px ${brandColor}88` }}
-              >
-                {isSubmitting ? "Submitting..." : (formButtonText || "Send it to me")}
-              </button>
-            </form>
-          )}
+              </div>
+            ) : (
+              <form onSubmit={onSubmitPublicForm} className="space-y-3">
+                <div className="space-y-1 text-center">
+                  <h3 className={`w-full text-center text-base sm:text-lg font-black ${isDark ? "text-white" : "text-zinc-900"}`}>
+                    {formTitle || "Get instant access"}
+                  </h3>
+                  <p className="text-xs text-[#9B9085] text-center leading-normal">
+                    {formSubtitle || "By opting in you consent to receive this resource by email."}
+                  </p>
+                </div>
+
+                <div className={customFormFields && customFormFields.length > 0 ? "grid grid-cols-1 sm:grid-cols-2 gap-2.5" : "space-y-2.5"}>
+                  <input
+                    type="text"
+                    required
+                    placeholder="Name *"
+                    value={publicFormValues.name || ""}
+                    onChange={(e) => setPublicFormValues?.({ ...publicFormValues, name: e.target.value })}
+                    className="min-h-10 h-10 w-full rounded-xl border border-zinc-200 dark:border-[#252529] bg-white dark:bg-[#18181C] px-3.5 py-2 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 outline-none transition shadow-xs"
+                  />
+                  <input
+                    type="email"
+                    required
+                    placeholder="Email *"
+                    value={publicFormValues.email || ""}
+                    onChange={(e) => setPublicFormValues?.({ ...publicFormValues, email: e.target.value })}
+                    className="min-h-10 h-10 w-full rounded-xl border border-zinc-200 dark:border-[#252529] bg-white dark:bg-[#18181C] px-3.5 py-2 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 outline-none transition shadow-xs"
+                  />
+                  {customFormFields.map((field: any) => (
+                    <div key={field.id} className={field.type === "textarea" ? "col-span-1 sm:col-span-2" : ""}>
+                      <input
+                        type="text"
+                        required={field.required}
+                        placeholder={`${field.label}${field.required ? " *" : ""}`}
+                        value={publicFormValues[field.id] || ""}
+                        onChange={(e) => setPublicFormValues?.({ ...publicFormValues, [field.id]: e.target.value })}
+                        className="min-h-10 h-10 w-full rounded-xl border border-zinc-200 dark:border-[#252529] bg-white dark:bg-[#18181C] px-3.5 py-2 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 outline-none transition shadow-xs"
+                      />
+                    </div>
+                  ))}
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="w-full text-center rounded-xl py-3 px-4 text-xs font-black text-white cursor-pointer mt-2 outline-none border-2 border-transparent hover:border-white/40 transition duration-150 disabled:opacity-50"
+                  style={{ background: `linear-gradient(135deg, ${brandColor} 0%, ${brandColor}cc 100%)`, boxShadow: `0 6px 24px -4px ${brandColor}88` }}
+                >
+                  {isSubmitting ? "Submitting..." : (formButtonText || "Get instant access")}
+                </button>
+              </form>
+            )}
+          </div>
         </div>
 
         {/* RIGHT: Orbital image */}
-        <div className="col-span-12 lg:col-span-5 flex items-center justify-center relative py-4" style={{ minHeight: "300px" }}>
-          <div className="absolute rounded-full pointer-events-none" style={{ width: "380px", height: "380px", background: `radial-gradient(circle, ${brandColor}20 0%, transparent 70%)`, filter: "blur(28px)" }} />
-          <div className="absolute rounded-full border border-dashed pointer-events-none" style={{ width: "340px", height: "340px", borderColor: `${brandColor}25` }} />
-          <div className="absolute rounded-full pointer-events-none" style={{ width: "295px", height: "295px", border: `1px solid ${brandColor}33`, boxShadow: `0 0 20px ${brandColor}22` }} />
-          <div className="absolute rounded-full pointer-events-none" style={{ width: "260px", height: "260px", border: `2px solid ${brandColor}55`, boxShadow: `0 0 32px ${brandColor}33` }} />
-          <div className="relative rounded-full overflow-hidden z-10 group" style={{ width: "230px", height: "230px", border: `3px solid ${brandColor}88`, boxShadow: `0 0 40px -8px ${brandColor}88` }}>
+        <div className="col-span-12 lg:col-span-6 flex items-center justify-center relative py-6 min-h-[380px] sm:min-h-[440px] lg:min-h-[500px]">
+          <div className="absolute rounded-full pointer-events-none" style={{ width: "min(92vw, 520px)", height: "min(92vw, 520px)", background: `radial-gradient(circle, ${brandColor}22 0%, transparent 70%)`, filter: "blur(32px)" }} />
+          <div className="absolute rounded-full border border-dashed pointer-events-none" style={{ width: "min(84vw, 460px)", height: "min(84vw, 460px)", borderColor: `${brandColor}25` }} />
+          <div className="absolute rounded-full pointer-events-none" style={{ width: "min(74vw, 400px)", height: "min(74vw, 400px)", border: `1px solid ${brandColor}33`, boxShadow: `0 0 24px ${brandColor}22` }} />
+          <div className="absolute rounded-full pointer-events-none" style={{ width: "min(64vw, 350px)", height: "min(64vw, 350px)", border: `2px solid ${brandColor}55`, boxShadow: `0 0 36px ${brandColor}33` }} />
+          <div className="relative rounded-full overflow-hidden z-10 group" style={{ width: "min(56vw, 310px)", height: "min(56vw, 310px)", border: `3.5px solid ${brandColor}88`, boxShadow: `0 0 45px -6px ${brandColor}88` }}>
             {/* Upload Progress Overlay for Orbit circle */}
             {uploadProgress !== null && uploadProgress !== undefined && (
               <div className="absolute inset-0 z-40 flex flex-col items-center justify-center p-4 bg-black/90 backdrop-blur-md text-white">
