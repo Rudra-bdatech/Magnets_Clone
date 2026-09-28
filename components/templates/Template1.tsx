@@ -47,9 +47,9 @@ export default function Template1(props: TemplateProps) {
 
   const getHeadlineFontSize = (text: string) => {
     const len = text ? text.length : 0;
-    if (len > 60) return "text-base sm:text-lg md:text-xl font-bold";
-    if (len > 35) return "text-lg sm:text-xl md:text-2xl font-extrabold";
-    return "text-xl sm:text-2xl md:text-3xl font-black";
+    if (len > 85) return "text-xl sm:text-2xl md:text-3xl font-extrabold";
+    if (len > 40) return "text-2xl sm:text-3xl md:text-4xl font-black";
+    return "text-3xl sm:text-4xl md:text-5xl font-black";
   };
 
   const handleBulletChange = (index: number, value: string) => {
