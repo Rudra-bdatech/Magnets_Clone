@@ -844,156 +844,109 @@ const BrandTemplatePreview = memo(function BrandTemplatePreview({
               </div>
             </div>
 
-            {/* RIGHT: Glassmorphic form panel */}
+            {/* RIGHT: Form and details */}
             <div className="col-span-12 md:col-span-6 flex flex-col justify-center space-y-3">
-              <div className="space-y-1">
+              {/* Eyebrow & Bullets */}
+              <div className="space-y-1.5">
                 <p className="text-[9px] font-black uppercase tracking-[0.2em]" style={{ color: brandColor }}>
                   {latestPage?.bulletsTitle || "Exclusive · Free Access"}
                 </p>
-                <h4 className={`text-sm font-black leading-tight ${themeMode === "dark" ? "text-white" : "text-zinc-900"}`}>
-                  {latestPage?.formTitle || "Claim Your Free Copy"}
-                </h4>
-                <p className={`text-[10px] leading-relaxed ${themeMode === "dark" ? "text-zinc-400" : "text-zinc-500"}`}>
-                  {latestPage?.formSubtitle || "Instant delivery. No card needed."}
-                </p>
-              </div>
 
-              {latestPage?.bullets && latestPage.bullets.length > 0 && (
-                <div className="space-y-1.5">
-                  {latestPage.bullets.slice(0, 3).map((item, idx) => (
-                    <div key={idx} className="flex items-start gap-2">
-                      <div
-                        className="flex h-3.5 w-3.5 shrink-0 mt-0.5 items-center justify-center rounded-full"
-                        style={{ backgroundColor: hexWithAlpha(brandColor, 0.13), border: `1px solid ${hexWithAlpha(brandColor, 0.33)}` }}
-                      >
-                        <svg width="6" height="6" viewBox="0 0 6 6" fill="none">
-                          <path d="M1 3l1.5 1.5L5 1.5" stroke={brandColor} strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
-                        </svg>
+                {latestPage?.bullets && latestPage.bullets.length > 0 && (
+                  <div className="space-y-1.5">
+                    {latestPage.bullets.slice(0, 3).map((item, idx) => (
+                      <div key={idx} className="flex items-start gap-2">
+                        <div
+                          className="flex h-3.5 w-3.5 shrink-0 mt-0.5 items-center justify-center rounded-full"
+                          style={{ backgroundColor: hexWithAlpha(brandColor, 0.13), border: `1px solid ${hexWithAlpha(brandColor, 0.33)}` }}
+                        >
+                          <svg width="6" height="6" viewBox="0 0 6 6" fill="none">
+                            <path d="M1 3l1.5 1.5L5 1.5" stroke={brandColor} strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
+                          </svg>
+                        </div>
+                        <span className={`text-[10px] leading-relaxed ${themeMode === "dark" ? "text-zinc-300" : "text-zinc-600"}`}>
+                          {item}
+                        </span>
                       </div>
-                      <span className={`text-[10px] leading-relaxed ${themeMode === "dark" ? "text-zinc-300" : "text-zinc-600"}`}>
-                        {item}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              <div className="flex items-center gap-2">
-                <div className="h-px flex-1" style={{ background: `linear-gradient(to right, ${hexWithAlpha(brandColor, 0.27)}, transparent)` }} />
-                <span className={`text-[8px] font-bold uppercase tracking-widest ${themeMode === "dark" ? "text-zinc-600" : "text-zinc-400"}`}>Sign Up Free</span>
-                <div className="h-px flex-1" style={{ background: `linear-gradient(to left, ${hexWithAlpha(brandColor, 0.27)}, transparent)` }} />
-              </div>
-
-              <div className="space-y-2">
-                <div
-                  className="flex items-center gap-2 rounded-xl px-3 py-2.5"
-                  style={{
-                    background: themeMode === "dark" ? "rgba(255,255,255,0.05)" : "#f4f5f8",
-                    border: `1px solid ${themeMode === "dark" ? hexWithAlpha(brandColor, 0.13) : hexWithAlpha(brandColor, 0.13)}`,
-                  }}
-                >
-                  <svg width="10" height="10" viewBox="0 0 12 12" fill="none" className="shrink-0">
-                    <circle cx="6" cy="4" r="2.5" stroke={brandColor} strokeWidth="1.4" />
-                    <path d="M1.5 10.5C1.5 8.567 3.567 7 6 7s4.5 1.567 4.5 3.5" stroke={brandColor} strokeWidth="1.4" strokeLinecap="round" />
-                  </svg>
-                  <input
-                    type="text"
-                    placeholder={latestPage?.namePlaceholder || "Full name"}
-                    readOnly
-                    className={`w-full bg-transparent text-[11px] outline-none pointer-events-none select-none ${themeMode === "dark" ? "text-white placeholder:text-zinc-600" : "text-zinc-800 placeholder:text-zinc-400"}`}
-                  />
-                </div>
-
-                <div
-                  className="flex items-center gap-2 rounded-xl px-3 py-2.5"
-                  style={{
-                    background: themeMode === "dark" ? "rgba(255,255,255,0.05)" : "#f4f5f8",
-                    border: `1px solid ${themeMode === "dark" ? hexWithAlpha(brandColor, 0.13) : hexWithAlpha(brandColor, 0.13)}`,
-                  }}
-                >
-                  <svg width="10" height="10" viewBox="0 0 12 12" fill="none" className="shrink-0">
-                    <rect x="1" y="2.5" width="10" height="7" rx="1.5" stroke={brandColor} strokeWidth="1.4" />
-                    <path d="M1 4l5 3.5L11 4" stroke={brandColor} strokeWidth="1.4" strokeLinecap="round" />
-                  </svg>
-                  <input
-                    type="email"
-                    placeholder={latestPage?.emailPlaceholder || "Email address"}
-                    readOnly
-                    className={`w-full bg-transparent text-[11px] outline-none pointer-events-none select-none ${themeMode === "dark" ? "text-white placeholder:text-zinc-600" : "text-zinc-800 placeholder:text-zinc-400"}`}
-                  />
-                </div>
-
-                {latestPage?.customFormFields && latestPage.customFormFields.length > 0 && (
-                  latestPage.customFormFields.map((field) => (
-                    <div
-                      key={field.id}
-                      className="flex items-center gap-2 rounded-xl px-3 py-2.5"
-                      style={{
-                        background: themeMode === "dark" ? "rgba(255,255,255,0.05)" : "#f4f5f8",
-                        border: `1px solid ${themeMode === "dark" ? hexWithAlpha(brandColor, 0.13) : hexWithAlpha(brandColor, 0.13)}`,
-                      }}
-                    >
-                      {field.type === "select" ? (
-                        <select disabled className={`w-full bg-transparent text-[11px] outline-none appearance-none ${themeMode === "dark" ? "text-white" : "text-zinc-800"}`}>
-                          <option>{field.placeholder || field.label}</option>
-                          {field.options?.map((opt: string, i: number) => <option key={i}>{opt}</option>)}
-                        </select>
-                      ) : field.type === "textarea" ? (
-                        <textarea
-                          placeholder={field.placeholder || field.label}
-                          rows={2}
-                          readOnly
-                          className={`w-full bg-transparent text-[11px] outline-none resize-none ${themeMode === "dark" ? "text-white placeholder:text-zinc-600" : "text-zinc-800 placeholder:text-zinc-400"}`}
-                        />
-                      ) : (
-                        <input
-                          type={field.type === "number" ? "number" : "text"}
-                          placeholder={field.placeholder || field.label}
-                          readOnly
-                          className={`w-full bg-transparent text-[11px] outline-none pointer-events-none ${themeMode === "dark" ? "text-white placeholder:text-zinc-600" : "text-zinc-800 placeholder:text-zinc-400"}`}
-                        />
-                      )}
-                    </div>
-                  ))
+                    ))}
+                  </div>
                 )}
-
-                <button
-                  type="button"
-                  className="w-full rounded-xl py-3 text-xs font-black text-white relative overflow-hidden transition-all duration-200"
-                  style={{
-                    background: `linear-gradient(135deg, ${brandColor} 0%, ${hexWithAlpha(brandColor, 0.73)} 100%)`,
-                    boxShadow: `0 0 24px -4px ${hexWithAlpha(brandColor, 0.55 + intensityRatio * 0.45)}, 0 4px 12px rgba(0,0,0,0.2)`,
-                  }}
-                >
-                  <span className="relative z-10 flex items-center justify-center gap-2 tracking-wide">
-                    <span>{latestPage?.formButtonText || latestPage?.cta || "Unlock Free Access"}</span>
-                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                      <path d="M2 7h10M8 3l4 4-4 4" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                  </span>
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/15 to-transparent -translate-x-full animate-[shimmer_2.5s_infinite] pointer-events-none" />
-                </button>
               </div>
 
-              <div className="flex items-center gap-2 pt-1">
-                <div className="flex -space-x-2">
-                  {["#e879f9", "#38bdf8", "#4ade80", "#fb923c"].map((color, i) => (
-                    <div
-                      key={i}
-                      className="h-5 w-5 rounded-full border-2 flex items-center justify-center text-[7px] font-black text-white"
-                      style={{
-                        backgroundColor: i === 0 ? brandColor : color,
-                        borderColor: themeMode === "dark" ? "#0b0b10" : "#ffffff",
-                      }}
-                    >
-                      {["A", "B", "C", "D"][i]}
-                    </div>
-                  ))}
-                </div>
-                <p className={`text-[9px] font-semibold ${themeMode === "dark" ? "text-zinc-500" : "text-zinc-400"}`}>
-                  Join <span style={{ color: brandColor }} className="font-black">12,000+</span> creators already inside
+              {/* Enclosed Opt-in Form Card */}
+              <div
+                className={`rounded-2xl border p-4 sm:p-5 text-left transition-all duration-300 backdrop-blur-sm shadow-xl ${
+                  themeMode === "dark" ? "text-white" : "text-zinc-900"
+                }`}
+                style={{
+                  borderColor: hexWithAlpha(brandColor, 0.15 + (intensityRatio) * 0.55),
+                  boxShadow: intensityRatio > 0.2 ? `0 10px 30px -4px ${hexWithAlpha(brandColor, 0.35 * intensityRatio)}` : "0 2px 8px rgba(0,0,0,0.05)",
+                  background: themeMode === "light"
+                    ? `linear-gradient(135deg, ${hexWithAlpha(brandColor, 0.05 + intensityRatio * 0.25)} 0%, rgba(255, 255, 255, 0.95) 60%)`
+                    : `linear-gradient(135deg, ${hexWithAlpha(brandColor, 0.08 + intensityRatio * 0.3)} 0%, rgba(22, 22, 25, 0.95) 60%)`
+                }}
+              >
+                <p className="text-base sm:text-lg font-black text-center tracking-tight">
+                  {latestPage?.formTitle || "Get instant access"}
                 </p>
+                <p className="text-[10px] sm:text-xs text-[#9B9085] text-center mt-1 leading-normal">
+                  {latestPage?.formSubtitle || "By opting in you consent to receive this resource by email."}
+                </p>
+
+                <div className="mt-3 flex flex-col gap-2.5">
+                  <div className={latestPage?.customFormFields && latestPage.customFormFields.length > 0 ? "grid grid-cols-1 sm:grid-cols-2 gap-2" : "grid grid-cols-1 sm:grid-cols-2 gap-2"}>
+                    <input
+                      type="text"
+                      placeholder="Name"
+                      readOnly
+                      className={`min-h-9 h-9 w-full rounded-xl border px-3 py-2 text-xs outline-none transition shadow-xs pointer-events-none ${
+                        themeMode === "dark" ? "bg-black/40 border-white/15 text-white placeholder:text-zinc-400" : "bg-white/90 border-black/15 text-zinc-900 placeholder:text-zinc-400"
+                      }`}
+                    />
+                    <input
+                      type="email"
+                      placeholder="Email"
+                      readOnly
+                      className={`min-h-9 h-9 w-full rounded-xl border px-3 py-2 text-xs outline-none transition shadow-xs pointer-events-none ${
+                        themeMode === "dark" ? "bg-black/40 border-white/15 text-white placeholder:text-zinc-400" : "bg-white/90 border-black/15 text-zinc-900 placeholder:text-zinc-400"
+                      }`}
+                    />
+                    {latestPage?.customFormFields && latestPage.customFormFields.length > 0 && (
+                      latestPage.customFormFields.map((field: any) => (
+                        <div
+                          key={field.id}
+                          className={field.type === "textarea" ? "col-span-1 sm:col-span-2" : ""}
+                        >
+                          <input
+                            type="text"
+                            placeholder={`${field.label || field.placeholder || "Field"}${field.required ? " *" : ""}`}
+                            readOnly
+                            className={`min-h-9 h-9 w-full rounded-xl border px-3 py-2 text-xs outline-none transition shadow-xs pointer-events-none ${
+                              themeMode === "dark" ? "bg-black/40 border-white/15 text-white placeholder:text-zinc-400" : "bg-white/90 border-black/15 text-zinc-900 placeholder:text-zinc-400"
+                            }`}
+                          />
+                        </div>
+                      ))
+                    )}
+                  </div>
+
+                  <button
+                    type="button"
+                    className="w-full min-h-9 h-9 inline-flex items-center justify-center rounded-xl px-3 py-2 text-xs font-black text-white shadow-md cursor-pointer"
+                    style={{ backgroundColor: brandColor }}
+                  >
+                    {latestPage?.formButtonText || latestPage?.cta || "Get instant access"}
+                  </button>
+                </div>
               </div>
+
+              {/* Deliverable Badge */}
+              {latestPage?.deliverable && (
+                <p className={`flex items-center justify-center gap-1.5 text-[10px] font-medium ${themeMode === "dark" ? "text-zinc-400" : "text-zinc-600"}`}>
+                  <span>🎁</span>
+                  <span>{latestPage.deliverable}</span>
+                </p>
+              )}
             </div>
           </div>
         </div>

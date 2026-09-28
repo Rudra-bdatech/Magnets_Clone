@@ -791,20 +791,12 @@ export default async function MagnetPageRoute({
 
               {/* RIGHT: Form and details */}
               <div className="col-span-12 lg:col-span-5 flex flex-col justify-center space-y-4 w-full">
-                {/* Eyebrow & header */}
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2">
-                    <span className="h-1.5 w-1.5 rounded-full animate-pulse" style={{ backgroundColor: brandColor, boxShadow: `0 0 8px ${brandColor}` }} />
-                    <span className="text-[10px] font-black uppercase tracking-[0.2em]" style={{ color: brandColor }}>
-                      {page.bulletsTitle || "Exclusive · Free Access"}
-                    </span>
-                  </div>
-                  {page.formTitle && (
-                    <h3 className={`text-xl sm:text-2xl font-black leading-tight ${themeMode === "dark" ? "text-white" : "text-zinc-900"}`}>{page.formTitle}</h3>
-                  )}
-                  {page.formSubtitle && (
-                    <p className={`text-xs sm:text-sm leading-relaxed ${themeMode === "dark" ? "text-zinc-400" : "text-zinc-500"}`}>{page.formSubtitle}</p>
-                  )}
+                {/* Eyebrow */}
+                <div className="flex items-center gap-2">
+                  <span className="h-1.5 w-1.5 rounded-full animate-pulse" style={{ backgroundColor: brandColor, boxShadow: `0 0 8px ${brandColor}` }} />
+                  <span className="text-[10px] font-black uppercase tracking-[0.2em]" style={{ color: brandColor }}>
+                    {page.bulletsTitle || "Exclusive · Free Access"}
+                  </span>
                 </div>
 
                 {/* Bullet list */}
@@ -826,12 +818,12 @@ export default async function MagnetPageRoute({
                   </div>
                 )}
 
-                {/* Form */}
+                {/* Form Card */}
                 <div className="pt-1 w-full">
                   <MagnetSignupForm
                     cta={page.cta}
-                    formTitle=""
-                    formSubtitle=""
+                    formTitle={page.formTitle}
+                    formSubtitle={page.formSubtitle}
                     formButtonText={page.formButtonText}
                     deliverable={page.deliverable}
                     accent={page.accent}
