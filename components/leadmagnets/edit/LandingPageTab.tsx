@@ -142,15 +142,15 @@ export default function LandingPageTab({
         >
           {/* Brand Name Header */}
           <div className="mb-6 flex items-center justify-center">
-            <div className="flex items-center gap-2.5">
-              <div className={`h-9 w-9 rounded-lg flex items-center justify-center bg-transparent overflow-hidden ${account?.logo || account?.avatar_url || account?.avatar ? "border-none" : "border border-dashed border-[#a1a1aa]/45"}`}>
+            <div className="flex items-center gap-2.5 sm:gap-3">
+              <div className={`h-10 w-10 rounded-xl flex items-center justify-center bg-transparent overflow-hidden shadow-xs ${account?.logo || account?.avatar_url || account?.avatar ? "border-none" : "border-2 border-dashed border-[#a1a1aa]/50"}`}>
                 {account?.logo || account?.avatar_url || account?.avatar ? (
                   <img src={account?.logo || account?.avatar_url || account?.avatar || ""} alt="Logo" className="h-full w-full object-cover" />
                 ) : (
-                  <div className="h-4 w-4 rounded-sm border border-dashed border-[#a1a1aa]" />
+                  <div className="h-4 w-4 rounded-md border-2 border-dashed border-[#a1a1aa]" />
                 )}
               </div>
-              <span className={`text-sm font-bold tracking-wider uppercase ${(account?.themeMode || "light") === "dark" ? "text-white" : "text-zinc-900"}`}>
+              <span className={`text-base sm:text-lg font-black tracking-wider uppercase ${(account?.themeMode || "light") === "dark" ? "text-white" : "text-zinc-900"}`}>
                 {account?.name || "BDA"}
               </span>
             </div>

@@ -80,7 +80,7 @@ export default function Template1(props: TemplateProps) {
 
 
   return (
-    <div className={`w-full max-w-7xl mx-auto py-1 relative ${isDark ? "text-white" : "text-zinc-900"}`}>
+    <div className={`w-full mx-auto py-1 relative ${isDark ? "text-white" : "text-zinc-900"}`}>
       {/* Upload progress overlay */}
       {uploadProgress !== null && uploadProgress !== undefined && (
         <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-black/85 backdrop-blur-md p-6 text-center text-white rounded-2xl">

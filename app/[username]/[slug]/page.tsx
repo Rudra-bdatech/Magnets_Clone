@@ -277,7 +277,7 @@ export default async function MagnetPageRoute({
 
   return (
     <main
-      className="flex min-h-screen flex-col font-sans transition-colors duration-300 relative"
+      className="flex min-h-screen lg:h-screen lg:max-h-screen lg:overflow-hidden flex-col font-sans transition-colors duration-300 relative justify-between"
       style={{
         colorScheme: themeMode === "dark" ? "dark" : "light",
         backgroundColor: themeMode === "dark" ? "#0E0E10" : "#FAFAFA",
@@ -301,30 +301,30 @@ export default async function MagnetPageRoute({
       />
       {/* Draft Preview Mode Top Banner for Logged-In Owner */}
       {isDraftMode && isOwner && (
-        <div className="sticky top-0 z-50 flex items-center justify-center gap-2 bg-amber-500 text-black px-4 py-1.5 text-xs font-bold shadow-md border-b border-amber-600 shrink-0">
+        <div className="sticky top-0 z-50 flex items-center justify-center gap-2 bg-amber-500 text-black px-4 py-1 text-xs font-bold shadow-md border-b border-amber-600 shrink-0">
           <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
           </svg>
           <span>⚠️ Draft Preview Mode — This magnet is not yet published. Only you can view this page.</span>
         </div>
       )}
-      <header className="w-full max-w-7xl mx-auto flex h-12 sm:h-14 items-center justify-center px-6 sm:px-10 relative shrink-0">
-        <div className="flex items-center gap-2">
-          <div className={`h-7 w-7 sm:h-8 sm:w-8 rounded-lg flex items-center justify-center bg-transparent overflow-hidden ${logo ? "border-none" : "border border-dashed border-[#a1a1aa]/45"}`}>
+      <header className="w-full flex h-12 sm:h-14 items-center justify-center px-6 sm:px-10 relative shrink-0">
+        <div className="flex items-center gap-2.5 sm:gap-3">
+          <div className={`h-8 w-8 sm:h-9 sm:w-9 md:h-10 md:w-10 rounded-xl flex items-center justify-center bg-transparent overflow-hidden shadow-xs ${logo ? "border-none" : "border-2 border-dashed border-[#a1a1aa]/50"}`}>
             {logo ? (
               <img src={logo} alt="Logo" className="h-full w-full object-cover" />
             ) : (
-              <div className="h-3.5 w-3.5 rounded-sm border border-dashed border-[#a1a1aa]" />
+              <div className="h-4 w-4 rounded-md border-2 border-dashed border-[#a1a1aa]" />
             )}
           </div>
-          <span className={`text-xs sm:text-sm font-bold tracking-wider uppercase ${themeMode === "dark" ? "text-white" : "text-zinc-900"}`}>
+          <span className={`text-sm sm:text-base md:text-lg font-black tracking-wider uppercase ${themeMode === "dark" ? "text-white" : "text-zinc-900"}`}>
             {businessName}
           </span>
         </div>
       </header>
 
       {/* Main full-screen content area filling the screen properly with optimized vertical fit */}
-      <div className="flex-1 w-full flex flex-col justify-center px-4 sm:px-8 lg:px-12 py-1 md:py-2">
+      <div className="flex-1 w-full flex flex-col justify-center px-4 sm:px-6 md:px-8 lg:px-10 xl:px-14 py-1 md:py-2">
         {/* Dynamic Multi-Template View Renderer */}
         {((page.template as string) === "template2" || (!page.template && (accountDoc?.templateId as string) === "template2")) ? (
           /* TEMPLATE 2: Lead Capture Split Panel Layout (Full Screen / No Outer Card) */
@@ -864,29 +864,29 @@ export default async function MagnetPageRoute({
           </div>
         ) : (
           /* TEMPLATE 1 / Default: Modern Full-Width Split Layout */
-          <div className="w-full max-w-7xl mx-auto py-1">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-12 items-center">
+          <div className="w-full h-full flex flex-col justify-center py-0">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 xl:gap-14 items-center w-full">
               {/* Left Content Column */}
-              <div className="lg:col-span-7 space-y-3.5 sm:space-y-4">
-                <span className={`inline-flex items-center gap-2 rounded-full border px-3 py-0.5 text-[11px] font-semibold shadow-xs ${themeMode === "dark"
+              <div className="lg:col-span-7 space-y-3 lg:space-y-4 xl:space-y-5 lg:pr-2 xl:pr-6">
+                <span className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-semibold shadow-xs ${themeMode === "dark"
                   ? "border-[#252529] bg-[#161619] text-zinc-300"
                   : "border-zinc-200 bg-zinc-50 text-zinc-700"
                   }`}>
                   <SparklesIcon className="h-3.5 w-3.5 text-brand-orange" />
                   Free resource
                 </span>
-                <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-[3rem] font-black leading-[1.08] tracking-tight">
+                <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-[2.6rem] xl:text-[3.2rem] 2xl:text-[3.6rem] font-black leading-[1.08] tracking-tight">
                   {activeHeadline}
                 </h1>
                 {page.subheadline && (
-                  <p className={`text-sm sm:text-base md:text-lg font-medium leading-relaxed line-clamp-2 ${themeMode === "dark" ? "text-zinc-300" : "text-zinc-700"
+                  <p className={`text-sm sm:text-base md:text-lg xl:text-xl font-medium leading-relaxed ${themeMode === "dark" ? "text-zinc-300" : "text-zinc-700"
                     }`}>
                     {page.subheadline}
                   </p>
                 )}
 
                 {page.pitch && (
-                  <p className={`text-xs sm:text-sm leading-relaxed line-clamp-2 ${themeMode === "dark" ? "text-zinc-400" : "text-zinc-500"
+                  <p className={`text-xs sm:text-sm md:text-base leading-relaxed ${themeMode === "dark" ? "text-zinc-400" : "text-zinc-500"
                     }`}>
                     {page.pitch}
                   </p>
@@ -894,18 +894,18 @@ export default async function MagnetPageRoute({
 
                 {page.bullets && page.bullets.length > 0 && (
                   <div className="space-y-2 pt-2 border-t border-black/10 dark:border-white/10">
-                    <p className="text-[10px] font-bold uppercase tracking-wider text-[#9B9085]">
+                    <p className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-[#9B9085]">
                       {page.bulletsTitle || "What you will learn"}
                     </p>
                     <ul className="space-y-2">
                       {page.bullets.slice(0, 3).map((line, idx) => (
-                        <li key={idx} className="flex items-start gap-2.5 text-xs sm:text-sm">
+                        <li key={idx} className="flex items-start gap-3 text-xs sm:text-sm md:text-base">
                           <span
-                            className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full mt-0.5 shadow-xs transition-all duration-300"
+                            className="flex h-4.5 w-4.5 shrink-0 items-center justify-center rounded-full mt-0.5 shadow-xs transition-all duration-300"
                             style={{
                               backgroundColor: brandColor,
-                              opacity: 0.5 + (highlightIntensity / 100) * 0.5,
-                              boxShadow: highlightIntensity > 30 ? `0 0 ${Math.round(10 * (highlightIntensity / 100))}px ${brandColor}${Math.round((highlightIntensity / 100) * 0.7 * 255).toString(16).padStart(2, '0')}` : 'none'
+                              opacity: 0.9,
+                              boxShadow: highlightIntensity > 30 ? `0 0 ${Math.round(8 * (highlightIntensity / 100))}px ${brandColor}${Math.round((highlightIntensity / 100) * 0.7 * 255).toString(16).padStart(2, '0')}` : 'none'
                             }}
                           >
                             <CheckIcon className="h-2.5 w-2.5 text-white stroke-[3px]" />
@@ -921,11 +921,11 @@ export default async function MagnetPageRoute({
               </div>
 
               {/* Right Media Preview & Form Column */}
-              <div className="lg:col-span-5 space-y-3.5">
+              <div className="lg:col-span-5 space-y-3 xl:space-y-4 w-full">
                 {/* Media Preview (Crisp proportion) */}
                 {activeImageUrl ? (
                   <div
-                    className="rounded-2xl border aspect-[16/8] max-h-[175px] w-full flex items-center justify-center transition-all duration-300 relative overflow-hidden shadow-xl"
+                    className="rounded-2xl border aspect-[16/7.5] max-h-[160px] lg:max-h-[180px] xl:max-h-[210px] w-full flex items-center justify-center transition-all duration-300 relative overflow-hidden shadow-xl"
                     style={{
                       borderColor: `${brandColor}${Math.round((0.18 + (highlightIntensity / 100) * 0.5) * 255).toString(16).padStart(2, '0')}`,
                     }}
@@ -960,9 +960,9 @@ export default async function MagnetPageRoute({
                     destinationUrl={page.destinationUrl}
                   />
                   {page.deliverable && (
-                    <p className={`mt-2 flex items-center justify-center gap-1.5 text-[11px] font-medium ${themeMode === "dark" ? "text-zinc-400" : "text-zinc-600"
+                    <p className={`mt-1.5 flex items-center justify-center gap-1.5 text-[11px] sm:text-xs font-medium ${themeMode === "dark" ? "text-zinc-400" : "text-zinc-600"
                       }`}>
-                      <GiftIcon className="h-3 w-3" />
+                      <GiftIcon className="h-3.5 w-3.5" />
                       {page.deliverable}
                     </p>
                   )}
@@ -973,9 +973,9 @@ export default async function MagnetPageRoute({
         )}
       </div>
 
-      <footer className="w-full max-w-7xl mx-auto py-2 text-center text-[11px] text-[#5c5650] shrink-0">
+      <footer className="w-full py-1.5 sm:py-2 text-center text-[10px] sm:text-[11px] text-[#5c5650] shrink-0">
         <a href="/" className="inline-flex items-center gap-1 font-medium hover:text-[#FE6F34] transition">
-          Powered by LeadMagnets <MoveRightIcon className="h-2.5 w-2.5" />
+          Powered by LeadMagnets <MoveRightIcon className="h-2 w-2" />
         </a>
       </footer>
     </main>
