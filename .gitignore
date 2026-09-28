@@ -44,3 +44,7 @@ next-env.d.ts
 scratch/
 scratch_*
 *.mjs
+
+# AI agent configuration and skills
+.agents/
+.claude/
