@@ -88,7 +88,7 @@ export async function handleAddPage(data: any, normEmail: string | null) {
 export async function handleDeletePage(data: any, normEmail: string | null) {
   const { id } = data;
   const filter = normEmail
-    ? { id, userEmail: { $regex: new RegExp(`^${normEmail}$`, "i") } }
+    ? { id, userEmail: normEmail } // exact match — normEmail is always lowercase (route.ts L141), userEmail in DB is always lowercase (Mongoose schema lowercase:true). Index can now be used.
     : { id };
 
   const targetPage = (await MagnetPageModel.findOne(filter).lean()) as unknown as MagnetPage | null;
