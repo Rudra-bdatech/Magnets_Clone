@@ -43,10 +43,12 @@ export default function Template4(props: TemplateProps) {
   const brandColor = account?.brandColor || "#0066B2";
   const themeMode = account?.themeMode || "light";
   const isDark = themeMode === "dark";
+  const logo = account?.logo || null;
+  const businessName = account?.brandName || account?.name || "";
 
   return (
     <div className="w-full max-w-7xl mx-auto py-1">
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 items-center">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 items-center lg:items-stretch">
         {/* LEFT: Copy + Form */}
         <div className="col-span-12 lg:col-span-6 flex flex-col justify-center space-y-4">
           <div className="flex items-center gap-2">
@@ -275,12 +277,29 @@ export default function Template4(props: TemplateProps) {
         </div>
 
         {/* RIGHT: Orbital image */}
-        <div className="col-span-12 lg:col-span-6 flex items-center justify-center relative py-6 min-h-[380px] sm:min-h-[440px] lg:min-h-[500px]">
-          <div className="absolute rounded-full pointer-events-none" style={{ width: "min(92vw, 520px)", height: "min(92vw, 520px)", background: `radial-gradient(circle, ${brandColor}22 0%, transparent 70%)`, filter: "blur(32px)" }} />
-          <div className="absolute rounded-full border border-dashed pointer-events-none" style={{ width: "min(84vw, 460px)", height: "min(84vw, 460px)", borderColor: `${brandColor}25` }} />
-          <div className="absolute rounded-full pointer-events-none" style={{ width: "min(74vw, 400px)", height: "min(74vw, 400px)", border: `1px solid ${brandColor}33`, boxShadow: `0 0 24px ${brandColor}22` }} />
-          <div className="absolute rounded-full pointer-events-none" style={{ width: "min(64vw, 350px)", height: "min(64vw, 350px)", border: `2px solid ${brandColor}55`, boxShadow: `0 0 36px ${brandColor}33` }} />
-          <div className="relative rounded-full overflow-hidden z-10 group" style={{ width: "min(56vw, 310px)", height: "min(56vw, 310px)", border: `3.5px solid ${brandColor}88`, boxShadow: `0 0 45px -6px ${brandColor}88` }}>
+        <div className="col-span-12 lg:col-span-6 relative flex flex-col items-center justify-center py-6 min-h-[420px] sm:min-h-[480px] lg:min-h-full">
+          {/* Brand Logo & Brand Name aligned with top of left side content */}
+          {(logo || businessName) && (
+            <div className="lg:absolute lg:top-0 lg:left-0 lg:right-0 flex items-center justify-center gap-2.5 mb-6 lg:mb-0">
+              <div className={`h-8 w-8 sm:h-9 sm:w-9 rounded-xl flex items-center justify-center bg-transparent overflow-hidden shadow-xs ${logo ? "border-none" : "border-2 border-dashed border-[#a1a1aa]/50"}`}>
+                {logo ? (
+                  <img src={logo} alt="Logo" className="h-full w-full object-cover" />
+                ) : (
+                  <div className="h-4 w-4 rounded-md border-2 border-dashed border-[#a1a1aa]" />
+                )}
+              </div>
+              <span className={`text-base sm:text-lg font-black tracking-wider uppercase ${isDark ? "text-white" : "text-zinc-900"}`}>
+                {businessName}
+              </span>
+            </div>
+          )}
+
+          <div className="relative flex items-center justify-center w-full">
+            <div className="absolute rounded-full pointer-events-none" style={{ width: "min(92vw, 520px)", height: "min(92vw, 520px)", background: `radial-gradient(circle, ${brandColor}22 0%, transparent 70%)`, filter: "blur(32px)" }} />
+            <div className="absolute rounded-full border border-dashed pointer-events-none" style={{ width: "min(84vw, 460px)", height: "min(84vw, 460px)", borderColor: `${brandColor}25` }} />
+            <div className="absolute rounded-full pointer-events-none" style={{ width: "min(74vw, 400px)", height: "min(74vw, 400px)", border: `1px solid ${brandColor}33`, boxShadow: `0 0 24px ${brandColor}22` }} />
+            <div className="absolute rounded-full pointer-events-none" style={{ width: "min(64vw, 350px)", height: "min(64vw, 350px)", border: `2px solid ${brandColor}55`, boxShadow: `0 0 36px ${brandColor}33` }} />
+            <div className="relative rounded-full overflow-hidden z-10 group" style={{ width: "min(56vw, 310px)", height: "min(56vw, 310px)", border: `3.5px solid ${brandColor}88`, boxShadow: `0 0 45px -6px ${brandColor}88` }}>
             {/* Upload Progress Overlay for Orbit circle */}
             {uploadProgress !== null && uploadProgress !== undefined && (
               <div className="absolute inset-0 z-40 flex flex-col items-center justify-center p-4 bg-black/90 backdrop-blur-md text-white">
@@ -378,6 +397,7 @@ export default function Template4(props: TemplateProps) {
               </button>
             ) : null}
           </div>
+        </div>
         </div>
       </div>
     </div>

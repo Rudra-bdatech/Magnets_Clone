@@ -412,9 +412,9 @@ const BrandTemplatePreview = memo(function BrandTemplatePreview({
       {/* TEMPLATE 4: Neon Orbit */}
       {templateId === "template4" && (
         <div className="w-full py-1">
-          <div className="grid grid-cols-12 gap-5 items-center">
+          <div className="grid grid-cols-12 gap-5 items-center md:items-stretch">
             {/* LEFT: Copy Panel */}
-            <div className="col-span-12 md:col-span-7 flex flex-col justify-center space-y-4">
+            <div className="col-span-12 md:col-span-6 flex flex-col justify-center space-y-4">
               <div className="flex items-center gap-2">
                 <span
                   className="h-1.5 w-1.5 rounded-full animate-pulse"
@@ -522,74 +522,91 @@ const BrandTemplatePreview = memo(function BrandTemplatePreview({
             </div>
 
             {/* RIGHT: Orbital image portal */}
-            <div className="col-span-12 md:col-span-5 flex items-center justify-center relative overflow-hidden py-4" style={{ minHeight: "320px" }}>
-              <div
-                className="absolute rounded-full pointer-events-none"
-                style={{
-                  width: "360px",
-                  height: "360px",
-                  background: `radial-gradient(circle, ${hexWithAlpha(brandColor, 0.12 + intensityRatio * 0.2)} 0%, transparent 70%)`,
-                  filter: "blur(28px)",
-                }}
-              />
-              <div className="absolute rounded-full border border-dashed pointer-events-none" style={{ width: "320px", height: "320px", borderColor: hexWithAlpha(brandColor, 0.15) }} />
-              <div
-                className="absolute rounded-full pointer-events-none"
-                style={{
-                  width: "275px",
-                  height: "275px",
-                  border: `1px solid ${hexWithAlpha(brandColor, 0.18 + intensityRatio * 0.3)}`,
-                  boxShadow: `0 0 20px ${hexWithAlpha(brandColor, 0.1 + intensityRatio * 0.2)}`,
-                }}
-              />
-              <div
-                className="absolute rounded-full pointer-events-none"
-                style={{
-                  width: "235px",
-                  height: "235px",
-                  border: `2px solid ${hexWithAlpha(brandColor, 0.35 + intensityRatio * 0.5)}`,
-                  boxShadow: `0 0 32px ${hexWithAlpha(brandColor, 0.2 + intensityRatio * 0.35)}, inset 0 0 16px ${hexWithAlpha(brandColor, 0.08 + intensityRatio * 0.15)}`,
-                }}
-              />
-
-              <div
-                className="relative rounded-full overflow-hidden z-10"
-                style={{
-                  width: "205px",
-                  height: "205px",
-                  border: `3px solid ${hexWithAlpha(brandColor, 0.5 + intensityRatio * 0.5)}`,
-                  boxShadow: `0 0 40px -8px ${hexWithAlpha(brandColor, 0.45 + intensityRatio * 0.55)}`,
-                }}
-              >
-                {latestPage?.imageUrl && latestPage.imageUrl.trim() !== "" ? (
-                  <img src={latestPage.imageUrl} alt={latestPage?.name || "Cover"} className="w-full h-full object-cover" />
-                ) : (
-                  <div
-                    className="w-full h-full flex flex-col items-center justify-center gap-2"
-                    style={{ background: `linear-gradient(145deg, ${hexWithAlpha(brandColor, 0.5 + intensityRatio * 0.4)} 0%, #0a0018 100%)` }}
-                  >
-                    <div className="absolute inset-0 opacity-[0.07]" style={{ backgroundImage: "repeating-linear-gradient(0deg, white 0px, white 1px, transparent 1px, transparent 7px)" }} />
-                    <svg width="30" height="30" viewBox="0 0 30 30" fill="none" className="opacity-60 relative z-10">
-                      <rect x="2" y="2" width="26" height="26" rx="5" stroke="white" strokeWidth="1.2" strokeDasharray="3 2" />
-                      <path d="M2 21l7-6 5 4 4-3 10 8" stroke="white" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
-                      <circle cx="9" cy="10" r="2.5" stroke="white" strokeWidth="1.2" />
-                    </svg>
-                    <span className="text-white text-[7px] font-bold uppercase tracking-[0.2em] opacity-50 relative z-10">Image</span>
+            <div className="col-span-12 md:col-span-6 relative flex flex-col items-center justify-center py-4 min-h-[340px] md:min-h-full">
+              {(logo || businessName) && (
+                <div className="md:absolute md:top-0 md:left-0 md:right-0 flex items-center justify-center gap-2 mb-4 md:mb-0">
+                  <div className={`h-7 w-7 rounded-lg flex items-center justify-center bg-transparent overflow-hidden shadow-xs ${logo ? "border-none" : "border border-dashed border-[#a1a1aa]/50"}`}>
+                    {logo ? (
+                      <img src={logo} alt="Logo" className="h-full w-full object-cover" />
+                    ) : (
+                      <div className="h-3 w-3 rounded-xs border border-dashed border-[#a1a1aa]" />
+                    )}
                   </div>
-                )}
-                <div className="absolute top-0 left-0 right-0 h-1/3 pointer-events-none" style={{ background: "linear-gradient(to bottom, rgba(255,255,255,0.12) 0%, transparent 100%)" }} />
-              </div>
+                  <span className={`text-xs sm:text-sm font-black tracking-wider uppercase ${themeMode === "dark" ? "text-white" : "text-zinc-900"}`}>
+                    {businessName}
+                  </span>
+                </div>
+              )}
 
-              <div
-                className="absolute z-20 h-3 w-3 rounded-full"
-                style={{
-                  right: "calc(50% - 120px)",
-                  top: "50%",
-                  transform: "translateY(-50%)",
-                  backgroundColor: brandColor,
-                  boxShadow: `0 0 10px ${brandColor}, 0 0 20px ${hexWithAlpha(brandColor, 0.4)}`,
-                }}
-              />
+              <div className="relative flex items-center justify-center w-full">
+                <div
+                  className="absolute rounded-full pointer-events-none"
+                  style={{
+                    width: "360px",
+                    height: "360px",
+                    background: `radial-gradient(circle, ${hexWithAlpha(brandColor, 0.12 + intensityRatio * 0.2)} 0%, transparent 70%)`,
+                    filter: "blur(28px)",
+                  }}
+                />
+                <div className="absolute rounded-full border border-dashed pointer-events-none" style={{ width: "320px", height: "320px", borderColor: hexWithAlpha(brandColor, 0.15) }} />
+                <div
+                  className="absolute rounded-full pointer-events-none"
+                  style={{
+                    width: "275px",
+                    height: "275px",
+                    border: `1px solid ${hexWithAlpha(brandColor, 0.18 + intensityRatio * 0.3)}`,
+                    boxShadow: `0 0 20px ${hexWithAlpha(brandColor, 0.1 + intensityRatio * 0.2)}`,
+                  }}
+                />
+                <div
+                  className="absolute rounded-full pointer-events-none"
+                  style={{
+                    width: "235px",
+                    height: "235px",
+                    border: `2px solid ${hexWithAlpha(brandColor, 0.35 + intensityRatio * 0.5)}`,
+                    boxShadow: `0 0 32px ${hexWithAlpha(brandColor, 0.2 + intensityRatio * 0.35)}, inset 0 0 16px ${hexWithAlpha(brandColor, 0.08 + intensityRatio * 0.15)}`,
+                  }}
+                />
+
+                <div
+                  className="relative rounded-full overflow-hidden z-10"
+                  style={{
+                    width: "205px",
+                    height: "205px",
+                    border: `3px solid ${hexWithAlpha(brandColor, 0.5 + intensityRatio * 0.5)}`,
+                    boxShadow: `0 0 40px -8px ${hexWithAlpha(brandColor, 0.45 + intensityRatio * 0.55)}`,
+                  }}
+                >
+                  {latestPage?.imageUrl && latestPage.imageUrl.trim() !== "" ? (
+                    <img src={latestPage.imageUrl} alt={latestPage?.name || "Cover"} className="w-full h-full object-cover" />
+                  ) : (
+                    <div
+                      className="w-full h-full flex flex-col items-center justify-center gap-2"
+                      style={{ background: `linear-gradient(145deg, ${hexWithAlpha(brandColor, 0.5 + intensityRatio * 0.4)} 0%, #0a0018 100%)` }}
+                    >
+                      <div className="absolute inset-0 opacity-[0.07]" style={{ backgroundImage: "repeating-linear-gradient(0deg, white 0px, white 1px, transparent 1px, transparent 7px)" }} />
+                      <svg width="30" height="30" viewBox="0 0 30 30" fill="none" className="opacity-60 relative z-10">
+                        <rect x="2" y="2" width="26" height="26" rx="5" stroke="white" strokeWidth="1.2" strokeDasharray="3 2" />
+                        <path d="M2 21l7-6 5 4 4-3 10 8" stroke="white" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
+                        <circle cx="9" cy="10" r="2.5" stroke="white" strokeWidth="1.2" />
+                      </svg>
+                      <span className="text-white text-[7px] font-bold uppercase tracking-[0.2em] opacity-50 relative z-10">Image</span>
+                    </div>
+                  )}
+                  <div className="absolute top-0 left-0 right-0 h-1/3 pointer-events-none" style={{ background: "linear-gradient(to bottom, rgba(255,255,255,0.12) 0%, transparent 100%)" }} />
+                </div>
+
+                <div
+                  className="absolute z-20 h-3 w-3 rounded-full"
+                  style={{
+                    right: "calc(50% - 120px)",
+                    top: "50%",
+                    transform: "translateY(-50%)",
+                    backgroundColor: brandColor,
+                    boxShadow: `0 0 10px ${brandColor}, 0 0 20px ${hexWithAlpha(brandColor, 0.4)}`,
+                  }}
+                />
+              </div>
             </div>
           </div>
 

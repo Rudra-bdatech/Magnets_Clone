@@ -312,8 +312,8 @@ export default async function MagnetPageRoute({
           <span>⚠️ Draft Preview Mode — This magnet is not yet published. Only you can view this page.</span>
         </div>
       )}
-      {/* If template is not template3, show the standard top header */}
-      {((page.template as string) !== "template3" && (!(!page.template && (accountDoc?.templateId as string) === "template3"))) && (
+      {/* If template is not template3 or template4, show the standard top header */}
+      {((page.template as string) !== "template3" && (page.template as string) !== "template4" && (!(!page.template && ((accountDoc?.templateId as string) === "template3" || (accountDoc?.templateId as string) === "template4")))) && (
         <header className="w-full flex items-center justify-center pt-3 sm:pt-4 pb-1 sm:pb-2 px-6 sm:px-10 relative shrink-0">
           <div className="flex items-center gap-2.5 sm:gap-3">
             <div className={`h-9 w-9 sm:h-10 sm:w-10 rounded-xl flex items-center justify-center bg-transparent overflow-hidden shadow-xs ${logo ? "border-none" : "border-2 border-dashed border-[#a1a1aa]/50"}`}>
@@ -545,7 +545,7 @@ export default async function MagnetPageRoute({
         ) : ((page.template as string) === "template4" || (!page.template && (accountDoc?.templateId as string) === "template4")) ? (
           /* TEMPLATE 4: Neon Orbit */
           <div className="w-full max-w-7xl mx-auto">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 items-center">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 items-center lg:items-stretch">
               {/* LEFT: Copy + Form */}
               <div className="col-span-12 lg:col-span-6 flex flex-col justify-center space-y-4">
                 <div className="flex items-center gap-2">
@@ -612,28 +612,46 @@ export default async function MagnetPageRoute({
               </div>
 
               {/* RIGHT: Orbital image portal */}
-              <div className="col-span-12 lg:col-span-6 flex items-center justify-center relative py-6 min-h-[380px] sm:min-h-[440px] lg:min-h-[500px]">
-                {/* Ambient glow */}
-                <div className="absolute rounded-full pointer-events-none" style={{ width: "min(92vw, 520px)", height: "min(92vw, 520px)", background: `radial-gradient(circle, ${brandColor}${Math.round((0.15 + (highlightIntensity / 100) * 0.25) * 255).toString(16).padStart(2, '0')} 0%, transparent 70%)`, filter: "blur(32px)" }} />
-                {/* Outer dashed ring */}
-                <div className="absolute rounded-full border border-dashed pointer-events-none" style={{ width: "min(84vw, 460px)", height: "min(84vw, 460px)", borderColor: `${brandColor}25` }} />
-                {/* Mid ring */}
-                <div className="absolute rounded-full pointer-events-none" style={{ width: "min(74vw, 400px)", height: "min(74vw, 400px)", border: `1px solid ${brandColor}${Math.round((0.18 + (highlightIntensity / 100) * 0.3) * 255).toString(16).padStart(2, '0')}`, boxShadow: `0 0 24px ${brandColor}22` }} />
-                {/* Inner neon halo */}
-                <div className="absolute rounded-full pointer-events-none" style={{ width: "min(64vw, 350px)", height: "min(64vw, 350px)", border: `2px solid ${brandColor}${Math.round((0.35 + (highlightIntensity / 100) * 0.5) * 255).toString(16).padStart(2, '0')}`, boxShadow: `0 0 36px ${brandColor}${Math.round((0.2 + (highlightIntensity / 100) * 0.35) * 255).toString(16).padStart(2, '0')}` }} />
-                {/* Circular image */}
-                <div className="relative rounded-full overflow-hidden z-10" style={{ width: "min(56vw, 310px)", height: "min(56vw, 310px)", border: `3.5px solid ${brandColor}${Math.round((0.5 + (highlightIntensity / 100) * 0.5) * 255).toString(16).padStart(2, '0')}`, boxShadow: `0 0 45px -6px ${brandColor}${Math.round((0.45 + (highlightIntensity / 100) * 0.55) * 255).toString(16).padStart(2, '0')}` }}>
-                  {activeImageUrl && activeImageUrl.trim() !== "" ? (
-                    <img
-                      src={activeImageUrl}
-                      alt={page.name}
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center" style={{ background: `linear-gradient(135deg, ${brandColor}88 0%, #0d0012 100%)` }}>
-                      <div className="h-8 w-8 rounded-full bg-white/20" />
+              <div className="col-span-12 lg:col-span-6 relative flex flex-col items-center justify-center py-6 min-h-[420px] sm:min-h-[480px] lg:min-h-full">
+                {/* Brand Logo & Brand Name aligned with top of left side content */}
+                {(logo || businessName) && (
+                  <div className="lg:absolute lg:top-0 lg:left-0 lg:right-0 flex items-center justify-center gap-2.5 mb-6 lg:mb-0">
+                    <div className="h-8 w-8 sm:h-9 sm:w-9 rounded-xl flex items-center justify-center bg-transparent overflow-hidden shadow-xs border-none">
+                      {logo ? (
+                        <img src={logo} alt="Brand Logo" className="h-full w-full object-cover" />
+                      ) : (
+                        <div className="h-4 w-4 rounded-md border-2 border-dashed border-[#a1a1aa]" />
+                      )}
                     </div>
-                  )}
+                    <span className={`text-base sm:text-lg font-black tracking-wider uppercase ${themeMode === "dark" ? "text-white" : "text-zinc-900"}`}>
+                      {businessName}
+                    </span>
+                  </div>
+                )}
+
+                <div className="relative flex items-center justify-center w-full">
+                  {/* Ambient glow */}
+                  <div className="absolute rounded-full pointer-events-none" style={{ width: "min(92vw, 520px)", height: "min(92vw, 520px)", background: `radial-gradient(circle, ${brandColor}${Math.round((0.15 + (highlightIntensity / 100) * 0.25) * 255).toString(16).padStart(2, '0')} 0%, transparent 70%)`, filter: "blur(32px)" }} />
+                  {/* Outer dashed ring */}
+                  <div className="absolute rounded-full border border-dashed pointer-events-none" style={{ width: "min(84vw, 460px)", height: "min(84vw, 460px)", borderColor: `${brandColor}25` }} />
+                  {/* Mid ring */}
+                  <div className="absolute rounded-full pointer-events-none" style={{ width: "min(74vw, 400px)", height: "min(74vw, 400px)", border: `1px solid ${brandColor}${Math.round((0.18 + (highlightIntensity / 100) * 0.3) * 255).toString(16).padStart(2, '0')}`, boxShadow: `0 0 24px ${brandColor}22` }} />
+                  {/* Inner neon halo */}
+                  <div className="absolute rounded-full pointer-events-none" style={{ width: "min(64vw, 350px)", height: "min(64vw, 350px)", border: `2px solid ${brandColor}${Math.round((0.35 + (highlightIntensity / 100) * 0.5) * 255).toString(16).padStart(2, '0')}`, boxShadow: `0 0 36px ${brandColor}${Math.round((0.2 + (highlightIntensity / 100) * 0.35) * 255).toString(16).padStart(2, '0')}` }} />
+                  {/* Circular image */}
+                  <div className="relative rounded-full overflow-hidden z-10" style={{ width: "min(56vw, 310px)", height: "min(56vw, 310px)", border: `3.5px solid ${brandColor}${Math.round((0.5 + (highlightIntensity / 100) * 0.5) * 255).toString(16).padStart(2, '0')}`, boxShadow: `0 0 45px -6px ${brandColor}${Math.round((0.45 + (highlightIntensity / 100) * 0.55) * 255).toString(16).padStart(2, '0')}` }}>
+                    {activeImageUrl && activeImageUrl.trim() !== "" ? (
+                      <img
+                        src={activeImageUrl}
+                        alt={page.name}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center" style={{ background: `linear-gradient(135deg, ${brandColor}88 0%, #0d0012 100%)` }}>
+                        <div className="h-8 w-8 rounded-full bg-white/20" />
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>

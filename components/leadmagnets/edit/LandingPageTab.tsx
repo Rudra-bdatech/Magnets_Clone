@@ -140,8 +140,8 @@ export default function LandingPageTab({
               : `radial-gradient(circle at 0% 0%, ${account?.brandColor || "#0066B2"}25 0%, transparent 50%), radial-gradient(circle at 100% 100%, ${account?.brandColor || "#0066B2"}15 0%, transparent 50%)`
           }}
         >
-          {/* Brand Name Header (Hidden for template3 since it is placed directly on the image) */}
-          {templateId !== "template3" && (
+          {/* Brand Name Header (Hidden for template3 and template4 since it is integrated into their layout) */}
+          {templateId !== "template3" && templateId !== "template4" && (
             <div className="mb-6 flex items-center justify-center">
               <div className="flex items-center gap-2.5 sm:gap-3">
                 <div className={`h-10 w-10 rounded-xl flex items-center justify-center bg-transparent overflow-hidden shadow-xs ${account?.logo ? "border-none" : "border-2 border-dashed border-[#a1a1aa]/50"}`}>
