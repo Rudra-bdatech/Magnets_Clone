@@ -9,6 +9,7 @@ import Button from "@/components/ui/button";
 import Input, { FieldLabel } from "@/components/ui/input";
 import PasswordInputWithStrength, { validatePasswordStrength } from "@/components/ui/password-input-with-strength";
 import GoogleAuthButton from "@/components/ui/google-auth-button";
+import LinkedInAuthButton from "@/components/ui/linkedin-auth-button";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -122,6 +123,9 @@ export default function RegisterPage() {
 
       {/* Continue with Google Button */}
       <GoogleAuthButton callbackUrl="/register/onboarding" disabled={loading} />
+
+      {/* Continue with LinkedIn Button */}
+      <LinkedInAuthButton callbackUrl="/register/onboarding" disabled={loading} />
 
       <div className="relative my-3 flex items-center justify-center">
         <div className="absolute inset-0 flex items-center">

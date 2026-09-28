@@ -218,6 +218,32 @@ export default function SequencesPage() {
             opened: Math.max(s.stats.opened || 0, liveOpened),
             completed: Math.max(s.stats.completed || 0, liveCompleted),
           };
+
+          if (s.emails && s.emails.length > 0) {
+            s.emails = s.emails.map((e, idx) => {
+              let stepDelivered = e.sent || 0;
+              let stepOpened = e.opened || 0;
+              const stepNum = idx + 1;
+              if (idx === 0) {
+                stepDelivered = Math.max(stepDelivered, liveDelivered);
+                stepOpened = Math.max(stepOpened, liveOpened);
+              } else {
+                const leadsAtStep = associatedLeads.filter((l) => {
+                  if (l.status === "completed") return true;
+                  if (!l.sequenceStep) return false;
+                  const match = l.sequenceStep.match(/Step\s+(\d+)/i) || l.sequenceStep.match(/Email\s+(\d+)/i);
+                  if (match) return parseInt(match[1], 10) >= stepNum;
+                  return l.sequenceStep.toLowerCase().includes("completed");
+                });
+                stepDelivered = Math.max(stepDelivered, leadsAtStep.length);
+                stepOpened = Math.max(
+                  stepOpened,
+                  leadsAtStep.filter((l) => l.status === "opened" || l.status === "replied").length
+                );
+              }
+              return { ...e, sent: stepDelivered, opened: stepOpened };
+            });
+          }
         }
         // Deduplicate: If this sequence belongs to a pageId that was also in pageSequences, replace it with this custom sequence
         if (s.pageId && map.has(s.pageId)) {

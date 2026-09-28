@@ -34,8 +34,8 @@ import { formatDateOnly } from "@/lib/utils";
 // Helpers
 // ---------------------------------------------------------------------------
 function maskSecret(secret: string): string {
-  if (!secret || secret.length < 8) return "••••••••••••••••";
-  return secret.slice(0, 6) + "••••••••••••••••••••••••••••••••••••••••••••••••••••••••••" + secret.slice(-4);
+  if (!secret || secret.length < 8) return "â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢";
+  return secret.slice(0, 6) + "â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢" + secret.slice(-4);
 }
 
 // ---------------------------------------------------------------------------
@@ -47,7 +47,7 @@ export default function LinkedInAutomationPage() {
   const [linkedinLeads, setLinkedinLeads] = useState<Lead[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Webhook config (fetched separately — not stored in localStorage for security)
+  // Webhook config (fetched separately â€” not stored in localStorage for security)
   const [webhookUrl, setWebhookUrl] = useState("");
   const [webhookSecret, setWebhookSecret] = useState("");
   const [loadingConfig, setLoadingConfig] = useState(true);
@@ -69,7 +69,7 @@ export default function LinkedInAutomationPage() {
 
   const appUrl = getAppUrl();
 
-  // ── Load account + pages + leads from localStorage instantly, then sync ──
+  // â”€â”€ Load account + pages + leads from localStorage instantly, then sync â”€â”€
   useEffect(() => {
     const localAccount = loadAccount();
     if (localAccount) setAccount(localAccount);
@@ -114,7 +114,7 @@ export default function LinkedInAutomationPage() {
     }
   }, []);
 
-  // ── Fetch webhook credentials from secure API endpoint ──
+  // â”€â”€ Fetch webhook credentials from secure API endpoint â”€â”€
   const fetchLinkedInConfig = useCallback(async () => {
     setLoadingConfig(true);
     try {
@@ -159,6 +159,15 @@ export default function LinkedInAutomationPage() {
   const [selectedMagnetId, setSelectedMagnetId] = useState("");
   const [triggerKeyword, setTriggerKeyword] = useState("resource");
 
+  // Mobile detection — affects modal UX
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+
   // Recent Posts & Per-Post Campaigns state
   const [posts, setPosts] = useState<LinkedInPostCampaign[]>([]);
   const [loadingPosts, setLoadingPosts] = useState(false);
@@ -185,6 +194,8 @@ export default function LinkedInAutomationPage() {
     setInputPassword("");
     setInputLiAt(account?.linkedinLiAt || "");
     setInputJSessionId(account?.linkedinJSessionId || "");
+    // On mobile, always default to OAuth tab (cookie tab is unusable without DevTools)
+    setConnectTab(isMobile ? "credentials" : "credentials");
     setShowConnectModal(true);
   };
 
@@ -558,7 +569,7 @@ export default function LinkedInAutomationPage() {
     }
   };
 
-  // ── Regenerate secret ──
+  // â”€â”€ Regenerate secret â”€â”€
   const handleRegenerate = async () => {
     setRegenerating(true);
     setShowRegenerateConfirm(false);
@@ -582,7 +593,7 @@ export default function LinkedInAutomationPage() {
     }
   };
 
-  // ── Copy helper ──
+  // â”€â”€ Copy helper â”€â”€
   const copyToClipboard = (text: string, field: string) => {
     navigator.clipboard.writeText(text);
     setCopiedField(field);
@@ -595,7 +606,7 @@ export default function LinkedInAutomationPage() {
   // Only live pages are relevant for LinkedIn
   const livePages = pages.filter((p) => p.status === "live");
 
-  // ── Test Webhook ──
+  // â”€â”€ Test Webhook â”€â”€
   const handleTestWebhook = async () => {
     if (!webhookSecret || loadingConfig) return;
     setTestLoading(true);
@@ -632,7 +643,7 @@ export default function LinkedInAutomationPage() {
           success: true,
           alreadySubscribed: !!data.alreadySubscribed,
           message: data.alreadySubscribed
-            ? `Already subscribed: ${testEmail} was already a lead for this magnet. Pipeline is working — no duplicate was created.`
+            ? `Already subscribed: ${testEmail} was already a lead for this magnet. Pipeline is working â€” no duplicate was created.`
             : `Pipeline working! Delivery email sent to ${testEmail}. Check your inbox and your Leads page.`,
         });
       } else {
@@ -658,7 +669,7 @@ export default function LinkedInAutomationPage() {
     }, null, 2)
     : "";
 
-  // ── Lead Filtering & Funnel Metrics ──
+  // â”€â”€ Lead Filtering & Funnel Metrics â”€â”€
   const [selectedTab, setSelectedTab] = useState<"all" | "converted" | "pending">("all");
 
   const convertedLeads = linkedinLeads.filter(
@@ -680,13 +691,13 @@ export default function LinkedInAutomationPage() {
       ? Math.round((convertedLeads.length / linkedinLeads.length) * 100)
       : 0;
 
-  // ─────────────────────────────────────────────────────────────────────────
+  // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   return (
     <DashboardShell account={account} title="LinkedIn Auto-Reply">
       <div className="flex flex-col min-h-[calc(100vh-3rem)] bg-[#F8FBFF] dark:bg-[#0E0E10]">
         <div className="flex-1 px-6 py-6 lg:px-8">
 
-          {/* ── Page Heading ── */}
+          {/* â”€â”€ Page Heading â”€â”€ */}
           <div className="mb-6">
             <h2 className="flex items-center gap-2.5 text-3xl font-bold text-zinc-900 dark:text-white">
               <Linkedin className="h-7 w-7 text-[#0A66C2]" />
@@ -699,7 +710,7 @@ export default function LinkedInAutomationPage() {
             </p>
           </div>
 
-          {/* ── Funnel KPI Cards ── */}
+          {/* â”€â”€ Funnel KPI Cards â”€â”€ */}
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 mb-5">
             <div className="rounded-2xl border border-[#0A66C2]/20 bg-white p-5 shadow-xs dark:border-[#0A66C2]/25 dark:bg-[#18181C]">
               <div className="flex items-center justify-between">
@@ -708,7 +719,7 @@ export default function LinkedInAutomationPage() {
                   <Linkedin className="h-3.5 w-3.5" />
                 </span>
               </div>
-              <p className="mt-2 text-2xl font-bold text-zinc-900 dark:text-white">{loading ? "—" : linkedinLeads.length}</p>
+              <p className="mt-2 text-2xl font-bold text-zinc-900 dark:text-white">{loading ? "â€”" : linkedinLeads.length}</p>
               <p className="text-[11px] text-zinc-400 dark:text-[#9B9085] mt-0.5">Commenters delivered via DM</p>
             </div>
 
@@ -719,7 +730,7 @@ export default function LinkedInAutomationPage() {
                   <Check className="h-3.5 w-3.5" />
                 </span>
               </div>
-              <p className="mt-2 text-2xl font-bold text-zinc-900 dark:text-white">{loading ? "—" : convertedLeads.length}</p>
+              <p className="mt-2 text-2xl font-bold text-zinc-900 dark:text-white">{loading ? "â€”" : convertedLeads.length}</p>
               <p className="text-[11px] text-emerald-600/80 dark:text-emerald-400/80 mt-0.5">Unlocked PDF & subscribed</p>
             </div>
 
@@ -730,15 +741,15 @@ export default function LinkedInAutomationPage() {
                   <Zap className="h-3.5 w-3.5" />
                 </span>
               </div>
-              <p className="mt-2 text-2xl font-bold text-zinc-900 dark:text-white">{loading ? "—" : `${conversionRate}%`}</p>
+              <p className="mt-2 text-2xl font-bold text-zinc-900 dark:text-white">{loading ? "â€”" : `${conversionRate}%`}</p>
               <p className="text-[11px] text-amber-600/80 dark:text-amber-400/80 mt-0.5">{pendingLeads.length} waiting to signup</p>
             </div>
           </div>
 
-          {/* ── Cards ── */}
+          {/* â”€â”€ Cards â”€â”€ */}
           <div className="space-y-4">
 
-            {/* ── Card 0: 1-Click Native LinkedIn Connect ── */}
+            {/* â”€â”€ Card 0: 1-Click Native LinkedIn Connect â”€â”€ */}
             <div className="rounded-2xl border border-[#0A66C2]/30 bg-white dark:border-[#0A66C2]/35 dark:bg-[#18181B] shadow-sm transition-colors p-6">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div className="flex items-start gap-3.5">
@@ -893,7 +904,7 @@ export default function LinkedInAutomationPage() {
               )}
             </div>
 
-            {/* ── Card 0.5: Recent Posts & Custom Campaigns ── */}
+            {/* â”€â”€ Card 0.5: Recent Posts & Custom Campaigns â”€â”€ */}
             {account?.linkedinConnected && (() => {
               const activeCount = posts.filter((p) => p.enabled).length;
               const pausedCount = posts.filter((p) => !p.enabled).length;
@@ -986,7 +997,7 @@ export default function LinkedInAutomationPage() {
                             onClick={() => setPostSearchQuery("")}
                             className="absolute right-2.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 text-xs"
                           >
-                            ×
+                            Ã—
                           </button>
                         )}
                       </div>
@@ -1161,7 +1172,7 @@ export default function LinkedInAutomationPage() {
                   {totalPostPages > 1 && (
                     <div className="flex items-center justify-between pt-4 mt-4 border-t border-zinc-100 dark:border-white/5 text-xs text-zinc-500 dark:text-[#9B9085]">
                       <span>
-                        Showing {startIndex + 1}–{Math.min(startIndex + POSTS_PER_PAGE, filteredPosts.length)} of {filteredPosts.length} posts
+                        Showing {startIndex + 1}â€“{Math.min(startIndex + POSTS_PER_PAGE, filteredPosts.length)} of {filteredPosts.length} posts
                       </span>
                       <div className="flex items-center gap-2">
                         <button
@@ -1190,7 +1201,7 @@ export default function LinkedInAutomationPage() {
               );
             })()}
 
-            {/* ── Advanced & Developer Settings Toggle ── */}
+            {/* â”€â”€ Advanced & Developer Settings Toggle â”€â”€ */}
             <div className="rounded-2xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#18181B] shadow-xs overflow-hidden">
               <button
                 type="button"
@@ -1226,7 +1237,7 @@ export default function LinkedInAutomationPage() {
 
               {openSections["developer"] && (
                 <div className="p-5 pt-2 border-t border-zinc-100 dark:border-white/5 space-y-4 bg-zinc-50/50 dark:bg-[#121214]/50">
-                  {/* ── Card 1: Webhook Credentials ── */}
+                  {/* â”€â”€ Card 1: Webhook Credentials â”€â”€ */}
                   <div className="rounded-2xl border border-[#0066B2]/30 bg-white dark:border-[#0066B2]/35 dark:bg-[#18181B] shadow-sm transition-colors p-5">
                     <div className="flex items-start gap-3 mb-5">
                       <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[#0066B2]/30 bg-[#F8FBFF] text-[#0066B2] shadow-sm dark:border-[#0066B2]/30 dark:bg-[#0066B2]/20 dark:text-[#38BDF8]">
@@ -1342,7 +1353,7 @@ export default function LinkedInAutomationPage() {
                     </div>
                   </div>
 
-                  {/* ── Card 1b: Test Your Webhook ── */}
+                  {/* â”€â”€ Card 1b: Test Your Webhook â”€â”€ */}
                   <div className="rounded-2xl border border-emerald-500/30 bg-white dark:border-emerald-500/25 dark:bg-[#18181B] shadow-sm transition-colors p-5">
                     <div className="flex items-start gap-3 mb-4">
                       <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-emerald-500/30 bg-emerald-50 text-emerald-600 shadow-sm dark:border-emerald-500/30 dark:bg-emerald-500/15 dark:text-emerald-400">
@@ -1394,7 +1405,7 @@ export default function LinkedInAutomationPage() {
                     )}
                   </div>
 
-                  {/* ── Card 2: Your Magnet IDs ── */}
+                  {/* â”€â”€ Card 2: Your Magnet IDs â”€â”€ */}
                   <div className="rounded-2xl border border-[#0066B2]/30 bg-white dark:border-[#0066B2]/35 dark:bg-[#18181B] shadow-sm transition-colors p-5">
                     <div className="flex items-start gap-3 mb-5">
                       <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[#0066B2]/30 bg-[#F8FBFF] text-[#0066B2] shadow-sm dark:border-[#0066B2]/30 dark:bg-[#0066B2]/20 dark:text-[#38BDF8]">
@@ -1450,7 +1461,7 @@ export default function LinkedInAutomationPage() {
                     )}
                   </div>
 
-                  {/* ── Card 3: Make.com Setup Guide (Accordion) ── */}
+                  {/* â”€â”€ Card 3: Make.com Setup Guide (Accordion) â”€â”€ */}
                   <div className="rounded-2xl border border-[#0066B2]/30 bg-white dark:border-[#0066B2]/35 dark:bg-[#18181B] shadow-sm transition-colors overflow-hidden">
                     <button
                       type="button"
@@ -1494,19 +1505,19 @@ export default function LinkedInAutomationPage() {
                             {
                               n: 1,
                               title: "Create a new scenario in Make.com",
-                              body: "Go to make.com → click \"Create new scenario\". Search for \"LinkedIn\" and add it as your first module.",
+                              body: "Go to make.com â†’ click \"Create new scenario\". Search for \"LinkedIn\" and add it as your first module.",
                               link: "https://make.com",
-                              linkLabel: "Open Make.com →",
+                              linkLabel: "Open Make.com â†’",
                             },
                             {
                               n: 2,
-                              title: 'Add trigger: LinkedIn → "Watch Post Comments"',
-                              body: "In the LinkedIn module, select the trigger \"Watch Post Comments\". Click \"Add\" → connect your LinkedIn account via OAuth. Set it to watch all your posts (or a specific post URL). Set interval to every 15 minutes.",
+                              title: 'Add trigger: LinkedIn â†’ "Watch Post Comments"',
+                              body: "In the LinkedIn module, select the trigger \"Watch Post Comments\". Click \"Add\" â†’ connect your LinkedIn account via OAuth. Set it to watch all your posts (or a specific post URL). Set interval to every 15 minutes.",
                             },
                             {
                               n: 3,
-                              title: 'Add an action: HTTP → "Make a Request"',
-                              body: "Click the \"+ \" to add a module after the trigger. Search \"HTTP\" → select \"Make a Request\". Set Method = POST. In the URL field, paste your Webhook URL from Card 1 above.",
+                              title: 'Add an action: HTTP â†’ "Make a Request"',
+                              body: "Click the \"+ \" to add a module after the trigger. Search \"HTTP\" â†’ select \"Make a Request\". Set Method = POST. In the URL field, paste your Webhook URL from Card 1 above.",
                             },
                             {
                               n: 4,
@@ -1515,8 +1526,8 @@ export default function LinkedInAutomationPage() {
                             },
                             {
                               n: 5,
-                              title: 'Add the auto-reply: LinkedIn → "Create a Comment Reply"',
-                              body: 'After the HTTP module, add LinkedIn → "Create a Comment Reply". For Comment ID, map the {{1.id}} field from the trigger. For Message, write your CTA — for example: "Hey {{1.author.firstName}}! 👋 Here is your free resource: https://magnets.bdatech.in/your-username/your-magnet — enjoy! Let me know if you have questions."',
+                              title: 'Add the auto-reply: LinkedIn â†’ "Create a Comment Reply"',
+                              body: 'After the HTTP module, add LinkedIn â†’ "Create a Comment Reply". For Comment ID, map the {{1.id}} field from the trigger. For Message, write your CTA â€” for example: "Hey {{1.author.firstName}}! ðŸ‘‹ Here is your free resource: https://magnets.bdatech.in/your-username/your-magnet â€” enjoy! Let me know if you have questions."',
                             },
                             {
                               n: 6,
@@ -1568,9 +1579,9 @@ export default function LinkedInAutomationPage() {
                               <div>
                                 <p className="text-[11.5px] font-bold text-amber-800 dark:text-amber-300 mb-1">LinkedIn does not expose commenter emails via API</p>
                                 <p className="text-[11px] text-amber-700 dark:text-amber-400/90 leading-relaxed">
-                                  Make.com&apos;s LinkedIn trigger will give you the commenter&apos;s name and profile URL, but <strong>not their private email</strong>. This is a LinkedIn platform restriction — not a bug.
+                                  Make.com&apos;s LinkedIn trigger will give you the commenter&apos;s name and profile URL, but <strong>not their private email</strong>. This is a LinkedIn platform restriction â€” not a bug.
                                   The email delivery step will be skipped, but the <strong>auto-reply comment with the link still posts successfully</strong>.
-                                  When they click the link and visit your Lead Magnet page, they enter their email there — that&apos;s where full lead capture happens.
+                                  When they click the link and visit your Lead Magnet page, they enter their email there â€” that&apos;s where full lead capture happens.
                                 </p>
                               </div>
                             </div>
@@ -1582,7 +1593,7 @@ export default function LinkedInAutomationPage() {
                             <p className="text-[11px] text-zinc-500 dark:text-[#9B9085] leading-relaxed">
                               n8n has a free community template: <span className="font-semibold text-zinc-700 dark:text-zinc-300">"Automate LinkedIn Comment Replies with GPT"</span>.
                               It polls comments every 10 minutes, calls your same Webhook URL above, and logs everything in a Google Sheet.
-                              The setup is identical — just use the same Webhook URL and Secret from Card 1.
+                              The setup is identical â€” just use the same Webhook URL and Secret from Card 1.
                             </p>
                             <a
                               href="https://n8n.io/workflows/7806-automate-linkedin-comment-replies-with-gpt-35-and-track-in-google-sheets/"
@@ -1601,7 +1612,7 @@ export default function LinkedInAutomationPage() {
               )}
             </div>
 
-            {/* ── Card 4: LinkedIn Funnel Tracker ── */}
+            {/* â”€â”€ Card 4: LinkedIn Funnel Tracker â”€â”€ */}
             <div className="rounded-2xl border border-[#0066B2]/30 bg-white dark:border-[#0066B2]/35 dark:bg-[#18181B] shadow-sm transition-colors p-5">
               <div className="flex items-start justify-between gap-3 mb-5">
                 <div className="flex items-start gap-3">
@@ -1742,7 +1753,7 @@ export default function LinkedInAutomationPage() {
 
                   {filteredLeads.length > 10 && (
                     <p className="text-[11px] text-zinc-500 dark:text-[#9B9085] text-center pt-2">
-                      +{filteredLeads.length - 10} more leads —{" "}
+                      +{filteredLeads.length - 10} more leads â€”{" "}
                       <a href="/dashboard/leads" className="text-[#0066B2] hover:underline font-semibold">
                         view all in Leads Dashboard
                       </a>
@@ -1756,16 +1767,24 @@ export default function LinkedInAutomationPage() {
         </div>
       </div>
 
-      {/* ── Native In-House LinkedIn Connection Modal ── */}
+      {/* â”€â”€ Native In-House LinkedIn Connection Modal â”€â”€ */}
       <AnimatePresence>
         {showConnectModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
+          <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:p-4 bg-black/60 backdrop-blur-xs">
             <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 10 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 10 }}
-              className="w-full max-w-lg rounded-2xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#18181B] p-6 shadow-2xl space-y-5"
+              initial={isMobile ? { opacity: 0, y: 80 } : { opacity: 0, scale: 0.95, y: 10 }}
+              animate={isMobile ? { opacity: 1, y: 0 } : { opacity: 1, scale: 1, y: 0 }}
+              exit={isMobile ? { opacity: 0, y: 80 } : { opacity: 0, scale: 0.95, y: 10 }}
+              className="w-full sm:max-w-lg rounded-t-3xl sm:rounded-2xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#18181B] p-5 sm:p-6 shadow-2xl space-y-4 sm:space-y-5 max-h-[92dvh] overflow-y-auto"
             >
+              {/* Mobile drag handle indicator */}
+              {isMobile && (
+                <div className="flex justify-center -mt-1 mb-1">
+                  <div className="h-1 w-10 rounded-full bg-zinc-300 dark:bg-zinc-600" />
+                </div>
+              )}
+
+              {/* Header */}
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#0A66C2] text-white shadow-md">
@@ -1773,7 +1792,7 @@ export default function LinkedInAutomationPage() {
                   </div>
                   <div>
                     <h3 className="text-base font-bold text-zinc-900 dark:text-white">Connect LinkedIn Account</h3>
-                    <p className="text-xs text-zinc-500 dark:text-[#9B9085]">100% In-House &bull; Anti-Ban Protection Active</p>
+                    <p className="text-xs text-zinc-500 dark:text-[#9B9085]">Choose how you want to connect</p>
                   </div>
                 </div>
                 <button
@@ -1785,13 +1804,7 @@ export default function LinkedInAutomationPage() {
                 </button>
               </div>
 
-              {/* Anti-Ban Safety Notice */}
-              <div className="flex items-center gap-2 rounded-xl border border-emerald-500/20 bg-emerald-50/60 dark:bg-emerald-500/10 p-3 text-[11.5px] text-emerald-800 dark:text-emerald-300 font-medium">
-                <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
-                <span><strong>Safe Automation Guard:</strong> Human-like delays (8–20s) and daily safety limits are enabled to protect your account from restrictions.</span>
-              </div>
-
-              {/* Mode Tabs */}
+              {/* Mode Tabs - Cookie tab hidden on mobile */}
               {!requiresPin && (
                 <div className="flex rounded-xl bg-zinc-100 dark:bg-zinc-800/80 p-1 text-xs font-semibold">
                   <button
@@ -1803,19 +1816,21 @@ export default function LinkedInAutomationPage() {
                         : "text-zinc-500 hover:text-zinc-900 dark:text-zinc-400"
                     }`}
                   >
-                    Email & Password (Easy)
+                    Sign In with LinkedIn
                   </button>
-                  <button
-                    type="button"
-                    onClick={() => setConnectTab("cookie")}
-                    className={`flex-1 rounded-lg py-2 transition ${
-                      connectTab === "cookie"
-                        ? "bg-white dark:bg-[#18181B] text-[#0A66C2] dark:text-[#38BDF8] shadow-xs"
-                        : "text-zinc-500 hover:text-zinc-900 dark:text-zinc-400"
-                    }`}
-                  >
-                    Session Cookie (Advanced)
-                  </button>
+                  {!isMobile && (
+                    <button
+                      type="button"
+                      onClick={() => setConnectTab("cookie")}
+                      className={`flex-1 rounded-lg py-2 transition ${
+                        connectTab === "cookie"
+                          ? "bg-white dark:bg-[#18181B] text-[#0A66C2] dark:text-[#38BDF8] shadow-xs"
+                          : "text-zinc-500 hover:text-zinc-900 dark:text-zinc-400"
+                      }`}
+                    >
+                      Session Cookie (Desktop only)
+                    </button>
+                  )}
                 </div>
               )}
 
@@ -1869,59 +1884,59 @@ export default function LinkedInAutomationPage() {
                   </div>
                 </form>
               ) : connectTab === "credentials" ? (
-                /* Email & Password Login Form */
-                <form onSubmit={handleLoginCredentials} className="space-y-4">
-                  <div>
-                    <label className="block text-xs font-bold text-zinc-700 dark:text-zinc-300 mb-1.5">
-                      LinkedIn Account Email *
-                    </label>
-                    <input
-                      type="email"
-                      required
-                      placeholder="you@company.com"
-                      value={inputEmail}
-                      onChange={(e) => setInputEmail(e.target.value)}
-                      className="w-full rounded-xl border border-zinc-200 dark:border-white/10 bg-zinc-50 dark:bg-[#121214] px-3.5 py-2.5 text-xs text-zinc-800 dark:text-zinc-200 outline-none focus:border-[#0A66C2] transition"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-bold text-zinc-700 dark:text-zinc-300 mb-1.5">
-                      LinkedIn Password *
-                    </label>
-                    <input
-                      type="password"
-                      required
-                      placeholder="••••••••••••"
-                      value={inputPassword}
-                      onChange={(e) => setInputPassword(e.target.value)}
-                      className="w-full rounded-xl border border-zinc-200 dark:border-white/10 bg-zinc-50 dark:bg-[#121214] px-3.5 py-2.5 text-xs text-zinc-800 dark:text-zinc-200 outline-none focus:border-[#0A66C2] transition"
-                    />
-                    <p className="text-[10.5px] text-zinc-400 mt-1">
-                      Credentials are used solely to establish an encrypted session token and are never stored.
+                /* â”€â”€ Official LinkedIn OAuth Tab â”€â”€ */
+                <div className="space-y-4">
+                  {/* What this does */}
+                  <div className="rounded-xl border border-[#0A66C2]/20 bg-[#EFF6FF] dark:bg-[#0A66C2]/10 p-4 space-y-2">
+                    <p className="text-xs font-bold text-[#0A66C2] dark:text-[#38BDF8] flex items-center gap-1.5">
+                      <CheckCircle2 className="h-3.5 w-3.5" /> How this works
                     </p>
+                    <ul className="text-[11.5px] text-zinc-700 dark:text-zinc-300 space-y-1.5 leading-relaxed">
+                      <li className="flex items-start gap-1.5">
+                        <span className="text-[#0A66C2] mt-0.5">â†’</span>
+                        You click the button below and are taken to <strong>LinkedIn&apos;s official website</strong>.
+                      </li>
+                      <li className="flex items-start gap-1.5">
+                        <span className="text-[#0A66C2] mt-0.5">â†’</span>
+                        You enter your email &amp; password <strong>directly on LinkedIn.com</strong> â€” we never see it.
+                      </li>
+                      <li className="flex items-start gap-1.5">
+                        <span className="text-[#0A66C2] mt-0.5">â†’</span>
+                        LinkedIn sends us your name, email, and profile photo to link your account.
+                      </li>
+                    </ul>
                   </div>
 
-                  <div className="flex items-center justify-end gap-3 pt-2">
-                    <button
-                      type="button"
-                      onClick={() => setShowConnectModal(false)}
-                      className="rounded-xl border border-zinc-200 dark:border-white/10 px-4 py-2.5 text-xs font-semibold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800"
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      type="submit"
-                      disabled={connectingLinkedIn}
-                      className="inline-flex items-center gap-2 rounded-xl bg-[#0A66C2] hover:bg-[#004182] px-5 py-2.5 text-xs font-bold text-white shadow-md transition disabled:opacity-50"
-                    >
-                      {connectingLinkedIn ? <Loader2 className="h-4 w-4 animate-spin" /> : <Linkedin className="h-4 w-4" />}
-                      {connectingLinkedIn ? "Signing In..." : "Sign In & Connect"}
-                    </button>
+                  {/* Safety notice */}
+                  <div className="flex items-center gap-2 rounded-xl border border-emerald-500/20 bg-emerald-50/60 dark:bg-emerald-500/10 p-3 text-[11px] text-emerald-800 dark:text-emerald-300 font-medium">
+                    <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
+                    <span>
+                      <strong>100% Secure:</strong> Uses the same OAuth standard as &ldquo;Sign in with Google&rdquo;. Your password never touches our servers.
+                    </span>
                   </div>
-                </form>
+
+                  {/* The actual OAuth button */}
+                  <a
+                    href="/api/auth/signin/linkedin?callbackUrl=/dashboard/linkedin"
+                    className="flex w-full items-center justify-center gap-2.5 rounded-xl bg-[#0A66C2] hover:bg-[#004182] px-5 py-3 text-sm font-bold text-white shadow-md transition active:scale-[0.98] cursor-pointer"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-4 w-4 shrink-0"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                    >
+                      <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+                    </svg>
+                    Continue with LinkedIn
+                  </a>
+
+                  <p className="text-center text-[10.5px] text-zinc-400 dark:text-zinc-500">
+                    Need automation only? Use the <button type="button" className="text-[#0A66C2] dark:text-[#38BDF8] font-semibold hover:underline" onClick={() => setConnectTab("cookie")}>Session Cookie tab</button> instead.
+                  </p>
+                </div>
               ) : (
-                /* Cookie Option Form */
+                /* â”€â”€ Cookie Option Form â”€â”€ */
                 <form onSubmit={handleSaveNativeLinkedInConnection} className="space-y-4">
                   <div className="rounded-xl border border-blue-500/20 bg-blue-50/60 dark:bg-blue-500/10 p-3.5 text-xs text-blue-900 dark:text-blue-200 space-y-1.5">
                     <p className="font-bold flex items-center gap-1.5 text-blue-800 dark:text-blue-300">

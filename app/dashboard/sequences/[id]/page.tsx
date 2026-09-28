@@ -145,16 +145,47 @@ export default function SequenceEditor() {
 
       if (found) {
         found.stats = stats;
-        // If attached page has sequenceEmails, ensure bodies are synchronized
-        if (pageFound && pageFound.sequenceEmails && pageFound.sequenceEmails.length > 0) {
+        // Ensure email step metrics (sent & opened) and bodies are synchronized
+        if (found.emails && found.emails.length > 0) {
           found.emails = found.emails.map((e, idx) => {
-            const pageEmail = pageFound.sequenceEmails?.[idx];
+            const pageEmail = pageFound?.sequenceEmails?.[idx];
+            let stepDelivered = e.sent || 0;
+            let stepOpened = e.opened || 0;
+
+            if (associatedLeads.length > 0) {
+              const stepNum = idx + 1;
+              if (idx === 0) {
+                stepDelivered = Math.max(stepDelivered, liveDelivered);
+                stepOpened = Math.max(stepOpened, liveOpened);
+              } else {
+                const leadsAtStep = associatedLeads.filter((l) => {
+                  if (l.status === "completed") return true;
+                  if (!l.sequenceStep) return false;
+                  const match = l.sequenceStep.match(/Step\s+(\d+)/i) || l.sequenceStep.match(/Email\s+(\d+)/i);
+                  if (match) return parseInt(match[1], 10) >= stepNum;
+                  return l.sequenceStep.toLowerCase().includes("completed");
+                });
+                stepDelivered = Math.max(stepDelivered, leadsAtStep.length);
+                stepOpened = Math.max(
+                  stepOpened,
+                  leadsAtStep.filter((l) => l.status === "opened" || l.status === "replied").length
+                );
+              }
+            } else if (found.stats) {
+              if (idx === 0) {
+                stepDelivered = Math.max(stepDelivered, found.stats.delivered || 0);
+                stepOpened = Math.max(stepOpened, found.stats.opened || 0);
+              }
+            }
+
             return {
               ...e,
+              sent: stepDelivered,
+              opened: stepOpened,
               body:
                 (e as any).body ||
                 pageEmail?.body ||
-                `Hi {first_name},\n\nHope you find ${pageFound.name || "this resource"} valuable!\n\nBest regards,`,
+                `Hi {first_name},\n\nHope you find ${pageFound?.name || "this resource"} valuable!\n\nBest regards,`,
             };
           });
         }
@@ -182,14 +213,32 @@ export default function SequenceEditor() {
                     ? `${Math.round(delayMinutes / 60)} hour${Math.round(delayMinutes / 60) > 1 ? "s" : ""} later`
                     : `${Math.round(delayMinutes / 1440)} day${Math.round(delayMinutes / 1440) > 1 ? "s" : ""} later`;
 
+                const stepNum = idx + 1;
+                let stepDelivered = 0;
+                let stepOpened = 0;
+                if (idx === 0) {
+                  stepDelivered = liveDelivered;
+                  stepOpened = liveOpened;
+                } else {
+                  const leadsAtStep = associatedLeads.filter((l) => {
+                    if (l.status === "completed") return true;
+                    if (!l.sequenceStep) return false;
+                    const match = l.sequenceStep.match(/Step\s+(\d+)/i) || l.sequenceStep.match(/Email\s+(\d+)/i);
+                    if (match) return parseInt(match[1], 10) >= stepNum;
+                    return l.sequenceStep.toLowerCase().includes("completed");
+                  });
+                  stepDelivered = leadsAtStep.length;
+                  stepOpened = leadsAtStep.filter((l) => l.status === "opened" || l.status === "replied").length;
+                }
+
                 return {
                   id: e.id || `se_${pageFound.id}_${idx + 1}`,
                   subject: e.subject || `Follow-up #${idx + 1}`,
                   delayLabel,
                   delayMinutes,
                   status: (pageFound.sequenceEnabled === false ? "draft" : "live") as "draft" | "live",
-                  sent: liveDelivered,
-                  opened: liveOpened,
+                  sent: stepDelivered,
+                  opened: stepOpened,
                   body:
                     e.body ||
                     `Hi {first_name},\n\nHere is your link to ${pageFound.name}.\n\nBest regards,`,
