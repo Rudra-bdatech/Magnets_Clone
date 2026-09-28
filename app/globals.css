@@ -1170,3 +1170,70 @@ textarea {
 .dark .ProseMirror hr {
   border-top-color: #27272a;
 }
+
+/* ─── Email Rendered & Preview Content Styling (Tables, Lists, Format) ────── */
+.email-rendered-content {
+  line-height: 1.65;
+}
+
+.email-rendered-content table {
+  border-collapse: collapse;
+  table-layout: auto;
+  width: 100%;
+  margin: 16px 0;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.dark .email-rendered-content table {
+  border-color: #27272a;
+}
+
+.email-rendered-content th,
+.email-rendered-content td {
+  border: 1px solid #e2e8f0;
+  padding: 10px 14px;
+  text-align: left;
+  vertical-align: top;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.dark .email-rendered-content th,
+.dark .email-rendered-content td {
+  border-color: #27272a;
+}
+
+.email-rendered-content th {
+  font-weight: 700;
+  background-color: #f8fafc;
+  color: #0f172a;
+}
+
+.dark .email-rendered-content th {
+  background-color: #1e1e24;
+  color: #f4f4f5;
+}
+
+.email-rendered-content td p,
+.email-rendered-content th p {
+  margin: 0 !important;
+  line-height: 1.5;
+}
+
+.email-rendered-content hr {
+  border: none;
+  border-top: 1px solid #e2e8f0;
+  margin: 20px 0;
+}
+
+.dark .email-rendered-content hr {
+  border-top-color: #27272a;
+}
+
+.email-rendered-content img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+}

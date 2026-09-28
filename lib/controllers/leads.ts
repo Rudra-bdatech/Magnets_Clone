@@ -346,6 +346,27 @@ export async function handleAddLead(data: any, req: Request, normEmail: string |
             '<a href="$1" target="_blank" style="color: #0066B2; text-decoration: underline; font-weight: 500; word-break: break-all;">$1</a>'
           );
 
+          // Inline email client compatible table formatting
+          formattedBodyHtml = formattedBodyHtml
+            .replace(/<table(\s+[^>]*)?>/gi, (match: string) => {
+              if (match.includes('style="')) {
+                return match.replace('style="', 'style="border-collapse: collapse; width: 100%; margin: 16px 0; border: 1px solid #e2e8f0; ');
+              }
+              return '<table cellpadding="10" cellspacing="0" border="1" style="border-collapse: collapse; width: 100%; margin: 16px 0; border: 1px solid #e2e8f0;">';
+            })
+            .replace(/<th(\s+[^>]*)?>/gi, (match: string) => {
+              if (match.includes('style="')) {
+                return match.replace('style="', 'style="border: 1px solid #e2e8f0; padding: 10px 14px; background-color: #f8fafc; color: #0f172a; font-weight: 700; text-align: left; vertical-align: top; font-size: 13px; ');
+              }
+              return '<th style="border: 1px solid #e2e8f0; padding: 10px 14px; background-color: #f8fafc; color: #0f172a; font-weight: 700; text-align: left; vertical-align: top; font-size: 13px;">';
+            })
+            .replace(/<td(\s+[^>]*)?>/gi, (match: string) => {
+              if (match.includes('style="')) {
+                return match.replace('style="', 'style="border: 1px solid #e2e8f0; padding: 10px 14px; color: #334155; text-align: left; vertical-align: top; font-size: 13px; ');
+              }
+              return '<td style="border: 1px solid #e2e8f0; padding: 10px 14px; color: #334155; text-align: left; vertical-align: top; font-size: 13px;">';
+            });
+
           const preheaderHtml = previewText
             ? `<div style="display:none;font-size:1px;color:#ffffff;line-height:1px;max-height:0px;max-width:0px;opacity:0;overflow:hidden;">${previewText}</div>`
             : "";
@@ -357,6 +378,13 @@ export async function handleAddLead(data: any, req: Request, normEmail: string |
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>${subject}</title>
+  <style>
+    table { border-collapse: collapse; width: 100%; margin: 16px 0; }
+    th, td { border: 1px solid #e2e8f0; padding: 10px 14px; text-align: left; vertical-align: top; font-size: 13px; line-height: 1.5; }
+    th { background-color: #f8fafc; font-weight: 700; color: #0f172a; }
+    td p, th p { margin: 0 !important; line-height: 1.5; }
+    hr { border: none; border-top: 1px solid #e2e8f0; margin: 20px 0; }
+  </style>
 </head>
 <body style="margin: 0; padding: 0; background-color: #f1f5f9; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;">
   ${preheaderHtml}

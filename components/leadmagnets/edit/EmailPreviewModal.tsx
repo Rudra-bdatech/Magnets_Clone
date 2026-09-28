@@ -152,7 +152,7 @@ export default function EmailPreviewModal({
 
               {/* Email Body Text */}
               <div
-                className={`text-sm leading-relaxed ${isDark ? "text-zinc-300" : "text-zinc-700"} [&_p]:mb-2 [&_strong]:font-bold [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5`}
+                className={`text-sm leading-relaxed email-rendered-content ${isDark ? "text-zinc-300" : "text-zinc-700"} [&_p]:mb-2 [&_strong]:font-bold [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5`}
                 dangerouslySetInnerHTML={{
                   __html: (() => {
                     const raw = (emailBody || "Hey {name},\n\nThank you for requesting this resource! Click the link below to get instant access:\n\nhttps://magnets.bdatech.in/r/sample\n\nEnjoy!")

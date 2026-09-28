@@ -146,7 +146,7 @@ export default function SequencePreviewModal({
                 {/* Inner Email Body Content */}
                 <div className="p-6 sm:p-8 space-y-6">
                   <div
-                    className="text-xs text-zinc-800 leading-relaxed [&_p]:mb-2 [&_strong]:font-bold [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5"
+                    className="text-xs text-zinc-800 leading-relaxed email-rendered-content [&_p]:mb-2 [&_strong]:font-bold [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5"
                     dangerouslySetInnerHTML={{
                       __html: (() => {
                         const rawBody = previewSequenceIndex === 0
