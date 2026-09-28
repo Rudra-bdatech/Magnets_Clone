@@ -99,28 +99,14 @@ export async function POST(req: NextRequest) {
     // 3. Connect to Database
     await dbConnect();
 
-    // 4. Per-User Secret Validation (Production-Grade)
-    // Instead of a single global env-var secret, each account has its own
-    // unique secret stored in their Account document.
-    // We look up which account owns this secret using timing-safe comparison.
-    //
-    // NOTE: We fetch all accounts with a non-empty secret and compare safely.
-    // This is acceptable at this scale. For very large user bases (10k+),
-    // MongoDB's indexed lookup would be used instead.
-    const accounts = await AccountModel.find(
-      { linkedinWebhookSecret: { $ne: "", $exists: true } },
+    // 4. Per-User Secret Validation (Production-Grade, Indexed Lookup)
+    // Direct indexed point-lookup using AccountSchema's linkedinWebhookSecret index.
+    const ownerAccount: any = await AccountModel.findOne(
+      { linkedinWebhookSecret: incomingSecret },
       { email: 1, linkedinWebhookSecret: 1, username: 1, notifyEmail: 1, leadAlertsEnabled: 1, name: 1 }
     ).lean();
 
-    let ownerAccount: any = null;
-    for (const acc of accounts) {
-      if (acc.linkedinWebhookSecret && safeCompare(incomingSecret, acc.linkedinWebhookSecret)) {
-        ownerAccount = acc;
-        break;
-      }
-    }
-
-    if (!ownerAccount) {
+    if (!ownerAccount || !safeCompare(incomingSecret, ownerAccount.linkedinWebhookSecret || "")) {
       const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
       console.warn(`[LinkedIn Webhook] Unauthorized attempt from IP: ${ip}`);
       return NextResponse.json(

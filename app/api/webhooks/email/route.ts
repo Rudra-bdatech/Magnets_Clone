@@ -91,59 +91,78 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // Process & store all standardized events
-    for (const ev of processedEvents) {
-      const eventId = `ev_wh_${crypto.randomBytes(8).toString("hex")}`;
-      await EmailEventModel.create({
-        id: eventId,
-        userEmail: ev.userEmail,
-        leadId: ev.leadId,
-        pageId: ev.pageId,
-        sequenceId: ev.sequenceId,
-        stepId: ev.stepId,
-        eventType: ev.eventType,
-        recipientEmail: ev.recipientEmail,
-        messageId: ev.messageId,
-        linkUrl: ev.linkUrl,
-        createdAt: new Date(),
-      });
+    // Process & store all standardized events concurrently
+    await Promise.all(
+      processedEvents.map(async (ev) => {
+        const eventId = `ev_wh_${crypto.randomBytes(8).toString("hex")}`;
+        const createEventPromise = EmailEventModel.create({
+          id: eventId,
+          userEmail: ev.userEmail,
+          leadId: ev.leadId,
+          pageId: ev.pageId,
+          sequenceId: ev.sequenceId,
+          stepId: ev.stepId,
+          eventType: ev.eventType,
+          recipientEmail: ev.recipientEmail,
+          messageId: ev.messageId,
+          linkUrl: ev.linkUrl,
+          createdAt: new Date(),
+        });
 
-      // Update Lead Status
-      if (ev.leadId) {
-        const lead = await LeadModel.findOne({ id: ev.leadId });
-        if (lead) {
-          if (ev.eventType === "opened" && (lead.status === "new" || lead.status === "delivered")) {
-            lead.status = "opened";
-            await lead.save();
+        // Atomic Lead Status Update
+        let updateLeadPromise: Promise<any> | null = null;
+        if (ev.leadId) {
+          if (ev.eventType === "opened") {
+            updateLeadPromise = LeadModel.updateOne(
+              { id: ev.leadId, status: { $in: ["new", "delivered"] } },
+              { $set: { status: "opened" } }
+            );
           } else if (ev.eventType === "bounced") {
-            lead.status = "stopped";
-            await lead.save();
+            updateLeadPromise = LeadModel.updateOne(
+              { id: ev.leadId },
+              { $set: { status: "stopped" } }
+            );
+          }
+        } else if (ev.recipientEmail) {
+          const query: any = { email: ev.recipientEmail };
+          if (ev.pageId) query.pageId = ev.pageId;
+
+          if (ev.eventType === "opened") {
+            updateLeadPromise = LeadModel.updateOne(
+              { ...query, status: { $in: ["new", "delivered"] } },
+              { $set: { status: "opened" } }
+            );
+          } else if (ev.eventType === "bounced") {
+            updateLeadPromise = LeadModel.updateOne(
+              query,
+              { $set: { status: "stopped" } }
+            );
           }
         }
-      } else if (ev.recipientEmail) {
-        const query: any = { email: ev.recipientEmail };
-        if (ev.pageId) query.pageId = ev.pageId;
-        const lead = await LeadModel.findOne(query);
-        if (lead) {
-          if (ev.eventType === "opened" && (lead.status === "new" || lead.status === "delivered")) {
-            lead.status = "opened";
-            await lead.save();
-          } else if (ev.eventType === "bounced") {
-            lead.status = "stopped";
-            await lead.save();
+
+        // Atomic Sequence Stats Update
+        let updateSequencePromise: Promise<any> | null = null;
+        if (ev.sequenceId) {
+          if (ev.eventType === "opened") {
+            updateSequencePromise = SequenceModel.updateOne(
+              { id: ev.sequenceId },
+              { $inc: { "stats.opened": 1 } }
+            );
+          } else if (ev.eventType === "delivered") {
+            updateSequencePromise = SequenceModel.updateOne(
+              { id: ev.sequenceId },
+              { $inc: { "stats.delivered": 1 } }
+            );
           }
         }
-      }
 
-      // Update Sequence Aggregated Stats
-      if (ev.sequenceId) {
-        if (ev.eventType === "opened") {
-          await SequenceModel.updateOne({ id: ev.sequenceId }, { $inc: { "stats.opened": 1 } });
-        } else if (ev.eventType === "delivered") {
-          await SequenceModel.updateOne({ id: ev.sequenceId }, { $inc: { "stats.delivered": 1 } });
-        }
-      }
-    }
+        await Promise.all([
+          createEventPromise,
+          updateLeadPromise,
+          updateSequencePromise,
+        ].filter(Boolean));
+      })
+    );
 
     return NextResponse.json({
       success: true,

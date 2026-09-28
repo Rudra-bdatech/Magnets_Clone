@@ -71,6 +71,7 @@ const AccountSchema = new Schema({
 });
 
 AccountSchema.index({ resetPasswordToken: 1 });
+AccountSchema.index({ linkedinWebhookSecret: 1 });
 
 // MagnetPage Schema
 const MagnetPageSchema = new Schema({
