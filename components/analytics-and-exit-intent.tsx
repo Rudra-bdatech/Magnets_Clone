@@ -76,6 +76,62 @@ export default function AnalyticsAndExitIntent({
     }
   }, [faviconUrl, pageId, isVariantB, isOwner]);
 
+  // Live Auto-Refresh when creator edits this lead magnet or switches back to this tab
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const pageMountTime = Date.now();
+    let bc: BroadcastChannel | null = null;
+    let reloadTimer: any = null;
+
+    const performAutoRefresh = () => {
+      if (reloadTimer) clearTimeout(reloadTimer);
+      reloadTimer = setTimeout(() => {
+        window.location.reload();
+      }, 250);
+    };
+
+    // 1. Instant cross-tab sync via BroadcastChannel
+    if ("BroadcastChannel" in window) {
+      try {
+        bc = new BroadcastChannel("leadmagnets_live_sync");
+        bc.onmessage = (event) => {
+          if (
+            event.data?.type === "PAGES_UPDATED" ||
+            event.data?.type === "PAGE_UPDATED" ||
+            event.data?.type === "BRAND_UPDATED"
+          ) {
+            if (!event.data.pageId || !pageId || event.data.pageId === pageId) {
+              performAutoRefresh();
+            }
+          }
+        };
+      } catch (_) {}
+    }
+
+    // 2. Automatic refresh on tab focus / visibility change if saved in another tab
+    const handleTabActive = () => {
+      if (document.visibilityState === "visible") {
+        try {
+          const lastSync = localStorage.getItem("leadmagnets_last_sync");
+          if (lastSync && Number(lastSync) > pageMountTime) {
+            performAutoRefresh();
+          }
+        } catch (_) {}
+      }
+    };
+
+    window.addEventListener("focus", handleTabActive);
+    document.addEventListener("visibilitychange", handleTabActive);
+
+    return () => {
+      if (bc) bc.close();
+      if (reloadTimer) clearTimeout(reloadTimer);
+      window.removeEventListener("focus", handleTabActive);
+      document.removeEventListener("visibilitychange", handleTabActive);
+    };
+  }, [pageId]);
+
   // Exit-Intent detection (detect cursor moving to top of window)
   useEffect(() => {
     if (dismissed) return;

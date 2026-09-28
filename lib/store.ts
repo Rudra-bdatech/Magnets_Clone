@@ -40,6 +40,14 @@ export function loadPages(): MagnetPage[] {
 export function savePages(pages: MagnetPage[]) {
   if (typeof window !== "undefined") {
     safeSetItem("currentUserPages", JSON.stringify(pages));
+    try {
+      localStorage.setItem("leadmagnets_last_sync", Date.now().toString());
+      if ("BroadcastChannel" in window) {
+        const bc = new BroadcastChannel("leadmagnets_live_sync");
+        bc.postMessage({ type: "PAGES_UPDATED", timestamp: Date.now() });
+        bc.close();
+      }
+    } catch (_) {}
     const email = localStorage.getItem("currentUserEmail");
     fetch("/api/data", {
       method: "POST",
@@ -240,6 +248,14 @@ export async function saveAccount(account: Account): Promise<{ success: boolean;
       delete sanitized.password;
       safeSetItem("currentUserAccount", JSON.stringify(sanitized));
       if (account.email) safeSetItem("currentUserEmail", account.email.trim().toLowerCase());
+      try {
+        localStorage.setItem("leadmagnets_last_sync", Date.now().toString());
+        if ("BroadcastChannel" in window) {
+          const bc = new BroadcastChannel("leadmagnets_live_sync");
+          bc.postMessage({ type: "BRAND_UPDATED", timestamp: Date.now() });
+          bc.close();
+        }
+      } catch (_) {}
     }
     return { success: true, account: cleanAccount };
   } catch (error: any) {

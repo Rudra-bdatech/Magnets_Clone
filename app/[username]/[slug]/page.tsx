@@ -5,8 +5,8 @@ import MagnetSignupForm from "@/components/magnet-signup-form";
 import AnalyticsAndExitIntent from "@/components/analytics-and-exit-intent";
 import { dbConnect } from "@/lib/mongodb";
 import { MagnetPageModel, AccountModel } from "@/lib/models";
-import { type MagnetPage } from "@/lib/data";
 import { verifySessionToken } from "@/lib/session-token";
+import { Check } from "lucide-react";
 
 
 export const dynamic = "force-dynamic";
@@ -896,24 +896,29 @@ export default async function MagnetPageRoute({
                 )}
 
                 {page.bullets && page.bullets.length > 0 && (
-                  <div className="space-y-2 pt-2">
+                  <div className="space-y-3 pt-2">
                     <p className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-[#9B9085]">
                       {page.bulletsTitle || "What you will learn"}
                     </p>
-                    <ul className="space-y-2">
+                    <ul className="space-y-2.5">
                       {page.bullets.map((line, idx) => (
-                        <li key={idx} className="flex items-start gap-3 text-xs sm:text-sm md:text-base">
+                        <li key={idx} className="flex items-center gap-2.5 text-xs sm:text-sm group">
                           <span
-                            className="flex h-4.5 w-4.5 shrink-0 items-center justify-center rounded-full mt-0.5 shadow-xs transition-all duration-300"
+                            className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full transition-all duration-300"
                             style={{
                               backgroundColor: brandColor,
-                              opacity: 0.9,
-                              boxShadow: highlightIntensity > 30 ? `0 0 ${Math.round(8 * (highlightIntensity / 100))}px ${brandColor}${Math.round((highlightIntensity / 100) * 0.7 * 255).toString(16).padStart(2, '0')}` : 'none'
+                              opacity: 0.5 + (highlightIntensity / 100) * 0.5,
+                              boxShadow:
+                                highlightIntensity > 30
+                                  ? `0 0 ${Math.round(14 * (highlightIntensity / 100))}px ${brandColor}${Math.round(
+                                      (highlightIntensity / 100) * 0.8 * 255
+                                    ).toString(16).padStart(2, "0")}`
+                                  : "none",
                             }}
                           >
-                            <CheckIcon className="h-2.5 w-2.5 text-white stroke-[3px]" />
+                            <Check className="h-3 w-3 text-white stroke-[3px]" />
                           </span>
-                          <span className={themeMode === "dark" ? "text-zinc-200" : "text-zinc-800"}>
+                          <span className={themeMode === "dark" ? "text-zinc-300" : "text-zinc-700"}>
                             {line}
                           </span>
                         </li>
