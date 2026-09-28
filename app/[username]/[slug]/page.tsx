@@ -749,11 +749,11 @@ export default async function MagnetPageRoute({
             </div>
           </div>
         ) : ((page.template as string) === "template6" || (page.template as string) === "template7" || (!page.template && ((accountDoc?.templateId as string) === "template6" || (accountDoc?.templateId as string) === "template7"))) ? (
-          /* TEMPLATE 6: Spotlight Hero */
-          <div className="w-full max-w-7xl mx-auto flex-1 flex flex-col justify-center py-2 sm:py-4">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 items-center">
+          /* TEMPLATE 6: Spotlight Hero (Full Desktop Viewport Split Layout) */
+          <div className="w-full flex-1 flex flex-col justify-center py-1 lg:py-2">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 xl:gap-14 items-center w-full">
               {/* LEFT: Full-bleed image panel */}
-              <div className="col-span-12 lg:col-span-6 relative overflow-hidden rounded-3xl shadow-2xl aspect-[4/3] max-h-[360px] min-h-[280px]">
+              <div className="col-span-12 lg:col-span-7 relative overflow-hidden rounded-3xl shadow-2xl min-h-[400px] sm:min-h-[460px] lg:min-h-[520px] xl:min-h-[580px] flex flex-col justify-end border border-black/10 dark:border-white/10 group">
                 {activeImageUrl && activeImageUrl.trim() !== "" ? (
                   <img src={activeImageUrl} alt={page.name} className="absolute inset-0 w-full h-full object-cover" />
                 ) : (
@@ -762,56 +762,72 @@ export default async function MagnetPageRoute({
                     style={{ background: `linear-gradient(155deg, ${brandColor}99 0%, #060610 55%, #12001a 100%)` }}
                   >
                     <div className="flex flex-col items-center gap-2 text-white/50">
-                      <SparklesIcon className="w-8 h-8" />
+                      <SparklesIcon className="w-10 h-10" />
                       <span className="text-xs uppercase font-bold tracking-wider">Spotlight Cover</span>
                     </div>
                   </div>
                 )}
-                {/* Bottom scrim */}
-                <div className="absolute inset-0 pointer-events-none" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.75) 0%, transparent 60%)" }} />
-                {/* Headline overlay at bottom */}
-                <div className="absolute bottom-0 left-0 right-0 p-5 z-10 space-y-1">
-                  <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-white leading-tight drop-shadow-xl">{activeHeadline}</h2>
-                  {page.subheadline && <p className="text-xs sm:text-sm text-white/80 line-clamp-1 drop-shadow">{page.subheadline}</p>}
+                {/* Cinematic scrim overlays */}
+                <div className="absolute inset-0 pointer-events-none" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.45) 50%, transparent 80%)" }} />
+                <div className="absolute inset-0 pointer-events-none" style={{ background: `linear-gradient(to right, ${brandColor}33 0%, transparent 60%)` }} />
+
+                {/* Headline & subheadline overlay at bottom */}
+                <div className="relative z-10 p-6 sm:p-8 md:p-10 space-y-2">
+                  <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-[2.4rem] xl:text-[3rem] font-black text-white leading-tight drop-shadow-2xl">
+                    {activeHeadline}
+                  </h1>
+                  {page.subheadline && (
+                    <p className="text-sm sm:text-base md:text-lg text-white/90 font-medium max-w-2xl leading-relaxed drop-shadow">
+                      {page.subheadline}
+                    </p>
+                  )}
+                  {page.pitch && (
+                    <p className="text-xs sm:text-sm text-white/75 leading-relaxed max-w-xl line-clamp-2">
+                      {page.pitch}
+                    </p>
+                  )}
                 </div>
               </div>
 
               {/* RIGHT: Form and details */}
-              <div className="col-span-12 lg:col-span-6 flex flex-col justify-center space-y-3.5">
-                {/* Header */}
-                <div className="space-y-0.5">
-                  <p className="text-[10px] font-black uppercase tracking-[0.2em]" style={{ color: brandColor }}>
-                    {page.bulletsTitle || "Exclusive · Free Access"}
-                  </p>
+              <div className="col-span-12 lg:col-span-5 flex flex-col justify-center space-y-4 w-full">
+                {/* Eyebrow & header */}
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <span className="h-1.5 w-1.5 rounded-full animate-pulse" style={{ backgroundColor: brandColor, boxShadow: `0 0 8px ${brandColor}` }} />
+                    <span className="text-[10px] font-black uppercase tracking-[0.2em]" style={{ color: brandColor }}>
+                      {page.bulletsTitle || "Exclusive · Free Access"}
+                    </span>
+                  </div>
                   {page.formTitle && (
-                    <h3 className={`text-lg sm:text-xl font-black leading-tight ${themeMode === "dark" ? "text-white" : "text-zinc-900"}`}>{page.formTitle}</h3>
+                    <h3 className={`text-xl sm:text-2xl font-black leading-tight ${themeMode === "dark" ? "text-white" : "text-zinc-900"}`}>{page.formTitle}</h3>
                   )}
                   {page.formSubtitle && (
-                    <p className={`text-xs leading-relaxed ${themeMode === "dark" ? "text-zinc-400" : "text-zinc-500"}`}>{page.formSubtitle}</p>
+                    <p className={`text-xs sm:text-sm leading-relaxed ${themeMode === "dark" ? "text-zinc-400" : "text-zinc-500"}`}>{page.formSubtitle}</p>
                   )}
                 </div>
 
                 {/* Bullet list */}
                 {page.bullets && page.bullets.length > 0 && (
-                  <div className="space-y-1.5">
+                  <div className="space-y-2 pt-1 border-t border-zinc-200/20 dark:border-zinc-800/40">
                     {page.bullets.map((item: string, idx: number) => (
                       <div key={idx} className="flex items-start gap-2.5">
                         <div
-                          className="flex h-3.5 w-3.5 shrink-0 mt-0.5 items-center justify-center rounded-full"
+                          className="flex h-4 w-4 shrink-0 mt-0.5 items-center justify-center rounded-full"
                           style={{ backgroundColor: `${brandColor}22`, border: `1px solid ${brandColor}55` }}
                         >
-                          <svg width="6" height="6" viewBox="0 0 6 6" fill="none">
-                            <path d="M1 3l1.5 1.5L5 1.5" stroke={brandColor} strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
+                          <svg width="7" height="7" viewBox="0 0 7 7" fill="none">
+                            <path d="M1 3.5l1.7 1.7L6 1.5" stroke={brandColor} strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
                           </svg>
                         </div>
-                        <span className={`text-xs sm:text-sm leading-relaxed ${themeMode === "dark" ? "text-zinc-300" : "text-zinc-600"}`}>{item}</span>
+                        <span className={`text-xs sm:text-sm md:text-base leading-relaxed ${themeMode === "dark" ? "text-zinc-300" : "text-zinc-600"}`}>{item}</span>
                       </div>
                     ))}
                   </div>
                 )}
 
                 {/* Form */}
-                <div className="pt-1">
+                <div className="pt-1 w-full">
                   <MagnetSignupForm
                     cta={page.cta}
                     formTitle=""
@@ -835,6 +851,13 @@ export default async function MagnetPageRoute({
                     afterSignupOption={page.afterSignupOption}
                     destinationUrl={page.destinationUrl}
                   />
+                  {page.deliverable && (
+                    <p className={`mt-1.5 flex items-center justify-center gap-1.5 text-[11px] sm:text-xs font-medium ${themeMode === "dark" ? "text-zinc-400" : "text-zinc-600"
+                      }`}>
+                      <GiftIcon className="h-3.5 w-3.5" />
+                      {page.deliverable}
+                    </p>
+                  )}
                 </div>
               </div>
             </div>
