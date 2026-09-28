@@ -729,7 +729,7 @@ export default function SequenceTab({
                                   type="button"
                                   onClick={() => {
                                     if (editor) {
-                                      editor.chain().focus().insertContent(`<p><a href="${res.url}" target="_blank" rel="noopener noreferrer">${res.name} (${res.url})</a></p>`).run();
+                                      editor.chain().focus().insertContent(`<p><a href="${res.url}" target="_blank" rel="noopener noreferrer">${res.name}</a></p>`).run();
                                     }
                                     setShowInsertResourceMenu(false);
                                   }}
