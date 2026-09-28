@@ -223,20 +223,12 @@ export async function GET(req: NextRequest) {
               ${formattedBodyHtml}
             </div>
 
-            <!-- Resource CTA Button -->
-            <div style="text-align: center; margin: 26px 0 18px 0;">
-              <a href="${accessUrl}" style="background: linear-gradient(135deg, ${brandColor} 0%, #004d88 100%); color: #ffffff; padding: 13px 32px; text-decoration: none; border-radius: 10px; font-weight: 700; font-size: 14px; display: inline-block; box-shadow: 0 4px 14px rgba(0, 102, 178, 0.28); letter-spacing: 0.01em;">
-                📥 Access Resource →
-              </a>
-            </div>
-
             <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 28px 0 16px 0;" />
             <table cellpadding="0" cellspacing="0" border="0" style="width: 100%; text-align: center;">
               <tr>
                 <td>
                   <div style="font-size: 11px; color: #94a3b8; line-height: 1.5;">
-                    Sent by <strong>${senderName}</strong> · Powered by LeadMagnets<br />
-                    <a href="${accessUrl}" style="color: #0066B2; text-decoration: underline;">Direct Resource Access</a>
+                    Sent by <strong>${senderName}</strong> · Powered by LeadMagnets
                   </div>
                 </td>
               </tr>
