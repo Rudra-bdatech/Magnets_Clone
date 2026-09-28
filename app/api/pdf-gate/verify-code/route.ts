@@ -3,6 +3,17 @@ import { dbConnect } from "@/lib/mongodb";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { PdfOtpModel, MagnetPageModel, LeadModel, AccountModel } from "@/lib/models";
 import { createPdfUnlockToken } from "@/lib/session-token";
+import { timingSafeEqual, createHash } from "crypto";
+
+function safeCompare(a: string, b: string): boolean {
+  try {
+    const bufA = Buffer.from(createHash("sha256").update(String(a)).digest("hex"));
+    const bufB = Buffer.from(createHash("sha256").update(String(b)).digest("hex"));
+    return bufA.length === bufB.length && timingSafeEqual(bufA, bufB);
+  } catch {
+    return false;
+  }
+}
 
 export const dynamic = "force-dynamic";
 
@@ -72,7 +83,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    if (otpRecord.code !== code) {
+    if (!safeCompare(otpRecord.code, code)) {
       return NextResponse.json(
         { error: "Incorrect code. Please check your email and try again." },
         { status: 400 }
