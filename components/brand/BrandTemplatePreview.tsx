@@ -733,31 +733,33 @@ const BrandTemplatePreview = memo(function BrandTemplatePreview({
                 {latestPage?.formTitle || "Get your free copy now"}
               </p>
 
-              <input
-                type="text"
-                placeholder={latestPage?.namePlaceholder || "Name *"}
-                readOnly
-                className="w-full rounded-xl border border-zinc-200 dark:border-[#252529] bg-white dark:bg-[#18181C] px-3.5 py-2.5 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 outline-none transition shadow-xs"
-              />
-              <input
-                type="email"
-                placeholder={latestPage?.emailPlaceholder || "Email *"}
-                readOnly
-                className="w-full rounded-xl border border-zinc-200 dark:border-[#252529] bg-white dark:bg-[#18181C] px-3.5 py-2.5 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 outline-none transition shadow-xs"
-              />
+              <div className={latestPage?.customFormFields && latestPage.customFormFields.length > 0 ? "grid grid-cols-1 sm:grid-cols-2 gap-2.5" : "grid grid-cols-1 sm:grid-cols-2 gap-2.5"}>
+                <input
+                  type="text"
+                  placeholder={latestPage?.namePlaceholder || "Name *"}
+                  readOnly
+                  className="w-full min-h-10 h-10 rounded-xl border border-zinc-200 dark:border-[#252529] bg-white dark:bg-[#18181C] px-3.5 py-2 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 outline-none transition shadow-xs"
+                />
+                <input
+                  type="email"
+                  placeholder={latestPage?.emailPlaceholder || "Email *"}
+                  readOnly
+                  className="w-full min-h-10 h-10 rounded-xl border border-zinc-200 dark:border-[#252529] bg-white dark:bg-[#18181C] px-3.5 py-2 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 outline-none transition shadow-xs"
+                />
 
-              {latestPage?.customFormFields && latestPage.customFormFields.length > 0 && (
-                latestPage.customFormFields.map((field) => (
-                  <div key={field.id}>
-                    <input
-                      type="text"
-                      placeholder={`${field.label}${field.required ? " *" : ""}`}
-                      readOnly
-                      className="w-full rounded-xl border border-zinc-200 dark:border-[#252529] bg-white dark:bg-[#18181C] px-3.5 py-2.5 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 outline-none transition shadow-xs"
-                    />
-                  </div>
-                ))
-              )}
+                {latestPage?.customFormFields && latestPage.customFormFields.length > 0 && (
+                  latestPage.customFormFields.map((field) => (
+                    <div key={field.id} className={field.type === "textarea" ? "col-span-1 sm:col-span-2" : ""}>
+                      <input
+                        type="text"
+                        placeholder={`${field.label}${field.required ? " *" : ""}`}
+                        readOnly
+                        className="w-full min-h-10 h-10 rounded-xl border border-zinc-200 dark:border-[#252529] bg-white dark:bg-[#18181C] px-3.5 py-2 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 outline-none transition shadow-xs"
+                      />
+                    </div>
+                  ))
+                )}
+              </div>
 
               <button
                 type="button"

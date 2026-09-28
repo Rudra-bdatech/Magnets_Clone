@@ -40,9 +40,9 @@ export default function Template5(props: TemplateProps) {
   const isDark = themeMode === "dark";
 
   return (
-    <div className="w-full max-w-5xl mx-auto space-y-0 py-1 relative">
+    <div className="w-full flex-1 flex flex-col justify-center py-1 lg:py-2 max-w-6xl xl:max-w-7xl mx-auto space-y-0 relative">
       {/* Full-bleed cover image header banner */}
-      <div className="relative w-full overflow-hidden rounded-3xl shadow-2xl border border-black/10 dark:border-white/10" style={{ paddingBottom: "45%", minHeight: "260px" }}>
+      <div className="relative w-full overflow-hidden rounded-3xl shadow-2xl border border-black/10 dark:border-white/10 min-h-[280px] sm:min-h-[340px] md:min-h-[380px] lg:min-h-[420px] flex items-end">
         {imageUrl && imageUrl.trim() !== "" ? (
           <img src={imageUrl} alt="Cover" className="absolute inset-0 w-full h-full object-cover" />
         ) : (
@@ -138,12 +138,12 @@ export default function Template5(props: TemplateProps) {
 
       {/* Floating glass form tray */}
       <div
-        className="relative z-20 mx-4 md:mx-8 -mt-5 mb-6 rounded-2xl p-5 space-y-4"
+        className="relative z-20 mx-4 sm:mx-8 md:mx-12 lg:mx-16 -mt-8 sm:-mt-10 md:-mt-14 rounded-3xl p-6 sm:p-8 space-y-5"
         style={{
           background: isDark ? "rgba(12,12,18,0.92)" : "rgba(255,255,255,0.96)",
           border: `1px solid ${isDark ? `${brandColor}30` : `${brandColor}20`}`,
           backdropFilter: "blur(20px)",
-          boxShadow: `0 8px 40px rgba(0,0,0,0.18)`
+          boxShadow: `0 12px 48px -12px rgba(0,0,0,0.35)`
         }}
       >
         {/* Pitch Area */}
@@ -158,10 +158,10 @@ export default function Template5(props: TemplateProps) {
               e.target.style.height = `${e.target.scrollHeight}px`;
             }}
             placeholder="Write a short pitch..."
-            className={`w-full text-xs leading-relaxed bg-transparent outline-none resize-none ${isDark ? "text-zinc-300 placeholder:text-zinc-500" : "text-zinc-600 placeholder:text-zinc-400"}`}
+            className={`w-full text-xs sm:text-sm leading-relaxed bg-transparent outline-none resize-none ${isDark ? "text-zinc-300 placeholder:text-zinc-500" : "text-zinc-600 placeholder:text-zinc-400"}`}
           />
         ) : pitch ? (
-          <p className={`text-xs leading-relaxed ${isDark ? "text-zinc-300" : "text-zinc-600"}`}>
+          <p className={`text-xs sm:text-sm leading-relaxed ${isDark ? "text-zinc-300" : "text-zinc-600"}`}>
             {pitch}
           </p>
         ) : null}
@@ -183,7 +183,7 @@ export default function Template5(props: TemplateProps) {
 
         {/* Bullets List */}
         {bullets && bullets.length > 0 ? (
-          <div className="space-y-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
             {bullets.map((item: string, idx: number) => (
               <div key={idx} className="flex items-center gap-2.5">
                 <div className="flex h-4 w-4 shrink-0 items-center justify-center rounded-md" style={{ background: `${brandColor}18`, border: `1px solid ${brandColor}44` }}>
@@ -195,7 +195,7 @@ export default function Template5(props: TemplateProps) {
                       type="text"
                       value={item}
                       onChange={(e) => { if (!bullets || !setBullets) return; const u = [...bullets]; u[idx] = e.target.value; setBullets(u); }}
-                      className={`w-full bg-transparent outline-none text-xs ${isDark ? "text-zinc-300" : "text-zinc-600"}`}
+                      className={`w-full bg-transparent outline-none text-xs sm:text-sm ${isDark ? "text-zinc-300" : "text-zinc-600"}`}
                       placeholder="Bullet point item..."
                     />
                     <button
@@ -208,7 +208,7 @@ export default function Template5(props: TemplateProps) {
                     </button>
                   </>
                 ) : (
-                  <span className={`text-xs ${isDark ? "text-zinc-300" : "text-zinc-600"}`}>
+                  <span className={`text-xs sm:text-sm ${isDark ? "text-zinc-300" : "text-zinc-600"}`}>
                     {item}
                   </span>
                 )}
@@ -233,7 +233,7 @@ export default function Template5(props: TemplateProps) {
         )}
 
         {/* Form Section */}
-        <div className="space-y-2 pt-2 border-t border-zinc-200/20 dark:border-zinc-800/40">
+        <div className="space-y-3 pt-3 border-t border-zinc-200/20 dark:border-zinc-800/40">
           {isEditor ? (
             <>
               {formTitle !== undefined && (
@@ -245,17 +245,20 @@ export default function Template5(props: TemplateProps) {
                   placeholder="Get your free copy now"
                 />
               )}
-              <input type="text" placeholder="Name *" readOnly className="w-full rounded-xl border border-zinc-200 dark:border-[#252529] bg-white dark:bg-[#18181C] px-3.5 py-2.5 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 outline-none transition shadow-xs" />
-              <input type="email" placeholder="Email *" readOnly className="w-full rounded-xl border border-zinc-200 dark:border-[#252529] bg-white dark:bg-[#18181C] px-3.5 py-2.5 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 outline-none transition shadow-xs" />
-              {customFormFields.map((field: any) => (
-                <input
-                  key={field.id}
-                  type="text"
-                  placeholder={`${field.label || "New Field"}${field.required ? " *" : ""}`}
-                  readOnly
-                  className="w-full rounded-xl border border-zinc-200 dark:border-[#252529] bg-white dark:bg-[#18181C] px-3.5 py-2.5 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 outline-none transition shadow-xs"
-                />
-              ))}
+              <div className={customFormFields && customFormFields.length > 0 ? "grid grid-cols-1 sm:grid-cols-2 gap-2.5" : "space-y-2.5"}>
+                <input type="text" placeholder="Name *" readOnly className="min-h-10 h-10 w-full rounded-xl border border-zinc-200 dark:border-[#252529] bg-white dark:bg-[#18181C] px-3.5 py-2 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 outline-none transition shadow-xs" />
+                <input type="email" placeholder="Email *" readOnly className="min-h-10 h-10 w-full rounded-xl border border-zinc-200 dark:border-[#252529] bg-white dark:bg-[#18181C] px-3.5 py-2 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 outline-none transition shadow-xs" />
+                {customFormFields.map((field: any) => (
+                  <div key={field.id} className={field.type === "textarea" ? "col-span-1 sm:col-span-2" : ""}>
+                    <input
+                      type="text"
+                      placeholder={`${field.label || "New Field"}${field.required ? " *" : ""}`}
+                      readOnly
+                      className="min-h-10 h-10 w-full rounded-xl border border-zinc-200 dark:border-[#252529] bg-white dark:bg-[#18181C] px-3.5 py-2 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 outline-none transition shadow-xs"
+                    />
+                  </div>
+                ))}
+              </div>
               <input
                 type="text"
                 value={formButtonText || ""}
@@ -273,48 +276,51 @@ export default function Template5(props: TemplateProps) {
                   }
                 }}
                 placeholder="Send it to me"
-                className="w-full text-center rounded-xl py-3 px-4 text-xs font-black text-white cursor-text mt-1 outline-none border-2 border-transparent hover:border-white/40 focus:border-white transition duration-150"
+                className="w-full text-center rounded-xl py-3 px-4 text-xs font-black text-white cursor-text mt-2 outline-none border-2 border-transparent hover:border-white/40 focus:border-white transition duration-150"
                 style={{ background: `linear-gradient(135deg, ${brandColor} 0%, ${brandColor}cc 100%)`, boxShadow: `0 6px 24px -4px ${brandColor}88` }}
               />
             </>
           ) : (
-            <form onSubmit={onSubmitPublicForm} className="space-y-2">
+            <form onSubmit={onSubmitPublicForm} className="space-y-3">
               {formTitle && (
                 <h4 className={`w-full text-center text-xs font-bold uppercase tracking-wider ${isDark ? "text-zinc-400" : "text-zinc-600"}`}>
                   {formTitle}
                 </h4>
               )}
-              <input
-                type="text"
-                required
-                placeholder="Name *"
-                value={publicFormValues.name || ""}
-                onChange={(e) => setPublicFormValues?.({ ...publicFormValues, name: e.target.value })}
-                className="w-full rounded-xl border border-zinc-200 dark:border-[#252529] bg-white dark:bg-[#18181C] px-3.5 py-2.5 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 outline-none transition shadow-xs"
-              />
-              <input
-                type="email"
-                required
-                placeholder="Email *"
-                value={publicFormValues.email || ""}
-                onChange={(e) => setPublicFormValues?.({ ...publicFormValues, email: e.target.value })}
-                className="w-full rounded-xl border border-zinc-200 dark:border-[#252529] bg-white dark:bg-[#18181C] px-3.5 py-2.5 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 outline-none transition shadow-xs"
-              />
-              {customFormFields.map((field: any) => (
+              <div className={customFormFields && customFormFields.length > 0 ? "grid grid-cols-1 sm:grid-cols-2 gap-2.5" : "space-y-2.5"}>
                 <input
-                  key={field.id}
                   type="text"
-                  required={field.required}
-                  placeholder={`${field.label}${field.required ? " *" : ""}`}
-                  value={publicFormValues[field.id] || ""}
-                  onChange={(e) => setPublicFormValues?.({ ...publicFormValues, [field.id]: e.target.value })}
-                  className="w-full rounded-xl border border-zinc-200 dark:border-[#252529] bg-white dark:bg-[#18181C] px-3.5 py-2.5 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 outline-none transition shadow-xs"
+                  required
+                  placeholder="Name *"
+                  value={publicFormValues.name || ""}
+                  onChange={(e) => setPublicFormValues?.({ ...publicFormValues, name: e.target.value })}
+                  className="min-h-10 h-10 w-full rounded-xl border border-zinc-200 dark:border-[#252529] bg-white dark:bg-[#18181C] px-3.5 py-2 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 outline-none transition shadow-xs"
                 />
-              ))}
+                <input
+                  type="email"
+                  required
+                  placeholder="Email *"
+                  value={publicFormValues.email || ""}
+                  onChange={(e) => setPublicFormValues?.({ ...publicFormValues, email: e.target.value })}
+                  className="min-h-10 h-10 w-full rounded-xl border border-zinc-200 dark:border-[#252529] bg-white dark:bg-[#18181C] px-3.5 py-2 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 outline-none transition shadow-xs"
+                />
+                {customFormFields.map((field: any) => (
+                  <div key={field.id} className={field.type === "textarea" ? "col-span-1 sm:col-span-2" : ""}>
+                    <input
+                      type="text"
+                      required={field.required}
+                      placeholder={`${field.label}${field.required ? " *" : ""}`}
+                      value={publicFormValues[field.id] || ""}
+                      onChange={(e) => setPublicFormValues?.({ ...publicFormValues, [field.id]: e.target.value })}
+                      className="min-h-10 h-10 w-full rounded-xl border border-zinc-200 dark:border-[#252529] bg-white dark:bg-[#18181C] px-3.5 py-2 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 outline-none transition shadow-xs"
+                    />
+                  </div>
+                ))}
+              </div>
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full text-center rounded-xl py-3 px-4 text-xs font-black text-white cursor-pointer mt-1 outline-none border-2 border-transparent hover:border-white/40 transition duration-150 disabled:opacity-50"
+                className="w-full text-center rounded-xl py-3 px-4 text-xs font-black text-white cursor-pointer mt-2 outline-none border-2 border-transparent hover:border-white/40 transition duration-150 disabled:opacity-50"
                 style={{ background: `linear-gradient(135deg, ${brandColor} 0%, ${brandColor}cc 100%)`, boxShadow: `0 6px 24px -4px ${brandColor}88` }}
               >
                 {isSubmitting ? "Submitting..." : (formButtonText || "Send it to me")}

@@ -658,9 +658,9 @@ export default async function MagnetPageRoute({
           </div>
         ) : ((page.template as string) === "template5" || (!page.template && (accountDoc?.templateId as string) === "template5")) ? (
           /* TEMPLATE 5: Magazine Cover Hero (Full Viewport / Stacked Tray matching Template5.tsx) */
-          <div className="w-full max-w-5xl mx-auto space-y-0">
+          <div className="w-full flex-1 flex flex-col justify-center py-2 sm:py-4 max-w-6xl xl:max-w-7xl mx-auto space-y-0">
             {/* Full-bleed cover image header banner */}
-            <div className="relative w-full h-44 sm:h-56 md:h-64 rounded-3xl overflow-hidden flex items-end shadow-2xl border border-black/10 dark:border-white/10">
+            <div className="relative w-full min-h-[280px] sm:min-h-[340px] md:min-h-[380px] lg:min-h-[420px] rounded-3xl overflow-hidden flex items-end shadow-2xl border border-black/10 dark:border-white/10">
               {activeImageUrl && activeImageUrl.trim() !== "" ? (
                 <img
                   src={activeImageUrl}
@@ -675,15 +675,15 @@ export default async function MagnetPageRoute({
               <div className="absolute inset-0 pointer-events-none" style={{ background: `linear-gradient(to right, ${brandColor}33 0%, transparent 60%)` }} />
 
               {/* Overlaid headline & subheadline */}
-              <div className="relative z-10 w-full p-5 sm:p-7 md:p-8 space-y-1.5">
-                <h1 className="text-2xl sm:text-3xl md:text-4xl font-black text-white leading-tight drop-shadow-xl">{activeHeadline}</h1>
-                {page.subheadline && <p className="text-white/85 text-xs sm:text-sm md:text-base max-w-3xl leading-relaxed drop-shadow">{page.subheadline}</p>}
+              <div className="relative z-10 w-full p-6 sm:p-8 md:p-10 space-y-2">
+                <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-[2.6rem] font-black text-white leading-tight drop-shadow-xl">{activeHeadline}</h1>
+                {page.subheadline && <p className="text-white/90 text-sm sm:text-base md:text-lg max-w-3xl leading-relaxed drop-shadow">{page.subheadline}</p>}
               </div>
             </div>
 
             {/* Floating glass form tray stacked underneath */}
             <div
-              className="relative z-20 mx-3 sm:mx-6 md:mx-8 -mt-6 rounded-2xl p-5 sm:p-6 space-y-3.5 shadow-2xl"
+              className="relative z-20 mx-4 sm:mx-8 md:mx-12 lg:mx-16 -mt-8 sm:-mt-10 md:-mt-14 rounded-3xl p-6 sm:p-8 space-y-5 shadow-2xl"
               style={{
                 background: themeMode === "dark" ? "rgba(12,12,18,0.94)" : "rgba(255,255,255,0.96)",
                 border: `1px solid ${themeMode === "dark" ? `${brandColor}35` : `${brandColor}25`}`,
@@ -693,7 +693,7 @@ export default async function MagnetPageRoute({
             >
               {/* Pitch Area */}
               {page.pitch && (
-                <p className={`text-xs sm:text-sm leading-relaxed ${themeMode === "dark" ? "text-zinc-300" : "text-zinc-700"}`}>
+                <p className={`text-xs sm:text-sm md:text-base leading-relaxed ${themeMode === "dark" ? "text-zinc-300" : "text-zinc-700"}`}>
                   {page.pitch}
                 </p>
               )}
@@ -701,17 +701,17 @@ export default async function MagnetPageRoute({
               {/* Bullets Section Header & List */}
               {((page.bullets && page.bullets.length > 0) || page.bulletsTitle) && (
                 <div className="space-y-2">
-                  <h3 className={`text-[10px] sm:text-xs font-bold uppercase tracking-wider ${themeMode === "dark" ? "text-zinc-400" : "text-zinc-500"}`}>
+                  <h3 className={`text-xs font-bold uppercase tracking-wider ${themeMode === "dark" ? "text-zinc-400" : "text-zinc-500"}`}>
                     {page.bulletsTitle || "What they will learn"}
                   </h3>
                   {page.bullets && page.bullets.length > 0 && (
-                    <div className="space-y-1.5">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                       {page.bullets.map((item: string, idx: number) => (
                         <div key={idx} className="flex items-center gap-2.5">
-                          <div className="flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded-md" style={{ background: `${brandColor}18`, border: `1px solid ${brandColor}44` }}>
-                            <svg width="6" height="6" viewBox="0 0 7 7" fill="none"><path d="M1 3.5l1.7 1.7L6 1.5" stroke={brandColor} strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                          <div className="flex h-4 w-4 shrink-0 items-center justify-center rounded-md" style={{ background: `${brandColor}18`, border: `1px solid ${brandColor}44` }}>
+                            <svg width="7" height="7" viewBox="0 0 7 7" fill="none"><path d="M1 3.5l1.7 1.7L6 1.5" stroke={brandColor} strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" /></svg>
                           </div>
-                          <span className={`text-xs sm:text-sm ${themeMode === "dark" ? "text-zinc-300" : "text-zinc-700"}`}>{item}</span>
+                          <span className={`text-xs sm:text-sm md:text-base ${themeMode === "dark" ? "text-zinc-300" : "text-zinc-700"}`}>{item}</span>
                         </div>
                       ))}
                     </div>
@@ -720,7 +720,7 @@ export default async function MagnetPageRoute({
               )}
 
               {/* Stacked Form */}
-              <div className="pt-2 border-t border-zinc-200/20 dark:border-zinc-800/40">
+              <div className="pt-3 border-t border-zinc-200/20 dark:border-zinc-800/40">
                 <MagnetSignupForm
                   cta={page.cta}
                   formTitle={page.formTitle}

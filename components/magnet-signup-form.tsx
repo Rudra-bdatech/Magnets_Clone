@@ -383,9 +383,9 @@ export default function MagnetSignupForm({
       ) : layout === "split-panel" ? (
         <div className="space-y-3 w-full">
           {formTitle && (
-            <h2 className={`w-full text-center text-lg sm:text-xl font-bold ${themeMode === "dark" ? "text-white" : "text-zinc-900"}`}>
+            <h4 className={`w-full text-center text-xs font-bold uppercase tracking-wider ${themeMode === "dark" ? "text-zinc-400" : "text-zinc-600"}`}>
               {formTitle}
-            </h2>
+            </h4>
           )}
           {formSubtitle && (
             <p className="w-full text-center text-xs text-zinc-400">
@@ -393,40 +393,87 @@ export default function MagnetSignupForm({
             </p>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-2.5 pt-2">
-            <input
-              type="text"
-              required
-              placeholder="Name *"
-              value={name}
-              disabled={loading}
-              onChange={(e) => setName(e.target.value)}
-              className="w-full rounded-xl border border-zinc-200 dark:border-[#252529] bg-white dark:bg-[#18181C] px-3.5 py-2.5 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 outline-none transition shadow-xs"
-            />
-            <input
-              type="email"
-              required
-              placeholder="Email *"
-              value={email}
-              disabled={loading}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full rounded-xl border border-zinc-200 dark:border-[#252529] bg-white dark:bg-[#18181C] px-3.5 py-2.5 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 outline-none transition shadow-xs"
-            />
+          <form onSubmit={handleSubmit} className="space-y-2.5 pt-1">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+              <input
+                type="text"
+                required
+                placeholder="Name *"
+                value={name}
+                disabled={loading}
+                onChange={(e) => setName(e.target.value)}
+                className="min-h-10 h-10 w-full rounded-xl border border-zinc-200 dark:border-[#252529] bg-white dark:bg-[#18181C] px-3.5 py-2 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 outline-none transition shadow-xs focus:border-[#0066B2]"
+              />
+              <input
+                type="email"
+                required
+                placeholder="Email *"
+                value={email}
+                disabled={loading}
+                onChange={(e) => setEmail(e.target.value)}
+                className="min-h-10 h-10 w-full rounded-xl border border-zinc-200 dark:border-[#252529] bg-white dark:bg-[#18181C] px-3.5 py-2 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 outline-none transition shadow-xs focus:border-[#0066B2]"
+              />
 
-            {customFormFields && customFormFields.length > 0 && (
-              customFormFields.map((field) => (
-                <input
-                  key={field.id}
-                  type="text"
-                  required={field.required}
-                  placeholder={`${field.label}${field.required ? " *" : ""}`}
-                  value={customFieldValues[field.id] || ""}
-                  disabled={loading}
-                  onChange={(e) => handleCustomFieldChange(field.id, e.target.value)}
-                  className="w-full rounded-xl border border-zinc-200 dark:border-[#252529] bg-white dark:bg-[#18181C] px-3.5 py-2.5 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 outline-none transition shadow-xs"
-                />
-              ))
-            )}
+              {customFormFields && customFormFields.length > 0 && (
+                customFormFields.map((field) => (
+                  <div
+                    key={field.id}
+                    className={field.type === "textarea" ? "col-span-1 sm:col-span-2" : ""}
+                  >
+                    {field.type === "textarea" ? (
+                      <textarea
+                        rows={2}
+                        required={field.required}
+                        placeholder={`${field.label}${field.required ? " *" : ""}`}
+                        value={customFieldValues[field.id] || ""}
+                        disabled={loading}
+                        onChange={(e) => handleCustomFieldChange(field.id, e.target.value)}
+                        className="w-full rounded-xl border border-zinc-200 dark:border-[#252529] bg-white dark:bg-[#18181C] px-3.5 py-2 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 outline-none transition shadow-xs focus:border-[#0066B2]"
+                      />
+                    ) : field.type === "select" ? (
+                      <select
+                        required={field.required}
+                        value={customFieldValues[field.id] || ""}
+                        disabled={loading}
+                        onChange={(e) => handleCustomFieldChange(field.id, e.target.value)}
+                        className="min-h-10 h-10 w-full rounded-xl border border-zinc-200 dark:border-[#252529] bg-white dark:bg-[#18181C] px-3.5 py-2 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 outline-none transition shadow-xs focus:border-[#0066B2]"
+                      >
+                        <option value="">{`${field.label}${field.required ? " *" : ""}`}</option>
+                        {(field.options || []).map((opt, idx) => (
+                          <option key={idx} value={opt}>
+                            {opt}
+                          </option>
+                        ))}
+                      </select>
+                    ) : field.type === "checkbox" ? (
+                      <label className="flex items-center gap-2 text-xs cursor-pointer h-10 px-1">
+                        <input
+                          type="checkbox"
+                          required={field.required}
+                          checked={!!customFieldValues[field.id]}
+                          disabled={loading}
+                          onChange={(e) => handleCustomFieldChange(field.id, e.target.checked)}
+                          className="rounded text-[#0066B2] focus:ring-[#0066B2]"
+                        />
+                        <span className={themeMode === "dark" ? "text-zinc-300" : "text-zinc-700"}>
+                          {field.label}{field.required ? " *" : ""}
+                        </span>
+                      </label>
+                    ) : (
+                      <input
+                        type={field.type === "number" ? "number" : "text"}
+                        required={field.required}
+                        placeholder={`${field.label}${field.required ? " *" : ""}`}
+                        value={customFieldValues[field.id] || ""}
+                        disabled={loading}
+                        onChange={(e) => handleCustomFieldChange(field.id, e.target.value)}
+                        className="min-h-10 h-10 w-full rounded-xl border border-zinc-200 dark:border-[#252529] bg-white dark:bg-[#18181C] px-3.5 py-2 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 outline-none transition shadow-xs focus:border-[#0066B2]"
+                      />
+                    )}
+                  </div>
+                ))
+              )}
+            </div>
 
             {enableAiPersonalizedDeliverable && (
               <div className="space-y-1">
@@ -454,8 +501,11 @@ export default function MagnetSignupForm({
             <button
               type="submit"
               disabled={loading}
-              className="w-full text-center rounded-xl py-3 px-4 text-xs font-extrabold text-white shadow-md transition duration-150 outline-none border-2 border-transparent hover:border-white/40 focus:border-white cursor-pointer mt-2 disabled:opacity-50"
-              style={{ backgroundColor: brandColor }}
+              className="w-full text-center rounded-xl py-3 px-4 text-xs font-black text-white shadow-md transition duration-150 outline-none border-2 border-transparent hover:border-white/40 focus:border-white cursor-pointer mt-2 disabled:opacity-50"
+              style={{
+                background: `linear-gradient(135deg, ${brandColor} 0%, ${brandColor}cc 100%)`,
+                boxShadow: `0 6px 24px -4px ${brandColor}88`
+              }}
             >
               {loading ? "Sending..." : (formButtonText || cta || "Send it to me")}
             </button>
