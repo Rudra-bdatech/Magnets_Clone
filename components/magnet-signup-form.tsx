@@ -47,7 +47,7 @@ export default function MagnetSignupForm({
   customFormFields?: CustomFormField[];
   username?: string;
   isVariantB?: boolean;
-  layout?: "standard" | "horizontal-glass" | "split-panel" | "editorial" | "monograph" | "brutalist" | "poster";
+  layout?: "standard" | "horizontal-glass" | "split-panel" | "editorial" | "monograph" | "brutalist" | "poster" | "collage-zine";
   afterSignupOption?: "standard" | "elsewhere" | "custom";
   destinationUrl?: string;
 }) {
@@ -263,6 +263,120 @@ export default function MagnetSignupForm({
             <span>📥 Click Here to Download Resource Immediately</span>
           </a>
         </div>
+      ) : layout === "collage-zine" ? (
+        (() => {
+          const isDark = themeMode === "dark";
+
+          return (
+            <div className="w-full" suppressHydrationWarning>
+              <form onSubmit={handleSubmit} className="space-y-2.5 font-dm-sans" suppressHydrationWarning>
+                <input
+                  required
+                  type="text"
+                  disabled={loading}
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="YOUR NAME"
+                  className="block w-full border-2 border-[#141414] p-3 text-xs font-dm-sans font-bold bg-white text-[#141414] placeholder:text-[#141414]/50 outline-none"
+                />
+                <input
+                  required
+                  type="email"
+                  disabled={loading}
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="EMAIL@ADDRESS.COM"
+                  className="block w-full border-2 border-[#141414] p-3 text-xs font-dm-sans font-bold bg-white text-[#141414] placeholder:text-[#141414]/50 outline-none"
+                />
+
+                {/* Custom Form Fields */}
+                {customFormFields &&
+                  customFormFields.map((field) => (
+                    <div key={field.id}>
+                      {field.type === "textarea" ? (
+                        <textarea
+                          rows={2}
+                          required={field.required}
+                          disabled={loading}
+                          value={customFieldValues[field.id] || ""}
+                          onChange={(e) => handleCustomFieldChange(field.id, e.target.value)}
+                          placeholder={`${(field.label || "DETAILS").toUpperCase()}${field.required ? " *" : ""}`}
+                          className="block w-full border-2 border-[#141414] p-3 text-xs font-dm-sans font-bold bg-white text-[#141414] placeholder:text-[#141414]/50 outline-none resize-none"
+                        />
+                      ) : field.type === "select" ? (
+                        <select
+                          required={field.required}
+                          disabled={loading}
+                          value={customFieldValues[field.id] || ""}
+                          onChange={(e) => handleCustomFieldChange(field.id, e.target.value)}
+                          className="block w-full border-2 border-[#141414] p-3 text-xs font-dm-sans font-bold bg-white text-[#141414] outline-none cursor-pointer"
+                        >
+                          <option value="">
+                            {`${(field.label || "SELECT OPTION").toUpperCase()}${field.required ? " *" : ""}`}
+                          </option>
+                          {(field.options || []).map((opt, idx) => (
+                            <option key={idx} value={opt}>
+                              {opt}
+                            </option>
+                          ))}
+                        </select>
+                      ) : (
+                        <input
+                          type={field.type || "text"}
+                          required={field.required}
+                          disabled={loading}
+                          value={customFieldValues[field.id] || ""}
+                          onChange={(e) => handleCustomFieldChange(field.id, e.target.value)}
+                          placeholder={`${(field.label || "FIELD").toUpperCase()}${field.required ? " *" : ""}`}
+                          className="block w-full border-2 border-[#141414] p-3 text-xs font-dm-sans font-bold bg-white text-[#141414] placeholder:text-[#141414]/50 outline-none"
+                        />
+                      )}
+                    </div>
+                  ))}
+
+                {/* AI Personalized Deliverable Field */}
+                {enableAiPersonalizedDeliverable && (
+                  <input
+                    type="text"
+                    required
+                    disabled={loading}
+                    value={customAnswer}
+                    onChange={(e) => setCustomAnswer(e.target.value)}
+                    placeholder={(customPromptPlaceholder || customPromptQuestion || "YOUR MAIN FOCUS / OBJECTIVE").toUpperCase()}
+                    className="block w-full border-2 border-[#141414] p-3 text-xs font-dm-sans font-bold bg-white text-[#141414] placeholder:text-[#141414]/50 outline-none"
+                  />
+                )}
+
+                {errorMsg && (
+                  <div className="p-2 border-2 border-red-500 bg-red-100 text-red-700 text-xs font-bold font-dm-sans">
+                    {errorMsg}
+                  </div>
+                )}
+
+                <div className="pt-2">
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className={`w-full border-2 border-[#141414] bg-[#f5ed21] hover:bg-[#faea00] text-[#141414] p-3.5 font-dm-sans font-extrabold text-xs sm:text-sm tracking-wider uppercase cursor-pointer transition-all disabled:opacity-50 ${
+                      isDark
+                        ? "shadow-[4px_4px_0px_#000000] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_#000000]"
+                        : "shadow-[4px_4px_0px_#141414] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_#141414]"
+                    }`}
+                  >
+                    {loading ? (
+                      <span className="flex items-center justify-center gap-2">
+                        <Loader2 className="h-4 w-4 animate-spin text-[#141414]" />
+                        <span>SENDING YOUR ZINE...</span>
+                      </span>
+                    ) : (
+                      formButtonText || cta || "YES, SEND IT! ↗"
+                    )}
+                  </button>
+                </div>
+              </form>
+            </div>
+          );
+        })()
       ) : layout === "poster" ? (
         (() => {
           const accentColor = brandColor || "#ff5038";

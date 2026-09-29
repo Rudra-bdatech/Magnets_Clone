@@ -1851,6 +1851,301 @@ const BrandTemplatePreview = memo(function BrandTemplatePreview({
           })()}
         </div>
       )}
+
+      {/* TEMPLATE 8: Collage Zine Layout */}
+      {templateId === "template8" && (
+        <div
+          className={`w-full transition-colors duration-200 border-2 overflow-hidden ${
+            themeMode === "dark"
+              ? "bg-[#15161d] border-[#2e303d] text-[#f4f4f5] shadow-[6px_6px_0px_#000000]"
+              : "bg-[#f8f4e9] border-[#141414] text-[#141414] shadow-[6px_6px_0px_#141414]"
+          }`}
+          style={{
+            fontFamily: "'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif",
+          }}
+        >
+          <style
+            dangerouslySetInnerHTML={{
+              __html: `
+                @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Shrikhand&display=swap');
+                .font-shrikhand {
+                  font-family: 'Shrikhand', cursive, serif;
+                }
+                .font-dm-sans {
+                  font-family: 'DM Sans', sans-serif;
+                }
+              `,
+            }}
+          />
+
+          {(() => {
+            const accentColor = brandColor || "#1554db";
+            const getContrastColor = (hexColor: string) => {
+              if (!hexColor || !hexColor.startsWith("#")) return "#ffffff";
+              const hex = hexColor.replace("#", "");
+              if (hex.length !== 6) return "#ffffff";
+              const r = parseInt(hex.substring(0, 2), 16) || 0;
+              const g = parseInt(hex.substring(2, 4), 16) || 0;
+              const b = parseInt(hex.substring(4, 6), 16) || 0;
+              const yiq = (r * 299 + g * 587 + b * 114) / 1000;
+              return yiq >= 135 ? "#141414" : "#ffffff";
+            };
+            const contrastOnAccent = getContrastColor(accentColor);
+
+            return (
+              <>
+                {/* 1. Masthead Header */}
+                <header
+                  className={`flex justify-between items-center px-4 py-3 sm:px-6 sm:py-3.5 border-b-2 transition-colors ${
+                    themeMode === "dark" ? "border-[#2e303d] bg-[#121319]" : "border-[#141414] bg-[#f8f4e9]"
+                  }`}
+                >
+                  <div className="flex items-center gap-2.5">
+                    {logo && (
+                      <img
+                        src={logo}
+                        alt="Logo"
+                        className={`h-6 w-6 object-cover border-2 shrink-0 ${
+                          themeMode === "dark" ? "border-[#2e303d]" : "border-[#141414]"
+                        }`}
+                      />
+                    )}
+                    <span
+                      className="font-shrikhand text-lg sm:text-xl tracking-wide"
+                      style={{
+                        color: themeMode === "dark" ? (accentColor !== "#1554db" ? accentColor : "#60a5fa") : accentColor,
+                      }}
+                    >
+                      {businessName || "Odd Hours"}
+                    </span>
+                  </div>
+
+                  <span
+                    className={`font-dm-sans text-[9px] sm:text-[10px] font-bold tracking-[0.14em] uppercase ${
+                      themeMode === "dark" ? "text-zinc-400" : "text-[#141414]"
+                    }`}
+                  >
+                    CREATIVE FIELD NOTES · #07
+                  </span>
+                </header>
+
+                {/* 2. Hero Section */}
+                <div className="grid grid-cols-1 md:grid-cols-12 min-h-[300px]">
+                  {/* Poster Left */}
+                  <div
+                    className={`md:col-span-5 relative min-h-[220px] sm:min-h-[260px] border-b-2 md:border-b-0 md:border-r-2 overflow-hidden flex items-center justify-center ${
+                      themeMode === "dark" ? "border-[#2e303d] bg-[#1a1b24]" : "border-[#141414] bg-[#f5ed21]"
+                    }`}
+                  >
+                    {latestPage?.imageUrl && latestPage.imageUrl.trim() !== "" ? (
+                      <img
+                        src={latestPage.imageUrl}
+                        alt="Cover"
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full relative flex flex-col justify-between p-4 min-h-[200px]">
+                        <span
+                          className={`font-dm-sans text-[8px] font-black uppercase px-2 py-0.5 border-2 w-fit ${
+                            themeMode === "dark"
+                              ? "bg-black text-[#f5ed21] border-[#f5ed21]"
+                              : "bg-[#141414] text-white border-[#141414]"
+                          }`}
+                        >
+                          VOL. 2026
+                        </span>
+                        <div className="text-center my-auto">
+                          <div
+                            className={`inline-block font-shrikhand text-2xl sm:text-3xl uppercase p-3 border-2 ${
+                              themeMode === "dark"
+                                ? "bg-[#121319] text-white border-[#2e303d]"
+                                : "bg-white text-[#1554db] border-[#141414]"
+                            }`}
+                          >
+                            <span style={{ color: themeMode === "dark" ? "#60a5fa" : (accentColor || "#1554db") }}>
+                              CREATIVE
+                            </span>
+                            <br />
+                            <span className="text-[#ff315b]">NOTES</span>
+                          </div>
+                        </div>
+                        <span className="font-dm-sans text-[8px] font-bold text-center tracking-widest uppercase">
+                          ★ ARCHIVE EDITION ★
+                        </span>
+                      </div>
+                    )}
+
+                    {/* Circular Sticker Badge */}
+                    <div
+                      className={`absolute top-3 left-3 rounded-full w-[70px] h-[70px] sm:w-[80px] sm:h-[80px] flex flex-col items-center justify-center text-center font-dm-sans font-black text-[8px] sm:text-[9px] leading-tight select-none border-2 ${
+                        themeMode === "dark"
+                          ? "bg-[#ff3366] text-white border-[#2e303d] shadow-[2px_2px_0px_#000000]"
+                          : "bg-[#ff4d73] text-white border-[#141414] shadow-[2px_2px_0px_#141414]"
+                      }`}
+                      style={{
+                        transform: "rotate(-10deg)",
+                      }}
+                    >
+                      <span>FREE</span>
+                      <span>EDITION!</span>
+                    </div>
+                  </div>
+
+                  {/* Copy Right */}
+                  <div
+                    className={`md:col-span-7 p-4 sm:p-6 flex flex-col justify-between ${
+                      themeMode === "dark" ? "bg-[#15161d]" : "bg-[#f8f4e9]"
+                    }`}
+                  >
+                    <div>
+                      <span
+                        className="font-dm-sans inline-block px-2 py-1 text-[9px] font-black uppercase border-2 border-[#141414] shadow-[2px_2px_0px_#141414] text-[#141414] bg-[#f5ed21] mb-3"
+                        style={{ transform: "rotate(2deg)" }}
+                      >
+                        {latestPage?.bulletsTitle || "A PLAYBOOK FOR PEOPLE WITH IDEAS"}
+                      </span>
+
+                      <h3
+                        className={`font-shrikhand text-2xl sm:text-3xl md:text-4xl leading-[0.95] tracking-tight mb-3 ${
+                          themeMode === "dark" ? "text-white" : "text-[#1554db]"
+                        }`}
+                        style={{
+                          color: themeMode === "dark" ? "#ffffff" : (accentColor || "#1554db"),
+                        }}
+                      >
+                        {latestPage?.headline ? (
+                          latestPage.headline.includes("Impossible") ? (
+                            <>
+                              {latestPage.headline.split("Impossible")[0]}
+                              <span className="text-[#ff315b]">Impossible</span>
+                              {latestPage.headline.split("Impossible")[1]}
+                            </>
+                          ) : (
+                            latestPage.headline
+                          )
+                        ) : (
+                          <>
+                            Make Your Work <span className="text-[#ff315b]">Impossible</span> to Ignore.
+                          </>
+                        )}
+                      </h3>
+
+                      <p
+                        className={`font-dm-sans text-xs sm:text-sm leading-relaxed ${
+                          themeMode === "dark" ? "text-zinc-300" : "text-[#141414]"
+                        }`}
+                      >
+                        {latestPage?.subheadline ||
+                          latestPage?.pitch ||
+                          "Twenty-one unconventional prompts, narrative tricks, and visual systems for turning 'pretty good' into unmistakably yours."}
+                      </p>
+                    </div>
+
+                    <div
+                      className={`pt-3 mt-3 border-t-2 text-[8px] font-dm-sans font-bold uppercase tracking-wider flex justify-between ${
+                        themeMode === "dark" ? "border-[#2e303d] text-zinc-500" : "border-[#141414]/15 text-[#141414]/60"
+                      }`}
+                    >
+                      <span>ZINE DISPATCH</span>
+                      <span>EST. 2026</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 3. Bottom Section: Bits & Signup */}
+                <div
+                  className={`grid grid-cols-1 md:grid-cols-12 border-t-2 ${
+                    themeMode === "dark" ? "border-[#2e303d]" : "border-[#141414]"
+                  }`}
+                >
+                  {/* Bits Left */}
+                  <div
+                    className={`md:col-span-7 grid grid-cols-3 border-b-2 md:border-b-0 md:border-r-2 ${
+                      themeMode === "dark" ? "border-[#2e303d] bg-[#121319]" : "border-[#141414] bg-[#f8f4e9]"
+                    }`}
+                  >
+                    {[
+                      { num: "01", title: "Find the strange bit", desc: "Your most specific instinct is your best edge." },
+                      { num: "02", title: "Repeatable worlds", desc: "Cohesive visual and narrative systems." },
+                      { num: "03", title: "Ship quickly", desc: "A practical ritual for weekly momentum." },
+                    ].map((bit, idx) => (
+                      <div
+                        key={idx}
+                        className={`p-3 sm:p-4 flex flex-col justify-between border-r-2 last:border-r-0 ${
+                          themeMode === "dark" ? "border-[#2e303d]" : "border-[#141414]"
+                        }`}
+                      >
+                        <div>
+                          <b className="font-shrikhand text-lg text-[#ff315b] block mb-1">
+                            {bit.num}
+                          </b>
+                          <h4
+                            className={`font-dm-sans text-[11px] sm:text-xs font-bold leading-tight mb-1 ${
+                              themeMode === "dark" ? "text-white" : "text-[#141414]"
+                            }`}
+                          >
+                            {bit.title}
+                          </h4>
+                          <p
+                            className={`font-dm-sans text-[9px] sm:text-[10px] leading-tight ${
+                              themeMode === "dark" ? "text-zinc-400" : "text-[#141414]/80"
+                            }`}
+                          >
+                            {bit.desc}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Signup Right */}
+                  <div
+                    className={`md:col-span-5 p-4 sm:p-5 flex flex-col justify-between text-white ${
+                      themeMode === "dark" ? "bg-[#171a26]" : ""
+                    }`}
+                    style={{
+                      backgroundColor: themeMode === "dark" ? "#171a26" : (accentColor || "#1554db"),
+                    }}
+                  >
+                    <div>
+                      <h4 className="font-shrikhand text-xl text-white mb-0.5">
+                        {latestPage?.formTitle || "Want the zine?"}
+                      </h4>
+                      <p className="font-dm-sans text-[10px] text-white/80 mb-3">
+                        {latestPage?.formSubtitle || "We'll send it now. Occasional notes later."}
+                      </p>
+
+                      <div className="space-y-1.5">
+                        <input
+                          type="text"
+                          readOnly
+                          placeholder="YOUR NAME"
+                          className="block w-full border-2 border-[#141414] p-2 text-[10px] font-dm-sans font-bold bg-white text-[#141414] outline-none"
+                        />
+                        <input
+                          type="email"
+                          readOnly
+                          placeholder="EMAIL@ADDRESS.COM"
+                          className="block w-full border-2 border-[#141414] p-2 text-[10px] font-dm-sans font-bold bg-white text-[#141414] outline-none"
+                        />
+
+                        <div className="pt-1">
+                          <button
+                            type="button"
+                            className="w-full border-2 border-[#141414] bg-[#f5ed21] text-[#141414] p-2 font-dm-sans font-black text-xs uppercase shadow-[3px_3px_0px_#141414] active:translate-x-0.5 active:translate-y-0.5 cursor-pointer"
+                          >
+                            {latestPage?.formButtonText || "YES, SEND IT! ↗"}
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </>
+            );
+          })()}
+        </div>
+      )}
     </>
   );
 });

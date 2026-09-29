@@ -290,31 +290,41 @@ export default async function MagnetPageRoute({
   const isTemplate5 = activeTemplate === "template5";
   const isTemplate6 = activeTemplate === "template6";
   const isTemplate7 = activeTemplate === "template7";
+  const isTemplate8 = activeTemplate === "template8";
 
   return (
     <main
       className="flex min-h-screen flex-col font-sans transition-colors duration-300 relative overflow-x-clip"
       style={{
         colorScheme: themeMode === "dark" ? "dark" : "light",
-        backgroundColor: isTemplate7
+        backgroundColor: isTemplate8
+          ? (themeMode === "dark" ? "#0d0e12" : "#eee9df")
+          : isTemplate7
           ? (themeMode === "dark" ? "#0d0d0f" : "#f4ff3c")
           : isTemplate2
           ? (themeMode === "dark" ? "#141416" : "#f3f0e8")
           : isTemplate4
           ? (themeMode === "dark" ? "#0b0d12" : "#f5f1e8")
           : (themeMode === "dark" ? "#0E0E10" : "#FAFAFA"),
-        color: isTemplate7
+        color: isTemplate8
+          ? (themeMode === "dark" ? "#f4f4f5" : "#141414")
+          : isTemplate7
           ? (themeMode === "dark" ? (brandColor || "#f4ff3c") : "#101010")
           : isTemplate2
           ? (themeMode === "dark" ? "#eae8e3" : "#151515")
           : isTemplate4
           ? (themeMode === "dark" ? "#f5f1e8" : "#0b0d12")
           : (themeMode === "dark" ? "#ffffff" : "#18181b"),
-        backgroundImage: (isTemplate2 || isTemplate7 || isTemplate4)
-          ? "none"
+        backgroundImage: (isTemplate2 || isTemplate7 || isTemplate4 || isTemplate8)
+          ? (isTemplate8
+            ? (themeMode === "dark"
+              ? "radial-gradient(rgba(255, 255, 255, 0.15) 1px, transparent 1px)"
+              : "radial-gradient(rgba(20, 20, 20, 0.18) 1px, transparent 1px)")
+            : "none")
           : (themeMode === "light"
             ? `radial-gradient(circle at 0% 0%, ${brandColor}10 0%, transparent 40%), radial-gradient(circle at 100% 100%, ${brandColor}08 0%, transparent 40%)`
-            : `radial-gradient(circle at 0% 0%, ${brandColor}15 0%, transparent 40%), radial-gradient(circle at 100% 100%, ${brandColor}0c 0%, transparent 40%)`)
+            : `radial-gradient(circle at 0% 0%, ${brandColor}15 0%, transparent 40%), radial-gradient(circle at 100% 100%, ${brandColor}0c 0%, transparent 40%)`),
+        backgroundSize: isTemplate8 ? "18px 18px" : undefined
       }}
     >
       <AnalyticsAndExitIntent
@@ -338,8 +348,8 @@ export default async function MagnetPageRoute({
           <span>⚠️ Draft Preview Mode — This magnet is not yet published. Only you can view this page.</span>
         </div>
       )}
-      {/* If template is not template2, template3, template4, template5, template6, or template7, show the standard top header */}
-      {!isTemplate2 && !isTemplate3 && !isTemplate4 && !isTemplate5 && !isTemplate6 && !isTemplate7 && (
+      {/* If template is not template2, template3, template4, template5, template6, template7, or template8, show the standard top header */}
+      {!isTemplate2 && !isTemplate3 && !isTemplate4 && !isTemplate5 && !isTemplate6 && !isTemplate7 && !isTemplate8 && (
         <header className="w-full flex items-center justify-center pt-3 sm:pt-4 pb-1 sm:pb-2 px-6 sm:px-10 relative shrink-0">
           <div className="flex items-center gap-2.5 sm:gap-3">
             <div className={`h-9 w-9 sm:h-10 sm:w-10 rounded-xl flex items-center justify-center bg-transparent overflow-hidden shadow-xs ${logo ? "border-none" : "border-2 border-dashed border-[#a1a1aa]/50"}`}>
@@ -1654,6 +1664,383 @@ export default async function MagnetPageRoute({
               © {new Date().getFullYear()} {businessName || "Vane Strategic Partners"} · Private circulation
             </footer>
           </div>
+        ) : isTemplate8 ? (
+          /* TEMPLATE 8: Collage Zine Edition */
+          (() => {
+            const accentColor = brandColor || "#1554db";
+            const getContrastColor = (hexColor: string) => {
+              if (!hexColor || !hexColor.startsWith("#")) return "#ffffff";
+              const hex = hexColor.replace("#", "");
+              if (hex.length !== 6) return "#ffffff";
+              const r = parseInt(hex.substring(0, 2), 16) || 0;
+              const g = parseInt(hex.substring(2, 4), 16) || 0;
+              const b = parseInt(hex.substring(4, 6), 16) || 0;
+              const yiq = (r * 299 + g * 587 + b * 114) / 1000;
+              return yiq >= 135 ? "#141414" : "#ffffff";
+            };
+            const contrastOnAccent = getContrastColor(accentColor);
+
+            const defaultBullets = [
+              "Find the strange bit — Your most specific instinct is usually the most valuable one.",
+              "Build a repeatable world — Make every idea feel like it came from the same vivid universe.",
+              "Ship before permission — A practical weekly ritual for creating momentum.",
+            ];
+
+            const currentBullets: string[] =
+              Array.isArray(page.bullets) && page.bullets.length > 0 ? page.bullets : defaultBullets;
+
+            const parseBullet = (item: string) => {
+              if (!item) return { title: "", desc: "" };
+              if (item.includes(" — ")) {
+                const [title, ...rest] = item.split(" — ");
+                return { title: title.trim(), desc: rest.join(" — ").trim() };
+              }
+              if (item.includes(" - ")) {
+                const [title, ...rest] = item.split(" - ");
+                return { title: title.trim(), desc: rest.join(" - ").trim() };
+              }
+              if (item.includes(":::")) {
+                const [title, ...rest] = item.split(":::");
+                return { title: title.trim(), desc: rest.join(":::").trim() };
+              }
+              if (item.includes("\n")) {
+                const [title, ...rest] = item.split("\n");
+                return { title: title.trim(), desc: rest.join("\n").trim() };
+              }
+              return { title: item, desc: "" };
+            };
+
+            return (
+              <div
+                className="w-full flex-1 flex flex-col justify-center py-4 sm:py-8 px-3 sm:px-6"
+                style={{
+                  fontFamily: "'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+                }}
+              >
+                <style
+                  dangerouslySetInnerHTML={{
+                    __html: `
+                      @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Shrikhand&display=swap');
+                      .font-shrikhand {
+                        font-family: 'Shrikhand', cursive, serif;
+                      }
+                      .font-dm-sans {
+                        font-family: 'DM Sans', sans-serif;
+                      }
+                    `,
+                  }}
+                />
+
+                {/* Sheet Container */}
+                <div
+                  className={`w-full max-w-[1220px] mx-auto transition-all duration-200 border-2 overflow-hidden ${
+                    themeMode === "dark"
+                      ? "bg-[#15161d] border-[#2e303d] shadow-[10px_10px_0px_#000000] text-[#f4f4f5]"
+                      : "bg-[#f8f4e9] border-[#141414] shadow-[10px_10px_0px_#141414] text-[#141414]"
+                  }`}
+                >
+                  {/* Masthead Header */}
+                  <header
+                    className={`flex flex-wrap justify-between items-center px-5 py-4 sm:px-8 sm:py-5 border-b-2 transition-colors ${
+                      themeMode === "dark" ? "border-[#2e303d] bg-[#121319]" : "border-[#141414] bg-[#f8f4e9]"
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      {logo && (
+                        <img
+                          src={logo}
+                          alt="Logo"
+                          className={`h-9 w-9 object-cover border-2 shrink-0 ${
+                            themeMode === "dark" ? "border-[#2e303d]" : "border-[#141414]"
+                          }`}
+                        />
+                      )}
+                      <div
+                        className="font-shrikhand text-2xl sm:text-3xl tracking-wide"
+                        style={{
+                          color: themeMode === "dark" ? (accentColor !== "#1554db" ? accentColor : "#60a5fa") : accentColor,
+                        }}
+                      >
+                        {(page as any).mastheadLeft || businessName || "Odd Hours"}
+                      </div>
+                    </div>
+
+                    <div
+                      className={`font-dm-sans text-[11px] sm:text-xs font-bold tracking-[0.14em] uppercase ${
+                        themeMode === "dark" ? "text-zinc-400" : "text-[#141414]"
+                      }`}
+                    >
+                      {(page as any).mastheadRight || "CREATIVE FIELD NOTES · #07"}
+                    </div>
+                  </header>
+
+                  {/* Hero Section */}
+                  <section className="grid grid-cols-1 lg:grid-cols-[0.95fr_1.05fr] min-h-[520px]">
+                    {/* Left Poster Column */}
+                    <div
+                      className={`relative min-h-[380px] sm:min-h-[460px] lg:min-h-[540px] border-b-2 lg:border-b-0 lg:border-r-2 overflow-hidden flex items-center justify-center ${
+                        themeMode === "dark" ? "border-[#2e303d] bg-[#1a1b24]" : "border-[#141414] bg-[#f5ed21]"
+                      }`}
+                    >
+                      {activeImageUrl && activeImageUrl.trim() !== "" ? (
+                        <img
+                          src={activeImageUrl}
+                          alt={activeHeadline || "Collage Cover"}
+                          className="w-full h-full object-cover min-h-[380px]"
+                        />
+                      ) : (
+                        /* Halftone Fallback Art */
+                        <div className="w-full h-full relative flex flex-col justify-between p-8 min-h-[380px] select-none">
+                          <div
+                            className="absolute inset-0 opacity-20 pointer-events-none"
+                            style={{
+                              backgroundImage: themeMode === "dark"
+                                ? "radial-gradient(#ffffff 2px, transparent 2px)"
+                                : "radial-gradient(#141414 2px, transparent 2px)",
+                              backgroundSize: "20px 20px",
+                            }}
+                          />
+
+                          <div className="relative z-10 flex justify-between items-start">
+                            <span
+                              className={`font-dm-sans text-[10px] sm:text-xs font-black uppercase px-2.5 py-1 border-2 tracking-wider ${
+                                themeMode === "dark"
+                                  ? "bg-black text-[#f5ed21] border-[#f5ed21]"
+                                  : "bg-[#141414] text-white border-[#141414]"
+                              }`}
+                            >
+                              VOL. {new Date().getFullYear()}
+                            </span>
+                            <span
+                              className={`font-shrikhand text-sm uppercase px-2 py-0.5 ${
+                                themeMode === "dark" ? "text-zinc-400" : "text-[#141414]"
+                              }`}
+                            >
+                              #07
+                            </span>
+                          </div>
+
+                          <div className="relative z-10 my-auto text-center py-6">
+                            <div
+                              className={`inline-block font-shrikhand text-4xl sm:text-6xl lg:text-7xl leading-[0.9] tracking-tight uppercase p-5 sm:p-7 border-2 ${
+                                themeMode === "dark"
+                                  ? "bg-[#121319]/90 text-white border-[#2e303d] shadow-[4px_4px_0px_#000000]"
+                                  : "bg-white text-[#1554db] border-[#141414] shadow-[4px_4px_0px_#141414]"
+                              }`}
+                            >
+                              <span style={{ color: themeMode === "dark" ? "#60a5fa" : (accentColor || "#1554db") }}>
+                                CREATIVE
+                              </span>
+                              <br />
+                              <span className="text-[#ff315b]">NOTES</span>
+                            </div>
+                          </div>
+
+                          <div className="relative z-10 text-center">
+                            <span
+                              className={`inline-block font-dm-sans text-[11px] font-bold uppercase tracking-widest px-3 py-1 border-2 ${
+                                themeMode === "dark"
+                                  ? "bg-[#252836] text-white border-[#2e303d]"
+                                  : "bg-[#f8f4e9] text-[#141414] border-[#141414]"
+                              }`}
+                            >
+                              ★ ARCHIVE EDITION ★
+                            </span>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Circular Sticker Badge */}
+                      <div
+                        className={`absolute top-6 left-6 rounded-full w-[100px] h-[100px] sm:w-[115px] sm:h-[115px] flex flex-col items-center justify-center text-center font-dm-sans font-black text-[11px] sm:text-[12px] leading-tight select-none border-2 transition-transform duration-300 hover:scale-105 ${
+                          themeMode === "dark"
+                            ? "bg-[#ff3366] text-white border-[#2e303d] shadow-[4px_4px_0px_#000000]"
+                            : "bg-[#ff4d73] text-white border-[#141414] shadow-[4px_4px_0px_#141414]"
+                        }`}
+                        style={{
+                          transform: "rotate(-10deg)",
+                        }}
+                      >
+                        <span>FREE</span>
+                        <span>48-PAGE</span>
+                        <span>EDITION!</span>
+                      </div>
+                    </div>
+
+                    {/* Right Copy Column */}
+                    <div
+                      className={`p-6 sm:p-10 lg:p-12 flex flex-col justify-between transition-colors ${
+                        themeMode === "dark" ? "bg-[#15161d]" : "bg-[#f8f4e9]"
+                      }`}
+                    >
+                      <div>
+                        {/* Taped Category Badge */}
+                        <div className="mb-6 inline-block">
+                          <span
+                            className="font-dm-sans inline-block px-3 py-1.5 text-[11px] font-extrabold tracking-wide uppercase border-2 border-[#141414] shadow-[2px_2px_0px_#141414] text-[#141414] bg-[#f5ed21]"
+                            style={{
+                              transform: "rotate(2deg)",
+                            }}
+                          >
+                            {(page as any).bulletsTitle || "A PLAYBOOK FOR PEOPLE WITH IDEAS"}
+                          </span>
+                        </div>
+
+                        {/* Headline */}
+                        <h1
+                          className={`font-shrikhand text-4xl sm:text-5xl md:text-6xl lg:text-[62px] xl:text-[72px] leading-[0.92] tracking-tight mb-6 ${
+                            themeMode === "dark" ? "text-white" : "text-[#1554db]"
+                          }`}
+                          style={{
+                            overflowWrap: "anywhere",
+                            color: themeMode === "dark" ? "#ffffff" : (accentColor || "#1554db"),
+                          }}
+                        >
+                          {activeHeadline ? (
+                            activeHeadline.includes("Impossible") ? (
+                              <>
+                                {activeHeadline.split("Impossible")[0]}
+                                <span className="text-[#ff315b]">Impossible</span>
+                                {activeHeadline.split("Impossible")[1]}
+                              </>
+                            ) : (
+                              activeHeadline
+                            )
+                          ) : (
+                            <>
+                              Make Your Work <span className="text-[#ff315b]">Impossible</span> to Ignore.
+                            </>
+                          )}
+                        </h1>
+
+                        {/* Subheadline & Pitch Paragraph */}
+                        <p
+                          className={`font-dm-sans text-base sm:text-lg leading-relaxed max-w-[520px] font-medium ${
+                            themeMode === "dark" ? "text-zinc-300" : "text-[#141414]"
+                          }`}
+                        >
+                          {page.subheadline ||
+                            page.pitch ||
+                            "Twenty-one unconventional prompts, narrative tricks, and visual systems for turning 'pretty good' into unmistakably yours."}
+                        </p>
+                      </div>
+
+                      {/* Micro Badge */}
+                      <div
+                        className={`pt-6 mt-6 border-t-2 text-[10px] font-dm-sans font-bold uppercase tracking-widest flex items-center justify-between ${
+                          themeMode === "dark" ? "border-[#2e303d] text-zinc-500" : "border-[#141414]/15 text-[#141414]/60"
+                        }`}
+                      >
+                        <span>ZINE DISPATCH · UNRESTRICTED ACCESS</span>
+                        <span>EST. {new Date().getFullYear()}</span>
+                      </div>
+                    </div>
+                  </section>
+
+                  {/* Bottom Section: 3 Bits + Signup Box */}
+                  <section
+                    className={`grid grid-cols-1 lg:grid-cols-[1.2fr_0.8fr] border-t-2 transition-colors ${
+                      themeMode === "dark" ? "border-[#2e303d]" : "border-[#141414]"
+                    }`}
+                  >
+                    {/* Left Column: 3 Bits */}
+                    <div
+                      className={`border-b-2 lg:border-b-0 lg:border-r-2 grid grid-cols-1 md:grid-cols-3 transition-colors ${
+                        themeMode === "dark" ? "border-[#2e303d] bg-[#121319]" : "border-[#141414] bg-[#f8f4e9]"
+                      }`}
+                    >
+                      {currentBullets.map((bullet, idx) => {
+                        const parsed = parseBullet(bullet);
+                        const numStr = (idx + 1).toString().padStart(2, "0");
+
+                        return (
+                          <article
+                            key={idx}
+                            className={`p-6 sm:p-7 flex flex-col justify-between border-b-2 md:border-b-0 md:border-r-2 last:border-r-0 transition-colors ${
+                              themeMode === "dark" ? "border-[#2e303d]" : "border-[#141414]"
+                            }`}
+                          >
+                            <div>
+                              <b className="font-shrikhand text-2xl sm:text-3xl text-[#ff315b] block mb-2">
+                                {numStr}
+                              </b>
+
+                              <h3
+                                className={`font-dm-sans text-sm sm:text-base font-bold mb-1.5 ${
+                                  themeMode === "dark" ? "text-white" : "text-[#141414]"
+                                }`}
+                              >
+                                {parsed.title || `Framework ${numStr}`}
+                              </h3>
+
+                              <p
+                                className={`font-dm-sans text-xs leading-relaxed ${
+                                  themeMode === "dark" ? "text-zinc-400" : "text-[#141414]/80"
+                                }`}
+                              >
+                                {parsed.desc || "A tactical framework designed to deliver instant clarity and execution momentum."}
+                              </p>
+                            </div>
+                          </article>
+                        );
+                      })}
+                    </div>
+
+                    {/* Right Column: High-Impact Signup Box */}
+                    <aside
+                      className={`p-6 sm:p-8 flex flex-col justify-between transition-colors ${
+                        themeMode === "dark" ? "bg-[#181a24] text-white" : "text-white"
+                      }`}
+                      style={{
+                        backgroundColor: themeMode === "dark" ? "#171a26" : (accentColor || "#1554db"),
+                      }}
+                    >
+                      <div>
+                        <h2 className="font-shrikhand text-2xl sm:text-3xl text-white mb-1">
+                          {page.formTitle || "Want the zine?"}
+                        </h2>
+
+                        <p className="font-dm-sans text-xs text-white/80 mb-4">
+                          {page.formSubtitle || "We'll send it now. Occasional notes later."}
+                        </p>
+
+                        <MagnetSignupForm
+                          cta={page.cta}
+                          layout="collage-zine"
+                          formTitle={page.formTitle || "Want the zine?"}
+                          formSubtitle={page.formSubtitle}
+                          formButtonText={page.formButtonText || "YES, SEND IT! ↗"}
+                          deliverable={page.deliverable}
+                          accent={page.accent}
+                          pageId={page.id}
+                          pageName={page.name}
+                          pageSlug={page.slug}
+                          pageOwnerEmail={(page as any).userEmail}
+                          brandColor={accentColor}
+                          highlightIntensity={highlightIntensity}
+                          themeMode={themeMode}
+                          customPromptQuestion={page.customPromptQuestion}
+                          customPromptPlaceholder={page.customPromptPlaceholder}
+                          enableAiPersonalizedDeliverable={page.enableAiPersonalizedDeliverable}
+                          customFormFields={page.customFormFields}
+                          username={params.username}
+                          isVariantB={isVariantB}
+                          afterSignupOption={page.afterSignupOption}
+                          destinationUrl={page.destinationUrl}
+                        />
+                      </div>
+
+                      {/* Anti-spam footer */}
+                      <div className="pt-4 mt-4 border-t border-white/20 text-[9px] font-dm-sans font-bold uppercase tracking-wider text-white/70 flex justify-between items-center">
+                        <span>🔒 NO SPAM PROMISE</span>
+                        <span>INSTANT DELIVERY</span>
+                      </div>
+                    </aside>
+                  </section>
+                </div>
+              </div>
+            );
+          })()
         ) : isTemplate7 ? (
           /* TEMPLATE 7: Brutalist Ledger Edition */
           (() => {
