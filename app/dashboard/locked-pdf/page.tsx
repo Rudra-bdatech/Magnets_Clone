@@ -616,12 +616,11 @@ export default function LockedPdfPage() {
     }
   }, [sequenceEmails, account?.name, activePage, pages, triggerImmediateSave]);
 
-  const removeSequenceEmail = useCallback((id: string) => {
-    const updated = sequenceEmails.filter((item) => item.id !== id);
+  const removeSequenceEmail = useCallback((id: string, index?: number) => {
+    const updated = sequenceEmails.filter((item, i) => (id && item.id ? item.id !== id : i !== index));
     setSequenceEmails(updated);
     const nextEnabled = updated.length > 0 ? sequenceEnabled : false;
     if (updated.length === 0) {
-      setSequenceEnabled(false);
       setSelectedSequenceIndex(0);
     } else if (selectedSequenceIndex >= updated.length) {
       setSelectedSequenceIndex(updated.length - 1);

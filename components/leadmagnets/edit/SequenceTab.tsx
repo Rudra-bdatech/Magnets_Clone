@@ -59,7 +59,7 @@ export interface SequenceTabProps {
   selectedSequenceIndex: number;
   setSelectedSequenceIndex: (idx: number) => void;
   addSequenceEmail: () => void;
-  removeSequenceEmail: (id: string) => void;
+  removeSequenceEmail: (id: string, index?: number) => void;
   setShowSequencePreviewModal: (show: boolean) => void;
   setPreviewSequenceIndex: (idx: number) => void;
   hostedResources?: any[];
@@ -285,20 +285,18 @@ export default function SequenceTab({
                           {item.delayDays || 1} {item.delayUnit || "hours"} delay
                         </span>
                       </div>
-                      {sequenceEmails.length > 1 && (
-                        <button
-                          type="button"
-                          disabled={!sequenceEnabled}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            removeSequenceEmail(item.id);
-                          }}
-                          title="Delete email"
-                          className="text-zinc-400 hover:text-red-500 transition p-1 cursor-pointer disabled:opacity-50"
-                        >
-                          <Trash2 className="h-3.5 w-3.5" />
-                        </button>
-                      )}
+                      <button
+                        type="button"
+                        disabled={!sequenceEnabled}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          removeSequenceEmail(item.id, idx);
+                        }}
+                        title="Delete email"
+                        className="text-zinc-400 hover:text-red-500 transition p-1 cursor-pointer disabled:opacity-50"
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </button>
                     </div>
                   );
                 })}
@@ -306,6 +304,27 @@ export default function SequenceTab({
             </div>
 
             {/* Right Main Email Detail Form */}
+            {!activeEmail && (
+              <div className={`lg:col-span-8 rounded-2xl border p-8 text-center space-y-3.5 transition-colors duration-200 ${(account?.themeMode || "light") === "dark" ? "border-[#27272A] bg-[#18181B] text-white" : "border-zinc-200 bg-white text-zinc-900"}`}>
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-50 dark:bg-blue-950/40 text-[#0066B2] dark:text-[#38BDF8] mx-auto shadow-xs">
+                  <Mail className="h-6 w-6" />
+                </div>
+                <div>
+                  <h4 className="text-sm font-bold">No Follow-up Emails in Sequence</h4>
+                  <p className="text-xs text-zinc-400 max-w-sm mx-auto mt-1 leading-relaxed">
+                    Subscribers will still receive the instant resource delivery email on signup. Add follow-up emails to automatically nurture leads over time.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={addSequenceEmail}
+                  className="inline-flex items-center gap-1.5 rounded-xl bg-[#0066B2] px-4 py-2 text-xs font-bold text-white hover:bg-[#005291] transition cursor-pointer shadow-xs"
+                >
+                  <Plus className="h-3.5 w-3.5" />
+                  <span>Add First Follow-up Email</span>
+                </button>
+              </div>
+            )}
             {activeEmail && (
               <div className={`lg:col-span-8 rounded-2xl border p-5 sm:p-6 space-y-5 transition-colors duration-200 ${(account?.themeMode || "light") === "dark" ? "border-[#27272A] bg-[#18181B] text-white" : "border-zinc-200 bg-white text-zinc-900"}`}>
                 <div className="flex items-center justify-between border-b pb-3 border-zinc-100 dark:border-[#27272A]">

@@ -470,9 +470,9 @@ export default function SequenceEditor() {
     update({ ...seq, emails: nextEmails }, nextEmails);
   }
 
-  function removeEmail(id: string) {
+  function removeEmail(id: string, index?: number) {
     if (!seq) return;
-    const nextEmails = emailsWithBody.filter((e) => e.id !== id);
+    const nextEmails = emailsWithBody.filter((e, i) => (id && e.id ? e.id !== id : i !== index));
     setEmailsWithBody(nextEmails);
     update({ ...seq, emails: nextEmails }, nextEmails);
     triggerToast("Email step removed.");
@@ -956,15 +956,13 @@ export default function SequenceEditor() {
                             {isExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
                           </button>
 
-                          {emailsWithBody.length > 1 && (
-                            <button
-                              aria-label="Delete email step"
-                              onClick={() => removeEmail(email.id)}
-                              className="flex h-6 w-6 sm:h-7 sm:w-7 items-center justify-center rounded-lg text-zinc-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition"
-                            >
-                              <Trash2 className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                            </button>
-                          )}
+                          <button
+                            aria-label="Delete email step"
+                            onClick={() => removeEmail(email.id, i)}
+                            className="flex h-6 w-6 sm:h-7 sm:w-7 items-center justify-center rounded-lg text-zinc-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition cursor-pointer"
+                          >
+                            <Trash2 className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                          </button>
                         </div>
                       </div>
 

@@ -821,11 +821,10 @@ export default function EditLeadMagnetPage() {
     setSequenceEnabled(true);
   };
 
-  const removeSequenceEmail = (id: string) => {
-    const updated = sequenceEmails.filter((e) => e.id !== id);
+  const removeSequenceEmail = (id: string, index?: number) => {
+    const updated = sequenceEmails.filter((e, i) => (id && e.id ? e.id !== id : i !== index));
     setSequenceEmails(updated);
     if (updated.length === 0) {
-      setSequenceEnabled(false);
       setSelectedSequenceIndex(0);
     } else if (selectedSequenceIndex >= updated.length) {
       setSelectedSequenceIndex(updated.length - 1);
