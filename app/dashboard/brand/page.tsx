@@ -316,6 +316,26 @@ export default function BrandPage() {
     return undefined;
   }, [allPages, templateId, stateLatestPage]);
 
+  const tabRefs = useRef<{ [key: string]: HTMLButtonElement | null }>({});
+  const tabsContainerRef = useRef<HTMLDivElement>(null);
+
+  const scrollToTab = useCallback((id: string) => {
+    const el = tabRefs.current[id];
+    if (el) {
+      el.scrollIntoView({
+        behavior: "smooth",
+        block: "nearest",
+        inline: "center",
+      });
+    }
+  }, []);
+
+  useEffect(() => {
+    if (templateId) {
+      scrollToTab(templateId);
+    }
+  }, [templateId, scrollToTab]);
+
   return (
     <DashboardShell account={account} title="Brand">
       {/* Toast Notification */}
@@ -372,10 +392,11 @@ export default function BrandPage() {
 
             {/* Live Preview Panel */}
             <div className="lg:col-span-8 flex flex-col h-full relative w-full pt-1 lg:pt-0">
-              {/* 7 Template Switcher Tabs Floating DIRECTLY ABOVE the Preview Card on desktop, neatly placed above on mobile */}
+              {/* Template Switcher Tabs Floating DIRECTLY ABOVE the Preview Card on desktop, neatly placed above on mobile */}
               <div className="relative mb-3 lg:mb-0 lg:absolute lg:-top-12 lg:left-0 lg:right-0 z-10 flex justify-end w-full">
                 <div
-                  className="w-full flex items-center gap-1 bg-zinc-100/90 dark:bg-[#111113]/90 backdrop-blur-md p-1.5 rounded-xl border border-zinc-200 dark:border-[#2b2b32] shadow-xs overflow-x-auto no-scrollbar scroll-smooth touch-pan-x"
+                  ref={tabsContainerRef}
+                  className="w-full flex items-center gap-1 bg-zinc-100/90 dark:bg-[#111113]/90 backdrop-blur-md p-1 sm:p-1.5 rounded-xl border border-zinc-200 dark:border-[#2b2b32] shadow-xs overflow-x-auto no-scrollbar scroll-smooth touch-pan-x"
                   onMouseLeave={() => setHoveredTemplateTab(null)}
                 >
                   {TEMPLATE_TABS.map((t) => {
@@ -385,12 +406,16 @@ export default function BrandPage() {
                     return (
                       <motion.button
                         key={t.id}
+                        ref={(el) => { tabRefs.current[t.id] = el; }}
                         type="button"
                         whileTap={{ scale: 0.97 }}
                         transition={{ type: "spring", stiffness: 600, damping: 28 }}
                         onMouseEnter={() => setHoveredTemplateTab(t.id)}
-                        onClick={() => setTemplateId(t.id as any)}
-                        className={`relative shrink-0 min-w-fit lg:flex-1 flex items-center justify-center gap-1.5 px-3 py-2 sm:py-1.5 rounded-lg text-xs font-semibold transition-colors duration-200 cursor-pointer whitespace-nowrap select-none ${isActive
+                        onClick={() => {
+                          setTemplateId(t.id as any);
+                          scrollToTab(t.id);
+                        }}
+                        className={`relative shrink-0 min-w-fit lg:flex-1 flex items-center justify-center gap-1 sm:gap-1.5 px-2 sm:px-2.5 lg:px-2 xl:px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-colors duration-200 cursor-pointer whitespace-nowrap select-none ${isActive
                           ? "text-white font-bold"
                           : "text-zinc-600 dark:text-[#9B9085] dark:hover:text-white"
                           }`}
