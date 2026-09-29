@@ -47,7 +47,7 @@ export default function MagnetSignupForm({
   customFormFields?: CustomFormField[];
   username?: string;
   isVariantB?: boolean;
-  layout?: "standard" | "horizontal-glass" | "split-panel" | "editorial";
+  layout?: "standard" | "horizontal-glass" | "split-panel" | "editorial" | "monograph";
   afterSignupOption?: "standard" | "elsewhere" | "custom";
   destinationUrl?: string;
 }) {
@@ -263,6 +263,153 @@ export default function MagnetSignupForm({
             <span>📥 Click Here to Download Resource Immediately</span>
           </a>
         </div>
+      ) : layout === "monograph" ? (
+        <form onSubmit={handleSubmit} className="space-y-4 font-manrope">
+          <div className="space-y-3.5">
+            <div>
+              <label
+                className="block text-[10px] font-bold tracking-[0.16em] uppercase mb-1.5"
+                style={{ color: themeMode === "dark" ? "#a89f97" : "#786f68" }}
+              >
+                FULL NAME
+              </label>
+              <input
+                type="text"
+                required
+                placeholder="Jane Doe"
+                value={name}
+                disabled={loading}
+                onChange={(e) => setName(e.target.value)}
+                className={`w-full p-3.5 border text-[13px] outline-none rounded-xs transition ${
+                  themeMode === "dark"
+                    ? "bg-[#141312] border-[#33302c] text-white placeholder:text-zinc-600 focus:border-[#c2410c]"
+                    : "bg-[#fcfaf8] border-[#d9d4cf] text-zinc-900 placeholder:text-zinc-400 focus:border-[#c2410c]"
+                }`}
+              />
+            </div>
+
+            <div>
+              <label
+                className="block text-[10px] font-bold tracking-[0.16em] uppercase mb-1.5"
+                style={{ color: themeMode === "dark" ? "#a89f97" : "#786f68" }}
+              >
+                WORK EMAIL
+              </label>
+              <input
+                type="email"
+                required
+                placeholder="jane@company.com"
+                value={email}
+                disabled={loading}
+                onChange={(e) => setEmail(e.target.value)}
+                className={`w-full p-3.5 border text-[13px] outline-none rounded-xs transition ${
+                  themeMode === "dark"
+                    ? "bg-[#141312] border-[#33302c] text-white placeholder:text-zinc-600 focus:border-[#c2410c]"
+                    : "bg-[#fcfaf8] border-[#d9d4cf] text-zinc-900 placeholder:text-zinc-400 focus:border-[#c2410c]"
+                }`}
+              />
+            </div>
+
+            {customFormFields && customFormFields.map((field) => (
+              <div key={field.id}>
+                <label
+                  className="block text-[10px] font-bold tracking-[0.16em] uppercase mb-1.5"
+                  style={{ color: themeMode === "dark" ? "#a89f97" : "#786f68" }}
+                >
+                  {field.label?.toUpperCase() || "ADDITIONAL FIELD"}
+                  {field.required ? " *" : ""}
+                </label>
+                {field.type === "textarea" ? (
+                  <textarea
+                    required={field.required}
+                    rows={2}
+                    placeholder={`${field.label}${field.required ? " *" : ""}`}
+                    value={customFieldValues[field.id] || ""}
+                    disabled={loading}
+                    onChange={(e) => handleCustomFieldChange(field.id, e.target.value)}
+                    className={`w-full p-3.5 border text-[13px] outline-none rounded-xs transition resize-none ${
+                      themeMode === "dark"
+                        ? "bg-[#141312] border-[#33302c] text-white placeholder:text-zinc-600 focus:border-[#c2410c]"
+                        : "bg-[#fcfaf8] border-[#d9d4cf] text-zinc-900 placeholder:text-zinc-400 focus:border-[#c2410c]"
+                    }`}
+                  />
+                ) : field.type === "select" ? (
+                  <select
+                    required={field.required}
+                    value={customFieldValues[field.id] || ""}
+                    disabled={loading}
+                    onChange={(e) => handleCustomFieldChange(field.id, e.target.value)}
+                    className={`w-full p-3.5 border text-[13px] outline-none rounded-xs transition ${
+                      themeMode === "dark"
+                        ? "bg-[#141312] border-[#33302c] text-white placeholder:text-zinc-600 focus:border-[#c2410c]"
+                        : "bg-[#fcfaf8] border-[#d9d4cf] text-zinc-900 placeholder:text-zinc-400 focus:border-[#c2410c]"
+                    }`}
+                  >
+                    <option value="">{`${field.label || "Select"}${field.required ? " *" : ""}`}</option>
+                    {(field.options || []).map((opt, idx) => (
+                      <option key={idx} value={opt}>
+                        {opt}
+                      </option>
+                    ))}
+                  </select>
+                ) : (
+                  <input
+                    type={field.type === "number" ? "number" : "text"}
+                    required={field.required}
+                    placeholder={`${field.label}${field.required ? " *" : ""}`}
+                    value={customFieldValues[field.id] || ""}
+                    disabled={loading}
+                    onChange={(e) => handleCustomFieldChange(field.id, e.target.value)}
+                    className={`w-full p-3.5 border text-[13px] outline-none rounded-xs transition ${
+                      themeMode === "dark"
+                        ? "bg-[#141312] border-[#33302c] text-white placeholder:text-zinc-600 focus:border-[#c2410c]"
+                        : "bg-[#fcfaf8] border-[#d9d4cf] text-zinc-900 placeholder:text-zinc-400 focus:border-[#c2410c]"
+                    }`}
+                  />
+                )}
+              </div>
+            ))}
+          </div>
+
+          {enableAiPersonalizedDeliverable && (
+            <div className="space-y-1">
+              <label
+                className="block text-[10px] font-bold tracking-[0.16em] uppercase mb-1.5"
+                style={{ color: brandColor || "#c2410c" }}
+              >
+                ✨ {customPromptQuestion || "What is your main goal or bottleneck?"}
+              </label>
+              <input
+                type="text"
+                required
+                value={customAnswer}
+                disabled={loading}
+                onChange={(e) => setCustomAnswer(e.target.value)}
+                placeholder={customPromptPlaceholder || "e.g. Scaling outreach, Lead generation"}
+                className={`w-full p-3.5 border text-[13px] outline-none rounded-xs transition ${
+                  themeMode === "dark"
+                    ? "bg-[#141312] border-[#33302c] text-white placeholder:text-zinc-600 focus:border-[#c2410c]"
+                    : "bg-[#fcfaf8] border-[#d9d4cf] text-zinc-900 placeholder:text-zinc-400 focus:border-[#c2410c]"
+                }`}
+              />
+            </div>
+          )}
+
+          {errorMsg && (
+            <div className="p-2.5 rounded-xs bg-rose-500/10 border border-rose-500/20 text-xs font-semibold text-rose-500 text-center">
+              {errorMsg}
+            </div>
+          )}
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full border-0 p-4 text-[13px] font-bold font-manrope text-white cursor-pointer rounded-xs transition hover:opacity-90 disabled:opacity-50 mt-1"
+            style={{ backgroundColor: brandColor || "#c2410c" }}
+          >
+            {loading ? "Sending..." : formButtonText || cta || "Receive the dispatch →"}
+          </button>
+        </form>
       ) : layout === "editorial" ? (
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-3.5">

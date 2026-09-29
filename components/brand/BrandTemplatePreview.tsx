@@ -1208,30 +1208,72 @@ const BrandTemplatePreview = memo(function BrandTemplatePreview({
                   </p>
                 </div>
 
-                <div className="space-y-2">
-                  <input
-                    type="text"
-                    placeholder="Full name"
-                    readOnly
-                    className={`w-full p-2 border text-[11px] outline-none rounded-xs ${
-                      themeMode === "dark"
-                        ? "bg-[#141312] border-[#33302c] text-white placeholder:text-zinc-600"
-                        : "bg-[#fcfaf8] border-[#d9d4cf] text-zinc-900 placeholder:text-zinc-400"
-                    }`}
-                  />
-                  <input
-                    type="email"
-                    placeholder="Work email"
-                    readOnly
-                    className={`w-full p-2 border text-[11px] outline-none rounded-xs ${
-                      themeMode === "dark"
-                        ? "bg-[#141312] border-[#33302c] text-white placeholder:text-zinc-600"
-                        : "bg-[#fcfaf8] border-[#d9d4cf] text-zinc-900 placeholder:text-zinc-400"
-                    }`}
-                  />
+                <div className="space-y-2.5">
+                  <div>
+                    <label
+                      className="block text-[8px] font-bold tracking-[0.16em] uppercase mb-1"
+                      style={{ color: themeMode === "dark" ? "#a89f97" : "#786f68" }}
+                    >
+                      FULL NAME
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="Jane Doe"
+                      readOnly
+                      className={`w-full p-2 border text-[11px] outline-none rounded-xs ${
+                        themeMode === "dark"
+                          ? "bg-[#141312] border-[#33302c] text-white placeholder:text-zinc-600"
+                          : "bg-[#fcfaf8] border-[#d9d4cf] text-zinc-900 placeholder:text-zinc-400"
+                      }`}
+                    />
+                  </div>
+
+                  <div>
+                    <label
+                      className="block text-[8px] font-bold tracking-[0.16em] uppercase mb-1"
+                      style={{ color: themeMode === "dark" ? "#a89f97" : "#786f68" }}
+                    >
+                      WORK EMAIL
+                    </label>
+                    <input
+                      type="email"
+                      placeholder="jane@company.com"
+                      readOnly
+                      className={`w-full p-2 border text-[11px] outline-none rounded-xs ${
+                        themeMode === "dark"
+                          ? "bg-[#141312] border-[#33302c] text-white placeholder:text-zinc-600"
+                          : "bg-[#fcfaf8] border-[#d9d4cf] text-zinc-900 placeholder:text-zinc-400"
+                      }`}
+                    />
+                  </div>
+
+                  {latestPage?.customFormFields && latestPage.customFormFields.length > 0 && (
+                    latestPage.customFormFields.map((field: any) => (
+                      <div key={field.id}>
+                        <label
+                          className="block text-[8px] font-bold tracking-[0.16em] uppercase mb-1"
+                          style={{ color: themeMode === "dark" ? "#a89f97" : "#786f68" }}
+                        >
+                          {field.label?.toUpperCase() || "ADDITIONAL FIELD"}
+                          {field.required ? " *" : ""}
+                        </label>
+                        <input
+                          type="text"
+                          placeholder={field.placeholder || "Enter value"}
+                          readOnly
+                          className={`w-full p-2 border text-[11px] outline-none rounded-xs ${
+                            themeMode === "dark"
+                              ? "bg-[#141312] border-[#33302c] text-white placeholder:text-zinc-600"
+                              : "bg-[#fcfaf8] border-[#d9d4cf] text-zinc-900 placeholder:text-zinc-400"
+                          }`}
+                        />
+                      </div>
+                    ))
+                  )}
+
                   <button
                     type="button"
-                    className="w-full border-0 p-2.5 text-[11px] font-bold font-manrope text-white cursor-pointer rounded-xs"
+                    className="w-full border-0 p-2.5 text-[11px] font-bold font-manrope text-white cursor-pointer rounded-xs transition hover:opacity-90 mt-1"
                     style={{ backgroundColor: brandColor || "#c2410c" }}
                   >
                     {latestPage?.formButtonText || latestPage?.cta || "Receive the dispatch →"}

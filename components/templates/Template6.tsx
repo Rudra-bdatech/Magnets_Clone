@@ -196,7 +196,7 @@ export default function Template6(props: TemplateProps) {
         </header>
 
         {/* MAIN 2-COLUMN GRID */}
-        <main className="grid grid-cols-1 lg:grid-cols-[1.45fr_0.8fr] gap-10 lg:gap-[70px] pt-8 lg:pt-[52px] items-start">
+        <main className="grid grid-cols-1 lg:grid-cols-[1.45fr_0.8fr] gap-10 lg:gap-[70px] pt-8 lg:pt-[52px]">
           {/* LEFT COLUMN: Editorial Presentation */}
           <section className="space-y-7 min-w-0">
             {/* Visual Cover Image */}
@@ -495,9 +495,9 @@ export default function Template6(props: TemplateProps) {
           </section>
 
           {/* RIGHT COLUMN: Sticky Opt-In Card */}
-          <aside className="w-full">
+          <aside className="w-full relative lg:self-stretch">
             <div
-              className="sticky top-7 rounded-xs border p-7 sm:p-9 transition-all"
+              className="lg:sticky lg:top-8 rounded-xs border p-7 sm:p-9 transition-all"
               style={{
                 backgroundColor: isDark ? "#1c1917" : "#ffffff",
                 borderColor: isDark ? "#33302c" : "#ddd7d2",

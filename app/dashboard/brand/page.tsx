@@ -475,8 +475,8 @@ export default function BrandPage() {
                       </motion.div>
                     </AnimatePresence>
 
-                    {/* Footer inside Preview */}
-                    {templateId !== "template2" && (
+                    {/* Footer inside Preview (Hidden for templates with integrated footers) */}
+                    {templateId !== "template2" && templateId !== "template5" && templateId !== "template6" && (
                       <div className={`mt-10 text-center text-[10px] border-t pt-4 transition-all duration-300 ${themeMode === "dark" ? "border-zinc-800 text-zinc-500" : "border-zinc-200 text-zinc-400"
                         }`}>
                         All rights reserved 2026

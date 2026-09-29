@@ -282,7 +282,7 @@ export default async function MagnetPageRoute({
 
   return (
     <main
-      className="flex min-h-screen flex-col font-sans transition-colors duration-300 relative overflow-x-hidden"
+      className="flex min-h-screen flex-col font-sans transition-colors duration-300 relative overflow-x-clip"
       style={{
         colorScheme: themeMode === "dark" ? "dark" : "light",
         backgroundColor: isTemplate2
@@ -1157,7 +1157,7 @@ export default async function MagnetPageRoute({
             </header>
 
             {/* Main Grid */}
-            <main className="grid grid-cols-1 lg:grid-cols-[1.45fr_0.8fr] gap-10 lg:gap-[70px] pt-8 lg:pt-[52px] items-start">
+            <main className="grid grid-cols-1 lg:grid-cols-[1.45fr_0.8fr] gap-10 lg:gap-[70px] pt-8 lg:pt-[52px]">
               {/* Left Column: Visual & Chapters */}
               <section className="space-y-7 min-w-0">
                 {/* Visual Cover */}
@@ -1336,9 +1336,9 @@ export default async function MagnetPageRoute({
               </section>
 
               {/* Right Column: Sticky Opt-in Card */}
-              <aside className="w-full">
+              <aside className="w-full relative lg:self-stretch">
                 <div
-                  className="sticky top-7 rounded-xs border p-7 sm:p-9 transition-all space-y-5"
+                  className="lg:sticky lg:top-8 rounded-xs border p-7 sm:p-9 transition-all space-y-5"
                   style={{
                     backgroundColor: themeMode === "dark" ? "#1c1917" : "#ffffff",
                     borderColor: themeMode === "dark" ? "#33302c" : "#ddd7d2",
@@ -1373,6 +1373,7 @@ export default async function MagnetPageRoute({
                   {/* MagnetSignupForm */}
                   <MagnetSignupForm
                     cta={page.cta}
+                    layout="monograph"
                     formTitle={page.formTitle || "Get the full report"}
                     formSubtitle={page.formSubtitle}
                     formButtonText={page.formButtonText || "Receive the dispatch →"}
