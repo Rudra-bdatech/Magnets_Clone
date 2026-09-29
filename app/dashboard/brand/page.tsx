@@ -438,8 +438,8 @@ export default function BrandPage() {
                 >
                   {/* Mock page container */}
                   <div className="p-3.5 sm:p-5 md:p-6">
-                    {/* Header brand name / logo (Hidden for template3 and template4) */}
-                    {templateId !== "template3" && templateId !== "template4" && (
+                    {/* Header brand name / logo (Hidden for template3, template4, and template5) */}
+                    {templateId !== "template3" && templateId !== "template4" && templateId !== "template5" && (
                       <div className="flex items-center gap-3 mb-5 sm:mb-8 justify-center">
                         <div className={`h-10 w-10 sm:h-11 sm:w-11 rounded-xl flex items-center justify-center bg-transparent overflow-hidden ${logo ? "border-none" : "border border-dashed border-[#a1a1aa]/45"}`}>
                           {logo ? (

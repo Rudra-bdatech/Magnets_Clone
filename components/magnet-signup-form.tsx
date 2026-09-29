@@ -402,7 +402,11 @@ export default function MagnetSignupForm({
                 value={name}
                 disabled={loading}
                 onChange={(e) => setName(e.target.value)}
-                className="min-h-10 h-10 w-full rounded-xl border border-zinc-200 dark:border-[#252529] bg-white dark:bg-[#18181C] px-3.5 py-2 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 outline-none transition shadow-xs focus:border-[#0066B2]"
+                className={`min-h-10 h-10 w-full rounded-xl border px-3.5 py-2 text-xs outline-none transition shadow-xs focus:border-[#0066B2] ${
+                  themeMode === "dark"
+                    ? "border-[#252529] bg-[#18181C] text-white placeholder:text-zinc-500"
+                    : "border-zinc-200 bg-white text-zinc-900 placeholder:text-zinc-400"
+                }`}
               />
               <input
                 type="email"
@@ -411,7 +415,11 @@ export default function MagnetSignupForm({
                 value={email}
                 disabled={loading}
                 onChange={(e) => setEmail(e.target.value)}
-                className="min-h-10 h-10 w-full rounded-xl border border-zinc-200 dark:border-[#252529] bg-white dark:bg-[#18181C] px-3.5 py-2 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 outline-none transition shadow-xs focus:border-[#0066B2]"
+                className={`min-h-10 h-10 w-full rounded-xl border px-3.5 py-2 text-xs outline-none transition shadow-xs focus:border-[#0066B2] ${
+                  themeMode === "dark"
+                    ? "border-[#252529] bg-[#18181C] text-white placeholder:text-zinc-500"
+                    : "border-zinc-200 bg-white text-zinc-900 placeholder:text-zinc-400"
+                }`}
               />
 
               {customFormFields && customFormFields.length > 0 && (
@@ -428,7 +436,11 @@ export default function MagnetSignupForm({
                         value={customFieldValues[field.id] || ""}
                         disabled={loading}
                         onChange={(e) => handleCustomFieldChange(field.id, e.target.value)}
-                        className="w-full rounded-xl border border-zinc-200 dark:border-[#252529] bg-white dark:bg-[#18181C] px-3.5 py-2 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 outline-none transition shadow-xs focus:border-[#0066B2]"
+                        className={`w-full rounded-xl border px-3.5 py-2 text-xs outline-none transition shadow-xs focus:border-[#0066B2] ${
+                          themeMode === "dark"
+                            ? "border-[#252529] bg-[#18181C] text-white placeholder:text-zinc-500"
+                            : "border-zinc-200 bg-white text-zinc-900 placeholder:text-zinc-400"
+                        }`}
                       />
                     ) : field.type === "select" ? (
                       <select
@@ -436,7 +448,11 @@ export default function MagnetSignupForm({
                         value={customFieldValues[field.id] || ""}
                         disabled={loading}
                         onChange={(e) => handleCustomFieldChange(field.id, e.target.value)}
-                        className="min-h-10 h-10 w-full rounded-xl border border-zinc-200 dark:border-[#252529] bg-white dark:bg-[#18181C] px-3.5 py-2 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 outline-none transition shadow-xs focus:border-[#0066B2]"
+                        className={`min-h-10 h-10 w-full rounded-xl border px-3.5 py-2 text-xs outline-none transition shadow-xs focus:border-[#0066B2] ${
+                          themeMode === "dark"
+                            ? "border-[#252529] bg-[#18181C] text-white placeholder:text-zinc-500"
+                            : "border-zinc-200 bg-white text-zinc-900 placeholder:text-zinc-400"
+                        }`}
                       >
                         <option value="">{`${field.label}${field.required ? " *" : ""}`}</option>
                         {(field.options || []).map((opt, idx) => (
@@ -467,7 +483,11 @@ export default function MagnetSignupForm({
                         value={customFieldValues[field.id] || ""}
                         disabled={loading}
                         onChange={(e) => handleCustomFieldChange(field.id, e.target.value)}
-                        className="min-h-10 h-10 w-full rounded-xl border border-zinc-200 dark:border-[#252529] bg-white dark:bg-[#18181C] px-3.5 py-2 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 outline-none transition shadow-xs focus:border-[#0066B2]"
+                        className={`min-h-10 h-10 w-full rounded-xl border px-3.5 py-2 text-xs outline-none transition shadow-xs focus:border-[#0066B2] ${
+                          themeMode === "dark"
+                            ? "border-[#252529] bg-[#18181C] text-white placeholder:text-zinc-500"
+                            : "border-zinc-200 bg-white text-zinc-900 placeholder:text-zinc-400"
+                        }`}
                       />
                     )}
                   </div>
@@ -487,7 +507,11 @@ export default function MagnetSignupForm({
                   disabled={loading}
                   onChange={(e) => setCustomAnswer(e.target.value)}
                   placeholder={customPromptPlaceholder || "e.g. Scaling outreach, Lead generation"}
-                  className="w-full rounded-xl border border-zinc-200 dark:border-[#252529] bg-white dark:bg-[#18181C] px-3.5 py-2.5 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 outline-none transition shadow-xs"
+                  className={`w-full rounded-xl border px-3.5 py-2.5 text-xs outline-none transition shadow-xs ${
+                    themeMode === "dark"
+                      ? "border-[#252529] bg-[#18181C] text-white placeholder:text-zinc-500"
+                      : "border-zinc-200 bg-white text-zinc-900 placeholder:text-zinc-400"
+                  }`}
                 />
               </div>
             )}

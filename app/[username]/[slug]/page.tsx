@@ -312,8 +312,8 @@ export default async function MagnetPageRoute({
           <span>⚠️ Draft Preview Mode — This magnet is not yet published. Only you can view this page.</span>
         </div>
       )}
-      {/* If template is not template3 or template4, show the standard top header */}
-      {((page.template as string) !== "template3" && (page.template as string) !== "template4" && (!(!page.template && ((accountDoc?.templateId as string) === "template3" || (accountDoc?.templateId as string) === "template4")))) && (
+      {/* If template is not template3, template4, or template5, show the standard top header */}
+      {((page.template as string) !== "template3" && (page.template as string) !== "template4" && (page.template as string) !== "template5" && (!(!page.template && ((accountDoc?.templateId as string) === "template3" || (accountDoc?.templateId as string) === "template4" || (accountDoc?.templateId as string) === "template5")))) && (
         <header className="w-full flex items-center justify-center pt-3 sm:pt-4 pb-1 sm:pb-2 px-6 sm:px-10 relative shrink-0">
           <div className="flex items-center gap-2.5 sm:gap-3">
             <div className={`h-9 w-9 sm:h-10 sm:w-10 rounded-xl flex items-center justify-center bg-transparent overflow-hidden shadow-xs ${logo ? "border-none" : "border-2 border-dashed border-[#a1a1aa]/50"}`}>
@@ -657,96 +657,251 @@ export default async function MagnetPageRoute({
             </div>
           </div>
         ) : ((page.template as string) === "template5" || (!page.template && (accountDoc?.templateId as string) === "template5")) ? (
-          /* TEMPLATE 5: Magazine Cover Hero (Full Viewport / Stacked Tray matching Template5.tsx) */
-          <div className="w-full flex-1 flex flex-col justify-center py-2 sm:py-4 max-w-6xl xl:max-w-7xl mx-auto space-y-0">
-            {/* Full-bleed cover image header banner */}
-            <div className="relative w-full min-h-[280px] sm:min-h-[340px] md:min-h-[380px] lg:min-h-[420px] rounded-3xl overflow-hidden flex items-end shadow-2xl border border-black/10 dark:border-white/10">
-              {activeImageUrl && activeImageUrl.trim() !== "" ? (
-                <img
-                  src={activeImageUrl}
-                  alt={page.name}
-                  className="absolute inset-0 w-full h-full object-cover"
-                />
-              ) : (
-                <div className="absolute inset-0 bg-[#121215]" />
-              )}
-              {/* Cinematic scrim */}
-              <div className="absolute inset-0 pointer-events-none" style={{ background: "linear-gradient(to bottom, rgba(0,0,0,0.08) 0%, rgba(0,0,0,0.55) 60%, rgba(0,0,0,0.92) 100%)" }} />
-              <div className="absolute inset-0 pointer-events-none" style={{ background: `linear-gradient(to right, ${brandColor}33 0%, transparent 60%)` }} />
-
-              {/* Overlaid headline & subheadline */}
-              <div className="relative z-10 w-full p-6 sm:p-8 md:p-10 space-y-2">
-                <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-[2.6rem] font-black text-white leading-tight drop-shadow-xl">{activeHeadline}</h1>
-                {page.subheadline && <p className="text-white/90 text-sm sm:text-base md:text-lg max-w-3xl leading-relaxed drop-shadow">{page.subheadline}</p>}
-              </div>
-            </div>
-
-            {/* Floating glass form tray stacked underneath */}
-            <div
-              className="relative z-20 mx-4 sm:mx-8 md:mx-12 lg:mx-16 -mt-8 sm:-mt-10 md:-mt-14 rounded-3xl p-6 sm:p-8 space-y-5 shadow-2xl"
+          /* TEMPLATE 5: Editorial Resource Showcase & Framework Edition */
+          <div className="w-full flex-1 flex flex-col justify-center py-4 sm:py-8 max-w-3xl mx-auto px-2 sm:px-4">
+            {/* Editorial Card Canvas */}
+            <article
+              className="relative overflow-hidden rounded-2xl sm:rounded-3xl border transition-all duration-300 shadow-2xl"
               style={{
-                background: themeMode === "dark" ? "rgba(12,12,18,0.94)" : "rgba(255,255,255,0.96)",
-                border: `1px solid ${themeMode === "dark" ? `${brandColor}35` : `${brandColor}25`}`,
-                backdropFilter: "blur(20px)",
-                boxShadow: `0 12px 48px -12px rgba(0,0,0,0.35)`
+                backgroundColor: themeMode === "dark" ? "#0f0f12" : "#ffffff",
+                borderColor: themeMode === "dark" ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)",
+                boxShadow: themeMode === "dark"
+                  ? "0 25px 60px -15px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.05)"
+                  : "0 25px 60px -15px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.04)",
               }}
             >
-              {/* Pitch Area */}
-              {page.pitch && (
-                <p className={`text-xs sm:text-sm md:text-base leading-relaxed ${themeMode === "dark" ? "text-zinc-300" : "text-zinc-700"}`}>
-                  {page.pitch}
-                </p>
-              )}
+              {/* Subtle Brand Accent Stripe on right edge */}
+              <div
+                aria-hidden="true"
+                className="absolute right-0 top-8 h-20 w-1.5 rounded-l-full pointer-events-none transition-all duration-300"
+                style={{ backgroundColor: brandColor }}
+              />
 
-              {/* Bullets Section Header & List */}
-              {((page.bullets && page.bullets.length > 0) || page.bulletsTitle) && (
-                <div className="space-y-2">
-                  <h3 className={`text-xs font-bold uppercase tracking-wider ${themeMode === "dark" ? "text-zinc-400" : "text-zinc-500"}`}>
-                    {page.bulletsTitle || "What they will learn"}
-                  </h3>
-                  {page.bullets && page.bullets.length > 0 && (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                      {page.bullets.map((item: string, idx: number) => (
-                        <div key={idx} className="flex items-center gap-2.5">
-                          <div className="flex h-4 w-4 shrink-0 items-center justify-center rounded-md" style={{ background: `${brandColor}18`, border: `1px solid ${brandColor}44` }}>
-                            <svg width="7" height="7" viewBox="0 0 7 7" fill="none"><path d="M1 3.5l1.7 1.7L6 1.5" stroke={brandColor} strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                          </div>
-                          <span className={`text-xs sm:text-sm md:text-base ${themeMode === "dark" ? "text-zinc-300" : "text-zinc-700"}`}>{item}</span>
+              {/* Top Ambient Glow */}
+              <div
+                aria-hidden="true"
+                className="absolute -top-24 -left-24 w-64 h-64 rounded-full blur-3xl pointer-events-none opacity-20"
+                style={{ backgroundColor: brandColor }}
+              />
+
+              {/* 1. EDITORIAL HEADER SECTION */}
+              <header className={`px-6 py-6 sm:px-10 sm:py-8 relative z-10 border-b ${themeMode === "dark" ? "border-zinc-800/80" : "border-zinc-100"}`}>
+                {/* Creator / Publisher Bar */}
+                <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+                  <div className="flex items-center gap-3 min-w-0">
+                    {logo ? (
+                      <img
+                        src={logo}
+                        alt={businessName}
+                        className={`w-11 h-11 rounded-full border object-cover shrink-0 shadow-xs ${
+                          themeMode === "dark" ? "border-zinc-700" : "border-zinc-200"
+                        }`}
+                      />
+                    ) : (
+                      <div
+                        className="w-11 h-11 rounded-full flex items-center justify-center font-bold text-sm text-white shrink-0 shadow-xs ring-2 ring-white/10"
+                        style={{ backgroundColor: brandColor }}
+                      >
+                        {(businessName || "B").charAt(0).toUpperCase()}
+                      </div>
+                    )}
+                    <div className="min-w-0">
+                      <p
+                        className="text-[10px] sm:text-xs font-bold uppercase tracking-wider"
+                        style={{ color: brandColor }}
+                      >
+                        Published by
+                      </p>
+                      <p className={`truncate text-sm font-semibold ${themeMode === "dark" ? "text-zinc-100" : "text-zinc-900"}`}>
+                        {businessName || "Creator"}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Category / Format Pill */}
+                  <div
+                    className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-wider"
+                    style={{
+                      backgroundColor: `${brandColor}14`,
+                      color: brandColor,
+                      border: `1px solid ${brandColor}30`,
+                    }}
+                  >
+                    <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: brandColor }} />
+                    <span>Proven Frameworks</span>
+                  </div>
+                </div>
+
+                {/* Editorial Headline & Subheadline */}
+                <div className="space-y-3">
+                  <h1 className={`text-2xl sm:text-4xl md:text-[2.6rem] font-extrabold tracking-tight leading-[1.12] ${themeMode === "dark" ? "text-zinc-50" : "text-zinc-950"}`}>
+                    {activeHeadline || "101 Winning Viral Templates That Get Results"}
+                  </h1>
+                  {page.subheadline && (
+                    <p className={`text-sm sm:text-base md:text-lg leading-relaxed ${themeMode === "dark" ? "text-zinc-300" : "text-zinc-600"}`}>
+                      {page.subheadline}
+                    </p>
+                  )}
+                </div>
+              </header>
+
+              {/* 2. RESOURCE PREVIEW / SHOWCASE SECTION */}
+              <section
+                aria-label="Resource Preview"
+                className={`relative px-6 py-7 sm:px-10 sm:py-9 border-b ${themeMode === "dark" ? "bg-[#141418]/60 border-zinc-800/80" : "bg-zinc-50/70 border-zinc-100"}`}
+              >
+                <div className={`relative group rounded-xl sm:rounded-2xl overflow-hidden border shadow-md ${themeMode === "dark" ? "border-zinc-800 bg-zinc-950" : "border-zinc-200/90 bg-zinc-950"}`}>
+                  {activeImageUrl && activeImageUrl.trim() !== "" ? (
+                    <div className="relative aspect-[16/10] sm:aspect-[16/9] w-full">
+                      <img
+                        src={activeImageUrl}
+                        alt={page.name || "Resource Preview"}
+                        className="w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-[1.01]"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/10 pointer-events-none" />
+                    </div>
+                  ) : (
+                    /* Tech Blueprint Cover Mockup */
+                    <div className="relative aspect-[16/10] sm:aspect-[16/9] w-full flex flex-col items-center justify-center p-8 bg-[#0b0c10] text-zinc-300 select-none overflow-hidden">
+                      <div
+                        className="absolute inset-0 opacity-15 pointer-events-none"
+                        style={{
+                          backgroundImage: `radial-gradient(circle at 1px 1px, ${brandColor} 1px, transparent 0)`,
+                          backgroundSize: "24px 24px",
+                        }}
+                      />
+                      <div
+                        className="absolute inset-0 pointer-events-none opacity-25"
+                        style={{
+                          background: `radial-gradient(ellipse at center, ${brandColor}33 0%, transparent 70%)`,
+                        }}
+                      />
+                      <div className="relative z-10 flex flex-col items-center text-center space-y-3 max-w-md">
+                        <div
+                          className="w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg border border-white/10"
+                          style={{ backgroundColor: `${brandColor}22` }}
+                        >
+                          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke={brandColor} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/>
+                            <path d="M6 6h10"/>
+                            <path d="M6 10h10"/>
+                          </svg>
                         </div>
-                      ))}
+                        <div>
+                          <p className="text-sm font-bold text-white tracking-wide">{page.name || "Winning Viral Templates"}</p>
+                          <p className="text-xs text-zinc-400 mt-0.5">Comprehensive playbook &amp; ready-to-use frameworks</p>
+                        </div>
+                      </div>
                     </div>
                   )}
                 </div>
-              )}
 
-              {/* Stacked Form */}
-              <div className="pt-3 border-t border-zinc-200/20 dark:border-zinc-800/40">
-                <MagnetSignupForm
-                  cta={page.cta}
-                  formTitle={page.formTitle}
-                  formSubtitle={page.formSubtitle}
-                  formButtonText={page.formButtonText}
-                  deliverable={page.deliverable}
-                  accent={page.accent}
-                  pageId={page.id}
-                  pageName={page.name}
-                  pageSlug={page.slug}
-                  pageOwnerEmail={(page as any).userEmail}
-                  brandColor={brandColor}
-                  highlightIntensity={highlightIntensity}
-                  themeMode={themeMode}
-                  customPromptQuestion={page.customPromptQuestion}
-                  customPromptPlaceholder={page.customPromptPlaceholder}
-                  enableAiPersonalizedDeliverable={page.enableAiPersonalizedDeliverable}
-                  customFormFields={page.customFormFields}
-                  username={params.username}
-                  isVariantB={isVariantB}
-                  layout="split-panel"
-                  afterSignupOption={page.afterSignupOption}
-                  destinationUrl={page.destinationUrl}
-                />
+                {/* Floating Pill Caption */}
+                <div className="flex justify-center -mt-3 relative z-20">
+                  <div
+                    className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-[11px] font-bold uppercase tracking-wider shadow-lg border backdrop-blur-md"
+                    style={{
+                      backgroundColor: themeMode === "dark" ? "rgba(24,24,27,0.95)" : "rgba(255,255,255,0.95)",
+                      color: themeMode === "dark" ? "#ffffff" : "#09090b",
+                      borderColor: themeMode === "dark" ? "rgba(255,255,255,0.15)" : "rgba(0,0,0,0.1)",
+                    }}
+                  >
+                    <span className="w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: brandColor }} />
+                    <span>Previewing: Strategy, Templates &amp; Examples</span>
+                  </div>
+                </div>
+              </section>
+
+              {/* 3. VALUE PROPOSITION & FORM SECTION */}
+              <div className="px-6 py-8 sm:px-10 sm:py-10 space-y-7">
+                {/* Pitch */}
+                {page.pitch && (
+                  <p className={`text-sm sm:text-base leading-relaxed ${themeMode === "dark" ? "text-zinc-300" : "text-zinc-700"}`}>
+                    {page.pitch}
+                  </p>
+                )}
+
+                {/* Bullets Section Header & List */}
+                {((page.bullets && page.bullets.length > 0) || page.bulletsTitle) && (
+                  <div className="space-y-4">
+                    <h2 className={`text-xs font-bold uppercase tracking-wider ${themeMode === "dark" ? "text-zinc-400" : "text-zinc-500"}`}>
+                      {page.bulletsTitle || "Inside the guide"}
+                    </h2>
+                    {page.bullets && page.bullets.length > 0 && (
+                      <ul className="grid gap-3.5">
+                        {page.bullets.map((item: string, idx: number) => (
+                          <li key={idx} className="flex items-start gap-3 text-sm leading-6">
+                            <span
+                              aria-hidden="true"
+                              className="mt-1 grid size-4 shrink-0 place-items-center rounded-full"
+                              style={{ backgroundColor: `${brandColor}18` }}
+                            >
+                              <span className="size-1.5 rounded-full" style={{ backgroundColor: brandColor }} />
+                            </span>
+                            <span className={themeMode === "dark" ? "text-zinc-200" : "text-zinc-800"}>{item}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                )}
+
+                {/* 4. EMBEDDED FORM CONTAINER */}
+                <div
+                  className="rounded-2xl border p-6 sm:p-8 space-y-4 shadow-sm relative overflow-hidden"
+                  style={{
+                    backgroundColor: themeMode === "dark" ? "rgba(20,20,24,0.85)" : "rgba(248,249,251,0.95)",
+                    borderColor: themeMode === "dark" ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.06)",
+                  }}
+                >
+                  <MagnetSignupForm
+                    cta={page.cta}
+                    formTitle={page.formTitle || "Get instant access to the templates"}
+                    formSubtitle={page.formSubtitle || "Enter your details below to receive the resource."}
+                    formButtonText={page.formButtonText || "Access the templates"}
+                    deliverable={page.deliverable}
+                    accent={page.accent}
+                    pageId={page.id}
+                    pageName={page.name}
+                    pageSlug={page.slug}
+                    pageOwnerEmail={(page as any).userEmail}
+                    brandColor={brandColor}
+                    highlightIntensity={highlightIntensity}
+                    themeMode={themeMode}
+                    customPromptQuestion={page.customPromptQuestion}
+                    customPromptPlaceholder={page.customPromptPlaceholder}
+                    enableAiPersonalizedDeliverable={page.enableAiPersonalizedDeliverable}
+                    customFormFields={page.customFormFields}
+                    username={params.username}
+                    isVariantB={isVariantB}
+                    layout="split-panel"
+                    afterSignupOption={page.afterSignupOption}
+                    destinationUrl={page.destinationUrl}
+                  />
+
+                  <p className="text-center text-[11px] leading-5 text-zinc-500 dark:text-zinc-400 flex items-center justify-center gap-1.5 pt-1">
+                    <svg className="w-3.5 h-3.5 text-emerald-500 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                    </svg>
+                    <span>Zero spam. You’ll receive the PDF immediately and high-value insights.</span>
+                  </p>
+                </div>
               </div>
-            </div>
+            </article>
+
+            {/* 5. TRUST & SOCIAL PROOF FOOTER */}
+            <footer className="mt-8 text-center space-y-4">
+              <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-[11px] font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+                <span>⚡ Instant Delivery</span>
+                <span>•</span>
+                <span>🔒 100% Free Forever</span>
+                <span>•</span>
+                <span>✨ Verified Content</span>
+              </div>
+              <p className="text-[11px] uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
+                © {new Date().getFullYear()} {businessName || "Author"} · All rights reserved
+              </p>
+            </footer>
           </div>
         ) : ((page.template as string) === "template6" || (page.template as string) === "template7" || (!page.template && ((accountDoc?.templateId as string) === "template6" || (accountDoc?.templateId as string) === "template7"))) ? (
           /* TEMPLATE 6: Spotlight Hero (Full Desktop Viewport Split Layout) */

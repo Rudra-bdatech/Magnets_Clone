@@ -1,6 +1,7 @@
 import React from "react";
-import { Check, Loader2, ImageIcon, Trash2, Plus, X } from "lucide-react";
+import { Check, Loader2, ImageIcon, Trash2, Plus, X, Sparkles, ShieldCheck, Zap, Lock, ArrowRight, BookOpen } from "lucide-react";
 import { type TemplateProps } from "./types";
+import { ImageGeneration } from "@/components/agents/image-generation";
 
 export default function Template5(props: TemplateProps) {
   const {
@@ -11,12 +12,15 @@ export default function Template5(props: TemplateProps) {
     bullets,
     bulletsTitle,
     formTitle,
+    formSubtitle,
     formButtonText,
     imageUrl,
     customFormFields = [],
     setCustomFormFields,
     fileInputRef,
     uploadProgress,
+    isGeneratingAICover,
+    handleGenerateAICoverImage,
     headlineRef,
     subheadlineRef,
     pitchRef,
@@ -25,6 +29,7 @@ export default function Template5(props: TemplateProps) {
     setPitch,
     setBulletsTitle,
     setFormTitle,
+    setFormSubtitle,
     setBullets,
     setImageUrl,
     setFormButtonText,
@@ -38,297 +43,716 @@ export default function Template5(props: TemplateProps) {
   const brandColor = account?.brandColor || "#0066B2";
   const themeMode = account?.themeMode || "light";
   const isDark = themeMode === "dark";
+  const logo = account?.logo || null;
+  const businessName = account?.brandName || account?.name || "Creator";
+  const currentYear = new Date().getFullYear();
 
   return (
-    <div className="w-full flex-1 flex flex-col justify-center py-1 lg:py-2 max-w-6xl xl:max-w-7xl mx-auto space-y-0 relative">
-      {/* Full-bleed cover image header banner */}
-      <div className="relative w-full overflow-hidden rounded-3xl shadow-2xl border border-black/10 dark:border-white/10 min-h-[280px] sm:min-h-[340px] md:min-h-[380px] lg:min-h-[420px] flex items-end">
-        {imageUrl && imageUrl.trim() !== "" ? (
-          <img src={imageUrl} alt="Cover" className="absolute inset-0 w-full h-full object-cover" />
-        ) : (
-          <div className="absolute inset-0 bg-[#121215]" />
-        )}
-        <div className="absolute inset-0 pointer-events-none z-10" style={{ background: "linear-gradient(to bottom, rgba(0,0,0,0.08) 0%, rgba(0,0,0,0.55) 60%, rgba(0,0,0,0.92) 100%)" }} />
-        <div className="absolute inset-0 pointer-events-none z-10" style={{ background: `linear-gradient(to right, ${brandColor}33 0%, transparent 60%)` }} />
+    <div className="w-full flex-1 flex flex-col justify-center py-4 sm:py-8 max-w-3xl mx-auto px-2 sm:px-4">
+      {/* Editorial Card Canvas */}
+      <article
+        className="relative overflow-hidden rounded-2xl sm:rounded-3xl border transition-all duration-300 shadow-2xl"
+        style={{
+          backgroundColor: isDark ? "#0f0f12" : "#ffffff",
+          borderColor: isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)",
+          boxShadow: isDark
+            ? "0 25px 60px -15px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.05)"
+            : "0 25px 60px -15px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.04)",
+        }}
+      >
+        {/* Subtle Brand Accent Stripe on right edge */}
+        <div
+          aria-hidden="true"
+          className="absolute right-0 top-8 h-20 w-1.5 rounded-l-full pointer-events-none transition-all duration-300"
+          style={{ backgroundColor: brandColor }}
+        />
 
-        {/* Upload Progress Overlay */}
-        {uploadProgress !== null && uploadProgress !== undefined && (
-          <div className="absolute inset-0 z-40 flex flex-col items-center justify-center p-6 bg-black/85 backdrop-blur-md text-white">
-            <div className="w-full max-w-xs space-y-3">
-              <div className="flex items-center justify-between text-xs font-bold">
-                <span className="flex items-center gap-2 text-[#0066B2] dark:text-[#38BDF8]">
-                  {uploadProgress === 100 ? (
-                    <Check className="h-4 w-4 text-emerald-500" />
-                  ) : (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  )}
-                  {uploadProgress === 100 ? "Image uploaded!" : "Uploading image..."}
-                </span>
-                <span className="font-mono text-[#0066B2] dark:text-[#38BDF8]">{uploadProgress}%</span>
-              </div>
-              <div className="h-2 w-full bg-zinc-200 dark:bg-zinc-800 rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-[#0066B2] dark:bg-[#38BDF8] rounded-full transition-all duration-150 ease-out"
-                  style={{ width: `${uploadProgress}%` }}
+        {/* Top Ambient Glow */}
+        <div
+          aria-hidden="true"
+          className="absolute -top-24 -left-24 w-64 h-64 rounded-full blur-3xl pointer-events-none opacity-20"
+          style={{ backgroundColor: brandColor }}
+        />
+
+        {/* 1. EDITORIAL HEADER SECTION */}
+        <header
+          className={`px-6 py-6 sm:px-10 sm:py-8 relative z-10 border-b ${
+            isDark ? "border-zinc-800/80" : "border-zinc-100"
+          }`}
+        >
+          {/* Creator / Publisher Bar */}
+          <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+            <div className="flex items-center gap-3 min-w-0">
+              {logo ? (
+                <img
+                  src={logo}
+                  alt={businessName}
+                  className={`w-11 h-11 rounded-full border object-cover shrink-0 shadow-xs ${
+                    isDark ? "border-zinc-700" : "border-zinc-200"
+                  }`}
                 />
+              ) : (
+                <div
+                  className="w-11 h-11 rounded-full flex items-center justify-center font-bold text-sm text-white shrink-0 shadow-xs ring-2 ring-white/10"
+                  style={{ backgroundColor: brandColor }}
+                >
+                  {businessName.charAt(0).toUpperCase()}
+                </div>
+              )}
+              <div className="min-w-0">
+                <p
+                  className="text-[10px] sm:text-xs font-bold uppercase tracking-wider"
+                  style={{ color: brandColor }}
+                >
+                  Published by
+                </p>
+                <p
+                  className={`truncate text-sm font-semibold ${
+                    isDark ? "text-zinc-100" : "text-zinc-900"
+                  }`}
+                >
+                  {businessName}
+                </p>
               </div>
-              <p className="text-[11px] text-zinc-400 text-center">Optimizing media assets...</p>
+            </div>
+
+            {/* Category / Format Pill */}
+            <div
+              className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-wider"
+              style={{
+                backgroundColor: `${brandColor}14`,
+                color: brandColor,
+                border: `1px solid ${brandColor}30`,
+              }}
+            >
+              <Zap className="w-3 h-3" />
+              <span>Proven Frameworks</span>
             </div>
           </div>
-        )}
 
-        {/* Image Action Overlay Controls (Editor) */}
-        {isEditor && (
-          <div className="absolute top-4 right-4 z-30 flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => fileInputRef?.current?.click()}
-              className="flex items-center gap-1.5 rounded-xl bg-black/70 hover:bg-black px-3 py-1.5 text-xs font-bold text-white shadow-md border border-white/20 backdrop-blur-md transition cursor-pointer"
+          {/* Editorial Headline */}
+          <div className="space-y-3">
+            {isEditor ? (
+              <textarea
+                ref={headlineRef}
+                rows={2}
+                value={headline || ""}
+                onChange={(e) => {
+                  setHeadline?.(e.target.value);
+                  e.target.style.height = "auto";
+                  e.target.style.height = `${e.target.scrollHeight}px`;
+                }}
+                placeholder="101 Winning Viral Templates That Get Results"
+                className={`w-full text-2xl sm:text-4xl md:text-[2.6rem] font-extrabold tracking-tight leading-[1.12] bg-transparent outline-none resize-none transition-colors ${
+                  isDark
+                    ? "text-zinc-50 placeholder:text-zinc-600"
+                    : "text-zinc-950 placeholder:text-zinc-400"
+                }`}
+              />
+            ) : (
+              <h1
+                className={`text-2xl sm:text-4xl md:text-[2.6rem] font-extrabold tracking-tight leading-[1.12] ${
+                  isDark ? "text-zinc-50" : "text-zinc-950"
+                }`}
+              >
+                {headline || "101 Winning Viral Templates That Get Results"}
+              </h1>
+            )}
+
+            {/* Subheadline */}
+            {isEditor ? (
+              <textarea
+                ref={subheadlineRef}
+                rows={2}
+                value={subheadline || ""}
+                onChange={(e) => {
+                  setSubheadline?.(e.target.value);
+                  e.target.style.height = "auto";
+                  e.target.style.height = `${e.target.scrollHeight}px`;
+                }}
+                placeholder="Stop staring at a blank page. Use field-tested structures pulled from posts that generated millions of impressions."
+                className={`w-full text-sm sm:text-base md:text-lg leading-relaxed bg-transparent outline-none resize-none ${
+                  isDark
+                    ? "text-zinc-300 placeholder:text-zinc-600"
+                    : "text-zinc-600 placeholder:text-zinc-400"
+                }`}
+              />
+            ) : subheadline ? (
+              <p
+                className={`text-sm sm:text-base md:text-lg leading-relaxed ${
+                  isDark ? "text-zinc-300" : "text-zinc-600"
+                }`}
+              >
+                {subheadline}
+              </p>
+            ) : null}
+          </div>
+        </header>
+
+        {/* 2. RESOURCE PREVIEW / SHOWCASE SECTION */}
+        <section
+          aria-label="Resource Preview"
+          className={`relative px-6 py-7 sm:px-10 sm:py-9 border-b ${
+            isDark
+              ? "bg-[#141418]/60 border-zinc-800/80"
+              : "bg-zinc-50/70 border-zinc-100"
+          }`}
+        >
+          <div
+            className={`relative group rounded-xl sm:rounded-2xl overflow-hidden border shadow-md ${
+              isDark ? "border-zinc-800 bg-zinc-950" : "border-zinc-200/90 bg-zinc-950"
+            }`}
+          >
+            {/* Upload Progress Overlay */}
+            {uploadProgress !== null && uploadProgress !== undefined && (
+              <div className="absolute inset-0 z-40 flex flex-col items-center justify-center p-6 bg-black/85 backdrop-blur-md text-white">
+                <div className="w-full max-w-xs space-y-3">
+                  <div className="flex items-center justify-between text-xs font-bold">
+                    <span className="flex items-center gap-2 text-white">
+                      {uploadProgress === 100 ? (
+                        <Check className="h-4 w-4 text-emerald-400" />
+                      ) : (
+                        <Loader2 className="h-4 w-4 animate-spin text-sky-400" />
+                      )}
+                      {uploadProgress === 100 ? "Ready!" : "Uploading image..."}
+                    </span>
+                    <span className="font-mono text-sky-400">{uploadProgress}%</span>
+                  </div>
+                  <div className="h-2 w-full bg-zinc-800 rounded-full overflow-hidden">
+                    <div
+                      className="h-full rounded-full transition-all duration-150 ease-out"
+                      style={{ width: `${uploadProgress}%`, backgroundColor: brandColor }}
+                    />
+                  </div>
+                  <p className="text-[11px] text-zinc-400 text-center">Optimizing preview graphic...</p>
+                </div>
+              </div>
+            )}
+
+            {/* AI Generation State */}
+            {isGeneratingAICover ? (
+              <ImageGeneration
+                status="generating"
+                prompt={headline || "101 Winning Viral Templates Preview"}
+                resolution="1200 × 900"
+                label="AI generating custom editorial showcase graphic"
+                aspectRatio="16 / 10"
+                className="w-full h-full min-h-[260px] sm:min-h-[340px]"
+              />
+            ) : imageUrl && imageUrl.trim() !== "" ? (
+              <div className="relative aspect-[16/10] sm:aspect-[16/9] w-full">
+                <img
+                  src={imageUrl}
+                  alt="Resource Preview"
+                  className="w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-[1.01]"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/10 pointer-events-none" />
+              </div>
+            ) : (
+              /* High-Tech Editorial Placeholder Graphic */
+              <div className="relative aspect-[16/10] sm:aspect-[16/9] w-full flex flex-col items-center justify-center p-8 bg-[#0b0c10] text-zinc-300 select-none overflow-hidden">
+                {/* Background Tech Grid */}
+                <div
+                  className="absolute inset-0 opacity-15 pointer-events-none"
+                  style={{
+                    backgroundImage: `radial-gradient(circle at 1px 1px, ${brandColor} 1px, transparent 0)`,
+                    backgroundSize: "24px 24px",
+                  }}
+                />
+                <div
+                  className="absolute inset-0 pointer-events-none opacity-25"
+                  style={{
+                    background: `radial-gradient(ellipse at center, ${brandColor}33 0%, transparent 70%)`,
+                  }}
+                />
+
+                <div className="relative z-10 flex flex-col items-center text-center space-y-3 max-w-md">
+                  <div
+                    className="w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg border border-white/10"
+                    style={{ backgroundColor: `${brandColor}22` }}
+                  >
+                    <BookOpen className="w-7 h-7" style={{ color: brandColor }} />
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold text-white tracking-wide">
+                      {headline || "101 Winning Viral Templates"}
+                    </p>
+                    <p className="text-xs text-zinc-400 mt-0.5">
+                      Comprehensive playbook &amp; ready-to-use frameworks
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Editor Action Overlay Controls */}
+            {isEditor && (
+              <div className="absolute top-3 right-3 z-30 flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => fileInputRef?.current?.click()}
+                  className="flex items-center gap-1.5 rounded-xl bg-black/75 hover:bg-black px-3 py-1.5 text-xs font-semibold text-white shadow-lg border border-white/20 backdrop-blur-md transition-all cursor-pointer hover:scale-105 active:scale-95"
+                >
+                  <ImageIcon className="h-3.5 w-3.5 text-zinc-300" />
+                  <span>{imageUrl && imageUrl.trim() !== "" ? "Replace Image" : "Upload Cover"}</span>
+                </button>
+
+                {handleGenerateAICoverImage && (
+                  <button
+                    type="button"
+                    onClick={handleGenerateAICoverImage}
+                    disabled={isGeneratingAICover}
+                    className="flex items-center gap-1.5 rounded-xl bg-black/75 hover:bg-black px-3 py-1.5 text-xs font-semibold text-purple-300 shadow-lg border border-purple-500/30 backdrop-blur-md transition-all cursor-pointer hover:scale-105 active:scale-95"
+                  >
+                    <Sparkles className="h-3.5 w-3.5 text-purple-400" />
+                    <span>AI Generate</span>
+                  </button>
+                )}
+
+                {imageUrl && imageUrl.trim() !== "" && setImageUrl && (
+                  <button
+                    type="button"
+                    onClick={() => setImageUrl(null)}
+                    className="flex items-center gap-1.5 rounded-xl bg-black/75 hover:bg-red-950/90 px-2.5 py-1.5 text-xs font-semibold text-red-400 shadow-lg border border-red-500/30 backdrop-blur-md transition-all cursor-pointer hover:scale-105 active:scale-95"
+                  >
+                    <Trash2 className="h-3.5 w-3.5 text-red-400" />
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* Floating Pill Caption */}
+          <div className="flex justify-center -mt-3 relative z-20">
+            <div
+              className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-[11px] font-bold uppercase tracking-wider shadow-lg border backdrop-blur-md"
+              style={{
+                backgroundColor: isDark ? "rgba(24,24,27,0.95)" : "rgba(255,255,255,0.95)",
+                color: isDark ? "#ffffff" : "#09090b",
+                borderColor: isDark ? "rgba(255,255,255,0.15)" : "rgba(0,0,0,0.1)",
+              }}
             >
-              <ImageIcon className="h-3.5 w-3.5 text-zinc-300" />
-              <span>{imageUrl && imageUrl.trim() !== "" ? "Replace Image" : "Add Image"}</span>
-            </button>
-            {imageUrl && imageUrl.trim() !== "" && setImageUrl && (
+              <span className="w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: brandColor }} />
+              <span>Previewing: Strategy, Templates &amp; Examples</span>
+            </div>
+          </div>
+        </section>
+
+        {/* 3. VALUE PROPOSITION & FORM SECTION */}
+        <div className="px-6 py-8 sm:px-10 sm:py-10 space-y-7">
+          {/* Pitch Section */}
+          {isEditor ? (
+            <textarea
+              ref={pitchRef}
+              rows={2}
+              value={pitch || ""}
+              onChange={(e) => {
+                setPitch?.(e.target.value);
+                e.target.style.height = "auto";
+                e.target.style.height = `${e.target.scrollHeight}px`;
+              }}
+              placeholder="Stop staring at a blank page. Use field-tested structures pulled from posts that generated millions of impressions."
+              className={`w-full text-sm sm:text-base leading-relaxed bg-transparent outline-none resize-none ${
+                isDark
+                  ? "text-zinc-300 placeholder:text-zinc-600"
+                  : "text-zinc-700 placeholder:text-zinc-400"
+              }`}
+            />
+          ) : pitch ? (
+            <p
+              className={`text-sm sm:text-base leading-relaxed ${
+                isDark ? "text-zinc-300" : "text-zinc-700"
+              }`}
+            >
+              {pitch}
+            </p>
+          ) : null}
+
+          {/* "Inside The Guide" Checklist Section */}
+          <div className="space-y-4">
+            {isEditor ? (
+              <input
+                type="text"
+                value={bulletsTitle || ""}
+                onChange={(e) => setBulletsTitle?.(e.target.value)}
+                placeholder="INSIDE THE GUIDE"
+                className={`w-full text-xs font-bold uppercase tracking-wider bg-transparent outline-none ${
+                  isDark
+                    ? "text-zinc-400 placeholder:text-zinc-600"
+                    : "text-zinc-500 placeholder:text-zinc-400"
+                }`}
+              />
+            ) : (
+              <h2
+                className={`text-xs font-bold uppercase tracking-wider ${
+                  isDark ? "text-zinc-400" : "text-zinc-500"
+                }`}
+              >
+                {bulletsTitle || "Inside the guide"}
+              </h2>
+            )}
+
+            {/* Bullets List */}
+            {bullets && bullets.length > 0 ? (
+              <ul className="grid gap-3.5">
+                {bullets.map((item: string, idx: number) => (
+                  <li key={idx} className="flex items-start gap-3 text-sm leading-6">
+                    {/* Modern Micro Ring Indicator */}
+                    <span
+                      aria-hidden="true"
+                      className="mt-1 grid size-4 shrink-0 place-items-center rounded-full"
+                      style={{ backgroundColor: `${brandColor}18` }}
+                    >
+                      <span className="size-1.5 rounded-full" style={{ backgroundColor: brandColor }} />
+                    </span>
+
+                    {isEditor ? (
+                      <div className="flex-1 flex items-center gap-2">
+                        <input
+                          type="text"
+                          value={item}
+                          onChange={(e) => {
+                            if (!bullets || !setBullets) return;
+                            const u = [...bullets];
+                            u[idx] = e.target.value;
+                            setBullets(u);
+                          }}
+                          className={`w-full bg-transparent outline-none text-sm ${
+                            isDark ? "text-zinc-200" : "text-zinc-800"
+                          }`}
+                          placeholder="Bullet point item..."
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setBullets?.(bullets.filter((_: any, i: number) => i !== idx))}
+                          className={`transition cursor-pointer p-1 ${
+                            isDark ? "text-zinc-400 hover:text-red-400" : "text-zinc-500 hover:text-red-500"
+                          }`}
+                          title="Remove bullet point"
+                        >
+                          <X className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    ) : (
+                      <span className={isDark ? "text-zinc-200" : "text-zinc-800"}>{item}</span>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            ) : isEditor ? (
+              <p
+                className={`text-xs italic ${
+                  isDark ? "text-zinc-500" : "text-zinc-400"
+                }`}
+              >
+                No bullets yet. Click add bullet below.
+              </p>
+            ) : null}
+
+            {isEditor && setBullets && (
               <button
                 type="button"
-                onClick={() => setImageUrl(null)}
-                className="flex items-center gap-1.5 rounded-xl bg-black/70 hover:bg-red-950/80 px-3 py-1.5 text-xs font-bold text-red-400 shadow-md border border-white/20 backdrop-blur-md transition cursor-pointer"
+                onClick={() => setBullets([...(bullets || []), ""])}
+                className={`inline-flex items-center gap-1.5 rounded-full border border-dashed px-3.5 py-1.5 text-xs font-semibold transition cursor-pointer ${
+                  isDark
+                    ? "border-zinc-700 bg-zinc-800/60 hover:bg-zinc-800 text-zinc-300"
+                    : "border-zinc-300 bg-zinc-100 hover:bg-zinc-200 text-zinc-700"
+                }`}
               >
-                <Trash2 className="h-3.5 w-3.5 text-red-400" />
-                <span>Remove</span>
+                <Plus className="w-3.5 h-3.5" />
+                <span>Add bullet point</span>
               </button>
             )}
           </div>
-        )}
 
-        <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8 z-10 space-y-1">
-          {isEditor ? (
-            <>
-              <textarea
-                ref={headlineRef}
-                rows={1}
-                value={headline || ""}
-                onChange={(e) => { setHeadline?.(e.target.value); e.target.style.height = "auto"; e.target.style.height = `${e.target.scrollHeight}px`; }}
-                placeholder="Your headline here"
-                className="w-full text-2xl md:text-4xl font-black text-white bg-transparent outline-none resize-none leading-tight placeholder:text-white/50"
-              />
-              <textarea
-                ref={subheadlineRef}
-                rows={1}
-                value={subheadline || ""}
-                onChange={(e) => { setSubheadline?.(e.target.value); e.target.style.height = "auto"; e.target.style.height = `${e.target.scrollHeight}px`; }}
-                placeholder="Short subhead. say what they will get"
-                className="w-full text-sm text-white/80 bg-transparent outline-none resize-none placeholder:text-white/50"
-              />
-            </>
-          ) : (
-            <>
-              <h1 className="text-2xl md:text-4xl font-black text-white leading-tight">
-                {headline || "Free Resource"}
-              </h1>
-              {subheadline && (
-                <p className="text-sm text-white/80">
-                  {subheadline}
-                </p>
-              )}
-            </>
-          )}
-        </div>
-      </div>
-
-      {/* Floating glass form tray */}
-      <div
-        className="relative z-20 mx-4 sm:mx-8 md:mx-12 lg:mx-16 -mt-8 sm:-mt-10 md:-mt-14 rounded-3xl p-6 sm:p-8 space-y-5"
-        style={{
-          background: isDark ? "rgba(12,12,18,0.92)" : "rgba(255,255,255,0.96)",
-          border: `1px solid ${isDark ? `${brandColor}30` : `${brandColor}20`}`,
-          backdropFilter: "blur(20px)",
-          boxShadow: `0 12px 48px -12px rgba(0,0,0,0.35)`
-        }}
-      >
-        {/* Pitch Area */}
-        {isEditor ? (
-          <textarea
-            ref={pitchRef}
-            rows={2}
-            value={pitch || ""}
-            onChange={(e) => {
-              setPitch?.(e.target.value);
-              e.target.style.height = "auto";
-              e.target.style.height = `${e.target.scrollHeight}px`;
+          {/* 4. EMBEDDED HIGH-CONVERTING LEAD MAGNET FORM CARD */}
+          <div
+            className="rounded-2xl border p-6 sm:p-8 space-y-4 shadow-sm relative overflow-hidden"
+            style={{
+              backgroundColor: isDark ? "rgba(20,20,24,0.85)" : "rgba(248,249,251,0.95)",
+              borderColor: isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.06)",
             }}
-            placeholder="Write a short pitch..."
-            className={`w-full text-xs sm:text-sm leading-relaxed bg-transparent outline-none resize-none ${isDark ? "text-zinc-300 placeholder:text-zinc-500" : "text-zinc-600 placeholder:text-zinc-400"}`}
-          />
-        ) : pitch ? (
-          <p className={`text-xs sm:text-sm leading-relaxed ${isDark ? "text-zinc-300" : "text-zinc-600"}`}>
-            {pitch}
-          </p>
-        ) : null}
-
-        {/* Bullets Section Header */}
-        {isEditor ? (
-          <input
-            type="text"
-            value={bulletsTitle || ""}
-            onChange={(e) => setBulletsTitle?.(e.target.value)}
-            placeholder="What they will learn"
-            className={`w-full text-xs font-bold uppercase tracking-wider bg-transparent outline-none ${isDark ? "text-zinc-400 placeholder:text-zinc-500" : "text-zinc-500 placeholder:text-zinc-400"}`}
-          />
-        ) : bulletsTitle ? (
-          <h3 className={`text-xs font-bold uppercase tracking-wider ${isDark ? "text-zinc-400" : "text-zinc-500"}`}>
-            {bulletsTitle}
-          </h3>
-        ) : null}
-
-        {/* Bullets List */}
-        {bullets && bullets.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-            {bullets.map((item: string, idx: number) => (
-              <div key={idx} className="flex items-center gap-2.5">
-                <div className="flex h-4 w-4 shrink-0 items-center justify-center rounded-md" style={{ background: `${brandColor}18`, border: `1px solid ${brandColor}44` }}>
-                  <svg width="7" height="7" viewBox="0 0 7 7" fill="none"><path d="M1 3.5l1.7 1.7L6 1.5" stroke={brandColor} strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                </div>
-                {isEditor ? (
-                  <>
-                    <input
-                      type="text"
-                      value={item}
-                      onChange={(e) => { if (!bullets || !setBullets) return; const u = [...bullets]; u[idx] = e.target.value; setBullets(u); }}
-                      className={`w-full bg-transparent outline-none text-xs sm:text-sm ${isDark ? "text-zinc-300" : "text-zinc-600"}`}
-                      placeholder="Bullet point item..."
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setBullets?.(bullets.filter((_: any, i: number) => i !== idx))}
-                      className="text-zinc-400 hover:text-white transition cursor-pointer p-1"
-                      title="Remove bullet point"
-                    >
-                      <X className="w-3.5 h-3.5" />
-                    </button>
-                  </>
-                ) : (
-                  <span className={`text-xs sm:text-sm ${isDark ? "text-zinc-300" : "text-zinc-600"}`}>
-                    {item}
-                  </span>
-                )}
-              </div>
-            ))}
-          </div>
-        ) : isEditor ? (
-          <p className="text-xs italic text-zinc-500 dark:text-zinc-400/80 my-1">
-            No bullets yet. click + to add one.
-          </p>
-        ) : null}
-
-        {isEditor && setBullets && (
-          <button
-            type="button"
-            onClick={() => setBullets([...(bullets || []), ""])}
-            className="inline-flex items-center gap-1.5 rounded-full border border-dashed border-zinc-600/60 hover:border-zinc-400 bg-zinc-900/40 hover:bg-zinc-900/80 px-3.5 py-1.5 text-xs font-medium text-zinc-300 transition cursor-pointer"
           >
-            <Plus className="w-3.5 h-3.5" />
-            <span>Add bullet</span>
-          </button>
-        )}
-
-        {/* Form Section */}
-        <div className="space-y-3 pt-3 border-t border-zinc-200/20 dark:border-zinc-800/40">
-          {isEditor ? (
-            <>
-              {formTitle !== undefined && (
+            {/* Form Title & Subtitle */}
+            {isEditor ? (
+              <div className="space-y-1">
                 <input
                   type="text"
                   value={formTitle || ""}
                   onChange={(e) => setFormTitle?.(e.target.value)}
-                  className={`w-full text-center text-xs font-bold uppercase tracking-wider bg-transparent outline-none placeholder:text-zinc-400 dark:placeholder:text-zinc-500 ${isDark ? "text-zinc-400" : "text-zinc-600"}`}
-                  placeholder="Get your free copy now"
+                  className={`w-full text-base font-bold bg-transparent outline-none ${
+                    isDark
+                      ? "text-zinc-100 placeholder:text-zinc-600"
+                      : "text-zinc-900 placeholder:text-zinc-400"
+                  }`}
+                  placeholder="Get instant access to the templates"
                 />
-              )}
-              <div className={customFormFields && customFormFields.length > 0 ? "grid grid-cols-1 sm:grid-cols-2 gap-2.5" : "space-y-2.5"}>
-                <input type="text" placeholder="Name *" readOnly className="min-h-10 h-10 w-full rounded-xl border border-zinc-200 dark:border-[#252529] bg-white dark:bg-[#18181C] px-3.5 py-2 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 outline-none transition shadow-xs" />
-                <input type="email" placeholder="Email *" readOnly className="min-h-10 h-10 w-full rounded-xl border border-zinc-200 dark:border-[#252529] bg-white dark:bg-[#18181C] px-3.5 py-2 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 outline-none transition shadow-xs" />
+                <input
+                  type="text"
+                  value={formSubtitle || ""}
+                  onChange={(e) => setFormSubtitle?.(e.target.value)}
+                  className={`w-full text-xs bg-transparent outline-none ${
+                    isDark
+                      ? "text-zinc-400 placeholder:text-zinc-600"
+                      : "text-zinc-500 placeholder:text-zinc-400"
+                  }`}
+                  placeholder="Enter your details below to receive the resource."
+                />
+              </div>
+            ) : (
+              <div>
+                <h3 className={`text-base font-bold ${isDark ? "text-zinc-100" : "text-zinc-900"}`}>
+                  {formTitle || "Get instant access to the templates"}
+                </h3>
+                {formSubtitle && (
+                  <p className={`text-xs mt-0.5 ${isDark ? "text-zinc-400" : "text-zinc-500"}`}>
+                    {formSubtitle}
+                  </p>
+                )}
+              </div>
+            )}
+
+            {isEditor ? (
+              /* Editor Form Preview */
+              <div className="space-y-3.5">
+                <div>
+                  <label
+                    className={`mb-1 block text-xs font-semibold ${
+                      isDark ? "text-zinc-400" : "text-zinc-600"
+                    }`}
+                  >
+                    Full name
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Enter your name"
+                    readOnly
+                    className={`h-11 w-full rounded-xl border px-3.5 text-xs outline-none shadow-2xs cursor-not-allowed ${
+                      isDark
+                        ? "border-zinc-700/80 bg-[#111114] text-white placeholder:text-zinc-500"
+                        : "border-zinc-200 bg-white text-zinc-900 placeholder:text-zinc-400"
+                    }`}
+                  />
+                </div>
+
+                <div>
+                  <label
+                    className={`mb-1 block text-xs font-semibold ${
+                      isDark ? "text-zinc-400" : "text-zinc-600"
+                    }`}
+                  >
+                    Email address
+                  </label>
+                  <input
+                    type="email"
+                    placeholder="name@company.com"
+                    readOnly
+                    className={`h-11 w-full rounded-xl border px-3.5 text-xs outline-none shadow-2xs cursor-not-allowed ${
+                      isDark
+                        ? "border-zinc-700/80 bg-[#111114] text-white placeholder:text-zinc-500"
+                        : "border-zinc-200 bg-white text-zinc-900 placeholder:text-zinc-400"
+                    }`}
+                  />
+                </div>
+
                 {customFormFields.map((field: any) => (
-                  <div key={field.id} className={field.type === "textarea" ? "col-span-1 sm:col-span-2" : ""}>
+                  <div key={field.id}>
+                    <label
+                      className={`mb-1 block text-xs font-semibold ${
+                        isDark ? "text-zinc-400" : "text-zinc-600"
+                      }`}
+                    >
+                      {field.label || "Custom Field"}{field.required ? " *" : ""}
+                    </label>
                     <input
                       type="text"
-                      placeholder={`${field.label || "New Field"}${field.required ? " *" : ""}`}
+                      placeholder={`Enter ${field.label || "value"}`}
                       readOnly
-                      className="min-h-10 h-10 w-full rounded-xl border border-zinc-200 dark:border-[#252529] bg-white dark:bg-[#18181C] px-3.5 py-2 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 outline-none transition shadow-xs"
+                      className={`h-11 w-full rounded-xl border px-3.5 text-xs outline-none shadow-2xs cursor-not-allowed ${
+                        isDark
+                          ? "border-zinc-700/80 bg-[#111114] text-white placeholder:text-zinc-500"
+                          : "border-zinc-200 bg-white text-zinc-900 placeholder:text-zinc-400"
+                      }`}
                     />
                   </div>
                 ))}
+
+                {/* Editable Button */}
+                <div className="pt-1">
+                  <div className="relative group">
+                    <input
+                      type="text"
+                      value={formButtonText || ""}
+                      onChange={(e) => setFormButtonText?.(e.target.value)}
+                      onFocus={(e) => {
+                        if (e.target.value === "Access the templates" || e.target.value === "Send it to me") {
+                          setFormButtonText?.("");
+                        } else {
+                          e.target.select();
+                        }
+                      }}
+                      onBlur={(e) => {
+                        if (!e.target.value.trim()) {
+                          setFormButtonText?.("Access the templates");
+                        }
+                      }}
+                      placeholder="Access the templates"
+                      className="h-12 w-full text-center rounded-xl px-4 text-xs sm:text-sm font-black text-white cursor-text outline-none border-2 border-transparent hover:border-white/40 focus:border-white transition-all shadow-md"
+                      style={{
+                        background: `linear-gradient(135deg, ${brandColor} 0%, ${brandColor}dd 100%)`,
+                        boxShadow: `0 8px 24px -4px ${brandColor}66`,
+                      }}
+                    />
+                  </div>
+                </div>
+
+                <p
+                  className={`text-center text-[11px] leading-5 flex items-center justify-center gap-1.5 ${
+                    isDark ? "text-zinc-400" : "text-zinc-500"
+                  }`}
+                >
+                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+                  <span>Zero spam. You’ll receive the PDF immediately and high-value insights.</span>
+                </p>
               </div>
-              <input
-                type="text"
-                value={formButtonText || ""}
-                onChange={(e) => setFormButtonText?.(e.target.value)}
-                onFocus={(e) => {
-                  if (e.target.value === "Send it to me" || e.target.value === "Get Instant Access →") {
-                    setFormButtonText?.("");
-                  } else {
-                    e.target.select();
-                  }
-                }}
-                onBlur={(e) => {
-                  if (!e.target.value.trim()) {
-                    setFormButtonText?.("Send it to me");
-                  }
-                }}
-                placeholder="Send it to me"
-                className="w-full text-center rounded-xl py-3 px-4 text-xs font-black text-white cursor-text mt-2 outline-none border-2 border-transparent hover:border-white/40 focus:border-white transition duration-150"
-                style={{ background: `linear-gradient(135deg, ${brandColor} 0%, ${brandColor}cc 100%)`, boxShadow: `0 6px 24px -4px ${brandColor}88` }}
-              />
-            </>
-          ) : (
-            <form onSubmit={onSubmitPublicForm} className="space-y-3">
-              {formTitle && (
-                <h4 className={`w-full text-center text-xs font-bold uppercase tracking-wider ${isDark ? "text-zinc-400" : "text-zinc-600"}`}>
-                  {formTitle}
-                </h4>
-              )}
-              <div className={customFormFields && customFormFields.length > 0 ? "grid grid-cols-1 sm:grid-cols-2 gap-2.5" : "space-y-2.5"}>
-                <input
-                  type="text"
-                  required
-                  placeholder="Name *"
-                  value={publicFormValues.name || ""}
-                  onChange={(e) => setPublicFormValues?.({ ...publicFormValues, name: e.target.value })}
-                  className="min-h-10 h-10 w-full rounded-xl border border-zinc-200 dark:border-[#252529] bg-white dark:bg-[#18181C] px-3.5 py-2 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 outline-none transition shadow-xs"
-                />
-                <input
-                  type="email"
-                  required
-                  placeholder="Email *"
-                  value={publicFormValues.email || ""}
-                  onChange={(e) => setPublicFormValues?.({ ...publicFormValues, email: e.target.value })}
-                  className="min-h-10 h-10 w-full rounded-xl border border-zinc-200 dark:border-[#252529] bg-white dark:bg-[#18181C] px-3.5 py-2 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 outline-none transition shadow-xs"
-                />
+            ) : (
+              /* Public Form Submission */
+              <form onSubmit={onSubmitPublicForm} className="space-y-3.5">
+                <div>
+                  <label
+                    className={`mb-1 block text-xs font-semibold ${
+                      isDark ? "text-zinc-400" : "text-zinc-600"
+                    }`}
+                  >
+                    Full name
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="Enter your name"
+                    value={publicFormValues.name || ""}
+                    onChange={(e) => setPublicFormValues?.({ ...publicFormValues, name: e.target.value })}
+                    className={`h-11 w-full rounded-xl border px-3.5 text-xs outline-none shadow-2xs transition-all ${
+                      isDark
+                        ? "border-zinc-700/80 bg-[#111114] text-white placeholder:text-zinc-500 focus:border-sky-500"
+                        : "border-zinc-200 bg-white text-zinc-900 placeholder:text-zinc-400 focus:border-sky-600"
+                    }`}
+                  />
+                </div>
+
+                <div>
+                  <label
+                    className={`mb-1 block text-xs font-semibold ${
+                      isDark ? "text-zinc-400" : "text-zinc-600"
+                    }`}
+                  >
+                    Email address
+                  </label>
+                  <input
+                    type="email"
+                    required
+                    placeholder="name@company.com"
+                    value={publicFormValues.email || ""}
+                    onChange={(e) => setPublicFormValues?.({ ...publicFormValues, email: e.target.value })}
+                    className={`h-11 w-full rounded-xl border px-3.5 text-xs outline-none shadow-2xs transition-all ${
+                      isDark
+                        ? "border-zinc-700/80 bg-[#111114] text-white placeholder:text-zinc-500 focus:border-sky-500"
+                        : "border-zinc-200 bg-white text-zinc-900 placeholder:text-zinc-400 focus:border-sky-600"
+                    }`}
+                  />
+                </div>
+
                 {customFormFields.map((field: any) => (
-                  <div key={field.id} className={field.type === "textarea" ? "col-span-1 sm:col-span-2" : ""}>
+                  <div key={field.id}>
+                    <label
+                      className={`mb-1 block text-xs font-semibold ${
+                        isDark ? "text-zinc-400" : "text-zinc-600"
+                      }`}
+                    >
+                      {field.label}{field.required ? " *" : ""}
+                    </label>
                     <input
                       type="text"
                       required={field.required}
-                      placeholder={`${field.label}${field.required ? " *" : ""}`}
+                      placeholder={`Enter ${field.label}`}
                       value={publicFormValues[field.id] || ""}
                       onChange={(e) => setPublicFormValues?.({ ...publicFormValues, [field.id]: e.target.value })}
-                      className="min-h-10 h-10 w-full rounded-xl border border-zinc-200 dark:border-[#252529] bg-white dark:bg-[#18181C] px-3.5 py-2 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 outline-none transition shadow-xs"
+                      className={`h-11 w-full rounded-xl border px-3.5 text-xs outline-none shadow-2xs transition-all ${
+                        isDark
+                          ? "border-zinc-700/80 bg-[#111114] text-white placeholder:text-zinc-500 focus:border-sky-500"
+                          : "border-zinc-200 bg-white text-zinc-900 placeholder:text-zinc-400 focus:border-sky-600"
+                      }`}
                     />
                   </div>
                 ))}
-              </div>
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="w-full text-center rounded-xl py-3 px-4 text-xs font-black text-white cursor-pointer mt-2 outline-none border-2 border-transparent hover:border-white/40 transition duration-150 disabled:opacity-50"
-                style={{ background: `linear-gradient(135deg, ${brandColor} 0%, ${brandColor}cc 100%)`, boxShadow: `0 6px 24px -4px ${brandColor}88` }}
-              >
-                {isSubmitting ? "Submitting..." : (formButtonText || "Send it to me")}
-              </button>
-            </form>
-          )}
+
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="h-12 w-full flex items-center justify-center gap-2 rounded-xl px-4 text-xs sm:text-sm font-black text-white cursor-pointer transition-all duration-200 hover:brightness-110 active:scale-[0.99] disabled:opacity-50 shadow-md"
+                  style={{
+                    background: `linear-gradient(135deg, ${brandColor} 0%, ${brandColor}dd 100%)`,
+                    boxShadow: `0 8px 24px -4px ${brandColor}66`,
+                  }}
+                >
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <span>Processing...</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>{formButtonText || "Access the templates"}</span>
+                      <ArrowRight className="w-4 h-4" />
+                    </>
+                  )}
+                </button>
+
+                <p
+                  className={`text-center text-[11px] leading-5 flex items-center justify-center gap-1.5 ${
+                    isDark ? "text-zinc-400" : "text-zinc-500"
+                  }`}
+                >
+                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+                  <span>Zero spam. You’ll receive the PDF immediately and high-value insights.</span>
+                </p>
+              </form>
+            )}
+          </div>
         </div>
-      </div>
+      </article>
+
+      {/* 5. TRUST & SOCIAL PROOF FOOTER */}
+      <footer className="mt-8 text-center space-y-4">
+        <div
+          className={`flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-[11px] font-bold uppercase tracking-wider ${
+            isDark ? "text-zinc-400" : "text-zinc-500"
+          }`}
+        >
+          <span className="inline-flex items-center gap-1.5">
+            <Zap className="w-3.5 h-3.5 text-amber-500" />
+            <span>Instant Delivery</span>
+          </span>
+          <span>•</span>
+          <span className="inline-flex items-center gap-1.5">
+            <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
+            <span>Verified Content</span>
+          </span>
+          <span>•</span>
+          <span className="inline-flex items-center gap-1.5">
+            <Lock className="w-3.5 h-3.5 text-blue-500" />
+            <span>Updated {currentYear}</span>
+          </span>
+        </div>
+
+        <p
+          className={`text-[11px] uppercase tracking-wider ${
+            isDark ? "text-zinc-500" : "text-zinc-400"
+          }`}
+        >
+          © {currentYear} {businessName} · All rights reserved
+        </p>
+      </footer>
     </div>
   );
 }

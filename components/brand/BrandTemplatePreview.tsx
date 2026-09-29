@@ -634,165 +634,203 @@ const BrandTemplatePreview = memo(function BrandTemplatePreview({
         </div>
       )}
 
-      {/* TEMPLATE 5: Magazine Cover Overlay */}
+      {/* TEMPLATE 5: Editorial Resource Showcase & Framework Edition */}
       {templateId === "template5" && (
-        <div className="w-full space-y-0 py-1">
-          {/* COVER IMAGE BLOCK */}
-          <div className="relative w-full rounded-3xl overflow-hidden shadow-2xl border border-black/10 dark:border-white/10" style={{ paddingBottom: "42%" }}>
-            {latestPage?.imageUrl && latestPage.imageUrl.trim() !== "" ? (
-              <img
-                src={latestPage.imageUrl}
-                alt={latestPage?.name || "Cover"}
-                className="absolute inset-0 w-full h-full object-cover"
-              />
-            ) : (
-              <div className="absolute inset-0 flex items-center justify-center bg-[#121215]">
-                <div className="flex flex-col items-center gap-2 opacity-40">
-                  <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
-                    <rect x="3" y="3" width="30" height="30" rx="6" stroke="white" strokeWidth="1.5" strokeDasharray="4 3" />
-                    <path d="M3 24l8-7 6 5 5-4 11 9" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                    <circle cx="11" cy="13" r="3" stroke="white" strokeWidth="1.5" />
-                  </svg>
-                  <span className="text-white text-[9px] font-semibold uppercase tracking-widest">Cover Image</span>
-                </div>
-              </div>
-            )}
-
-            <div
-              className="absolute inset-0 pointer-events-none"
-              style={{
-                background: "linear-gradient(to top, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.45) 45%, rgba(0,0,0,0.05) 100%)",
-              }}
-            />
-            <div className="absolute inset-0 pointer-events-none" style={{ background: `linear-gradient(to right, ${hexWithAlpha(brandColor, 0.2)} 0%, transparent 60%)` }} />
-
-            {/* TOP-LEFT BRAND BADGE */}
-            <div className="absolute top-4 left-4 z-10 flex items-center gap-2">
-              {logo ? (
-                <img src={logo} alt="Logo" className="h-7 w-7 rounded-lg object-contain" />
-              ) : (
-                <div
-                  className="h-7 w-7 rounded-lg flex items-center justify-center text-white text-[10px] font-black"
-                  style={{ backgroundColor: brandColor, boxShadow: `0 0 12px ${hexWithAlpha(brandColor, 0.53)}` }}
-                >
-                  {(businessName || "B").charAt(0).toUpperCase()}
-                </div>
-              )}
-              <span className="text-white text-[11px] font-bold tracking-wide drop-shadow-lg">
-                {businessName || "Brand"}
-              </span>
-            </div>
-
-            {/* OVERLAID HEADLINE */}
-            <div className="absolute bottom-0 left-0 right-0 z-10 p-5 md:p-6 space-y-1">
-              <h3 className="text-xl md:text-3xl font-black text-white leading-tight tracking-tight drop-shadow-xl">
-                {latestPage?.headline || latestPage?.name || "101 Winning Viral Templates That Get Results"}
-              </h3>
-              <p className="text-xs text-white/80 leading-relaxed font-medium drop-shadow">
-                {latestPage?.subheadline || "Short subhead. say what they will get"}
-              </p>
-            </div>
-          </div>
-
-          {/* FLOATING SIGN-UP TRAY */}
-          <div
-            className="relative z-20 mx-3 md:mx-6 -mt-5 mb-4 rounded-2xl p-5 space-y-4 shadow-2xl"
+        <div className="w-full flex-1 flex flex-col justify-center py-2 max-w-xl mx-auto px-1 sm:px-2">
+          <article
+            className="relative overflow-hidden rounded-2xl border transition-all duration-300 shadow-xl"
             style={{
-              background: themeMode === "dark" ? "rgba(12,12,18,0.92)" : "rgba(255,255,255,0.96)",
-              border: `1px solid ${themeMode === "dark" ? hexWithAlpha(brandColor, 0.19) : hexWithAlpha(brandColor, 0.13)}`,
-              backdropFilter: "blur(20px)",
-              boxShadow: "0 8px 40px rgba(0,0,0,0.18)",
+              backgroundColor: themeMode === "dark" ? "#0f0f12" : "#ffffff",
+              borderColor: themeMode === "dark" ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)",
             }}
           >
-            {latestPage?.pitch && (
-              <p className={`text-xs leading-relaxed ${themeMode === "dark" ? "text-zinc-300" : "text-zinc-600"}`}>
-                {latestPage.pitch}
-              </p>
-            )}
+            {/* Subtle Brand Accent Stripe on right edge */}
+            <div
+              aria-hidden="true"
+              className="absolute right-0 top-6 h-14 w-1.5 rounded-l-full pointer-events-none"
+              style={{ backgroundColor: brandColor }}
+            />
 
-            <h4 className={`text-xs font-bold uppercase tracking-wider ${themeMode === "dark" ? "text-zinc-400" : "text-zinc-500"}`}>
-              {latestPage?.bulletsTitle || "What they will learn"}
-            </h4>
+            {/* Top Ambient Glow */}
+            <div
+              aria-hidden="true"
+              className="absolute -top-16 -left-16 w-44 h-44 rounded-full blur-2xl pointer-events-none opacity-20"
+              style={{ backgroundColor: brandColor }}
+            />
 
-            {latestPage?.bullets && latestPage.bullets.length > 0 && (
-              <div className="space-y-2">
-                {latestPage.bullets.map((item, idx) => (
-                  <div key={idx} className="flex items-center gap-2.5">
-                    <div className="flex h-4 w-4 shrink-0 items-center justify-center rounded-md" style={{ background: hexWithAlpha(brandColor, 0.09), border: `1px solid ${hexWithAlpha(brandColor, 0.27)}` }}>
-                      <svg width="7" height="7" viewBox="0 0 7 7" fill="none"><path d="M1 3.5l1.7 1.7L6 1.5" stroke={brandColor} strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" /></svg>
+            {/* 1. HEADER SECTION */}
+            <header className={`p-5 relative z-10 border-b ${themeMode === "dark" ? "border-zinc-800/80" : "border-zinc-100"}`}>
+              <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
+                <div className="flex items-center gap-2.5 min-w-0">
+                  {logo ? (
+                    <img
+                      src={logo}
+                      alt={businessName}
+                      className={`w-8 h-8 rounded-full border object-cover shrink-0 ${
+                        themeMode === "dark" ? "border-zinc-700" : "border-zinc-200"
+                      }`}
+                    />
+                  ) : (
+                    <div
+                      className="w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs text-white shrink-0"
+                      style={{ backgroundColor: brandColor }}
+                    >
+                      {(businessName || "B").charAt(0).toUpperCase()}
                     </div>
-                    <span className={`text-xs ${themeMode === "dark" ? "text-zinc-300" : "text-zinc-600"}`}>{item}</span>
+                  )}
+                  <div className="min-w-0">
+                    <p className="text-[9px] font-bold uppercase tracking-wider" style={{ color: brandColor }}>
+                      Published by
+                    </p>
+                    <p className={`truncate text-xs font-semibold ${themeMode === "dark" ? "text-zinc-100" : "text-zinc-900"}`}>
+                      {businessName || "Brand"}
+                    </p>
                   </div>
-                ))}
+                </div>
+
+                <div
+                  className="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider"
+                  style={{
+                    backgroundColor: `${brandColor}14`,
+                    color: brandColor,
+                    border: `1px solid ${brandColor}30`,
+                  }}
+                >
+                  <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: brandColor }} />
+                  <span>Proven Frameworks</span>
+                </div>
               </div>
-            )}
 
-            {/* Form Inputs Section */}
-            <div className="space-y-2 pt-2 border-t border-zinc-200/20 dark:border-zinc-800/40">
-              <p className={`text-center text-xs font-bold uppercase tracking-wider ${themeMode === "dark" ? "text-zinc-400" : "text-zinc-600"}`}>
-                {latestPage?.formTitle || "Get your free copy now"}
-              </p>
+              <div className="space-y-1.5">
+                <h3 className={`text-lg sm:text-xl font-extrabold tracking-tight leading-tight ${themeMode === "dark" ? "text-zinc-50" : "text-zinc-950"}`}>
+                  {latestPage?.headline || latestPage?.name || "101 Winning Viral Templates That Get Results"}
+                </h3>
+                <p className={`text-xs leading-relaxed line-clamp-2 ${themeMode === "dark" ? "text-zinc-300" : "text-zinc-600"}`}>
+                  {latestPage?.subheadline || "Stop staring at a blank page. Use field-tested structures pulled from posts that generated millions of impressions."}
+                </p>
+              </div>
+            </header>
 
-              <div className={latestPage?.customFormFields && latestPage.customFormFields.length > 0 ? "grid grid-cols-1 sm:grid-cols-2 gap-2.5" : "grid grid-cols-1 sm:grid-cols-2 gap-2.5"}>
-                <input
-                  type="text"
-                  placeholder={latestPage?.namePlaceholder || "Name *"}
-                  readOnly
-                  className="w-full min-h-10 h-10 rounded-xl border border-zinc-200 dark:border-[#252529] bg-white dark:bg-[#18181C] px-3.5 py-2 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 outline-none transition shadow-xs"
-                />
-                <input
-                  type="email"
-                  placeholder={latestPage?.emailPlaceholder || "Email *"}
-                  readOnly
-                  className="w-full min-h-10 h-10 rounded-xl border border-zinc-200 dark:border-[#252529] bg-white dark:bg-[#18181C] px-3.5 py-2 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 outline-none transition shadow-xs"
-                />
-
-                {latestPage?.customFormFields && latestPage.customFormFields.length > 0 && (
-                  latestPage.customFormFields.map((field) => (
-                    <div key={field.id} className={field.type === "textarea" ? "col-span-1 sm:col-span-2" : ""}>
-                      <input
-                        type="text"
-                        placeholder={`${field.label}${field.required ? " *" : ""}`}
-                        readOnly
-                        className="w-full min-h-10 h-10 rounded-xl border border-zinc-200 dark:border-[#252529] bg-white dark:bg-[#18181C] px-3.5 py-2 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 outline-none transition shadow-xs"
-                      />
+            {/* 2. RESOURCE PREVIEW SECTION */}
+            <section className={`relative p-5 border-b ${themeMode === "dark" ? "bg-[#141418]/60 border-zinc-800/80" : "bg-zinc-50/70 border-zinc-100"}`}>
+              <div className={`relative rounded-xl overflow-hidden border shadow-xs aspect-[16/10] w-full ${themeMode === "dark" ? "border-zinc-800 bg-zinc-950" : "border-zinc-200/90 bg-zinc-950"}`}>
+                {latestPage?.imageUrl && latestPage.imageUrl.trim() !== "" ? (
+                  <img
+                    src={latestPage.imageUrl}
+                    alt={latestPage?.name || "Resource"}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full flex flex-col items-center justify-center p-4 bg-[#0b0c10] text-zinc-300">
+                    <div
+                      className="w-10 h-10 rounded-xl flex items-center justify-center mb-2"
+                      style={{ backgroundColor: `${brandColor}22` }}
+                    >
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={brandColor} strokeWidth="2">
+                        <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/>
+                        <path d="M6 6h10"/>
+                        <path d="M6 10h10"/>
+                      </svg>
                     </div>
-                  ))
+                    <span className="text-[11px] font-bold text-white">Editorial Showcase Graphic</span>
+                  </div>
                 )}
               </div>
 
-              <button
-                type="button"
-                className="w-full rounded-xl py-3 text-xs font-black text-white cursor-pointer mt-1"
+              {/* Floating Pill */}
+              <div className="flex justify-center -mt-2.5 relative z-10">
+                <div
+                  className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[9px] font-bold uppercase tracking-wider shadow-sm border backdrop-blur-md"
+                  style={{
+                    backgroundColor: themeMode === "dark" ? "rgba(24,24,27,0.95)" : "rgba(255,255,255,0.95)",
+                    color: themeMode === "dark" ? "#ffffff" : "#09090b",
+                    borderColor: themeMode === "dark" ? "rgba(255,255,255,0.15)" : "rgba(0,0,0,0.1)",
+                  }}
+                >
+                  <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: brandColor }} />
+                  <span>Previewing: Strategy &amp; Templates</span>
+                </div>
+              </div>
+            </section>
+
+            {/* 3. CONTENT & FORM SECTION */}
+            <div className="p-5 space-y-4">
+              {latestPage?.pitch && (
+                <p className={`text-xs leading-relaxed ${themeMode === "dark" ? "text-zinc-300" : "text-zinc-700"}`}>
+                  {latestPage.pitch}
+                </p>
+              )}
+
+              {/* Bullets */}
+              <div className="space-y-2">
+                <h4 className={`text-[10px] font-bold uppercase tracking-wider ${themeMode === "dark" ? "text-zinc-400" : "text-zinc-500"}`}>
+                  {latestPage?.bulletsTitle || "Inside the guide"}
+                </h4>
+                {latestPage?.bullets && latestPage.bullets.length > 0 && (
+                  <div className="space-y-1.5">
+                    {latestPage.bullets.map((item, idx) => (
+                      <div key={idx} className="flex items-center gap-2">
+                        <span
+                          className="grid size-3.5 shrink-0 place-items-center rounded-full"
+                          style={{ backgroundColor: `${brandColor}18` }}
+                        >
+                          <span className="size-1 rounded-full" style={{ backgroundColor: brandColor }} />
+                        </span>
+                        <span className={`text-xs ${themeMode === "dark" ? "text-zinc-200" : "text-zinc-800"}`}>{item}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Inset Form Card */}
+              <div
+                className="rounded-xl border p-4 space-y-2.5"
                 style={{
-                  background: `linear-gradient(135deg, ${brandColor} 0%, ${hexWithAlpha(brandColor, 0.8)} 100%)`,
-                  boxShadow: `0 6px 24px -4px ${hexWithAlpha(brandColor, 0.53)}`,
+                  backgroundColor: themeMode === "dark" ? "rgba(20,20,24,0.85)" : "rgba(248,249,251,0.95)",
+                  borderColor: themeMode === "dark" ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.06)",
                 }}
               >
-                {latestPage?.formButtonText || latestPage?.cta || "Get Instant Access →"}
-              </button>
-            </div>
-          </div>
+                <p className={`text-xs font-bold ${themeMode === "dark" ? "text-zinc-100" : "text-zinc-900"}`}>
+                  {latestPage?.formTitle || "Get instant access to the templates"}
+                </p>
 
-          {/* BOTTOM FEATURE STRIP */}
-          <div className={`mx-4 mb-4 mt-3 pt-3 border-t flex flex-wrap items-center justify-center gap-x-5 gap-y-2 ${themeMode === "dark" ? "border-white/[0.06]" : "border-zinc-200/80"}`}>
-            {(latestPage?.bullets && latestPage.bullets.length > 0
-              ? latestPage.bullets.slice(0, 3)
-              : [
-                  "101 fill-in-the-blank templates",
-                  "Proven viral structures",
-                  "Works for any niche",
-                ]
-            ).map((item, idx) => (
-              <span key={idx} className={`flex items-center gap-1.5 text-[10px] font-semibold ${themeMode === "dark" ? "text-zinc-400" : "text-zinc-500"}`}>
-                <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                  <circle cx="6" cy="6" r="5.25" stroke={brandColor} strokeWidth="1.25" />
-                  <path d="M3.5 6l1.8 1.8L8.5 4.5" stroke={brandColor} strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-                {item}
-              </span>
-            ))}
-          </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  <input
+                    type="text"
+                    placeholder={latestPage?.namePlaceholder || "Full name"}
+                    readOnly
+                    className={`w-full h-9 rounded-lg border px-3 text-xs outline-none ${
+                      themeMode === "dark"
+                        ? "border-zinc-700 bg-[#111114] text-white placeholder:text-zinc-500"
+                        : "border-zinc-200 bg-white text-zinc-900 placeholder:text-zinc-400"
+                    }`}
+                  />
+                  <input
+                    type="email"
+                    placeholder={latestPage?.emailPlaceholder || "Email address"}
+                    readOnly
+                    className={`w-full h-9 rounded-lg border px-3 text-xs outline-none ${
+                      themeMode === "dark"
+                        ? "border-zinc-700 bg-[#111114] text-white placeholder:text-zinc-500"
+                        : "border-zinc-200 bg-white text-zinc-900 placeholder:text-zinc-400"
+                    }`}
+                  />
+                </div>
+
+                <button
+                  type="button"
+                  className="w-full rounded-lg py-2.5 text-xs font-bold text-white cursor-pointer transition shadow-xs"
+                  style={{
+                    background: `linear-gradient(135deg, ${brandColor} 0%, ${brandColor}dd 100%)`,
+                    boxShadow: `0 4px 14px -3px ${brandColor}66`,
+                  }}
+                >
+                  {latestPage?.formButtonText || latestPage?.cta || "Access the templates"}
+                </button>
+              </div>
+            </div>
+          </article>
         </div>
       )}
 
