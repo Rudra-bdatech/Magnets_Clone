@@ -361,7 +361,7 @@ const BrandTemplatePreview = memo(function BrandTemplatePreview({
                         <p className="font-serif italic text-xs text-[#151515] dark:text-[#eae8e3]">
                           {quoteText || defaultQuotePlaceholder}
                         </p>
-                        <p className="text-[9px] font-sans font-bold uppercase tracking-wider opacity-70">
+                        <p className="text-[9px] font-sans font-bold uppercase tracking-wider text-[#151515]/80 dark:text-[#eae8e3]/80">
                           {quoteAuthor || defaultAuthorPlaceholder}
                         </p>
                       </>

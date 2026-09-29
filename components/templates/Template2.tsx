@@ -594,7 +594,7 @@ export default function Template2(props: TemplateProps) {
                       const nextVal = quoteAuthor ? `${e.target.value} ::: ${quoteAuthor}` : e.target.value;
                       setPitch?.(nextVal);
                     }}
-                    className="w-full font-serif italic text-lg sm:text-xl text-[#151515] dark:text-[#eae8e3] bg-transparent outline-none resize-none leading-snug placeholder:opacity-50"
+                    className="w-full font-serif italic text-lg sm:text-xl text-[#151515] dark:text-[#eae8e3] bg-transparent outline-none resize-none leading-snug placeholder:text-[#151515]/60 dark:placeholder:text-[#eae8e3]/60 placeholder:opacity-100"
                     placeholder={defaultQuotePlaceholder}
                   />
                   <div className="pt-1">
@@ -605,7 +605,7 @@ export default function Template2(props: TemplateProps) {
                         const q = quoteText || defaultQuotePlaceholder;
                         setPitch?.(`${q} ::: ${e.target.value}`);
                       }}
-                      className="w-full text-[10px] sm:text-[11px] font-sans font-bold uppercase tracking-[0.18em] text-[#151515]/80 dark:text-[#eae8e3]/80 bg-transparent outline-none placeholder:opacity-60"
+                      className="w-full text-[10px] sm:text-[11px] font-sans font-bold uppercase tracking-[0.18em] text-[#151515]/80 dark:text-[#eae8e3]/80 bg-transparent outline-none placeholder:text-[#151515]/60 dark:placeholder:text-[#eae8e3]/60 placeholder:opacity-100"
                       placeholder={defaultAuthorPlaceholder}
                     />
                   </div>
@@ -615,7 +615,7 @@ export default function Template2(props: TemplateProps) {
                   <blockquote className="font-serif italic text-lg sm:text-xl text-[#151515] dark:text-[#eae8e3] leading-snug">
                     {quoteText || defaultQuotePlaceholder}
                   </blockquote>
-                  <div className="text-[10px] sm:text-[11px] font-sans font-bold uppercase tracking-[0.18em] opacity-75">
+                  <div className="text-[10px] sm:text-[11px] font-sans font-bold uppercase tracking-[0.18em] text-[#151515]/80 dark:text-[#eae8e3]/80">
                     {quoteAuthor || defaultAuthorPlaceholder}
                   </div>
                 </>

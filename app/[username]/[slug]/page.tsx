@@ -570,7 +570,7 @@ export default async function MagnetPageRoute({
                           <blockquote className="font-serif italic text-lg sm:text-xl text-[#151515] dark:text-[#eae8e3] leading-snug">
                             {quoteText || defaultQuotePlaceholder}
                           </blockquote>
-                          <div className="text-[10px] sm:text-[11px] font-sans font-bold uppercase tracking-[0.18em] opacity-75">
+                          <div className="text-[10px] sm:text-[11px] font-sans font-bold uppercase tracking-[0.18em] text-[#151515]/80 dark:text-[#eae8e3]/80">
                             {quoteAuthor || defaultAuthorPlaceholder}
                           </div>
                         </>
