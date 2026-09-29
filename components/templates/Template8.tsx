@@ -148,6 +148,53 @@ export default function Template8(props: TemplateProps) {
     }
   };
 
+  const localHeadlineRef = React.useRef<HTMLTextAreaElement | null>(null);
+  const localSubheadlineRef = React.useRef<HTMLTextAreaElement | null>(null);
+
+  const setHeadlineTextareaRef = (el: HTMLTextAreaElement | null) => {
+    localHeadlineRef.current = el;
+    if (headlineRef) {
+      if (typeof headlineRef === "function") {
+        headlineRef(el);
+      } else {
+        (headlineRef as any).current = el;
+      }
+    }
+    if (el) {
+      el.style.height = "auto";
+      el.style.height = `${el.scrollHeight}px`;
+    }
+  };
+
+  const setSubheadlineTextareaRef = (el: HTMLTextAreaElement | null) => {
+    localSubheadlineRef.current = el;
+    if (subheadlineRef) {
+      if (typeof subheadlineRef === "function") {
+        subheadlineRef(el);
+      } else {
+        (subheadlineRef as any).current = el;
+      }
+    }
+    if (el) {
+      el.style.height = "auto";
+      el.style.height = `${el.scrollHeight}px`;
+    }
+  };
+
+  const autoResizeTextarea = (el: HTMLTextAreaElement | null) => {
+    if (!el) return;
+    el.style.height = "auto";
+    el.style.height = `${el.scrollHeight}px`;
+  };
+
+  React.useEffect(() => {
+    autoResizeTextarea(localHeadlineRef.current);
+  }, [headline]);
+
+  React.useEffect(() => {
+    autoResizeTextarea(localSubheadlineRef.current);
+  }, [subheadline, pitch]);
+
   // Sticker Text fallback
   const stickerText = deliverable
     ? `FREE\n${deliverable.toUpperCase()}\nEDITION!`
@@ -464,6 +511,8 @@ export default function Template8(props: TemplateProps) {
                     className="font-dm-sans inline-block px-3 py-1.5 text-[11px] font-extrabold tracking-wide uppercase border-2 border-[#141414] outline-none shadow-[2px_2px_0px_#141414] text-[#141414] bg-[#f5ed21]"
                     style={{
                       transform: "rotate(2deg)",
+                      width: `${Math.max((bulletsTitle || "A PLAYBOOK FOR PEOPLE WITH IDEAS").length + 2, 34)}ch`,
+                      maxWidth: "100%",
                     }}
                   />
                 ) : (
@@ -481,12 +530,15 @@ export default function Template8(props: TemplateProps) {
               {/* Headline */}
               {isEditor ? (
                 <textarea
-                  ref={headlineRef}
+                  ref={setHeadlineTextareaRef}
                   value={headline || ""}
-                  onChange={(e) => setHeadline?.(e.target.value)}
+                  onChange={(e) => {
+                    setHeadline?.(e.target.value);
+                    autoResizeTextarea(e.currentTarget);
+                  }}
                   placeholder="Make Your Work Impossible to Ignore."
-                  rows={3}
-                  className={`font-shrikhand w-full text-4xl sm:text-5xl md:text-6xl lg:text-[62px] xl:text-[72px] leading-[0.92] tracking-tight bg-transparent outline-none resize-none mb-6 placeholder:opacity-30 ${
+                  rows={1}
+                  className={`font-shrikhand w-full text-4xl sm:text-5xl md:text-6xl lg:text-[62px] xl:text-[72px] leading-[0.92] tracking-tight bg-transparent outline-none resize-none mb-4 overflow-hidden placeholder:opacity-30 ${
                     isDark ? "text-white" : "text-[#1554db]"
                   }`}
                   style={{
@@ -496,7 +548,7 @@ export default function Template8(props: TemplateProps) {
                 />
               ) : (
                 <h1
-                  className={`font-shrikhand text-4xl sm:text-5xl md:text-6xl lg:text-[62px] xl:text-[72px] leading-[0.92] tracking-tight mb-6 ${
+                  className={`font-shrikhand text-4xl sm:text-5xl md:text-6xl lg:text-[62px] xl:text-[72px] leading-[0.92] tracking-tight mb-4 ${
                     isDark ? "text-white" : "text-[#1554db]"
                   }`}
                   style={{
@@ -525,21 +577,22 @@ export default function Template8(props: TemplateProps) {
               {/* Subheadline & Pitch Paragraph */}
               {isEditor ? (
                 <textarea
-                  ref={subheadlineRef}
+                  ref={setSubheadlineTextareaRef}
                   value={subheadline || pitch || ""}
                   onChange={(e) => {
                     setSubheadline?.(e.target.value);
                     setPitch?.(e.target.value);
+                    autoResizeTextarea(e.currentTarget);
                   }}
                   placeholder="Twenty-one unconventional prompts, narrative tricks, and visual systems for turning 'pretty good' into unmistakably yours."
-                  rows={3}
-                  className={`font-dm-sans w-full text-base sm:text-lg leading-relaxed bg-transparent outline-none resize-none max-w-[520px] placeholder:opacity-40 font-medium ${
-                    isDark ? "text-zinc-300" : "text-[#141414]"
+                  rows={1}
+                  className={`font-dm-sans w-full text-base sm:text-lg leading-relaxed bg-transparent outline-none resize-none max-w-[560px] overflow-hidden font-medium placeholder:opacity-75 ${
+                    isDark ? "text-zinc-300 placeholder:text-zinc-300/75" : "text-[#141414] placeholder:text-[#141414]/75"
                   }`}
                 />
               ) : (
                 <p
-                  className={`font-dm-sans text-base sm:text-lg leading-relaxed max-w-[520px] font-medium ${
+                  className={`font-dm-sans text-base sm:text-lg leading-relaxed max-w-[560px] font-medium ${
                     isDark ? "text-zinc-300" : "text-[#141414]"
                   }`}
                 >
