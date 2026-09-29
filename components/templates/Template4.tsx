@@ -343,22 +343,6 @@ export default function Template4(props: TemplateProps) {
                   <div className="absolute inset-0 bg-black/75 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center gap-2 text-white transition duration-200">
                     <button
                       type="button"
-                      disabled={isGeneratingAICover}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleGenerateAICoverImage?.();
-                      }}
-                      className="flex items-center gap-1 rounded-xl bg-indigo-600/80 hover:bg-indigo-600 px-3 py-1.5 text-[11px] font-bold text-white border border-indigo-400/30 backdrop-blur-md transition cursor-pointer disabled:opacity-50"
-                    >
-                      {isGeneratingAICover ? (
-                        <Loader2 className="h-3.5 w-3.5 animate-spin text-white" />
-                      ) : (
-                        <Sparkles className="h-3.5 w-3.5 text-amber-300" />
-                      )}
-                      <span>AI Cover</span>
-                    </button>
-                    <button
-                      type="button"
                       onClick={(e) => {
                         e.stopPropagation();
                         fileInputRef?.current?.click();

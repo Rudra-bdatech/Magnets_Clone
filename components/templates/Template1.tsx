@@ -305,17 +305,6 @@ export default function Template1(props: TemplateProps) {
                     >
                       <ImageIcon className="h-3 w-3" /> Upload Image
                     </button>
-                    {handleGenerateAICoverImage && (
-                      <button
-                        type="button"
-                        disabled={isGeneratingAICover}
-                        onClick={handleGenerateAICoverImage}
-                        className="flex items-center gap-1 rounded-lg border border-purple-500/30 bg-purple-500/10 px-3 py-1.5 text-[11px] font-bold text-purple-600 dark:text-purple-400 hover:bg-purple-500/20 transition cursor-pointer disabled:opacity-50"
-                      >
-                        {isGeneratingAICover ? <Loader2 className="h-3 w-3 animate-spin" /> : <Sparkles className="h-3 w-3" />}
-                        {isGeneratingAICover ? "Generating..." : "AI Image"}
-                      </button>
-                    )}
                   </div>
                 )}
               </div>

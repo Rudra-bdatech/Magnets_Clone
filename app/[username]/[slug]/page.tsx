@@ -312,8 +312,8 @@ export default async function MagnetPageRoute({
           <span>⚠️ Draft Preview Mode — This magnet is not yet published. Only you can view this page.</span>
         </div>
       )}
-      {/* If template is not template3, template4, or template5, show the standard top header */}
-      {((page.template as string) !== "template3" && (page.template as string) !== "template4" && (page.template as string) !== "template5" && (!(!page.template && ((accountDoc?.templateId as string) === "template3" || (accountDoc?.templateId as string) === "template4" || (accountDoc?.templateId as string) === "template5")))) && (
+      {/* If template is not template2, template3, template4, or template5, show the standard top header */}
+      {((page.template as string) !== "template2" && (page.template as string) !== "template3" && (page.template as string) !== "template4" && (page.template as string) !== "template5" && (!(!page.template && ((accountDoc?.templateId as string) === "template2" || (accountDoc?.templateId as string) === "template3" || (accountDoc?.templateId as string) === "template4" || (accountDoc?.templateId as string) === "template5")))) && (
         <header className="w-full flex items-center justify-center pt-3 sm:pt-4 pb-1 sm:pb-2 px-6 sm:px-10 relative shrink-0">
           <div className="flex items-center gap-2.5 sm:gap-3">
             <div className={`h-9 w-9 sm:h-10 sm:w-10 rounded-xl flex items-center justify-center bg-transparent overflow-hidden shadow-xs ${logo ? "border-none" : "border-2 border-dashed border-[#a1a1aa]/50"}`}>
@@ -331,96 +331,299 @@ export default async function MagnetPageRoute({
       )}
 
       {/* Main content area filling the screen properly with balanced vertical spacing */}
-      <div className="flex-1 w-full flex flex-col justify-center px-4 sm:px-6 md:px-8 lg:px-10 xl:px-14 pb-3 sm:pb-4">
+      <div className={`flex-1 w-full flex flex-col justify-center ${((page.template as string) === "template2" || (!page.template && (accountDoc?.templateId as string) === "template2")) ? "p-0" : "px-4 sm:px-6 md:px-8 lg:px-10 xl:px-14 pb-3 sm:pb-4"}`}>
         {/* Dynamic Multi-Template View Renderer */}
         {((page.template as string) === "template2" || (!page.template && (accountDoc?.templateId as string) === "template2")) ? (
-          /* TEMPLATE 2: Lead Capture Split Panel Layout (Full Screen / Full Width & Height) */
-          <div className="w-full flex-1 flex flex-col justify-center py-1 lg:py-2">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 xl:gap-14 items-center w-full">
-              {/* Left Panel: Cover Image Backdrop + Gradient Scrim + Content Overlay */}
-              <div className="lg:col-span-7 relative flex flex-col justify-end p-6 sm:p-8 md:p-10 lg:p-12 xl:p-14 rounded-3xl overflow-hidden min-h-[440px] sm:min-h-[500px] lg:min-h-[560px] xl:min-h-[620px] bg-zinc-900 text-white shadow-2xl border border-black/10 dark:border-white/10 group min-w-0">
-                {activeImageUrl && activeImageUrl.trim() !== "" && (
-                  <img
-                    src={activeImageUrl}
-                    alt={page.name}
-                    className="absolute inset-0 w-full h-full object-cover opacity-50"
-                  />
-                )}
-                <div className="absolute inset-0 bg-gradient-to-t from-[#0a0c16] via-[#0a0c16]/70 to-transparent pointer-events-none" />
+          /* TEMPLATE 2: Signal / Noise Editorial Newspaper & Dispatch Edition (Full-Screen) */
+          <div
+            className={`w-full min-h-screen flex flex-col transition-colors duration-200 font-sans ${
+              themeMode === "dark"
+                ? "bg-[#141416] text-[#eae8e3]"
+                : "bg-[#f3f0e8] text-[#151515]"
+            }`}
+          >
+            {/* Inline styles for smooth ticker marquee */}
+            <style>{`
+              @keyframes editorialTicker {
+                0% { transform: translateX(0%); }
+                100% { transform: translateX(-50%); }
+              }
+              .editorial-ticker-content {
+                display: inline-flex;
+                white-space: nowrap;
+                animation: editorialTicker 28s linear infinite;
+              }
+            `}</style>
 
-                {/* Left Panel Content */}
-                <div className="relative z-10 space-y-3 lg:space-y-4 xl:space-y-5 min-w-0">
-                  <h1 className={`text-white leading-[1.08] drop-shadow-md break-words [overflow-wrap:anywhere] ${(activeHeadline?.length || 0) > 60 ? "text-2xl sm:text-3xl md:text-4xl lg:text-[2.2rem] xl:text-[2.6rem] font-bold" : (activeHeadline?.length || 0) > 35 ? "text-3xl sm:text-4xl md:text-5xl lg:text-[2.6rem] xl:text-[3.2rem] font-extrabold" : "text-3xl sm:text-4xl md:text-5xl lg:text-[2.8rem] xl:text-[3.4rem] 2xl:text-[3.8rem] font-black"}`}>
-                    {activeHeadline || "Free Resource"}
-                  </h1>
-                  {page.subheadline && (
-                    <p className="text-sm sm:text-base md:text-lg xl:text-xl text-white/90 font-medium leading-relaxed drop-shadow break-words [overflow-wrap:anywhere]">
-                      {page.subheadline}
-                    </p>
-                  )}
-                  {page.pitch && (
-                    <p className="text-xs sm:text-sm md:text-base text-white/80 leading-relaxed whitespace-pre-line break-words [overflow-wrap:anywhere]">
-                      {page.pitch}
-                    </p>
-                  )}
-
-                  {/* Bullets */}
-                  {page.bullets && page.bullets.length > 0 && (
-                    <div className="space-y-2.5 pt-2 border-t border-white/15 min-w-0">
-                      {page.bulletsTitle && (
-                        <p className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-white/70">
-                          {page.bulletsTitle}
-                        </p>
-                      )}
-                      <ul className="space-y-2 sm:space-y-2.5">
-                        {page.bullets.map((b: string, i: number) => (
-                          <li key={i} className="flex items-start gap-2.5 text-xs sm:text-sm md:text-base text-zinc-100 min-w-0">
-                            <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-400 font-bold border border-emerald-500/30 mt-0.5">
-                              ✓
-                            </span>
-                            <span className="break-words [overflow-wrap:anywhere]">{b}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
+            {/* 1. EDITORIAL MASTHEAD */}
+            <header
+              className={`w-full px-4 sm:px-8 py-5 border-b grid grid-cols-1 md:grid-cols-3 items-end gap-4 ${
+                themeMode === "dark" ? "border-white/15" : "border-[#151515]"
+              }`}
+            >
+              <div className="text-left font-mono text-[10px] sm:text-xs font-bold uppercase tracking-widest opacity-80">
+                <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-black/10 dark:bg-white/10 mb-1">
+                  Issue No. 04
+                </span>
+                <div className="text-[11px] font-semibold tracking-wider opacity-70">
+                  The Attention & Growth Issue
                 </div>
               </div>
 
-              {/* Right Panel: Form */}
-              <div className="lg:col-span-5 w-full flex flex-col justify-center space-y-3 xl:space-y-4 lg:pt-1 xl:pt-2">
-                <MagnetSignupForm
-                  cta={page.cta}
-                  formTitle={page.formTitle}
-                  formSubtitle={page.formSubtitle}
-                  formButtonText={page.formButtonText}
-                  deliverable={page.deliverable}
-                  accent={page.accent}
-                  pageId={page.id}
-                  pageName={page.name}
-                  pageSlug={page.slug}
-                  pageOwnerEmail={(page as any).userEmail}
-                  brandColor={brandColor}
-                  highlightIntensity={highlightIntensity}
-                  themeMode={themeMode}
-                  customPromptQuestion={page.customPromptQuestion}
-                  customPromptPlaceholder={page.customPromptPlaceholder}
-                  enableAiPersonalizedDeliverable={page.enableAiPersonalizedDeliverable}
-                  customFormFields={page.customFormFields}
-                  username={params.username}
-                  isVariantB={isVariantB}
-                  afterSignupOption={page.afterSignupOption}
-                  destinationUrl={page.destinationUrl}
-                />
-                {page.deliverable && (
-                  <p className={`mt-1.5 flex items-center justify-center gap-1.5 text-[11px] sm:text-xs font-medium ${themeMode === "dark" ? "text-zinc-400" : "text-zinc-600"
-                    }`}>
-                    <GiftIcon className="h-3.5 w-3.5" />
-                    {page.deliverable}
-                  </p>
-                )}
+              <div className="text-center">
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight uppercase font-serif leading-none">
+                  Signal <span className="font-serif italic font-normal" style={{ color: brandColor }}>/</span> Noise
+                </h2>
+                <div className="text-[10px] tracking-widest uppercase font-mono mt-1 opacity-60">
+                  A Contemporary Editorial Field Guide
+                </div>
+              </div>
+
+              <div className="text-left md:text-right font-mono text-[10px] sm:text-xs uppercase tracking-widest opacity-80">
+                <div className="font-bold flex md:justify-end items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full" style={{ backgroundColor: brandColor }} />
+                  Special Edition
+                </div>
+                <span className="block text-[10px] font-normal opacity-70 mt-0.5">
+                  Published for Visionary Leaders
+                </span>
+              </div>
+            </header>
+
+            {/* 2. TICKER BAR */}
+            <div
+              className={`w-full flex items-center overflow-hidden h-8 text-[11px] font-mono uppercase tracking-wider select-none ${
+                themeMode === "dark" ? "bg-black text-[#eae8e3]" : "bg-[#151515] text-[#f3f0e8]"
+              }`}
+            >
+              <div
+                className="flex items-center gap-1.5 px-3 sm:px-4 h-full shrink-0 font-black text-white z-10 shadow-md"
+                style={{ backgroundColor: brandColor }}
+              >
+                <span>Dispatch</span>
+              </div>
+              <div className="overflow-hidden flex-1 relative flex items-center">
+                <div className="editorial-ticker-content text-[10px] sm:text-[11px] font-semibold opacity-90">
+                  <span className="px-4">+++ ESSENTIAL FRAMEWORKS +++ CUT THROUGH THE ALGORITHM NOISE +++ MEASURED FOR HIGH-LEVERAGE TEAMS +++ DOWNLOAD YOUR COPY TODAY +++</span>
+                  <span className="px-4">+++ ESSENTIAL FRAMEWORKS +++ CUT THROUGH THE ALGORITHM NOISE +++ MEASURED FOR HIGH-LEVERAGE TEAMS +++ DOWNLOAD YOUR COPY TODAY +++</span>
+                </div>
               </div>
             </div>
+
+            {/* 3. HERO COVER BANNER & MAIN GRID */}
+            <div className="w-full max-w-7xl mx-auto flex-1 px-4 sm:px-6 md:px-8 lg:px-10 py-6 sm:py-8 space-y-8">
+              <div
+                className="relative min-h-[360px] sm:min-h-[440px] md:min-h-[480px] rounded-2xl overflow-hidden flex flex-col justify-between p-6 sm:p-8 md:p-10 border shadow-lg"
+                style={{
+                  backgroundImage: `linear-gradient(90deg, rgba(12,12,12,0.92) 0%, rgba(12,12,12,0.65) 55%, rgba(12,12,12,0.25) 100%), url(${activeImageUrl && activeImageUrl.trim() !== "" ? activeImageUrl : "https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=1600&q=80"})`,
+                  backgroundSize: "cover",
+                  backgroundPosition: "center",
+                  borderColor: themeMode === "dark" ? "rgba(255,255,255,0.15)" : "rgba(21,21,21,0.3)",
+                }}
+              >
+                <div className="relative z-10 flex items-center gap-2">
+                  <span
+                    className="px-2.5 py-1 rounded text-[10px] font-black tracking-widest uppercase text-white font-mono shadow-sm"
+                    style={{ backgroundColor: brandColor }}
+                  >
+                    Lead Essay
+                  </span>
+                  <span className="px-2.5 py-1 rounded text-[10px] font-semibold tracking-wider uppercase text-white/90 bg-black/60 backdrop-blur-sm border border-white/20 font-mono">
+                    12 Min Read • Actionable Blueprint
+                  </span>
+                </div>
+
+                <div className="relative z-10 max-w-2xl space-y-3 text-white mt-auto pt-8">
+                  <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black font-serif text-white leading-[1.05] drop-shadow-md tracking-tight">
+                    {activeHeadline || "The Attention Paradox: How to Make High-Value Ideas Impossible to Ignore"}
+                  </h1>
+                  {page.subheadline && (
+                    <p className="text-sm sm:text-base md:text-lg text-white/90 leading-snug font-sans drop-shadow">
+                      {page.subheadline}
+                    </p>
+                  )}
+                  <div className="flex items-center gap-3 pt-3 border-t border-white/20 text-xs font-mono text-white/80">
+                    <span className="font-bold text-white uppercase tracking-wider">
+                      By {businessName || "Editorial Board"}
+                    </span>
+                    <span>•</span>
+                    <span>Verified Framework</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* 4. MAIN EDITORIAL GRID */}
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                {/* Left 7 Cols: Abstract + Bullets + Stats */}
+                <div className="lg:col-span-7 space-y-6">
+                  {page.pitch && (
+                    <div
+                      className={`p-6 sm:p-7 rounded-2xl border space-y-4 ${
+                        themeMode === "dark" ? "bg-[#18181c] border-white/10" : "bg-white border-[#151515]/20 shadow-sm"
+                      }`}
+                    >
+                      <div className="flex items-center justify-between border-b pb-2.5 font-mono text-xs uppercase tracking-widest opacity-70">
+                        <span className="font-bold flex items-center gap-1.5" style={{ color: brandColor }}>
+                          Executive Abstract
+                        </span>
+                        <span>Section I</span>
+                      </div>
+                      <div className="text-sm sm:text-base leading-relaxed font-serif opacity-90">
+                        {page.pitch}
+                      </div>
+                    </div>
+                  )}
+
+                  {page.bullets && page.bullets.length > 0 && (
+                    <div
+                      className={`p-6 sm:p-7 rounded-2xl border space-y-4 ${
+                        themeMode === "dark" ? "bg-[#18181c] border-white/10" : "bg-white border-[#151515]/20 shadow-sm"
+                      }`}
+                    >
+                      <div className="flex items-center justify-between border-b pb-2.5 font-mono text-xs uppercase tracking-widest">
+                        <span className="font-bold" style={{ color: brandColor }}>
+                          {page.bulletsTitle || "Inside This Field Guide"}
+                        </span>
+                        <span className="opacity-50 text-[10px]">Key Takeaways</span>
+                      </div>
+                      <div className="space-y-3 pt-1">
+                        {page.bullets.map((bullet: string, i: number) => (
+                          <div key={i} className="flex items-start gap-3 text-sm leading-snug">
+                            <span
+                              className="font-mono text-xs font-bold px-2 py-0.5 rounded shrink-0 mt-0.5 border"
+                              style={{
+                                backgroundColor: themeMode === "dark" ? "rgba(255,255,255,0.08)" : "#f3f0e8",
+                                borderColor: themeMode === "dark" ? "rgba(255,255,255,0.15)" : "#151515",
+                                color: brandColor,
+                              }}
+                            >
+                              0{i + 1}
+                            </span>
+                            <span className="font-sans opacity-90 text-xs sm:text-sm">{bullet}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="grid grid-cols-3 gap-3 font-mono text-center">
+                    <div
+                      className={`p-3.5 rounded-xl border ${
+                        themeMode === "dark" ? "bg-[#18181c] border-white/10" : "bg-white border-[#151515]/20 shadow-xs"
+                      }`}
+                    >
+                      <div className="text-xl sm:text-2xl font-black font-serif" style={{ color: brandColor }}>
+                        100%
+                      </div>
+                      <div className="text-[10px] uppercase opacity-70 mt-0.5">Free Access</div>
+                    </div>
+                    <div
+                      className={`p-3.5 rounded-xl border ${
+                        themeMode === "dark" ? "bg-[#18181c] border-white/10" : "bg-white border-[#151515]/20 shadow-xs"
+                      }`}
+                    >
+                      <div className="text-xl sm:text-2xl font-black font-serif" style={{ color: brandColor }}>
+                        Instant
+                      </div>
+                      <div className="text-[10px] uppercase opacity-70 mt-0.5">Delivery</div>
+                    </div>
+                    <div
+                      className={`p-3.5 rounded-xl border ${
+                        themeMode === "dark" ? "bg-[#18181c] border-white/10" : "bg-white border-[#151515]/20 shadow-xs"
+                      }`}
+                    >
+                      <div className="text-xl sm:text-2xl font-black font-serif" style={{ color: brandColor }}>
+                        Zero
+                      </div>
+                      <div className="text-[10px] uppercase opacity-70 mt-0.5">Spam Policy</div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Right 5 Cols: Subscription Slip Form */}
+                <div className="lg:col-span-5 sticky top-6">
+                  <div
+                    className={`rounded-2xl border-2 p-6 sm:p-7 shadow-2xl relative transition-all ${
+                      themeMode === "dark"
+                        ? "bg-[#18181c] border-white/20 text-[#eae8e3]"
+                        : "bg-white border-[#151515] text-[#151515]"
+                    }`}
+                  >
+                    <div className="flex items-center justify-between pb-3 border-b mb-4 font-mono text-[11px] uppercase tracking-wider">
+                      <span className="font-bold flex items-center gap-1.5">
+                        <span className="w-2 h-2 rounded-full" style={{ backgroundColor: brandColor }} />
+                        Dispatch Requisition
+                      </span>
+                      <span className="font-mono text-[10px] px-2 py-0.5 rounded border border-current opacity-70">
+                        Form 04-A
+                      </span>
+                    </div>
+
+                    <div className="text-center space-y-1.5 mb-5">
+                      <h3 className="text-lg sm:text-xl font-black font-serif leading-tight">
+                        {page.formTitle || "Claim Your Field Report"}
+                      </h3>
+                      {page.formSubtitle && (
+                        <p className="text-xs opacity-75 font-sans leading-relaxed">
+                          {page.formSubtitle}
+                        </p>
+                      )}
+                    </div>
+
+                    <MagnetSignupForm
+                      cta={page.cta}
+                      formTitle={page.formTitle}
+                      formSubtitle={page.formSubtitle}
+                      formButtonText={page.formButtonText}
+                      deliverable={page.deliverable}
+                      accent={page.accent}
+                      pageId={page.id}
+                      pageName={page.name}
+                      pageSlug={page.slug}
+                      pageOwnerEmail={(page as any).userEmail}
+                      brandColor={brandColor}
+                      highlightIntensity={highlightIntensity}
+                      themeMode={themeMode}
+                      customPromptQuestion={page.customPromptQuestion}
+                      customPromptPlaceholder={page.customPromptPlaceholder}
+                      enableAiPersonalizedDeliverable={page.enableAiPersonalizedDeliverable}
+                      customFormFields={page.customFormFields}
+                      username={params.username}
+                      isVariantB={isVariantB}
+                      afterSignupOption={page.afterSignupOption}
+                      destinationUrl={page.destinationUrl}
+                    />
+
+                    {page.deliverable && (
+                      <p className={`mt-2.5 flex items-center justify-center gap-1.5 text-[11px] font-mono ${
+                        themeMode === "dark" ? "text-zinc-400" : "text-zinc-600"
+                      }`}>
+                        <GiftIcon className="h-3.5 w-3.5" />
+                        {page.deliverable}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* 5. FOOTER */}
+            <footer
+              className={`px-6 py-4 border-t flex flex-wrap items-center justify-between gap-4 font-mono text-[10px] sm:text-xs uppercase tracking-wider ${
+                themeMode === "dark" ? "border-white/10 text-zinc-400 bg-black/40" : "border-[#151515]/20 text-zinc-600 bg-black/5"
+              }`}
+            >
+              <div>
+                © {new Date().getFullYear()} {businessName || "Signal / Noise Editorial"}. All rights reserved.
+              </div>
+              <div className="flex items-center gap-4">
+                <span>Printed & Dispatched Globally</span>
+                <span>•</span>
+                <span className="font-bold" style={{ color: brandColor }}>
+                  Issue 04
+                </span>
+              </div>
+            </footer>
           </div>
         ) : ((page.template as string) === "template3" || (!page.template && (accountDoc?.templateId as string) === "template3")) ? (
           /* TEMPLATE 3: Aurora Reveal */

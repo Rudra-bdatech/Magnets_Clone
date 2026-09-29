@@ -167,94 +167,194 @@ const BrandTemplatePreview = memo(function BrandTemplatePreview({
         </div>
       )}
 
-      {/* TEMPLATE 2: Lead Capture Split Panel Layout */}
+      {/* TEMPLATE 2: Signal / Noise Editorial Newspaper & Dispatch Edition */}
       {templateId === "template2" && (
-        <div className="w-full py-1">
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-5 items-center">
-            {/* Left Panel: Cover Image + Gradient Scrim + Bullets */}
-            <div className="md:col-span-7 relative flex flex-col justify-end p-5 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl overflow-hidden min-h-[260px] sm:min-h-[340px] bg-zinc-900 text-white shadow-xl border border-black/10 dark:border-white/10">
-              {latestPage?.imageUrl && latestPage.imageUrl.trim() !== "" && (
-                <img
-                  src={latestPage.imageUrl}
-                  alt={latestPage?.name || "Lead capture image"}
-                  className="absolute inset-0 w-full h-full object-cover opacity-50"
-                />
-              )}
-              <div className="absolute inset-0 bg-gradient-to-t from-[#0a0c16] via-[#0a0c16]/60 to-transparent pointer-events-none" />
+        <div
+          className={`w-full max-w-5xl mx-auto my-1 rounded-2xl overflow-hidden border shadow-xl transition-colors duration-200 font-sans ${
+            themeMode === "dark"
+              ? "bg-[#141416] text-[#eae8e3] border-zinc-800"
+              : "bg-[#f3f0e8] text-[#151515] border-[#151515]/30"
+          }`}
+        >
+          {/* 1. EDITORIAL MASTHEAD */}
+          <header
+            className={`px-4 sm:px-6 py-3.5 border-b grid grid-cols-1 md:grid-cols-3 items-end gap-3 ${
+              themeMode === "dark" ? "border-white/15" : "border-[#151515]"
+            }`}
+          >
+            <div className="text-left font-mono text-[10px] font-bold uppercase tracking-widest opacity-80">
+              <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-black/10 dark:bg-white/10 mb-0.5">
+                Issue No. 04
+              </span>
+              <div className="text-[10px] font-semibold tracking-wider opacity-70">
+                The Attention & Growth Issue
+              </div>
+            </div>
 
-              <div className="relative z-10 space-y-3">
-                <h3 className="text-xl md:text-2xl font-extrabold tracking-tight text-white leading-tight">
-                  {latestPage?.headline || latestPage?.name || "Build forms that convert"}
+            <div className="text-center">
+              <h4 className="text-xl sm:text-2xl font-black tracking-tight uppercase font-serif leading-none">
+                Signal <span className="font-serif italic font-normal" style={{ color: brandColor }}>/</span> Noise
+              </h4>
+              <div className="text-[9px] tracking-widest uppercase font-mono mt-0.5 opacity-60">
+                A Contemporary Editorial Field Guide
+              </div>
+            </div>
+
+            <div className="text-left md:text-right font-mono text-[10px] uppercase tracking-widest opacity-80">
+              <div className="font-bold flex md:justify-end items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: brandColor }} />
+                Special Edition
+              </div>
+              <span className="block text-[9px] font-normal opacity-70">
+                Published for Visionary Leaders
+              </span>
+            </div>
+          </header>
+
+          {/* 2. TICKER BAR */}
+          <div
+            className={`flex items-center overflow-hidden h-7 text-[10px] font-mono uppercase tracking-wider select-none ${
+              themeMode === "dark" ? "bg-black text-[#eae8e3]" : "bg-[#151515] text-[#f3f0e8]"
+            }`}
+          >
+            <div
+              className="flex items-center gap-1 px-3 h-full shrink-0 font-black text-white z-10 shadow-md text-[10px]"
+              style={{ backgroundColor: brandColor }}
+            >
+              <span>Dispatch</span>
+            </div>
+            <div className="overflow-hidden flex-1 relative flex items-center">
+              <div className="text-[10px] font-semibold opacity-90 truncate px-3">
+                +++ ESSENTIAL FRAMEWORKS +++ CUT THROUGH THE ALGORITHM NOISE +++ DOWNLOAD YOUR COPY TODAY +++
+              </div>
+            </div>
+          </div>
+
+          {/* 3. HERO & GRID */}
+          <div className="p-4 sm:p-5 space-y-5">
+            <div
+              className="relative min-h-[220px] sm:min-h-[260px] rounded-xl overflow-hidden flex flex-col justify-between p-5 sm:p-6 border shadow-md"
+              style={{
+                backgroundImage: `linear-gradient(90deg, rgba(12,12,12,0.92) 0%, rgba(12,12,12,0.65) 55%, rgba(12,12,12,0.25) 100%), url(${latestPage?.imageUrl && latestPage.imageUrl.trim() !== "" ? latestPage.imageUrl : "https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=1600&q=80"})`,
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+                borderColor: themeMode === "dark" ? "rgba(255,255,255,0.15)" : "rgba(21,21,21,0.3)",
+              }}
+            >
+              <div className="relative z-10 flex items-center gap-2">
+                <span
+                  className="px-2 py-0.5 rounded text-[9px] font-black tracking-widest uppercase text-white font-mono shadow-sm"
+                  style={{ backgroundColor: brandColor }}
+                >
+                  Lead Essay
+                </span>
+                <span className="px-2 py-0.5 rounded text-[9px] font-semibold tracking-wider uppercase text-white/90 bg-black/60 backdrop-blur-sm border border-white/20 font-mono">
+                  Verified Blueprint
+                </span>
+              </div>
+
+              <div className="relative z-10 max-w-xl space-y-2 text-white mt-auto pt-4">
+                <h3 className="text-lg sm:text-2xl font-black font-serif text-white leading-tight drop-shadow-md tracking-tight">
+                  {latestPage?.headline || latestPage?.name || "The Attention Paradox: How to Make Ideas Impossible to Ignore"}
                 </h3>
-                <p className="text-xs md:text-sm font-semibold text-white/90">
-                  {latestPage?.subheadline || "The friendly form builder for growing teams"}
-                </p>
-                {latestPage?.pitch && (
-                  <p className="text-[11px] text-white/70 leading-relaxed">
-                    {latestPage.pitch}
+                {latestPage?.subheadline && (
+                  <p className="text-xs sm:text-sm text-white/90 leading-snug font-sans drop-shadow line-clamp-2">
+                    {latestPage.subheadline}
                   </p>
-                )}
-
-                {latestPage?.bullets && latestPage.bullets.length > 0 && (
-                  <ul className="space-y-2 pt-2 border-t border-white/10">
-                    {latestPage.bullets.map((item, idx) => (
-                      <li key={idx} className="flex items-start gap-2 text-[11px] text-white/90">
-                        <svg className="w-3.5 h-3.5 shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke={brandColor || "#a5b4fc"} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                          <polyline points="20 6 9 17 4 12" />
-                        </svg>
-                        <span>{item}</span>
-                      </li>
-                    ))}
-                  </ul>
                 )}
               </div>
             </div>
 
-            {/* Right Panel: Form */}
-            <div className={`md:col-span-5 p-5 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl flex flex-col justify-center border shadow-xl ${themeMode === "dark" ? "border-zinc-800 bg-[#18181B] text-white" : "border-zinc-200 bg-white text-zinc-900"}`}>
-              <div className="space-y-3">
-                <p className="w-full text-center text-lg font-bold">
-                  {latestPage?.formTitle || latestPage?.cta || "Send it to me"}
-                </p>
-                <p className="w-full text-center text-xs text-zinc-400">
-                  {latestPage?.formSubtitle || "By opting in you consent to receive this resource by email."}
-                </p>
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-5 items-start">
+              {/* Left 7 Cols */}
+              <div className="md:col-span-7 space-y-4">
+                {latestPage?.pitch && (
+                  <div
+                    className={`p-4 rounded-xl border text-xs sm:text-sm font-serif leading-relaxed ${
+                      themeMode === "dark" ? "bg-[#18181c] border-white/10" : "bg-white border-[#151515]/20"
+                    }`}
+                  >
+                    {latestPage.pitch}
+                  </div>
+                )}
 
-                <div className="pt-2">
-                  <div className={latestPage?.customFormFields && latestPage.customFormFields.length > 0 ? "grid grid-cols-1 sm:grid-cols-2 gap-2.5" : "space-y-2.5"}>
+                {latestPage?.bullets && latestPage.bullets.length > 0 && (
+                  <div
+                    className={`p-4 rounded-xl border space-y-2.5 ${
+                      themeMode === "dark" ? "bg-[#18181c] border-white/10" : "bg-white border-[#151515]/20"
+                    }`}
+                  >
+                    <div className="font-mono text-[11px] font-bold uppercase tracking-wider" style={{ color: brandColor }}>
+                      Key Takeaways
+                    </div>
+                    <div className="space-y-2">
+                      {latestPage.bullets.map((b, i) => (
+                        <div key={i} className="flex items-start gap-2 text-xs">
+                          <span
+                            className="font-mono text-[10px] font-bold px-1.5 py-0.2 rounded border shrink-0 mt-0.5"
+                            style={{
+                              backgroundColor: themeMode === "dark" ? "rgba(255,255,255,0.08)" : "#f3f0e8",
+                              borderColor: themeMode === "dark" ? "rgba(255,255,255,0.15)" : "#151515",
+                              color: brandColor,
+                            }}
+                          >
+                            0{i + 1}
+                          </span>
+                          <span className="opacity-90">{b}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Right 5 Cols: Form */}
+              <div className="md:col-span-5">
+                <div
+                  className={`p-4 sm:p-5 rounded-xl border-2 shadow-lg space-y-3 ${
+                    themeMode === "dark"
+                      ? "bg-[#18181c] border-white/20 text-[#eae8e3]"
+                      : "bg-white border-[#151515] text-[#151515]"
+                  }`}
+                >
+                  <div className="text-center space-y-1">
+                    <p className="font-serif font-black text-sm sm:text-base">
+                      {latestPage?.formTitle || latestPage?.cta || "Claim Your Field Report"}
+                    </p>
+                    <p className="text-[10px] opacity-70">
+                      {latestPage?.formSubtitle || "Enter your details for instant access."}
+                    </p>
+                  </div>
+
+                  <div className="space-y-2">
                     <input
                       type="text"
                       placeholder={latestPage?.namePlaceholder || "Name *"}
                       readOnly
-                      className="w-full rounded-xl border border-zinc-200 dark:border-[#252529] bg-white dark:bg-[#18181C] px-3.5 py-2.5 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 outline-none transition shadow-xs"
+                      className={`w-full rounded-lg border px-3 py-2 text-xs font-mono outline-none ${
+                        themeMode === "dark"
+                          ? "bg-black/40 border-zinc-700 text-white"
+                          : "bg-[#f3f0e8] border-[#151515]/30 text-zinc-900"
+                      }`}
                     />
                     <input
                       type="email"
                       placeholder={latestPage?.emailPlaceholder || "Email *"}
                       readOnly
-                      className="w-full rounded-xl border border-zinc-200 dark:border-[#252529] bg-white dark:bg-[#18181C] px-3.5 py-2.5 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 outline-none transition shadow-xs"
+                      className={`w-full rounded-lg border px-3 py-2 text-xs font-mono outline-none ${
+                        themeMode === "dark"
+                          ? "bg-black/40 border-zinc-700 text-white"
+                          : "bg-[#f3f0e8] border-[#151515]/30 text-zinc-900"
+                      }`}
                     />
-
-                    {latestPage?.customFormFields && latestPage.customFormFields.length > 0 && (
-                      latestPage.customFormFields.map((field) => (
-                        <input
-                          key={field.id}
-                          type="text"
-                          placeholder={`${field.label}${field.required ? " *" : ""}`}
-                          readOnly
-                          className={`w-full rounded-xl border border-zinc-200 dark:border-[#252529] bg-white dark:bg-[#18181C] px-3.5 py-2.5 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 outline-none transition shadow-xs ${field.type === "textarea" ? "col-span-1 sm:col-span-2" : ""}`}
-                        />
-                      ))
-                    )}
+                    <button
+                      type="button"
+                      className="w-full rounded-lg py-2.5 px-3 text-xs font-mono font-black uppercase tracking-wider text-white shadow-md transition hover:brightness-110 mt-1"
+                      style={{ backgroundColor: brandColor }}
+                    >
+                      {latestPage?.formButtonText || latestPage?.cta || "Get Instant Access"}
+                    </button>
                   </div>
-
-                  <button
-                    type="button"
-                    className="w-full rounded-xl py-3 px-4 text-xs font-bold text-white shadow-md transition duration-200 hover:opacity-95 mt-3"
-                    style={{ backgroundColor: brandColor }}
-                  >
-                    {latestPage?.formButtonText || latestPage?.cta || "Send it to me"}
-                  </button>
                 </div>
               </div>
             </div>

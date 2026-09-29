@@ -297,18 +297,6 @@ export default function Template5(props: TemplateProps) {
                   <span>{imageUrl && imageUrl.trim() !== "" ? "Replace Image" : "Upload Cover"}</span>
                 </button>
 
-                {handleGenerateAICoverImage && (
-                  <button
-                    type="button"
-                    onClick={handleGenerateAICoverImage}
-                    disabled={isGeneratingAICover}
-                    className="flex items-center gap-1.5 rounded-xl bg-black/75 hover:bg-black px-3 py-1.5 text-xs font-semibold text-purple-300 shadow-lg border border-purple-500/30 backdrop-blur-md transition-all cursor-pointer hover:scale-105 active:scale-95"
-                  >
-                    <Sparkles className="h-3.5 w-3.5 text-purple-400" />
-                    <span>AI Generate</span>
-                  </button>
-                )}
-
                 {imageUrl && imageUrl.trim() !== "" && setImageUrl && (
                   <button
                     type="button"
