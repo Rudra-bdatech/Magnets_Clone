@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowRight, Check, CheckCircle2 } from "lucide-react";
+import { ArrowRight, Check, CheckCircle2, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { type CustomFormField } from "@/lib/data";
 
@@ -47,7 +47,7 @@ export default function MagnetSignupForm({
   customFormFields?: CustomFormField[];
   username?: string;
   isVariantB?: boolean;
-  layout?: "standard" | "horizontal-glass" | "split-panel";
+  layout?: "standard" | "horizontal-glass" | "split-panel" | "editorial";
   afterSignupOption?: "standard" | "elsewhere" | "custom";
   destinationUrl?: string;
 }) {
@@ -263,6 +263,107 @@ export default function MagnetSignupForm({
             <span>📥 Click Here to Download Resource Immediately</span>
           </a>
         </div>
+      ) : layout === "editorial" ? (
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="space-y-3.5">
+            <div className="space-y-1.5">
+              <label className="block text-[10px] font-sans font-bold uppercase tracking-[0.15em] opacity-90">
+                YOUR NAME
+              </label>
+              <input
+                type="text"
+                required
+                placeholder="Jane Holloway"
+                value={name}
+                disabled={loading}
+                onChange={(e) => setName(e.target.value)}
+                className={`w-full border border-[#151515] dark:border-white/30 px-3.5 py-2.5 text-xs outline-none font-sans transition focus:border-[#2544d8] ${
+                  themeMode === "dark"
+                    ? "bg-black/30 text-white placeholder:text-zinc-500"
+                    : "bg-[#ece7dc]/50 text-zinc-900 placeholder:text-zinc-400"
+                }`}
+              />
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="block text-[10px] font-sans font-bold uppercase tracking-[0.15em] opacity-90">
+                EMAIL ADDRESS
+              </label>
+              <input
+                type="email"
+                required
+                placeholder="jane@studio.com"
+                value={email}
+                disabled={loading}
+                onChange={(e) => setEmail(e.target.value)}
+                className={`w-full border border-[#151515] dark:border-white/30 px-3.5 py-2.5 text-xs outline-none font-sans transition focus:border-[#2544d8] ${
+                  themeMode === "dark"
+                    ? "bg-black/30 text-white placeholder:text-zinc-500"
+                    : "bg-[#ece7dc]/50 text-zinc-900 placeholder:text-zinc-400"
+                }`}
+              />
+            </div>
+
+            {customFormFields && customFormFields.map((field) => (
+              <div key={field.id} className="space-y-1.5">
+                <label className="block text-[10px] font-sans font-bold uppercase tracking-[0.15em] opacity-90">
+                  {field.label?.toUpperCase() || "ADDITIONAL FIELD"}
+                </label>
+                {field.type === "textarea" ? (
+                  <textarea
+                    required={field.required}
+                    rows={2}
+                    placeholder={`${field.label}${field.required ? " *" : ""}`}
+                    value={customFieldValues[field.id] || ""}
+                    disabled={loading}
+                    onChange={(e) => handleCustomFieldChange(field.id, e.target.value)}
+                    className={`w-full border border-[#151515] dark:border-white/30 px-3.5 py-2.5 text-xs outline-none font-sans transition focus:border-[#2544d8] resize-none ${
+                      themeMode === "dark"
+                        ? "bg-black/30 text-white placeholder:text-zinc-500"
+                        : "bg-[#ece7dc]/50 text-zinc-900 placeholder:text-zinc-400"
+                    }`}
+                  />
+                ) : (
+                  <input
+                    type={field.type === "number" ? "number" : "text"}
+                    required={field.required}
+                    placeholder={`${field.label}${field.required ? " *" : ""}`}
+                    value={customFieldValues[field.id] || ""}
+                    disabled={loading}
+                    onChange={(e) => handleCustomFieldChange(field.id, e.target.value)}
+                    className={`w-full border border-[#151515] dark:border-white/30 px-3.5 py-2.5 text-xs outline-none font-sans transition focus:border-[#2544d8] ${
+                      themeMode === "dark"
+                        ? "bg-black/30 text-white placeholder:text-zinc-500"
+                        : "bg-[#ece7dc]/50 text-zinc-900 placeholder:text-zinc-400"
+                    }`}
+                  />
+                )}
+              </div>
+            ))}
+          </div>
+
+          {errorMsg && (
+            <div className="p-2.5 bg-rose-500/10 border border-rose-500/20 text-xs font-semibold text-rose-500 text-center font-sans">
+              {errorMsg}
+            </div>
+          )}
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full text-center py-3.5 px-4 text-xs font-sans font-bold uppercase tracking-[0.15em] text-white shadow-md transition cursor-pointer hover:brightness-110 disabled:opacity-50 mt-4 bg-[#2544d8]"
+            style={{ backgroundColor: brandColor || "#2544d8" }}
+          >
+            {loading ? (
+              <span className="inline-flex items-center justify-center gap-2">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                <span>DISPATCHING...</span>
+              </span>
+            ) : (
+              <span>{formButtonText || cta || "SEND THE DIGITAL ISSUE →"}</span>
+            )}
+          </button>
+        </form>
       ) : layout === "horizontal-glass" ? (
         <form onSubmit={handleSubmit}>
           {customFormFields && customFormFields.length > 0 ? (

@@ -52,31 +52,33 @@ export default function Template1(props: TemplateProps) {
     return "text-3xl sm:text-4xl md:text-5xl font-black";
   };
 
+  const hasCustomBullets = Array.isArray(bullets);
+  const displayBullets: string[] = hasCustomBullets
+    ? bullets
+    : [
+        "101 fill-in-the-blank templates for every content scenario",
+        "Proven structures for storytelling, advice, and transformation posts",
+        "Ready-to-use formats that let you focus on your message",
+      ];
+
   const handleBulletChange = (index: number, value: string) => {
     if (!setBullets) return;
-    const next = [...bullets];
+    const next = [...displayBullets];
     next[index] = value;
     setBullets(next);
   };
 
   const handleAddBullet = () => {
     if (!setBullets) return;
-    setBullets([...bullets, ""]);
+    const current = [...displayBullets];
+    setBullets([...current, ""]);
   };
 
   const handleRemoveBullet = (index: number) => {
     if (!setBullets) return;
-    setBullets(bullets.filter((_: any, i: number) => i !== index));
+    const current = [...displayBullets];
+    setBullets(current.filter((_: any, i: number) => i !== index));
   };
-
-  const displayBullets: string[] =
-    bullets && bullets.length > 0
-      ? bullets
-      : [
-          "101 fill-in-the-blank templates for every content scenario",
-          "Proven structures for storytelling, advice, and transformation posts",
-          "Ready-to-use formats that let you focus on your message",
-        ];
 
 
   return (
@@ -225,16 +227,14 @@ export default function Template1(props: TemplateProps) {
                         }`}
                         placeholder="Key takeaway or feature bullet..."
                       />
-                      {displayBullets.length > 1 && (
-                        <button
-                          type="button"
-                          onClick={() => handleRemoveBullet(idx)}
-                          className="opacity-0 group-hover:opacity-100 p-1 text-zinc-400 hover:text-red-500 transition cursor-pointer"
-                          title="Remove bullet"
-                        >
-                          <X className="h-3.5 w-3.5" />
-                        </button>
-                      )}
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveBullet(idx)}
+                        className="p-1 rounded-md text-zinc-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 transition-all cursor-pointer"
+                        title="Remove bullet"
+                      >
+                        <X className="h-3.5 w-3.5" />
+                      </button>
                     </div>
                   ) : (
                     <span className={isDark ? "text-zinc-300" : "text-zinc-700"}>
@@ -243,6 +243,12 @@ export default function Template1(props: TemplateProps) {
                   )}
                 </li>
               ))}
+
+              {displayBullets.length === 0 && isEditor && (
+                <li className="text-xs italic text-zinc-400 py-1">
+                  No bullet points. Click "+ Add key bullet point" below to add one.
+                </li>
+              )}
             </ul>
 
             {isEditor && (

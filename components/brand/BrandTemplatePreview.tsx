@@ -167,7 +167,7 @@ const BrandTemplatePreview = memo(function BrandTemplatePreview({
         </div>
       )}
 
-      {/* TEMPLATE 2: Signal / Noise Editorial Newspaper & Dispatch Edition */}
+      {/* TEMPLATE 2: Signal / Noise Editorial Edition */}
       {templateId === "template2" && (
         <div
           className={`w-full max-w-5xl mx-auto my-1 rounded-2xl overflow-hidden border shadow-xl transition-colors duration-200 font-sans ${
@@ -182,180 +182,196 @@ const BrandTemplatePreview = memo(function BrandTemplatePreview({
               themeMode === "dark" ? "border-white/15" : "border-[#151515]"
             }`}
           >
-            <div className="text-left font-mono text-[10px] font-bold uppercase tracking-widest opacity-80">
-              <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-black/10 dark:bg-white/10 mb-0.5">
-                Issue No. 04
-              </span>
-              <div className="text-[10px] font-semibold tracking-wider opacity-70">
-                The Attention & Growth Issue
-              </div>
+            <div className="text-left font-sans text-[10px] font-bold uppercase tracking-[0.18em] opacity-90">
+              <div>VOL. 08 · FIELD NOTES</div>
+              <div className="mt-0.5">ISSUE NO. 42</div>
             </div>
 
             <div className="text-center">
-              <h4 className="text-xl sm:text-2xl font-black tracking-tight uppercase font-serif leading-none">
-                Signal <span className="font-serif italic font-normal" style={{ color: brandColor }}>/</span> Noise
+              <h4 className="text-xl sm:text-2xl font-black tracking-tight uppercase font-sans leading-none">
+                SIGNAL <span className="font-serif italic font-normal text-[#ef3d25] mx-0.5">/</span> NOISE
               </h4>
-              <div className="text-[9px] tracking-widest uppercase font-mono mt-0.5 opacity-60">
-                A Contemporary Editorial Field Guide
-              </div>
             </div>
 
-            <div className="text-left md:text-right font-mono text-[10px] uppercase tracking-widest opacity-80">
-              <div className="font-bold flex md:justify-end items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: brandColor }} />
-                Special Edition
+            <div className="text-left md:text-right font-sans text-[10px] font-bold uppercase tracking-[0.18em] opacity-90">
+              <div>INDEPENDENT IDEAS</div>
+              <div className="mt-0.5 font-normal text-[#5a574f] dark:text-zinc-400">
+                AUTUMN · 2026
               </div>
-              <span className="block text-[9px] font-normal opacity-70">
-                Published for Visionary Leaders
-              </span>
             </div>
           </header>
 
           {/* 2. TICKER BAR */}
           <div
-            className={`flex items-center overflow-hidden h-7 text-[10px] font-mono uppercase tracking-wider select-none ${
+            className={`flex items-center overflow-hidden h-7 text-[10px] font-sans font-bold uppercase tracking-[0.12em] select-none ${
               themeMode === "dark" ? "bg-black text-[#eae8e3]" : "bg-[#151515] text-[#f3f0e8]"
             }`}
           >
             <div
-              className="flex items-center gap-1 px-3 h-full shrink-0 font-black text-white z-10 shadow-md text-[10px]"
-              style={{ backgroundColor: brandColor }}
+              className="flex items-center px-3 h-full shrink-0 font-black text-white bg-[#ef3d25] text-[9px]"
             >
-              <span>Dispatch</span>
+              <span>NEW ISSUE</span>
             </div>
             <div className="overflow-hidden flex-1 relative flex items-center">
-              <div className="text-[10px] font-semibold opacity-90 truncate px-3">
-                +++ ESSENTIAL FRAMEWORKS +++ CUT THROUGH THE ALGORITHM NOISE +++ DOWNLOAD YOUR COPY TODAY +++
+              <div className="text-[9px] font-semibold opacity-90 truncate px-3">
+                ATTENTION IS NOT GIVEN. IT IS DESIGNED. • A FIELD GUIDE FOR PEOPLE WHO MAKE IDEAS MOVE.
               </div>
             </div>
           </div>
 
-          {/* 3. HERO & GRID */}
-          <div className="p-4 sm:p-5 space-y-5">
-            <div
-              className="relative min-h-[220px] sm:min-h-[260px] rounded-xl overflow-hidden flex flex-col justify-between p-5 sm:p-6 border shadow-md"
-              style={{
-                backgroundImage: `linear-gradient(90deg, rgba(12,12,12,0.92) 0%, rgba(12,12,12,0.65) 55%, rgba(12,12,12,0.25) 100%), url(${latestPage?.imageUrl && latestPage.imageUrl.trim() !== "" ? latestPage.imageUrl : "https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=1600&q=80"})`,
-                backgroundSize: "cover",
-                backgroundPosition: "center",
-                borderColor: themeMode === "dark" ? "rgba(255,255,255,0.15)" : "rgba(21,21,21,0.3)",
-              }}
-            >
-              <div className="relative z-10 flex items-center gap-2">
-                <span
-                  className="px-2 py-0.5 rounded text-[9px] font-black tracking-widest uppercase text-white font-mono shadow-sm"
-                  style={{ backgroundColor: brandColor }}
-                >
-                  Lead Essay
-                </span>
-                <span className="px-2 py-0.5 rounded text-[9px] font-semibold tracking-wider uppercase text-white/90 bg-black/60 backdrop-blur-sm border border-white/20 font-mono">
-                  Verified Blueprint
-                </span>
-              </div>
+          {/* 3. HERO */}
+          <div
+            className="relative min-h-[240px] sm:min-h-[280px] flex flex-col justify-between p-5 sm:p-6 border-b border-[#151515] dark:border-white/15 overflow-hidden"
+            style={{
+              backgroundImage: `linear-gradient(90deg, rgba(12,12,12,0.92) 0%, rgba(12,12,12,0.6) 55%, rgba(12,12,12,0.15) 100%), url(${latestPage?.imageUrl && latestPage.imageUrl.trim() !== "" ? latestPage.imageUrl : "https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=1600&q=80"})`,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+            }}
+          >
+            <div className="absolute top-2 right-4 pointer-events-none select-none">
+              <span className="font-serif text-7xl font-bold leading-none block opacity-30 text-white" style={{ WebkitTextStroke: "1px rgba(255,255,255,0.4)", color: "transparent" }}>
+                42
+              </span>
+            </div>
 
-              <div className="relative z-10 max-w-xl space-y-2 text-white mt-auto pt-4">
-                <h3 className="text-lg sm:text-2xl font-black font-serif text-white leading-tight drop-shadow-md tracking-tight">
-                  {latestPage?.headline || latestPage?.name || "The Attention Paradox: How to Make Ideas Impossible to Ignore"}
-                </h3>
-                {latestPage?.subheadline && (
-                  <p className="text-xs sm:text-sm text-white/90 leading-snug font-sans drop-shadow line-clamp-2">
-                    {latestPage.subheadline}
-                  </p>
-                )}
+            <div className="relative z-10">
+              <span className="px-2.5 py-0.5 bg-[#ef3d25] text-white text-[9px] font-black uppercase tracking-wider font-sans inline-block">
+                {latestPage?.accent || "THE ATTENTION ISSUE"}
+              </span>
+            </div>
+
+            <div className="relative z-10 max-w-xl space-y-2 text-white mt-auto pt-4">
+              <h3 className="text-xl sm:text-3xl font-serif text-white leading-tight drop-shadow-md tracking-tight">
+                {latestPage?.headline || latestPage?.name || "101 ideas that refuse to vanish."}
+              </h3>
+              {latestPage?.subheadline && (
+                <p className="text-xs sm:text-sm text-white/90 leading-snug font-sans drop-shadow line-clamp-2">
+                  {latestPage.subheadline}
+                </p>
+              )}
+              <div className="flex items-center gap-4 pt-2 text-[9px] font-sans font-bold uppercase tracking-wider text-white/80">
+                <span>12 MIN READ</span>
+                <span>BY {businessName || "MARA VALE"}</span>
+                <span>VISUAL ESSAY</span>
+              </div>
+            </div>
+          </div>
+
+          {/* 4. 2-COLUMN LOWER SECTION */}
+          <div className="grid grid-cols-1 md:grid-cols-12 items-stretch">
+            {/* Left 8 Cols */}
+            <div className="md:col-span-8 p-5 sm:p-6 space-y-5">
+              {(() => {
+                const hasCustomBullets = Array.isArray(latestPage?.bullets);
+                const displayBullets = hasCustomBullets
+                  ? latestPage!.bullets!
+                  : [
+                      "The first seven seconds ::: Seven opening structures that create curiosity.",
+                      "Build a visual memory ::: How contrast, rhythm, and restraint turn information into recognition.",
+                      "Anatomy of the share ::: Twelve remarkable posts, dismantled to reveal ideas.",
+                    ];
+
+                if (displayBullets.length === 0) return null;
+
+                return (
+                  <>
+                    <div className="flex items-center justify-between pb-2 border-b border-[#151515]/20 dark:border-white/15 text-[10px] font-sans font-bold uppercase tracking-wider">
+                      <span>{latestPage?.bulletsTitle || "INSIDE THIS ISSUE"}</span>
+                      <span>CONTENTS 01—0{displayBullets.length}</span>
+                    </div>
+
+                    <div className="divide-y divide-[#151515]/15 dark:divide-white/10">
+                      {displayBullets.slice(0, 3).map((item, i) => {
+                        const parts = item.includes(":::") ? item.split(":::") : [item, ""];
+                        return (
+                          <div key={i} className="py-3 flex items-start justify-between gap-3">
+                            <div className="flex items-start gap-3 flex-1">
+                              <span className="font-serif italic text-lg text-[#151515] dark:text-[#eae8e3]">
+                                0{i + 1}
+                              </span>
+                              <div>
+                                <div className="font-serif font-bold text-sm text-[#151515] dark:text-[#eae8e3]">
+                                  {parts[0]}
+                                </div>
+                                {parts[1] && (
+                                  <div className="text-[11px] font-sans opacity-75">
+                                    {parts[1]}
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                            <span className="text-xs opacity-60">↗</span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </>
+                );
+              })()}
+
+              {/* Quote box */}
+              <div className="border-t-2 border-[#2544d8] bg-[#e7e2d7] dark:bg-[#1e1e24] p-4 space-y-1.5">
+                {(() => {
+                  const defaultQuotePlaceholder = "“Good work earns attention once. A distinct point of view earns it again.”";
+                  const defaultAuthorPlaceholder = `— ${businessName || "EDITORIAL BOARD"}, EDITOR AT LARGE`;
+                  const pitchParts = (latestPage?.pitch || "").includes(":::") ? (latestPage?.pitch || "").split(":::") : [latestPage?.pitch || "", ""];
+                  const quoteText = pitchParts[0]?.trim() || "";
+                  const quoteAuthor = pitchParts[1]?.trim() || "";
+                  return (
+                    <>
+                      <p className="font-serif italic text-xs text-[#151515] dark:text-[#eae8e3]">
+                        {quoteText || defaultQuotePlaceholder}
+                      </p>
+                      <p className="text-[9px] font-sans font-bold uppercase tracking-wider opacity-70">
+                        {quoteAuthor || defaultAuthorPlaceholder}
+                      </p>
+                    </>
+                  );
+                })()}
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-5 items-start">
-              {/* Left 7 Cols */}
-              <div className="md:col-span-7 space-y-4">
-                {latestPage?.pitch && (
-                  <div
-                    className={`p-4 rounded-xl border text-xs sm:text-sm font-serif leading-relaxed ${
-                      themeMode === "dark" ? "bg-[#18181c] border-white/10" : "bg-white border-[#151515]/20"
-                    }`}
-                  >
-                    {latestPage.pitch}
-                  </div>
-                )}
-
-                {latestPage?.bullets && latestPage.bullets.length > 0 && (
-                  <div
-                    className={`p-4 rounded-xl border space-y-2.5 ${
-                      themeMode === "dark" ? "bg-[#18181c] border-white/10" : "bg-white border-[#151515]/20"
-                    }`}
-                  >
-                    <div className="font-mono text-[11px] font-bold uppercase tracking-wider" style={{ color: brandColor }}>
-                      Key Takeaways
-                    </div>
-                    <div className="space-y-2">
-                      {latestPage.bullets.map((b, i) => (
-                        <div key={i} className="flex items-start gap-2 text-xs">
-                          <span
-                            className="font-mono text-[10px] font-bold px-1.5 py-0.2 rounded border shrink-0 mt-0.5"
-                            style={{
-                              backgroundColor: themeMode === "dark" ? "rgba(255,255,255,0.08)" : "#f3f0e8",
-                              borderColor: themeMode === "dark" ? "rgba(255,255,255,0.15)" : "#151515",
-                              color: brandColor,
-                            }}
-                          >
-                            0{i + 1}
-                          </span>
-                          <span className="opacity-90">{b}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
+            {/* Right 4 Cols */}
+            <div className="md:col-span-4 border-t md:border-t-0 md:border-l border-[#151515]/20 dark:border-white/15 p-5 space-y-4">
+              <div className="text-[10px] font-sans font-bold uppercase tracking-wider text-[#2544d8]">
+                DIGITAL EDITION
+              </div>
+              <div>
+                <p className="font-serif text-lg font-normal">
+                  {latestPage?.formTitle || "Keep the issue."}
+                </p>
+                <p className="text-[11px] opacity-75 font-sans">
+                  {latestPage?.formSubtitle || "Receive the complete 48-page digital edition."}
+                </p>
               </div>
 
-              {/* Right 5 Cols: Form */}
-              <div className="md:col-span-5">
-                <div
-                  className={`p-4 sm:p-5 rounded-xl border-2 shadow-lg space-y-3 ${
-                    themeMode === "dark"
-                      ? "bg-[#18181c] border-white/20 text-[#eae8e3]"
-                      : "bg-white border-[#151515] text-[#151515]"
-                  }`}
-                >
-                  <div className="text-center space-y-1">
-                    <p className="font-serif font-black text-sm sm:text-base">
-                      {latestPage?.formTitle || latestPage?.cta || "Claim Your Field Report"}
-                    </p>
-                    <p className="text-[10px] opacity-70">
-                      {latestPage?.formSubtitle || "Enter your details for instant access."}
-                    </p>
-                  </div>
-
-                  <div className="space-y-2">
-                    <input
-                      type="text"
-                      placeholder={latestPage?.namePlaceholder || "Name *"}
-                      readOnly
-                      className={`w-full rounded-lg border px-3 py-2 text-xs font-mono outline-none ${
-                        themeMode === "dark"
-                          ? "bg-black/40 border-zinc-700 text-white"
-                          : "bg-[#f3f0e8] border-[#151515]/30 text-zinc-900"
-                      }`}
-                    />
-                    <input
-                      type="email"
-                      placeholder={latestPage?.emailPlaceholder || "Email *"}
-                      readOnly
-                      className={`w-full rounded-lg border px-3 py-2 text-xs font-mono outline-none ${
-                        themeMode === "dark"
-                          ? "bg-black/40 border-zinc-700 text-white"
-                          : "bg-[#f3f0e8] border-[#151515]/30 text-zinc-900"
-                      }`}
-                    />
-                    <button
-                      type="button"
-                      className="w-full rounded-lg py-2.5 px-3 text-xs font-mono font-black uppercase tracking-wider text-white shadow-md transition hover:brightness-110 mt-1"
-                      style={{ backgroundColor: brandColor }}
-                    >
-                      {latestPage?.formButtonText || latestPage?.cta || "Get Instant Access"}
-                    </button>
-                  </div>
+              <div className="space-y-2.5">
+                <div className="space-y-1">
+                  <span className="block text-[9px] font-bold uppercase tracking-wider">YOUR NAME</span>
+                  <input
+                    type="text"
+                    placeholder="Jane Holloway"
+                    readOnly
+                    className="w-full border border-[#151515] dark:border-white/30 px-2.5 py-1.5 text-xs bg-[#ece7dc]/50 dark:bg-black/30 outline-none"
+                  />
                 </div>
+                <div className="space-y-1">
+                  <span className="block text-[9px] font-bold uppercase tracking-wider">EMAIL ADDRESS</span>
+                  <input
+                    type="email"
+                    placeholder="jane@studio.com"
+                    readOnly
+                    className="w-full border border-[#151515] dark:border-white/30 px-2.5 py-1.5 text-xs bg-[#ece7dc]/50 dark:bg-black/30 outline-none"
+                  />
+                </div>
+
+                <button
+                  type="button"
+                  className="w-full py-2.5 px-3 text-xs font-sans font-bold uppercase tracking-wider text-white bg-[#2544d8] shadow-sm"
+                  style={{ backgroundColor: brandColor || "#2544d8" }}
+                >
+                  {latestPage?.formButtonText || "SEND THE DIGITAL ISSUE →"}
+                </button>
               </div>
             </div>
           </div>

@@ -131,17 +131,25 @@ export default function LandingPageTab({
       <div className="space-y-8">
         {/* Canvas Outer Container - Dynamically switches Light vs Dark depending on account.themeMode */}
         <div
-          className="rounded-3xl p-4 sm:p-8 transition-colors duration-300 relative"
+          className={`transition-colors duration-300 relative ${
+            templateId === "template2"
+              ? "rounded-2xl sm:rounded-3xl overflow-hidden p-0 border border-[#151515]/20 dark:border-white/10 shadow-2xl"
+              : "rounded-3xl p-4 sm:p-8"
+          }`}
           style={{
-            backgroundColor: (account?.themeMode || "light") === "dark" ? "#0E0E10" : "#FAFAFA",
+            backgroundColor: templateId === "template2"
+              ? ((account?.themeMode || "light") === "dark" ? "#141416" : "#f3f0e8")
+              : ((account?.themeMode || "light") === "dark" ? "#0E0E10" : "#FAFAFA"),
             color: (account?.themeMode || "light") === "dark" ? "#ffffff" : "#18181b",
-            backgroundImage: (account?.themeMode || "light") === "light"
-              ? `radial-gradient(circle at 0% 0%, ${account?.brandColor || "#0066B2"}10 0%, transparent 40%), radial-gradient(circle at 100% 100%, ${account?.brandColor || "#0066B2"}08 0%, transparent 40%)`
-              : `radial-gradient(circle at 0% 0%, ${account?.brandColor || "#0066B2"}25 0%, transparent 50%), radial-gradient(circle at 100% 100%, ${account?.brandColor || "#0066B2"}15 0%, transparent 50%)`
+            backgroundImage: templateId === "template2"
+              ? "none"
+              : ((account?.themeMode || "light") === "light"
+                ? `radial-gradient(circle at 0% 0%, ${account?.brandColor || "#0066B2"}10 0%, transparent 40%), radial-gradient(circle at 100% 100%, ${account?.brandColor || "#0066B2"}08 0%, transparent 40%)`
+                : `radial-gradient(circle at 0% 0%, ${account?.brandColor || "#0066B2"}25 0%, transparent 50%), radial-gradient(circle at 100% 100%, ${account?.brandColor || "#0066B2"}15 0%, transparent 50%)`)
           }}
         >
-          {/* Brand Name Header (Hidden for template3, template4, and template5 since it is integrated into their layout) */}
-          {templateId !== "template3" && templateId !== "template4" && templateId !== "template5" && (
+          {/* Brand Name Header (Hidden for template2, template3, template4, and template5 since it is integrated into their layout) */}
+          {templateId !== "template2" && templateId !== "template3" && templateId !== "template4" && templateId !== "template5" && (
             <div className="mb-6 flex items-center justify-center">
               <div className="flex items-center gap-2.5 sm:gap-3">
                 <div className={`h-10 w-10 rounded-xl flex items-center justify-center bg-transparent overflow-hidden shadow-xs ${account?.logo ? "border-none" : "border-2 border-dashed border-[#a1a1aa]/50"}`}>
@@ -216,9 +224,11 @@ export default function LandingPageTab({
           />
 
           {/* Canvas Footer */}
-          <div className="mt-8 text-center text-xs text-zinc-400">
-            All rights reserved 2026
-          </div>
+          {templateId !== "template2" && (
+            <div className="mt-8 text-center text-xs text-zinc-400">
+              All rights reserved 2026
+            </div>
+          )}
         </div>
 
         {/* A/B Testing Section */}
