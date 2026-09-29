@@ -816,6 +816,44 @@ export default async function MagnetPageRoute({
               return { title: item, desc: "" };
             };
 
+            const parsePitch = (rawPitch: string | undefined | null) => {
+              if (!rawPitch) {
+                return {
+                  statNumber: "48",
+                  pitchText: "Pages of battle-tested systems for creating authority, holding attention, and turning an original point of view into durable demand.",
+                  hasStat: true,
+                };
+              }
+              if (rawPitch === "__hidden__" || rawPitch === "__none__") {
+                return {
+                  statNumber: "",
+                  pitchText: "",
+                  hasStat: false,
+                  isHidden: true,
+                };
+              }
+              if (rawPitch.includes(":::")) {
+                const parts = rawPitch.split(":::");
+                const num = parts[0]?.trim() || "";
+                const text = parts.slice(1).join(":::").trim();
+                const hasStat = num !== "__none__" && num !== "__hidden__";
+                return {
+                  statNumber: hasStat ? num : "",
+                  pitchText: text,
+                  hasStat,
+                  isHidden: false,
+                };
+              }
+              return {
+                statNumber: "48",
+                pitchText: rawPitch,
+                hasStat: true,
+                isHidden: false,
+              };
+            };
+
+            const parsedPitch = parsePitch(page.pitch);
+
             const trackItems = (page.bullets && page.bullets.length > 0)
               ? page.bullets
               : defaultTracks.map((t) => `${t.title} ::: ${t.desc}`);
@@ -912,24 +950,27 @@ export default async function MagnetPageRoute({
                         </div>
 
                         {/* Intro Stat & Pitch Row */}
-                        <div className="flex items-start gap-5 sm:gap-7 pt-8 sm:pt-10">
-                          <div
-                            className="font-bebas text-5xl sm:text-6xl md:text-7xl leading-none select-none shrink-0"
-                            style={{ color: numberTeal }}
-                          >
-                            48
-                          </div>
+                        {!parsedPitch.isHidden && (
+                          <div className="flex items-start gap-4 sm:gap-6 pt-8 sm:pt-10">
+                            {parsedPitch.hasStat && parsedPitch.statNumber && (
+                              <div
+                                className="font-bebas text-5xl sm:text-6xl md:text-7xl leading-none select-none shrink-0"
+                                style={{ color: numberTeal }}
+                              >
+                                {parsedPitch.statNumber}
+                              </div>
+                            )}
 
-                          <div className="flex-1 max-w-[440px]">
-                            <p
-                              className="font-space text-xs sm:text-[13px] leading-relaxed m-0"
-                              style={{ color: mutedText }}
-                            >
-                              {page.pitch ||
-                                "Pages of battle-tested systems for creating authority, holding attention, and turning an original point of view into durable demand."}
-                            </p>
+                            <div className="flex-1 max-w-[460px]">
+                              <p
+                                className="font-space text-xs sm:text-[13px] leading-relaxed m-0"
+                                style={{ color: mutedText }}
+                              >
+                                {parsedPitch.pitchText}
+                              </p>
+                            </div>
                           </div>
-                        </div>
+                        )}
                       </div>
 
                       {/* Right Column: Cover Image & Floating Form Box */}

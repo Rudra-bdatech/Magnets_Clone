@@ -100,7 +100,7 @@ export default function Template4(props: TemplateProps) {
   ];
 
   const parseTrack = (item: string, idx: number) => {
-    if (!item) return defaultTracks[idx % defaultTracks.length];
+    if (!item) return { title: "", desc: "" };
     if (item.includes(":::")) {
       const parts = item.split(":::");
       return { title: parts[0]?.trim() || "", desc: parts[1]?.trim() || "" };
@@ -116,8 +116,8 @@ export default function Template4(props: TemplateProps) {
     return { title: item, desc: "" };
   };
 
-  const hasBullets = Array.isArray(bullets) && bullets.length > 0;
-  const trackItems: string[] = hasBullets
+  const hasCustomBullets = Array.isArray(bullets);
+  const trackItems: string[] = hasCustomBullets
     ? bullets
     : defaultTracks.map((t) => `${t.title} ::: ${t.desc}`);
 
@@ -150,6 +150,69 @@ export default function Template4(props: TemplateProps) {
   const handleRemoveTrack = (idx: number) => {
     if (!setBullets) return;
     setBullets(trackItems.filter((_, i) => i !== idx));
+  };
+
+  // Stat Number & Pitch parsing
+  const parsePitch = (rawPitch: string | undefined | null) => {
+    if (!rawPitch) {
+      return {
+        statNumber: "",
+        pitchText: "",
+        hasStat: true,
+      };
+    }
+    if (rawPitch === "__hidden__" || rawPitch === "__none__") {
+      return {
+        statNumber: "",
+        pitchText: "",
+        hasStat: false,
+        isHidden: true,
+      };
+    }
+    if (rawPitch.includes(":::")) {
+      const parts = rawPitch.split(":::");
+      const num = parts[0]?.trim() || "";
+      const text = parts.slice(1).join(":::").trim();
+      const hasStat = num !== "__none__" && num !== "__hidden__";
+      return {
+        statNumber: hasStat ? num : "",
+        pitchText: text,
+        hasStat,
+        isHidden: false,
+      };
+    }
+    return {
+      statNumber: "48",
+      pitchText: rawPitch,
+      hasStat: true,
+      isHidden: false,
+    };
+  };
+
+  const parsedPitch = parsePitch(pitch);
+
+  const handleStatNumberChange = (val: string) => {
+    if (!setPitch) return;
+    setPitch(`${val} ::: ${parsedPitch.pitchText}`);
+  };
+
+  const handleRemoveStatNumber = () => {
+    if (!setPitch) return;
+    setPitch(`__none__ ::: ${parsedPitch.pitchText}`);
+  };
+
+  const handleAddStatNumber = () => {
+    if (!setPitch) return;
+    setPitch(`48 ::: ${parsedPitch.pitchText}`);
+  };
+
+  const handlePitchTextChange = (val: string) => {
+    if (!setPitch) return;
+    if (!parsedPitch.hasStat) {
+      setPitch(`__none__ ::: ${val}`);
+    } else {
+      setPitch(`${parsedPitch.statNumber || "48"} ::: ${val}`);
+    }
   };
 
   const handleFieldChange = (key: string, val: string) => {
@@ -328,24 +391,66 @@ export default function Template4(props: TemplateProps) {
               </div>
 
               {/* Intro Stat & Pitch Row */}
-              <div className="flex items-start gap-5 sm:gap-7 pt-8 sm:pt-10">
-                {/* Number Callout */}
-                <div
-                  className="font-bebas text-5xl sm:text-6xl md:text-7xl leading-none select-none shrink-0"
-                  style={{ color: numberTeal }}
-                >
-                  48
-                </div>
+              <div className="flex items-start gap-4 sm:gap-6 pt-8 sm:pt-10">
+                {/* Number Callout or Add Button */}
+                {isEditor ? (
+                  parsedPitch.hasStat ? (
+                    <div className="relative group shrink-0 flex items-start">
+                      <input
+                        type="text"
+                        value={parsedPitch.statNumber}
+                        onChange={(e) => handleStatNumberChange(e.target.value)}
+                        placeholder="48"
+                        className="font-bebas text-5xl sm:text-6xl md:text-7xl leading-none bg-transparent outline-none w-18 sm:w-24 transition-all placeholder:opacity-30"
+                        style={{ color: numberTeal }}
+                        title="Stat number callout"
+                      />
+                      <button
+                        type="button"
+                        onClick={handleRemoveStatNumber}
+                        className="p-1 rounded text-zinc-400 hover:text-red-500 hover:bg-red-500/10 transition-colors cursor-pointer"
+                        title="Remove number callout"
+                        aria-label="Remove number callout"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="shrink-0 pt-1">
+                      <button
+                        type="button"
+                        onClick={handleAddStatNumber}
+                        className="inline-flex items-center gap-1 px-2.5 py-1.5 font-space text-[10px] font-bold uppercase rounded-xs border border-dashed transition-all hover:brightness-110 cursor-pointer"
+                        style={{
+                          color: numberTeal,
+                          borderColor: `${numberTeal}66`,
+                          backgroundColor: `${numberTeal}10`,
+                        }}
+                        title="Add stat number callout"
+                      >
+                        <Plus className="w-3 h-3" />
+                        <span>STAT</span>
+                      </button>
+                    </div>
+                  )
+                ) : parsedPitch.hasStat && (parsedPitch.statNumber || !pitch) ? (
+                  <div
+                    className="font-bebas text-5xl sm:text-6xl md:text-7xl leading-none select-none shrink-0"
+                    style={{ color: numberTeal }}
+                  >
+                    {parsedPitch.statNumber || "48"}
+                  </div>
+                ) : null}
 
                 {/* Pitch Paragraph */}
-                <div className="flex-1 max-w-[440px]">
+                <div className="flex-1 max-w-[460px]">
                   {isEditor ? (
                     <textarea
                       ref={pitchRef}
                       rows={3}
-                      value={pitch || ""}
+                      value={parsedPitch.pitchText}
                       onChange={(e) => {
-                        setPitch?.(e.target.value);
+                        handlePitchTextChange(e.target.value);
                         e.target.style.height = "auto";
                         e.target.style.height = `${e.target.scrollHeight}px`;
                       }}
@@ -358,7 +463,7 @@ export default function Template4(props: TemplateProps) {
                       className="font-space text-xs sm:text-[13px] leading-relaxed m-0"
                       style={{ color: mutedText }}
                     >
-                      {pitch ||
+                      {parsedPitch.pitchText ||
                         "Pages of battle-tested systems for creating authority, holding attention, and turning an original point of view into durable demand."}
                     </p>
                   )}
@@ -715,94 +820,110 @@ export default function Template4(props: TemplateProps) {
           </section>
 
           {/* 3. TRACKS SECTION (BULLETS) */}
-          <section
-            className="border-t grid grid-cols-1 md:grid-cols-3 transition-colors"
-            style={{ borderColor }}
-          >
-            {trackItems.map((item, idx) => {
-              const trackNum = (idx + 1).toString().padStart(2, "0");
-              const parsed = parseTrack(item, idx);
+          {trackItems.length > 0 ? (
+            <section
+              className={`border-t grid grid-cols-1 ${
+                trackItems.length === 1
+                  ? "md:grid-cols-1"
+                  : trackItems.length === 2
+                  ? "md:grid-cols-2"
+                  : "md:grid-cols-3"
+              } transition-colors`}
+              style={{ borderColor }}
+            >
+              {trackItems.map((item, idx) => {
+                const trackNum = (idx + 1).toString().padStart(2, "0");
+                const parsed = parseTrack(item, idx);
 
-              return (
-                <article
-                  key={idx}
-                  className={`p-6 sm:py-7 sm:px-8 flex flex-col justify-between relative group ${
-                    idx < trackItems.length - 1 ? "md:border-r border-b md:border-b-0" : ""
-                  }`}
-                  style={{ borderColor }}
-                >
-                  <div className="space-y-2">
-                    {/* Track Number Tag */}
-                    <div className="flex items-center justify-between">
-                      <small
-                        className="font-space text-[10px] sm:text-[11px] font-bold uppercase tracking-wider"
-                        style={{ color: numberTeal }}
-                      >
-                        TRACK / {trackNum}
-                      </small>
-
-                      {isEditor && trackItems.length > 1 && (
-                        <button
-                          type="button"
-                          onClick={() => handleRemoveTrack(idx)}
-                          className="opacity-0 group-hover:opacity-100 transition-opacity p-1 text-zinc-400 hover:text-red-400 cursor-pointer"
-                          title="Remove track"
+                return (
+                  <article
+                    key={idx}
+                    className={`p-6 sm:py-7 sm:px-8 flex flex-col justify-between relative group ${
+                      idx < trackItems.length - 1 ? "md:border-r border-b md:border-b-0" : ""
+                    }`}
+                    style={{ borderColor }}
+                  >
+                    <div className="space-y-2">
+                      {/* Track Number Tag */}
+                      <div className="flex items-center justify-between">
+                        <small
+                          className="font-space text-[10px] sm:text-[11px] font-bold uppercase tracking-wider"
+                          style={{ color: numberTeal }}
                         >
-                          <X className="w-3.5 h-3.5" />
-                        </button>
-                      )}
-                    </div>
+                          TRACK / {trackNum}
+                        </small>
 
-                    {/* Track Title */}
-                    <div>
-                      {isEditor ? (
-                        <input
-                          type="text"
-                          value={parsed.title}
-                          onChange={(e) =>
-                            handleTrackTitleChange(idx, e.target.value)
-                          }
-                          placeholder={`Track ${trackNum} Title`}
-                          className="font-bebas text-2xl sm:text-3xl tracking-normal uppercase bg-transparent outline-none w-full placeholder:opacity-40"
-                          style={{ color: textColor }}
-                        />
-                      ) : (
-                        <h3
-                          className="font-bebas text-2xl sm:text-3xl tracking-normal uppercase m-0 leading-tight"
-                          style={{ color: textColor }}
-                        >
-                          {parsed.title}
-                        </h3>
-                      )}
-                    </div>
+                        {isEditor && (
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveTrack(idx)}
+                            className="p-1 rounded text-zinc-400 hover:text-red-500 hover:bg-red-500/10 transition-colors cursor-pointer"
+                            title={`Remove Track ${trackNum}`}
+                            aria-label={`Remove Track ${trackNum}`}
+                          >
+                            <X className="w-4 h-4" />
+                          </button>
+                        )}
+                      </div>
 
-                    {/* Track Description */}
-                    <div>
-                      {isEditor ? (
-                        <textarea
-                          rows={2}
-                          value={parsed.desc}
-                          onChange={(e) =>
-                            handleTrackDescChange(idx, e.target.value)
-                          }
-                          placeholder="Describe the principle or framework delivered in this track..."
-                          className="font-space text-[10px] sm:text-[11px] leading-relaxed bg-transparent outline-none resize-none w-full placeholder:opacity-40"
-                          style={{ color: dimText }}
-                        />
-                      ) : (
-                        <p
-                          className="font-space text-[10px] sm:text-[11px] leading-relaxed m-0"
-                          style={{ color: dimText }}
-                        >
-                          {parsed.desc}
-                        </p>
-                      )}
+                      {/* Track Title */}
+                      <div>
+                        {isEditor ? (
+                          <input
+                            type="text"
+                            value={parsed.title}
+                            onChange={(e) =>
+                              handleTrackTitleChange(idx, e.target.value)
+                            }
+                            placeholder={`Track ${trackNum} Title`}
+                            className="font-bebas text-2xl sm:text-3xl tracking-normal uppercase bg-transparent outline-none w-full placeholder:opacity-40"
+                            style={{ color: textColor }}
+                          />
+                        ) : (
+                          <h3
+                            className="font-bebas text-2xl sm:text-3xl tracking-normal uppercase m-0 leading-tight"
+                            style={{ color: textColor }}
+                          >
+                            {parsed.title}
+                          </h3>
+                        )}
+                      </div>
+
+                      {/* Track Description */}
+                      <div>
+                        {isEditor ? (
+                          <textarea
+                            rows={2}
+                            value={parsed.desc}
+                            onChange={(e) =>
+                              handleTrackDescChange(idx, e.target.value)
+                            }
+                            placeholder="Describe the principle or framework delivered in this track..."
+                            className="font-space text-[10px] sm:text-[11px] leading-relaxed bg-transparent outline-none resize-none w-full placeholder:opacity-40"
+                            style={{ color: dimText }}
+                          />
+                        ) : (
+                          <p
+                            className="font-space text-[10px] sm:text-[11px] leading-relaxed m-0"
+                            style={{ color: dimText }}
+                          >
+                            {parsed.desc}
+                          </p>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                </article>
-              );
-            })}
-          </section>
+                  </article>
+                );
+              })}
+            </section>
+          ) : isEditor ? (
+            <div
+              className="border-t p-6 text-center text-xs font-space text-zinc-500 transition-colors"
+              style={{ borderColor }}
+            >
+              No tracks added. Click &quot;Add Track&quot; below to add one.
+            </div>
+          ) : null}
 
           {/* Add Track Button in Editor Mode */}
           {isEditor && (
