@@ -1117,12 +1117,6 @@ export default async function MagnetPageRoute({
             }`}
             style={{ fontFamily: "'Manrope', -apple-system, BlinkMacSystemFont, sans-serif" }}
           >
-            <style>{`
-              @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Manrope:wght@400;500;600;700&display=swap');
-              .font-instrument { font-family: 'Instrument Serif', Georgia, serif; }
-              .font-manrope { font-family: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif; }
-            `}</style>
-
             {/* Masthead Header */}
             <header
               className={`flex justify-between items-end pb-5 border-b transition-colors ${
@@ -1243,7 +1237,7 @@ export default async function MagnetPageRoute({
                 )}
 
                 {/* Chapters */}
-                {((page.bullets && page.bullets.length > 0) || !page.bullets) && (
+                {page.bullets && page.bullets.length > 0 && page.bullets.some((b: string) => b && b.trim().length > 0) && (
                   <div
                     className={`pt-7 border-t transition-colors ${
                       themeMode === "dark" ? "border-[#33302c]" : "border-[#ded9d4]"
@@ -1257,14 +1251,7 @@ export default async function MagnetPageRoute({
                     </div>
 
                     <div className="divide-y divide-[#ded9d4] dark:divide-[#33302c]">
-                      {(page.bullets && page.bullets.length > 0
-                        ? page.bullets
-                        : [
-                            "The Signal-to-Noise Protocol — Audit attention and eliminate low-leverage activities through the Four Filters.",
-                            "Recursive Hiring Loops — Build a talent engine that identifies multipliers before they reach the market.",
-                            "Velocity Without Chaos — Replace recurring meetings with lightweight synchronization rituals.",
-                          ]
-                      ).map((item: string, idx: number) => {
+                      {page.bullets.filter((b: string) => b && b.trim().length > 0).map((item: string, idx: number) => {
                         const numStr = (idx + 1).toString().padStart(2, "0") + " /";
                         let title = item;
                         let desc = "";
@@ -1317,22 +1304,23 @@ export default async function MagnetPageRoute({
                 )}
 
                 {/* Pullquote */}
-                <blockquote
-                  className="p-7 sm:p-9 rounded-xs transition-colors"
-                  style={{
-                    backgroundColor: themeMode === "dark" ? "#0d0c0b" : "#1c1917",
-                    color: "#fcfaf8",
-                    border: themeMode === "dark" ? "1px solid #292524" : "none",
-                  }}
-                >
-                  <div className="font-instrument italic text-[22px] sm:text-[25px] leading-[1.3]">
-                    {page.pitch ||
-                      "“Speed is often a byproduct of clarity. Build the infrastructure that makes high performance inevitable.”"}
-                  </div>
-                  <small className="block mt-5 font-manrope font-bold text-[9px] tracking-[0.13em] uppercase text-[#a49d96]">
-                    {businessName || "Marcus Vane"} · Author
-                  </small>
-                </blockquote>
+                {page.pitch && page.pitch !== "__HIDDEN__" && page.pitch.trim().length > 0 && (
+                  <blockquote
+                    className="p-7 sm:p-9 rounded-xs transition-colors"
+                    style={{
+                      backgroundColor: themeMode === "dark" ? "#0d0c0b" : "#1c1917",
+                      color: "#fcfaf8",
+                      border: themeMode === "dark" ? "1px solid #292524" : "none",
+                    }}
+                  >
+                    <div className="font-instrument italic text-[22px] sm:text-[25px] leading-[1.3]">
+                      {page.pitch}
+                    </div>
+                    <small className="block mt-5 font-manrope font-bold text-[9px] tracking-[0.13em] uppercase text-[#a49d96]">
+                      {businessName || "Marcus Vane"} · Author
+                    </small>
+                  </blockquote>
+                )}
               </section>
 
               {/* Right Column: Sticky Opt-in Card */}

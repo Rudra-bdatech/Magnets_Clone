@@ -8,7 +8,7 @@ export default function Template6(props: TemplateProps) {
     headline,
     subheadline,
     pitch,
-    bullets = [],
+    bullets,
     bulletsTitle,
     mastheadLeft,
     mastheadRight,
@@ -21,8 +21,6 @@ export default function Template6(props: TemplateProps) {
     setCustomFormFields,
     fileInputRef,
     uploadProgress,
-    isGeneratingAICover,
-    handleGenerateAICoverImage,
     headlineRef,
     subheadlineRef,
     pitchRef,
@@ -51,8 +49,6 @@ export default function Template6(props: TemplateProps) {
   const currentYear = new Date().getFullYear();
 
   const authorName = account?.name || account?.brandName || "Marcus Vane";
-  const brandTitle = mastheadRight || account?.brandName || "The Executive Dispatch";
-  const issueKicker = mastheadLeft || "Intelligence report · Issue 08";
 
   const defaultBullets = [
     "The Signal-to-Noise Protocol — Audit attention and eliminate low-leverage activities through the Four Filters.",
@@ -60,8 +56,7 @@ export default function Template6(props: TemplateProps) {
     "Velocity Without Chaos — Replace recurring meetings with lightweight synchronization rituals.",
   ];
 
-  const hasCustomBullets = Array.isArray(bullets) && bullets.length > 0;
-  const displayBullets: string[] = hasCustomBullets ? bullets : defaultBullets;
+  const currentBullets: string[] = Array.isArray(bullets) ? bullets : [];
 
   const parseBullet = (item: string) => {
     if (!item) return { title: "", desc: "" };
@@ -82,19 +77,21 @@ export default function Template6(props: TemplateProps) {
 
   const handleBulletChange = (index: number, value: string) => {
     if (!setBullets) return;
-    const next = [...displayBullets];
+    const next = [...currentBullets];
     next[index] = value;
     setBullets(next);
   };
 
   const handleAddBullet = () => {
     if (!setBullets) return;
-    setBullets([...displayBullets, ""]);
+    const next = [...currentBullets];
+    setBullets([...next, ""]);
   };
 
   const handleRemoveBullet = (index: number) => {
     if (!setBullets) return;
-    setBullets(displayBullets.filter((_, i) => i !== index));
+    const next = currentBullets.filter((_, i) => i !== index);
+    setBullets(next);
   };
 
   return (
@@ -106,17 +103,6 @@ export default function Template6(props: TemplateProps) {
         fontFamily: "'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
       }}
     >
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Manrope:wght@400;500;600;700&display=swap');
-
-        .font-instrument {
-          font-family: 'Instrument Serif', Georgia, serif;
-        }
-        .font-manrope {
-          font-family: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
-        }
-      `}</style>
-
       {/* Upload Progress Overlay */}
       {uploadProgress !== null && uploadProgress !== undefined && (
         <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/85 backdrop-blur-md p-6 text-center text-white">
@@ -151,10 +137,10 @@ export default function Template6(props: TemplateProps) {
             {isEditor ? (
               <input
                 type="text"
-                value={mastheadLeft !== undefined ? mastheadLeft : issueKicker}
+                value={mastheadLeft || ""}
                 onChange={(e) => setMastheadLeft?.(e.target.value)}
                 placeholder="Intelligence report · Issue 08"
-                className="text-[10px] font-bold tracking-[0.16em] uppercase bg-transparent outline-none w-full max-w-md placeholder:opacity-50"
+                className="text-[10px] font-bold tracking-[0.16em] uppercase bg-transparent outline-none w-full max-w-md placeholder:text-zinc-400 dark:placeholder:text-zinc-600"
                 style={{ color: isDark ? "#a89f97" : "#786f68" }}
               />
             ) : (
@@ -162,17 +148,17 @@ export default function Template6(props: TemplateProps) {
                 className="text-[10px] font-bold tracking-[0.16em] uppercase"
                 style={{ color: isDark ? "#a89f97" : "#786f68" }}
               >
-                {issueKicker}
+                {mastheadLeft || "Intelligence report · Issue 08"}
               </div>
             )}
 
             {isEditor ? (
               <input
                 type="text"
-                value={mastheadRight !== undefined ? mastheadRight : brandTitle}
+                value={mastheadRight || ""}
                 onChange={(e) => setMastheadRight?.(e.target.value)}
-                placeholder="The Executive Dispatch"
-                className="font-instrument italic text-[28px] sm:text-[34px] leading-tight mt-1 bg-transparent outline-none w-full max-w-lg placeholder:opacity-50"
+                placeholder={account?.brandName || "The Executive Dispatch"}
+                className="font-instrument italic text-[28px] sm:text-[34px] leading-tight mt-1 bg-transparent outline-none w-full max-w-lg placeholder:text-zinc-400 dark:placeholder:text-zinc-600"
                 style={{ color: isDark ? "#fcfaf8" : "#1c1917" }}
               />
             ) : (
@@ -180,7 +166,7 @@ export default function Template6(props: TemplateProps) {
                 className="font-instrument italic text-[28px] sm:text-[34px] leading-tight mt-1"
                 style={{ color: isDark ? "#fcfaf8" : "#1c1917" }}
               >
-                {brandTitle}
+                {mastheadRight || account?.brandName || "The Executive Dispatch"}
               </div>
             )}
           </div>
@@ -243,7 +229,7 @@ export default function Template6(props: TemplateProps) {
                       className="font-instrument italic text-lg sm:text-xl"
                       style={{ color: isDark ? "#ded9d4" : "#5c554f" }}
                     >
-                      {brandTitle}
+                      {mastheadRight || account?.brandName || "The Executive Dispatch"}
                     </p>
                   </div>
                 </div>
@@ -283,7 +269,7 @@ export default function Template6(props: TemplateProps) {
                   value={bulletsTitle || ""}
                   onChange={(e) => setBulletsTitle?.(e.target.value)}
                   placeholder="Strategic framework"
-                  className="inline-block px-2.5 py-1 text-[10px] font-bold tracking-[0.12em] uppercase rounded-xs outline-none cursor-text transition-colors"
+                  className="inline-block px-2.5 py-1 text-[10px] font-bold tracking-[0.12em] uppercase rounded-xs outline-none cursor-text transition-colors placeholder:text-[#b53b12]/60 dark:placeholder:text-[#fb923c]/60"
                   style={{
                     backgroundColor: isDark ? "rgba(194, 65, 12, 0.2)" : "#f5e5dc",
                     color: isDark ? "#fb923c" : "#b53b12",
@@ -315,7 +301,7 @@ export default function Template6(props: TemplateProps) {
                     e.target.style.height = `${e.target.scrollHeight}px`;
                   }}
                   placeholder="The Architecture of High-Output Engineering"
-                  className="w-full font-instrument font-medium text-[36px] sm:text-[48px] lg:text-[62px] xl:text-[70px] leading-[0.94] tracking-tight bg-transparent outline-none resize-none"
+                  className="w-full font-instrument font-medium text-[36px] sm:text-[48px] lg:text-[62px] xl:text-[70px] leading-[0.94] tracking-tight bg-transparent outline-none resize-none placeholder:text-zinc-400 dark:placeholder:text-zinc-600"
                   style={{ color: isDark ? "#fcfaf8" : "#1c1917" }}
                 />
               ) : (
@@ -341,7 +327,7 @@ export default function Template6(props: TemplateProps) {
                     e.target.style.height = `${e.target.scrollHeight}px`;
                   }}
                   placeholder="A 42-page field guide to the organizational systems used by ambitious teams to maintain velocity without burning out."
-                  className="w-full text-[17px] sm:text-[19px] leading-[1.6] bg-transparent outline-none resize-none"
+                  className="w-full text-[17px] sm:text-[19px] leading-[1.6] bg-transparent outline-none resize-none placeholder:text-zinc-400 dark:placeholder:text-zinc-600"
                   style={{ color: isDark ? "#c4bcb3" : "#5c554f" }}
                 />
               ) : (
@@ -356,142 +342,181 @@ export default function Template6(props: TemplateProps) {
             </div>
 
             {/* Chapters / "Inside this guide" Section */}
-            <div
-              className={`pt-7 border-t transition-colors ${
-                isDark ? "border-[#33302c]" : "border-[#ded9d4]"
-              }`}
-            >
+            {(isEditor || currentBullets.length > 0) && (
               <div
-                className="text-[10px] font-bold tracking-[0.16em] uppercase mb-3"
-                style={{ color: isDark ? "#a89f97" : "#786f68" }}
+                className={`pt-7 border-t transition-colors ${
+                  isDark ? "border-[#33302c]" : "border-[#ded9d4]"
+                }`}
               >
-                Inside this guide
-              </div>
-
-              <div className="divide-y divide-[#ded9d4] dark:divide-[#33302c]">
-                {displayBullets.map((item: string, idx: number) => {
-                  const numStr = (idx + 1).toString().padStart(2, "0") + " /";
-                  const parsed = parseBullet(item);
-
-                  return (
-                    <article
-                      key={idx}
-                      className="grid grid-cols-[44px_1fr] sm:grid-cols-[48px_1fr] py-5 items-start gap-2 group"
-                    >
-                      <span
-                        className="font-instrument italic text-[19px] sm:text-[21px] select-none"
-                        style={{ color: brandColor }}
-                      >
-                        {numStr}
-                      </span>
-
-                      <div className="space-y-1 min-w-0 pr-2">
-                        {isEditor ? (
-                          <div className="space-y-1">
-                            <input
-                              type="text"
-                              value={item}
-                              onChange={(e) => handleBulletChange(idx, e.target.value)}
-                              placeholder="Chapter Title — Description of the chapter or lesson"
-                              className="w-full text-sm sm:text-base font-semibold bg-transparent outline-none"
-                              style={{ color: isDark ? "#fcfaf8" : "#1c1917" }}
-                            />
-                            <div className="flex items-center justify-between pt-0.5">
-                              <span className="text-[10px] italic text-zinc-400">
-                                Tip: Use &quot;Title — Description&quot; to format
-                              </span>
-                              <button
-                                type="button"
-                                onClick={() => handleRemoveBullet(idx)}
-                                className="text-zinc-400 hover:text-red-500 transition cursor-pointer p-0.5"
-                                title="Remove chapter"
-                              >
-                                <X className="w-3.5 h-3.5" />
-                              </button>
-                            </div>
-                          </div>
-                        ) : (
-                          <>
-                            <h3
-                              className="text-[16px] sm:text-[17px] font-bold leading-snug m-0"
-                              style={{ color: isDark ? "#fcfaf8" : "#1c1917" }}
-                            >
-                              {parsed.title}
-                            </h3>
-                            {parsed.desc ? (
-                              <p
-                                className="text-[13px] leading-[1.5] m-0"
-                                style={{ color: isDark ? "#a89f97" : "#756d66" }}
-                              >
-                                {parsed.desc}
-                              </p>
-                            ) : null}
-                          </>
-                        )}
-                      </div>
-                    </article>
-                  );
-                })}
-              </div>
-
-              {isEditor && (
-                <div className="pt-3">
-                  <button
-                    type="button"
-                    onClick={handleAddBullet}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xs border text-xs font-bold transition cursor-pointer"
-                    style={{
-                      borderColor: isDark ? "#44403c" : "#d9d4cf",
-                      backgroundColor: isDark ? "#1c1917" : "#ffffff",
-                      color: isDark ? "#ded9d4" : "#1c1917",
-                    }}
-                  >
-                    <Plus className="w-3.5 h-3.5" style={{ color: brandColor }} />
-                    <span>Add chapter</span>
-                  </button>
+                <div
+                  className="text-[10px] font-bold tracking-[0.16em] uppercase mb-3"
+                  style={{ color: isDark ? "#a89f97" : "#786f68" }}
+                >
+                  Inside this guide
                 </div>
-              )}
-            </div>
+
+                {currentBullets.length > 0 ? (
+                  <div className="divide-y divide-[#ded9d4] dark:divide-[#33302c]">
+                    {currentBullets.map((item: string, idx: number) => {
+                      const numStr = (idx + 1).toString().padStart(2, "0") + " /";
+                      const parsed = parseBullet(item || defaultBullets[idx] || "");
+
+                      return (
+                        <article
+                          key={idx}
+                          className="grid grid-cols-[44px_1fr] sm:grid-cols-[48px_1fr] py-5 items-start gap-2 group"
+                        >
+                          <span
+                            className="font-instrument italic text-[19px] sm:text-[21px] select-none"
+                            style={{ color: brandColor }}
+                          >
+                            {numStr}
+                          </span>
+
+                          <div className="space-y-1 min-w-0 pr-2">
+                            {isEditor ? (
+                              <div className="space-y-1">
+                                <input
+                                  type="text"
+                                  value={item}
+                                  onChange={(e) => handleBulletChange(idx, e.target.value)}
+                                  placeholder={defaultBullets[idx] || "Chapter Title — Description"}
+                                  className="w-full text-sm sm:text-base font-semibold bg-transparent outline-none placeholder:text-zinc-400 dark:placeholder:text-zinc-600 font-manrope"
+                                  style={{ color: isDark ? "#fcfaf8" : "#1c1917" }}
+                                />
+                                <div className="flex items-center justify-between pt-0.5">
+                                  <span className="text-[10px] italic text-zinc-400">
+                                    Tip: Use &quot;Title — Description&quot; to format
+                                  </span>
+                                  <button
+                                    type="button"
+                                    onClick={() => handleRemoveBullet(idx)}
+                                    className="text-zinc-400 hover:text-red-500 transition cursor-pointer p-0.5"
+                                    title="Remove chapter"
+                                  >
+                                    <X className="w-3.5 h-3.5" />
+                                  </button>
+                                </div>
+                              </div>
+                            ) : (
+                              <>
+                                <h3
+                                  className="text-[16px] sm:text-[17px] font-bold leading-snug m-0"
+                                  style={{ color: isDark ? "#fcfaf8" : "#1c1917" }}
+                                >
+                                  {parsed.title}
+                                </h3>
+                                {parsed.desc ? (
+                                  <p
+                                    className="text-[13px] leading-[1.5] m-0"
+                                    style={{ color: isDark ? "#a89f97" : "#756d66" }}
+                                  >
+                                    {parsed.desc}
+                                  </p>
+                                ) : null}
+                              </>
+                            )}
+                          </div>
+                        </article>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <p
+                    className="text-xs italic py-2 m-0"
+                    style={{ color: isDark ? "#a89f97" : "#786f68" }}
+                  >
+                    No chapters added. Click &quot;Add chapter&quot; below to add one.
+                  </p>
+                )}
+
+                {isEditor && (
+                  <div className="pt-3">
+                    <button
+                      type="button"
+                      onClick={handleAddBullet}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xs border text-xs font-bold transition cursor-pointer"
+                      style={{
+                        borderColor: isDark ? "#44403c" : "#d9d4cf",
+                        backgroundColor: isDark ? "#1c1917" : "#ffffff",
+                        color: isDark ? "#ded9d4" : "#1c1917",
+                      }}
+                    >
+                      <Plus className="w-3.5 h-3.5" style={{ color: brandColor }} />
+                      <span>Add chapter</span>
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* Inverted Editorial Quote / Pitch Callout */}
-            <blockquote
-              className="p-7 sm:p-9 rounded-xs transition-colors"
-              style={{
-                backgroundColor: isDark ? "#0d0c0b" : "#1c1917",
-                color: "#fcfaf8",
-                border: isDark ? "1px solid #292524" : "none",
-              }}
-            >
-              {isEditor ? (
-                <div className="space-y-3">
-                  <textarea
-                    ref={pitchRef}
-                    rows={2}
-                    value={pitch || ""}
-                    onChange={(e) => {
-                      setPitch?.(e.target.value);
-                      e.target.style.height = "auto";
-                      e.target.style.height = `${e.target.scrollHeight}px`;
-                    }}
-                    placeholder="“Speed is often a byproduct of clarity. Build the infrastructure that makes high performance inevitable.”"
-                    className="w-full font-instrument italic text-[22px] sm:text-[25px] leading-[1.3] bg-transparent text-[#fcfaf8] outline-none resize-none placeholder:text-zinc-500"
-                  />
-                  <small className="block font-manrope font-bold text-[9px] tracking-[0.13em] uppercase text-[#a49d96]">
-                    {authorName} · Author
-                  </small>
-                </div>
-              ) : (
-                <>
-                  <div className="font-instrument italic text-[22px] sm:text-[25px] leading-[1.3]">
-                    {pitch ||
-                      "“Speed is often a byproduct of clarity. Build the infrastructure that makes high performance inevitable.”"}
+            {pitch !== "__HIDDEN__" ? (
+              <blockquote
+                className="p-7 sm:p-9 rounded-xs transition-colors relative group"
+                style={{
+                  backgroundColor: isDark ? "#0d0c0b" : "#1c1917",
+                  color: "#fcfaf8",
+                  border: isDark ? "1px solid #292524" : "none",
+                }}
+              >
+                {isEditor && setPitch && (
+                  <button
+                    type="button"
+                    onClick={() => setPitch("__HIDDEN__")}
+                    className="absolute top-4 right-4 text-zinc-400 hover:text-red-400 p-1 rounded-md transition cursor-pointer"
+                    title="Remove quote card"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                )}
+
+                {isEditor ? (
+                  <div className="space-y-3">
+                    <textarea
+                      ref={pitchRef}
+                      rows={3}
+                      value={pitch || ""}
+                      onChange={(e) => {
+                        setPitch?.(e.target.value);
+                        e.target.style.height = "auto";
+                        e.target.style.height = `${e.target.scrollHeight}px`;
+                      }}
+                      placeholder="“Speed is often a byproduct of clarity. Build the infrastructure that makes high performance inevitable.”"
+                      className="w-full font-instrument italic text-[22px] sm:text-[25px] leading-[1.3] bg-transparent text-[#fcfaf8] outline-none resize-none placeholder:text-zinc-500 pr-6"
+                    />
+                    <small className="block font-manrope font-bold text-[9px] tracking-[0.13em] uppercase text-[#a49d96]">
+                      {authorName} · Author
+                    </small>
                   </div>
-                  <small className="block mt-5 font-manrope font-bold text-[9px] tracking-[0.13em] uppercase text-[#a49d96]">
-                    {authorName} · Author
-                  </small>
-                </>
-              )}
-            </blockquote>
+                ) : (
+                  <>
+                    <div className="font-instrument italic text-[22px] sm:text-[25px] leading-[1.3]">
+                      {pitch ||
+                        "“Speed is often a byproduct of clarity. Build the infrastructure that makes high performance inevitable.”"}
+                    </div>
+                    <small className="block mt-5 font-manrope font-bold text-[9px] tracking-[0.13em] uppercase text-[#a49d96]">
+                      {authorName} · Author
+                    </small>
+                  </>
+                )}
+              </blockquote>
+            ) : isEditor && setPitch ? (
+              <div className="pt-2">
+                <button
+                  type="button"
+                  onClick={() => setPitch("")}
+                  className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-md border border-dashed hover:border-solid transition cursor-pointer"
+                  style={{
+                    borderColor: brandColor,
+                    color: brandColor,
+                  }}
+                >
+                  <Plus className="w-3.5 h-3.5" style={{ color: brandColor }} />
+                  <span>Add author quote</span>
+                </button>
+              </div>
+            ) : null}
           </section>
 
           {/* RIGHT COLUMN: Sticky Opt-In Card */}
@@ -520,7 +545,7 @@ export default function Template6(props: TemplateProps) {
                     value={formTitle || ""}
                     onChange={(e) => setFormTitle?.(e.target.value)}
                     placeholder="Get the full report"
-                    className="w-full font-instrument text-[28px] sm:text-[32px] font-medium leading-tight bg-transparent outline-none"
+                    className="w-full font-instrument text-[28px] sm:text-[32px] font-medium leading-tight bg-transparent outline-none placeholder:text-zinc-400 dark:placeholder:text-zinc-600"
                     style={{ color: isDark ? "#fcfaf8" : "#1c1917" }}
                   />
                   <textarea
@@ -528,7 +553,7 @@ export default function Template6(props: TemplateProps) {
                     value={formSubtitle || ""}
                     onChange={(e) => setFormSubtitle?.(e.target.value)}
                     placeholder="The PDF and supplemental worksheets will arrive directly in your inbox."
-                    className="w-full text-[13px] leading-[1.5] bg-transparent outline-none resize-none"
+                    className="w-full text-[13px] leading-[1.5] bg-transparent outline-none resize-none placeholder:text-zinc-400 dark:placeholder:text-zinc-600 font-manrope"
                     style={{ color: isDark ? "#a89f97" : "#746c65" }}
                   />
                 </div>
@@ -541,7 +566,7 @@ export default function Template6(props: TemplateProps) {
                     {formTitle || "Get the full report"}
                   </h2>
                   <p
-                    className="text-[13px] leading-[1.5] m-0"
+                    className="text-[13px] leading-[1.5] m-0 font-manrope"
                     style={{ color: isDark ? "#a89f97" : "#746c65" }}
                   >
                     {formSubtitle ||
@@ -552,7 +577,7 @@ export default function Template6(props: TemplateProps) {
 
               {/* Form Input Fields */}
               {isEditor ? (
-                <div className="space-y-4">
+                <div className="space-y-4 font-manrope">
                   <div className="space-y-3.5">
                     <div>
                       <label
@@ -620,12 +645,12 @@ export default function Template6(props: TemplateProps) {
                     value={formButtonText || ""}
                     onChange={(e) => setFormButtonText?.(e.target.value)}
                     placeholder="Receive the dispatch →"
-                    className="w-full text-center border-0 p-4 text-[13px] font-bold font-manrope text-white cursor-text outline-none rounded-xs shadow-md transition hover:opacity-95"
+                    className="w-full text-center border-0 p-4 text-[13px] font-bold font-manrope text-white cursor-text outline-none rounded-xs shadow-md transition hover:opacity-95 placeholder:text-white/70"
                     style={{ backgroundColor: brandColor }}
                   />
                 </div>
               ) : (
-                <form onSubmit={onSubmitPublicForm} className="space-y-4">
+                <form onSubmit={onSubmitPublicForm} className="space-y-4 font-manrope">
                   <div className="space-y-3.5">
                     <div>
                       <label

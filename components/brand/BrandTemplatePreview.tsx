@@ -998,12 +998,6 @@ const BrandTemplatePreview = memo(function BrandTemplatePreview({
           }`}
           style={{ fontFamily: "'Manrope', -apple-system, BlinkMacSystemFont, sans-serif" }}
         >
-          <style>{`
-            @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Manrope:wght@400;500;600;700&display=swap');
-            .font-instrument { font-family: 'Instrument Serif', Georgia, serif; }
-            .font-manrope { font-family: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif; }
-          `}</style>
-
           {/* Masthead Header */}
           <header
             className={`flex justify-between items-end pb-3 border-b transition-colors ${
@@ -1108,27 +1102,28 @@ const BrandTemplatePreview = memo(function BrandTemplatePreview({
               </p>
 
               {/* Chapters */}
-              <div
-                className={`pt-4 border-t transition-colors ${
-                  themeMode === "dark" ? "border-[#33302c]" : "border-[#ded9d4]"
-                }`}
-              >
+              {((latestPage?.bullets && latestPage.bullets.length > 0 && latestPage.bullets.some((b: string) => b && b.trim().length > 0)) || (!latestPage && true)) && (
                 <div
-                  className="text-[8px] font-bold tracking-[0.16em] uppercase mb-2"
-                  style={{ color: themeMode === "dark" ? "#a89f97" : "#786f68" }}
+                  className={`pt-4 border-t transition-colors ${
+                    themeMode === "dark" ? "border-[#33302c]" : "border-[#ded9d4]"
+                  }`}
                 >
-                  Inside this guide
-                </div>
+                  <div
+                    className="text-[8px] font-bold tracking-[0.16em] uppercase mb-2"
+                    style={{ color: themeMode === "dark" ? "#a89f97" : "#786f68" }}
+                  >
+                    Inside this guide
+                  </div>
 
-                <div className="divide-y divide-[#ded9d4] dark:divide-[#33302c]">
-                  {(latestPage?.bullets && latestPage.bullets.length > 0
-                    ? latestPage.bullets.slice(0, 3)
-                    : [
-                        "The Signal-to-Noise Protocol — Audit attention and eliminate low-leverage activities through the Four Filters.",
-                        "Recursive Hiring Loops — Build a talent engine that identifies multipliers before they reach the market.",
-                        "Velocity Without Chaos — Replace recurring meetings with lightweight synchronization rituals.",
-                      ]
-                  ).map((item, idx) => {
+                  <div className="divide-y divide-[#ded9d4] dark:divide-[#33302c]">
+                    {(latestPage?.bullets && latestPage.bullets.length > 0
+                      ? latestPage.bullets.filter((b: string) => b && b.trim().length > 0).slice(0, 3)
+                      : [
+                          "The Signal-to-Noise Protocol — Audit attention and eliminate low-leverage activities through the Four Filters.",
+                          "Recursive Hiring Loops — Build a talent engine that identifies multipliers before they reach the market.",
+                          "Velocity Without Chaos — Replace recurring meetings with lightweight synchronization rituals.",
+                        ]
+                    ).map((item, idx) => {
                     const numStr = (idx + 1).toString().padStart(2, "0") + " /";
                     let title = item;
                     let desc = "";
@@ -1171,6 +1166,25 @@ const BrandTemplatePreview = memo(function BrandTemplatePreview({
                   })}
                 </div>
               </div>
+            )}
+
+            {latestPage?.pitch && latestPage.pitch !== "__HIDDEN__" && latestPage.pitch.trim().length > 0 && (
+                <div
+                  className="p-3 sm:p-4 rounded-xs mt-3 transition-colors"
+                  style={{
+                    backgroundColor: themeMode === "dark" ? "#0d0c0b" : "#1c1917",
+                    color: "#fcfaf8",
+                    border: themeMode === "dark" ? "1px solid #292524" : "none",
+                  }}
+                >
+                  <div className="font-instrument italic text-[13px] sm:text-[14px] leading-snug">
+                    {latestPage.pitch}
+                  </div>
+                  <small className="block mt-2 font-manrope font-bold text-[8px] tracking-[0.13em] uppercase text-[#a49d96]">
+                    {businessName || "Author"} · Author
+                  </small>
+                </div>
+              )}
             </section>
 
             {/* Right Column (Opt-in card) */}

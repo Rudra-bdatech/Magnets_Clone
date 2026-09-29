@@ -219,7 +219,7 @@ export default function EditLeadMagnetPage() {
             setHeadline(cleanHeadline);
             setSubheadline(cleanSubheadline);
             if (found.pitch) setPitch(found.pitch);
-            if (found.bullets) setBullets(found.bullets);
+            if (found.bullets !== undefined && Array.isArray(found.bullets)) setBullets(found.bullets);
             if (found.mastheadLeft !== undefined) setMastheadLeft(found.mastheadLeft);
             if (found.mastheadRight !== undefined) setMastheadRight(found.mastheadRight);
             if (found.imageUrl !== undefined) setImageUrl(found.imageUrl);
@@ -370,7 +370,7 @@ export default function EditLeadMagnetPage() {
   const initialHeadline = page ? (page.headline && page.headline !== "hi" ? page.headline : (page.name || "")) : "";
   const initialSubheadline = page ? (page.subheadline && page.subheadline !== "Enter your email to get instant access." ? page.subheadline : "") : "";
   const initialPitch = page?.pitch || "";
-  const initialBullets = page?.bullets && page.bullets.length > 0 ? page.bullets : (page?.bullets !== undefined ? [] : ["", "", ""]);
+  const initialBullets = Array.isArray(page?.bullets) ? page.bullets : [];
   const initialImage = page?.imageUrl !== undefined ? page.imageUrl : null;
   const initialEmailSubject = page?.emailSubject || "Here is your requested resource";
   const initialEmailPreviewText = page?.emailPreviewText || "Click below to access your free download.";
@@ -865,7 +865,7 @@ export default function EditLeadMagnetPage() {
       setHeadline(cleanHeadline);
       setSubheadline(cleanSubheadline);
       if (page.pitch) setPitch(page.pitch);
-      if (page.bullets) setBullets(page.bullets);
+      if (page.bullets !== undefined && Array.isArray(page.bullets)) setBullets(page.bullets);
       if (page.imageUrl !== undefined) setImageUrl(page.imageUrl);
       if (page.sequenceEnabled !== undefined) setSequenceEnabled(page.sequenceEnabled);
       if (page.stopOnCall !== undefined) setStopOnCall(page.stopOnCall);
