@@ -168,24 +168,28 @@ export default function Template2(props: TemplateProps) {
       )}
 
       {/* Marquee Animation Styles */}
-      <style>{`
-        @keyframes editorialTickerMarquee {
-          0% { transform: translateX(0%); }
-          100% { transform: translateX(-50%); }
-        }
-        .editorial-marquee {
-          display: inline-flex;
-          white-space: nowrap;
-          animation: editorialTickerMarquee 24s linear infinite;
-        }
-        .editorial-marquee:hover {
-          animation-play-state: paused;
-        }
-        .stroked-watermark {
-          -webkit-text-stroke: 1.5px rgba(255, 255, 255, 0.35);
-          color: transparent;
-        }
-      `}</style>
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `
+            @keyframes editorialTickerMarquee {
+              0% { transform: translateX(0%); }
+              100% { transform: translateX(-50%); }
+            }
+            .editorial-marquee {
+              display: inline-flex;
+              white-space: nowrap;
+              animation: editorialTickerMarquee 24s linear infinite;
+            }
+            .editorial-marquee:hover {
+              animation-play-state: paused;
+            }
+            .stroked-watermark {
+              -webkit-text-stroke: 1.5px rgba(255, 255, 255, 0.35);
+              color: transparent;
+            }
+          `,
+        }}
+      />
 
       {/* 1. MASTHEAD */}
       {(() => {

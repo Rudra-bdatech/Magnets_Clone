@@ -107,6 +107,9 @@ export default function RootLayout({
         {/* Resource hints: preconnect to same-origin CDN for /_next/static chunks */}
         <link rel="preconnect" href="https://magnets.bdatech.in" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://magnets.bdatech.in" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
       </head>
       <body className="antialiased font-sans">
         <NextTopLoader

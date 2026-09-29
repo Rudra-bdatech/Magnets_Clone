@@ -47,7 +47,7 @@ export default function MagnetSignupForm({
   customFormFields?: CustomFormField[];
   username?: string;
   isVariantB?: boolean;
-  layout?: "standard" | "horizontal-glass" | "split-panel" | "editorial" | "monograph";
+  layout?: "standard" | "horizontal-glass" | "split-panel" | "editorial" | "monograph" | "brutalist";
   afterSignupOption?: "standard" | "elsewhere" | "custom";
   destinationUrl?: string;
 }) {
@@ -263,6 +263,230 @@ export default function MagnetSignupForm({
             <span>📥 Click Here to Download Resource Immediately</span>
           </a>
         </div>
+      ) : layout === "brutalist" ? (
+        (() => {
+          const accentColor = brandColor || "#f4ff3c";
+          const getContrastColor = (hexColor: string) => {
+            if (!hexColor || !hexColor.startsWith("#")) return "#000000";
+            const hex = hexColor.replace("#", "");
+            if (hex.length !== 6) return "#000000";
+            const r = parseInt(hex.substring(0, 2), 16) || 0;
+            const g = parseInt(hex.substring(2, 4), 16) || 0;
+            const b = parseInt(hex.substring(4, 6), 16) || 0;
+            const yiq = (r * 299 + g * 587 + b * 114) / 1000;
+            return yiq >= 135 ? "#000000" : "#ffffff";
+          };
+          const contrastOnAccent = getContrastColor(accentColor);
+
+          return (
+            <form
+              onSubmit={handleSubmit}
+              className="space-y-0 border-b-2"
+              style={{ borderColor: themeMode === "dark" ? "#2a2a2e" : "#101010" }}
+            >
+              {/* Field 1: Name */}
+              <div
+                className={`grid grid-cols-[100px_1fr] sm:grid-cols-[115px_1fr] border-t-2 items-stretch ${
+                  themeMode === "dark" ? "border-[#2a2a2e] bg-[#121215]" : "border-[#101010] bg-transparent"
+                }`}
+              >
+                <label
+                  className="p-3.5 sm:p-4 font-ibm text-[10px] sm:text-[11px] font-bold tracking-wider uppercase border-r-2 flex items-center shrink-0"
+                  style={{
+                    borderColor: themeMode === "dark" ? "#2a2a2e" : "#101010",
+                    color: themeMode === "dark" ? accentColor : contrastOnAccent,
+                  }}
+                >
+                  NAME
+                </label>
+                <input
+                  type="text"
+                  required
+                  disabled={loading}
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="TYPE HERE"
+                  className={`font-ibm text-xs sm:text-sm p-3.5 sm:p-4 bg-transparent outline-none min-w-0 font-medium ${
+                    themeMode === "dark"
+                      ? "text-white placeholder:text-zinc-600"
+                      : (contrastOnAccent === "#ffffff" ? "text-white placeholder:text-white/60" : "text-[#101010] placeholder:text-[#101010]/60")
+                  }`}
+                />
+              </div>
+
+              {/* Field 2: Email */}
+              <div
+                className={`grid grid-cols-[100px_1fr] sm:grid-cols-[115px_1fr] border-t-2 items-stretch ${
+                  themeMode === "dark" ? "border-[#2a2a2e] bg-[#121215]" : "border-[#101010] bg-transparent"
+                }`}
+              >
+                <label
+                  className="p-3.5 sm:p-4 font-ibm text-[10px] sm:text-[11px] font-bold tracking-wider uppercase border-r-2 flex items-center shrink-0"
+                  style={{
+                    borderColor: themeMode === "dark" ? "#2a2a2e" : "#101010",
+                    color: themeMode === "dark" ? accentColor : contrastOnAccent,
+                  }}
+                >
+                  EMAIL
+                </label>
+                <input
+                  type="email"
+                  required
+                  disabled={loading}
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="YOU@WORK.COM"
+                  className={`font-ibm text-xs sm:text-sm p-3.5 sm:p-4 bg-transparent outline-none min-w-0 font-medium ${
+                    themeMode === "dark"
+                      ? "text-white placeholder:text-zinc-600"
+                      : (contrastOnAccent === "#ffffff" ? "text-white placeholder:text-white/60" : "text-[#101010] placeholder:text-[#101010]/60")
+                  }`}
+                />
+              </div>
+
+              {/* Custom Form Fields */}
+              {customFormFields &&
+                customFormFields.map((field) => (
+                  <div
+                    key={field.id}
+                    className={`grid grid-cols-[100px_1fr] sm:grid-cols-[115px_1fr] border-t-2 items-stretch ${
+                      themeMode === "dark" ? "border-[#2a2a2e] bg-[#121215]" : "border-[#101010] bg-transparent"
+                    }`}
+                  >
+                    <label
+                      className="p-3.5 sm:p-4 font-ibm text-[10px] sm:text-[11px] font-bold tracking-wider uppercase border-r-2 flex items-center shrink-0"
+                      style={{
+                        borderColor: themeMode === "dark" ? "#2a2a2e" : "#101010",
+                        color: themeMode === "dark" ? accentColor : contrastOnAccent,
+                      }}
+                    >
+                      {field.label?.toUpperCase() || "FIELD"}
+                      {field.required ? " *" : ""}
+                    </label>
+                    {field.type === "textarea" ? (
+                      <textarea
+                        rows={2}
+                        required={field.required}
+                        disabled={loading}
+                        value={customFieldValues[field.id] || ""}
+                        onChange={(e) => handleCustomFieldChange(field.id, e.target.value)}
+                        placeholder={field.placeholder || "TYPE HERE"}
+                        className={`font-ibm text-xs sm:text-sm p-3.5 sm:p-4 bg-transparent outline-none min-w-0 font-medium resize-none ${
+                          themeMode === "dark"
+                            ? "text-white placeholder:text-zinc-600"
+                            : (contrastOnAccent === "#ffffff" ? "text-white placeholder:text-white/60" : "text-[#101010] placeholder:text-[#101010]/60")
+                        }`}
+                      />
+                    ) : field.type === "select" ? (
+                      <select
+                        required={field.required}
+                        disabled={loading}
+                        value={customFieldValues[field.id] || ""}
+                        onChange={(e) => handleCustomFieldChange(field.id, e.target.value)}
+                        className={`font-ibm text-xs sm:text-sm p-3.5 sm:p-4 bg-transparent outline-none min-w-0 font-medium cursor-pointer ${
+                          themeMode === "dark" ? "text-white bg-[#121215]" : (contrastOnAccent === "#ffffff" ? "text-white bg-black/30" : "text-[#101010] bg-white/30")
+                        }`}
+                      >
+                        <option value="" className={themeMode === "dark" ? "bg-[#121215] text-white" : "bg-white text-black"}>
+                          {field.placeholder || "SELECT AN OPTION"}
+                        </option>
+                        {(field.options || []).map((opt, idx) => (
+                          <option key={idx} value={opt} className={themeMode === "dark" ? "bg-[#121215] text-white" : "bg-white text-black"}>
+                            {opt}
+                          </option>
+                        ))}
+                      </select>
+                    ) : (
+                      <input
+                        type={field.type || "text"}
+                        required={field.required}
+                        disabled={loading}
+                        value={customFieldValues[field.id] || ""}
+                        onChange={(e) => handleCustomFieldChange(field.id, e.target.value)}
+                        placeholder={field.placeholder || "TYPE HERE"}
+                        className={`font-ibm text-xs sm:text-sm p-3.5 sm:p-4 bg-transparent outline-none min-w-0 font-medium ${
+                          themeMode === "dark"
+                            ? "text-white placeholder:text-zinc-600"
+                            : (contrastOnAccent === "#ffffff" ? "text-white placeholder:text-white/60" : "text-[#101010] placeholder:text-[#101010]/60")
+                        }`}
+                      />
+                    )}
+                  </div>
+                ))}
+
+              {/* AI Personalized Input */}
+              {enableAiPersonalizedDeliverable && (
+                <div
+                  className={`grid grid-cols-[100px_1fr] sm:grid-cols-[115px_1fr] border-t-3 items-stretch ${
+                    themeMode === "dark" ? "border-[#2a2a2e] bg-[#121215]" : "border-[#101010] bg-transparent"
+                  }`}
+                >
+                  <label
+                    className="p-3.5 sm:p-4 font-ibm text-[9px] sm:text-[10px] font-bold tracking-wider uppercase border-r-3 flex items-center shrink-0"
+                    style={{
+                      borderColor: themeMode === "dark" ? "#2a2a2e" : "#101010",
+                      color: themeMode === "dark" ? accentColor : contrastOnAccent,
+                    }}
+                  >
+                    ✨ FOCUS
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    disabled={loading}
+                    value={customAnswer}
+                    onChange={(e) => setCustomAnswer(e.target.value)}
+                    placeholder={customPromptPlaceholder || customPromptQuestion || "YOUR PRIMARY OBJECTIVE"}
+                    className={`font-ibm text-xs sm:text-sm p-3.5 sm:p-4 bg-transparent outline-none min-w-0 font-medium ${
+                      themeMode === "dark"
+                        ? "text-white placeholder:text-zinc-600"
+                        : (contrastOnAccent === "#ffffff" ? "text-white placeholder:text-white/60" : "text-[#101010] placeholder:text-[#101010]/60")
+                    }`}
+                  />
+                </div>
+              )}
+
+              {errorMsg && (
+                <div className="p-3 bg-red-600 text-white font-ibm text-xs font-bold uppercase mt-3">
+                  {errorMsg}
+                </div>
+              )}
+
+              {/* Submit Action Button */}
+              <div className="pt-6">
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full p-4 sm:p-5 font-archivo text-sm sm:text-base tracking-wider uppercase border-3 text-center transition duration-150 cursor-pointer hover:translate-x-[2px] hover:translate-y-[2px] disabled:opacity-50"
+                  style={
+                    themeMode === "dark"
+                      ? {
+                          backgroundColor: accentColor,
+                          color: contrastOnAccent,
+                          borderColor: accentColor,
+                          boxShadow: `4px 4px 0px ${accentColor}`,
+                        }
+                      : {
+                          backgroundColor: "#101010",
+                          color: "#ffffff",
+                          borderColor: "#101010",
+                          boxShadow: "5px 5px 0px rgba(0,0,0,1)",
+                        }
+                  }
+                >
+                  {loading ? (
+                    <span className="flex items-center justify-center gap-2">
+                      <Loader2 className="h-5 w-5 animate-spin" />
+                      <span>TRANSMITTING LEDGER...</span>
+                    </span>
+                  ) : (
+                    <span>{formButtonText || cta || "Send me the PDF ↗"}</span>
+                  )}
+                </button>
+              </div>
+            </form>
+          );
+        })()
       ) : layout === "monograph" ? (
         <form onSubmit={handleSubmit} className="space-y-4 font-manrope">
           <div className="space-y-3.5">

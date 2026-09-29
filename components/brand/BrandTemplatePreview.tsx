@@ -991,7 +991,7 @@ const BrandTemplatePreview = memo(function BrandTemplatePreview({
       )}
 
       {/* TEMPLATE 6: Monograph Editorial Publication */}
-      {(templateId === "template6" || templateId === "template7") && (
+      {templateId === "template6" && (
         <div
           className={`w-full py-2 px-1 sm:px-2 transition-colors ${
             themeMode === "dark" ? "text-[#fcfaf8]" : "text-[#1c1917]"
@@ -1303,6 +1303,337 @@ const BrandTemplatePreview = memo(function BrandTemplatePreview({
               </div>
             </aside>
           </main>
+        </div>
+      )}
+
+      {/* TEMPLATE 7: Brutalist Ledger Edition */}
+      {templateId === "template7" && (
+        <div
+          className={`w-full border-3 transition-colors duration-200 ${
+            themeMode === "dark"
+              ? "bg-[#0d0d0f] border-[#2a2a2e]"
+              : "bg-[#f4ff3c] text-[#101010] border-[#101010]"
+          }`}
+          style={{
+            fontFamily: "'IBM Plex Mono', monospace",
+            color: themeMode === "dark" ? (brandColor || "#f4ff3c") : "#101010",
+          }}
+        >
+          {(() => {
+            const accentColor = brandColor || "#f4ff3c";
+            const getContrastColor = (hexColor: string) => {
+              if (!hexColor || !hexColor.startsWith("#")) return "#000000";
+              const hex = hexColor.replace("#", "");
+              if (hex.length !== 6) return "#000000";
+              const r = parseInt(hex.substring(0, 2), 16) || 0;
+              const g = parseInt(hex.substring(2, 4), 16) || 0;
+              const b = parseInt(hex.substring(4, 6), 16) || 0;
+              const yiq = (r * 299 + g * 587 + b * 114) / 1000;
+              return yiq >= 135 ? "#000000" : "#ffffff";
+            };
+            const contrastOnAccent = getContrastColor(accentColor);
+
+            return (
+              <>
+                {/* Masthead Header */}
+                <header
+                  className={`grid grid-cols-[1fr_auto] gap-2 px-3 py-2 border-b-3 items-center ${
+                    themeMode === "dark" ? "border-[#2a2a2e] bg-[#121215]" : "border-[#101010] bg-[#f4ff3c]"
+                  }`}
+                >
+                  <div className="flex items-center gap-2">
+                    {logo && (
+                      <img
+                        src={logo}
+                        alt="Logo"
+                        className="h-6 w-6 object-cover border border-current shrink-0"
+                      />
+                    )}
+                    <div
+                      className={`font-archivo text-base sm:text-lg tracking-tight uppercase ${
+                        themeMode === "dark" ? "text-white" : "text-[#101010]"
+                      }`}
+                    >
+                      {(latestPage as any)?.mastheadLeft || businessName || "OUTPUT/INDEX"}
+                    </div>
+                  </div>
+                  <div
+                    className={`font-ibm text-[9px] font-bold tracking-wider uppercase sm:text-right ${
+                      themeMode === "dark" ? "text-zinc-400" : "text-[#101010]"
+                    }`}
+                  >
+                    {(latestPage as any)?.mastheadRight || "FIELD MANUAL 009 · 48 PAGES"}
+                  </div>
+                </header>
+
+                {/* Hero Section */}
+                <div
+                  className={`grid grid-cols-1 md:grid-cols-[54%_46%] border-b-3 ${
+                    themeMode === "dark" ? "border-[#2a2a2e]" : "border-[#101010]"
+                  }`}
+                >
+                  {/* Copy Column */}
+                  <div
+                    className={`p-4 sm:p-5 border-b-3 md:border-b-0 md:border-r-3 flex flex-col justify-between ${
+                      themeMode === "dark" ? "border-[#2a2a2e]" : "border-[#101010]"
+                    }`}
+                  >
+                    <div>
+                      <span
+                        className="inline-block font-ibm px-2 py-0.5 text-[8px] font-bold tracking-wider uppercase border-2 mb-2"
+                        style={
+                          themeMode === "dark"
+                            ? { backgroundColor: accentColor, color: contrastOnAccent, borderColor: accentColor }
+                            : { backgroundColor: "#101010", color: accentColor, borderColor: "#101010" }
+                        }
+                      >
+                        {latestPage?.bulletsTitle || "SYSTEMS FOR CREATIVE OPERATORS"}
+                      </span>
+
+                      <h1
+                        className={`font-archivo text-2xl sm:text-4xl leading-[0.9] tracking-tight uppercase mb-3 ${
+                          themeMode === "dark" ? "text-white" : "text-[#101010]"
+                        }`}
+                      >
+                        {latestPage?.headline || "Make Better Work. Faster."}
+                      </h1>
+
+                      <p
+                        className={`font-ibm text-[11px] leading-relaxed max-w-[420px] m-0 ${
+                          themeMode === "dark" ? "text-zinc-300" : "text-[#101010]"
+                        }`}
+                      >
+                        {latestPage?.subheadline ||
+                          latestPage?.pitch ||
+                          "Thirty-seven operating principles for teams that refuse to choose between quality and momentum."}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Image Column with Stamp */}
+                  <div
+                    className={`relative min-h-[160px] sm:min-h-[200px] flex items-center justify-center overflow-hidden ${
+                      themeMode === "dark" ? "bg-[#151518]" : "bg-[#e5ef35]"
+                    }`}
+                  >
+                    {latestPage?.imageUrl && latestPage.imageUrl.trim() !== "" ? (
+                      <img
+                        src={latestPage.imageUrl}
+                        alt={latestPage.name || "Cover Image"}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex flex-col items-center justify-center p-4 text-center">
+                        <div
+                          className="font-archivo text-2xl sm:text-3xl tracking-tighter uppercase p-2 border-3"
+                          style={
+                            themeMode === "dark"
+                              ? {
+                                  borderColor: accentColor,
+                                  color: accentColor,
+                                  backgroundColor: "black",
+                                  boxShadow: `3px 3px 0px ${accentColor}`,
+                                }
+                              : {
+                                  borderColor: "black",
+                                  color: "black",
+                                  backgroundColor: "white",
+                                  boxShadow: "3px 3px 0px #101010",
+                                }
+                          }
+                        >
+                          MANUAL
+                        </div>
+                      </div>
+                    )}
+
+                    <div
+                      className="absolute right-2 bottom-2 font-ibm font-bold text-[9px] tracking-wider uppercase border-2 px-2 py-1"
+                      style={
+                        themeMode === "dark"
+                          ? {
+                              backgroundColor: "#18181b",
+                              color: accentColor,
+                              borderColor: accentColor,
+                              boxShadow: `2px 2px 0px ${accentColor}`,
+                              transform: "rotate(-3deg)",
+                            }
+                          : {
+                              backgroundColor: accentColor,
+                              color: contrastOnAccent,
+                              borderColor: "#101010",
+                              boxShadow: "2px 2px 0px rgba(0,0,0,1)",
+                              transform: "rotate(-3deg)",
+                            }
+                      }
+                    >
+                      12,000+ READERS
+                    </div>
+                  </div>
+                </div>
+
+                {/* Lower Section */}
+                <div className="grid grid-cols-1 md:grid-cols-2">
+                  {/* Index Column */}
+                  <div
+                    className={`border-b-3 md:border-b-0 md:border-r-3 divide-y-2 ${
+                      themeMode === "dark" ? "border-[#2a2a2e] divide-[#2a2a2e]" : "border-[#101010] divide-[#101010]"
+                    }`}
+                  >
+                    {(latestPage?.bullets && latestPage.bullets.length > 0
+                      ? latestPage.bullets
+                      : [
+                          "THE FRICTION AUDIT — Find where good ideas go to die.",
+                          "DECISION VELOCITY — Stop waiting for perfect information.",
+                          "THE WEEKLY RESET — A 20-minute operating ritual.",
+                        ]
+                    ).map((item: string, idx: number) => {
+                      const numStr = (idx + 1).toString().padStart(2, "0");
+                      const title = item.includes(" — ") ? item.split(" — ")[0] : item;
+                      const desc = item.includes(" — ") ? item.split(" — ")[1] : "";
+
+                      return (
+                        <div key={idx} className="grid grid-cols-[40px_1fr] p-3 items-start gap-2">
+                          <strong
+                            className="font-archivo text-base"
+                            style={{ color: themeMode === "dark" ? accentColor : "#101010" }}
+                          >
+                            {numStr}
+                          </strong>
+                          <div className="space-y-0.5 min-w-0">
+                            <div
+                              className={`font-archivo text-[11px] uppercase tracking-tight ${
+                                themeMode === "dark" ? "text-white" : "text-[#101010]"
+                              }`}
+                            >
+                              {title}
+                            </div>
+                            {desc && (
+                              <div
+                                className={`font-ibm text-[9px] leading-relaxed ${
+                                  themeMode === "dark" ? "text-zinc-400" : "text-black/80"
+                                }`}
+                              >
+                                {desc}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  {/* Form Column */}
+                  <div
+                    className={`p-4 sm:p-5 flex flex-col justify-between ${
+                      themeMode === "dark" ? "bg-[#18181b]" : "text-[#101010]"
+                    }`}
+                    style={
+                      themeMode !== "dark"
+                        ? { backgroundColor: accentColor !== "#f4ff3c" ? accentColor : "#ff5a36", color: contrastOnAccent }
+                        : undefined
+                    }
+                  >
+                    <div>
+                      <h2
+                        className="font-archivo text-xl sm:text-2xl leading-[0.95] uppercase tracking-tight mb-2"
+                        style={{ color: themeMode === "dark" ? accentColor : contrastOnAccent }}
+                      >
+                        {latestPage?.formTitle || "Take the manual."}
+                      </h2>
+
+                      <div className="space-y-0 border-b-2" style={{ borderColor: themeMode === "dark" ? "#2a2a2e" : "#101010" }}>
+                        <div
+                          className={`grid grid-cols-[80px_1fr] border-t-2 items-center ${
+                            themeMode === "dark" ? "border-[#2a2a2e] bg-[#121215]" : "border-[#101010]"
+                          }`}
+                        >
+                          <label
+                            className="p-2 font-ibm text-[8px] font-bold tracking-wider uppercase border-r-2"
+                            style={{
+                              borderColor: themeMode === "dark" ? "#2a2a2e" : "#101010",
+                              color: themeMode === "dark" ? accentColor : contrastOnAccent,
+                            }}
+                          >
+                            NAME
+                          </label>
+                          <input
+                            type="text"
+                            readOnly
+                            placeholder="TYPE HERE"
+                            className={`font-ibm text-[10px] p-2 bg-transparent outline-none ${
+                              themeMode === "dark"
+                                ? "text-white placeholder:text-zinc-600"
+                                : (contrastOnAccent === "#ffffff" ? "text-white placeholder:text-white/60" : "text-black placeholder:text-black/50")
+                            }`}
+                          />
+                        </div>
+
+                        <div
+                          className={`grid grid-cols-[80px_1fr] border-t-2 items-center ${
+                            themeMode === "dark" ? "border-[#2a2a2e] bg-[#121215]" : "border-[#101010]"
+                          }`}
+                        >
+                          <label
+                            className="p-2 font-ibm text-[8px] font-bold tracking-wider uppercase border-r-2"
+                            style={{
+                              borderColor: themeMode === "dark" ? "#2a2a2e" : "#101010",
+                              color: themeMode === "dark" ? accentColor : contrastOnAccent,
+                            }}
+                          >
+                            EMAIL
+                          </label>
+                          <input
+                            type="email"
+                            readOnly
+                            placeholder="YOU@WORK.COM"
+                            className={`font-ibm text-[10px] p-2 bg-transparent outline-none ${
+                              themeMode === "dark"
+                                ? "text-white placeholder:text-zinc-600"
+                                : (contrastOnAccent === "#ffffff" ? "text-white placeholder:text-white/60" : "text-black placeholder:text-black/50")
+                            }`}
+                          />
+                        </div>
+                      </div>
+
+                      <div className="pt-3">
+                        <div
+                          className="w-full p-2.5 font-archivo text-xs tracking-wider uppercase border-2 text-center"
+                          style={
+                            themeMode === "dark"
+                              ? {
+                                  backgroundColor: accentColor,
+                                  color: contrastOnAccent,
+                                  borderColor: accentColor,
+                                  boxShadow: `3px 3px 0px ${accentColor}`,
+                                }
+                              : {
+                                  backgroundColor: "#101010",
+                                  color: "#ffffff",
+                                  borderColor: "#101010",
+                                  boxShadow: "3px 3px 0px rgba(0,0,0,1)",
+                                }
+                          }
+                        >
+                          {latestPage?.formButtonText || latestPage?.cta || "Send me the PDF ↗"}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Ticker Footer */}
+                <footer
+                  className={`py-1.5 px-3 border-t-3 overflow-hidden font-ibm text-[9px] font-bold uppercase tracking-widest ${
+                    themeMode === "dark" ? "border-[#2a2a2e] bg-black" : "border-[#101010] bg-[#101010]"
+                  }`}
+                  style={{ color: accentColor }}
+                >
+                  NO FLUFF / NO HACKS / FIELD-TESTED FRAMEWORKS / INSTANT DIGITAL DELIVERY
+                </footer>
+              </>
+            );
+          })()}
         </div>
       )}
     </>

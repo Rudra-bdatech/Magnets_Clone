@@ -278,20 +278,35 @@ export default async function MagnetPageRoute({
   const logo = accountDoc?.logo || null;
   const highlightIntensity = accountDoc?.highlightIntensity ?? 100;
   const businessName = accountDoc?.brandName || accountDoc?.name || "BDA";
-  const isTemplate2 = (page.template as string) === "template2" || (!page.template && (accountDoc?.templateId as string) === "template2");
+  const pageTemplate = (page.template as string);
+  const accountTemplate = (accountDoc?.templateId as string);
+  const activeTemplate = (pageTemplate && pageTemplate !== "classic")
+    ? pageTemplate
+    : (accountTemplate || "template1");
+
+  const isTemplate2 = activeTemplate === "template2";
+  const isTemplate3 = activeTemplate === "template3";
+  const isTemplate4 = activeTemplate === "template4";
+  const isTemplate5 = activeTemplate === "template5";
+  const isTemplate6 = activeTemplate === "template6";
+  const isTemplate7 = activeTemplate === "template7";
 
   return (
     <main
       className="flex min-h-screen flex-col font-sans transition-colors duration-300 relative overflow-x-clip"
       style={{
         colorScheme: themeMode === "dark" ? "dark" : "light",
-        backgroundColor: isTemplate2
+        backgroundColor: isTemplate7
+          ? (themeMode === "dark" ? "#0d0d0f" : "#f4ff3c")
+          : isTemplate2
           ? (themeMode === "dark" ? "#141416" : "#f3f0e8")
           : (themeMode === "dark" ? "#0E0E10" : "#FAFAFA"),
-        color: isTemplate2
+        color: isTemplate7
+          ? (themeMode === "dark" ? (brandColor || "#f4ff3c") : "#101010")
+          : isTemplate2
           ? (themeMode === "dark" ? "#eae8e3" : "#151515")
           : (themeMode === "dark" ? "#ffffff" : "#18181b"),
-        backgroundImage: isTemplate2
+        backgroundImage: (isTemplate2 || isTemplate7)
           ? "none"
           : (themeMode === "light"
             ? `radial-gradient(circle at 0% 0%, ${brandColor}10 0%, transparent 40%), radial-gradient(circle at 100% 100%, ${brandColor}08 0%, transparent 40%)`
@@ -319,8 +334,8 @@ export default async function MagnetPageRoute({
           <span>⚠️ Draft Preview Mode — This magnet is not yet published. Only you can view this page.</span>
         </div>
       )}
-      {/* If template is not template2, template3, template4, template5, or template6, show the standard top header */}
-      {((page.template as string) !== "template2" && (page.template as string) !== "template3" && (page.template as string) !== "template4" && (page.template as string) !== "template5" && (page.template as string) !== "template6" && (!(!page.template && ((accountDoc?.templateId as string) === "template2" || (accountDoc?.templateId as string) === "template3" || (accountDoc?.templateId as string) === "template4" || (accountDoc?.templateId as string) === "template5" || (accountDoc?.templateId as string) === "template6")))) && (
+      {/* If template is not template2, template3, template4, template5, template6, or template7, show the standard top header */}
+      {!isTemplate2 && !isTemplate3 && !isTemplate4 && !isTemplate5 && !isTemplate6 && !isTemplate7 && (
         <header className="w-full flex items-center justify-center pt-3 sm:pt-4 pb-1 sm:pb-2 px-6 sm:px-10 relative shrink-0">
           <div className="flex items-center gap-2.5 sm:gap-3">
             <div className={`h-9 w-9 sm:h-10 sm:w-10 rounded-xl flex items-center justify-center bg-transparent overflow-hidden shadow-xs ${logo ? "border-none" : "border-2 border-dashed border-[#a1a1aa]/50"}`}>
@@ -338,9 +353,9 @@ export default async function MagnetPageRoute({
       )}
 
       {/* Main content area filling the screen properly with balanced vertical spacing */}
-      <div className={`flex-1 w-full flex flex-col justify-center ${((page.template as string) === "template2" || (!page.template && (accountDoc?.templateId as string) === "template2")) ? "p-0" : "px-4 sm:px-6 md:px-8 lg:px-10 xl:px-14 pb-3 sm:pb-4"}`}>
+      <div className={`flex-1 w-full flex flex-col justify-center ${(isTemplate2 || isTemplate7) ? "p-0" : "px-4 sm:px-6 md:px-8 lg:px-10 xl:px-14 pb-3 sm:pb-4"}`}>
         {/* Dynamic Multi-Template View Renderer */}
-        {((page.template as string) === "template2" || (!page.template && (accountDoc?.templateId as string) === "template2")) ? (
+        {isTemplate2 ? (
           /* TEMPLATE 2: Signal / Noise Editorial Edition (Full-Screen) */
           <div
             className={`w-full min-h-screen flex flex-col font-sans selection:bg-[#ef3d25] selection:text-white transition-colors duration-200 ${
@@ -360,24 +375,28 @@ export default async function MagnetPageRoute({
             }
           >
             {/* Inline styles for marquee & watermark */}
-            <style>{`
-              @keyframes editorialTickerMarquee {
-                0% { transform: translateX(0%); }
-                100% { transform: translateX(-50%); }
-              }
-              .editorial-marquee {
-                display: inline-flex;
-                white-space: nowrap;
-                animation: editorialTickerMarquee 24s linear infinite;
-              }
-              .editorial-marquee:hover {
-                animation-play-state: paused;
-              }
-              .stroked-watermark {
-                -webkit-text-stroke: 1.5px rgba(255, 255, 255, 0.35);
-                color: transparent;
-              }
-            `}</style>
+            <style
+              dangerouslySetInnerHTML={{
+                __html: `
+                  @keyframes editorialTickerMarquee {
+                    0% { transform: translateX(0%); }
+                    100% { transform: translateX(-50%); }
+                  }
+                  .editorial-marquee {
+                    display: inline-flex;
+                    white-space: nowrap;
+                    animation: editorialTickerMarquee 24s linear infinite;
+                  }
+                  .editorial-marquee:hover {
+                    animation-play-state: paused;
+                  }
+                  .stroked-watermark {
+                    -webkit-text-stroke: 1.5px rgba(255, 255, 255, 0.35);
+                    color: transparent;
+                  }
+                `,
+              }}
+            />
 
             {/* 1. MASTHEAD */}
             {(() => {
@@ -628,7 +647,7 @@ export default async function MagnetPageRoute({
               </div>
             </div>
           </div>
-        ) : ((page.template as string) === "template3" || (!page.template && (accountDoc?.templateId as string) === "template3")) ? (
+        ) : isTemplate3 ? (
           /* TEMPLATE 3: Aurora Reveal */
           <div className="w-full max-w-7xl mx-auto">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 items-center lg:items-stretch">
@@ -748,7 +767,7 @@ export default async function MagnetPageRoute({
               </div>
             </div>
           </div>
-        ) : ((page.template as string) === "template4" || (!page.template && (accountDoc?.templateId as string) === "template4")) ? (
+        ) : isTemplate4 ? (
           /* TEMPLATE 4: Neon Orbit (Full Viewport Split Layout) */
           <div className="w-full flex-1 flex flex-col justify-center pt-4 sm:pt-5 md:pt-6 pb-3 sm:pb-4">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 xl:gap-14 items-center lg:items-stretch w-full">
@@ -862,7 +881,7 @@ export default async function MagnetPageRoute({
               </div>
             </div>
           </div>
-        ) : ((page.template as string) === "template5" || (!page.template && (accountDoc?.templateId as string) === "template5")) ? (
+        ) : isTemplate5 ? (
           /* TEMPLATE 5: Editorial Resource Showcase & Framework Edition */
           <div className="w-full flex-1 flex flex-col justify-center py-4 sm:py-8 max-w-3xl mx-auto px-2 sm:px-4">
             {/* Editorial Card Canvas */}
@@ -1109,7 +1128,7 @@ export default async function MagnetPageRoute({
               </p>
             </footer>
           </div>
-        ) : ((page.template as string) === "template6" || (page.template as string) === "template7" || (!page.template && ((accountDoc?.templateId as string) === "template6" || (accountDoc?.templateId as string) === "template7"))) ? (
+        ) : isTemplate6 ? (
           /* TEMPLATE 6: Monograph Editorial Publication */
           <div
             className={`w-full flex-1 flex flex-col justify-center py-4 sm:py-8 max-w-[1160px] mx-auto transition-colors ${
@@ -1403,6 +1422,442 @@ export default async function MagnetPageRoute({
               © {new Date().getFullYear()} {businessName || "Vane Strategic Partners"} · Private circulation
             </footer>
           </div>
+        ) : isTemplate7 ? (
+          /* TEMPLATE 7: Brutalist Ledger Edition */
+          (() => {
+            const accentColor = brandColor || "#f4ff3c";
+            const getContrastColor = (hexColor: string) => {
+              if (!hexColor || !hexColor.startsWith("#")) return "#000000";
+              const hex = hexColor.replace("#", "");
+              if (hex.length !== 6) return "#000000";
+              const r = parseInt(hex.substring(0, 2), 16) || 0;
+              const g = parseInt(hex.substring(2, 4), 16) || 0;
+              const b = parseInt(hex.substring(4, 6), 16) || 0;
+              const yiq = (r * 299 + g * 587 + b * 114) / 1000;
+              return yiq >= 135 ? "#000000" : "#ffffff";
+            };
+            const contrastOnAccent = getContrastColor(accentColor);
+
+            return (
+              <div
+                className={`w-full flex-1 flex flex-col justify-between transition-colors duration-200 border-4 ${
+                  themeMode === "dark"
+                    ? "bg-[#0d0d0f] border-[#2a2a2e]"
+                    : "bg-[#f4ff3c] text-[#101010] border-[#101010]"
+                }`}
+                style={{
+                  fontFamily: "'IBM Plex Mono', monospace, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas",
+                  color: themeMode === "dark" ? accentColor : "#101010",
+                }}
+              >
+                <style
+                  dangerouslySetInnerHTML={{
+                    __html: `
+                      .font-archivo {
+                        font-family: 'Archivo Black', -apple-system, BlinkMacSystemFont, sans-serif;
+                      }
+                      .font-ibm {
+                        font-family: 'IBM Plex Mono', monospace;
+                      }
+                      @keyframes brutalistMarquee {
+                        0% { transform: translateX(0%); }
+                        100% { transform: translateX(-50%); }
+                      }
+                      .animate-brutalist-ticker {
+                        display: inline-flex;
+                        white-space: nowrap;
+                        animation: brutalistMarquee 25s linear infinite;
+                      }
+                      .animate-brutalist-ticker:hover {
+                        animation-play-state: paused;
+                      }
+                    `,
+                  }}
+                />
+
+                <div className="w-full flex-1 flex flex-col">
+                  {/* Masthead Header */}
+                  <header
+                    className={`grid grid-cols-1 sm:grid-cols-[1fr_auto] gap-3 px-5 py-4 sm:px-7 sm:py-5 border-b-4 items-center transition-colors ${
+                      themeMode === "dark" ? "border-[#2a2a2e] bg-[#121215]" : "border-[#101010] bg-[#f4ff3c]"
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      {logo && (
+                        <img
+                          src={logo}
+                          alt="Logo"
+                          className="h-8 w-8 object-cover border-2 border-current shrink-0"
+                        />
+                      )}
+                      <div
+                        className={`font-archivo text-xl sm:text-2xl tracking-tight uppercase ${
+                          themeMode === "dark" ? "text-white" : "text-[#101010]"
+                        }`}
+                      >
+                        {(page as any).mastheadLeft || businessName || "OUTPUT/INDEX"}
+                      </div>
+                    </div>
+
+                    <div
+                      className={`font-ibm text-xs sm:text-[11px] font-semibold tracking-wider uppercase sm:text-right ${
+                        themeMode === "dark" ? "text-[#a1a1aa]" : "text-[#101010]"
+                      }`}
+                    >
+                      {(page as any).mastheadRight || "FIELD MANUAL 009 · FREE PDF · 48 PAGES"}
+                    </div>
+                  </header>
+
+                  {/* Hero Section: Copy & Image */}
+                  <section
+                    className={`grid grid-cols-1 lg:grid-cols-[52%_48%] border-b-4 transition-colors ${
+                      themeMode === "dark" ? "border-[#2a2a2e]" : "border-[#101010]"
+                    }`}
+                  >
+                    {/* Left Column: Copy */}
+                    <div
+                      className={`p-6 sm:p-10 lg:p-11 border-b-4 lg:border-b-0 lg:border-r-4 flex flex-col justify-between transition-colors ${
+                        themeMode === "dark" ? "border-[#2a2a2e] bg-[#0d0d0f]" : "border-[#101010] bg-[#f4ff3c]"
+                      }`}
+                    >
+                      <div>
+                        {/* Eyebrow badge */}
+                        <div className="mb-6">
+                          <span
+                            className="font-ibm inline-block px-3 py-1.5 text-[10px] sm:text-[11px] font-bold tracking-wider uppercase border-2"
+                            style={
+                              themeMode === "dark"
+                                ? { backgroundColor: accentColor, color: contrastOnAccent, borderColor: accentColor }
+                                : { backgroundColor: "#101010", color: accentColor, borderColor: "#101010" }
+                            }
+                          >
+                            {page.bulletsTitle || "SYSTEMS FOR CREATIVE OPERATORS"}
+                          </span>
+                        </div>
+
+                        {/* Headline */}
+                        <h1
+                          className={`font-archivo text-4xl sm:text-6xl md:text-7xl lg:text-[76px] xl:text-[88px] leading-[0.88] tracking-tight uppercase mb-6 ${
+                            themeMode === "dark" ? "text-white" : "text-[#101010]"
+                          }`}
+                          style={{ overflowWrap: "anywhere" }}
+                        >
+                          {activeHeadline || "Make Better Work. Faster."}
+                        </h1>
+
+                        {/* Paragraph / Pitch */}
+                        <p
+                          className={`font-ibm text-sm sm:text-base leading-relaxed max-w-[570px] ${
+                            themeMode === "dark" ? "text-zinc-300" : "text-[#101010]"
+                          }`}
+                        >
+                          {page.subheadline ||
+                            page.pitch ||
+                            "Thirty-seven operating principles for teams that refuse to choose between quality and momentum."}
+                        </p>
+                      </div>
+
+                      <div
+                        className={`pt-8 mt-8 border-t-2 text-[10px] font-ibm font-semibold uppercase tracking-widest ${
+                          themeMode === "dark" ? "border-zinc-800 text-zinc-500" : "border-black/20 text-black/60"
+                        }`}
+                      >
+                        LEDGER REF: LM-{new Date().getFullYear()}-007 · VERIFIED OUTPUT
+                      </div>
+                    </div>
+
+                    {/* Right Column: Hero Cover Image & Stamp */}
+                    <div
+                      className={`relative min-h-[380px] sm:min-h-[480px] lg:min-h-[560px] flex items-center justify-center overflow-hidden ${
+                        themeMode === "dark" ? "bg-[#151518]" : "bg-[#e5ef35]"
+                      }`}
+                    >
+                      {activeImageUrl && activeImageUrl.trim() !== "" ? (
+                        <img
+                          src={activeImageUrl}
+                          alt={page.name || "Cover Image"}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full relative flex flex-col justify-between p-8 min-h-[380px] sm:min-h-[480px]">
+                          <div
+                            className="absolute inset-0 opacity-20 pointer-events-none"
+                            style={{
+                              backgroundImage:
+                                themeMode === "dark"
+                                  ? `linear-gradient(${accentColor} 1.5px, transparent 1.5px), linear-gradient(90deg, ${accentColor} 1.5px, transparent 1.5px)`
+                                  : "linear-gradient(#101010 1.5px, transparent 1.5px), linear-gradient(90deg, #101010 1.5px, transparent 1.5px)",
+                              backgroundSize: "32px 32px",
+                            }}
+                          />
+                          <div className="relative z-10 flex justify-between items-start">
+                            <span
+                              className="font-ibm text-xs font-bold border-2 px-2.5 py-1 uppercase"
+                              style={
+                                themeMode === "dark"
+                                  ? { backgroundColor: "black", color: accentColor, borderColor: accentColor }
+                                  : { backgroundColor: "black", color: "white", borderColor: "black" }
+                              }
+                            >
+                              FIG. 07 / SCHEMATIC
+                            </span>
+                            <span
+                              className={`font-archivo text-xs px-2 py-1 uppercase ${
+                                themeMode === "dark" ? "text-zinc-400" : "text-black"
+                              }`}
+                            >
+                              INDEX // {new Date().getFullYear()}
+                            </span>
+                          </div>
+
+                          <div className="relative z-10 my-auto text-center py-8">
+                            <div
+                              className="inline-block font-archivo text-5xl sm:text-7xl lg:text-8xl tracking-tighter uppercase p-4 border-4"
+                              style={
+                                themeMode === "dark"
+                                  ? {
+                                      borderColor: accentColor,
+                                      color: accentColor,
+                                      backgroundColor: "rgba(0,0,0,0.7)",
+                                      boxShadow: `6px 6px 0px ${accentColor}`,
+                                    }
+                                  : {
+                                      borderColor: "#101010",
+                                      color: "#101010",
+                                      backgroundColor: "rgba(255,255,255,0.7)",
+                                      boxShadow: "6px 6px 0px #101010",
+                                    }
+                              }
+                            >
+                              MANUAL
+                            </div>
+                            <p
+                              className={`font-ibm text-xs sm:text-sm font-bold uppercase tracking-widest mt-4 ${
+                                themeMode === "dark" ? "text-zinc-300" : "text-black"
+                              }`}
+                            >
+                              {(page as any).mastheadLeft || businessName || "CORE SYSTEMS INDEX"}
+                            </p>
+                          </div>
+
+                          <div className="relative z-10 flex justify-between items-end text-[10px] font-ibm font-bold uppercase">
+                            <span>SPEC: DIRECT ARCHIVE</span>
+                            <span>STATUS: READY</span>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Stamp Badge */}
+                      <div
+                        className="absolute right-4 bottom-4 sm:right-6 sm:bottom-6 z-20 font-ibm font-bold text-xs sm:text-sm tracking-wider uppercase border-3 px-3.5 py-2 sm:px-4 sm:py-2.5"
+                        style={
+                          themeMode === "dark"
+                            ? {
+                                backgroundColor: "#18181b",
+                                color: accentColor,
+                                borderColor: accentColor,
+                                boxShadow: `4px 4px 0px ${accentColor}`,
+                                transform: "rotate(-3deg)",
+                              }
+                            : {
+                                backgroundColor: accentColor,
+                                color: contrastOnAccent,
+                                borderColor: "#101010",
+                                boxShadow: "4px 4px 0px rgba(0,0,0,1)",
+                                transform: "rotate(-3deg)",
+                              }
+                        }
+                      >
+                        12,000+ READERS
+                      </div>
+                    </div>
+                  </section>
+
+                  {/* Lower Section: Index & Form */}
+                  <section
+                    className={`grid grid-cols-1 lg:grid-cols-2 transition-colors ${
+                      themeMode === "dark" ? "bg-[#0d0d0f]" : "bg-[#f4ff3c]"
+                    }`}
+                  >
+                    {/* Left Column: Chapters / Index */}
+                    <div
+                      className={`border-b-4 lg:border-b-0 lg:border-r-4 transition-colors flex flex-col justify-between ${
+                        themeMode === "dark" ? "border-[#2a2a2e]" : "border-[#101010]"
+                      }`}
+                    >
+                      <div>
+                        <div
+                          className="p-5 sm:p-6 border-b-2 flex items-center justify-between font-ibm text-xs font-bold tracking-wider uppercase"
+                          style={
+                            themeMode === "dark"
+                              ? { borderColor: "#2a2a2e", backgroundColor: "#121215", color: accentColor }
+                              : { borderColor: "#101010", backgroundColor: "#eef731", color: "#101010" }
+                          }
+                        >
+                          <span>FIELD MANUAL TABLE OF CONTENTS</span>
+                          <span>
+                            {(page.bullets && page.bullets.length > 0 ? page.bullets.length : 3)} MODULES
+                          </span>
+                        </div>
+
+                        <div className="divide-y-2" style={{ borderColor: themeMode === "dark" ? "#2a2a2e" : "#101010" }}>
+                          {(page.bullets && page.bullets.length > 0
+                            ? page.bullets
+                            : [
+                                "THE FRICTION AUDIT — Find where good ideas go to die.",
+                                "DECISION VELOCITY — Stop waiting for perfect information.",
+                                "THE WEEKLY RESET — A 20-minute operating ritual.",
+                              ]
+                          ).map((item: string, idx: number) => {
+                            const numStr = (idx + 1).toString().padStart(2, "0");
+                            let title = item;
+                            let desc = "";
+                            if (item.includes(" — ")) {
+                              const parts = item.split(" — ");
+                              title = parts[0];
+                              desc = parts.slice(1).join(" — ");
+                            } else if (item.includes(" - ")) {
+                              const parts = item.split(" - ");
+                              title = parts[0];
+                              desc = parts.slice(1).join(" - ");
+                            } else if (item.includes(":::")) {
+                              const parts = item.split(":::");
+                              title = parts[0];
+                              desc = parts.slice(1).join(":::");
+                            }
+
+                            return (
+                              <div
+                                key={idx}
+                                className={`grid grid-cols-[70px_1fr] sm:grid-cols-[90px_1fr] p-5 sm:p-6 items-start gap-4 border-b-2 transition-colors ${
+                                  themeMode === "dark"
+                                    ? "border-[#2a2a2e] hover:bg-[#15151a]"
+                                    : "border-[#101010] hover:bg-[#ebf533]"
+                                }`}
+                              >
+                                <strong
+                                  className="font-archivo text-2xl sm:text-3xl leading-none"
+                                  style={{ color: themeMode === "dark" ? accentColor : "#101010" }}
+                                >
+                                  {numStr}
+                                </strong>
+                                <div className="min-w-0 space-y-1">
+                                  <div
+                                    className={`font-archivo text-base sm:text-lg uppercase tracking-tight ${
+                                      themeMode === "dark" ? "text-white" : "text-[#101010]"
+                                    }`}
+                                  >
+                                    {title || `CHAPTER ${numStr}`}
+                                  </div>
+                                  {desc && (
+                                    <div
+                                      className={`font-ibm text-xs sm:text-[13px] leading-relaxed ${
+                                        themeMode === "dark" ? "text-zinc-400" : "text-black/80"
+                                      }`}
+                                    >
+                                      {desc}
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Right Column: Brutalist Form */}
+                    <div
+                      className={`p-6 sm:p-10 lg:p-12 flex flex-col justify-between transition-colors ${
+                        themeMode === "dark"
+                          ? "bg-[#18181b] border-t-4 lg:border-t-0 border-[#2a2a2e]"
+                          : "text-[#101010]"
+                      }`}
+                      style={
+                        themeMode !== "dark"
+                          ? { backgroundColor: accentColor !== "#f4ff3c" ? accentColor : "#ff5a36", color: contrastOnAccent }
+                          : undefined
+                      }
+                    >
+                      <div>
+                        <h2
+                          className="font-archivo text-3xl sm:text-4xl lg:text-[44px] leading-[0.95] uppercase tracking-tight mb-3"
+                          style={{ color: themeMode === "dark" ? accentColor : contrastOnAccent }}
+                        >
+                          {page.formTitle || "Take the manual."}
+                        </h2>
+
+                        {page.formSubtitle && (
+                          <p
+                            className={`font-ibm text-xs sm:text-sm leading-relaxed mb-6 ${
+                              themeMode === "dark" ? "text-zinc-300" : (contrastOnAccent === "#ffffff" ? "text-white/90" : "text-[#101010]/90")
+                            }`}
+                          >
+                            {page.formSubtitle}
+                          </p>
+                        )}
+
+                        <MagnetSignupForm
+                          cta={page.cta}
+                          layout="brutalist"
+                          formTitle={page.formTitle || "Take the manual."}
+                          formSubtitle={page.formSubtitle}
+                          formButtonText={page.formButtonText || "Send me the PDF ↗"}
+                          deliverable={page.deliverable}
+                          accent={page.accent}
+                          pageId={page.id}
+                          pageName={page.name}
+                          pageSlug={page.slug}
+                          pageOwnerEmail={(page as any).userEmail}
+                          brandColor={accentColor}
+                          highlightIntensity={highlightIntensity}
+                          themeMode={themeMode}
+                          customPromptQuestion={page.customPromptQuestion}
+                          customPromptPlaceholder={page.customPromptPlaceholder}
+                          enableAiPersonalizedDeliverable={page.enableAiPersonalizedDeliverable}
+                          customFormFields={page.customFormFields}
+                          username={params.username}
+                          isVariantB={isVariantB}
+                          afterSignupOption={page.afterSignupOption}
+                          destinationUrl={page.destinationUrl}
+                        />
+                      </div>
+
+                      <div
+                        className={`pt-6 mt-6 border-t-2 text-[9px] sm:text-[10px] font-ibm font-bold uppercase tracking-wider flex justify-between items-center ${
+                          themeMode === "dark" ? "border-zinc-800 text-zinc-500" : (contrastOnAccent === "#ffffff" ? "border-white/20 text-white/80" : "border-black/20 text-black/70")
+                        }`}
+                      >
+                        <span>🔒 ZERO SPAM PROMISE</span>
+                        <span>INSTANT DISPATCH</span>
+                      </div>
+                    </div>
+                  </section>
+                </div>
+
+                {/* Bottom Ticker Marquee */}
+                <footer
+                  className={`w-full py-3 px-4 border-t-4 overflow-hidden font-ibm text-[11px] sm:text-xs font-bold uppercase tracking-widest transition-colors ${
+                    themeMode === "dark" ? "border-[#2a2a2e] bg-[#000000]" : "border-[#101010] bg-[#101010]"
+                  }`}
+                  style={{ color: accentColor }}
+                >
+                  <div className="overflow-hidden whitespace-nowrap">
+                    <div className="animate-brutalist-ticker">
+                      <span className="mr-4">
+                        NO FLUFF / NO HACKS / FIELD-TESTED FRAMEWORKS / INSTANT DIGITAL DELIVERY / ZERO GIMMICKS /
+                        NO FLUFF / NO HACKS / FIELD-TESTED FRAMEWORKS / INSTANT DIGITAL DELIVERY / ZERO GIMMICKS /
+                      </span>
+                      <span className="mr-4">
+                        NO FLUFF / NO HACKS / FIELD-TESTED FRAMEWORKS / INSTANT DIGITAL DELIVERY / ZERO GIMMICKS /
+                        NO FLUFF / NO HACKS / FIELD-TESTED FRAMEWORKS / INSTANT DIGITAL DELIVERY / ZERO GIMMICKS /
+                      </span>
+                    </div>
+                  </div>
+                </footer>
+              </div>
+            );
+          })()
         ) : (
           /* TEMPLATE 1 / Default: Modern Full-Width Split Layout */
           <div className="w-full flex-1 flex flex-col justify-center py-1 lg:py-2">
