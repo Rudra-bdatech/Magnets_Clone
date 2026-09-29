@@ -1913,7 +1913,7 @@ const BrandTemplatePreview = memo(function BrandTemplatePreview({
                     <span
                       className="font-shrikhand text-lg sm:text-xl tracking-wide"
                       style={{
-                        color: themeMode === "dark" ? (accentColor !== "#1554db" ? accentColor : "#60a5fa") : accentColor,
+                        color: accentColor,
                       }}
                     >
                       {businessName || "Odd Hours"}
@@ -1962,7 +1962,7 @@ const BrandTemplatePreview = memo(function BrandTemplatePreview({
                                 : "bg-white text-[#1554db] border-[#141414]"
                             }`}
                           >
-                            <span style={{ color: themeMode === "dark" ? "#60a5fa" : (accentColor || "#1554db") }}>
+                            <span style={{ color: accentColor }}>
                               CREATIVE
                             </span>
                             <br />
@@ -2006,11 +2006,9 @@ const BrandTemplatePreview = memo(function BrandTemplatePreview({
                       </span>
 
                       <h3
-                        className={`font-shrikhand text-2xl sm:text-3xl md:text-4xl leading-[0.95] tracking-tight mb-3 ${
-                          themeMode === "dark" ? "text-white" : "text-[#1554db]"
-                        }`}
+                        className={`font-shrikhand text-2xl sm:text-3xl md:text-4xl leading-[0.95] tracking-tight mb-3`}
                         style={{
-                          color: themeMode === "dark" ? "#ffffff" : (accentColor || "#1554db"),
+                          color: accentColor,
                         }}
                       >
                         {latestPage?.headline ? (
@@ -2100,11 +2098,9 @@ const BrandTemplatePreview = memo(function BrandTemplatePreview({
 
                   {/* Signup Right */}
                   <div
-                    className={`md:col-span-5 p-4 sm:p-5 flex flex-col justify-between text-white ${
-                      themeMode === "dark" ? "bg-[#171a26]" : ""
-                    }`}
+                    className={`md:col-span-5 p-4 sm:p-5 flex flex-col justify-between text-white`}
                     style={{
-                      backgroundColor: themeMode === "dark" ? "#171a26" : (accentColor || "#1554db"),
+                      backgroundColor: accentColor,
                     }}
                   >
                     <div>

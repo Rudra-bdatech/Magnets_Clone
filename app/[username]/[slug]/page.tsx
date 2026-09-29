@@ -1758,7 +1758,7 @@ export default async function MagnetPageRoute({
                       <div
                         className="font-shrikhand text-2xl sm:text-3xl tracking-wide"
                         style={{
-                          color: themeMode === "dark" ? (accentColor !== "#1554db" ? accentColor : "#60a5fa") : accentColor,
+                          color: accentColor,
                         }}
                       >
                         {(page as any).mastheadLeft || businessName || "Odd Hours"}
@@ -1828,7 +1828,7 @@ export default async function MagnetPageRoute({
                                   : "bg-white text-[#1554db] border-[#141414] shadow-[4px_4px_0px_#141414]"
                               }`}
                             >
-                              <span style={{ color: themeMode === "dark" ? "#60a5fa" : (accentColor || "#1554db") }}>
+                              <span style={{ color: accentColor }}>
                                 CREATIVE
                               </span>
                               <br />
@@ -1888,12 +1888,10 @@ export default async function MagnetPageRoute({
 
                         {/* Headline */}
                         <h1
-                          className={`font-shrikhand text-4xl sm:text-5xl md:text-6xl lg:text-[62px] xl:text-[72px] leading-[0.92] tracking-tight mb-6 ${
-                            themeMode === "dark" ? "text-white" : "text-[#1554db]"
-                          }`}
+                          className={`font-shrikhand text-4xl sm:text-5xl md:text-6xl lg:text-[62px] xl:text-[72px] leading-[0.92] tracking-tight mb-6`}
                           style={{
                             overflowWrap: "anywhere",
-                            color: themeMode === "dark" ? "#ffffff" : (accentColor || "#1554db"),
+                            color: accentColor,
                           }}
                         >
                           {activeHeadline ? (
@@ -1988,11 +1986,9 @@ export default async function MagnetPageRoute({
 
                     {/* Right Column: High-Impact Signup Box */}
                     <aside
-                      className={`p-6 sm:p-8 xl:p-10 flex flex-col justify-between transition-colors ${
-                        themeMode === "dark" ? "bg-[#181a24] text-white" : "text-white"
-                      }`}
+                      className={`p-6 sm:p-8 xl:p-10 flex flex-col justify-between transition-colors text-white`}
                       style={{
-                        backgroundColor: themeMode === "dark" ? "#171a26" : (accentColor || "#1554db"),
+                        backgroundColor: accentColor,
                         color: "#ffffff",
                       }}
                     >

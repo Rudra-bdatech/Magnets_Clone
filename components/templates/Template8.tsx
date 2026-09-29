@@ -285,18 +285,16 @@ export default function Template8(props: TemplateProps) {
                 value={mastheadLeft || ""}
                 onChange={(e) => setMastheadLeft?.(e.target.value)}
                 placeholder={businessName || "Odd Hours"}
-                className={`font-shrikhand text-2xl sm:text-3xl tracking-wide bg-transparent outline-none w-full max-w-sm placeholder:opacity-40 transition-colors ${
-                  isDark ? "text-[#60a5fa]" : "text-[#1554db]"
-                }`}
+                className={`font-shrikhand text-2xl sm:text-3xl tracking-wide bg-transparent outline-none w-full max-w-sm placeholder:opacity-40 transition-colors`}
                 style={{
-                  color: isDark ? (accentColor !== "#1554db" ? accentColor : "#60a5fa") : accentColor,
+                  color: accentColor,
                 }}
               />
             ) : (
               <div
                 className="font-shrikhand text-2xl sm:text-3xl tracking-wide"
                 style={{
-                  color: isDark ? (accentColor !== "#1554db" ? accentColor : "#60a5fa") : accentColor,
+                  color: accentColor,
                 }}
               >
                 {mastheadLeft || businessName || "Odd Hours"}
@@ -424,7 +422,7 @@ export default function Template8(props: TemplateProps) {
                         : "bg-white text-[#1554db] border-[#141414] sticker-shadow"
                     }`}
                   >
-                    <span style={{ color: isDark ? "#60a5fa" : (accentColor || "#1554db") }}>
+                    <span style={{ color: accentColor || "#1554db" }}>
                       CREATIVE
                     </span>
                     <br />
@@ -543,17 +541,15 @@ export default function Template8(props: TemplateProps) {
                   }`}
                   style={{
                     overflowWrap: "anywhere",
-                    color: isDark ? "#ffffff" : (accentColor || "#1554db"),
+                    color: accentColor || "#1554db",
                   }}
                 />
               ) : (
                 <h1
-                  className={`font-shrikhand text-4xl sm:text-5xl md:text-6xl lg:text-[62px] xl:text-[72px] leading-[0.92] tracking-tight mb-4 ${
-                    isDark ? "text-white" : "text-[#1554db]"
-                  }`}
+                  className={`font-shrikhand text-4xl sm:text-5xl md:text-6xl lg:text-[62px] xl:text-[72px] leading-[0.92] tracking-tight mb-4`}
                   style={{
                     overflowWrap: "anywhere",
-                    color: isDark ? "#ffffff" : (accentColor || "#1554db"),
+                    color: accentColor || "#1554db",
                   }}
                 >
                   {headline ? (
@@ -733,7 +729,7 @@ export default function Template8(props: TemplateProps) {
                 : "text-white"
             }`}
             style={{
-              backgroundColor: isDark ? "#171a26" : (accentColor || "#1554db"),
+              backgroundColor: accentColor || "#1554db",
               color: "#ffffff",
             }}
           >
