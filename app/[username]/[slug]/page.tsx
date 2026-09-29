@@ -1696,73 +1696,82 @@ export default async function MagnetPageRoute({
                         >
                           <span>FIELD MANUAL TABLE OF CONTENTS</span>
                           <span>
-                            {(page.bullets && page.bullets.length > 0 ? page.bullets.length : 3)} MODULES
+                            {(Array.isArray(page.bullets) ? page.bullets.length : 3)} MODULES
                           </span>
                         </div>
 
-                        <div className="divide-y-2" style={{ borderColor: themeMode === "dark" ? "#2a2a2e" : "#101010" }}>
-                          {(page.bullets && page.bullets.length > 0
+                        {(() => {
+                          const displayBullets = Array.isArray(page.bullets)
                             ? page.bullets
                             : [
                                 "THE FRICTION AUDIT — Find where good ideas go to die.",
                                 "DECISION VELOCITY — Stop waiting for perfect information.",
                                 "THE WEEKLY RESET — A 20-minute operating ritual.",
-                              ]
-                          ).map((item: string, idx: number) => {
-                            const numStr = (idx + 1).toString().padStart(2, "0");
-                            let title = item;
-                            let desc = "";
-                            if (item.includes(" — ")) {
-                              const parts = item.split(" — ");
-                              title = parts[0];
-                              desc = parts.slice(1).join(" — ");
-                            } else if (item.includes(" - ")) {
-                              const parts = item.split(" - ");
-                              title = parts[0];
-                              desc = parts.slice(1).join(" - ");
-                            } else if (item.includes(":::")) {
-                              const parts = item.split(":::");
-                              title = parts[0];
-                              desc = parts.slice(1).join(":::");
-                            }
+                              ];
 
-                            return (
-                              <div
-                                key={idx}
-                                className={`grid grid-cols-[70px_1fr] sm:grid-cols-[90px_1fr] p-5 sm:p-6 items-start gap-4 border-b-2 transition-colors ${
-                                  themeMode === "dark"
-                                    ? "border-[#2a2a2e] hover:bg-[#15151a]"
-                                    : "border-[#101010] hover:bg-[#ebf533]"
-                                }`}
-                              >
-                                <strong
-                                  className="font-archivo text-2xl sm:text-3xl leading-none"
-                                  style={{ color: themeMode === "dark" ? accentColor : "#101010" }}
-                                >
-                                  {numStr}
-                                </strong>
-                                <div className="min-w-0 space-y-1">
+                          if (displayBullets.length === 0) {
+                            return null;
+                          }
+
+                          return (
+                            <div className="divide-y-2" style={{ borderColor: themeMode === "dark" ? "#2a2a2e" : "#101010" }}>
+                              {displayBullets.map((item: string, idx: number) => {
+                                const numStr = (idx + 1).toString().padStart(2, "0");
+                                let title = item;
+                                let desc = "";
+                                if (item.includes(" — ")) {
+                                  const parts = item.split(" — ");
+                                  title = parts[0];
+                                  desc = parts.slice(1).join(" — ");
+                                } else if (item.includes(" - ")) {
+                                  const parts = item.split(" - ");
+                                  title = parts[0];
+                                  desc = parts.slice(1).join(" - ");
+                                } else if (item.includes(":::")) {
+                                  const parts = item.split(":::");
+                                  title = parts[0];
+                                  desc = parts.slice(1).join(":::");
+                                }
+
+                                return (
                                   <div
-                                    className={`font-archivo text-base sm:text-lg uppercase tracking-tight ${
-                                      themeMode === "dark" ? "text-white" : "text-[#101010]"
+                                    key={idx}
+                                    className={`grid grid-cols-[70px_1fr] sm:grid-cols-[90px_1fr] p-5 sm:p-6 items-start gap-4 border-b-2 transition-colors ${
+                                      themeMode === "dark"
+                                        ? "border-[#2a2a2e] hover:bg-[#15151a]"
+                                        : "border-[#101010] hover:bg-[#ebf533]"
                                     }`}
                                   >
-                                    {title || `CHAPTER ${numStr}`}
-                                  </div>
-                                  {desc && (
-                                    <div
-                                      className={`font-ibm text-xs sm:text-[13px] leading-relaxed ${
-                                        themeMode === "dark" ? "text-zinc-400" : "text-black/80"
-                                      }`}
+                                    <strong
+                                      className="font-archivo text-2xl sm:text-3xl leading-none"
+                                      style={{ color: themeMode === "dark" ? accentColor : "#101010" }}
                                     >
-                                      {desc}
+                                      {numStr}
+                                    </strong>
+                                    <div className="min-w-0 space-y-1">
+                                      <div
+                                        className={`font-archivo text-base sm:text-lg uppercase tracking-tight ${
+                                          themeMode === "dark" ? "text-white" : "text-[#101010]"
+                                        }`}
+                                      >
+                                        {title || `CHAPTER ${numStr}`}
+                                      </div>
+                                      {desc && (
+                                        <div
+                                          className={`font-ibm text-xs sm:text-[13px] leading-relaxed ${
+                                            themeMode === "dark" ? "text-zinc-400" : "text-black/80"
+                                          }`}
+                                        >
+                                          {desc}
+                                        </div>
+                                      )}
                                     </div>
-                                  )}
-                                </div>
-                              </div>
-                            );
-                          })}
-                        </div>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          );
+                        })()}
                       </div>
                     </div>
 

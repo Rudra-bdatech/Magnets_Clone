@@ -1476,51 +1476,80 @@ const BrandTemplatePreview = memo(function BrandTemplatePreview({
                 <div className="grid grid-cols-1 md:grid-cols-2">
                   {/* Index Column */}
                   <div
-                    className={`border-b-3 md:border-b-0 md:border-r-3 divide-y-2 ${
-                      themeMode === "dark" ? "border-[#2a2a2e] divide-[#2a2a2e]" : "border-[#101010] divide-[#101010]"
+                    className={`border-b-2 md:border-b-0 md:border-r-2 flex flex-col justify-between ${
+                      themeMode === "dark" ? "border-[#2a2a2e]" : "border-[#101010]"
                     }`}
                   >
-                    {(latestPage?.bullets && latestPage.bullets.length > 0
-                      ? latestPage.bullets
-                      : [
-                          "THE FRICTION AUDIT — Find where good ideas go to die.",
-                          "DECISION VELOCITY — Stop waiting for perfect information.",
-                          "THE WEEKLY RESET — A 20-minute operating ritual.",
-                        ]
-                    ).map((item: string, idx: number) => {
-                      const numStr = (idx + 1).toString().padStart(2, "0");
-                      const title = item.includes(" — ") ? item.split(" — ")[0] : item;
-                      const desc = item.includes(" — ") ? item.split(" — ")[1] : "";
+                    <div>
+                      {(() => {
+                        const displayBullets = Array.isArray(latestPage?.bullets)
+                          ? latestPage.bullets
+                          : [
+                              "THE FRICTION AUDIT — Find where good ideas go to die.",
+                              "DECISION VELOCITY — Stop waiting for perfect information.",
+                              "THE WEEKLY RESET — A 20-minute operating ritual.",
+                            ];
 
-                      return (
-                        <div key={idx} className="grid grid-cols-[40px_1fr] p-3 items-start gap-2">
-                          <strong
-                            className="font-archivo text-base"
-                            style={{ color: themeMode === "dark" ? accentColor : "#101010" }}
-                          >
-                            {numStr}
-                          </strong>
-                          <div className="space-y-0.5 min-w-0">
+                        return (
+                          <>
                             <div
-                              className={`font-archivo text-[11px] uppercase tracking-tight ${
-                                themeMode === "dark" ? "text-white" : "text-[#101010]"
-                              }`}
+                              className="p-2.5 sm:p-3 border-b-2 flex items-center justify-between font-ibm text-[8px] sm:text-[9px] font-bold tracking-wider uppercase"
+                              style={
+                                themeMode === "dark"
+                                  ? { borderColor: "#2a2a2e", backgroundColor: "#121215", color: accentColor }
+                                  : { borderColor: "#101010", backgroundColor: "#eef731", color: "#101010" }
+                              }
                             >
-                              {title}
+                              <span>FIELD MANUAL TABLE OF CONTENTS</span>
+                              <span>{displayBullets.length} MODULES</span>
                             </div>
-                            {desc && (
-                              <div
-                                className={`font-ibm text-[9px] leading-relaxed ${
-                                  themeMode === "dark" ? "text-zinc-400" : "text-black/80"
-                                }`}
-                              >
-                                {desc}
+
+                            {displayBullets.length === 0 ? (
+                              <div className="p-6 text-center font-ibm text-[10px] opacity-50 uppercase tracking-wider">
+                                NO CHAPTER MODULES ADDED
+                              </div>
+                            ) : (
+                              <div className="divide-y-2" style={{ borderColor: themeMode === "dark" ? "#2a2a2e" : "#101010" }}>
+                                {displayBullets.map((item: string, idx: number) => {
+                                  const numStr = (idx + 1).toString().padStart(2, "0");
+                                  const title = item.includes(" — ") ? item.split(" — ")[0] : item;
+                                  const desc = item.includes(" — ") ? item.split(" — ")[1] : "";
+
+                                  return (
+                                    <div key={idx} className="grid grid-cols-[35px_1fr] p-2.5 sm:p-3 items-start gap-2 border-b-2" style={{ borderColor: themeMode === "dark" ? "#2a2a2e" : "#101010" }}>
+                                      <strong
+                                        className="font-archivo text-sm sm:text-base"
+                                        style={{ color: themeMode === "dark" ? accentColor : "#101010" }}
+                                      >
+                                        {numStr}
+                                      </strong>
+                                      <div className="space-y-0.5 min-w-0">
+                                        <div
+                                          className={`font-archivo text-[10px] sm:text-[11px] uppercase tracking-tight ${
+                                            themeMode === "dark" ? "text-white" : "text-[#101010]"
+                                          }`}
+                                        >
+                                          {title}
+                                        </div>
+                                        {desc && (
+                                          <div
+                                            className={`font-ibm text-[8px] sm:text-[9px] leading-relaxed ${
+                                              themeMode === "dark" ? "text-zinc-400" : "text-black/80"
+                                            }`}
+                                          >
+                                            {desc}
+                                          </div>
+                                        )}
+                                      </div>
+                                    </div>
+                                  );
+                                })}
                               </div>
                             )}
-                          </div>
-                        </div>
-                      );
-                    })}
+                          </>
+                        );
+                      })()}
+                    </div>
                   </div>
 
                   {/* Form Column */}
