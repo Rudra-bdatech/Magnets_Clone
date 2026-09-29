@@ -990,159 +990,263 @@ const BrandTemplatePreview = memo(function BrandTemplatePreview({
         </div>
       )}
 
-      {/* TEMPLATE 6: Spotlight Hero */}
+      {/* TEMPLATE 6: Monograph Editorial Publication */}
       {(templateId === "template6" || templateId === "template7") && (
-        <div className="w-full py-1">
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-5 items-center">
-            {/* LEFT: Full-bleed image panel */}
-            <div className="col-span-12 md:col-span-6 relative overflow-hidden rounded-3xl shadow-2xl aspect-[4/3] max-h-[340px] min-h-[260px]">
-              {latestPage?.imageUrl && latestPage.imageUrl.trim() !== "" ? (
-                <img
-                  src={latestPage.imageUrl}
-                  alt={latestPage?.name || "Cover"}
-                  className="absolute inset-0 w-full h-full object-cover"
-                />
-              ) : (
-                <div
-                  className="absolute inset-0"
-                  style={{
-                    background: `linear-gradient(155deg, ${hexWithAlpha(brandColor, 0.6 + intensityRatio * 0.35)} 0%, #060610 55%, #12001a 100%)`,
-                  }}
-                >
-                  <div className="absolute inset-0 flex items-center justify-center opacity-10">
-                    {[160, 110, 66, 32].map((size, i) => (
-                      <div
-                        key={i}
-                        className="absolute rounded-full border border-white"
-                        style={{ width: size, height: size, opacity: 1 - i * 0.2 }}
-                      />
-                    ))}
-                  </div>
-                  <div
-                    className="absolute inset-0 opacity-[0.05]"
-                    style={{ backgroundImage: "repeating-linear-gradient(0deg, white 0px, white 1px, transparent 1px, transparent 8px)" }}
-                  />
-                </div>
-              )}
-              <div className="absolute inset-0 pointer-events-none" style={{ background: "linear-gradient(to right, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0.4) 100%)" }} />
-              <div className="absolute inset-0 pointer-events-none" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 55%)" }} />
-              <div className="absolute inset-0 flex flex-col justify-end p-5 z-10">
-                <div className="space-y-1.5 max-w-xs">
-                  <h3 className="text-2xl md:text-3xl font-black text-white leading-[1.0] tracking-tight drop-shadow-2xl">
-                    {latestPage?.headline || latestPage?.name || "101 Winning Viral Templates"}
-                  </h3>
-                  <p className="text-[11px] text-white/70 leading-relaxed font-medium drop-shadow-sm">
-                    {latestPage?.subheadline || "Content that connects, converts, and compounds."}
-                  </p>
-                </div>
+        <div
+          className={`w-full py-2 px-1 sm:px-2 transition-colors ${
+            themeMode === "dark" ? "text-[#fcfaf8]" : "text-[#1c1917]"
+          }`}
+          style={{ fontFamily: "'Manrope', -apple-system, BlinkMacSystemFont, sans-serif" }}
+        >
+          <style>{`
+            @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Manrope:wght@400;500;600;700&display=swap');
+            .font-instrument { font-family: 'Instrument Serif', Georgia, serif; }
+            .font-manrope { font-family: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif; }
+          `}</style>
+
+          {/* Masthead Header */}
+          <header
+            className={`flex justify-between items-end pb-3 border-b transition-colors ${
+              themeMode === "dark" ? "border-[#33302c]" : "border-[#d9d4cf]"
+            }`}
+          >
+            <div>
+              <div
+                className="text-[8px] font-bold tracking-[0.16em] uppercase"
+                style={{ color: themeMode === "dark" ? "#a89f97" : "#786f68" }}
+              >
+                {(latestPage as any)?.mastheadLeft || "Intelligence report · Issue 08"}
+              </div>
+              <div
+                className="font-instrument italic text-[22px] sm:text-[26px] leading-tight mt-0.5"
+                style={{ color: themeMode === "dark" ? "#fcfaf8" : "#1c1917" }}
+              >
+                {(latestPage as any)?.mastheadRight || businessName || "The Executive Dispatch"}
               </div>
             </div>
 
-            {/* RIGHT: Form and details */}
-            <div className="col-span-12 md:col-span-6 flex flex-col justify-center space-y-3">
-              {/* Eyebrow & Bullets */}
-              <div className="space-y-1.5">
-                <p className="text-[9px] font-black uppercase tracking-[0.2em]" style={{ color: brandColor }}>
-                  {latestPage?.bulletsTitle || "Exclusive · Free Access"}
-                </p>
+            <div
+              className="text-right text-[10px] hidden sm:block font-manrope shrink-0"
+              style={{ color: themeMode === "dark" ? "#a89f97" : "#5c554f" }}
+            >
+              <b className={themeMode === "dark" ? "text-zinc-200" : "text-zinc-900"}>
+                Published {new Date().getFullYear()}
+              </b>
+              <br />
+              By {businessName || "Marcus Vane"}
+            </div>
+          </header>
 
-                {latestPage?.bullets && latestPage.bullets.length > 0 && (
-                  <div className="space-y-1.5">
-                    {latestPage.bullets.slice(0, 3).map((item, idx) => (
-                      <div key={idx} className="flex items-start gap-2">
-                        <div
-                          className="flex h-3.5 w-3.5 shrink-0 mt-0.5 items-center justify-center rounded-full"
-                          style={{ backgroundColor: hexWithAlpha(brandColor, 0.13), border: `1px solid ${hexWithAlpha(brandColor, 0.33)}` }}
-                        >
-                          <svg width="6" height="6" viewBox="0 0 6 6" fill="none">
-                            <path d="M1 3l1.5 1.5L5 1.5" stroke={brandColor} strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
-                          </svg>
-                        </div>
-                        <span className={`text-[10px] leading-relaxed ${themeMode === "dark" ? "text-zinc-300" : "text-zinc-600"}`}>
-                          {item}
-                        </span>
-                      </div>
-                    ))}
+          {/* Main Grid */}
+          <main className="grid grid-cols-1 md:grid-cols-[1.3fr_0.9fr] gap-6 pt-5 items-start">
+            {/* Left Column */}
+            <section className="space-y-4 min-w-0">
+              {/* Visual Cover */}
+              <div
+                className={`relative w-full aspect-[3/2] rounded-xs overflow-hidden border transition-all ${
+                  themeMode === "dark" ? "border-[#33302c] bg-[#1a1918]" : "border-[#ded9d4] bg-[#f5efe9]"
+                }`}
+              >
+                {latestPage?.imageUrl && latestPage.imageUrl.trim() !== "" ? (
+                  <img
+                    src={latestPage.imageUrl}
+                    alt={latestPage?.name || "Cover"}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div
+                    className="w-full h-full relative flex items-center justify-center overflow-hidden"
+                    style={{
+                      background:
+                        themeMode === "dark"
+                          ? "linear-gradient(135deg, #24201d 0%, #161514 100%)"
+                          : "linear-gradient(135deg, #f0e8e0 0%, #ded2c6 100%)",
+                    }}
+                  >
+                    <div
+                      className="w-10 h-10 rounded-full border flex items-center justify-center font-instrument italic text-base shadow-sm"
+                      style={{
+                        borderColor: brandColor,
+                        color: brandColor,
+                        backgroundColor: themeMode === "dark" ? "rgba(0,0,0,0.4)" : "rgba(255,255,255,0.7)",
+                      }}
+                    >
+                      {(businessName || "M").charAt(0)}
+                    </div>
                   </div>
                 )}
               </div>
 
-              {/* Enclosed Opt-in Form Card */}
-              <div
-                className={`rounded-2xl border p-4 sm:p-5 text-left transition-all duration-300 backdrop-blur-sm shadow-xl ${
-                  themeMode === "dark" ? "text-white" : "text-zinc-900"
-                }`}
-                style={{
-                  borderColor: hexWithAlpha(brandColor, 0.15 + (intensityRatio) * 0.55),
-                  boxShadow: intensityRatio > 0.2 ? `0 10px 30px -4px ${hexWithAlpha(brandColor, 0.35 * intensityRatio)}` : "0 2px 8px rgba(0,0,0,0.05)",
-                  background: themeMode === "light"
-                    ? `linear-gradient(135deg, ${hexWithAlpha(brandColor, 0.05 + intensityRatio * 0.25)} 0%, rgba(255, 255, 255, 0.95) 60%)`
-                    : `linear-gradient(135deg, ${hexWithAlpha(brandColor, 0.08 + intensityRatio * 0.3)} 0%, rgba(22, 22, 25, 0.95) 60%)`
-                }}
-              >
-                <p className="text-base sm:text-lg font-black text-center tracking-tight">
-                  {latestPage?.formTitle || "Get instant access"}
-                </p>
-                <p className="text-[10px] sm:text-xs text-[#9B9085] text-center mt-1 leading-normal">
-                  {latestPage?.formSubtitle || "By opting in you consent to receive this resource by email."}
-                </p>
-
-                <div className="mt-3 flex flex-col gap-2.5">
-                  <div className={latestPage?.customFormFields && latestPage.customFormFields.length > 0 ? "grid grid-cols-1 sm:grid-cols-2 gap-2" : "grid grid-cols-1 sm:grid-cols-2 gap-2"}>
-                    <input
-                      type="text"
-                      placeholder="Name"
-                      readOnly
-                      className={`min-h-9 h-9 w-full rounded-xl border px-3 py-2 text-xs outline-none transition shadow-xs pointer-events-none ${
-                        themeMode === "dark" ? "bg-black/40 border-white/15 text-white placeholder:text-zinc-400" : "bg-white/90 border-black/15 text-zinc-900 placeholder:text-zinc-400"
-                      }`}
-                    />
-                    <input
-                      type="email"
-                      placeholder="Email"
-                      readOnly
-                      className={`min-h-9 h-9 w-full rounded-xl border px-3 py-2 text-xs outline-none transition shadow-xs pointer-events-none ${
-                        themeMode === "dark" ? "bg-black/40 border-white/15 text-white placeholder:text-zinc-400" : "bg-white/90 border-black/15 text-zinc-900 placeholder:text-zinc-400"
-                      }`}
-                    />
-                    {latestPage?.customFormFields && latestPage.customFormFields.length > 0 && (
-                      latestPage.customFormFields.map((field: any) => (
-                        <div
-                          key={field.id}
-                          className={field.type === "textarea" ? "col-span-1 sm:col-span-2" : ""}
-                        >
-                          <input
-                            type="text"
-                            placeholder={`${field.label || field.placeholder || "Field"}${field.required ? " *" : ""}`}
-                            readOnly
-                            className={`min-h-9 h-9 w-full rounded-xl border px-3 py-2 text-xs outline-none transition shadow-xs pointer-events-none ${
-                              themeMode === "dark" ? "bg-black/40 border-white/15 text-white placeholder:text-zinc-400" : "bg-white/90 border-black/15 text-zinc-900 placeholder:text-zinc-400"
-                            }`}
-                          />
-                        </div>
-                      ))
-                    )}
-                  </div>
-
-                  <button
-                    type="button"
-                    className="w-full min-h-9 h-9 inline-flex items-center justify-center rounded-xl px-3 py-2 text-xs font-black text-white shadow-md cursor-pointer"
-                    style={{ backgroundColor: brandColor }}
-                  >
-                    {latestPage?.formButtonText || latestPage?.cta || "Get instant access"}
-                  </button>
-                </div>
+              {/* Category Tag */}
+              <div>
+                <span
+                  className="inline-block px-2 py-0.5 text-[8px] font-bold tracking-[0.12em] uppercase rounded-xs"
+                  style={{
+                    backgroundColor: themeMode === "dark" ? "rgba(194, 65, 12, 0.2)" : "#f5e5dc",
+                    color: themeMode === "dark" ? "#fb923c" : "#b53b12",
+                  }}
+                >
+                  {latestPage?.bulletsTitle || "Strategic framework"}
+                </span>
               </div>
 
-              {/* Deliverable Badge */}
-              {latestPage?.deliverable && (
-                <p className={`flex items-center justify-center gap-1.5 text-[10px] font-medium ${themeMode === "dark" ? "text-zinc-400" : "text-zinc-600"}`}>
-                  <span>🎁</span>
-                  <span>{latestPage.deliverable}</span>
+              {/* Title */}
+              <h3
+                className="font-instrument font-medium text-[24px] sm:text-[30px] leading-[0.96] tracking-tight m-0"
+                style={{ color: themeMode === "dark" ? "#fcfaf8" : "#1c1917" }}
+              >
+                {latestPage?.headline || latestPage?.name || "The Architecture of High-Output Engineering"}
+              </h3>
+
+              {/* Subheadline */}
+              <p
+                className="text-[11px] leading-relaxed m-0"
+                style={{ color: themeMode === "dark" ? "#c4bcb3" : "#5c554f" }}
+              >
+                {latestPage?.subheadline ||
+                  "A 42-page field guide to the organizational systems used by ambitious teams to maintain velocity without burning out."}
+              </p>
+
+              {/* Chapters */}
+              <div
+                className={`pt-4 border-t transition-colors ${
+                  themeMode === "dark" ? "border-[#33302c]" : "border-[#ded9d4]"
+                }`}
+              >
+                <div
+                  className="text-[8px] font-bold tracking-[0.16em] uppercase mb-2"
+                  style={{ color: themeMode === "dark" ? "#a89f97" : "#786f68" }}
+                >
+                  Inside this guide
+                </div>
+
+                <div className="divide-y divide-[#ded9d4] dark:divide-[#33302c]">
+                  {(latestPage?.bullets && latestPage.bullets.length > 0
+                    ? latestPage.bullets.slice(0, 3)
+                    : [
+                        "The Signal-to-Noise Protocol — Audit attention and eliminate low-leverage activities through the Four Filters.",
+                        "Recursive Hiring Loops — Build a talent engine that identifies multipliers before they reach the market.",
+                        "Velocity Without Chaos — Replace recurring meetings with lightweight synchronization rituals.",
+                      ]
+                  ).map((item, idx) => {
+                    const numStr = (idx + 1).toString().padStart(2, "0") + " /";
+                    let title = item;
+                    let desc = "";
+                    if (item.includes(" — ")) {
+                      const parts = item.split(" — ");
+                      title = parts[0];
+                      desc = parts.slice(1).join(" — ");
+                    } else if (item.includes(" - ")) {
+                      const parts = item.split(" - ");
+                      title = parts[0];
+                      desc = parts.slice(1).join(" - ");
+                    }
+
+                    return (
+                      <div key={idx} className="grid grid-cols-[30px_1fr] py-2 items-start gap-1.5">
+                        <span
+                          className="font-instrument italic text-[14px]"
+                          style={{ color: brandColor || "#c2410c" }}
+                        >
+                          {numStr}
+                        </span>
+                        <div>
+                          <h4
+                            className="text-[11px] font-bold leading-tight m-0"
+                            style={{ color: themeMode === "dark" ? "#fcfaf8" : "#1c1917" }}
+                          >
+                            {title}
+                          </h4>
+                          {desc && (
+                            <p
+                              className="text-[9px] leading-tight mt-0.5 m-0"
+                              style={{ color: themeMode === "dark" ? "#a89f97" : "#756d66" }}
+                            >
+                              {desc}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </section>
+
+            {/* Right Column (Opt-in card) */}
+            <aside className="w-full">
+              <div
+                className="rounded-xs border p-4 sm:p-5 space-y-3"
+                style={{
+                  backgroundColor: themeMode === "dark" ? "#1c1917" : "#ffffff",
+                  borderColor: themeMode === "dark" ? "#33302c" : "#ddd7d2",
+                  boxShadow:
+                    themeMode === "dark"
+                      ? "0 10px 30px rgba(0,0,0,0.5)"
+                      : "0 10px 30px rgba(35,25,18,0.06)",
+                }}
+              >
+                <div>
+                  <div
+                    className="text-[8px] font-bold tracking-[0.16em] uppercase mb-1"
+                    style={{ color: themeMode === "dark" ? "#a89f97" : "#786f68" }}
+                  >
+                    Complimentary digital edition
+                  </div>
+                  <h4
+                    className="font-instrument text-[20px] font-medium leading-tight m-0"
+                    style={{ color: themeMode === "dark" ? "#fcfaf8" : "#1c1917" }}
+                  >
+                    {latestPage?.formTitle || "Get the full report"}
+                  </h4>
+                  <p
+                    className="text-[10px] leading-tight mt-1 mb-0"
+                    style={{ color: themeMode === "dark" ? "#a89f97" : "#746c65" }}
+                  >
+                    {latestPage?.formSubtitle ||
+                      "The PDF and supplemental worksheets will arrive directly in your inbox."}
+                  </p>
+                </div>
+
+                <div className="space-y-2">
+                  <input
+                    type="text"
+                    placeholder="Full name"
+                    readOnly
+                    className={`w-full p-2 border text-[11px] outline-none rounded-xs ${
+                      themeMode === "dark"
+                        ? "bg-[#141312] border-[#33302c] text-white placeholder:text-zinc-600"
+                        : "bg-[#fcfaf8] border-[#d9d4cf] text-zinc-900 placeholder:text-zinc-400"
+                    }`}
+                  />
+                  <input
+                    type="email"
+                    placeholder="Work email"
+                    readOnly
+                    className={`w-full p-2 border text-[11px] outline-none rounded-xs ${
+                      themeMode === "dark"
+                        ? "bg-[#141312] border-[#33302c] text-white placeholder:text-zinc-600"
+                        : "bg-[#fcfaf8] border-[#d9d4cf] text-zinc-900 placeholder:text-zinc-400"
+                    }`}
+                  />
+                  <button
+                    type="button"
+                    className="w-full border-0 p-2.5 text-[11px] font-bold font-manrope text-white cursor-pointer rounded-xs"
+                    style={{ backgroundColor: brandColor || "#c2410c" }}
+                  >
+                    {latestPage?.formButtonText || latestPage?.cta || "Receive the dispatch →"}
+                  </button>
+                </div>
+
+                <p
+                  className="text-center text-[8px] font-manrope pt-1 m-0"
+                  style={{ color: themeMode === "dark" ? "#8a817a" : "#746c65" }}
+                >
+                  No noise. Only occasional, high-signal notes.
                 </p>
-              )}
-            </div>
-          </div>
+              </div>
+            </aside>
+          </main>
         </div>
       )}
     </>

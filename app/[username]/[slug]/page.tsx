@@ -319,8 +319,8 @@ export default async function MagnetPageRoute({
           <span>⚠️ Draft Preview Mode — This magnet is not yet published. Only you can view this page.</span>
         </div>
       )}
-      {/* If template is not template2, template3, template4, or template5, show the standard top header */}
-      {((page.template as string) !== "template2" && (page.template as string) !== "template3" && (page.template as string) !== "template4" && (page.template as string) !== "template5" && (!(!page.template && ((accountDoc?.templateId as string) === "template2" || (accountDoc?.templateId as string) === "template3" || (accountDoc?.templateId as string) === "template4" || (accountDoc?.templateId as string) === "template5")))) && (
+      {/* If template is not template2, template3, template4, template5, or template6, show the standard top header */}
+      {((page.template as string) !== "template2" && (page.template as string) !== "template3" && (page.template as string) !== "template4" && (page.template as string) !== "template5" && (page.template as string) !== "template6" && (!(!page.template && ((accountDoc?.templateId as string) === "template2" || (accountDoc?.templateId as string) === "template3" || (accountDoc?.templateId as string) === "template4" || (accountDoc?.templateId as string) === "template5" || (accountDoc?.templateId as string) === "template6")))) && (
         <header className="w-full flex items-center justify-center pt-3 sm:pt-4 pb-1 sm:pb-2 px-6 sm:px-10 relative shrink-0">
           <div className="flex items-center gap-2.5 sm:gap-3">
             <div className={`h-9 w-9 sm:h-10 sm:w-10 rounded-xl flex items-center justify-center bg-transparent overflow-hidden shadow-xs ${logo ? "border-none" : "border-2 border-dashed border-[#a1a1aa]/50"}`}>
@@ -1110,89 +1110,279 @@ export default async function MagnetPageRoute({
             </footer>
           </div>
         ) : ((page.template as string) === "template6" || (page.template as string) === "template7" || (!page.template && ((accountDoc?.templateId as string) === "template6" || (accountDoc?.templateId as string) === "template7"))) ? (
-          /* TEMPLATE 6: Spotlight Hero (Full Desktop Viewport Split Layout) */
-          <div className="w-full flex-1 flex flex-col justify-center py-1 lg:py-2">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 xl:gap-14 items-center w-full">
-              {/* LEFT: Full-bleed image panel */}
-              <div className="col-span-12 lg:col-span-7 relative overflow-hidden rounded-3xl shadow-2xl min-h-[400px] sm:min-h-[460px] lg:min-h-[520px] xl:min-h-[580px] flex flex-col justify-end border border-black/10 dark:border-white/10 group">
-                {activeImageUrl && activeImageUrl.trim() !== "" ? (
-                  <img src={activeImageUrl} alt={page.name} className="absolute inset-0 w-full h-full object-cover" />
-                ) : (
-                  <div
-                    className="absolute inset-0 flex items-center justify-center"
-                    style={{ background: `linear-gradient(155deg, ${brandColor}99 0%, #060610 55%, #12001a 100%)` }}
-                  >
-                    <div className="flex flex-col items-center gap-2 text-white/50">
-                      <SparklesIcon className="w-10 h-10" />
-                      <span className="text-xs uppercase font-bold tracking-wider">Spotlight Cover</span>
-                    </div>
-                  </div>
-                )}
-                {/* Cinematic scrim overlays */}
-                <div className="absolute inset-0 pointer-events-none" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.45) 50%, transparent 80%)" }} />
-                <div className="absolute inset-0 pointer-events-none" style={{ background: `linear-gradient(to right, ${brandColor}33 0%, transparent 60%)` }} />
+          /* TEMPLATE 6: Monograph Editorial Publication */
+          <div
+            className={`w-full flex-1 flex flex-col justify-center py-4 sm:py-8 max-w-[1160px] mx-auto transition-colors ${
+              themeMode === "dark" ? "text-[#fcfaf8]" : "text-[#1c1917]"
+            }`}
+            style={{ fontFamily: "'Manrope', -apple-system, BlinkMacSystemFont, sans-serif" }}
+          >
+            <style>{`
+              @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Manrope:wght@400;500;600;700&display=swap');
+              .font-instrument { font-family: 'Instrument Serif', Georgia, serif; }
+              .font-manrope { font-family: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif; }
+            `}</style>
 
-                {/* Headline & subheadline overlay at bottom */}
-                <div className="relative z-10 p-6 sm:p-8 md:p-10 space-y-2">
-                  <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-[2.4rem] xl:text-[3rem] font-black text-white leading-tight drop-shadow-2xl">
-                    {activeHeadline}
-                  </h1>
-                  {page.subheadline && (
-                    <p className="text-sm sm:text-base md:text-lg text-white/90 font-medium max-w-2xl leading-relaxed drop-shadow">
-                      {page.subheadline}
-                    </p>
-                  )}
-                  {page.pitch && (
-                    <p className="text-xs sm:text-sm text-white/75 leading-relaxed max-w-xl line-clamp-2">
-                      {page.pitch}
-                    </p>
-                  )}
+            {/* Masthead Header */}
+            <header
+              className={`flex justify-between items-end pb-5 border-b transition-colors ${
+                themeMode === "dark" ? "border-[#33302c]" : "border-[#d9d4cf]"
+              }`}
+            >
+              <div>
+                <div
+                  className="text-[10px] font-bold tracking-[0.16em] uppercase"
+                  style={{ color: themeMode === "dark" ? "#a89f97" : "#786f68" }}
+                >
+                  {(page as any).mastheadLeft || "Intelligence report · Issue 08"}
+                </div>
+                <div
+                  className="font-instrument italic text-[28px] sm:text-[34px] leading-tight mt-1"
+                  style={{ color: themeMode === "dark" ? "#fcfaf8" : "#1c1917" }}
+                >
+                  {(page as any).mastheadRight || businessName || "The Executive Dispatch"}
                 </div>
               </div>
 
-              {/* RIGHT: Form and details */}
-              <div className="col-span-12 lg:col-span-5 flex flex-col justify-center space-y-4 w-full">
-                {/* Eyebrow */}
-                <div className="flex items-center gap-2">
-                  <span className="h-1.5 w-1.5 rounded-full animate-pulse" style={{ backgroundColor: brandColor, boxShadow: `0 0 8px ${brandColor}` }} />
-                  <span className="text-[10px] font-black uppercase tracking-[0.2em]" style={{ color: brandColor }}>
-                    {page.bulletsTitle || "Exclusive · Free Access"}
+              <div
+                className="text-right text-xs hidden sm:block font-manrope shrink-0"
+                style={{ color: themeMode === "dark" ? "#a89f97" : "#5c554f" }}
+              >
+                <b className={themeMode === "dark" ? "text-zinc-200" : "text-zinc-900"}>
+                  Published {new Date().getFullYear()}
+                </b>
+                <br />
+                By {businessName || "Marcus Vane"}
+              </div>
+            </header>
+
+            {/* Main Grid */}
+            <main className="grid grid-cols-1 lg:grid-cols-[1.45fr_0.8fr] gap-10 lg:gap-[70px] pt-8 lg:pt-[52px] items-start">
+              {/* Left Column: Visual & Chapters */}
+              <section className="space-y-7 min-w-0">
+                {/* Visual Cover */}
+                <div
+                  className={`relative w-full aspect-[3/2] rounded-xs overflow-hidden border transition-all ${
+                    themeMode === "dark" ? "border-[#33302c] bg-[#1a1918]" : "border-[#ded9d4] bg-[#f5efe9]"
+                  }`}
+                >
+                  {activeImageUrl && activeImageUrl.trim() !== "" ? (
+                    <img
+                      src={activeImageUrl}
+                      alt={page.name || "Monograph Visual"}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div
+                      className="w-full h-full relative flex items-center justify-center overflow-hidden"
+                      style={{
+                        background:
+                          themeMode === "dark"
+                            ? "linear-gradient(135deg, #24201d 0%, #161514 100%)"
+                            : "linear-gradient(135deg, #f0e8e0 0%, #ded2c6 100%)",
+                      }}
+                    >
+                      <div
+                        className="absolute inset-0 opacity-20 pointer-events-none"
+                        style={{
+                          backgroundImage: `radial-gradient(${brandColor} 1px, transparent 1px)`,
+                          backgroundSize: "20px 20px",
+                        }}
+                      />
+                      <div className="relative z-10 text-center px-4 space-y-2">
+                        <div
+                          className="w-16 h-16 mx-auto rounded-full border flex items-center justify-center font-instrument italic text-2xl shadow-sm"
+                          style={{
+                            borderColor: brandColor,
+                            color: brandColor,
+                            backgroundColor: themeMode === "dark" ? "rgba(0,0,0,0.4)" : "rgba(255,255,255,0.7)",
+                          }}
+                        >
+                          {(businessName || "M").charAt(0)}
+                        </div>
+                        <p
+                          className="font-instrument italic text-lg sm:text-xl"
+                          style={{ color: themeMode === "dark" ? "#ded9d4" : "#5c554f" }}
+                        >
+                          {(page as any).mastheadRight || businessName || "The Executive Dispatch"}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Category Tag */}
+                <div>
+                  <span
+                    className="inline-block px-2.5 py-1 text-[10px] font-bold tracking-[0.12em] uppercase rounded-xs"
+                    style={{
+                      backgroundColor: themeMode === "dark" ? "rgba(194, 65, 12, 0.2)" : "#f5e5dc",
+                      color: themeMode === "dark" ? "#fb923c" : "#b53b12",
+                    }}
+                  >
+                    {page.bulletsTitle || "Strategic framework"}
                   </span>
                 </div>
 
-                {/* Bullet list */}
-                {page.bullets && page.bullets.length > 0 && (
-                  <div className="space-y-2 pt-1 border-t border-zinc-200/20 dark:border-zinc-800/40">
-                    {page.bullets.map((item: string, idx: number) => (
-                      <div key={idx} className="flex items-start gap-2.5">
-                        <div
-                          className="flex h-4 w-4 shrink-0 mt-0.5 items-center justify-center rounded-full"
-                          style={{ backgroundColor: `${brandColor}22`, border: `1px solid ${brandColor}55` }}
-                        >
-                          <svg width="7" height="7" viewBox="0 0 7 7" fill="none">
-                            <path d="M1 3.5l1.7 1.7L6 1.5" stroke={brandColor} strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
-                          </svg>
-                        </div>
-                        <span className={`text-xs sm:text-sm md:text-base leading-relaxed ${themeMode === "dark" ? "text-zinc-300" : "text-zinc-600"}`}>{item}</span>
-                      </div>
-                    ))}
+                {/* Title */}
+                <h1
+                  className="font-instrument font-medium text-[36px] sm:text-[48px] lg:text-[62px] xl:text-[70px] leading-[0.94] tracking-tight m-0"
+                  style={{ color: themeMode === "dark" ? "#fcfaf8" : "#1c1917" }}
+                >
+                  {activeHeadline || "The Architecture of High-Output Engineering"}
+                </h1>
+
+                {/* Subheadline / Lead */}
+                {page.subheadline && (
+                  <p
+                    className="text-[17px] sm:text-[19px] leading-[1.6] max-w-[620px] m-0"
+                    style={{ color: themeMode === "dark" ? "#c4bcb3" : "#5c554f" }}
+                  >
+                    {page.subheadline}
+                  </p>
+                )}
+
+                {/* Chapters */}
+                {((page.bullets && page.bullets.length > 0) || !page.bullets) && (
+                  <div
+                    className={`pt-7 border-t transition-colors ${
+                      themeMode === "dark" ? "border-[#33302c]" : "border-[#ded9d4]"
+                    }`}
+                  >
+                    <div
+                      className="text-[10px] font-bold tracking-[0.16em] uppercase mb-3"
+                      style={{ color: themeMode === "dark" ? "#a89f97" : "#786f68" }}
+                    >
+                      Inside this guide
+                    </div>
+
+                    <div className="divide-y divide-[#ded9d4] dark:divide-[#33302c]">
+                      {(page.bullets && page.bullets.length > 0
+                        ? page.bullets
+                        : [
+                            "The Signal-to-Noise Protocol — Audit attention and eliminate low-leverage activities through the Four Filters.",
+                            "Recursive Hiring Loops — Build a talent engine that identifies multipliers before they reach the market.",
+                            "Velocity Without Chaos — Replace recurring meetings with lightweight synchronization rituals.",
+                          ]
+                      ).map((item: string, idx: number) => {
+                        const numStr = (idx + 1).toString().padStart(2, "0") + " /";
+                        let title = item;
+                        let desc = "";
+                        if (item.includes(" — ")) {
+                          const parts = item.split(" — ");
+                          title = parts[0];
+                          desc = parts.slice(1).join(" — ");
+                        } else if (item.includes(" - ")) {
+                          const parts = item.split(" - ");
+                          title = parts[0];
+                          desc = parts.slice(1).join(" - ");
+                        } else if (item.includes(": ")) {
+                          const parts = item.split(": ");
+                          title = parts[0];
+                          desc = parts.slice(1).join(": ");
+                        }
+
+                        return (
+                          <article
+                            key={idx}
+                            className="grid grid-cols-[44px_1fr] sm:grid-cols-[48px_1fr] py-5 items-start gap-2"
+                          >
+                            <span
+                              className="font-instrument italic text-[19px] sm:text-[21px]"
+                              style={{ color: brandColor || "#c2410c" }}
+                            >
+                              {numStr}
+                            </span>
+                            <div className="space-y-1 min-w-0 pr-2">
+                              <h3
+                                className="text-[16px] sm:text-[17px] font-bold leading-snug m-0"
+                                style={{ color: themeMode === "dark" ? "#fcfaf8" : "#1c1917" }}
+                              >
+                                {title}
+                              </h3>
+                              {desc && (
+                                <p
+                                  className="text-[13px] leading-[1.5] m-0"
+                                  style={{ color: themeMode === "dark" ? "#a89f97" : "#756d66" }}
+                                >
+                                  {desc}
+                                </p>
+                              )}
+                            </div>
+                          </article>
+                        );
+                      })}
+                    </div>
                   </div>
                 )}
 
-                {/* Form Card */}
-                <div className="pt-1 w-full">
+                {/* Pullquote */}
+                <blockquote
+                  className="p-7 sm:p-9 rounded-xs transition-colors"
+                  style={{
+                    backgroundColor: themeMode === "dark" ? "#0d0c0b" : "#1c1917",
+                    color: "#fcfaf8",
+                    border: themeMode === "dark" ? "1px solid #292524" : "none",
+                  }}
+                >
+                  <div className="font-instrument italic text-[22px] sm:text-[25px] leading-[1.3]">
+                    {page.pitch ||
+                      "“Speed is often a byproduct of clarity. Build the infrastructure that makes high performance inevitable.”"}
+                  </div>
+                  <small className="block mt-5 font-manrope font-bold text-[9px] tracking-[0.13em] uppercase text-[#a49d96]">
+                    {businessName || "Marcus Vane"} · Author
+                  </small>
+                </blockquote>
+              </section>
+
+              {/* Right Column: Sticky Opt-in Card */}
+              <aside className="w-full">
+                <div
+                  className="sticky top-7 rounded-xs border p-7 sm:p-9 transition-all space-y-5"
+                  style={{
+                    backgroundColor: themeMode === "dark" ? "#1c1917" : "#ffffff",
+                    borderColor: themeMode === "dark" ? "#33302c" : "#ddd7d2",
+                    boxShadow:
+                      themeMode === "dark"
+                        ? "0 18px 50px rgba(0,0,0,0.6)"
+                        : "0 18px 50px rgba(35,25,18,0.08)",
+                  }}
+                >
+                  <div>
+                    <div
+                      className="text-[10px] font-bold tracking-[0.16em] uppercase mb-2"
+                      style={{ color: themeMode === "dark" ? "#a89f97" : "#786f68" }}
+                    >
+                      Complimentary digital edition
+                    </div>
+                    <h2
+                      className="font-instrument text-[28px] sm:text-[32px] font-medium leading-tight m-0"
+                      style={{ color: themeMode === "dark" ? "#fcfaf8" : "#1c1917" }}
+                    >
+                      {page.formTitle || "Get the full report"}
+                    </h2>
+                    <p
+                      className="text-[13px] leading-[1.5] mt-1.5 mb-0"
+                      style={{ color: themeMode === "dark" ? "#a89f97" : "#746c65" }}
+                    >
+                      {page.formSubtitle ||
+                        "The PDF and supplemental worksheets will arrive directly in your inbox."}
+                    </p>
+                  </div>
+
+                  {/* MagnetSignupForm */}
                   <MagnetSignupForm
                     cta={page.cta}
-                    formTitle={page.formTitle}
+                    formTitle={page.formTitle || "Get the full report"}
                     formSubtitle={page.formSubtitle}
-                    formButtonText={page.formButtonText}
+                    formButtonText={page.formButtonText || "Receive the dispatch →"}
                     deliverable={page.deliverable}
                     accent={page.accent}
                     pageId={page.id}
                     pageName={page.name}
                     pageSlug={page.slug}
                     pageOwnerEmail={(page as any).userEmail}
-                    brandColor={brandColor}
+                    brandColor={brandColor || "#c2410c"}
                     highlightIntensity={highlightIntensity}
                     themeMode={themeMode}
                     customPromptQuestion={page.customPromptQuestion}
@@ -1204,16 +1394,25 @@ export default async function MagnetPageRoute({
                     afterSignupOption={page.afterSignupOption}
                     destinationUrl={page.destinationUrl}
                   />
-                  {page.deliverable && (
-                    <p className={`mt-1.5 flex items-center justify-center gap-1.5 text-[11px] sm:text-xs font-medium ${themeMode === "dark" ? "text-zinc-400" : "text-zinc-600"
-                      }`}>
-                      <GiftIcon className="h-3.5 w-3.5" />
-                      {page.deliverable}
-                    </p>
-                  )}
+
+                  <p
+                    className="text-center text-[9px] font-manrope pt-2 m-0"
+                    style={{ color: themeMode === "dark" ? "#8a817a" : "#746c65" }}
+                  >
+                    No noise. Only occasional, high-signal notes.
+                  </p>
                 </div>
-              </div>
-            </div>
+              </aside>
+            </main>
+
+            {/* Footer */}
+            <footer
+              className={`border-t mt-14 pt-6 pb-4 text-[9px] font-bold tracking-[0.14em] uppercase transition-colors text-center sm:text-left ${
+                themeMode === "dark" ? "border-[#33302c] text-[#8a817a]" : "border-[#ded9d4] text-[#8a817a]"
+              }`}
+            >
+              © {new Date().getFullYear()} {businessName || "Vane Strategic Partners"} · Private circulation
+            </footer>
           </div>
         ) : (
           /* TEMPLATE 1 / Default: Modern Full-Width Split Layout */
