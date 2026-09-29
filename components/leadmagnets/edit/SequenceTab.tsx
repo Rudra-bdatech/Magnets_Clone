@@ -239,6 +239,26 @@ export default function SequenceTab({
               </div>
 
               <div className="space-y-2 max-h-[520px] overflow-y-auto pr-1">
+                {/* Step 1: Initial Resource Delivery Milestone Indicator */}
+                <div className="rounded-xl p-2.5 border border-emerald-200 dark:border-emerald-900/60 bg-emerald-50/60 dark:bg-emerald-950/30 text-emerald-900 dark:text-emerald-200 flex items-center justify-between gap-2 shadow-2xs">
+                  <div className="min-w-0 flex-1 flex items-center gap-2">
+                    <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-md bg-emerald-600 text-[10px] font-extrabold text-white">
+                      1
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <span className="block text-xs font-bold truncate">
+                        ⚡ Instant Delivery Email
+                      </span>
+                      <span className="block text-[10px] text-emerald-700 dark:text-emerald-400 font-medium truncate">
+                        Dispatched immediately upon signup
+                      </span>
+                    </div>
+                  </div>
+                  <span className="text-[10px] font-extrabold text-emerald-700 dark:text-emerald-300 bg-emerald-100/80 dark:bg-emerald-950/80 px-1.5 py-0.5 rounded-md shrink-0 border border-emerald-200 dark:border-emerald-800">
+                    Step 1
+                  </span>
+                </div>
+
                 {sequenceEmails.map((item, idx) => {
                   const isSelected = idx === selectedSequenceIndex;
                   return (
@@ -253,10 +273,15 @@ export default function SequenceTab({
                         }`}
                     >
                       <div className="min-w-0 flex-1">
-                        <span className="block text-xs font-extrabold truncate">
-                          Email {idx + 1}: {item.subject || "Untitled email"}
-                        </span>
-                        <span className="block text-[11px] text-zinc-400 font-normal truncate mt-0.5">
+                        <div className="flex items-center gap-1.5">
+                          <span className="flex h-4 w-4 shrink-0 items-center justify-center rounded bg-[#0066B2] text-[9px] font-extrabold text-white">
+                            {idx + 2}
+                          </span>
+                          <span className="block text-xs font-extrabold truncate">
+                            Follow-up #{idx + 1}: {item.subject || "Untitled email"}
+                          </span>
+                        </div>
+                        <span className="block text-[11px] text-zinc-400 font-normal truncate mt-0.5 ml-5.5">
                           {item.delayDays || 1} {item.delayUnit || "hours"} delay
                         </span>
                       </div>

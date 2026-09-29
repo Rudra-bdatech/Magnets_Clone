@@ -780,9 +780,62 @@ export default function SequenceEditor() {
               {/* Email Cards Container */}
               <div className="relative space-y-4">
                 {/* Connecting Vertical Line */}
-                {emailsWithBody.length > 1 && (
-                  <div className="absolute left-5 sm:left-6 top-8 bottom-8 w-0.5 bg-gradient-to-b from-[#0066B2]/40 via-zinc-200 dark:via-zinc-800 to-transparent z-0 pointer-events-none" />
-                )}
+                <div className="absolute left-5 sm:left-6 top-8 bottom-8 w-0.5 bg-gradient-to-b from-[#0066B2]/40 via-zinc-200 dark:via-zinc-800 to-transparent z-0 pointer-events-none" />
+
+                {/* Step 1: Instant Resource Delivery Milestone Card */}
+                <div className="relative z-10 rounded-2xl border border-emerald-200/90 dark:border-emerald-900/60 bg-gradient-to-br from-emerald-50/70 via-white to-white dark:from-emerald-950/20 dark:via-[#18181B] dark:to-[#18181B] p-3.5 sm:p-5 shadow-sm transition hover:shadow-md backdrop-blur-sm">
+                  <div className="flex flex-wrap items-center justify-between gap-2.5 pb-3 border-b border-emerald-100 dark:border-emerald-950/60">
+                    <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+                      <span className="flex h-6 w-6 sm:h-7 sm:w-7 shrink-0 items-center justify-center rounded-lg sm:rounded-xl bg-emerald-600 text-xs font-extrabold text-white shadow-xs">
+                        1
+                      </span>
+                      <div className="flex items-center gap-1.5 rounded-xl border border-emerald-200 dark:border-emerald-800/60 bg-emerald-100/60 dark:bg-emerald-950/50 px-2 sm:px-2.5 py-1 text-xs font-bold text-emerald-800 dark:text-emerald-300">
+                        <Zap className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                        <span>Instant Delivery (On Signup)</span>
+                      </div>
+                      <span className="text-[11px] font-semibold text-zinc-500 dark:text-zinc-400">
+                        Initial resource download email
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-1.5 sm:gap-2 ml-auto sm:ml-0">
+                      <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] sm:text-[11px] font-bold text-emerald-600 dark:text-emerald-400">
+                        <Check className="h-3 w-3 shrink-0" />
+                        100% Delivered ({delivered.toLocaleString()})
+                      </span>
+                      <span className="inline-flex items-center gap-1 rounded-full bg-indigo-500/10 px-2 py-0.5 text-[10px] sm:text-[11px] font-bold text-indigo-600 dark:text-indigo-400">
+                        <Eye className="h-3 w-3 shrink-0" />
+                        {overallOpenRate}% Open Rate
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="mt-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white/80 dark:bg-zinc-900/60 rounded-xl p-3 border border-emerald-100 dark:border-emerald-950/40">
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-2">
+                        <p className="text-[10px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
+                          Resource Email Subject
+                        </p>
+                      </div>
+                      <p className="text-xs sm:text-sm font-bold text-zinc-900 dark:text-white truncate mt-0.5">
+                        {attachedPage?.emailSubject || `Here is your requested resource: ${attachedPage?.name || "Download"}`}
+                      </p>
+                      <p className="text-[11px] text-zinc-500 dark:text-zinc-400 mt-0.5 truncate">
+                        Dispatched immediately to deliver the file link upon form submission.
+                      </p>
+                    </div>
+
+                    {attachedPage && (
+                      <Link
+                        href={`/dashboard/leadmagnets/edit/${attachedPage.id}?tab=delivery`}
+                        className="inline-flex items-center gap-1 text-[11px] font-bold text-[#0066B2] dark:text-[#38BDF8] hover:underline shrink-0"
+                      >
+                        <span>Edit Delivery Template</span>
+                        <ArrowUpRight className="h-3 w-3" />
+                      </Link>
+                    )}
+                  </div>
+                </div>
 
                 {emailsWithBody.map((email, i) => {
                   const isExpanded = expandedEmailId === email.id;
@@ -799,7 +852,10 @@ export default function SequenceEditor() {
                       <div className="flex flex-wrap items-center justify-between gap-2.5 pb-3 border-b border-zinc-100 dark:border-zinc-800/60">
                         <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
                           <span className="flex h-6 w-6 sm:h-7 sm:w-7 shrink-0 items-center justify-center rounded-lg sm:rounded-xl bg-[#0066B2] text-xs font-extrabold text-white shadow-xs">
-                            {i + 1}
+                            {i + 2}
+                          </span>
+                          <span className="text-xs font-extrabold text-[#0066B2] dark:text-[#38BDF8] bg-blue-50 dark:bg-blue-950/40 px-2 py-0.5 rounded-lg border border-blue-200 dark:border-blue-900/60 shrink-0">
+                            Follow-up #{i + 1}
                           </span>
 
                           {/* Delay Selector */}

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { dbConnect } from "@/lib/mongodb";
-import { LeadModel, MagnetPageModel, SequenceModel, AccountModel } from "@/lib/models";
+import { LeadModel, MagnetPageModel, SequenceModel, AccountModel, EmailEventModel } from "@/lib/models";
 import { sendMail } from "@/lib/email";
 import { parseFlexibleDate } from "@/lib/utils";
 
@@ -71,6 +71,26 @@ export async function GET(req: NextRequest) {
     const pageById = new Map(pageDocs.filter((p) => p.id).map((p) => [p.id, p]));
     const pageByName = new Map(pageDocs.filter((p) => p.name).map((p) => [p.name, p]));
 
+    const uniqueRecipientEmails = Array.from(
+      new Set(activeLeads.map((l) => (l.email || "").toLowerCase().trim()).filter(Boolean))
+    );
+
+    const sentEvents = await EmailEventModel.find({
+      recipientEmail: { $in: uniqueRecipientEmails },
+      eventType: "sent",
+    }).lean();
+
+    const sentEventsMap = new Map<string, Set<string>>();
+    for (const ev of sentEvents) {
+      const key = `${(ev.recipientEmail || "").toLowerCase().trim()}_${ev.pageId || ""}`;
+      if (!sentEventsMap.has(key)) {
+        sentEventsMap.set(key, new Set());
+      }
+      if (ev.stepId) {
+        sentEventsMap.get(key)!.add(ev.stepId);
+      }
+    }
+
     for (const lead of activeLeads) {
       if (!lead.pageId && !lead.page) {
         debugLogs.push({ email: lead.email, reason: "No pageId or page" });
@@ -96,6 +116,31 @@ export async function GET(req: NextRequest) {
       }
 
       const sequenceEmails = pageDoc.sequenceEmails;
+      const sentKey = `${(lead.email || "").toLowerCase().trim()}_${pageDoc.id || ""}`;
+      const sentStepIds = sentEventsMap.get(sentKey) || new Set<string>();
+
+      // Find the first sequence email in sequenceEmails that hasn't been sent to this lead yet
+      let nextEmailIndex = -1;
+      for (let idx = 0; idx < sequenceEmails.length; idx++) {
+        const item = sequenceEmails[idx];
+        const stepIdentifier = item.id || `step_${idx + 1}`;
+        const altIdentifier = `se_${pageDoc.id}_${idx + 1}`;
+        if (!sentStepIds.has(stepIdentifier) && !sentStepIds.has(altIdentifier)) {
+          nextEmailIndex = idx;
+          break;
+        }
+      }
+
+      if (nextEmailIndex === -1) {
+        if (lead.sequenceStep !== "Completed") {
+          lead.sequenceStep = "Completed";
+          lead.status = "completed";
+          await lead.save();
+        }
+        debugLogs.push({ email: lead.email, sequenceEmailsTotal: sequenceEmails.length, reason: "All sequence steps already delivered" });
+        continue;
+      }
+
       const parsedDate = parseFlexibleDate(lead.signedUpAt);
       let signupTime = parsedDate ? parsedDate.getTime() : NaN;
 
@@ -109,22 +154,6 @@ export async function GET(req: NextRequest) {
       }
 
       const elapsedMinutes = Math.floor((now - signupTime) / (1000 * 60));
-
-      // Determine next email index based on lead.sequenceStep
-      if (lead.sequenceStep?.toLowerCase().includes("completed")) {
-        debugLogs.push({ email: lead.email, sequenceStep: lead.sequenceStep, reason: "Lead sequence completed" });
-        continue;
-      }
-
-      // Parse step number (e.g., "Step 1 of 1" -> step 1 -> index 0)
-      const currentStepMatch = lead.sequenceStep?.match(/Step\s+(\d+)/i);
-      const currentStepNum = currentStepMatch ? parseInt(currentStepMatch[1], 10) : 1;
-      const nextEmailIndex = currentStepNum - 1; // 0-indexed: Step 1 is index 0
-
-      if (nextEmailIndex < 0 || nextEmailIndex >= sequenceEmails.length) {
-        debugLogs.push({ email: lead.email, currentStepNum, nextEmailIndex, totalEmails: sequenceEmails.length, reason: "Step index out of bounds" });
-        continue;
-      }
 
       const nextEmail = sequenceEmails[nextEmailIndex];
       const targetCumulativeMinutes = sequenceEmails
