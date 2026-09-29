@@ -68,16 +68,20 @@ export function savePages(pages: MagnetPage[]) {
             status: (matchingPage.sequenceEnabled === false ? "draft" : "live") as "draft" | "live",
             stopOnBooking: matchingPage.stopOnCall ?? s.stopOnBooking,
             emails: matchingPage.sequenceEmails.map((e, idx) => {
-              const min = e.delayUnit === "minutes"
-                ? 0
-                : e.delayUnit === "hours"
-                  ? (e.delayDays ?? 1) * 60
-                  : (e.delayDays ?? (idx === 0 ? 0 : 1)) * 1440;
+              const min = e.delayMinutes !== undefined
+                ? e.delayMinutes
+                : e.delayUnit === "minutes"
+                  ? (e.delayDays ?? 0)
+                  : e.delayUnit === "hours"
+                    ? (e.delayDays ?? 1) * 60
+                    : (e.delayDays ?? (idx === 0 ? 0 : 1)) * 1440;
               const lbl = min === 0
                 ? "Instantly"
-                : min < 1440
-                  ? `${Math.round(min / 60)} hour${Math.round(min / 60) > 1 ? "s" : ""} later`
-                  : `${Math.round(min / 1440)} day${Math.round(min / 1440) > 1 ? "s" : ""} later`;
+                : min < 60
+                  ? `${min} minute${min > 1 ? "s" : ""} later`
+                  : min < 1440
+                    ? `${Math.round(min / 60)} hour${Math.round(min / 60) > 1 ? "s" : ""} later`
+                    : `${Math.round(min / 1440)} day${Math.round(min / 1440) > 1 ? "s" : ""} later`;
               return {
                 id: e.id || `se_${s.id}_${idx + 1}`,
                 subject: e.subject || `Follow-up #${idx + 1}`,

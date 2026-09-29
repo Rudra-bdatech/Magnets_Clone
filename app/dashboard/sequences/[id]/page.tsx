@@ -201,7 +201,7 @@ export default function SequenceEditor() {
                   e.delayMinutes !== undefined
                     ? e.delayMinutes
                     : e.delayUnit === "minutes"
-                    ? 0
+                    ? (e.delayDays ?? 0)
                     : e.delayUnit === "hours"
                     ? delayDays * 60
                     : delayDays * 1440;
@@ -209,6 +209,8 @@ export default function SequenceEditor() {
                 const delayLabel =
                   delayMinutes === 0
                     ? "Instantly"
+                    : delayMinutes < 60
+                    ? `${delayMinutes} minute${delayMinutes > 1 ? "s" : ""} later`
                     : delayMinutes < 1440
                     ? `${Math.round(delayMinutes / 60)} hour${Math.round(delayMinutes / 60) > 1 ? "s" : ""} later`
                     : `${Math.round(delayMinutes / 1440)} day${Math.round(delayMinutes / 1440) > 1 ? "s" : ""} later`;
@@ -365,6 +367,9 @@ export default function SequenceEditor() {
 
             if (min === 0) {
               delayDays = 0;
+              delayUnit = "minutes";
+            } else if (min < 60) {
+              delayDays = min;
               delayUnit = "minutes";
             } else if (min < 1440) {
               delayDays = Math.max(1, Math.round(min / 60));

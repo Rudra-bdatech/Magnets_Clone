@@ -138,15 +138,31 @@ export default function SequencesPage() {
 
           const emailsList: SequenceEmail[] =
             p.sequenceEmails && p.sequenceEmails.length > 0
-              ? p.sequenceEmails.map((e, idx) => ({
-                  id: e.id || `se_${p.id}_${idx + 1}`,
-                  subject: e.subject || `Follow-up #${idx + 1}`,
-                  delayLabel: `${e.delayDays || 1} day${(e.delayDays || 1) > 1 ? "s" : ""} delay`,
-                  delayMinutes: (e.delayDays || 1) * 1440,
-                  status: (p.sequenceEnabled === false ? "draft" : "live") as "draft" | "live",
-                  sent: deliveredCount,
-                  opened: openedCount,
-                }))
+              ? p.sequenceEmails.map((e, idx) => {
+                  const min = e.delayMinutes !== undefined
+                    ? e.delayMinutes
+                    : e.delayUnit === "minutes"
+                      ? (e.delayDays ?? 0)
+                      : e.delayUnit === "hours"
+                        ? (e.delayDays ?? 1) * 60
+                        : (e.delayDays ?? (idx === 0 ? 0 : 1)) * 1440;
+                  const lbl = min === 0
+                    ? "Instantly"
+                    : min < 60
+                      ? `${min}m delay`
+                      : min < 1440
+                        ? `${Math.round(min / 60)}h delay`
+                        : `${Math.round(min / 1440)}d delay`;
+                  return {
+                    id: e.id || `se_${p.id}_${idx + 1}`,
+                    subject: e.subject || `Follow-up #${idx + 1}`,
+                    delayLabel: lbl,
+                    delayMinutes: min,
+                    status: (p.sequenceEnabled === false ? "draft" : "live") as "draft" | "live",
+                    sent: deliveredCount,
+                    opened: openedCount,
+                  };
+                })
               : [
                   {
                     id: `se_${p.id}_1`,
@@ -215,7 +231,7 @@ export default function SequencesPage() {
             ...s.stats,
             signedUp: Math.max(s.stats.signedUp || 0, associatedLeads.length),
             delivered: Math.max(s.stats.delivered || 0, liveDelivered),
-            opened: Math.max(s.stats.opened || 0, liveOpened),
+            opened: liveOpened,
             completed: Math.max(s.stats.completed || 0, liveCompleted),
           };
 
@@ -226,7 +242,7 @@ export default function SequencesPage() {
               const stepNum = idx + 1;
               if (idx === 0) {
                 stepDelivered = Math.max(stepDelivered, liveDelivered);
-                stepOpened = Math.max(stepOpened, liveOpened);
+                stepOpened = liveOpened;
               } else {
                 const leadsAtStep = associatedLeads.filter((l) => {
                   if (l.status === "completed") return true;
@@ -236,10 +252,7 @@ export default function SequencesPage() {
                   return l.sequenceStep.toLowerCase().includes("completed");
                 });
                 stepDelivered = Math.max(stepDelivered, leadsAtStep.length);
-                stepOpened = Math.max(
-                  stepOpened,
-                  leadsAtStep.filter((l) => l.status === "opened" || l.status === "replied").length
-                );
+                stepOpened = leadsAtStep.filter((l) => l.status === "opened" || l.status === "replied").length;
               }
               return { ...e, sent: stepDelivered, opened: stepOpened };
             });
