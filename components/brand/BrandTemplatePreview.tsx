@@ -565,229 +565,306 @@ const BrandTemplatePreview = memo(function BrandTemplatePreview({
         </div>
       )}
 
-      {/* TEMPLATE 4: Neon Orbit */}
+      {/* TEMPLATE 4: Night Poster / Day Poster Edition */}
       {templateId === "template4" && (
-        <div className="w-full py-1">
-          <div className="grid grid-cols-12 gap-5 items-center md:items-stretch">
-            {/* LEFT: Copy Panel */}
-            <div className="col-span-12 md:col-span-6 flex flex-col justify-center space-y-4">
-              <div className="flex items-center gap-2">
-                <span
-                  className="h-1.5 w-1.5 rounded-full animate-pulse"
-                  style={{ backgroundColor: brandColor, boxShadow: `0 0 8px ${brandColor}` }}
-                />
-                <span className={`text-[9px] font-black uppercase tracking-[0.22em] ${themeMode === "dark" ? "text-zinc-500" : "text-zinc-400"}`}>
-                  {latestPage?.bulletsTitle || "Free Resource · Limited Time"}
-                </span>
-              </div>
+        (() => {
+          const isDark = themeMode === "dark";
+          const canvasBg = isDark ? "#0b0d12" : "#f5f1e8";
+          const textColor = isDark ? "#f5f1e8" : "#0b0d12";
+          const mutedText = isDark ? "#b9bbc3" : "#4b5563";
+          const dimText = isDark ? "#8d9099" : "#6b7280";
+          const borderColor = isDark ? "rgba(255, 255, 255, 0.17)" : "rgba(11, 13, 18, 0.16)";
+          const accentColor = brandColor || "#ff5038";
+          const numberTeal = isDark ? "#2dd4bf" : "#0d9488";
+          const formBoxBg = isDark ? "#f5f1e8" : "#0b0d12";
+          const formBoxText = isDark ? "#0b0d12" : "#f5f1e8";
+          const formBoxMuted = isDark ? "#4b5563" : "#b9bbc3";
+          const formBoxInputBorder = isDark ? "#0b0d12" : "#f5f1e8";
 
-              <h3 className={`text-xl md:text-2xl font-black leading-tight tracking-tight ${themeMode === "dark" ? "text-white" : "text-zinc-900"}`}>
-                {latestPage?.headline || latestPage?.name || "101 Winning Viral Templates"}
-              </h3>
+          const defaultTracks = [
+            {
+              title: "Pattern Recognition",
+              desc: "Read the cultural signals before they become obvious.",
+            },
+            {
+              title: "Narrative Pressure",
+              desc: "Build stories that create momentum without manipulation.",
+            },
+            {
+              title: "Durable Demand",
+              desc: "Turn attention into a repeatable commercial system.",
+            },
+          ];
 
-              <p className={`text-[11px] leading-relaxed ${themeMode === "dark" ? "text-zinc-400" : "text-zinc-500"}`}>
-                {latestPage?.subheadline || "Field-tested frameworks. Proven content structures. Built for creators who move fast."}
-              </p>
+          const parseTrack = (item: string, idx: number) => {
+            if (!item) return defaultTracks[idx % defaultTracks.length];
+            if (item.includes(":::")) {
+              const parts = item.split(":::");
+              return { title: parts[0]?.trim() || "", desc: parts[1]?.trim() || "" };
+            }
+            if (item.includes(" — ")) {
+              const parts = item.split(" — ");
+              return { title: parts[0]?.trim() || "", desc: parts[1]?.trim() || "" };
+            }
+            if (item.includes(" - ")) {
+              const parts = item.split(" - ");
+              return { title: parts[0]?.trim() || "", desc: parts[1]?.trim() || "" };
+            }
+            return { title: item, desc: "" };
+          };
 
-              {latestPage?.pitch && (
-                <p className={`text-[11px] leading-relaxed ${themeMode === "dark" ? "text-zinc-400" : "text-zinc-500"}`}>
-                  {latestPage.pitch}
-                </p>
-              )}
+          const trackItems = (latestPage?.bullets && latestPage.bullets.length > 0)
+            ? latestPage.bullets
+            : defaultTracks.map((t) => `${t.title} ::: ${t.desc}`);
 
-              {latestPage?.bullets && latestPage.bullets.length > 0 && (
-                <div className="space-y-2">
-                  {latestPage.bullets.map((item, idx) => (
-                    <div key={idx} className="flex items-center gap-2.5">
-                      <div
-                        className="flex h-4 w-4 shrink-0 items-center justify-center rounded-md"
-                        style={{
-                          background: hexWithAlpha(brandColor, 0.09),
-                          border: `1px solid ${hexWithAlpha(brandColor, 0.27)}`,
-                          boxShadow: highlightIntensity > 40 ? `0 0 8px ${hexWithAlpha(brandColor, 0.27)}` : "none",
-                        }}
-                      >
-                        <svg width="7" height="7" viewBox="0 0 7 7" fill="none">
-                          <path d="M1 3.5l1.7 1.7L6 1.5" stroke={brandColor} strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
-                        </svg>
-                      </div>
-                      <span className={`text-[11px] font-medium ${themeMode === "dark" ? "text-zinc-300" : "text-zinc-600"}`}>{item}</span>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              <div
-                className={`rounded-2xl border p-4 sm:p-5 text-left transition-all duration-300 backdrop-blur-md shadow-xl ${
-                  themeMode === "dark" ? "bg-[#14141A]/90 text-white" : "bg-white/90 text-zinc-900"
-                }`}
-                style={{
-                  borderColor: `${brandColor}33`,
-                  boxShadow: `0 10px 30px -4px ${brandColor}25`,
+          return (
+            <div
+              className="w-full rounded-lg overflow-hidden border transition-colors selection:bg-rose-500 selection:text-white"
+              style={{
+                backgroundColor: canvasBg,
+                color: textColor,
+                borderColor,
+                fontFamily: "'Space Mono', monospace, ui-monospace, sans-serif",
+              }}
+            >
+              <style
+                dangerouslySetInnerHTML={{
+                  __html: `
+                    @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+                    .font-bebas {
+                      font-family: 'Bebas Neue', sans-serif, -apple-system;
+                    }
+                    .font-space {
+                      font-family: 'Space Mono', monospace, ui-monospace;
+                    }
+                  `,
                 }}
+              />
+
+              {/* 1. TOP NAV BAR */}
+              <header
+                className="flex items-center justify-between px-4 py-3 border-b text-[9px] tracking-[0.18em] uppercase"
+                style={{ borderColor }}
               >
-                <div className="space-y-1 text-center mb-3">
-                  <p className={`w-full text-center text-sm sm:text-base font-black ${themeMode === "dark" ? "text-white" : "text-zinc-900"}`}>
-                    {latestPage?.formTitle || "Get instant access"}
-                  </p>
-                  <p className="text-[11px] text-[#9B9085] text-center leading-normal">
-                    {latestPage?.formSubtitle || "By opting in you consent to receive this resource by email."}
-                  </p>
-                </div>
-
-                <div className={latestPage?.customFormFields && latestPage.customFormFields.length > 0 ? "grid grid-cols-1 sm:grid-cols-2 gap-2.5" : "space-y-2.5"}>
-                  <input
-                    type="text"
-                    placeholder={latestPage?.namePlaceholder || "Name *"}
-                    readOnly
-                    className="min-h-10 h-10 w-full rounded-xl border border-zinc-200 dark:border-[#252529] bg-white dark:bg-[#18181C] px-3.5 py-2 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 outline-none transition shadow-xs"
-                  />
-                  <input
-                    type="email"
-                    placeholder={latestPage?.emailPlaceholder || "Email *"}
-                    readOnly
-                    className="min-h-10 h-10 w-full rounded-xl border border-zinc-200 dark:border-[#252529] bg-white dark:bg-[#18181C] px-3.5 py-2 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 outline-none transition shadow-xs"
-                  />
-
-                  {latestPage?.customFormFields && latestPage.customFormFields.length > 0 && (
-                    latestPage.customFormFields.map((field) => (
-                      <div key={field.id} className={field.type === "textarea" ? "col-span-1 sm:col-span-2" : ""}>
-                        <input
-                          type="text"
-                          placeholder={`${field.label}${field.required ? " *" : ""}`}
-                          readOnly
-                          className="min-h-10 h-10 w-full rounded-xl border border-zinc-200 dark:border-[#252529] bg-white dark:bg-[#18181C] px-3.5 py-2 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 outline-none transition shadow-xs"
-                        />
-                      </div>
-                    ))
+                <div className="flex items-center gap-2">
+                  {logo && (
+                    <img
+                      src={logo}
+                      alt="Logo"
+                      className="h-4 w-4 object-cover rounded-xs border"
+                      style={{ borderColor }}
+                    />
                   )}
+                  <b className="font-space truncate">
+                    {latestPage?.mastheadLeft || `${(businessName || "NOCTURNE").toUpperCase()} / RESEARCH`}
+                  </b>
                 </div>
 
-                <button
-                  type="button"
-                  className="w-full rounded-xl py-3 text-xs font-black text-white tracking-wide transition-all duration-200 relative overflow-hidden mt-3"
-                  style={{
-                    background: `linear-gradient(135deg, ${brandColor} 0%, ${hexWithAlpha(brandColor, 0.8)} 100%)`,
-                    boxShadow: `0 6px 26px -4px ${hexWithAlpha(brandColor, 0.5 + intensityRatio * 0.45)}`,
-                  }}
-                >
-                  <span className="relative z-10">{latestPage?.formButtonText || latestPage?.cta || "Get instant access"}</span>
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent pointer-events-none" />
-                </button>
-              </div>
-            </div>
+                <div className="font-space text-right text-[8px]" style={{ color: mutedText }}>
+                  {latestPage?.mastheadRight || `ISSUE 11 — ${new Date().getFullYear()}`}
+                </div>
+              </header>
 
-            {/* RIGHT: Orbital image portal */}
-            <div className="col-span-12 md:col-span-6 relative flex flex-col items-center justify-center py-4 min-h-[340px] md:min-h-full">
-              {(logo || businessName) && (
-                <div className="md:absolute md:top-0 md:left-0 md:right-0 flex items-center justify-center gap-2 mb-4 md:mb-0">
-                  <div className={`h-7 w-7 rounded-lg flex items-center justify-center bg-transparent overflow-hidden shadow-xs ${logo ? "border-none" : "border border-dashed border-[#a1a1aa]/50"}`}>
-                    {logo ? (
-                      <img src={logo} alt="Logo" className="h-full w-full object-cover" />
-                    ) : (
-                      <div className="h-3 w-3 rounded-xs border border-dashed border-[#a1a1aa]" />
+              {/* 2. HERO STAGE */}
+              <main className="grid grid-cols-1 md:grid-cols-[1.1fr_0.9fr] min-h-[380px] relative">
+                {/* Left Column: Overline, Headline, Intro */}
+                <div className="p-5 flex flex-col justify-between relative z-10">
+                  <div className="space-y-3">
+                    <small
+                      className="font-space text-[9px] font-bold uppercase tracking-[0.2em] block"
+                      style={{ color: accentColor }}
+                    >
+                      {latestPage?.bulletsTitle || "A MANUAL FOR INDEPENDENT MINDS"}
+                    </small>
+
+                    <h3
+                      className="font-bebas text-4xl sm:text-5xl md:text-6xl leading-[0.84] tracking-normal uppercase m-0"
+                      style={{ color: textColor }}
+                    >
+                      {latestPage?.headline || latestPage?.name || "THE SIGNAL CODE"}
+                    </h3>
+
+                    {latestPage?.subheadline && (
+                      <p
+                        className="font-space text-[10px] leading-relaxed m-0"
+                        style={{ color: mutedText }}
+                      >
+                        {latestPage.subheadline}
+                      </p>
                     )}
                   </div>
-                  <span className={`text-xs sm:text-sm font-black tracking-wider uppercase ${themeMode === "dark" ? "text-white" : "text-zinc-900"}`}>
-                    {businessName}
-                  </span>
+
+                  <div className="flex items-start gap-3 pt-4">
+                    <div
+                      className="font-bebas text-4xl leading-none select-none shrink-0"
+                      style={{ color: numberTeal }}
+                    >
+                      48
+                    </div>
+                    <p
+                      className="font-space text-[9px] leading-relaxed m-0"
+                      style={{ color: mutedText }}
+                    >
+                      {latestPage?.pitch ||
+                        "Pages of battle-tested systems for creating authority, holding attention, and turning an original point of view into durable demand."}
+                    </p>
+                  </div>
                 </div>
-              )}
 
-              <div className="relative flex items-center justify-center w-full">
-                <div
-                  className="absolute rounded-full pointer-events-none"
-                  style={{
-                    width: "360px",
-                    height: "360px",
-                    background: `radial-gradient(circle, ${hexWithAlpha(brandColor, 0.12 + intensityRatio * 0.2)} 0%, transparent 70%)`,
-                    filter: "blur(28px)",
-                  }}
-                />
-                <div className="absolute rounded-full border border-dashed pointer-events-none" style={{ width: "320px", height: "320px", borderColor: hexWithAlpha(brandColor, 0.15) }} />
-                <div
-                  className="absolute rounded-full pointer-events-none"
-                  style={{
-                    width: "275px",
-                    height: "275px",
-                    border: `1px solid ${hexWithAlpha(brandColor, 0.18 + intensityRatio * 0.3)}`,
-                    boxShadow: `0 0 20px ${hexWithAlpha(brandColor, 0.1 + intensityRatio * 0.2)}`,
-                  }}
-                />
-                <div
-                  className="absolute rounded-full pointer-events-none"
-                  style={{
-                    width: "235px",
-                    height: "235px",
-                    border: `2px solid ${hexWithAlpha(brandColor, 0.35 + intensityRatio * 0.5)}`,
-                    boxShadow: `0 0 32px ${hexWithAlpha(brandColor, 0.2 + intensityRatio * 0.35)}, inset 0 0 16px ${hexWithAlpha(brandColor, 0.08 + intensityRatio * 0.15)}`,
-                  }}
-                />
-
-                <div
-                  className="relative rounded-full overflow-hidden z-10"
-                  style={{
-                    width: "205px",
-                    height: "205px",
-                    border: `3px solid ${hexWithAlpha(brandColor, 0.5 + intensityRatio * 0.5)}`,
-                    boxShadow: `0 0 40px -8px ${hexWithAlpha(brandColor, 0.45 + intensityRatio * 0.55)}`,
-                  }}
-                >
+                {/* Right Column: Visual Cover & Floating Formbox */}
+                <div className="relative min-h-[280px] md:min-h-full flex flex-col justify-end overflow-hidden group">
                   {latestPage?.imageUrl && latestPage.imageUrl.trim() !== "" ? (
-                    <img src={latestPage.imageUrl} alt={latestPage?.name || "Cover"} className="w-full h-full object-cover" />
+                    <img
+                      src={latestPage.imageUrl}
+                      alt={latestPage?.name || "Cover"}
+                      className="absolute inset-0 w-full h-full object-cover object-center"
+                    />
                   ) : (
                     <div
-                      className="w-full h-full flex flex-col items-center justify-center gap-2"
-                      style={{ background: `linear-gradient(145deg, ${hexWithAlpha(brandColor, 0.5 + intensityRatio * 0.4)} 0%, #0a0018 100%)` }}
+                      className="absolute inset-0 w-full h-full flex flex-col items-center justify-center select-none"
+                      style={{
+                        background: isDark
+                          ? "radial-gradient(circle at 60% 40%, #1c202a 0%, #0d0f15 100%)"
+                          : "radial-gradient(circle at 60% 40%, #e8e2d5 0%, #d8d0c0 100%)",
+                      }}
                     >
-                      <div className="absolute inset-0 opacity-[0.07]" style={{ backgroundImage: "repeating-linear-gradient(0deg, white 0px, white 1px, transparent 1px, transparent 7px)" }} />
-                      <svg width="30" height="30" viewBox="0 0 30 30" fill="none" className="opacity-60 relative z-10">
-                        <rect x="2" y="2" width="26" height="26" rx="5" stroke="white" strokeWidth="1.2" strokeDasharray="3 2" />
-                        <path d="M2 21l7-6 5 4 4-3 10 8" stroke="white" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
-                        <circle cx="9" cy="10" r="2.5" stroke="white" strokeWidth="1.2" />
-                      </svg>
-                      <span className="text-white text-[7px] font-bold uppercase tracking-[0.2em] opacity-50 relative z-10">Image</span>
+                      <div
+                        className="absolute inset-0 opacity-15 pointer-events-none"
+                        style={{
+                          backgroundImage: `linear-gradient(${textColor} 1px, transparent 1px), linear-gradient(90deg, ${textColor} 1px, transparent 1px)`,
+                          backgroundSize: "28px 28px",
+                        }}
+                      />
+                      <div className="relative z-10 text-center space-y-1 px-4 pointer-events-none">
+                        <div
+                          className="font-bebas text-3xl opacity-25 tracking-widest uppercase"
+                          style={{ color: textColor }}
+                        >
+                          {businessName || "NOCTURNE"}
+                        </div>
+                        <div
+                          className="font-space text-[7px] tracking-[0.2em] uppercase opacity-40"
+                          style={{ color: textColor }}
+                        >
+                          ARCHIVAL SPECIFICATION
+                        </div>
+                      </div>
                     </div>
                   )}
-                  <div className="absolute top-0 left-0 right-0 h-1/3 pointer-events-none" style={{ background: "linear-gradient(to bottom, rgba(255,255,255,0.12) 0%, transparent 100%)" }} />
-                </div>
 
-                <div
-                  className="absolute z-20 h-3 w-3 rounded-full"
-                  style={{
-                    right: "calc(50% - 120px)",
-                    top: "50%",
-                    transform: "translateY(-50%)",
-                    backgroundColor: brandColor,
-                    boxShadow: `0 0 10px ${brandColor}, 0 0 20px ${hexWithAlpha(brandColor, 0.4)}`,
-                  }}
-                />
-              </div>
-            </div>
-          </div>
+                  {/* Fade Gradient */}
+                  <div
+                    className="absolute inset-0 pointer-events-none z-10"
+                    style={{
+                      background: isDark
+                        ? `linear-gradient(90deg, #0b0d12 0%, rgba(11, 13, 18, 0.7) 20%, transparent 55%), linear-gradient(0deg, #0b0d12 0%, transparent 40%)`
+                        : `linear-gradient(90deg, #f5f1e8 0%, rgba(245, 241, 232, 0.7) 20%, transparent 55%), linear-gradient(0deg, #f5f1e8 0%, transparent 40%)`,
+                    }}
+                  />
 
-          {/* BOTTOM TRUST STRIP */}
-          <div className={`px-2 pb-2 pt-3 flex flex-wrap items-center justify-between gap-2 border-t mt-3 ${themeMode === "dark" ? "border-white/[0.05]" : "border-zinc-100"}`}>
-            <div className="flex items-center gap-2">
-              {logo ? (
-                <img src={logo} alt="Logo" className="h-5 w-5 rounded object-contain" />
-              ) : (
-                <div className="h-5 w-5 rounded flex items-center justify-center text-white text-[8px] font-black" style={{ backgroundColor: brandColor }}>
-                  {(businessName || "B").charAt(0).toUpperCase()}
+                  {/* Rotated Sideword */}
+                  <div
+                    className="hidden md:block absolute right-[-30px] top-[140px] transform rotate-90 font-bebas text-xs tracking-[0.3em] select-none pointer-events-none z-20"
+                    style={{
+                      color: isDark ? "rgba(255, 255, 255, 0.28)" : "rgba(11, 13, 18, 0.28)",
+                    }}
+                  >
+                    LIMITED DIGITAL RELEASE
+                  </div>
+
+                  {/* Floating Formbox Preview */}
+                  <div
+                    className="relative md:absolute z-30 md:right-3 md:bottom-3 m-3 md:m-0 w-auto md:w-[220px] p-3.5 shadow-xl"
+                    style={{
+                      backgroundColor: formBoxBg,
+                      color: formBoxText,
+                    }}
+                  >
+                    <p
+                      className="font-bebas text-lg uppercase leading-tight m-0"
+                      style={{ color: formBoxText }}
+                    >
+                      {latestPage?.formTitle || "ENTER THE ARCHIVE"}
+                    </p>
+                    <p
+                      className="font-space text-[8px] leading-tight mt-0.5 mb-2"
+                      style={{ color: formBoxMuted }}
+                    >
+                      {latestPage?.formSubtitle || "Receive the complete report and templates."}
+                    </p>
+
+                    <div className="space-y-1.5">
+                      <input
+                        type="text"
+                        readOnly
+                        placeholder="YOUR NAME"
+                        className="w-full border-0 border-b bg-transparent py-1 px-0.5 font-space text-[9px] outline-none"
+                        style={{ borderBottomColor: formBoxInputBorder, color: formBoxText }}
+                      />
+                      <input
+                        type="email"
+                        readOnly
+                        placeholder="EMAIL ADDRESS"
+                        className="w-full border-0 border-b bg-transparent py-1 px-0.5 font-space text-[9px] outline-none"
+                        style={{ borderBottomColor: formBoxInputBorder, color: formBoxText }}
+                      />
+                      <button
+                        type="button"
+                        className="w-full text-center py-2 px-2 font-space font-bold text-[8px] uppercase tracking-wider mt-1.5 cursor-pointer"
+                        style={{
+                          backgroundColor: accentColor,
+                          color: isDark ? "#0b0d12" : "#ffffff",
+                        }}
+                      >
+                        {latestPage?.formButtonText || latestPage?.cta || "UNLOCK THE REPORT →"}
+                      </button>
+                    </div>
+                  </div>
                 </div>
-              )}
-              <span className={`text-[10px] font-bold ${themeMode === "dark" ? "text-zinc-400" : "text-zinc-500"}`}>{businessName || "Brand"}</span>
+              </main>
+
+              {/* 3. TRACKS SECTION */}
+              <footer
+                className="border-t grid grid-cols-1 md:grid-cols-3 text-left"
+                style={{ borderColor }}
+              >
+                {trackItems.slice(0, 3).map((item, idx) => {
+                  const trackNum = (idx + 1).toString().padStart(2, "0");
+                  const parsed = parseTrack(item, idx);
+
+                  return (
+                    <article
+                      key={idx}
+                      className={`p-3 flex flex-col justify-between ${
+                        idx < 2 ? "md:border-r border-b md:border-b-0" : ""
+                      }`}
+                      style={{ borderColor }}
+                    >
+                      <small
+                        className="font-space text-[8px] font-bold uppercase tracking-wider"
+                        style={{ color: numberTeal }}
+                      >
+                        TRACK / {trackNum}
+                      </small>
+                      <p
+                        className="font-bebas text-base uppercase m-0 leading-tight mt-0.5"
+                        style={{ color: textColor }}
+                      >
+                        {parsed.title}
+                      </p>
+                      <p
+                        className="font-space text-[7px] leading-tight m-0 mt-0.5"
+                        style={{ color: dimText }}
+                      >
+                        {parsed.desc}
+                      </p>
+                    </article>
+                  );
+                })}
+              </footer>
             </div>
-            <div className="flex items-center gap-2.5 sm:gap-3 flex-wrap">
-              {["10K+ Downloads", "Verified Free", "Instant Access"].map((tag, i) => (
-                <span key={i} className={`flex items-center gap-1 text-[9px] font-semibold ${themeMode === "dark" ? "text-zinc-500" : "text-zinc-400"}`}>
-                  <span className="h-1 w-1 rounded-full" style={{ backgroundColor: brandColor }} />
-                  {tag}
-                </span>
-              ))}
-            </div>
-          </div>
-        </div>
+          );
+        })()
       )}
 
       {/* TEMPLATE 5: Editorial Resource Showcase & Framework Edition */}

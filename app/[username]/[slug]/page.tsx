@@ -300,13 +300,17 @@ export default async function MagnetPageRoute({
           ? (themeMode === "dark" ? "#0d0d0f" : "#f4ff3c")
           : isTemplate2
           ? (themeMode === "dark" ? "#141416" : "#f3f0e8")
+          : isTemplate4
+          ? (themeMode === "dark" ? "#0b0d12" : "#f5f1e8")
           : (themeMode === "dark" ? "#0E0E10" : "#FAFAFA"),
         color: isTemplate7
           ? (themeMode === "dark" ? (brandColor || "#f4ff3c") : "#101010")
           : isTemplate2
           ? (themeMode === "dark" ? "#eae8e3" : "#151515")
+          : isTemplate4
+          ? (themeMode === "dark" ? "#f5f1e8" : "#0b0d12")
           : (themeMode === "dark" ? "#ffffff" : "#18181b"),
-        backgroundImage: (isTemplate2 || isTemplate7)
+        backgroundImage: (isTemplate2 || isTemplate7 || isTemplate4)
           ? "none"
           : (themeMode === "light"
             ? `radial-gradient(circle at 0% 0%, ${brandColor}10 0%, transparent 40%), radial-gradient(circle at 100% 100%, ${brandColor}08 0%, transparent 40%)`
@@ -768,119 +772,306 @@ export default async function MagnetPageRoute({
             </div>
           </div>
         ) : isTemplate4 ? (
-          /* TEMPLATE 4: Neon Orbit (Full Viewport Split Layout) */
-          <div className="w-full flex-1 flex flex-col justify-center pt-4 sm:pt-5 md:pt-6 pb-3 sm:pb-4">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 xl:gap-14 items-center lg:items-stretch w-full">
-              {/* LEFT: Copy + Form */}
-              <div className="col-span-12 lg:col-span-6 xl:col-span-7 flex flex-col justify-center space-y-4 lg:space-y-5 min-w-0">
-                <div className="flex items-center gap-2">
-                  <span className="h-1.5 w-1.5 rounded-full animate-pulse" style={{ backgroundColor: brandColor, boxShadow: `0 0 8px ${brandColor}` }} />
-                  <span className={`text-[10px] font-black uppercase tracking-[0.22em] ${themeMode === "dark" ? "text-zinc-400" : "text-zinc-500"}`}>
-                    {page.bulletsTitle || "Free Resource · Limited Time"}
-                  </span>
-                </div>
+          /* TEMPLATE 4: Night Poster / Day Poster Brutalist Edition */
+          (() => {
+            const isDark = themeMode === "dark";
+            const canvasBg = isDark ? "#0b0d12" : "#f5f1e8";
+            const textColor = isDark ? "#f5f1e8" : "#0b0d12";
+            const mutedText = isDark ? "#b9bbc3" : "#4b5563";
+            const dimText = isDark ? "#8d9099" : "#6b7280";
+            const borderColor = isDark ? "rgba(255, 255, 255, 0.17)" : "rgba(11, 13, 18, 0.16)";
+            const accentColor = brandColor || "#ff5038";
+            const numberTeal = isDark ? "#2dd4bf" : "#0d9488";
+            const currentYear = new Date().getFullYear();
 
-                <h1 className={`text-3xl sm:text-4xl md:text-5xl lg:text-[2.4rem] xl:text-[3rem] font-black leading-[1.08] tracking-tight break-words [overflow-wrap:anywhere] ${themeMode === "dark" ? "text-white" : "text-zinc-900"}`}>
-                  {activeHeadline}
-                </h1>
+            const defaultTracks = [
+              {
+                title: "Pattern Recognition",
+                desc: "Read the cultural signals before they become obvious.",
+              },
+              {
+                title: "Narrative Pressure",
+                desc: "Build stories that create momentum without manipulation.",
+              },
+              {
+                title: "Durable Demand",
+                desc: "Turn attention into a repeatable commercial system.",
+              },
+            ];
 
-                {page.subheadline && (
-                  <p className={`text-sm sm:text-base md:text-lg font-medium leading-relaxed break-words [overflow-wrap:anywhere] ${themeMode === "dark" ? "text-zinc-300" : "text-zinc-600"}`}>
-                    {page.subheadline}
-                  </p>
-                )}
+            const parseTrack = (item: string, idx: number) => {
+              if (!item) return defaultTracks[idx % defaultTracks.length];
+              if (item.includes(":::")) {
+                const parts = item.split(":::");
+                return { title: parts[0]?.trim() || "", desc: parts[1]?.trim() || "" };
+              }
+              if (item.includes(" — ")) {
+                const parts = item.split(" — ");
+                return { title: parts[0]?.trim() || "", desc: parts[1]?.trim() || "" };
+              }
+              if (item.includes(" - ")) {
+                const parts = item.split(" - ");
+                return { title: parts[0]?.trim() || "", desc: parts[1]?.trim() || "" };
+              }
+              return { title: item, desc: "" };
+            };
 
-                {page.pitch && (
-                  <p className={`text-xs sm:text-sm md:text-base leading-relaxed whitespace-pre-line break-words [overflow-wrap:anywhere] ${themeMode === "dark" ? "text-zinc-400" : "text-zinc-500"}`}>
-                    {page.pitch}
-                  </p>
-                )}
+            const trackItems = (page.bullets && page.bullets.length > 0)
+              ? page.bullets
+              : defaultTracks.map((t) => `${t.title} ::: ${t.desc}`);
 
-                {page.bullets && page.bullets.length > 0 && (
-                  <div className="space-y-2.5">
-                    {page.bullets.map((item: string, idx: number) => (
-                      <div key={idx} className="flex items-center gap-2.5">
-                        <div className="flex h-4 w-4 shrink-0 items-center justify-center rounded-md" style={{ background: `${brandColor}18`, border: `1px solid ${brandColor}44` }}>
-                          <svg width="7" height="7" viewBox="0 0 7 7" fill="none"><path d="M1 3.5l1.7 1.7L6 1.5" stroke={brandColor} strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                        </div>
-                        <span className={`text-xs sm:text-sm md:text-base font-medium ${themeMode === "dark" ? "text-zinc-300" : "text-zinc-600"}`}>{item}</span>
-                      </div>
-                    ))}
-                  </div>
-                )}
+            return (
+              <div
+                className="w-full flex-1 flex flex-col justify-between selection:bg-rose-500 selection:text-white transition-colors duration-200"
+                style={{
+                  backgroundColor: canvasBg,
+                  color: textColor,
+                  fontFamily: "'Space Mono', monospace, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas",
+                }}
+              >
+                <style
+                  dangerouslySetInnerHTML={{
+                    __html: `
+                      @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+                      .font-bebas {
+                        font-family: 'Bebas Neue', sans-serif, -apple-system;
+                      }
+                      .font-space {
+                        font-family: 'Space Mono', monospace, ui-monospace;
+                      }
+                    `,
+                  }}
+                />
 
-                <div className="pt-1">
-                  <MagnetSignupForm
-                    cta={page.cta}
-                    formTitle={page.formTitle}
-                    formSubtitle={page.formSubtitle}
-                    formButtonText={page.formButtonText}
-                    deliverable={page.deliverable}
-                    accent={page.accent}
-                    pageId={page.id}
-                    pageName={page.name}
-                    pageSlug={page.slug}
-                    pageOwnerEmail={(page as any).userEmail}
-                    brandColor={brandColor}
-                    highlightIntensity={highlightIntensity}
-                    themeMode={themeMode}
-                    customPromptQuestion={page.customPromptQuestion}
-                    customPromptPlaceholder={page.customPromptPlaceholder}
-                    enableAiPersonalizedDeliverable={page.enableAiPersonalizedDeliverable}
-                    customFormFields={page.customFormFields}
-                    username={params.username}
-                    isVariantB={isVariantB}
-                    afterSignupOption={page.afterSignupOption}
-                    destinationUrl={page.destinationUrl}
-                  />
-                </div>
-              </div>
-
-              {/* RIGHT: Orbital image portal */}
-              <div className="col-span-12 lg:col-span-6 xl:col-span-5 relative flex flex-col items-center justify-center py-6 min-h-[440px] sm:min-h-[500px] lg:min-h-[580px] xl:min-h-[640px]">
-                {/* Brand Logo & Brand Name aligned with top of left side content */}
-                {(logo || businessName) && (
-                  <div className="lg:absolute lg:top-0 lg:left-0 lg:right-0 flex items-center justify-center gap-2.5 mb-6 lg:mb-0">
-                    <div className="h-8 w-8 sm:h-9 sm:w-9 rounded-xl flex items-center justify-center bg-transparent overflow-hidden shadow-xs border-none">
-                      {logo ? (
-                        <img src={logo} alt="Brand Logo" className="h-full w-full object-cover" />
-                      ) : (
-                        <div className="h-4 w-4 rounded-md border-2 border-dashed border-[#a1a1aa]" />
+                <div className="w-full flex-1 flex flex-col">
+                  {/* 1. TOP NAV BAR */}
+                  <header
+                    className="relative z-10 flex flex-wrap items-center justify-between gap-3 px-5 py-4 sm:px-8 sm:py-5 border-b text-[10px] tracking-[0.18em] uppercase transition-colors"
+                    style={{ borderColor }}
+                  >
+                    <div className="flex items-center gap-3 min-w-0">
+                      {logo && (
+                        <img
+                          src={logo}
+                          alt="Logo"
+                          className="h-6 w-6 object-cover rounded-xs border shrink-0"
+                          style={{ borderColor }}
+                        />
                       )}
+                      <b className="font-space tracking-[0.18em] truncate">
+                        {(page as any).mastheadLeft || `${businessName.toUpperCase()} / RESEARCH`}
+                      </b>
                     </div>
-                    <span className={`text-base sm:text-lg font-black tracking-wider uppercase ${themeMode === "dark" ? "text-white" : "text-zinc-900"}`}>
-                      {businessName}
-                    </span>
-                  </div>
-                )}
 
-                <div className="relative flex items-center justify-center w-full">
-                  {/* Ambient glow */}
-                  <div className="absolute rounded-full pointer-events-none" style={{ width: "min(92vw, 560px)", height: "min(92vw, 560px)", background: `radial-gradient(circle, ${brandColor}${Math.round((0.15 + (highlightIntensity / 100) * 0.25) * 255).toString(16).padStart(2, '0')} 0%, transparent 70%)`, filter: "blur(32px)" }} />
-                  {/* Outer dashed ring */}
-                  <div className="absolute rounded-full border border-dashed pointer-events-none" style={{ width: "min(84vw, 500px)", height: "min(84vw, 500px)", borderColor: `${brandColor}25` }} />
-                  {/* Mid ring */}
-                  <div className="absolute rounded-full pointer-events-none" style={{ width: "min(74vw, 440px)", height: "min(74vw, 440px)", border: `1px solid ${brandColor}${Math.round((0.18 + (highlightIntensity / 100) * 0.3) * 255).toString(16).padStart(2, '0')}`, boxShadow: `0 0 24px ${brandColor}22` }} />
-                  {/* Inner neon halo */}
-                  <div className="absolute rounded-full pointer-events-none" style={{ width: "min(64vw, 380px)", height: "min(64vw, 380px)", border: `2px solid ${brandColor}${Math.round((0.35 + (highlightIntensity / 100) * 0.5) * 255).toString(16).padStart(2, '0')}`, boxShadow: `0 0 36px ${brandColor}${Math.round((0.2 + (highlightIntensity / 100) * 0.35) * 255).toString(16).padStart(2, '0')}` }} />
-                  {/* Circular image */}
-                  <div className="relative rounded-full overflow-hidden z-10" style={{ width: "min(56vw, 330px)", height: "min(56vw, 330px)", border: `3.5px solid ${brandColor}${Math.round((0.5 + (highlightIntensity / 100) * 0.5) * 255).toString(16).padStart(2, '0')}`, boxShadow: `0 0 45px -6px ${brandColor}${Math.round((0.45 + (highlightIntensity / 100) * 0.55) * 255).toString(16).padStart(2, '0')}` }}>
-                    {activeImageUrl && activeImageUrl.trim() !== "" ? (
-                      <img
-                        src={activeImageUrl}
-                        alt={page.name}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center" style={{ background: `linear-gradient(135deg, ${brandColor}88 0%, #0d0012 100%)` }}>
-                        <div className="h-8 w-8 rounded-full bg-white/20" />
+                    <div className="flex items-center gap-2 shrink-0">
+                      <span className="font-space text-right" style={{ color: mutedText }}>
+                        {(page as any).mastheadRight || `ISSUE 11 — ${currentYear}`}
+                      </span>
+                    </div>
+                  </header>
+
+                  {/* 2. MAIN HERO STAGE */}
+                  <main className="w-full flex-1 flex flex-col">
+                    <section className="grid grid-cols-1 lg:grid-cols-[1.1fr_0.9fr] min-h-[580px] lg:min-h-[640px] relative">
+                      {/* Left Column: Overline, Massive Headline, Stat & Pitch */}
+                      <div className="p-6 sm:p-10 lg:py-14 lg:px-12 flex flex-col justify-between relative z-10">
+                        <div className="space-y-5 sm:space-y-6">
+                          <div>
+                            <small
+                              className="font-space text-[11px] sm:text-xs font-bold uppercase tracking-[0.2em] block"
+                              style={{ color: accentColor }}
+                            >
+                              {page.bulletsTitle || "A MANUAL FOR INDEPENDENT MINDS"}
+                            </small>
+                          </div>
+
+                          <div>
+                            <h1
+                              className="font-bebas text-5xl sm:text-7xl md:text-8xl lg:text-[96px] xl:text-[110px] leading-[0.82] tracking-normal uppercase m-0 break-words"
+                              style={{ color: textColor }}
+                            >
+                              {activeHeadline || (
+                                <>
+                                  THE<br />
+                                  <span style={{ color: accentColor }}>SIGNAL</span>
+                                  <br />
+                                  CODE
+                                </>
+                              )}
+                            </h1>
+                          </div>
+
+                          {page.subheadline && (
+                            <p
+                              className="font-space text-xs sm:text-sm leading-relaxed max-w-[480px] m-0"
+                              style={{ color: mutedText }}
+                            >
+                              {page.subheadline}
+                            </p>
+                          )}
+                        </div>
+
+                        {/* Intro Stat & Pitch Row */}
+                        <div className="flex items-start gap-5 sm:gap-7 pt-8 sm:pt-10">
+                          <div
+                            className="font-bebas text-5xl sm:text-6xl md:text-7xl leading-none select-none shrink-0"
+                            style={{ color: numberTeal }}
+                          >
+                            48
+                          </div>
+
+                          <div className="flex-1 max-w-[440px]">
+                            <p
+                              className="font-space text-xs sm:text-[13px] leading-relaxed m-0"
+                              style={{ color: mutedText }}
+                            >
+                              {page.pitch ||
+                                "Pages of battle-tested systems for creating authority, holding attention, and turning an original point of view into durable demand."}
+                            </p>
+                          </div>
+                        </div>
                       </div>
-                    )}
-                  </div>
+
+                      {/* Right Column: Cover Image & Floating Form Box */}
+                      <div className="relative min-h-[480px] lg:min-h-full flex flex-col justify-end overflow-hidden group">
+                        {activeImageUrl && activeImageUrl.trim() !== "" ? (
+                          <img
+                            src={activeImageUrl}
+                            alt={page.name || "Poster Visual"}
+                            className="absolute inset-0 w-full h-full object-cover object-center"
+                          />
+                        ) : (
+                          <div
+                            className="absolute inset-0 w-full h-full flex flex-col items-center justify-center select-none"
+                            style={{
+                              background: isDark
+                                ? "radial-gradient(circle at 60% 40%, #1c202a 0%, #0d0f15 100%)"
+                                : "radial-gradient(circle at 60% 40%, #e8e2d5 0%, #d8d0c0 100%)",
+                            }}
+                          >
+                            <div
+                              className="absolute inset-0 opacity-15 pointer-events-none"
+                              style={{
+                                backgroundImage: `linear-gradient(${textColor} 1px, transparent 1px), linear-gradient(90deg, ${textColor} 1px, transparent 1px)`,
+                                backgroundSize: "48px 48px",
+                              }}
+                            />
+                            <div className="relative z-10 text-center space-y-3 px-6 pointer-events-none">
+                              <div
+                                className="font-bebas text-6xl sm:text-7xl opacity-20 tracking-widest uppercase"
+                                style={{ color: textColor }}
+                              >
+                                {businessName}
+                              </div>
+                              <div
+                                className="font-space text-[10px] tracking-[0.25em] uppercase opacity-40"
+                                style={{ color: textColor }}
+                              >
+                                ARCHIVAL SPECIFICATION // VOL 04
+                              </div>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Subtle Fade Gradient */}
+                        <div
+                          className="absolute inset-0 pointer-events-none z-10"
+                          style={{
+                            background: isDark
+                              ? `linear-gradient(90deg, #0b0d12 0%, rgba(11, 13, 18, 0.7) 20%, transparent 55%), linear-gradient(0deg, #0b0d12 0%, transparent 40%)`
+                              : `linear-gradient(90deg, #f5f1e8 0%, rgba(245, 241, 232, 0.7) 20%, transparent 55%), linear-gradient(0deg, #f5f1e8 0%, transparent 40%)`,
+                          }}
+                        />
+
+                        {/* Rotated Sideword */}
+                        <div
+                          className="hidden lg:block absolute right-[-45px] top-[240px] transform rotate-90 font-bebas text-lg tracking-[0.3em] select-none pointer-events-none z-20"
+                          style={{
+                            color: isDark ? "rgba(255, 255, 255, 0.28)" : "rgba(11, 13, 18, 0.28)",
+                          }}
+                        >
+                          LIMITED DIGITAL RELEASE
+                        </div>
+
+                        {/* Floating Signup Form Box */}
+                        <aside className="relative lg:absolute z-30 lg:right-[4vw] lg:bottom-10 m-5 lg:m-0 w-auto lg:w-[min(390px,90%)]">
+                          <MagnetSignupForm
+                            cta={page.cta}
+                            layout="poster"
+                            formTitle={page.formTitle || "ENTER THE ARCHIVE"}
+                            formSubtitle={
+                              page.formSubtitle ||
+                              "Receive the complete report and three working templates."
+                            }
+                            formButtonText={page.formButtonText || "UNLOCK THE REPORT →"}
+                            deliverable={page.deliverable}
+                            accent={page.accent}
+                            pageId={page.id}
+                            pageName={page.name}
+                            pageSlug={page.slug}
+                            pageOwnerEmail={(page as any).userEmail}
+                            brandColor={brandColor}
+                            highlightIntensity={highlightIntensity}
+                            themeMode={themeMode}
+                            customPromptQuestion={page.customPromptQuestion}
+                            customPromptPlaceholder={page.customPromptPlaceholder}
+                            enableAiPersonalizedDeliverable={page.enableAiPersonalizedDeliverable}
+                            customFormFields={page.customFormFields}
+                            username={params.username}
+                            isVariantB={isVariantB}
+                            afterSignupOption={page.afterSignupOption}
+                            destinationUrl={page.destinationUrl}
+                          />
+                        </aside>
+                      </div>
+                    </section>
+
+                    {/* 3. TRACKS SECTION (BULLETS) */}
+                    <section
+                      className="border-t grid grid-cols-1 md:grid-cols-3 transition-colors"
+                      style={{ borderColor }}
+                    >
+                      {trackItems.map((item, idx) => {
+                        const trackNum = (idx + 1).toString().padStart(2, "0");
+                        const parsed = parseTrack(item, idx);
+
+                        return (
+                          <article
+                            key={idx}
+                            className={`p-6 sm:py-7 sm:px-8 flex flex-col justify-between ${
+                              idx < trackItems.length - 1 ? "md:border-r border-b md:border-b-0" : ""
+                            }`}
+                            style={{ borderColor }}
+                          >
+                            <div className="space-y-2">
+                              <small
+                                className="font-space text-[10px] sm:text-[11px] font-bold uppercase tracking-wider"
+                                style={{ color: numberTeal }}
+                              >
+                                TRACK / {trackNum}
+                              </small>
+                              <h3
+                                className="font-bebas text-2xl sm:text-3xl tracking-normal uppercase m-0 leading-tight"
+                                style={{ color: textColor }}
+                              >
+                                {parsed.title}
+                              </h3>
+                              <p
+                                className="font-space text-[10px] sm:text-[11px] leading-relaxed m-0"
+                                style={{ color: dimText }}
+                              >
+                                {parsed.desc}
+                              </p>
+                            </div>
+                          </article>
+                        );
+                      })}
+                    </section>
+                  </main>
                 </div>
               </div>
-            </div>
-          </div>
+            );
+          })()
         ) : isTemplate5 ? (
           /* TEMPLATE 5: Editorial Resource Showcase & Framework Edition */
           <div className="w-full flex-1 flex flex-col justify-center py-4 sm:py-8 max-w-3xl mx-auto px-2 sm:px-4">

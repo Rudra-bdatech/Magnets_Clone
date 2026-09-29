@@ -47,7 +47,7 @@ export default function MagnetSignupForm({
   customFormFields?: CustomFormField[];
   username?: string;
   isVariantB?: boolean;
-  layout?: "standard" | "horizontal-glass" | "split-panel" | "editorial" | "monograph" | "brutalist";
+  layout?: "standard" | "horizontal-glass" | "split-panel" | "editorial" | "monograph" | "brutalist" | "poster";
   afterSignupOption?: "standard" | "elsewhere" | "custom";
   destinationUrl?: string;
 }) {
@@ -263,6 +263,180 @@ export default function MagnetSignupForm({
             <span>📥 Click Here to Download Resource Immediately</span>
           </a>
         </div>
+      ) : layout === "poster" ? (
+        (() => {
+          const accentColor = brandColor || "#ff5038";
+          const isDark = themeMode === "dark";
+          const formBoxBg = isDark ? "#f5f1e8" : "#0b0d12";
+          const formBoxText = isDark ? "#0b0d12" : "#f5f1e8";
+          const formBoxMuted = isDark ? "#4b5563" : "#b9bbc3";
+          const formBoxInputBorder = isDark ? "#0b0d12" : "#f5f1e8";
+
+          return (
+            <div
+              className="p-6 sm:p-7 shadow-2xl transition-all"
+              suppressHydrationWarning
+              style={{
+                backgroundColor: formBoxBg,
+                color: formBoxText,
+                fontFamily: "'Space Mono', monospace, ui-monospace, sans-serif",
+              }}
+            >
+              <div className="space-y-1 mb-4" suppressHydrationWarning>
+                <h2
+                  className="font-bebas text-3xl sm:text-4xl tracking-normal uppercase m-0 leading-tight"
+                  style={{ color: formBoxText }}
+                  suppressHydrationWarning
+                >
+                  {formTitle || "ENTER THE ARCHIVE"}
+                </h2>
+                <p
+                  className="font-space text-[11px] leading-relaxed m-0"
+                  style={{ color: formBoxMuted }}
+                  suppressHydrationWarning
+                >
+                  {formSubtitle || "Receive the complete report and three working templates."}
+                </p>
+              </div>
+
+              <form onSubmit={handleSubmit} className="space-y-3 font-space">
+                <div>
+                  <input
+                    type="text"
+                    required
+                    disabled={loading}
+                    placeholder="YOUR NAME"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    className="w-full border-0 border-b bg-transparent py-2.5 px-0.5 font-space text-xs outline-none transition-colors"
+                    style={{
+                      borderBottomColor: formBoxInputBorder,
+                      color: formBoxText,
+                    }}
+                  />
+                </div>
+
+                <div>
+                  <input
+                    type="email"
+                    required
+                    disabled={loading}
+                    placeholder="EMAIL ADDRESS"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="w-full border-0 border-b bg-transparent py-2.5 px-0.5 font-space text-xs outline-none transition-colors"
+                    style={{
+                      borderBottomColor: formBoxInputBorder,
+                      color: formBoxText,
+                    }}
+                  />
+                </div>
+
+                {customFormFields &&
+                  customFormFields.map((field) => (
+                    <div key={field.id}>
+                      {field.type === "textarea" ? (
+                        <textarea
+                          rows={2}
+                          required={field.required}
+                          disabled={loading}
+                          placeholder={`${(field.label || "").toUpperCase()}${field.required ? " *" : ""}`}
+                          value={customFieldValues[field.id] || ""}
+                          onChange={(e) => handleCustomFieldChange(field.id, e.target.value)}
+                          className="w-full border-0 border-b bg-transparent py-2.5 px-0.5 font-space text-xs outline-none resize-none transition-colors"
+                          style={{
+                            borderBottomColor: formBoxInputBorder,
+                            color: formBoxText,
+                          }}
+                        />
+                      ) : field.type === "select" ? (
+                        <select
+                          required={field.required}
+                          disabled={loading}
+                          value={customFieldValues[field.id] || ""}
+                          onChange={(e) => handleCustomFieldChange(field.id, e.target.value)}
+                          className="w-full border-0 border-b bg-transparent py-2.5 px-0.5 font-space text-xs outline-none cursor-pointer transition-colors"
+                          style={{
+                            borderBottomColor: formBoxInputBorder,
+                            color: formBoxText,
+                            backgroundColor: formBoxBg,
+                          }}
+                        >
+                          <option value="">
+                            {`${(field.label || "SELECT").toUpperCase()}${field.required ? " *" : ""}`}
+                          </option>
+                          {(field.options || []).map((opt, idx) => (
+                            <option key={idx} value={opt}>
+                              {opt}
+                            </option>
+                          ))}
+                        </select>
+                      ) : (
+                        <input
+                          type={field.type === "number" ? "number" : "text"}
+                          required={field.required}
+                          disabled={loading}
+                          placeholder={`${(field.label || "").toUpperCase()}${field.required ? " *" : ""}`}
+                          value={customFieldValues[field.id] || ""}
+                          onChange={(e) => handleCustomFieldChange(field.id, e.target.value)}
+                          className="w-full border-0 border-b bg-transparent py-2.5 px-0.5 font-space text-xs outline-none transition-colors"
+                          style={{
+                            borderBottomColor: formBoxInputBorder,
+                            color: formBoxText,
+                          }}
+                        />
+                      )}
+                    </div>
+                  ))}
+
+                {enableAiPersonalizedDeliverable && (
+                  <div>
+                    <input
+                      type="text"
+                      required
+                      disabled={loading}
+                      placeholder={(customPromptPlaceholder || customPromptQuestion || "YOUR PRIMARY OBJECTIVE").toUpperCase()}
+                      value={customAnswer}
+                      onChange={(e) => setCustomAnswer(e.target.value)}
+                      className="w-full border-0 border-b bg-transparent py-2.5 px-0.5 font-space text-xs outline-none transition-colors"
+                      style={{
+                        borderBottomColor: formBoxInputBorder,
+                        color: formBoxText,
+                      }}
+                    />
+                  </div>
+                )}
+
+                {errorMsg && (
+                  <p className="text-red-500 font-space text-[10px] m-0 pt-1">
+                    {errorMsg}
+                  </p>
+                )}
+
+                <div className="pt-2">
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="w-full text-center py-3.5 px-4 font-space font-bold text-xs uppercase cursor-pointer transition-all hover:brightness-105 active:scale-[0.99] disabled:opacity-50"
+                    style={{
+                      backgroundColor: accentColor,
+                      color: isDark ? "#0b0d12" : "#ffffff",
+                    }}
+                  >
+                    {loading ? (
+                      <span className="flex items-center justify-center gap-2">
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        <span>VERIFYING...</span>
+                      </span>
+                    ) : (
+                      formButtonText || cta || "UNLOCK THE REPORT →"
+                    )}
+                  </button>
+                </div>
+              </form>
+            </div>
+          );
+        })()
       ) : layout === "brutalist" ? (
         (() => {
           const accentColor = brandColor || "#f4ff3c";

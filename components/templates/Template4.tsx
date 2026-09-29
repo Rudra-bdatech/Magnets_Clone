@@ -1,5 +1,15 @@
 import React from "react";
-import { Check, Loader2, ImageIcon, Trash2, Plus, X, Sparkles } from "lucide-react";
+import {
+  Check,
+  Loader2,
+  ImageIcon,
+  Trash2,
+  Plus,
+  X,
+  Sparkles,
+  ArrowRight,
+  UploadCloud,
+} from "lucide-react";
 import { type TemplateProps } from "./types";
 import { ImageGeneration } from "@/components/agents/image-generation";
 
@@ -9,8 +19,12 @@ export default function Template4(props: TemplateProps) {
     headline,
     subheadline,
     pitch,
-    bullets,
+    bullets = [],
     bulletsTitle,
+    mastheadLeft,
+    setMastheadLeft,
+    mastheadRight,
+    setMastheadRight,
     formTitle,
     formSubtitle,
     formButtonText,
@@ -33,356 +47,785 @@ export default function Template4(props: TemplateProps) {
     setBullets,
     setImageUrl,
     setFormButtonText,
-    isEditor = true,
+    mode = "editor",
     isSubmitting = false,
     publicFormValues = {},
     setPublicFormValues,
     onSubmitPublicForm,
+    errorMsg,
+    successMsg,
   } = props as any;
 
-  const brandColor = account?.brandColor || "#0066B2";
-  const themeMode = account?.themeMode || "light";
+  const rawProps = props as any;
+  const isEditor = props.mode ? props.mode === "editor" : rawProps.isEditor !== false;
+
+  // Colors & Brand Settings
+  const brandColor = account?.brandColor || props.brandColor || "#ff5038";
+  const themeMode = account?.themeMode || props.themeMode || "dark";
   const isDark = themeMode === "dark";
   const logo = account?.logo || null;
-  const businessName = account?.brandName || account?.name || "";
+  const businessName = account?.brandName || account?.name || "NOCTURNE";
+  const currentYear = new Date().getFullYear();
+
+  // Dynamic Theme Colors matching Night Poster / Day Poster
+  const canvasBg = isDark ? "#0b0d12" : "#f5f1e8";
+  const textColor = isDark ? "#f5f1e8" : "#0b0d12";
+  const mutedText = isDark ? "#b9bbc3" : "#4b5563";
+  const dimText = isDark ? "#8d9099" : "#6b7280";
+  const borderColor = isDark ? "rgba(255, 255, 255, 0.17)" : "rgba(11, 13, 18, 0.16)";
+  const accentColor = brandColor || "#ff5038";
+  const numberTeal = isDark ? "#2dd4bf" : "#0d9488";
+
+  // Formbox Theme Colors
+  const formBoxBg = isDark ? "#f5f1e8" : "#0b0d12";
+  const formBoxText = isDark ? "#0b0d12" : "#f5f1e8";
+  const formBoxMuted = isDark ? "#4b5563" : "#b9bbc3";
+  const formBoxInputBorder = isDark ? "#0b0d12" : "#f5f1e8";
+  const formBoxPlaceholder = isDark ? "#8d9099" : "#8d9099";
+
+  // Default Tracks (Bullets)
+  const defaultTracks = [
+    {
+      title: "Pattern Recognition",
+      desc: "Read the cultural signals before they become obvious.",
+    },
+    {
+      title: "Narrative Pressure",
+      desc: "Build stories that create momentum without manipulation.",
+    },
+    {
+      title: "Durable Demand",
+      desc: "Turn attention into a repeatable commercial system.",
+    },
+  ];
+
+  const parseTrack = (item: string, idx: number) => {
+    if (!item) return defaultTracks[idx % defaultTracks.length];
+    if (item.includes(":::")) {
+      const parts = item.split(":::");
+      return { title: parts[0]?.trim() || "", desc: parts[1]?.trim() || "" };
+    }
+    if (item.includes(" — ")) {
+      const parts = item.split(" — ");
+      return { title: parts[0]?.trim() || "", desc: parts[1]?.trim() || "" };
+    }
+    if (item.includes(" - ")) {
+      const parts = item.split(" - ");
+      return { title: parts[0]?.trim() || "", desc: parts[1]?.trim() || "" };
+    }
+    return { title: item, desc: "" };
+  };
+
+  const hasBullets = Array.isArray(bullets) && bullets.length > 0;
+  const trackItems: string[] = hasBullets
+    ? bullets
+    : defaultTracks.map((t) => `${t.title} ::: ${t.desc}`);
+
+  const handleTrackTitleChange = (idx: number, newTitle: string) => {
+    if (!setBullets) return;
+    const current = [...trackItems];
+    const parsed = parseTrack(current[idx] || "", idx);
+    current[idx] = parsed.desc ? `${newTitle} ::: ${parsed.desc}` : newTitle;
+    setBullets(current);
+  };
+
+  const handleTrackDescChange = (idx: number, newDesc: string) => {
+    if (!setBullets) return;
+    const current = [...trackItems];
+    const parsed = parseTrack(current[idx] || "", idx);
+    const title = parsed.title || defaultTracks[idx % defaultTracks.length].title;
+    current[idx] = `${title} ::: ${newDesc}`;
+    setBullets(current);
+  };
+
+  const handleAddTrack = () => {
+    if (!setBullets) return;
+    const num = (trackItems.length + 1).toString().padStart(2, "0");
+    setBullets([
+      ...trackItems,
+      `Core Principle ${num} ::: Strategic insight for high-velocity operators.`,
+    ]);
+  };
+
+  const handleRemoveTrack = (idx: number) => {
+    if (!setBullets) return;
+    setBullets(trackItems.filter((_, i) => i !== idx));
+  };
+
+  const handleFieldChange = (key: string, val: string) => {
+    if (setPublicFormValues) {
+      setPublicFormValues((prev: Record<string, string>) => ({
+        ...prev,
+        [key]: val,
+      }));
+    }
+  };
 
   return (
-    <div className="w-full flex-1 flex flex-col justify-center pt-4 sm:pt-5 md:pt-6 pb-3 sm:pb-4">
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 xl:gap-14 items-center lg:items-stretch w-full">
-        {/* LEFT: Copy + Form */}
-        <div className="col-span-12 lg:col-span-6 xl:col-span-7 flex flex-col justify-center space-y-4 lg:space-y-5 min-w-0">
-          <div className="flex items-center gap-2">
-            <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: brandColor }} />
+    <div
+      className="w-full min-h-full flex flex-col justify-between selection:bg-rose-500 selection:text-white transition-colors duration-200"
+      style={{
+        backgroundColor: canvasBg,
+        color: textColor,
+        fontFamily: "'Space Mono', monospace, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas",
+      }}
+    >
+      {/* Import Bebas Neue & Space Mono fonts */}
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `
+            @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+            .font-bebas {
+              font-family: 'Bebas Neue', sans-serif, -apple-system;
+            }
+            .font-space {
+              font-family: 'Space Mono', monospace, ui-monospace;
+            }
+            .poster-headline-input::placeholder {
+              color: inherit;
+              opacity: 0.35;
+            }
+          `,
+        }}
+      />
+
+      <div className="w-full flex-1 flex flex-col">
+        {/* 1. TOP NAV BAR */}
+        <header
+          className="relative z-10 flex flex-wrap items-center justify-between gap-3 px-5 py-4 sm:px-8 sm:py-5 border-b text-[10px] tracking-[0.18em] uppercase transition-colors"
+          style={{ borderColor }}
+        >
+          {/* Left: Brand / Logo */}
+          <div className="flex items-center gap-3 min-w-0">
+            {logo && (
+              <img
+                src={logo}
+                alt="Logo"
+                className="h-6 w-6 object-cover rounded-xs border shrink-0"
+                style={{ borderColor }}
+              />
+            )}
             {isEditor ? (
               <input
                 type="text"
-                value={bulletsTitle || ""}
-                onChange={(e) => setBulletsTitle?.(e.target.value)}
-                placeholder="Free Resource · Limited Time"
-                className={`text-[9px] font-black uppercase tracking-[0.22em] bg-transparent outline-none w-full ${isDark ? "text-zinc-500" : "text-zinc-400"}`}
+                value={mastheadLeft || ""}
+                onChange={(e) => setMastheadLeft?.(e.target.value)}
+                placeholder={`${businessName.toUpperCase()} / RESEARCH`}
+                className="font-bold font-space bg-transparent outline-none uppercase w-48 sm:w-64 transition-opacity placeholder:opacity-50"
+                style={{ color: textColor }}
               />
             ) : (
-              <span className={`text-[9px] font-black uppercase tracking-[0.22em] ${isDark ? "text-zinc-500" : "text-zinc-400"}`}>
-                {bulletsTitle || "Free Resource · Limited Time"}
-              </span>
+              <b className="font-space tracking-[0.18em] truncate">
+                {mastheadLeft || `${businessName.toUpperCase()} / RESEARCH`}
+              </b>
             )}
           </div>
 
-          {isEditor ? (
-            <>
-              <textarea ref={headlineRef} rows={1} value={headline || ""} onChange={(e) => { setHeadline?.(e.target.value); e.target.style.height = "auto"; e.target.style.height = `${e.target.scrollHeight}px`; }} className={`w-full text-2xl md:text-3xl font-black leading-tight bg-transparent outline-none resize-none ${isDark ? "text-white" : "text-zinc-900"}`} placeholder="Your headline here" />
-              <textarea ref={subheadlineRef} rows={1} value={subheadline || ""} onChange={(e) => { setSubheadline?.(e.target.value); e.target.style.height = "auto"; e.target.style.height = `${e.target.scrollHeight}px`; }} className={`w-full text-sm bg-transparent outline-none resize-none ${isDark ? "text-zinc-400" : "text-zinc-500"}`} placeholder="Short subhead. say what they will get" />
-              <textarea
-                ref={pitchRef}
-                rows={2}
-                value={pitch || ""}
-                onChange={(e) => {
-                  setPitch?.(e.target.value);
-                  e.target.style.height = "auto";
-                  e.target.style.height = `${e.target.scrollHeight}px`;
-                }}
-                placeholder="Write a short pitch..."
-                className={`w-full text-xs leading-relaxed bg-transparent outline-none resize-none ${isDark ? "text-zinc-400 placeholder:text-zinc-500/70" : "text-zinc-600 placeholder:text-zinc-400/70"}`}
+          {/* Right: Edition / Year */}
+          <div className="flex items-center gap-2 shrink-0">
+            {isEditor ? (
+              <input
+                type="text"
+                value={mastheadRight || ""}
+                onChange={(e) => setMastheadRight?.(e.target.value)}
+                placeholder={`ISSUE 11 — ${currentYear}`}
+                className="font-space text-right bg-transparent outline-none uppercase w-36 sm:w-44 transition-opacity placeholder:opacity-50"
+                style={{ color: mutedText }}
               />
-            </>
-          ) : (
-            <>
-              <h1 className={`text-2xl md:text-3xl font-black leading-tight ${isDark ? "text-white" : "text-zinc-900"}`}>
-                {headline || "Free Resource"}
-              </h1>
-              {subheadline && (
-                <p className={`text-sm ${isDark ? "text-zinc-400" : "text-zinc-500"}`}>
-                  {subheadline}
-                </p>
-              )}
-              {pitch && (
-                <p className={`text-xs leading-relaxed ${isDark ? "text-zinc-400" : "text-zinc-600"}`}>
-                  {pitch}
-                </p>
-              )}
-            </>
-          )}
+            ) : (
+              <span className="font-space text-right" style={{ color: mutedText }}>
+                {mastheadRight || `ISSUE 11 — ${currentYear}`}
+              </span>
+            )}
+          </div>
+        </header>
 
-          {bullets && bullets.length > 0 ? (
-            <div className="space-y-2">
-              {bullets.map((item: string, idx: number) => (
-                <div key={idx} className="flex items-center gap-2.5">
-                  <div className="flex h-4 w-4 shrink-0 items-center justify-center rounded-md" style={{ background: `${brandColor}18`, border: `1px solid ${brandColor}44` }}>
-                    <svg width="7" height="7" viewBox="0 0 7 7" fill="none"><path d="M1 3.5l1.7 1.7L6 1.5" stroke={brandColor} strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                  </div>
+        {/* 2. MAIN HERO STAGE */}
+        <main className="w-full flex-1 flex flex-col">
+          <section className="grid grid-cols-1 lg:grid-cols-[1.1fr_0.9fr] min-h-[580px] lg:min-h-[640px] relative">
+            {/* LEFT COLUMN: Overline, Massive Headline, Intro Stat & Pitch */}
+            <div className="p-6 sm:p-10 lg:py-14 lg:px-12 flex flex-col justify-between relative z-10">
+              <div className="space-y-5 sm:space-y-6">
+                {/* Overline / BulletsTitle */}
+                <div>
                   {isEditor ? (
-                    <>
-                      <input type="text" value={item} onChange={(e) => { if (!bullets || !setBullets) return; const u = [...bullets]; u[idx] = e.target.value; setBullets(u); }} className={`w-full bg-transparent outline-none text-xs ${isDark ? "text-zinc-300" : "text-zinc-600"}`} placeholder="Bullet point item..." />
-                      <button
-                        type="button"
-                        onClick={() => setBullets?.(bullets.filter((_: any, i: number) => i !== idx))}
-                        className="text-zinc-400 hover:text-white transition cursor-pointer p-1"
-                        title="Remove bullet point"
-                      >
-                        <X className="w-3.5 h-3.5" />
-                      </button>
-                    </>
+                    <input
+                      type="text"
+                      value={bulletsTitle || ""}
+                      onChange={(e) => setBulletsTitle?.(e.target.value)}
+                      placeholder="A MANUAL FOR INDEPENDENT MINDS"
+                      className="font-space text-[11px] sm:text-xs font-bold uppercase tracking-[0.2em] bg-transparent outline-none w-full placeholder:opacity-50"
+                      style={{ color: accentColor }}
+                    />
                   ) : (
-                    <span className={`text-xs ${isDark ? "text-zinc-300" : "text-zinc-600"}`}>
-                      {item}
-                    </span>
+                    <small
+                      className="font-space text-[11px] sm:text-xs font-bold uppercase tracking-[0.2em] block"
+                      style={{ color: accentColor }}
+                    >
+                      {bulletsTitle || "A MANUAL FOR INDEPENDENT MINDS"}
+                    </small>
                   )}
                 </div>
-              ))}
-            </div>
-          ) : isEditor ? (
-            <p className="text-xs italic text-zinc-500 dark:text-zinc-400/80 my-1">
-              No bullets yet. click + to add one.
-            </p>
-          ) : null}
 
-          {isEditor && setBullets && (
-            <button
-              type="button"
-              onClick={() => setBullets([...(bullets || []), ""])}
-              className="inline-flex items-center gap-1.5 rounded-full border border-dashed border-zinc-600/60 hover:border-zinc-400 bg-zinc-900/40 hover:bg-zinc-900/80 px-3.5 py-1.5 text-xs font-medium text-zinc-300 transition cursor-pointer mt-1"
-            >
-              <Plus className="w-3.5 h-3.5" />
-              <span>Add bullet</span>
-            </button>
-          )}
-
-          <div
-            className={`rounded-2xl border p-5 sm:p-6 text-left transition-all duration-300 backdrop-blur-md shadow-xl ${
-              isDark ? "bg-[#14141A]/90 text-white" : "bg-white/90 text-zinc-900"
-            }`}
-            style={{
-              borderColor: `${brandColor}33`,
-              boxShadow: `0 10px 30px -4px ${brandColor}25`,
-            }}
-          >
-            {isEditor ? (
-              <div className="space-y-3">
-                <div className="space-y-1 text-center">
-                  <input
-                    type="text"
-                    value={formTitle || ""}
-                    onChange={(e) => setFormTitle?.(e.target.value)}
-                    className={`w-full text-center text-base sm:text-lg font-black bg-transparent outline-none placeholder:text-zinc-400 dark:placeholder:text-zinc-500 ${isDark ? "text-white" : "text-zinc-900"}`}
-                    placeholder="Get instant access"
-                  />
-                  <input
-                    type="text"
-                    value={formSubtitle || ""}
-                    onChange={(e) => setFormSubtitle?.(e.target.value)}
-                    className="w-full text-center text-xs text-[#9B9085] bg-transparent outline-none placeholder:text-zinc-500"
-                    placeholder="By opting in you consent to receive this resource by email."
-                  />
+                {/* Massive Hero Headline in Bebas Neue */}
+                <div>
+                  {isEditor ? (
+                    <textarea
+                      ref={headlineRef}
+                      rows={2}
+                      value={headline || ""}
+                      onChange={(e) => {
+                        setHeadline?.(e.target.value);
+                        e.target.style.height = "auto";
+                        e.target.style.height = `${e.target.scrollHeight}px`;
+                      }}
+                      placeholder={"THE SIGNAL CODE"}
+                      className="poster-headline-input font-bebas text-5xl sm:text-7xl md:text-8xl lg:text-[96px] xl:text-[110px] leading-[0.82] tracking-normal bg-transparent outline-none resize-none w-full uppercase transition-all"
+                      style={{ color: textColor }}
+                    />
+                  ) : (
+                    <h1
+                      className="font-bebas text-5xl sm:text-7xl md:text-8xl lg:text-[96px] xl:text-[110px] leading-[0.82] tracking-normal uppercase m-0 break-words"
+                      style={{ color: textColor }}
+                    >
+                      {headline || (
+                        <>
+                          THE<br />
+                          <span style={{ color: accentColor }}>SIGNAL</span>
+                          <br />
+                          CODE
+                        </>
+                      )}
+                    </h1>
+                  )}
                 </div>
 
-                <div className={customFormFields && customFormFields.length > 0 ? "grid grid-cols-1 sm:grid-cols-2 gap-2.5" : "space-y-2.5"}>
-                  <input
-                    type="text"
-                    placeholder="Name *"
-                    readOnly
-                    className="min-h-10 h-10 w-full rounded-xl border border-zinc-200 dark:border-[#252529] bg-white dark:bg-[#18181C] px-3.5 py-2 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 outline-none transition shadow-xs"
+                {/* Subheadline (if provided) */}
+                {isEditor ? (
+                  <textarea
+                    ref={subheadlineRef}
+                    rows={1}
+                    value={subheadline || ""}
+                    onChange={(e) => {
+                      setSubheadline?.(e.target.value);
+                      e.target.style.height = "auto";
+                      e.target.style.height = `${e.target.scrollHeight}px`;
+                    }}
+                    placeholder="Short crisp subtitle (optional)..."
+                    className="font-space text-xs sm:text-sm leading-relaxed bg-transparent outline-none resize-none w-full max-w-[480px] placeholder:opacity-40"
+                    style={{ color: mutedText }}
                   />
-                  <input
-                    type="email"
-                    placeholder="Email *"
-                    readOnly
-                    className="min-h-10 h-10 w-full rounded-xl border border-zinc-200 dark:border-[#252529] bg-white dark:bg-[#18181C] px-3.5 py-2 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 outline-none transition shadow-xs"
-                  />
-                  {customFormFields.map((field: any) => (
-                    <div key={field.id} className={field.type === "textarea" ? "col-span-1 sm:col-span-2" : ""}>
-                      <input
-                        type="text"
-                        placeholder={`${field.label || "New Field"}${field.required ? " *" : ""}`}
-                        readOnly
-                        className="min-h-10 h-10 w-full rounded-xl border border-zinc-200 dark:border-[#252529] bg-white dark:bg-[#18181C] px-3.5 py-2 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 outline-none transition shadow-xs"
-                      />
-                    </div>
-                  ))}
-                </div>
-
-                <input
-                  type="text"
-                  value={formButtonText || ""}
-                  onChange={(e) => setFormButtonText?.(e.target.value)}
-                  onFocus={(e) => {
-                    if (e.target.value === "Send it to me" || e.target.value === "Get instant access" || e.target.value === "Unlock Free Access →") {
-                      setFormButtonText?.("");
-                    } else {
-                      e.target.select();
-                    }
-                  }}
-                  onBlur={(e) => {
-                    if (!e.target.value.trim()) {
-                      setFormButtonText?.("Get instant access");
-                    }
-                  }}
-                  placeholder="Get instant access"
-                  className="w-full text-center rounded-xl py-3 px-4 text-xs font-black text-white cursor-text mt-2 outline-none border-2 border-transparent hover:border-white/40 focus:border-white transition duration-150"
-                  style={{ background: `linear-gradient(135deg, ${brandColor} 0%, ${brandColor}cc 100%)`, boxShadow: `0 6px 24px -4px ${brandColor}88` }}
-                />
-              </div>
-            ) : (
-              <form onSubmit={onSubmitPublicForm} className="space-y-3">
-                <div className="space-y-1 text-center">
-                  <h3 className={`w-full text-center text-base sm:text-lg font-black ${isDark ? "text-white" : "text-zinc-900"}`}>
-                    {formTitle || "Get instant access"}
-                  </h3>
-                  <p className="text-xs text-[#9B9085] text-center leading-normal">
-                    {formSubtitle || "By opting in you consent to receive this resource by email."}
-                  </p>
-                </div>
-
-                <div className={customFormFields && customFormFields.length > 0 ? "grid grid-cols-1 sm:grid-cols-2 gap-2.5" : "space-y-2.5"}>
-                  <input
-                    type="text"
-                    required
-                    placeholder="Name *"
-                    value={publicFormValues.name || ""}
-                    onChange={(e) => setPublicFormValues?.({ ...publicFormValues, name: e.target.value })}
-                    className="min-h-10 h-10 w-full rounded-xl border border-zinc-200 dark:border-[#252529] bg-white dark:bg-[#18181C] px-3.5 py-2 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 outline-none transition shadow-xs"
-                  />
-                  <input
-                    type="email"
-                    required
-                    placeholder="Email *"
-                    value={publicFormValues.email || ""}
-                    onChange={(e) => setPublicFormValues?.({ ...publicFormValues, email: e.target.value })}
-                    className="min-h-10 h-10 w-full rounded-xl border border-zinc-200 dark:border-[#252529] bg-white dark:bg-[#18181C] px-3.5 py-2 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 outline-none transition shadow-xs"
-                  />
-                  {customFormFields.map((field: any) => (
-                    <div key={field.id} className={field.type === "textarea" ? "col-span-1 sm:col-span-2" : ""}>
-                      <input
-                        type="text"
-                        required={field.required}
-                        placeholder={`${field.label}${field.required ? " *" : ""}`}
-                        value={publicFormValues[field.id] || ""}
-                        onChange={(e) => setPublicFormValues?.({ ...publicFormValues, [field.id]: e.target.value })}
-                        className="min-h-10 h-10 w-full rounded-xl border border-zinc-200 dark:border-[#252529] bg-white dark:bg-[#18181C] px-3.5 py-2 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 outline-none transition shadow-xs"
-                      />
-                    </div>
-                  ))}
-                </div>
-
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="w-full text-center rounded-xl py-3 px-4 text-xs font-black text-white cursor-pointer mt-2 outline-none border-2 border-transparent hover:border-white/40 transition duration-150 disabled:opacity-50"
-                  style={{ background: `linear-gradient(135deg, ${brandColor} 0%, ${brandColor}cc 100%)`, boxShadow: `0 6px 24px -4px ${brandColor}88` }}
-                >
-                  {isSubmitting ? "Submitting..." : (formButtonText || "Get instant access")}
-                </button>
-              </form>
-            )}
-          </div>
-        </div>
-
-        {/* RIGHT: Orbital image */}
-        <div className="col-span-12 lg:col-span-6 xl:col-span-5 relative flex flex-col items-center justify-center py-6 min-h-[440px] sm:min-h-[500px] lg:min-h-[580px] xl:min-h-[640px]">
-          {/* Brand Logo & Brand Name aligned with top of left side content */}
-          {(logo || businessName) && (
-            <div className="lg:absolute lg:top-0 lg:left-0 lg:right-0 flex items-center justify-center gap-2.5 mb-6 lg:mb-0">
-              <div className={`h-8 w-8 sm:h-9 sm:w-9 rounded-xl flex items-center justify-center bg-transparent overflow-hidden shadow-xs ${logo ? "border-none" : "border-2 border-dashed border-[#a1a1aa]/50"}`}>
-                {logo ? (
-                  <img src={logo} alt="Logo" className="h-full w-full object-cover" />
                 ) : (
-                  <div className="h-4 w-4 rounded-md border-2 border-dashed border-[#a1a1aa]" />
+                  subheadline && (
+                    <p
+                      className="font-space text-xs sm:text-sm leading-relaxed max-w-[480px] m-0"
+                      style={{ color: mutedText }}
+                    >
+                      {subheadline}
+                    </p>
+                  )
                 )}
               </div>
-              <span className={`text-base sm:text-lg font-black tracking-wider uppercase ${isDark ? "text-white" : "text-zinc-900"}`}>
-                {businessName}
-              </span>
-            </div>
-          )}
 
-          <div className="relative flex items-center justify-center w-full">
-            <div className="absolute rounded-full pointer-events-none" style={{ width: "min(92vw, 520px)", height: "min(92vw, 520px)", background: `radial-gradient(circle, ${brandColor}22 0%, transparent 70%)`, filter: "blur(32px)" }} />
-            <div className="absolute rounded-full border border-dashed pointer-events-none" style={{ width: "min(84vw, 460px)", height: "min(84vw, 460px)", borderColor: `${brandColor}25` }} />
-            <div className="absolute rounded-full pointer-events-none" style={{ width: "min(74vw, 400px)", height: "min(74vw, 400px)", border: `1px solid ${brandColor}33`, boxShadow: `0 0 24px ${brandColor}22` }} />
-            <div className="absolute rounded-full pointer-events-none" style={{ width: "min(64vw, 350px)", height: "min(64vw, 350px)", border: `2px solid ${brandColor}55`, boxShadow: `0 0 36px ${brandColor}33` }} />
-            <div className="relative rounded-full overflow-hidden z-10 group" style={{ width: "min(56vw, 310px)", height: "min(56vw, 310px)", border: `3.5px solid ${brandColor}88`, boxShadow: `0 0 45px -6px ${brandColor}88` }}>
-            {/* Upload Progress Overlay for Orbit circle */}
-            {uploadProgress !== null && uploadProgress !== undefined && (
-              <div className="absolute inset-0 z-40 flex flex-col items-center justify-center p-4 bg-black/90 backdrop-blur-md text-white">
-                <div className="w-full max-w-[170px] space-y-2 text-center">
-                  <div className="flex items-center justify-center gap-1.5 text-xs font-bold text-[#0066B2] dark:text-[#38BDF8]">
-                    {uploadProgress === 100 ? (
-                      <Check className="h-4 w-4 text-emerald-500" />
-                    ) : (
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                    )}
-                    <span>{uploadProgress === 100 ? "Done!" : "Uploading"}</span>
-                    <span className="font-mono">{uploadProgress}%</span>
-                  </div>
-                  <div className="h-1.5 w-full bg-zinc-800 rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-[#0066B2] dark:bg-[#38BDF8] rounded-full transition-all duration-150 ease-out"
-                      style={{ width: `${uploadProgress}%` }}
+              {/* Intro Stat & Pitch Row */}
+              <div className="flex items-start gap-5 sm:gap-7 pt-8 sm:pt-10">
+                {/* Number Callout */}
+                <div
+                  className="font-bebas text-5xl sm:text-6xl md:text-7xl leading-none select-none shrink-0"
+                  style={{ color: numberTeal }}
+                >
+                  48
+                </div>
+
+                {/* Pitch Paragraph */}
+                <div className="flex-1 max-w-[440px]">
+                  {isEditor ? (
+                    <textarea
+                      ref={pitchRef}
+                      rows={3}
+                      value={pitch || ""}
+                      onChange={(e) => {
+                        setPitch?.(e.target.value);
+                        e.target.style.height = "auto";
+                        e.target.style.height = `${e.target.scrollHeight}px`;
+                      }}
+                      placeholder="Pages of battle-tested systems for creating authority, holding attention, and turning an original point of view into durable demand."
+                      className="font-space text-xs sm:text-[13px] leading-relaxed bg-transparent outline-none resize-none w-full placeholder:opacity-50"
+                      style={{ color: mutedText }}
                     />
-                  </div>
-                  <p className="text-[9px] text-zinc-400">Optimizing media...</p>
+                  ) : (
+                    <p
+                      className="font-space text-xs sm:text-[13px] leading-relaxed m-0"
+                      style={{ color: mutedText }}
+                    >
+                      {pitch ||
+                        "Pages of battle-tested systems for creating authority, holding attention, and turning an original point of view into durable demand."}
+                    </p>
+                  )}
                 </div>
               </div>
-            )}
-            {isGeneratingAICover ? (
-              <ImageGeneration
-                status="generating"
-                prompt={headline || "Digital Strategy Cover"}
-                resolution="1200 × 630"
-                label="AI agent rendering cover artwork"
-                aspectRatio="16 / 9"
-                className="h-full w-full min-h-[220px]"
-              />
-            ) : imageUrl && imageUrl.trim() !== "" ? (
-              <>
+            </div>
+
+            {/* RIGHT COLUMN: Cover Image Backdrop + Sideword + Floating Formbox */}
+            <div className="relative min-h-[480px] lg:min-h-full flex flex-col justify-end overflow-hidden group">
+              {/* Cover Image or Fallback Graphic */}
+              {isGeneratingAICover ? (
+                <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/90">
+                  <ImageGeneration
+                    status="generating"
+                    prompt={headline || "Night Poster Editorial Cover"}
+                    resolution="1200 × 630"
+                    label="AI agent rendering poster visual..."
+                    aspectRatio="16 / 9"
+                    className="h-full w-full"
+                  />
+                </div>
+              ) : imageUrl && imageUrl.trim() !== "" ? (
                 <img
                   src={imageUrl}
-                  alt="Cover"
-                  className="w-full h-full object-cover"
+                  alt="Poster Cover"
+                  className="absolute inset-0 w-full h-full object-cover object-center"
                 />
-                {isEditor && (
-                  <div className="absolute inset-0 bg-black/75 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center gap-2 text-white transition duration-200">
+              ) : (
+                /* Fallback Poster Graphic */
+                <div
+                  className="absolute inset-0 w-full h-full flex flex-col items-center justify-center select-none"
+                  style={{
+                    background: isDark
+                      ? "radial-gradient(circle at 60% 40%, #1c202a 0%, #0d0f15 100%)"
+                      : "radial-gradient(circle at 60% 40%, #e8e2d5 0%, #d8d0c0 100%)",
+                  }}
+                >
+                  {/* Decorative Geometric Grid */}
+                  <div
+                    className="absolute inset-0 opacity-15 pointer-events-none"
+                    style={{
+                      backgroundImage: `linear-gradient(${textColor} 1px, transparent 1px), linear-gradient(90deg, ${textColor} 1px, transparent 1px)`,
+                      backgroundSize: "48px 48px",
+                    }}
+                  />
+                  <div className="relative z-10 text-center space-y-3 px-6 pointer-events-none">
+                    <div
+                      className="font-bebas text-6xl sm:text-7xl opacity-20 tracking-widest uppercase"
+                      style={{ color: textColor }}
+                    >
+                      {businessName}
+                    </div>
+                    <div
+                      className="font-space text-[10px] tracking-[0.25em] uppercase opacity-40"
+                      style={{ color: textColor }}
+                    >
+                      ARCHIVAL SPECIFICATION // VOL 04
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Seamless Fade Gradient over image */}
+              <div
+                className="absolute inset-0 pointer-events-none z-10"
+                style={{
+                  background: isDark
+                    ? `linear-gradient(90deg, #0b0d12 0%, rgba(11, 13, 18, 0.7) 20%, transparent 55%), linear-gradient(0deg, #0b0d12 0%, transparent 40%)`
+                    : `linear-gradient(90deg, #f5f1e8 0%, rgba(245, 241, 232, 0.7) 20%, transparent 55%), linear-gradient(0deg, #f5f1e8 0%, transparent 40%)`,
+                }}
+              />
+
+              {/* Upload Progress Indicator Overlay */}
+              {uploadProgress !== null && uploadProgress !== undefined && (
+                <div className="absolute inset-0 z-40 flex flex-col items-center justify-center p-6 bg-black/90 backdrop-blur-sm text-white">
+                  <div className="w-full max-w-xs space-y-3 text-center">
+                    <div className="flex items-center justify-center gap-2 text-xs font-bold font-space">
+                      {uploadProgress === 100 ? (
+                        <Check className="h-4 w-4 text-emerald-400" />
+                      ) : (
+                        <Loader2 className="h-4 w-4 animate-spin text-teal-400" />
+                      )}
+                      <span>{uploadProgress === 100 ? "UPLOADED" : "UPLOADING COVER"}</span>
+                      <span>{uploadProgress}%</span>
+                    </div>
+                    <div className="h-1.5 w-full bg-zinc-800 rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-teal-400 transition-all duration-200"
+                        style={{ width: `${uploadProgress}%` }}
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Editor Image Action Bar (Top Right) */}
+              {isEditor && (
+                <div className="absolute top-4 right-4 z-30 flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef?.current?.click()}
+                    className="flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-bold font-space rounded-xs transition-all shadow-md cursor-pointer border bg-black/70 hover:bg-black text-white border-white/20"
+                    title="Upload custom cover photo"
+                  >
+                    <UploadCloud className="w-3.5 h-3.5" />
+                    <span>{imageUrl ? "REPLACE" : "UPLOAD"}</span>
+                  </button>
+
+                  {imageUrl && setImageUrl && (
                     <button
                       type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        fileInputRef?.current?.click();
-                      }}
-                      className="flex items-center gap-1 rounded-xl bg-white/20 hover:bg-white/30 px-3 py-1.5 text-[11px] font-bold text-white border border-white/30 backdrop-blur-md transition cursor-pointer"
+                      onClick={() => setImageUrl(null)}
+                      className="p-1.5 rounded-xs transition-all shadow-md cursor-pointer border bg-red-600/80 hover:bg-red-600 text-white border-red-500/40"
+                      title="Remove image"
                     >
-                      <ImageIcon className="h-3.5 w-3.5" />
-                      <span>Replace</span>
+                      <Trash2 className="w-3.5 h-3.5" />
                     </button>
-                    {setImageUrl && (
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setImageUrl(null);
-                        }}
-                        className="flex items-center gap-1 rounded-xl bg-red-500/30 hover:bg-red-500/50 px-3 py-1.5 text-[11px] font-bold text-red-300 border border-red-400/40 backdrop-blur-md transition cursor-pointer"
+                  )}
+                </div>
+              )}
+
+              {/* Rotated Sideword */}
+              <div
+                className="hidden lg:block absolute right-[-45px] top-[240px] transform rotate-90 font-bebas text-lg tracking-[0.3em] select-none pointer-events-none z-20"
+                style={{ color: isDark ? "rgba(255, 255, 255, 0.28)" : "rgba(11, 13, 18, 0.28)" }}
+              >
+                LIMITED DIGITAL RELEASE
+              </div>
+
+              {/* Floating Form Box */}
+              <aside
+                className="relative lg:absolute z-30 lg:right-[4vw] lg:bottom-10 m-5 lg:m-0 w-auto lg:w-[min(390px,90%)] p-6 sm:p-7 shadow-2xl transition-all"
+                style={{
+                  backgroundColor: formBoxBg,
+                  color: formBoxText,
+                  boxShadow: isDark
+                    ? "0 25px 50px -12px rgba(0, 0, 0, 0.7)"
+                    : "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
+                }}
+              >
+                {/* Form Title & Subtitle */}
+                <div className="space-y-1 mb-4">
+                  {isEditor ? (
+                    <>
+                      <input
+                        type="text"
+                        value={formTitle || ""}
+                        onChange={(e) => setFormTitle?.(e.target.value)}
+                        placeholder="ENTER THE ARCHIVE"
+                        className="font-bebas text-3xl sm:text-4xl tracking-normal uppercase bg-transparent outline-none w-full placeholder:opacity-40"
+                        style={{ color: formBoxText }}
+                      />
+                      <textarea
+                        rows={2}
+                        value={formSubtitle || ""}
+                        onChange={(e) => setFormSubtitle?.(e.target.value)}
+                        placeholder="Receive the complete report and three working templates."
+                        className="font-space text-[11px] leading-relaxed bg-transparent outline-none resize-none w-full placeholder:opacity-40"
+                        style={{ color: formBoxMuted }}
+                      />
+                    </>
+                  ) : (
+                    <>
+                      <h2
+                        className="font-bebas text-3xl sm:text-4xl tracking-normal uppercase m-0 leading-tight"
+                        style={{ color: formBoxText }}
                       >
-                        <Trash2 className="h-3.5 w-3.5 text-red-300" />
-                        <span>Delete</span>
-                      </button>
-                    )}
+                        {formTitle || "ENTER THE ARCHIVE"}
+                      </h2>
+                      <p
+                        className="font-space text-[11px] leading-relaxed m-0"
+                        style={{ color: formBoxMuted }}
+                      >
+                        {formSubtitle ||
+                          "Receive the complete report and three working templates."}
+                      </p>
+                    </>
+                  )}
+                </div>
+
+                {/* Form Fields & Submit */}
+                {isEditor ? (
+                  <div className="space-y-3">
+                    {/* Name Input */}
+                    <div>
+                      <input
+                        type="text"
+                        readOnly
+                        placeholder="YOUR NAME"
+                        className="w-full border-0 border-b bg-transparent py-2.5 px-0.5 font-space text-xs outline-none transition-colors"
+                        style={{
+                          borderBottomColor: formBoxInputBorder,
+                          color: formBoxText,
+                        }}
+                      />
+                    </div>
+
+                    {/* Email Input */}
+                    <div>
+                      <input
+                        type="email"
+                        readOnly
+                        placeholder="EMAIL ADDRESS"
+                        className="w-full border-0 border-b bg-transparent py-2.5 px-0.5 font-space text-xs outline-none transition-colors"
+                        style={{
+                          borderBottomColor: formBoxInputBorder,
+                          color: formBoxText,
+                        }}
+                      />
+                    </div>
+
+                    {/* Custom Form Fields */}
+                    {customFormFields &&
+                      customFormFields.map((field: any) => (
+                        <div key={field.id}>
+                          <input
+                            type="text"
+                            readOnly
+                            placeholder={`${(field.label || "Custom Field").toUpperCase()}${
+                              field.required ? " *" : ""
+                            }`}
+                            className="w-full border-0 border-b bg-transparent py-2.5 px-0.5 font-space text-xs outline-none transition-colors"
+                            style={{
+                              borderBottomColor: formBoxInputBorder,
+                              color: formBoxText,
+                            }}
+                          />
+                        </div>
+                      ))}
+
+                    {/* Editable Button */}
+                    <div className="pt-2">
+                      <input
+                        type="text"
+                        value={formButtonText || ""}
+                        onChange={(e) => setFormButtonText?.(e.target.value)}
+                        placeholder="UNLOCK THE REPORT →"
+                        className="w-full text-center py-3.5 px-4 font-space font-bold text-xs uppercase cursor-text outline-none transition-transform hover:brightness-105"
+                        style={{
+                          backgroundColor: accentColor,
+                          color: isDark ? "#0b0d12" : "#ffffff",
+                        }}
+                      />
+                    </div>
                   </div>
+                ) : (
+                  <form onSubmit={onSubmitPublicForm} className="space-y-3">
+                    {/* Public Name */}
+                    <div>
+                      <input
+                        type="text"
+                        required
+                        placeholder="YOUR NAME"
+                        value={publicFormValues.name || ""}
+                        onChange={(e) => handleFieldChange("name", e.target.value)}
+                        className="w-full border-0 border-b bg-transparent py-2.5 px-0.5 font-space text-xs outline-none transition-colors"
+                        style={{
+                          borderBottomColor: formBoxInputBorder,
+                          color: formBoxText,
+                        }}
+                      />
+                    </div>
+
+                    {/* Public Email */}
+                    <div>
+                      <input
+                        type="email"
+                        required
+                        placeholder="EMAIL ADDRESS"
+                        value={publicFormValues.email || ""}
+                        onChange={(e) => handleFieldChange("email", e.target.value)}
+                        className="w-full border-0 border-b bg-transparent py-2.5 px-0.5 font-space text-xs outline-none transition-colors"
+                        style={{
+                          borderBottomColor: formBoxInputBorder,
+                          color: formBoxText,
+                        }}
+                      />
+                    </div>
+
+                    {/* Public Custom Form Fields */}
+                    {customFormFields &&
+                      customFormFields.map((field: any) => (
+                        <div key={field.id}>
+                          {field.type === "textarea" ? (
+                            <textarea
+                              rows={2}
+                              required={field.required}
+                              placeholder={`${(field.label || "").toUpperCase()}${
+                                field.required ? " *" : ""
+                              }`}
+                              value={publicFormValues[field.id] || ""}
+                              onChange={(e) =>
+                                handleFieldChange(field.id, e.target.value)
+                              }
+                              className="w-full border-0 border-b bg-transparent py-2.5 px-0.5 font-space text-xs outline-none resize-none transition-colors"
+                              style={{
+                                borderBottomColor: formBoxInputBorder,
+                                color: formBoxText,
+                              }}
+                            />
+                          ) : (
+                            <input
+                              type={field.type === "number" ? "number" : "text"}
+                              required={field.required}
+                              placeholder={`${(field.label || "").toUpperCase()}${
+                                field.required ? " *" : ""
+                              }`}
+                              value={publicFormValues[field.id] || ""}
+                              onChange={(e) =>
+                                handleFieldChange(field.id, e.target.value)
+                              }
+                              className="w-full border-0 border-b bg-transparent py-2.5 px-0.5 font-space text-xs outline-none transition-colors"
+                              style={{
+                                borderBottomColor: formBoxInputBorder,
+                                color: formBoxText,
+                              }}
+                            />
+                          )}
+                        </div>
+                      ))}
+
+                    {/* Error / Success Feedback */}
+                    {errorMsg && (
+                      <p className="text-red-500 font-space text-[10px] m-0 pt-1">
+                        {errorMsg}
+                      </p>
+                    )}
+                    {successMsg && (
+                      <p className="text-emerald-500 font-space text-[10px] m-0 pt-1 font-bold">
+                        {successMsg}
+                      </p>
+                    )}
+
+                    {/* Submit Button */}
+                    <div className="pt-2">
+                      <button
+                        type="submit"
+                        disabled={isSubmitting}
+                        className="w-full text-center py-3.5 px-4 font-space font-bold text-xs uppercase cursor-pointer transition-all hover:brightness-105 active:scale-[0.99] disabled:opacity-50"
+                        style={{
+                          backgroundColor: accentColor,
+                          color: isDark ? "#0b0d12" : "#ffffff",
+                        }}
+                      >
+                        {isSubmitting
+                          ? "VERIFYING..."
+                          : formButtonText || "UNLOCK THE REPORT →"}
+                      </button>
+                    </div>
+                  </form>
                 )}
-              </>
-            ) : isEditor ? (
+              </aside>
+            </div>
+          </section>
+
+          {/* 3. TRACKS SECTION (BULLETS) */}
+          <section
+            className="border-t grid grid-cols-1 md:grid-cols-3 transition-colors"
+            style={{ borderColor }}
+          >
+            {trackItems.map((item, idx) => {
+              const trackNum = (idx + 1).toString().padStart(2, "0");
+              const parsed = parseTrack(item, idx);
+
+              return (
+                <article
+                  key={idx}
+                  className={`p-6 sm:py-7 sm:px-8 flex flex-col justify-between relative group ${
+                    idx < trackItems.length - 1 ? "md:border-r border-b md:border-b-0" : ""
+                  }`}
+                  style={{ borderColor }}
+                >
+                  <div className="space-y-2">
+                    {/* Track Number Tag */}
+                    <div className="flex items-center justify-between">
+                      <small
+                        className="font-space text-[10px] sm:text-[11px] font-bold uppercase tracking-wider"
+                        style={{ color: numberTeal }}
+                      >
+                        TRACK / {trackNum}
+                      </small>
+
+                      {isEditor && trackItems.length > 1 && (
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveTrack(idx)}
+                          className="opacity-0 group-hover:opacity-100 transition-opacity p-1 text-zinc-400 hover:text-red-400 cursor-pointer"
+                          title="Remove track"
+                        >
+                          <X className="w-3.5 h-3.5" />
+                        </button>
+                      )}
+                    </div>
+
+                    {/* Track Title */}
+                    <div>
+                      {isEditor ? (
+                        <input
+                          type="text"
+                          value={parsed.title}
+                          onChange={(e) =>
+                            handleTrackTitleChange(idx, e.target.value)
+                          }
+                          placeholder={`Track ${trackNum} Title`}
+                          className="font-bebas text-2xl sm:text-3xl tracking-normal uppercase bg-transparent outline-none w-full placeholder:opacity-40"
+                          style={{ color: textColor }}
+                        />
+                      ) : (
+                        <h3
+                          className="font-bebas text-2xl sm:text-3xl tracking-normal uppercase m-0 leading-tight"
+                          style={{ color: textColor }}
+                        >
+                          {parsed.title}
+                        </h3>
+                      )}
+                    </div>
+
+                    {/* Track Description */}
+                    <div>
+                      {isEditor ? (
+                        <textarea
+                          rows={2}
+                          value={parsed.desc}
+                          onChange={(e) =>
+                            handleTrackDescChange(idx, e.target.value)
+                          }
+                          placeholder="Describe the principle or framework delivered in this track..."
+                          className="font-space text-[10px] sm:text-[11px] leading-relaxed bg-transparent outline-none resize-none w-full placeholder:opacity-40"
+                          style={{ color: dimText }}
+                        />
+                      ) : (
+                        <p
+                          className="font-space text-[10px] sm:text-[11px] leading-relaxed m-0"
+                          style={{ color: dimText }}
+                        >
+                          {parsed.desc}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </article>
+              );
+            })}
+          </section>
+
+          {/* Add Track Button in Editor Mode */}
+          {isEditor && (
+            <div
+              className="p-4 border-t flex justify-center bg-black/10 dark:bg-white/5"
+              style={{ borderColor }}
+            >
               <button
                 type="button"
-                onClick={() => fileInputRef?.current?.click()}
-                className="w-full h-full flex flex-col items-center justify-center p-4 text-center cursor-pointer transition group/btn hover:opacity-90"
-                style={{ background: `linear-gradient(135deg, ${brandColor}88 0%, #0d0012 100%)` }}
+                onClick={handleAddTrack}
+                className="inline-flex items-center gap-1.5 px-4 py-2 font-space text-[11px] font-bold uppercase tracking-wider rounded-xs border transition-all hover:brightness-110 cursor-pointer"
+                style={{
+                  backgroundColor: `${accentColor}18`,
+                  color: textColor,
+                  borderColor: `${accentColor}44`,
+                }}
               >
-                <ImageIcon className="h-8 w-8 text-white/80 group-hover/btn:scale-110 transition-transform mb-1.5" />
-                <span className="text-xs font-bold text-white">Add Cover Image</span>
-                <span className="text-[10px] text-white/60 mt-0.5">Click to upload</span>
+                <Plus className="w-3.5 h-3.5" />
+                <span>ADD TRACK / 0{(trackItems.length + 1).toString().padStart(2, "0")}</span>
               </button>
-            ) : null}
-          </div>
-        </div>
-        </div>
+            </div>
+          )}
+        </main>
       </div>
     </div>
   );
