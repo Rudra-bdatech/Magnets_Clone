@@ -1911,10 +1911,9 @@ const BrandTemplatePreview = memo(function BrandTemplatePreview({
                       />
                     )}
                     <span
-                      className="font-shrikhand text-lg sm:text-xl tracking-wide"
-                      style={{
-                        color: accentColor,
-                      }}
+                      className={`font-shrikhand text-lg sm:text-xl tracking-wide ${
+                        themeMode === "dark" ? "text-white" : "text-[#141414]"
+                      }`}
                     >
                       {businessName || "Odd Hours"}
                     </span>

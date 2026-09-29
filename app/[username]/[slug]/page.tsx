@@ -1756,10 +1756,9 @@ export default async function MagnetPageRoute({
                         />
                       )}
                       <div
-                        className="font-shrikhand text-2xl sm:text-3xl tracking-wide"
-                        style={{
-                          color: accentColor,
-                        }}
+                        className={`font-shrikhand text-2xl sm:text-3xl tracking-wide ${
+                          themeMode === "dark" ? "text-white" : "text-[#141414]"
+                        }`}
                       >
                         {(page as any).mastheadLeft || businessName || "Odd Hours"}
                       </div>

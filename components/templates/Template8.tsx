@@ -285,17 +285,15 @@ export default function Template8(props: TemplateProps) {
                 value={mastheadLeft || ""}
                 onChange={(e) => setMastheadLeft?.(e.target.value)}
                 placeholder={businessName || "Odd Hours"}
-                className={`font-shrikhand text-2xl sm:text-3xl tracking-wide bg-transparent outline-none w-full max-w-sm placeholder:opacity-40 transition-colors`}
-                style={{
-                  color: accentColor,
-                }}
+                className={`font-shrikhand text-2xl sm:text-3xl tracking-wide bg-transparent outline-none w-full max-w-sm placeholder:opacity-40 transition-colors ${
+                  isDark ? "text-white" : "text-[#141414]"
+                }`}
               />
             ) : (
               <div
-                className="font-shrikhand text-2xl sm:text-3xl tracking-wide"
-                style={{
-                  color: accentColor,
-                }}
+                className={`font-shrikhand text-2xl sm:text-3xl tracking-wide ${
+                  isDark ? "text-white" : "text-[#141414]"
+                }`}
               >
                 {mastheadLeft || businessName || "Odd Hours"}
               </div>
