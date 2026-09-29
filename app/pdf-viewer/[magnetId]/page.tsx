@@ -54,11 +54,12 @@ export default async function PdfViewerPage({ params, searchParams }: Props) {
     ? pageDoc.pdfPages
     : [];
 
-  // Fallback to token payload only if DB doc has no pages
-  if (effectivePdfPages.length === 0 && rawToken && rawToken !== "1") {
+  // If the subscriber has a valid unlock token with a snapshot of the pages they unlocked,
+  // ensure they retain access to their original unlocked PDF version even if the owner updates the file later.
+  if (rawToken && rawToken !== "1") {
     const verifiedPayload = verifyPdfUnlockToken(rawToken);
     if (verifiedPayload && (verifiedPayload.magnetId === magnetId || !verifiedPayload.magnetId)) {
-      if (verifiedPayload.pdfPages && verifiedPayload.pdfPages.length > 0) {
+      if (Array.isArray(verifiedPayload.pdfPages) && verifiedPayload.pdfPages.length > 0) {
         effectivePdfPages = verifiedPayload.pdfPages;
       }
     }

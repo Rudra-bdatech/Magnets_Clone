@@ -167,7 +167,11 @@ export async function POST(req: NextRequest) {
     }
 
     // ── Generate signed per-subscriber access token with snapshot ─────────
+    const mongoose = await import("mongoose");
     let pageDocSnapshot = await MagnetPageModel.findOne({ id: magnetId }).lean();
+    if (!pageDocSnapshot && mongoose.Types.ObjectId.isValid(magnetId)) {
+      pageDocSnapshot = await MagnetPageModel.findOne({ _id: magnetId }).lean();
+    }
     const pdfSnapshot: string[] = Array.isArray(pageDocSnapshot?.pdfPages) ? pageDocSnapshot.pdfPages : [];
 
     const unlockToken = createPdfUnlockToken({
