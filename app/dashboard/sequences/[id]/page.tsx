@@ -156,29 +156,32 @@ export default function SequenceEditor() {
             let stepOpened = e.opened || 0;
 
             if (associatedLeads.length > 0) {
-              const stepNum = idx + 1;
-              if (idx === 0) {
-                stepDelivered = Math.max(stepDelivered, liveDelivered);
-                stepOpened = Math.max(stepOpened, liveOpened);
-              } else {
-                const leadsAtStep = associatedLeads.filter((l) => {
-                  if (l.status === "completed") return true;
-                  if (!l.sequenceStep) return false;
-                  const match = l.sequenceStep.match(/Step\s+(\d+)/i) || l.sequenceStep.match(/Email\s+(\d+)/i);
-                  if (match) return parseInt(match[1], 10) >= stepNum;
-                  return l.sequenceStep.toLowerCase().includes("completed");
-                });
-                stepDelivered = Math.max(stepDelivered, leadsAtStep.length);
-                stepOpened = Math.max(
-                  stepOpened,
-                  leadsAtStep.filter((l) => l.status === "opened" || l.status === "replied").length
-                );
-              }
+              const stepIdentifier = e.id || `se_${pageFound?.id}_${idx + 1}`;
+              const leadsAtStep = associatedLeads.filter((l) => {
+                if (l.openedSteps && (l.openedSteps.includes(stepIdentifier) || l.openedSteps.includes(`step_${idx + 1}`) || (e.id && l.openedSteps.includes(e.id)))) {
+                  return true;
+                }
+                if (!l.sequenceStep) return false;
+                const stepMatch = l.sequenceStep.match(/Step\s+(\d+)/i);
+                if (stepMatch) {
+                  return parseInt(stepMatch[1], 10) >= idx + 2;
+                }
+                const emailMatch = l.sequenceStep.match(/Email\s+(\d+)/i);
+                if (emailMatch) {
+                  return parseInt(emailMatch[1], 10) >= idx + 1;
+                }
+                return false;
+              });
+              stepDelivered = leadsAtStep.length;
+              stepOpened = leadsAtStep.filter((l) => {
+                if (l.openedSteps && (l.openedSteps.includes(stepIdentifier) || l.openedSteps.includes(`step_${idx + 1}`) || (e.id && l.openedSteps.includes(e.id)))) {
+                  return true;
+                }
+                return false;
+              }).length;
             } else if (found.stats) {
-              if (idx === 0) {
-                stepDelivered = Math.max(stepDelivered, found.stats.delivered || 0);
-                stepOpened = Math.max(stepOpened, found.stats.opened || 0);
-              }
+              stepDelivered = e.sent || 0;
+              stepOpened = e.opened || 0;
             }
 
             return {
@@ -234,24 +237,32 @@ export default function SequenceEditor() {
                     ? `${Math.round(delayMinutes / 60)} hour${Math.round(delayMinutes / 60) > 1 ? "s" : ""} later`
                     : `${Math.round(delayMinutes / 1440)} day${Math.round(delayMinutes / 1440) > 1 ? "s" : ""} later`;
 
-                const stepNum = idx + 1;
+                const stepIdentifier = e.id || `se_${pageFound.id}_${idx + 1}`;
                 let stepDelivered = 0;
                 let stepOpened = 0;
-                if (idx === 0) {
-                  stepDelivered = liveDelivered;
-                  stepOpened = liveOpened;
-                } else {
+                if (associatedLeads.length > 0) {
                   const leadsAtStep = associatedLeads.filter((l) => {
-                    if (l.status === "completed") return true;
+                    if (l.openedSteps && (l.openedSteps.includes(stepIdentifier) || l.openedSteps.includes(`step_${idx + 1}`) || (e.id && l.openedSteps.includes(e.id)))) {
+                      return true;
+                    }
                     if (!l.sequenceStep) return false;
-                    const match = l.sequenceStep.match(/Step\s+(\d+)/i) || l.sequenceStep.match(/Email\s+(\d+)/i);
-                    if (match) return parseInt(match[1], 10) >= stepNum;
-                    return l.sequenceStep.toLowerCase().includes("completed");
+                    const stepMatch = l.sequenceStep.match(/Step\s+(\d+)/i);
+                    if (stepMatch) {
+                      return parseInt(stepMatch[1], 10) >= idx + 2;
+                    }
+                    const emailMatch = l.sequenceStep.match(/Email\s+(\d+)/i);
+                    if (emailMatch) {
+                      return parseInt(emailMatch[1], 10) >= idx + 1;
+                    }
+                    return false;
                   });
                   stepDelivered = leadsAtStep.length;
-                  stepOpened = leadsAtStep.filter(
-                  (l) => l.opened || l.status === "opened" || l.status === "replied" || (l.openedSteps && l.openedSteps.length > 0)
-                ).length;
+                  stepOpened = leadsAtStep.filter((l) => {
+                    if (l.openedSteps && (l.openedSteps.includes(stepIdentifier) || l.openedSteps.includes(`step_${idx + 1}`) || (e.id && l.openedSteps.includes(e.id)))) {
+                      return true;
+                    }
+                    return false;
+                  }).length;
                 }
 
                 return {

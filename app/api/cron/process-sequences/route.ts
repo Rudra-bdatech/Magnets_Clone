@@ -80,14 +80,19 @@ export async function GET(req: NextRequest) {
       eventType: "sent",
     }).lean();
 
-    const sentEventsMap = new Map<string, Set<string>>();
+    const sentEventsMap = new Map<string, { stepIds: Set<string>; lastSentTime: number }>();
     for (const ev of sentEvents) {
       const key = `${(ev.recipientEmail || "").toLowerCase().trim()}_${ev.pageId || ""}`;
       if (!sentEventsMap.has(key)) {
-        sentEventsMap.set(key, new Set());
+        sentEventsMap.set(key, { stepIds: new Set(), lastSentTime: 0 });
       }
+      const entry = sentEventsMap.get(key)!;
       if (ev.stepId) {
-        sentEventsMap.get(key)!.add(ev.stepId);
+        entry.stepIds.add(ev.stepId);
+      }
+      const evTime = ev.createdAt ? new Date(ev.createdAt).getTime() : 0;
+      if (evTime > entry.lastSentTime) {
+        entry.lastSentTime = evTime;
       }
     }
 
@@ -117,7 +122,8 @@ export async function GET(req: NextRequest) {
 
       const sequenceEmails = pageDoc.sequenceEmails;
       const sentKey = `${(lead.email || "").toLowerCase().trim()}_${pageDoc.id || ""}`;
-      const sentStepIds = sentEventsMap.get(sentKey) || new Set<string>();
+      const sentEntry = sentEventsMap.get(sentKey) || { stepIds: new Set<string>(), lastSentTime: 0 };
+      const sentStepIds = sentEntry.stepIds;
 
       // Find the first sequence email in sequenceEmails that hasn't been sent to this lead yet
       let nextEmailIndex = -1;
@@ -153,26 +159,34 @@ export async function GET(req: NextRequest) {
         signupTime = now;
       }
 
-      const elapsedMinutes = Math.floor((now - signupTime) / (1000 * 60));
+      // Base time: For step 1 (idx 0), calculate from signupTime.
+      // For step 2+ (idx > 0), calculate from the exact time the previous email was sent!
+      const baseTime = (nextEmailIndex > 0 && sentEntry.lastSentTime > 0)
+        ? sentEntry.lastSentTime
+        : signupTime;
+
+      const elapsedMinutes = Math.floor((now - baseTime) / (1000 * 60));
 
       const nextEmail = sequenceEmails[nextEmailIndex];
-      const targetCumulativeMinutes = sequenceEmails
-        .slice(0, nextEmailIndex + 1)
-        .reduce((sum: number, item: any) => {
-          let mins = 0;
-          if (typeof item.delayMinutes === "number" && !isNaN(item.delayMinutes)) {
-            mins = item.delayMinutes;
-          } else {
-            const num = Number(item.delayDays) || 0;
-            if (item.delayUnit === "minutes") mins = num;
-            else if (item.delayUnit === "hours") mins = num * 60;
-            else mins = num * 1440; // days default
-          }
-          return sum + mins;
-        }, 0);
+      let stepRequiredDelay = 0;
+      if (typeof nextEmail.delayMinutes === "number" && !isNaN(nextEmail.delayMinutes)) {
+        stepRequiredDelay = nextEmail.delayMinutes;
+      } else {
+        const num = Number(nextEmail.delayDays) || 0;
+        if (nextEmail.delayUnit === "minutes") stepRequiredDelay = num;
+        else if (nextEmail.delayUnit === "hours") stepRequiredDelay = num * 60;
+        else stepRequiredDelay = num * 1440; // days default
+      }
 
-      if (elapsedMinutes < targetCumulativeMinutes) {
-        debugLogs.push({ email: lead.email, elapsedMinutes, targetCumulativeMinutes, reason: "Cumulative delay time not yet reached" });
+      if (elapsedMinutes < stepRequiredDelay) {
+        debugLogs.push({
+          email: lead.email,
+          stepIndex: nextEmailIndex + 1,
+          elapsedMinutes,
+          stepRequiredDelay,
+          remainingMinutes: stepRequiredDelay - elapsedMinutes,
+          reason: `Waiting: ${stepRequiredDelay - elapsedMinutes} min(s) remaining after previous email`,
+        });
         continue;
       }
 

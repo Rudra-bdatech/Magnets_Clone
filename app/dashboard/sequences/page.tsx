@@ -238,24 +238,32 @@ export default function SequencesPage() {
 
           if (s.emails && s.emails.length > 0) {
             s.emails = s.emails.map((e, idx) => {
+              const stepIdentifier = e.id || `se_${s.id}_${idx + 1}`;
               let stepDelivered = e.sent || 0;
               let stepOpened = e.opened || 0;
-              const stepNum = idx + 1;
-              if (idx === 0) {
-                stepDelivered = Math.max(stepDelivered, liveDelivered);
-                stepOpened = liveOpened;
-              } else {
+              if (associatedLeads.length > 0) {
                 const leadsAtStep = associatedLeads.filter((l) => {
-                  if (l.status === "completed") return true;
+                  if (l.openedSteps && (l.openedSteps.includes(stepIdentifier) || l.openedSteps.includes(`step_${idx + 1}`) || (e.id && l.openedSteps.includes(e.id)))) {
+                    return true;
+                  }
                   if (!l.sequenceStep) return false;
-                  const match = l.sequenceStep.match(/Step\s+(\d+)/i) || l.sequenceStep.match(/Email\s+(\d+)/i);
-                  if (match) return parseInt(match[1], 10) >= stepNum;
-                  return l.sequenceStep.toLowerCase().includes("completed");
+                  const stepMatch = l.sequenceStep.match(/Step\s+(\d+)/i);
+                  if (stepMatch) {
+                    return parseInt(stepMatch[1], 10) >= idx + 2;
+                  }
+                  const emailMatch = l.sequenceStep.match(/Email\s+(\d+)/i);
+                  if (emailMatch) {
+                    return parseInt(emailMatch[1], 10) >= idx + 1;
+                  }
+                  return false;
                 });
-                stepDelivered = Math.max(stepDelivered, leadsAtStep.length);
-                stepOpened = leadsAtStep.filter(
-                  (l) => l.opened || l.status === "opened" || l.status === "replied" || (l.openedSteps && l.openedSteps.length > 0)
-                ).length;
+                stepDelivered = leadsAtStep.length;
+                stepOpened = leadsAtStep.filter((l) => {
+                  if (l.openedSteps && (l.openedSteps.includes(stepIdentifier) || l.openedSteps.includes(`step_${idx + 1}`) || (e.id && l.openedSteps.includes(e.id)))) {
+                    return true;
+                  }
+                  return false;
+                }).length;
               }
               return { ...e, sent: stepDelivered, opened: stepOpened };
             });
