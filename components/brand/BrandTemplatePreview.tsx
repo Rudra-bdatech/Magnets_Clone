@@ -1565,11 +1565,23 @@ const BrandTemplatePreview = memo(function BrandTemplatePreview({
                   >
                     <div>
                       <h2
-                        className="font-archivo text-xl sm:text-2xl leading-[0.95] uppercase tracking-tight mb-2"
+                        className="font-archivo text-xl sm:text-2xl leading-[0.95] uppercase tracking-tight mb-1.5"
                         style={{ color: themeMode === "dark" ? accentColor : contrastOnAccent }}
                       >
-                        {latestPage?.formTitle || "Take the manual."}
+                        {latestPage?.formTitle || "DOWNLOAD HERE"}
                       </h2>
+
+                      {latestPage?.formSubtitle && (
+                        <p
+                          className={`font-ibm text-[9px] sm:text-[10px] leading-relaxed mb-3 ${
+                            themeMode === "dark"
+                              ? "text-zinc-300"
+                              : (contrastOnAccent === "#ffffff" ? "text-white/90" : "text-[#101010]/90")
+                          }`}
+                        >
+                          {latestPage.formSubtitle}
+                        </p>
+                      )}
 
                       <div className="space-y-0 border-b-2" style={{ borderColor: themeMode === "dark" ? "#2a2a2e" : "#101010" }}>
                         <div
@@ -1590,7 +1602,7 @@ const BrandTemplatePreview = memo(function BrandTemplatePreview({
                             type="text"
                             readOnly
                             placeholder="TYPE HERE"
-                            className={`font-ibm text-[10px] p-2 bg-transparent outline-none ${
+                            className={`font-ibm text-[9px] sm:text-[10px] p-2 bg-transparent outline-none ${
                               themeMode === "dark"
                                 ? "text-white placeholder:text-zinc-600"
                                 : (contrastOnAccent === "#ffffff" ? "text-white placeholder:text-white/60" : "text-black placeholder:text-black/50")
@@ -1616,18 +1628,49 @@ const BrandTemplatePreview = memo(function BrandTemplatePreview({
                             type="email"
                             readOnly
                             placeholder="YOU@WORK.COM"
-                            className={`font-ibm text-[10px] p-2 bg-transparent outline-none ${
+                            className={`font-ibm text-[9px] sm:text-[10px] p-2 bg-transparent outline-none ${
                               themeMode === "dark"
                                 ? "text-white placeholder:text-zinc-600"
                                 : (contrastOnAccent === "#ffffff" ? "text-white placeholder:text-white/60" : "text-black placeholder:text-black/50")
                             }`}
                           />
                         </div>
+
+                        {/* Custom Form Fields if any */}
+                        {latestPage?.customFormFields &&
+                          latestPage.customFormFields.map((cf: any, i: number) => (
+                            <div
+                              key={i}
+                              className={`grid grid-cols-[80px_1fr] border-t-2 items-center ${
+                                themeMode === "dark" ? "border-[#2a2a2e] bg-[#121215]" : "border-[#101010]"
+                              }`}
+                            >
+                              <label
+                                className="p-2 font-ibm text-[8px] font-bold tracking-wider uppercase border-r-2 truncate"
+                                style={{
+                                  borderColor: themeMode === "dark" ? "#2a2a2e" : "#101010",
+                                  color: themeMode === "dark" ? accentColor : contrastOnAccent,
+                                }}
+                              >
+                                {cf.label || cf.name || "FIELD"}
+                              </label>
+                              <input
+                                type="text"
+                                readOnly
+                                placeholder={cf.placeholder || "TYPE HERE"}
+                                className={`font-ibm text-[9px] sm:text-[10px] p-2 bg-transparent outline-none ${
+                                  themeMode === "dark"
+                                    ? "text-white placeholder:text-zinc-600"
+                                    : (contrastOnAccent === "#ffffff" ? "text-white placeholder:text-white/60" : "text-black placeholder:text-black/50")
+                                }`}
+                              />
+                            </div>
+                          ))}
                       </div>
 
                       <div className="pt-3">
                         <div
-                          className="w-full p-2.5 font-archivo text-xs tracking-wider uppercase border-2 text-center"
+                          className="w-full p-2.5 font-archivo text-xs tracking-wider uppercase border-2 text-center font-bold"
                           style={
                             themeMode === "dark"
                               ? {
@@ -1644,8 +1687,17 @@ const BrandTemplatePreview = memo(function BrandTemplatePreview({
                                 }
                           }
                         >
-                          {latestPage?.formButtonText || latestPage?.cta || "Send me the PDF ↗"}
+                          {latestPage?.formButtonText || latestPage?.cta || "GET INSTANT ACCESS"}
                         </div>
+                      </div>
+
+                      {/* Trust info */}
+                      <div
+                        className="flex items-center justify-between pt-3 font-ibm text-[7px] uppercase tracking-wider opacity-70"
+                        style={{ color: themeMode === "dark" ? "#a1a1aa" : contrastOnAccent }}
+                      >
+                        <span>🔒 ZERO SPAM PROMISE</span>
+                        <span>INSTANT DISPATCH</span>
                       </div>
                     </div>
                   </div>
