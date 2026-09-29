@@ -113,6 +113,8 @@ const MagnetPageSchema = new Schema({
   variantBViews: { type: Number, default: 0 },
   variantBSignups: { type: Number, default: 0 },
   bulletsTitle: { type: String, default: "What's inside:" },
+  mastheadLeft: { type: String, default: "" },
+  mastheadRight: { type: String, default: "" },
   formTitle: { type: String, default: "Instant Access" },
   formSubtitle: { type: String, default: "Where should we send your copy?" },
   namePlaceholder: { type: String, default: "Name" },

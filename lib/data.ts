@@ -63,6 +63,8 @@ export interface MagnetPage {
   customPromptPlaceholder?: string;
   enableAiPersonalizedDeliverable?: boolean;
   bulletsTitle?: string;
+  mastheadLeft?: string;
+  mastheadRight?: string;
   // Editable Signup Form Card Settings
   formTitle?: string;
   formSubtitle?: string;

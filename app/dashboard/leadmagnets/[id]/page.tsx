@@ -220,6 +220,8 @@ export default function EditLeadMagnetPage() {
             setSubheadline(cleanSubheadline);
             if (found.pitch) setPitch(found.pitch);
             if (found.bullets) setBullets(found.bullets);
+            if (found.mastheadLeft !== undefined) setMastheadLeft(found.mastheadLeft);
+            if (found.mastheadRight !== undefined) setMastheadRight(found.mastheadRight);
             if (found.imageUrl !== undefined) setImageUrl(found.imageUrl);
             if (found.emailSubject) setEmailSubject(found.emailSubject);
             if (found.emailPreviewText) setEmailPreviewText(found.emailPreviewText);
@@ -381,6 +383,8 @@ export default function EditLeadMagnetPage() {
   const [pitch, setPitch] = useState(initialPitch);
   const [bullets, setBullets] = useState<string[]>(initialBullets);
   const [bulletsTitle, setBulletsTitle] = useState(page?.bulletsTitle && page.bulletsTitle !== "What they will learn" && page.bulletsTitle !== "Free Resource · Instant Access" ? page.bulletsTitle : "");
+  const [mastheadLeft, setMastheadLeft] = useState(page?.mastheadLeft || "");
+  const [mastheadRight, setMastheadRight] = useState(page?.mastheadRight || "");
   const [formTitle, setFormTitle] = useState(page?.formTitle && page.formTitle !== "Download for free" && page.formTitle !== "Claim Your Copy" ? page.formTitle : "");
   const [formSubtitle, setFormSubtitle] = useState(page?.formSubtitle && page.formSubtitle !== "Pop your email in and we'll send it straight over." ? page.formSubtitle : "");
   const [formButtonText, setFormButtonText] = useState(page?.formButtonText || page?.cta || "Send it to me");
@@ -458,6 +462,8 @@ export default function EditLeadMagnetPage() {
     buttonUrl: string;
     quizFunnelEnabled: boolean;
     bulletsTitle: string;
+    mastheadLeft: string;
+    mastheadRight: string;
     formTitle: string;
     formSubtitle: string;
     formButtonText: string;
@@ -483,6 +489,8 @@ export default function EditLeadMagnetPage() {
       buttonUrl: page?.buttonUrl || "",
       quizFunnelEnabled: page?.quizFunnelEnabled || false,
       bulletsTitle: page?.bulletsTitle && page.bulletsTitle !== "What they will learn" ? page.bulletsTitle : "",
+      mastheadLeft: page?.mastheadLeft || "",
+      mastheadRight: page?.mastheadRight || "",
       formTitle: page?.formTitle || "Download for free",
       formSubtitle: page?.formSubtitle || "Pop your email in and we'll send it straight over.",
       formButtonText: page?.formButtonText || page?.cta || "Send it to me",
@@ -641,6 +649,11 @@ export default function EditLeadMagnetPage() {
     setButtonUrl(target.buttonUrl);
     setQuizFunnelEnabled(target.quizFunnelEnabled);
     setBulletsTitle(target.bulletsTitle);
+    if (target.mastheadLeft !== undefined) setMastheadLeft(target.mastheadLeft);
+    if (target.mastheadRight !== undefined) setMastheadRight(target.mastheadRight);
+    if (target.formTitle !== undefined) setFormTitle(target.formTitle);
+    if (target.formSubtitle !== undefined) setFormSubtitle(target.formSubtitle);
+    if (target.formButtonText !== undefined) setFormButtonText(target.formButtonText);
 
     setHistoryIndex(prevIndex);
   }, [historyIndex, history]);
@@ -673,6 +686,11 @@ export default function EditLeadMagnetPage() {
     setButtonUrl(target.buttonUrl);
     setQuizFunnelEnabled(target.quizFunnelEnabled);
     setBulletsTitle(target.bulletsTitle);
+    if (target.mastheadLeft !== undefined) setMastheadLeft(target.mastheadLeft);
+    if (target.mastheadRight !== undefined) setMastheadRight(target.mastheadRight);
+    if (target.formTitle !== undefined) setFormTitle(target.formTitle);
+    if (target.formSubtitle !== undefined) setFormSubtitle(target.formSubtitle);
+    if (target.formButtonText !== undefined) setFormButtonText(target.formButtonText);
 
     setHistoryIndex(nextIndex);
   }, [historyIndex, history]);
@@ -918,6 +936,8 @@ export default function EditLeadMagnetPage() {
         buttonUrl,
         quizFunnelEnabled,
         bulletsTitle,
+        mastheadLeft,
+        mastheadRight,
         formTitle,
         formSubtitle,
         formButtonText,
@@ -952,6 +972,8 @@ export default function EditLeadMagnetPage() {
           a.buttonUrl !== b.buttonUrl ||
           a.quizFunnelEnabled !== b.quizFunnelEnabled ||
           a.bulletsTitle !== b.bulletsTitle ||
+          a.mastheadLeft !== b.mastheadLeft ||
+          a.mastheadRight !== b.mastheadRight ||
           a.formTitle !== b.formTitle ||
           a.formSubtitle !== b.formSubtitle ||
           a.formButtonText !== b.formButtonText
@@ -982,7 +1004,8 @@ export default function EditLeadMagnetPage() {
     emailSubject, emailPreviewText, emailBody,
     sequenceEnabled, stopOnCall, sequenceEmails,
     afterSignupOption, destinationUrl, customHeading, customMessage, videoUrl, buttonLabel, buttonUrl, quizFunnelEnabled,
-    bulletsTitle,
+    bulletsTitle, mastheadLeft, mastheadRight,
+    formTitle, formSubtitle, formButtonText,
     historyIndex, history
   ]);
 
@@ -1048,6 +1071,8 @@ export default function EditLeadMagnetPage() {
           enableAiPersonalizedDeliverable,
           customFormFields,
           bulletsTitle,
+          mastheadLeft,
+          mastheadRight,
           formTitle,
           formSubtitle,
           formButtonText,
@@ -1089,8 +1114,8 @@ export default function EditLeadMagnetPage() {
     afterSignupOption, destinationUrl, customHeading, customMessage, videoUrl, buttonLabel, buttonUrl, quizFunnelEnabled,
     hasVariantB, testStarted, variantBImage, variantBTitle,
     customPromptQuestion, customPromptPlaceholder, enableAiPersonalizedDeliverable,
-    customFormFields, bulletsTitle, formTitle, formSubtitle, formButtonText,
-    lockedPdfPages, lockedPdfFreePages, lockedPdfTitle
+    customFormFields, bulletsTitle, mastheadLeft, mastheadRight, formTitle, formSubtitle, formButtonText,
+    lockedPdfPages, lockedPdfFreePages, lockedPdfTitle, templateId
   ]);
 
   const handleGoBack = () => {
@@ -1126,6 +1151,8 @@ export default function EditLeadMagnetPage() {
         enableAiPersonalizedDeliverable,
         customFormFields,
         bulletsTitle,
+        mastheadLeft,
+        mastheadRight,
         formTitle,
         formSubtitle,
         formButtonText,
@@ -1718,6 +1745,10 @@ export default function EditLeadMagnetPage() {
                   setBullets={setBullets}
                   bulletsTitle={bulletsTitle}
                   setBulletsTitle={setBulletsTitle}
+                  mastheadLeft={mastheadLeft}
+                  setMastheadLeft={setMastheadLeft}
+                  mastheadRight={mastheadRight}
+                  setMastheadRight={setMastheadRight}
                   formTitle={formTitle}
                   setFormTitle={setFormTitle}
                   formSubtitle={formSubtitle}

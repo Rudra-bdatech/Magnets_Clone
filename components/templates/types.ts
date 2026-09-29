@@ -17,6 +17,8 @@ export interface TemplateProps {
   pitch?: string;
   bullets?: string[];
   bulletsTitle?: string;
+  mastheadLeft?: string;
+  mastheadRight?: string;
   formTitle?: string;
   formSubtitle?: string;
   formButtonText?: string;
@@ -36,6 +38,8 @@ export interface TemplateProps {
   setPitch?: (val: string) => void;
   setBullets?: (val: string[]) => void;
   setBulletsTitle?: (val: string) => void;
+  setMastheadLeft?: (val: string) => void;
+  setMastheadRight?: (val: string) => void;
   setFormTitle?: (val: string) => void;
   setFormSubtitle?: (val: string) => void;
   setFormButtonText?: (val: string) => void;

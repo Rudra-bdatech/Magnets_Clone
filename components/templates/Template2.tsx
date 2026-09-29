@@ -5,8 +5,8 @@ import {
   ImageIcon,
   Plus,
   X,
-  Sparkles,
   ArrowUpRight,
+  Trash2,
 } from "lucide-react";
 import { type TemplateProps } from "./types";
 
@@ -18,6 +18,11 @@ export default function Template2(props: TemplateProps) {
     pitch,
     bullets = [],
     bulletsTitle,
+    mastheadLeft,
+    setMastheadLeft,
+    mastheadRight,
+    setMastheadRight,
+    page,
     formTitle,
     formSubtitle,
     formButtonText,
@@ -38,6 +43,7 @@ export default function Template2(props: TemplateProps) {
     setFormTitle,
     setFormSubtitle,
     setBullets,
+    setImageUrl,
     setFormButtonText,
     isSubmitting = false,
     publicFormValues = {},
@@ -182,33 +188,157 @@ export default function Template2(props: TemplateProps) {
       `}</style>
 
       {/* 1. MASTHEAD */}
-      <header className="w-full border-b border-[#151515] dark:border-white/20 px-6 sm:px-10 py-5 grid grid-cols-1 md:grid-cols-3 items-end gap-4">
-        {/* Left: Vol & Issue */}
-        <div className="text-left font-sans text-[10px] sm:text-[11px] font-bold uppercase tracking-[0.18em] leading-tight opacity-90">
-          <div>VOL. 08 · FIELD NOTES</div>
-          <div className="mt-0.5">ISSUE NO. 42</div>
-        </div>
+      {(() => {
+        const defaultLeft1 = "VOL. 08 · FIELD NOTES";
+        const defaultLeft2 = "ISSUE NO. 42";
+        const curLeft = mastheadLeft ?? page?.mastheadLeft ?? "";
+        const isLeftHidden = curLeft === "__hidden__";
+        const leftParts = curLeft.includes(":::") ? curLeft.split(":::") : [curLeft, ""];
+        const leftLine1 = leftParts[0] || "";
+        const leftLine2 = leftParts[1] || "";
 
-        {/* Center: Brand Logo + Brand Title */}
-        <div className="flex items-center justify-center gap-2.5 sm:gap-3.5 text-center">
-          {logo && (
-            <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-xl overflow-hidden shadow-sm border border-[#151515]/20 dark:border-white/20 shrink-0 bg-transparent">
-              <img src={logo} alt={businessName} className="h-full w-full object-cover" />
+        const defaultRight1 = "INDEPENDENT IDEAS";
+        const defaultRight2 = "AUTUMN · 2026";
+        const curRight = mastheadRight ?? page?.mastheadRight ?? "";
+        const isRightHidden = curRight === "__hidden__";
+        const rightParts = curRight.includes(":::") ? curRight.split(":::") : [curRight, ""];
+        const rightLine1 = rightParts[0] || "";
+        const rightLine2 = rightParts[1] || "";
+
+        return (
+          <header className="w-full border-b border-[#151515] dark:border-white/20 px-6 sm:px-10 py-5 grid grid-cols-1 md:grid-cols-3 items-end gap-4">
+            {/* Left: Vol & Issue */}
+            <div className="text-left font-sans text-[10px] sm:text-[11px] font-bold uppercase tracking-[0.18em] leading-tight opacity-90 relative group min-h-[34px] flex items-end">
+              {isLeftHidden ? (
+                isEditor && (
+                  <button
+                    type="button"
+                    onClick={() => setMastheadLeft?.("")}
+                    className="inline-flex items-center gap-1 border border-dashed border-[#151515]/30 dark:border-white/30 px-2 py-1 text-[10px] font-sans font-bold uppercase tracking-wider hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer"
+                  >
+                    <Plus className="w-3 h-3" />
+                    <span>Add Vol / Issue</span>
+                  </button>
+                )
+              ) : (
+                <div className="w-full relative">
+                  {isEditor && (
+                    <button
+                      type="button"
+                      onClick={() => setMastheadLeft?.("__hidden__")}
+                      className="absolute -top-3.5 right-0 p-1 rounded text-zinc-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 transition cursor-pointer"
+                      title="Remove Left Masthead"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  )}
+                  {isEditor ? (
+                    <div className="space-y-0.5 pr-5">
+                      <input
+                        type="text"
+                        value={leftLine1}
+                        onChange={(e) => {
+                          const l2 = leftLine2;
+                          setMastheadLeft?.(`${e.target.value} ::: ${l2}`);
+                        }}
+                        className="w-full bg-transparent outline-none font-bold uppercase tracking-[0.18em] placeholder:opacity-50 text-[#151515] dark:text-[#eae8e3]"
+                        placeholder={defaultLeft1}
+                      />
+                      <input
+                        type="text"
+                        value={leftLine2}
+                        onChange={(e) => {
+                          const l1 = leftLine1 || defaultLeft1;
+                          setMastheadLeft?.(`${l1} ::: ${e.target.value}`);
+                        }}
+                        className="w-full bg-transparent outline-none font-bold uppercase tracking-[0.18em] placeholder:opacity-50 text-[#151515] dark:text-[#eae8e3]"
+                        placeholder={defaultLeft2}
+                      />
+                    </div>
+                  ) : (
+                    <div>
+                      <div>{leftLine1 || defaultLeft1}</div>
+                      <div className="mt-0.5">{leftLine2 || defaultLeft2}</div>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
-          )}
-          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black tracking-[-0.02em] uppercase font-sans leading-none text-[#151515] dark:text-[#eae8e3]">
-            {businessName}
-          </h1>
-        </div>
 
-        {/* Right: Category & Season */}
-        <div className="text-left md:text-right font-sans text-[10px] sm:text-[11px] font-bold uppercase tracking-[0.18em] leading-tight opacity-90">
-          <div>INDEPENDENT IDEAS</div>
-          <div className="mt-0.5 font-normal text-[#5a574f] dark:text-zinc-400">
-            AUTUMN · 2026
-          </div>
-        </div>
-      </header>
+            {/* Center: Brand Logo + Brand Title */}
+            <div className="flex items-center justify-center gap-2.5 sm:gap-3.5 text-center">
+              {logo && (
+                <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-xl overflow-hidden shadow-sm border border-[#151515]/20 dark:border-white/20 shrink-0 bg-transparent">
+                  <img src={logo} alt={businessName} className="h-full w-full object-cover" />
+                </div>
+              )}
+              <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black tracking-[-0.02em] uppercase font-sans leading-none text-[#151515] dark:text-[#eae8e3]">
+                {businessName}
+              </h1>
+            </div>
+
+            {/* Right: Category & Season */}
+            <div className="text-left md:text-right font-sans text-[10px] sm:text-[11px] font-bold uppercase tracking-[0.18em] leading-tight opacity-90 relative group min-h-[34px] flex items-end justify-start md:justify-end">
+              {isRightHidden ? (
+                isEditor && (
+                  <button
+                    type="button"
+                    onClick={() => setMastheadRight?.("")}
+                    className="inline-flex items-center gap-1 border border-dashed border-[#151515]/30 dark:border-white/30 px-2 py-1 text-[10px] font-sans font-bold uppercase tracking-wider hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer"
+                  >
+                    <Plus className="w-3 h-3" />
+                    <span>Add Category / Date</span>
+                  </button>
+                )
+              ) : (
+                <div className="w-full relative">
+                  {isEditor && (
+                    <button
+                      type="button"
+                      onClick={() => setMastheadRight?.("__hidden__")}
+                      className="absolute -top-3.5 left-0 md:left-auto md:right-0 p-1 rounded text-zinc-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 transition cursor-pointer"
+                      title="Remove Right Masthead"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  )}
+                  {isEditor ? (
+                    <div className="space-y-0.5 pl-0 md:pl-5">
+                      <input
+                        type="text"
+                        value={rightLine1}
+                        onChange={(e) => {
+                          const r2 = rightLine2;
+                          setMastheadRight?.(`${e.target.value} ::: ${r2}`);
+                        }}
+                        className="w-full bg-transparent outline-none font-bold uppercase tracking-[0.18em] placeholder:opacity-50 text-left md:text-right text-[#151515] dark:text-[#eae8e3]"
+                        placeholder={defaultRight1}
+                      />
+                      <input
+                        type="text"
+                        value={rightLine2}
+                        onChange={(e) => {
+                          const r1 = rightLine1 || defaultRight1;
+                          setMastheadRight?.(`${r1} ::: ${e.target.value}`);
+                        }}
+                        className="w-full bg-transparent outline-none font-bold uppercase tracking-[0.18em] placeholder:opacity-50 text-left md:text-right text-[#5a574f] dark:text-zinc-400"
+                        placeholder={defaultRight2}
+                      />
+                    </div>
+                  ) : (
+                    <div>
+                      <div>{rightLine1 || defaultRight1}</div>
+                      <div className="mt-0.5 font-normal text-[#5a574f] dark:text-zinc-400">
+                        {rightLine2 || defaultRight2}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          </header>
+        );
+      })()}
 
       {/* 2. TICKER BAR */}
       <div className="w-full flex items-center overflow-hidden h-8 text-[10px] font-sans font-bold uppercase tracking-[0.12em] select-none bg-[#151515] text-[#f3f0e8]">
@@ -255,22 +385,17 @@ export default function Template2(props: TemplateProps) {
                 className="flex items-center gap-1.5 bg-black/80 hover:bg-black px-3 py-1.5 text-xs font-bold text-white border border-white/30 backdrop-blur-md transition cursor-pointer"
               >
                 <ImageIcon className="h-3.5 w-3.5 text-zinc-300" />
-                <span>{imageUrl ? "Change Photo" : "Upload Photo"}</span>
+                <span>{imageUrl && imageUrl.trim() !== "" ? "Change Photo" : "Upload Photo"}</span>
               </button>
 
-              {handleGenerateAICoverImage && (
+              {imageUrl && imageUrl.trim() !== "" && setImageUrl && (
                 <button
                   type="button"
-                  disabled={isGeneratingAICover}
-                  onClick={handleGenerateAICoverImage}
-                  className="flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-500 px-3 py-1.5 text-xs font-bold text-white border border-indigo-400/40 backdrop-blur-md transition cursor-pointer disabled:opacity-50"
+                  onClick={() => setImageUrl(null)}
+                  className="flex items-center gap-1.5 bg-black/80 hover:bg-red-950 px-2.5 py-1.5 text-xs font-bold text-red-400 border border-white/30 backdrop-blur-md transition cursor-pointer"
                 >
-                  {isGeneratingAICover ? (
-                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                  ) : (
-                    <Sparkles className="h-3.5 w-3.5 text-amber-300 animate-pulse" />
-                  )}
-                  <span>AI Art</span>
+                  <Trash2 className="h-3.5 w-3.5 text-red-400" />
+                  <span>Remove</span>
                 </button>
               )}
             </div>

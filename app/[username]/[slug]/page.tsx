@@ -380,31 +380,65 @@ export default async function MagnetPageRoute({
             `}</style>
 
             {/* 1. MASTHEAD */}
-            <header className="w-full border-b border-[#151515] dark:border-white/20 px-6 sm:px-10 py-5 grid grid-cols-1 md:grid-cols-3 items-end gap-4">
-              <div className="text-left font-sans text-[10px] sm:text-[11px] font-bold uppercase tracking-[0.18em] leading-tight opacity-90">
-                <div>VOL. 08 · FIELD NOTES</div>
-                <div className="mt-0.5">ISSUE NO. 42</div>
-              </div>
+            {(() => {
+              const defaultLeft1 = "VOL. 08 · FIELD NOTES";
+              const defaultLeft2 = "ISSUE NO. 42";
+              const curLeft = page.mastheadLeft ?? "";
+              const isLeftHidden = curLeft === "__hidden__";
+              const leftParts = curLeft.includes(":::") ? curLeft.split(":::") : [curLeft, ""];
+              const leftLine1 = leftParts[0] || defaultLeft1;
+              const leftLine2 = leftParts[1] || defaultLeft2;
 
-              {/* Center: Brand Logo + Brand Title */}
-              <div className="flex items-center justify-center gap-2.5 sm:gap-3.5 text-center">
-                {logo && (
-                  <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-xl overflow-hidden shadow-sm border border-[#151515]/20 dark:border-white/20 shrink-0 bg-transparent">
-                    <img src={logo} alt={businessName} className="h-full w-full object-cover" />
+              const defaultRight1 = "INDEPENDENT IDEAS";
+              const defaultRight2 = "AUTUMN · 2026";
+              const curRight = page.mastheadRight ?? "";
+              const isRightHidden = curRight === "__hidden__";
+              const rightParts = curRight.includes(":::") ? curRight.split(":::") : [curRight, ""];
+              const rightLine1 = rightParts[0] || defaultRight1;
+              const rightLine2 = rightParts[1] || defaultRight2;
+
+              return (
+                <header className="w-full border-b border-[#151515] dark:border-white/20 px-6 sm:px-10 py-5 grid grid-cols-1 md:grid-cols-3 items-end gap-4">
+                  {/* Left: Vol & Issue */}
+                  <div className="text-left font-sans text-[10px] sm:text-[11px] font-bold uppercase tracking-[0.18em] leading-tight opacity-90 min-h-[34px] flex items-end">
+                    {!isLeftHidden ? (
+                      <div>
+                        <div>{leftLine1}</div>
+                        <div className="mt-0.5">{leftLine2}</div>
+                      </div>
+                    ) : (
+                      <div />
+                    )}
                   </div>
-                )}
-                <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black tracking-[-0.02em] uppercase font-sans leading-none text-[#151515] dark:text-[#eae8e3]">
-                  {businessName || "EDITORIAL BOARD"}
-                </h1>
-              </div>
 
-              <div className="text-left md:text-right font-sans text-[10px] sm:text-[11px] font-bold uppercase tracking-[0.18em] leading-tight opacity-90">
-                <div>INDEPENDENT IDEAS</div>
-                <div className="mt-0.5 font-normal text-[#5a574f] dark:text-zinc-400">
-                  AUTUMN · 2026
-                </div>
-              </div>
-            </header>
+                  {/* Center: Brand Logo + Brand Title */}
+                  <div className="flex items-center justify-center gap-2.5 sm:gap-3.5 text-center">
+                    {logo && (
+                      <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-xl overflow-hidden shadow-sm border border-[#151515]/20 dark:border-white/20 shrink-0 bg-transparent">
+                        <img src={logo} alt={businessName} className="h-full w-full object-cover" />
+                      </div>
+                    )}
+                    <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black tracking-[-0.02em] uppercase font-sans leading-none text-[#151515] dark:text-[#eae8e3]">
+                      {businessName || "EDITORIAL BOARD"}
+                    </h1>
+                  </div>
+
+                  {/* Right: Category & Season */}
+                  <div className="text-left md:text-right font-sans text-[10px] sm:text-[11px] font-bold uppercase tracking-[0.18em] leading-tight opacity-90 min-h-[34px] flex items-end justify-start md:justify-end">
+                    {!isRightHidden ? (
+                      <div>
+                        <div>{rightLine1}</div>
+                        <div className="mt-0.5 font-normal text-[#5a574f] dark:text-zinc-400">
+                          {rightLine2}
+                        </div>
+                      </div>
+                    ) : (
+                      <div />
+                    )}
+                  </div>
+                </header>
+              );
+            })()}
 
             {/* 2. TICKER BAR */}
             <div className="w-full flex items-center overflow-hidden h-8 text-[10px] font-sans font-bold uppercase tracking-[0.12em] select-none bg-[#151515] text-[#f3f0e8]">

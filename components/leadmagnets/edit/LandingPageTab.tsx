@@ -29,6 +29,10 @@ export interface LandingPageTabProps {
   setBullets: (bullets: string[]) => void;
   bulletsTitle: string;
   setBulletsTitle: (val: string) => void;
+  mastheadLeft?: string;
+  setMastheadLeft?: (val: string) => void;
+  mastheadRight?: string;
+  setMastheadRight?: (val: string) => void;
   formTitle: string;
   setFormTitle: (val: string) => void;
   formSubtitle: string;
@@ -85,6 +89,10 @@ export default function LandingPageTab({
   setBullets,
   bulletsTitle,
   setBulletsTitle,
+  mastheadLeft,
+  setMastheadLeft,
+  mastheadRight,
+  setMastheadRight,
   formTitle,
   setFormTitle,
   formSubtitle,
@@ -186,6 +194,10 @@ export default function LandingPageTab({
             pitch={pitch}
             bullets={bullets}
             bulletsTitle={bulletsTitle}
+            mastheadLeft={mastheadLeft}
+            setMastheadLeft={setMastheadLeft}
+            mastheadRight={mastheadRight}
+            setMastheadRight={setMastheadRight}
             formTitle={formTitle}
             formSubtitle={formSubtitle}
             formButtonText={formButtonText}
