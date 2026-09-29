@@ -438,8 +438,8 @@ export default function BrandPage() {
                 >
                   {/* Mock page container */}
                   <div className="p-3.5 sm:p-5 md:p-6">
-                    {/* Header brand name / logo (Hidden for template3, template4, and template5) */}
-                    {templateId !== "template3" && templateId !== "template4" && templateId !== "template5" && (
+                    {/* Header brand name / logo (Hidden for template2, template3, template4, and template5) */}
+                    {templateId !== "template2" && templateId !== "template3" && templateId !== "template4" && templateId !== "template5" && (
                       <div className="flex items-center gap-3 mb-5 sm:mb-8 justify-center">
                         <div className={`h-10 w-10 sm:h-11 sm:w-11 rounded-xl flex items-center justify-center bg-transparent overflow-hidden ${logo ? "border-none" : "border border-dashed border-[#a1a1aa]/45"}`}>
                           {logo ? (
@@ -476,10 +476,12 @@ export default function BrandPage() {
                     </AnimatePresence>
 
                     {/* Footer inside Preview */}
-                    <div className={`mt-10 text-center text-[10px] border-t pt-4 transition-all duration-300 ${themeMode === "dark" ? "border-zinc-800 text-zinc-500" : "border-zinc-200 text-zinc-400"
-                      }`}>
-                      All rights reserved 2026
-                    </div>
+                    {templateId !== "template2" && (
+                      <div className={`mt-10 text-center text-[10px] border-t pt-4 transition-all duration-300 ${themeMode === "dark" ? "border-zinc-800 text-zinc-500" : "border-zinc-200 text-zinc-400"
+                        }`}>
+                        All rights reserved 2026
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>

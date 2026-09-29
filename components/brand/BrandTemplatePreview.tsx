@@ -187,9 +187,15 @@ const BrandTemplatePreview = memo(function BrandTemplatePreview({
               <div className="mt-0.5">ISSUE NO. 42</div>
             </div>
 
-            <div className="text-center">
-              <h4 className="text-xl sm:text-2xl font-black tracking-tight uppercase font-sans leading-none">
-                SIGNAL <span className="font-serif italic font-normal text-[#ef3d25] mx-0.5">/</span> NOISE
+            {/* Center: Brand Logo + Brand Title */}
+            <div className="flex items-center justify-center gap-2 sm:gap-2.5 text-center">
+              {logo && (
+                <div className="h-6 w-6 sm:h-7 sm:w-7 rounded-lg overflow-hidden shadow-xs border border-[#151515]/20 dark:border-white/20 shrink-0 bg-transparent">
+                  <img src={logo} alt={businessName} className="h-full w-full object-cover" />
+                </div>
+              )}
+              <h4 className="text-lg sm:text-xl md:text-2xl font-black tracking-tight uppercase font-sans leading-none">
+                {businessName || "EDITORIAL BOARD"}
               </h4>
             </div>
 

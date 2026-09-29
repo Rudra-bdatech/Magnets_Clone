@@ -48,9 +48,10 @@ export default function Template2(props: TemplateProps) {
   const rawProps = props as any;
   const isEditor = props.mode ? props.mode === "editor" : (rawProps.isEditor !== false);
 
-  const brandColor = account?.brandColor || "#2544d8"; // Royal Blue accent
-  const themeMode = account?.themeMode || "light";
+  const brandColor = account?.brandColor || props.brandColor || "#2544d8"; // Royal Blue accent
+  const themeMode = account?.themeMode || props.themeMode || "light";
   const isDark = themeMode === "dark";
+  const logo = account?.logo || null;
   const businessName = account?.brandName || account?.name || "EDITORIAL BOARD";
 
   // Default placeholders matching the reference magazine
@@ -188,10 +189,15 @@ export default function Template2(props: TemplateProps) {
           <div className="mt-0.5">ISSUE NO. 42</div>
         </div>
 
-        {/* Center: Brand Title */}
-        <div className="text-center">
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-[-0.03em] uppercase font-sans leading-none">
-            SIGNAL <span className="font-serif italic font-normal text-[#ef3d25] mx-1">/</span> NOISE
+        {/* Center: Brand Logo + Brand Title */}
+        <div className="flex items-center justify-center gap-2.5 sm:gap-3.5 text-center">
+          {logo && (
+            <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-xl overflow-hidden shadow-sm border border-[#151515]/20 dark:border-white/20 shrink-0 bg-transparent">
+              <img src={logo} alt={businessName} className="h-full w-full object-cover" />
+            </div>
+          )}
+          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black tracking-[-0.02em] uppercase font-sans leading-none text-[#151515] dark:text-[#eae8e3]">
+            {businessName}
           </h1>
         </div>
 
