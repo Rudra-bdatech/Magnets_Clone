@@ -428,14 +428,27 @@ export default function BrandPage() {
 
                 {/* Outer frame matching client page background theme mode */}
                 <div
-                  className={`rounded-2xl border transition-all duration-300 overflow-hidden ${themeMode === "dark"
-                    ? "bg-[#0E0E10] border-[#2e2e38] text-white"
-                    : "bg-[#FAFAFA] border-[#e4e4e7] text-zinc-900"
-                    }`}
+                  className={`rounded-2xl border transition-all duration-300 overflow-hidden ${
+                    templateId === "template8"
+                      ? (themeMode === "dark"
+                          ? "bg-[#0d0e12] border-[#2e303d] text-white"
+                          : "bg-[#eee9df] border-[#141414] text-zinc-900")
+                      : (themeMode === "dark"
+                          ? "bg-[#0E0E10] border-[#2e2e38] text-white"
+                          : "bg-[#FAFAFA] border-[#e4e4e7] text-zinc-900")
+                  }`}
                   style={{
-                    backgroundImage: themeMode === "light"
-                      ? `radial-gradient(circle at 0% 0%, ${hexWithAlpha(brandColor, 0.05 + (highlightIntensity / 100) * 0.4)} 0%, transparent 50%), radial-gradient(circle at 100% 100%, ${hexWithAlpha(brandColor, 0.03 + (highlightIntensity / 100) * 0.35)} 0%, transparent 50%)`
-                      : `radial-gradient(circle at 0% 0%, ${hexWithAlpha(brandColor, 0.08 + (highlightIntensity / 100) * 0.45)} 0%, transparent 50%), radial-gradient(circle at 100% 100%, ${hexWithAlpha(brandColor, 0.05 + (highlightIntensity / 100) * 0.4)} 0%, transparent 50%)`
+                    backgroundColor: templateId === "template8"
+                      ? (themeMode === "dark" ? "#0d0e12" : "#eee9df")
+                      : undefined,
+                    backgroundImage: templateId === "template8"
+                      ? (themeMode === "dark"
+                          ? "radial-gradient(rgba(255, 255, 255, 0.15) 1px, transparent 1px)"
+                          : "radial-gradient(rgba(20, 20, 20, 0.18) 1px, transparent 1px)")
+                      : (themeMode === "light"
+                          ? `radial-gradient(circle at 0% 0%, ${hexWithAlpha(brandColor, 0.05 + (highlightIntensity / 100) * 0.4)} 0%, transparent 50%), radial-gradient(circle at 100% 100%, ${hexWithAlpha(brandColor, 0.03 + (highlightIntensity / 100) * 0.35)} 0%, transparent 50%)`
+                          : `radial-gradient(circle at 0% 0%, ${hexWithAlpha(brandColor, 0.08 + (highlightIntensity / 100) * 0.45)} 0%, transparent 50%), radial-gradient(circle at 100% 100%, ${hexWithAlpha(brandColor, 0.05 + (highlightIntensity / 100) * 0.4)} 0%, transparent 50%)`),
+                    backgroundSize: templateId === "template8" ? "18px 18px" : undefined
                   }}
                 >
                   {/* Mock page container */}
@@ -478,7 +491,7 @@ export default function BrandPage() {
                     </AnimatePresence>
 
                     {/* Footer inside Preview (Hidden for templates with integrated footers) */}
-                    {templateId !== "template2" && templateId !== "template5" && templateId !== "template6" && templateId !== "template7" && (
+                    {templateId !== "template2" && templateId !== "template5" && templateId !== "template6" && templateId !== "template7" && templateId !== "template8" && (
                       <div className={`mt-10 text-center text-[10px] border-t pt-4 transition-all duration-300 ${themeMode === "dark" ? "border-zinc-800 text-zinc-500" : "border-zinc-200 text-zinc-400"
                         }`}>
                         All rights reserved 2026
