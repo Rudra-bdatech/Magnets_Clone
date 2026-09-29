@@ -774,21 +774,21 @@ const BrandTemplatePreview = memo(function BrandTemplatePreview({
 
                   {/* Floating Formbox Preview */}
                   <div
-                    className="relative md:absolute z-30 md:right-3 md:bottom-3 m-3 md:m-0 w-auto md:w-[220px] p-3.5 shadow-xl"
+                    className="relative md:absolute z-30 md:right-3 md:bottom-3 m-3 md:m-0 w-auto md:w-[240px] p-4 shadow-xl"
                     style={{
                       backgroundColor: formBoxBg,
                       color: formBoxText,
                     }}
                   >
                     <p
-                      className="font-bebas text-lg uppercase leading-tight m-0"
+                      className="font-bebas text-xl uppercase leading-tight m-0"
                       style={{ color: formBoxText }}
                     >
                       {latestPage?.formTitle || "ENTER THE ARCHIVE"}
                     </p>
                     <p
-                      className="font-space text-[8px] leading-tight mt-0.5 mb-2"
-                      style={{ color: formBoxMuted }}
+                      className="font-space text-[9px] leading-tight mt-0.5 mb-2.5"
+                      style={{ color: isDark ? "#4b5563" : "#9ca3af" }}
                     >
                       {latestPage?.formSubtitle || "Receive the complete report and templates."}
                     </p>
@@ -797,20 +797,36 @@ const BrandTemplatePreview = memo(function BrandTemplatePreview({
                       <input
                         type="text"
                         readOnly
-                        placeholder="YOUR NAME"
-                        className="w-full border-0 border-b bg-transparent py-1 px-0.5 font-space text-[9px] outline-none"
-                        style={{ borderBottomColor: formBoxInputBorder, color: formBoxText }}
+                        placeholder={latestPage?.namePlaceholder || "YOUR NAME"}
+                        className="w-full border-0 border-b bg-transparent py-1 px-0.5 font-space text-[9px] outline-none placeholder:text-current placeholder:opacity-40"
+                        style={{ borderBottomColor: isDark ? "#0b0d12" : "rgba(245, 241, 232, 0.6)", color: formBoxText }}
                       />
                       <input
                         type="email"
                         readOnly
-                        placeholder="EMAIL ADDRESS"
-                        className="w-full border-0 border-b bg-transparent py-1 px-0.5 font-space text-[9px] outline-none"
-                        style={{ borderBottomColor: formBoxInputBorder, color: formBoxText }}
+                        placeholder={latestPage?.emailPlaceholder || "EMAIL ADDRESS"}
+                        className="w-full border-0 border-b bg-transparent py-1 px-0.5 font-space text-[9px] outline-none placeholder:text-current placeholder:opacity-40"
+                        style={{ borderBottomColor: isDark ? "#0b0d12" : "rgba(245, 241, 232, 0.6)", color: formBoxText }}
                       />
+
+                      {/* Sync Dynamic Custom Form Fields */}
+                      {latestPage?.customFormFields && latestPage.customFormFields.length > 0 && (
+                        latestPage.customFormFields.map((field) => (
+                          <div key={field.id}>
+                            <input
+                              type="text"
+                              readOnly
+                              placeholder={`${(field.label || "FIELD").toUpperCase()}${field.required ? " *" : ""}`}
+                              className="w-full border-0 border-b bg-transparent py-1 px-0.5 font-space text-[9px] outline-none placeholder:text-current placeholder:opacity-40"
+                              style={{ borderBottomColor: isDark ? "#0b0d12" : "rgba(245, 241, 232, 0.6)", color: formBoxText }}
+                            />
+                          </div>
+                        ))
+                      )}
+
                       <button
                         type="button"
-                        className="w-full text-center py-2 px-2 font-space font-bold text-[8px] uppercase tracking-wider mt-1.5 cursor-pointer"
+                        className="w-full text-center py-2 px-2 font-space font-bold text-[9px] uppercase tracking-wider mt-2 cursor-pointer shadow-md transition"
                         style={{
                           backgroundColor: accentColor,
                           color: isDark ? "#0b0d12" : "#ffffff",
