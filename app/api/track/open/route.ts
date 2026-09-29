@@ -48,19 +48,33 @@ export async function GET(req: NextRequest) {
           createdAt: new Date(),
         });
 
-        // 2. Update Lead status to "opened" if currently "new" or "delivered"
+        // 2. Update Lead opened flag and step telemetry in MongoDB
+        let targetLead = null;
         if (leadId) {
-          const lead = await LeadModel.findOne({ id: leadId });
-          if (lead && (lead.status === "new" || lead.status === "delivered")) {
-            lead.status = "opened";
-            await lead.save();
+          targetLead = await LeadModel.findOne({ id: leadId });
+        }
+        if (!targetLead && recipient && pageId) {
+          targetLead = await LeadModel.findOne({ email: recipient, pageId });
+        }
+        if (!targetLead && recipient) {
+          targetLead = await LeadModel.findOne({ email: recipient }).sort({ _id: -1 });
+        }
+
+        if (targetLead) {
+          targetLead.opened = true;
+          targetLead.openedAt = new Date();
+          if (stepId) {
+            if (!Array.isArray(targetLead.openedSteps)) {
+              targetLead.openedSteps = [];
+            }
+            if (!targetLead.openedSteps.includes(stepId)) {
+              targetLead.openedSteps.push(stepId);
+            }
           }
-        } else if (recipient && pageId) {
-          const lead = await LeadModel.findOne({ email: recipient, pageId });
-          if (lead && (lead.status === "new" || lead.status === "delivered")) {
-            lead.status = "opened";
-            await lead.save();
+          if (targetLead.status === "new" || targetLead.status === "delivered") {
+            targetLead.status = "opened";
           }
+          await targetLead.save();
         }
 
         // 3. Atomically increment sequence opened stats in MongoDB

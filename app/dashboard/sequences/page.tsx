@@ -125,7 +125,7 @@ export default function SequencesPage() {
             ).length || (signupCount > 0 ? signupCount : 0);
 
           const openedCount = associatedLeads.filter(
-            (l) => l.status === "opened" || l.status === "replied"
+            (l) => l.opened || l.status === "opened" || l.status === "replied" || (l.openedSteps && l.openedSteps.length > 0)
           ).length;
 
           const completedCount = associatedLeads.filter(
@@ -213,7 +213,7 @@ export default function SequencesPage() {
         );
         if (associatedLeads.length > 0) {
           const liveOpened = associatedLeads.filter(
-            (l) => l.status === "opened" || l.status === "replied"
+            (l) => l.opened || l.status === "opened" || l.status === "replied" || (l.openedSteps && l.openedSteps.length > 0)
           ).length;
           const liveDelivered =
             associatedLeads.filter(
@@ -253,7 +253,9 @@ export default function SequencesPage() {
                   return l.sequenceStep.toLowerCase().includes("completed");
                 });
                 stepDelivered = Math.max(stepDelivered, leadsAtStep.length);
-                stepOpened = leadsAtStep.filter((l) => l.status === "opened" || l.status === "replied").length;
+                stepOpened = leadsAtStep.filter(
+                  (l) => l.opened || l.status === "opened" || l.status === "replied" || (l.openedSteps && l.openedSteps.length > 0)
+                ).length;
               }
               return { ...e, sent: stepDelivered, opened: stepOpened };
             });

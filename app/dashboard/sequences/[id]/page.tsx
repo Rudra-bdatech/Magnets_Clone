@@ -119,7 +119,9 @@ export default function SequenceEditor() {
         pageFound?.signups || 0
       );
 
-      const liveOpened = associatedLeads.filter((l) => l.status === "opened" || l.status === "replied").length;
+      const liveOpened = associatedLeads.filter(
+        (l) => l.opened || l.status === "opened" || l.status === "replied" || (l.openedSteps && l.openedSteps.length > 0)
+      ).length;
       const liveDelivered =
         associatedLeads.filter(
           (l) =>
@@ -230,7 +232,9 @@ export default function SequenceEditor() {
                     return l.sequenceStep.toLowerCase().includes("completed");
                   });
                   stepDelivered = leadsAtStep.length;
-                  stepOpened = leadsAtStep.filter((l) => l.status === "opened" || l.status === "replied").length;
+                  stepOpened = leadsAtStep.filter(
+                  (l) => l.opened || l.status === "opened" || l.status === "replied" || (l.openedSteps && l.openedSteps.length > 0)
+                ).length;
                 }
 
                 return {
