@@ -142,4 +142,24 @@ export function getMagnetSortTimestamp(item: { id?: string; updatedAt?: string; 
   return isNaN(d) ? 0 : d;
 }
 
+/**
+ * Strips HTML tags and converts block elements into clean human-readable plain text
+ */
+export function htmlToPlainText(html?: string): string {
+  if (!html) return "";
+  if (!/<[a-z][\s\S]*>/i.test(html)) return html;
+
+  return html
+    .replace(/<\/p>\s*<p>/gi, "\n\n")
+    .replace(/<br\s*[\/]?>/gi, "\n")
+    .replace(/<\/p>/gi, "\n")
+    .replace(/<p>/gi, "")
+    .replace(/<[^>]+>/g, "")
+    .replace(/&nbsp;/g, " ")
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .trim();
+}
+
 

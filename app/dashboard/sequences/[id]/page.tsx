@@ -48,6 +48,7 @@ import {
   loadAccount,
   syncWithDatabase,
 } from "@/lib/store";
+import { htmlToPlainText } from "@/lib/utils";
 
 const standardDelays = [
   { label: "Instantly", minutes: 0 },
@@ -182,12 +183,28 @@ export default function SequenceEditor() {
 
             return {
               ...e,
+              subject: pageEmail?.subject || e.subject || `Follow-up #${idx + 1}`,
+              delayMinutes: pageEmail?.delayMinutes !== undefined
+                ? pageEmail.delayMinutes
+                : pageEmail?.delayUnit === "minutes"
+                ? (pageEmail.delayDays ?? 0)
+                : pageEmail?.delayUnit === "hours"
+                ? (pageEmail.delayDays ?? 1) * 60
+                : (pageEmail?.delayDays ?? (idx === 0 ? 0 : 1)) * 1440,
+              delayLabel: pageEmail
+                ? (pageEmail.delayUnit === "minutes"
+                  ? `${pageEmail.delayDays ?? 0}m delay`
+                  : pageEmail.delayUnit === "hours"
+                  ? `${pageEmail.delayDays ?? 1}h delay`
+                  : `${pageEmail.delayDays ?? 1}d delay`)
+                : e.delayLabel,
               sent: stepDelivered,
               opened: stepOpened,
-              body:
-                (e as any).body ||
+              body: htmlToPlainText(
                 pageEmail?.body ||
-                `Hi {first_name},\n\nHope you find ${pageFound?.name || "this resource"} valuable!\n\nBest regards,`,
+                (e as any).body ||
+                `Hi {first_name},\n\nHope you find ${pageFound?.name || "this resource"} valuable!\n\nBest regards,`
+              ),
             };
           });
         }
@@ -245,9 +262,10 @@ export default function SequenceEditor() {
                   status: (pageFound.sequenceEnabled === false ? "draft" : "live") as "draft" | "live",
                   sent: stepDelivered,
                   opened: stepOpened,
-                  body:
+                  body: htmlToPlainText(
                     e.body ||
-                    `Hi {first_name},\n\nHere is your link to ${pageFound.name}.\n\nBest regards,`,
+                    `Hi {first_name},\n\nHere is your link to ${pageFound.name}.\n\nBest regards,`
+                  ),
                 };
               })
             : [
@@ -999,19 +1017,6 @@ export default function SequenceEditor() {
 
                             <div className="flex items-center gap-1.5 sm:gap-2">
                               <button
-                                onClick={() => generateAiBody(email.id)}
-                                disabled={generatingAiBodyForId === email.id}
-                                className="inline-flex items-center gap-1 rounded-lg border border-purple-200 dark:border-purple-900/60 bg-purple-50 dark:bg-purple-950/30 px-2 sm:px-2.5 py-1 text-[10px] sm:text-[11px] font-bold text-purple-600 dark:text-purple-400 hover:bg-purple-100 transition cursor-pointer disabled:opacity-50"
-                              >
-                                {generatingAiBodyForId === email.id ? (
-                                  <Loader2 className="h-3 w-3 animate-spin" />
-                                ) : (
-                                  <Sparkles className="h-3 w-3" />
-                                )}
-                                <span>AI Write Body</span>
-                              </button>
-
-                              <button
                                 onClick={() => sendTestEmail(email.id)}
                                 disabled={sendingTestForId === email.id}
                                 className="inline-flex items-center gap-1 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-2 sm:px-2.5 py-1 text-[10px] sm:text-[11px] font-bold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 transition cursor-pointer disabled:opacity-50"
@@ -1045,7 +1050,7 @@ export default function SequenceEditor() {
                           {currentTab === "edit" ? (
                             <textarea
                               rows={6}
-                              value={email.body || ""}
+                              value={htmlToPlainText(email.body || "")}
                               onChange={(e) => patchEmail(email.id, { body: e.target.value })}
                               placeholder="Write your email content here..."
                               className="w-full rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 p-2.5 sm:p-3 text-xs font-medium text-zinc-800 dark:text-zinc-200 placeholder-zinc-400 focus:border-[#0066B2] focus:outline-none font-sans leading-relaxed"
