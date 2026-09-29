@@ -1689,25 +1689,52 @@ export default async function MagnetPageRoute({
             const currentBullets: string[] =
               Array.isArray(page.bullets) && page.bullets.length > 0 ? page.bullets : defaultBullets;
 
-            const parseBullet = (item: string) => {
-              if (!item) return { title: "", desc: "" };
+            const parseBullet = (item: string, defaultIdx: number) => {
+              if (!item) return { num: (defaultIdx + 1).toString().padStart(2, "0"), title: "", desc: "" };
+              if (item.includes(":::")) {
+                const parts = item.split(":::");
+                if (parts.length >= 3) {
+                  return {
+                    num: parts[0],
+                    title: parts[1].trim(),
+                    desc: parts.slice(2).join(":::").trim(),
+                  };
+                }
+                return {
+                  num: (defaultIdx + 1).toString().padStart(2, "0"),
+                  title: parts[0].trim(),
+                  desc: parts.slice(1).join(":::").trim(),
+                };
+              }
               if (item.includes(" — ")) {
                 const [title, ...rest] = item.split(" — ");
-                return { title: title.trim(), desc: rest.join(" — ").trim() };
+                return {
+                  num: (defaultIdx + 1).toString().padStart(2, "0"),
+                  title: title.trim(),
+                  desc: rest.join(" — ").trim(),
+                };
               }
               if (item.includes(" - ")) {
                 const [title, ...rest] = item.split(" - ");
-                return { title: title.trim(), desc: rest.join(" - ").trim() };
-              }
-              if (item.includes(":::")) {
-                const [title, ...rest] = item.split(":::");
-                return { title: title.trim(), desc: rest.join(":::").trim() };
+                return {
+                  num: (defaultIdx + 1).toString().padStart(2, "0"),
+                  title: title.trim(),
+                  desc: rest.join(" - ").trim(),
+                };
               }
               if (item.includes("\n")) {
                 const [title, ...rest] = item.split("\n");
-                return { title: title.trim(), desc: rest.join("\n").trim() };
+                return {
+                  num: (defaultIdx + 1).toString().padStart(2, "0"),
+                  title: title.trim(),
+                  desc: rest.join("\n").trim(),
+                };
               }
-              return { title: item, desc: "" };
+              return {
+                num: (defaultIdx + 1).toString().padStart(2, "0"),
+                title: item,
+                desc: "",
+              };
             };
 
             return (
@@ -1942,13 +1969,20 @@ export default async function MagnetPageRoute({
                   >
                     {/* Left Column: 3 Bits */}
                     <div
-                      className={`border-b-2 lg:border-b-0 lg:border-r-2 grid grid-cols-1 md:grid-cols-3 transition-colors ${
+                      className={`border-b-2 lg:border-b-0 lg:border-r-2 grid grid-cols-1 ${
+                        currentBullets.length === 1
+                          ? "md:grid-cols-1"
+                          : currentBullets.length === 2
+                          ? "md:grid-cols-2"
+                          : "md:grid-cols-3"
+                      } transition-colors ${
                         themeMode === "dark" ? "border-[#2e303d] bg-[#121319]" : "border-[#141414] bg-[#f8f4e9]"
                       }`}
                     >
                       {currentBullets.map((bullet, idx) => {
-                        const parsed = parseBullet(bullet);
-                        const numStr = (idx + 1).toString().padStart(2, "0");
+                        const parsed = parseBullet(bullet, idx);
+                        const isNumHidden = parsed.num === "__none__";
+                        const displayNum = isNumHidden ? "" : (parsed.num || (idx + 1).toString().padStart(2, "0"));
 
                         return (
                           <article
@@ -1958,16 +1992,18 @@ export default async function MagnetPageRoute({
                             }`}
                           >
                             <div>
-                              <b className="font-shrikhand text-2xl sm:text-3xl text-[#ff315b] block mb-2">
-                                {numStr}
-                              </b>
+                              {!isNumHidden && displayNum && (
+                                <b className="font-shrikhand text-2xl sm:text-3xl text-[#ff315b] block mb-2">
+                                  {displayNum}
+                                </b>
+                              )}
 
                               <h3
                                 className={`font-dm-sans text-sm sm:text-base font-bold mb-1.5 ${
                                   themeMode === "dark" ? "text-white" : "text-[#141414]"
                                 }`}
                               >
-                                {parsed.title || `Framework ${numStr}`}
+                                {parsed.title || `Framework ${(idx + 1).toString().padStart(2, "0")}`}
                               </h3>
 
                               <p

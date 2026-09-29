@@ -90,47 +90,83 @@ export default function Template8(props: TemplateProps) {
   const currentBullets: string[] =
     Array.isArray(bullets) && bullets.length > 0 ? bullets : defaultBullets;
 
-  const parseBullet = (item: string) => {
-    if (!item) return { title: "", desc: "" };
+  const parseBullet = (item: string, defaultIdx: number) => {
+    if (!item) return { num: (defaultIdx + 1).toString().padStart(2, "0"), title: "", desc: "" };
+    if (item.includes(":::")) {
+      const parts = item.split(":::");
+      if (parts.length >= 3) {
+        return {
+          num: parts[0],
+          title: parts[1].trim(),
+          desc: parts.slice(2).join(":::").trim(),
+        };
+      }
+      return {
+        num: (defaultIdx + 1).toString().padStart(2, "0"),
+        title: parts[0].trim(),
+        desc: parts.slice(1).join(":::").trim(),
+      };
+    }
     if (item.includes(" — ")) {
       const [title, ...rest] = item.split(" — ");
-      return { title: title.trim(), desc: rest.join(" — ").trim() };
+      return {
+        num: (defaultIdx + 1).toString().padStart(2, "0"),
+        title: title.trim(),
+        desc: rest.join(" — ").trim(),
+      };
     }
     if (item.includes(" - ")) {
       const [title, ...rest] = item.split(" - ");
-      return { title: title.trim(), desc: rest.join(" - ").trim() };
-    }
-    if (item.includes(":::")) {
-      const [title, ...rest] = item.split(":::");
-      return { title: title.trim(), desc: rest.join(":::").trim() };
+      return {
+        num: (defaultIdx + 1).toString().padStart(2, "0"),
+        title: title.trim(),
+        desc: rest.join(" - ").trim(),
+      };
     }
     if (item.includes("\n")) {
       const [title, ...rest] = item.split("\n");
-      return { title: title.trim(), desc: rest.join("\n").trim() };
+      return {
+        num: (defaultIdx + 1).toString().padStart(2, "0"),
+        title: title.trim(),
+        desc: rest.join("\n").trim(),
+      };
     }
-    return { title: item, desc: "" };
+    return {
+      num: (defaultIdx + 1).toString().padStart(2, "0"),
+      title: item,
+      desc: "",
+    };
+  };
+
+  const handleBulletNumberChange = (index: number, newNum: string) => {
+    if (!setBullets) return;
+    const next = [...currentBullets];
+    const parsed = parseBullet(next[index] || "", index);
+    const saveNum = newNum === "" ? "__none__" : newNum;
+    next[index] = `${saveNum}:::${parsed.title}:::${parsed.desc}`;
+    setBullets(next);
   };
 
   const handleBulletTitleChange = (index: number, newTitle: string) => {
     if (!setBullets) return;
     const next = [...currentBullets];
-    const parsed = parseBullet(next[index] || "");
-    next[index] = parsed.desc ? `${newTitle} — ${parsed.desc}` : newTitle;
+    const parsed = parseBullet(next[index] || "", index);
+    next[index] = `${parsed.num}:::${newTitle}:::${parsed.desc}`;
     setBullets(next);
   };
 
   const handleBulletDescChange = (index: number, newDesc: string) => {
     if (!setBullets) return;
     const next = [...currentBullets];
-    const parsed = parseBullet(next[index] || "");
-    next[index] = `${parsed.title || "Insight " + (index + 1)} — ${newDesc}`;
+    const parsed = parseBullet(next[index] || "", index);
+    next[index] = `${parsed.num}:::${parsed.title}:::${newDesc}`;
     setBullets(next);
   };
 
   const handleAddBullet = () => {
     if (!setBullets) return;
     const num = (currentBullets.length + 1).toString().padStart(2, "0");
-    setBullets([...currentBullets, `Idea ${num} — Key perspective or tactic to elevate your creative output.`]);
+    setBullets([...currentBullets, `${num}:::Idea ${num}:::Key perspective or tactic to elevate your creative output.`]);
   };
 
   const handleRemoveBullet = (index: number) => {
@@ -621,84 +657,115 @@ export default function Template8(props: TemplateProps) {
               isDark ? "border-[#2e303d] bg-[#121319]" : "border-[#141414] bg-[#f8f4e9]"
             }`}
           >
-            <div className="grid grid-cols-1 md:grid-cols-3 h-full">
-              {currentBullets.map((bullet, idx) => {
-                const parsed = parseBullet(bullet);
-                const numStr = (idx + 1).toString().padStart(2, "0");
+            {currentBullets.length > 0 ? (
+              <div
+                className={`grid grid-cols-1 ${
+                  currentBullets.length === 1
+                    ? "md:grid-cols-1"
+                    : currentBullets.length === 2
+                    ? "md:grid-cols-2"
+                    : "md:grid-cols-3"
+                } h-full`}
+              >
+                {currentBullets.map((bullet, idx) => {
+                  const parsed = parseBullet(bullet, idx);
+                  const isNumHidden = parsed.num === "__none__";
+                  const displayNum = isNumHidden ? "" : (parsed.num || (idx + 1).toString().padStart(2, "0"));
 
-                return (
-                  <article
-                    key={idx}
-                    className={`p-6 sm:p-7 flex flex-col justify-between border-b-2 md:border-b-0 md:border-r-2 last:border-r-0 relative group transition-colors ${
-                      isDark ? "border-[#2e303d]" : "border-[#141414]"
-                    }`}
-                  >
-                    <div>
-                      {/* Big Number */}
-                      <b className="font-shrikhand text-2xl sm:text-3xl text-[#ff315b] block mb-2">
-                        {numStr}
-                      </b>
+                  return (
+                    <article
+                      key={idx}
+                      className={`p-6 sm:p-7 flex flex-col justify-between border-b-2 md:border-b-0 md:border-r-2 last:border-r-0 relative group transition-colors ${
+                        isDark ? "border-[#2e303d]" : "border-[#141414]"
+                      }`}
+                    >
+                      <div>
+                        {/* Number & Trash Action */}
+                        <div className="flex items-center justify-between gap-2 mb-2">
+                          {isEditor ? (
+                            <input
+                              type="text"
+                              value={displayNum}
+                              onChange={(e) => handleBulletNumberChange(idx, e.target.value)}
+                              placeholder="01"
+                              className="font-shrikhand text-2xl sm:text-3xl text-[#ff315b] bg-transparent outline-none w-24 placeholder:text-[#ff315b]/30"
+                              title="Edit number, or delete/backspace to remove it"
+                            />
+                          ) : (
+                            !isNumHidden && displayNum && (
+                              <b className="font-shrikhand text-2xl sm:text-3xl text-[#ff315b] block">
+                                {displayNum}
+                              </b>
+                            )
+                          )}
 
-                      {/* Title */}
-                      {isEditor ? (
-                        <input
-                          type="text"
-                          value={parsed.title}
-                          onChange={(e) => handleBulletTitleChange(idx, e.target.value)}
-                          placeholder="Feature title"
-                          className={`font-dm-sans text-sm sm:text-base font-bold bg-transparent outline-none w-full mb-1.5 ${
-                            isDark ? "text-white" : "text-[#141414]"
-                          }`}
-                        />
-                      ) : (
-                        <h3
-                          className={`font-dm-sans text-sm sm:text-base font-bold mb-1.5 ${
-                            isDark ? "text-white" : "text-[#141414]"
-                          }`}
-                        >
-                          {parsed.title || `Framework ${numStr}`}
-                        </h3>
-                      )}
+                          {isEditor && (
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveBullet(idx)}
+                              className="p-1 rounded text-red-500 hover:bg-red-500/10 opacity-40 group-hover:opacity-100 transition-all cursor-pointer"
+                              title="Delete this card"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </button>
+                          )}
+                        </div>
 
-                      {/* Description */}
-                      {isEditor ? (
-                        <textarea
-                          rows={2}
-                          value={parsed.desc}
-                          onChange={(e) => handleBulletDescChange(idx, e.target.value)}
-                          placeholder="Description of this idea..."
-                          className={`font-dm-sans text-xs leading-relaxed bg-transparent outline-none resize-none w-full ${
-                            isDark ? "text-zinc-400" : "text-[#141414]/80"
-                          }`}
-                        />
-                      ) : (
-                        <p
-                          className={`font-dm-sans text-xs leading-relaxed ${
-                            isDark ? "text-zinc-400" : "text-[#141414]/80"
-                          }`}
-                        >
-                          {parsed.desc || "A tactical framework designed to deliver instant clarity and execution momentum."}
-                        </p>
-                      )}
-                    </div>
+                        {/* Title */}
+                        {isEditor ? (
+                          <input
+                            type="text"
+                            value={parsed.title}
+                            onChange={(e) => handleBulletTitleChange(idx, e.target.value)}
+                            placeholder="Feature title"
+                            className={`font-dm-sans text-sm sm:text-base font-bold bg-transparent outline-none w-full mb-1.5 ${
+                              isDark ? "text-white" : "text-[#141414]"
+                            }`}
+                          />
+                        ) : (
+                          <h3
+                            className={`font-dm-sans text-sm sm:text-base font-bold mb-1.5 ${
+                              isDark ? "text-white" : "text-[#141414]"
+                            }`}
+                          >
+                            {parsed.title || `Framework ${(idx + 1).toString().padStart(2, "0")}`}
+                          </h3>
+                        )}
 
-                    {/* Editor Trash Action */}
-                    {isEditor && currentBullets.length > 1 && (
-                      <div className="pt-3 flex justify-end opacity-0 group-hover:opacity-100 transition-opacity">
-                        <button
-                          type="button"
-                          onClick={() => handleRemoveBullet(idx)}
-                          className="p-1 rounded text-red-500 hover:bg-red-500/10 transition-colors"
-                          title="Delete bit"
-                        >
-                          <Trash2 className="h-3.5 w-3.5" />
-                        </button>
+                        {/* Description */}
+                        {isEditor ? (
+                          <textarea
+                            rows={2}
+                            value={parsed.desc}
+                            onChange={(e) => handleBulletDescChange(idx, e.target.value)}
+                            placeholder="Description of this idea..."
+                            className={`font-dm-sans text-xs leading-relaxed bg-transparent outline-none resize-none w-full ${
+                              isDark ? "text-zinc-400" : "text-[#141414]/80"
+                            }`}
+                          />
+                        ) : (
+                          <p
+                            className={`font-dm-sans text-xs leading-relaxed ${
+                              isDark ? "text-zinc-400" : "text-[#141414]/80"
+                            }`}
+                          >
+                            {parsed.desc || "A tactical framework designed to deliver instant clarity and execution momentum."}
+                          </p>
+                        )}
                       </div>
-                    )}
-                  </article>
-                );
-              })}
-            </div>
+                    </article>
+                  );
+                })}
+              </div>
+            ) : (
+              isEditor && (
+                <div className="p-8 text-center flex flex-col items-center justify-center my-auto">
+                  <p className="text-xs font-dm-sans font-bold uppercase tracking-wider text-zinc-400 mb-2">
+                    No note cards added
+                  </p>
+                </div>
+              )
+            )}
 
             {/* Editor: Add Bit Button */}
             {isEditor && currentBullets.length < 6 && (

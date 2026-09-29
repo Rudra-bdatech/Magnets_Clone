@@ -2057,42 +2057,77 @@ const BrandTemplatePreview = memo(function BrandTemplatePreview({
                 >
                   {/* Bits Left */}
                   <div
-                    className={`md:col-span-7 grid grid-cols-3 border-b-2 md:border-b-0 md:border-r-2 ${
+                    className={`md:col-span-7 grid grid-cols-1 ${
+                      (latestPage?.bullets || []).length === 1
+                        ? "md:grid-cols-1"
+                        : (latestPage?.bullets || []).length === 2
+                        ? "md:grid-cols-2"
+                        : "md:grid-cols-3"
+                    } border-b-2 md:border-b-0 md:border-r-2 ${
                       themeMode === "dark" ? "border-[#2e303d] bg-[#121319]" : "border-[#141414] bg-[#f8f4e9]"
                     }`}
                   >
-                    {[
-                      { num: "01", title: "Find the strange bit", desc: "Your most specific instinct is your best edge." },
-                      { num: "02", title: "Repeatable worlds", desc: "Cohesive visual and narrative systems." },
-                      { num: "03", title: "Ship quickly", desc: "A practical ritual for weekly momentum." },
-                    ].map((bit, idx) => (
-                      <div
-                        key={idx}
-                        className={`p-3 sm:p-4 flex flex-col justify-between border-r-2 last:border-r-0 ${
-                          themeMode === "dark" ? "border-[#2e303d]" : "border-[#141414]"
-                        }`}
-                      >
-                        <div>
-                          <b className="font-shrikhand text-lg text-[#ff315b] block mb-1">
-                            {bit.num}
-                          </b>
-                          <h4
-                            className={`font-dm-sans text-[11px] sm:text-xs font-bold leading-tight mb-1 ${
-                              themeMode === "dark" ? "text-white" : "text-[#141414]"
+                    {(() => {
+                      const defaultBullets = [
+                        "01:::Find the strange bit:::Your most specific instinct is your best edge.",
+                        "02:::Repeatable worlds:::Cohesive visual and narrative systems.",
+                        "03:::Ship quickly:::A practical ritual for weekly momentum.",
+                      ];
+                      const bList = (Array.isArray(latestPage?.bullets) && latestPage.bullets.length > 0)
+                        ? latestPage.bullets
+                        : defaultBullets;
+
+                      const parseB = (item: string, defaultIdx: number) => {
+                        if (!item) return { num: (defaultIdx + 1).toString().padStart(2, "0"), title: "", desc: "" };
+                        if (item.includes(":::")) {
+                          const parts = item.split(":::");
+                          if (parts.length >= 3) return { num: parts[0], title: parts[1].trim(), desc: parts.slice(2).join(":::").trim() };
+                          return { num: (defaultIdx + 1).toString().padStart(2, "0"), title: parts[0].trim(), desc: parts.slice(1).join(":::").trim() };
+                        }
+                        if (item.includes(" — ")) {
+                          const [title, ...rest] = item.split(" — ");
+                          return { num: (defaultIdx + 1).toString().padStart(2, "0"), title: title.trim(), desc: rest.join(" — ").trim() };
+                        }
+                        return { num: (defaultIdx + 1).toString().padStart(2, "0"), title: item, desc: "" };
+                      };
+
+                      return bList.map((bullet: string, idx: number) => {
+                        const parsed = parseB(bullet, idx);
+                        const isNumHidden = parsed.num === "__none__";
+                        const displayNum = isNumHidden ? "" : (parsed.num || (idx + 1).toString().padStart(2, "0"));
+
+                        return (
+                          <div
+                            key={idx}
+                            className={`p-3 sm:p-4 flex flex-col justify-between border-b-2 md:border-b-0 md:border-r-2 last:border-r-0 ${
+                              themeMode === "dark" ? "border-[#2e303d]" : "border-[#141414]"
                             }`}
                           >
-                            {bit.title}
-                          </h4>
-                          <p
-                            className={`font-dm-sans text-[9px] sm:text-[10px] leading-tight ${
-                              themeMode === "dark" ? "text-zinc-400" : "text-[#141414]/80"
-                            }`}
-                          >
-                            {bit.desc}
-                          </p>
-                        </div>
-                      </div>
-                    ))}
+                            <div>
+                              {!isNumHidden && displayNum && (
+                                <b className="font-shrikhand text-lg text-[#ff315b] block mb-1">
+                                  {displayNum}
+                                </b>
+                              )}
+                              <h4
+                                className={`font-dm-sans text-[11px] sm:text-xs font-bold leading-tight mb-1 ${
+                                  themeMode === "dark" ? "text-white" : "text-[#141414]"
+                                }`}
+                              >
+                                {parsed.title || `Framework ${(idx + 1).toString().padStart(2, "0")}`}
+                              </h4>
+                              <p
+                                className={`font-dm-sans text-[9px] sm:text-[10px] leading-tight ${
+                                  themeMode === "dark" ? "text-zinc-400" : "text-[#141414]/80"
+                                }`}
+                              >
+                                {parsed.desc}
+                              </p>
+                            </div>
+                          </div>
+                        );
+                      });
+                    })()}
                   </div>
 
                   {/* Signup Right */}
