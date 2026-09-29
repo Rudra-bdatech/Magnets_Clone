@@ -209,7 +209,7 @@ export default function Template8(props: TemplateProps) {
 
       {/* Main Sheet Container */}
       <div
-        className={`w-full max-w-[1220px] mx-auto transition-all duration-200 border-2 overflow-hidden ${
+        className={`w-full max-w-[96%] sm:max-w-[94%] xl:max-w-[92%] 2xl:max-w-[1700px] mx-auto transition-all duration-200 border-2 overflow-hidden ${
           isDark
             ? "bg-[#15161d] border-[#2e303d] zine-shadow-dark"
             : "bg-[#f8f4e9] border-[#141414] zine-shadow"
@@ -674,13 +674,14 @@ export default function Template8(props: TemplateProps) {
 
           {/* Right Column: High-Impact Signup Box */}
           <aside
-            className={`p-6 sm:p-8 flex flex-col justify-between transition-colors ${
+            className={`p-6 sm:p-8 xl:p-10 flex flex-col justify-between transition-colors ${
               isDark
                 ? "bg-[#181a24] text-white"
                 : "text-white"
             }`}
             style={{
               backgroundColor: isDark ? "#171a26" : (accentColor || "#1554db"),
+              color: "#ffffff",
             }}
           >
             <div>
@@ -691,10 +692,11 @@ export default function Template8(props: TemplateProps) {
                   value={formTitle || ""}
                   onChange={(e) => setFormTitle?.(e.target.value)}
                   placeholder="Want the zine?"
-                  className="font-shrikhand text-2xl sm:text-3xl text-white bg-transparent outline-none w-full mb-1 placeholder:text-white/40"
+                  className="font-shrikhand text-2xl sm:text-3xl xl:text-4xl text-white bg-transparent outline-none w-full mb-1.5 placeholder:text-white/40"
+                  style={{ color: "#ffffff" }}
                 />
               ) : (
-                <h2 className="font-shrikhand text-2xl sm:text-3xl text-white mb-1">
+                <h2 className="font-shrikhand text-2xl sm:text-3xl xl:text-4xl text-white mb-1.5" style={{ color: "#ffffff" }}>
                   {formTitle || "Want the zine?"}
                 </h2>
               )}
@@ -706,10 +708,11 @@ export default function Template8(props: TemplateProps) {
                   value={formSubtitle || ""}
                   onChange={(e) => setFormSubtitle?.(e.target.value)}
                   placeholder="We'll send it now. Occasional notes later."
-                  className="font-dm-sans text-xs text-white/80 bg-transparent outline-none w-full mb-4 placeholder:text-white/40"
+                  className="font-dm-sans text-xs sm:text-sm text-white/90 bg-transparent outline-none w-full mb-5 placeholder:text-white/40"
+                  style={{ color: "rgba(255, 255, 255, 0.9)" }}
                 />
               ) : (
-                <p className="font-dm-sans text-xs text-white/80 mb-4">
+                <p className="font-dm-sans text-xs sm:text-sm text-white/90 mb-5" style={{ color: "rgba(255, 255, 255, 0.9)" }}>
                   {formSubtitle || "We'll send it now. Occasional notes later."}
                 </p>
               )}

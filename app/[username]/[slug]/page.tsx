@@ -1712,7 +1712,7 @@ export default async function MagnetPageRoute({
 
             return (
               <div
-                className="w-full flex-1 flex flex-col justify-center py-4 sm:py-8 px-3 sm:px-6"
+                className="w-full flex-1 flex flex-col justify-center py-4 sm:py-8 px-2 sm:px-4 md:px-8 lg:px-10 xl:px-12"
                 style={{
                   fontFamily: "'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
                 }}
@@ -1731,9 +1731,9 @@ export default async function MagnetPageRoute({
                   }}
                 />
 
-                {/* Sheet Container */}
+                {/* Sheet Container - Expanded to 92-96% Desktop Width */}
                 <div
-                  className={`w-full max-w-[1220px] mx-auto transition-all duration-200 border-2 overflow-hidden ${
+                  className={`w-full max-w-[96%] sm:max-w-[94%] xl:max-w-[92%] 2xl:max-w-[1700px] mx-auto transition-all duration-200 border-2 overflow-hidden ${
                     themeMode === "dark"
                       ? "bg-[#15161d] border-[#2e303d] shadow-[10px_10px_0px_#000000] text-[#f4f4f5]"
                       : "bg-[#f8f4e9] border-[#141414] shadow-[10px_10px_0px_#141414] text-[#141414]"
@@ -1775,10 +1775,10 @@ export default async function MagnetPageRoute({
                   </header>
 
                   {/* Hero Section */}
-                  <section className="grid grid-cols-1 lg:grid-cols-[0.95fr_1.05fr] min-h-[520px]">
+                  <section className="grid grid-cols-1 lg:grid-cols-[0.95fr_1.05fr] min-h-[520px] xl:min-h-[580px]">
                     {/* Left Poster Column */}
                     <div
-                      className={`relative min-h-[380px] sm:min-h-[460px] lg:min-h-[540px] border-b-2 lg:border-b-0 lg:border-r-2 overflow-hidden flex items-center justify-center ${
+                      className={`relative min-h-[380px] sm:min-h-[460px] lg:min-h-[540px] xl:min-h-[580px] border-b-2 lg:border-b-0 lg:border-r-2 overflow-hidden flex items-center justify-center ${
                         themeMode === "dark" ? "border-[#2e303d] bg-[#1a1b24]" : "border-[#141414] bg-[#f5ed21]"
                       }`}
                     >
@@ -1869,7 +1869,7 @@ export default async function MagnetPageRoute({
 
                     {/* Right Copy Column */}
                     <div
-                      className={`p-6 sm:p-10 lg:p-12 flex flex-col justify-between transition-colors ${
+                      className={`p-6 sm:p-10 lg:p-12 xl:p-14 flex flex-col justify-between transition-colors ${
                         themeMode === "dark" ? "bg-[#15161d]" : "bg-[#f8f4e9]"
                       }`}
                     >
@@ -1915,7 +1915,7 @@ export default async function MagnetPageRoute({
 
                         {/* Subheadline & Pitch Paragraph */}
                         <p
-                          className={`font-dm-sans text-base sm:text-lg leading-relaxed max-w-[520px] font-medium ${
+                          className={`font-dm-sans text-base sm:text-lg leading-relaxed max-w-[560px] font-medium ${
                             themeMode === "dark" ? "text-zinc-300" : "text-[#141414]"
                           }`}
                         >
@@ -1988,19 +1988,20 @@ export default async function MagnetPageRoute({
 
                     {/* Right Column: High-Impact Signup Box */}
                     <aside
-                      className={`p-6 sm:p-8 flex flex-col justify-between transition-colors ${
+                      className={`p-6 sm:p-8 xl:p-10 flex flex-col justify-between transition-colors ${
                         themeMode === "dark" ? "bg-[#181a24] text-white" : "text-white"
                       }`}
                       style={{
                         backgroundColor: themeMode === "dark" ? "#171a26" : (accentColor || "#1554db"),
+                        color: "#ffffff",
                       }}
                     >
                       <div>
-                        <h2 className="font-shrikhand text-2xl sm:text-3xl text-white mb-1">
+                        <h2 className="font-shrikhand text-2xl sm:text-3xl xl:text-4xl text-white mb-1.5" style={{ color: "#ffffff" }}>
                           {page.formTitle || "Want the zine?"}
                         </h2>
 
-                        <p className="font-dm-sans text-xs text-white/80 mb-4">
+                        <p className="font-dm-sans text-xs sm:text-sm text-white/90 mb-5" style={{ color: "rgba(255, 255, 255, 0.9)" }}>
                           {page.formSubtitle || "We'll send it now. Occasional notes later."}
                         </p>
 
@@ -2031,7 +2032,7 @@ export default async function MagnetPageRoute({
                       </div>
 
                       {/* Anti-spam footer */}
-                      <div className="pt-4 mt-4 border-t border-white/20 text-[9px] font-dm-sans font-bold uppercase tracking-wider text-white/70 flex justify-between items-center">
+                      <div className="pt-4 mt-4 border-t border-white/20 text-[9px] font-dm-sans font-bold uppercase tracking-wider text-white/80 flex justify-between items-center" style={{ color: "rgba(255, 255, 255, 0.8)" }}>
                         <span>🔒 NO SPAM PROMISE</span>
                         <span>INSTANT DELIVERY</span>
                       </div>
