@@ -310,25 +310,27 @@ const BrandTemplatePreview = memo(function BrandTemplatePreview({
               })()}
 
               {/* Quote box */}
-              <div className="border-t-2 border-[#2544d8] bg-[#e7e2d7] dark:bg-[#1e1e24] p-4 space-y-1.5">
-                {(() => {
-                  const defaultQuotePlaceholder = "“Good work earns attention once. A distinct point of view earns it again.”";
-                  const defaultAuthorPlaceholder = `— ${businessName || "EDITORIAL BOARD"}, EDITOR AT LARGE`;
-                  const pitchParts = (latestPage?.pitch || "").includes(":::") ? (latestPage?.pitch || "").split(":::") : [latestPage?.pitch || "", ""];
-                  const quoteText = pitchParts[0]?.trim() || "";
-                  const quoteAuthor = pitchParts[1]?.trim() || "";
-                  return (
-                    <>
-                      <p className="font-serif italic text-xs text-[#151515] dark:text-[#eae8e3]">
-                        {quoteText || defaultQuotePlaceholder}
-                      </p>
-                      <p className="text-[9px] font-sans font-bold uppercase tracking-wider opacity-70">
-                        {quoteAuthor || defaultAuthorPlaceholder}
-                      </p>
-                    </>
-                  );
-                })()}
-              </div>
+              {latestPage?.pitch !== "__hidden__" && latestPage?.pitch !== "__none__" && (
+                <div className="border-t-2 border-[#2544d8] bg-[#e7e2d7] dark:bg-[#1e1e24] p-4 space-y-1.5">
+                  {(() => {
+                    const defaultQuotePlaceholder = "“Good work earns attention once. A distinct point of view earns it again.”";
+                    const defaultAuthorPlaceholder = `— ${businessName || "EDITORIAL BOARD"}, EDITOR AT LARGE`;
+                    const pitchParts = (latestPage?.pitch || "").includes(":::") ? (latestPage?.pitch || "").split(":::") : [latestPage?.pitch || "", ""];
+                    const quoteText = pitchParts[0]?.trim() || "";
+                    const quoteAuthor = pitchParts[1]?.trim() || "";
+                    return (
+                      <>
+                        <p className="font-serif italic text-xs text-[#151515] dark:text-[#eae8e3]">
+                          {quoteText || defaultQuotePlaceholder}
+                        </p>
+                        <p className="text-[9px] font-sans font-bold uppercase tracking-wider opacity-70">
+                          {quoteAuthor || defaultAuthorPlaceholder}
+                        </p>
+                      </>
+                    );
+                  })()}
+                </div>
+              )}
             </div>
 
             {/* Right 4 Cols */}

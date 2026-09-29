@@ -517,25 +517,27 @@ export default async function MagnetPageRoute({
                 })()}
 
                 {/* Pull Quote Box with Blue Top Bar */}
-                <div className="w-full overflow-hidden border-t-4 border-[#2544d8] bg-[#e7e2d7] dark:bg-[#1e1e24] p-6 sm:p-8 space-y-3">
-                  {(() => {
-                    const defaultQuotePlaceholder = "“Good work earns attention once. A distinct point of view earns it again.”";
-                    const defaultAuthorPlaceholder = `— ${businessName || "EDITORIAL BOARD"}, EDITOR AT LARGE`;
-                    const pitchParts = (page.pitch || "").includes(":::") ? (page.pitch || "").split(":::") : [page.pitch || "", ""];
-                    const quoteText = pitchParts[0]?.trim() || "";
-                    const quoteAuthor = pitchParts[1]?.trim() || "";
-                    return (
-                      <>
-                        <blockquote className="font-serif italic text-lg sm:text-xl text-[#151515] dark:text-[#eae8e3] leading-snug">
-                          {quoteText || defaultQuotePlaceholder}
-                        </blockquote>
-                        <div className="text-[10px] sm:text-[11px] font-sans font-bold uppercase tracking-[0.18em] opacity-75">
-                          {quoteAuthor || defaultAuthorPlaceholder}
-                        </div>
-                      </>
-                    );
-                  })()}
-                </div>
+                {page.pitch !== "__hidden__" && page.pitch !== "__none__" && (
+                  <div className="w-full overflow-hidden border-t-4 border-[#2544d8] bg-[#e7e2d7] dark:bg-[#1e1e24] p-6 sm:p-8 space-y-3">
+                    {(() => {
+                      const defaultQuotePlaceholder = "“Good work earns attention once. A distinct point of view earns it again.”";
+                      const defaultAuthorPlaceholder = `— ${businessName || "EDITORIAL BOARD"}, EDITOR AT LARGE`;
+                      const pitchParts = (page.pitch || "").includes(":::") ? (page.pitch || "").split(":::") : [page.pitch || "", ""];
+                      const quoteText = pitchParts[0]?.trim() || "";
+                      const quoteAuthor = pitchParts[1]?.trim() || "";
+                      return (
+                        <>
+                          <blockquote className="font-serif italic text-lg sm:text-xl text-[#151515] dark:text-[#eae8e3] leading-snug">
+                            {quoteText || defaultQuotePlaceholder}
+                          </blockquote>
+                          <div className="text-[10px] sm:text-[11px] font-sans font-bold uppercase tracking-[0.18em] opacity-75">
+                            {quoteAuthor || defaultAuthorPlaceholder}
+                          </div>
+                        </>
+                      );
+                    })()}
+                  </div>
+                )}
               </div>
 
               {/* RIGHT COLUMN: Digital Edition Form Panel (~35% width) */}

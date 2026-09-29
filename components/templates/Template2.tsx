@@ -429,44 +429,68 @@ export default function Template2(props: TemplateProps) {
           </div>
 
           {/* Pull Quote Box with Blue Top Bar */}
-          <div className="w-full overflow-hidden border-t-4 border-[#2544d8] bg-[#e7e2d7] dark:bg-[#1e1e24] p-6 sm:p-8 space-y-3">
-            {isEditor ? (
-              <div className="space-y-2">
-                <textarea
-                  ref={pitchRef}
-                  rows={2}
-                  value={quoteText}
-                  onChange={(e) => {
-                    const nextVal = quoteAuthor ? `${e.target.value} ::: ${quoteAuthor}` : e.target.value;
-                    setPitch?.(nextVal);
-                  }}
-                  className="w-full font-serif italic text-lg sm:text-xl text-[#151515] dark:text-[#eae8e3] bg-transparent outline-none resize-none leading-snug placeholder:opacity-50"
-                  placeholder={defaultQuotePlaceholder}
-                />
-                <div className="pt-1">
-                  <input
-                    type="text"
-                    value={quoteAuthor}
+          {pitch === "__hidden__" || pitch === "__none__" ? (
+            isEditor && (
+              <button
+                type="button"
+                onClick={() => setPitch?.(defaultQuotePlaceholder)}
+                className="inline-flex items-center gap-1.5 border border-dashed border-[#151515] dark:border-white/40 px-4 py-2 text-xs font-sans font-bold uppercase tracking-wider transition cursor-pointer hover:bg-black/5 dark:hover:bg-white/5"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                <span>Add Pull Quote Card</span>
+              </button>
+            )
+          ) : (
+            <div className="w-full overflow-hidden border-t-4 border-[#2544d8] bg-[#e7e2d7] dark:bg-[#1e1e24] p-6 sm:p-8 space-y-3 relative group">
+              {isEditor && (
+                <button
+                  type="button"
+                  onClick={() => setPitch?.("__hidden__")}
+                  className="absolute top-3 right-3 p-1 rounded-md text-zinc-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 transition-all cursor-pointer z-10"
+                  title="Remove quote card"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              )}
+
+              {isEditor ? (
+                <div className="space-y-2 pr-6">
+                  <textarea
+                    ref={pitchRef}
+                    rows={2}
+                    value={quoteText}
                     onChange={(e) => {
-                      const q = quoteText || defaultQuotePlaceholder;
-                      setPitch?.(`${q} ::: ${e.target.value}`);
+                      const nextVal = quoteAuthor ? `${e.target.value} ::: ${quoteAuthor}` : e.target.value;
+                      setPitch?.(nextVal);
                     }}
-                    className="w-full text-[10px] sm:text-[11px] font-sans font-bold uppercase tracking-[0.18em] text-[#151515]/80 dark:text-[#eae8e3]/80 bg-transparent outline-none placeholder:opacity-60"
-                    placeholder={defaultAuthorPlaceholder}
+                    className="w-full font-serif italic text-lg sm:text-xl text-[#151515] dark:text-[#eae8e3] bg-transparent outline-none resize-none leading-snug placeholder:opacity-50"
+                    placeholder={defaultQuotePlaceholder}
                   />
+                  <div className="pt-1">
+                    <input
+                      type="text"
+                      value={quoteAuthor}
+                      onChange={(e) => {
+                        const q = quoteText || defaultQuotePlaceholder;
+                        setPitch?.(`${q} ::: ${e.target.value}`);
+                      }}
+                      className="w-full text-[10px] sm:text-[11px] font-sans font-bold uppercase tracking-[0.18em] text-[#151515]/80 dark:text-[#eae8e3]/80 bg-transparent outline-none placeholder:opacity-60"
+                      placeholder={defaultAuthorPlaceholder}
+                    />
+                  </div>
                 </div>
-              </div>
-            ) : (
-              <>
-                <blockquote className="font-serif italic text-lg sm:text-xl text-[#151515] dark:text-[#eae8e3] leading-snug">
-                  {quoteText || defaultQuotePlaceholder}
-                </blockquote>
-                <div className="text-[10px] sm:text-[11px] font-sans font-bold uppercase tracking-[0.18em] opacity-75">
-                  {quoteAuthor || defaultAuthorPlaceholder}
-                </div>
-              </>
-            )}
-          </div>
+              ) : (
+                <>
+                  <blockquote className="font-serif italic text-lg sm:text-xl text-[#151515] dark:text-[#eae8e3] leading-snug">
+                    {quoteText || defaultQuotePlaceholder}
+                  </blockquote>
+                  <div className="text-[10px] sm:text-[11px] font-sans font-bold uppercase tracking-[0.18em] opacity-75">
+                    {quoteAuthor || defaultAuthorPlaceholder}
+                  </div>
+                </>
+              )}
+            </div>
+          )}
         </div>
 
         {/* RIGHT COLUMN: Digital Edition Form Panel (~35% width) */}
