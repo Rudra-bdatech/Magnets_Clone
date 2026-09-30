@@ -106,6 +106,7 @@ export default function SocialCardModal({
 
   // Active Font
   const selectedFont = TYPOGRAPHY_PRESETS.find((f) => f.id === fontFamily)?.fontFamily || TYPOGRAPHY_PRESETS[0].fontFamily;
+  const isLandscape = format === "twitter" || format === "facebook";
 
   // Render Canvas into an HTMLCanvasElement
   async function renderCardCanvas(scaleMultiplier: number = 1): Promise<HTMLCanvasElement> {
@@ -737,11 +738,11 @@ export default function SocialCardModal({
                         ? { background: "linear-gradient(135deg, #4338CA, #DB2777)", color: "#ffffff" }
                         : undefined),
               }}
-              className={`flex flex-col justify-between rounded-3xl p-7 shadow-2xl transition-all duration-300 relative overflow-hidden ${format === "twitter" || format === "facebook"
-                ? "w-[520px] aspect-[16/9]"
+              className={`flex flex-col justify-between rounded-3xl shadow-2xl transition-all duration-300 relative overflow-hidden ${isLandscape
+                ? "w-[540px] aspect-[16/9] p-5"
                 : format === "story"
-                  ? "w-[340px] aspect-[9/16]"
-                  : "w-[400px] aspect-square"
+                  ? "w-[340px] aspect-[9/16] p-7"
+                  : "w-[400px] aspect-square p-6 sm:p-7"
                 } ${theme === "dark"
                   ? "bg-slate-900 text-white border border-slate-800"
                   : theme === "gradient"
@@ -752,33 +753,42 @@ export default function SocialCardModal({
                 }`}
             >
               {/* Card Top / Body */}
-              <div>
-                <span
-                  className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-1 text-xs font-bold uppercase tracking-wider ${theme === "minimal"
-                    ? "bg-indigo-500/10 text-indigo-600"
-                    : "bg-white/20 text-white backdrop-blur-md"
-                    }`}
-                >
-                  <Sparkles className="h-3 w-3" /> {badgeText}
-                </span>
+              <div className="flex flex-col min-h-0">
+                <div>
+                  <span
+                    className={`inline-flex items-center gap-1.5 rounded-full font-bold uppercase tracking-wider ${isLandscape ? "px-2.5 py-0.5 text-[10px]" : "px-3.5 py-1 text-xs"
+                      } ${theme === "minimal"
+                        ? "bg-indigo-500/10 text-indigo-600"
+                        : "bg-white/20 text-white backdrop-blur-md"
+                      }`}
+                  >
+                    <Sparkles className={isLandscape ? "h-2.5 w-2.5" : "h-3 w-3"} /> {badgeText}
+                  </span>
+                </div>
 
-                <h4 className="mt-3.5 text-lg sm:text-xl font-black leading-tight tracking-tight">
+                <h4 className={`font-black leading-tight tracking-tight ${isLandscape ? "mt-2 text-base sm:text-lg line-clamp-2" : "mt-3.5 text-lg sm:text-xl"
+                  }`}>
                   {cardHeadline}
                 </h4>
 
                 {cardSubheadline && (
-                  <p className="mt-2 text-xs sm:text-sm leading-snug opacity-90 font-medium">
+                  <p className={`leading-snug opacity-90 font-medium ${isLandscape ? "mt-1 text-xs line-clamp-1" : "mt-2 text-xs sm:text-sm"
+                    }`}>
                     {cardSubheadline}
                   </p>
                 )}
 
                 {/* Bullets Highlight Box */}
                 {showBullets && (
-                  <div className={`mt-3.5 rounded-2xl p-3.5 backdrop-blur-md border ${theme === "minimal"
-                    ? "bg-ink-50 border-ink-200 text-ink-900"
-                    : "bg-white/10 border-white/20 text-white"
+                  <div className={`backdrop-blur-md border ${isLandscape
+                    ? "mt-2 rounded-xl p-2.5"
+                    : "mt-3.5 rounded-2xl p-3.5"
+                    } ${theme === "minimal"
+                      ? "bg-ink-50 border-ink-200 text-ink-900"
+                      : "bg-white/10 border-white/20 text-white"
                     }`}>
-                    <div className="space-y-2 text-xs font-semibold">
+                    <div className={`font-semibold ${isLandscape ? "space-y-1 text-[11px]" : "space-y-2 text-xs"
+                      }`}>
                       {(page.bullets && page.bullets.length > 0
                         ? page.bullets.slice(0, 3)
                         : [
@@ -786,9 +796,9 @@ export default function SocialCardModal({
                           "Pre-built templates and checklists",
                         ]
                       ).map((bullet, idx) => (
-                        <div key={idx} className="flex items-start gap-2">
+                        <div key={idx} className="flex items-start gap-1.5">
                           <span className="text-emerald-400 font-bold shrink-0 mt-0.5">✓</span>
-                          <span className="leading-tight">{bullet}</span>
+                          <span className="leading-tight line-clamp-1">{bullet}</span>
                         </div>
                       ))}
                     </div>
@@ -797,16 +807,18 @@ export default function SocialCardModal({
               </div>
 
               {/* Card Footer Bar */}
-              <div className="mt-4 flex items-center justify-between gap-2 border-t border-current/20 pt-3.5">
+              <div className={`flex items-center justify-between gap-2 border-t border-current/20 shrink-0 ${isLandscape ? "mt-2.5 pt-2" : "mt-4 pt-3.5"
+                }`}>
                 {showAvatar ? (
                   <div className="min-w-0">
-                    <p className="text-xs sm:text-sm font-bold truncate">By {creatorName}</p>
-                    <p className="text-xs opacity-75 truncate">@{username}</p>
+                    <p className={`font-bold truncate ${isLandscape ? "text-xs" : "text-xs sm:text-sm"}`}>By {creatorName}</p>
+                    <p className={`opacity-75 truncate ${isLandscape ? "text-[10px]" : "text-xs"}`}>@{username}</p>
                   </div>
                 ) : <div />}
 
                 {showUrlPill && (
-                  <span className="rounded-xl bg-white px-3 py-1.5 text-xs font-bold text-indigo-600 shadow-md shrink-0">
+                  <span className={`rounded-xl bg-white font-bold text-indigo-600 shadow-md shrink-0 ${isLandscape ? "px-2.5 py-1 text-[10px]" : "px-3 py-1.5 text-xs"
+                    }`}>
                     {cleanUrlDisplay}
                   </span>
                 )}
