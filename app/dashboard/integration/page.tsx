@@ -74,10 +74,10 @@ export default function WorkspaceSetupPage() {
     "zapier-webhook": false,
     "pipedrive-webhook": false,
     "kit-webhook": false,
-    "legal-links": true,
-    "newsletter": true,
-    "analytics-tracking": true,
-    "branding-preview": true,
+    "legal-links": false,
+    "newsletter": false,
+    "analytics-tracking": false,
+    "branding-preview": false,
   });
 
   const toggle = (key: string) =>
