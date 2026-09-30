@@ -227,44 +227,88 @@ const BrandTemplatePreview = memo(function BrandTemplatePreview({
                   </div>
 
                   <div
-                    className={`rounded-[18px] p-5 sm:p-6 border transition-all ${
-                      isDark ? "bg-[#14151b] border-[#26272f] shadow-xl" : "bg-white border-[#e5e7eb] shadow-lg"
+                    className={`rounded-[22px] p-6 sm:p-7 border transition-all ${
+                      isDark ? "bg-[#14151b] border-[#26272f] shadow-2xl" : "bg-white border-[#e5e7eb] shadow-xl"
                     }`}
                   >
-                    <h4 className={`text-[18px] font-extrabold mb-1.5 ${isDark ? "text-white" : "text-[#111217]"}`}>
+                    <h4 className={`text-[21px] font-extrabold mb-2 ${isDark ? "text-white" : "text-[#111217]"}`}>
                       {latestPage?.formTitle || "Get the full report"}
                     </h4>
-                    <p className={`text-[11.5px] leading-[1.55] mb-4 ${isDark ? "text-[#9a9da9]" : "text-[#6b7280]"}`}>
+                    <p className={`text-[12.5px] leading-[1.6] mb-5 ${isDark ? "text-[#9a9da9]" : "text-[#6b7280]"}`}>
                       {latestPage?.formSubtitle || "The PDF and supplemental worksheets will arrive directly in your inbox."}
                     </p>
 
-                    <div className="space-y-2.5">
-                      <input
-                        type="text"
-                        placeholder="Full name"
-                        readOnly
-                        className={`w-full px-3.5 py-3 rounded-[12px] text-xs outline-none border pointer-events-none select-none ${
-                          isDark ? "bg-[#0c0d11] border-[#2c2d36] text-white placeholder:text-[#6f7280]" : "bg-[#f8fafc] border-[#cbd5e1] text-zinc-900 placeholder:text-zinc-400"
-                        }`}
-                      />
-                      <input
-                        type="email"
-                        placeholder="Work email"
-                        readOnly
-                        className={`w-full px-3.5 py-3 rounded-[12px] text-xs outline-none border pointer-events-none select-none ${
-                          isDark ? "bg-[#0c0d11] border-[#2c2d36] text-white placeholder:text-[#6f7280]" : "bg-[#f8fafc] border-[#cbd5e1] text-zinc-900 placeholder:text-zinc-400"
-                        }`}
-                      />
+                    <div className="space-y-3.5">
+                      <div className="field">
+                        <input
+                          type="text"
+                          placeholder="Full name"
+                          readOnly
+                          className={`w-full px-4 py-3.5 rounded-[14px] text-sm outline-none border transition pointer-events-none select-none ${
+                            isDark ? "bg-[#0c0d11] border-[#2c2d36] text-white placeholder:text-[#6f7280]" : "bg-[#f8fafc] border-[#cbd5e1] text-zinc-900 placeholder:text-zinc-400"
+                          }`}
+                        />
+                      </div>
+                      <div className="field">
+                        <input
+                          type="email"
+                          placeholder="Work email"
+                          readOnly
+                          className={`w-full px-4 py-3.5 rounded-[14px] text-sm outline-none border transition pointer-events-none select-none ${
+                            isDark ? "bg-[#0c0d11] border-[#2c2d36] text-white placeholder:text-[#6f7280]" : "bg-[#f8fafc] border-[#cbd5e1] text-zinc-900 placeholder:text-zinc-400"
+                          }`}
+                        />
+                      </div>
+
+                      {/* Custom Form Fields in Brand Preview */}
+                      {latestPage?.customFormFields && latestPage.customFormFields.length > 0 && (
+                        <div className="space-y-3">
+                          {latestPage.customFormFields.map((field: any) => (
+                            <div key={field.id} className="field">
+                              <input
+                                type="text"
+                                placeholder={`${field.label || "Custom field"}${field.required ? " *" : ""}`}
+                                readOnly
+                                className={`w-full px-4 py-3.5 rounded-[14px] text-sm outline-none border transition pointer-events-none select-none ${
+                                  isDark
+                                    ? "bg-[#0c0d11] border-[#2c2d36] text-white placeholder:text-[#6f7280]"
+                                    : "bg-[#f8fafc] border-[#cbd5e1] text-zinc-900 placeholder:text-zinc-400"
+                                }`}
+                              />
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      {/* AI Personalized Deliverable Field in Brand Preview */}
+                      {latestPage?.enableAiPersonalizedDeliverable && (
+                        <div className="field">
+                          <input
+                            type="text"
+                            readOnly
+                            placeholder={latestPage?.customPromptPlaceholder || latestPage?.customPromptQuestion || "Your focus / objective"}
+                            className={`w-full px-4 py-3.5 rounded-[14px] text-sm outline-none border transition pointer-events-none select-none ${
+                              isDark
+                                ? "bg-[#0c0d11] border-[#2c2d36] text-white placeholder:text-[#6f7280]"
+                                : "bg-[#f8fafc] border-[#cbd5e1] text-zinc-900 placeholder:text-zinc-400"
+                            }`}
+                          />
+                        </div>
+                      )}
+
                       <button
                         type="button"
-                        className="w-full text-white py-3.5 px-3 rounded-[12px] font-extrabold text-xs tracking-[0.01em] shadow-md transition pointer-events-none"
-                        style={{ backgroundColor: accentColor }}
+                        className="w-full text-white py-3.5 px-6 rounded-[14px] font-extrabold text-sm tracking-[0.01em] shadow-lg transition pointer-events-none"
+                        style={{
+                          backgroundColor: accentColor,
+                          boxShadow: `0 10px 24px -6px ${accentColor}66`,
+                        }}
                       >
-                        {latestPage?.formButtonText || latestPage?.cta || "Receive the dispatch →"}
+                        {latestPage?.formButtonText || latestPage?.cta || "Get instant access"}
                       </button>
                     </div>
 
-                    <p className={`text-center text-[10px] mt-3.5 ${isDark ? "text-[#7d8090]" : "text-[#9ca3af]"}`}>
+                    <p className={`text-center text-[10.5px] mt-4 ${isDark ? "text-[#7d8090]" : "text-[#9ca3af]"}`}>
                       No noise. Only occasional, high-signal notes.
                     </p>
                   </div>
