@@ -20,6 +20,7 @@ const TEMPLATE_TABS = [
   { id: "template6", label: "Template 6" },
   { id: "template7", label: "Template 7" },
   { id: "template8", label: "Template 8" },
+  { id: "template9", label: "Template 9" },
 ];
 
 export default function BrandPage() {
@@ -454,7 +455,9 @@ export default function BrandPage() {
                 {/* Outer frame matching client page background theme mode */}
                 <div
                   className={`rounded-2xl border transition-all duration-300 overflow-hidden ${
-                    templateId === "template8"
+                    templateId === "template9"
+                      ? "bg-[#191038] border-white/20 text-[#f4f2ff]"
+                      : templateId === "template8"
                       ? (themeMode === "dark"
                           ? "bg-[#0d0e12] border-[#2e303d] text-white"
                           : "bg-[#eee9df] border-[#141414] text-zinc-900")
@@ -463,10 +466,14 @@ export default function BrandPage() {
                           : "bg-[#FAFAFA] border-[#e4e4e7] text-zinc-900")
                   }`}
                   style={{
-                    backgroundColor: templateId === "template8"
+                    backgroundColor: templateId === "template9"
+                      ? "#191038"
+                      : templateId === "template8"
                       ? (themeMode === "dark" ? "#0d0e12" : "#eee9df")
                       : undefined,
-                    backgroundImage: templateId === "template8"
+                    backgroundImage: templateId === "template9"
+                      ? "none"
+                      : templateId === "template8"
                       ? (themeMode === "dark"
                           ? "radial-gradient(rgba(255, 255, 255, 0.15) 1px, transparent 1px)"
                           : "radial-gradient(rgba(20, 20, 20, 0.18) 1px, transparent 1px)")
@@ -478,8 +485,8 @@ export default function BrandPage() {
                 >
                   {/* Mock page container */}
                   <div className="p-3.5 sm:p-5 md:p-6">
-                    {/* Header brand name / logo (Hidden for template2, template3, template4, template5, template6, template7, and template8) */}
-                    {templateId !== "template2" && templateId !== "template3" && templateId !== "template4" && templateId !== "template5" && templateId !== "template6" && templateId !== "template7" && templateId !== "template8" && (
+                    {/* Header brand name / logo (Hidden for templates that integrate it directly) */}
+                    {templateId !== "template2" && templateId !== "template3" && templateId !== "template4" && templateId !== "template5" && templateId !== "template6" && templateId !== "template7" && templateId !== "template8" && templateId !== "template9" && (
                       <div className="flex items-center gap-3 mb-5 sm:mb-8 justify-center">
                         <div className={`h-10 w-10 sm:h-11 sm:w-11 rounded-xl flex items-center justify-center bg-transparent overflow-hidden ${logo ? "border-none" : "border border-dashed border-[#a1a1aa]/45"}`}>
                           {logo ? (
@@ -516,7 +523,7 @@ export default function BrandPage() {
                     </AnimatePresence>
 
                     {/* Footer inside Preview (Hidden for templates with integrated footers) */}
-                    {templateId !== "template2" && templateId !== "template5" && templateId !== "template6" && templateId !== "template7" && templateId !== "template8" && (
+                    {templateId !== "template2" && templateId !== "template5" && templateId !== "template6" && templateId !== "template7" && templateId !== "template8" && templateId !== "template9" && (
                       <div className={`mt-10 text-center text-[10px] border-t pt-4 transition-all duration-300 ${themeMode === "dark" ? "border-zinc-800 text-zinc-500" : "border-zinc-200 text-zinc-400"
                         }`}>
                         All rights reserved 2026

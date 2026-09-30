@@ -210,7 +210,7 @@ export default function Template2(props: TemplateProps) {
         const rightLine2 = rightParts[1] || "";
 
         return (
-          <header className="w-full border-b border-[#151515] dark:border-white/20 px-6 sm:px-10 py-5 grid grid-cols-1 md:grid-cols-3 items-end gap-4">
+          <header className={`w-full border-b px-6 sm:px-10 py-5 grid grid-cols-1 md:grid-cols-3 items-end gap-4 ${isDark ? "border-white/20" : "border-[#151515]"}`}>
             {/* Left: Vol & Issue */}
             <div className="text-left font-sans text-[10px] sm:text-[11px] font-bold uppercase tracking-[0.18em] leading-tight opacity-90 relative group min-h-[34px] flex items-end">
               {isLeftHidden ? (
@@ -218,7 +218,9 @@ export default function Template2(props: TemplateProps) {
                   <button
                     type="button"
                     onClick={() => setMastheadLeft?.("")}
-                    className="inline-flex items-center gap-1 border border-dashed border-[#151515]/30 dark:border-white/30 px-2 py-1 text-[10px] font-sans font-bold uppercase tracking-wider hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer"
+                    className={`inline-flex items-center gap-1 border border-dashed px-2 py-1 text-[10px] font-sans font-bold uppercase tracking-wider cursor-pointer ${
+                      isDark ? "border-white/30 hover:bg-white/5" : "border-[#151515]/30 hover:bg-black/5"
+                    }`}
                   >
                     <Plus className="w-3 h-3" />
                     <span>Add Vol / Issue</span>
@@ -230,7 +232,9 @@ export default function Template2(props: TemplateProps) {
                     <button
                       type="button"
                       onClick={() => setMastheadLeft?.("__hidden__")}
-                      className="absolute -top-3.5 right-0 p-1 rounded text-zinc-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 transition cursor-pointer"
+                      className={`absolute -top-3.5 right-0 p-1 rounded text-zinc-400 hover:text-red-600 transition cursor-pointer ${
+                        isDark ? "hover:bg-red-950/30" : "hover:bg-red-50"
+                      }`}
                       title="Remove Left Masthead"
                     >
                       <X className="w-3.5 h-3.5" />
@@ -245,7 +249,9 @@ export default function Template2(props: TemplateProps) {
                           const l2 = leftLine2;
                           setMastheadLeft?.(`${e.target.value} ::: ${l2}`);
                         }}
-                        className="w-full bg-transparent outline-none font-bold uppercase tracking-[0.18em] placeholder:opacity-50 text-[#151515] dark:text-[#eae8e3]"
+                        className={`w-full bg-transparent outline-none font-bold uppercase tracking-[0.18em] placeholder:opacity-50 ${
+                          isDark ? "text-[#eae8e3]" : "text-[#151515]"
+                        }`}
                         placeholder={defaultLeft1}
                       />
                       <input
@@ -255,7 +261,9 @@ export default function Template2(props: TemplateProps) {
                           const l1 = leftLine1 || defaultLeft1;
                           setMastheadLeft?.(`${l1} ::: ${e.target.value}`);
                         }}
-                        className="w-full bg-transparent outline-none font-bold uppercase tracking-[0.18em] placeholder:opacity-50 text-[#151515] dark:text-[#eae8e3]"
+                        className={`w-full bg-transparent outline-none font-bold uppercase tracking-[0.18em] placeholder:opacity-50 ${
+                          isDark ? "text-[#eae8e3]" : "text-[#151515]"
+                        }`}
                         placeholder={defaultLeft2}
                       />
                     </div>
@@ -272,11 +280,15 @@ export default function Template2(props: TemplateProps) {
             {/* Center: Brand Logo + Brand Title */}
             <div className="flex items-center justify-center gap-2.5 sm:gap-3.5 text-center">
               {logo && (
-                <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-xl overflow-hidden shadow-sm border border-[#151515]/20 dark:border-white/20 shrink-0 bg-transparent">
+                <div className={`h-8 w-8 sm:h-10 sm:w-10 rounded-xl overflow-hidden shadow-sm border shrink-0 bg-transparent ${
+                  isDark ? "border-white/20" : "border-[#151515]/20"
+                }`}>
                   <img src={logo} alt={businessName} className="h-full w-full object-cover" />
                 </div>
               )}
-              <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black tracking-[-0.02em] uppercase font-sans leading-none text-[#151515] dark:text-[#eae8e3]">
+              <h1 className={`text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black tracking-[-0.02em] uppercase font-sans leading-none ${
+                isDark ? "text-[#eae8e3]" : "text-[#151515]"
+              }`}>
                 {businessName}
               </h1>
             </div>
@@ -288,7 +300,9 @@ export default function Template2(props: TemplateProps) {
                   <button
                     type="button"
                     onClick={() => setMastheadRight?.("")}
-                    className="inline-flex items-center gap-1 border border-dashed border-[#151515]/30 dark:border-white/30 px-2 py-1 text-[10px] font-sans font-bold uppercase tracking-wider hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer"
+                    className={`inline-flex items-center gap-1 border border-dashed px-2 py-1 text-[10px] font-sans font-bold uppercase tracking-wider cursor-pointer ${
+                      isDark ? "border-white/30 hover:bg-white/5" : "border-[#151515]/30 hover:bg-black/5"
+                    }`}
                   >
                     <Plus className="w-3 h-3" />
                     <span>Add Category / Date</span>
@@ -300,7 +314,9 @@ export default function Template2(props: TemplateProps) {
                     <button
                       type="button"
                       onClick={() => setMastheadRight?.("__hidden__")}
-                      className="absolute -top-3.5 left-0 md:left-auto md:right-0 p-1 rounded text-zinc-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 transition cursor-pointer"
+                      className={`absolute -top-3.5 left-0 md:left-auto md:right-0 p-1 rounded text-zinc-400 hover:text-red-600 transition cursor-pointer ${
+                        isDark ? "hover:bg-red-950/30" : "hover:bg-red-50"
+                      }`}
                       title="Remove Right Masthead"
                     >
                       <X className="w-3.5 h-3.5" />
@@ -315,7 +331,9 @@ export default function Template2(props: TemplateProps) {
                           const r2 = rightLine2;
                           setMastheadRight?.(`${e.target.value} ::: ${r2}`);
                         }}
-                        className="w-full bg-transparent outline-none font-bold uppercase tracking-[0.18em] placeholder:opacity-50 text-left md:text-right text-[#151515] dark:text-[#eae8e3]"
+                        className={`w-full bg-transparent outline-none font-bold uppercase tracking-[0.18em] placeholder:opacity-50 text-left md:text-right ${
+                          isDark ? "text-[#eae8e3]" : "text-[#151515]"
+                        }`}
                         placeholder={defaultRight1}
                       />
                       <input
@@ -325,14 +343,16 @@ export default function Template2(props: TemplateProps) {
                           const r1 = rightLine1 || defaultRight1;
                           setMastheadRight?.(`${r1} ::: ${e.target.value}`);
                         }}
-                        className="w-full bg-transparent outline-none font-bold uppercase tracking-[0.18em] placeholder:opacity-50 text-left md:text-right text-[#5a574f] dark:text-zinc-400"
+                        className={`w-full bg-transparent outline-none font-bold uppercase tracking-[0.18em] placeholder:opacity-50 text-left md:text-right ${
+                          isDark ? "text-zinc-400" : "text-[#5a574f]"
+                        }`}
                         placeholder={defaultRight2}
                       />
                     </div>
                   ) : (
                     <div>
                       <div>{rightLine1 || defaultRight1}</div>
-                      <div className="mt-0.5 font-normal text-[#5a574f] dark:text-zinc-400">
+                      <div className={`mt-0.5 font-normal ${isDark ? "text-zinc-400" : "text-[#5a574f]"}`}>
                         {rightLine2 || defaultRight2}
                       </div>
                     </div>
@@ -359,7 +379,9 @@ export default function Template2(props: TemplateProps) {
 
       {/* 3. HERO SECTION (FEATURE STORY WITH WATERMARK & HEADLINE) */}
       <div
-        className="relative min-h-[480px] sm:min-h-[540px] md:min-h-[580px] flex flex-col justify-between p-6 sm:p-10 md:p-14 border-b border-[#151515] dark:border-white/20 overflow-hidden"
+        className={`relative min-h-[480px] sm:min-h-[540px] md:min-h-[580px] flex flex-col justify-between p-6 sm:p-10 md:p-14 border-b overflow-hidden ${
+          isDark ? "border-white/20" : "border-[#151515]"
+        }`}
         style={{
           backgroundImage: `linear-gradient(90deg, rgba(12,12,12,0.92) 0%, rgba(12,12,12,0.6) 55%, rgba(12,12,12,0.15) 100%), url(${coverImage})`,
           backgroundSize: "cover",
@@ -464,7 +486,9 @@ export default function Template2(props: TemplateProps) {
         <div className="lg:col-span-8 p-6 sm:p-10 flex flex-col justify-between space-y-8">
           <div className="space-y-6">
             {/* Header: INSIDE THIS ISSUE | CONTENTS 01-03 */}
-            <div className="flex items-center justify-between pb-2.5 border-b border-[#151515] dark:border-white/20 text-[10px] sm:text-[11px] font-sans font-bold uppercase tracking-[0.18em]">
+            <div className={`flex items-center justify-between pb-2.5 border-b text-[10px] sm:text-[11px] font-sans font-bold uppercase tracking-[0.18em] ${
+              isDark ? "border-white/20" : "border-[#151515]"
+            }`}>
               {isEditor ? (
                 <input
                   type="text"
@@ -480,7 +504,7 @@ export default function Template2(props: TemplateProps) {
             </div>
 
             {/* Content Rows */}
-            <div className="divide-y divide-[#151515]/20 dark:divide-white/10">
+            <div className={`divide-y ${isDark ? "divide-white/10" : "divide-[#151515]/20"}`}>
               {displayBullets.map((item: string, idx: number) => {
                 const placeholderObj = defaultArticlePlaceholders[idx % defaultArticlePlaceholders.length];
                 const parts = item.includes(":::") ? item.split(":::") : [item, ""];
@@ -492,7 +516,9 @@ export default function Template2(props: TemplateProps) {
                   <div key={idx} className="py-5 sm:py-6 flex items-start justify-between gap-4 group">
                     <div className="flex items-start gap-4 sm:gap-6 flex-1">
                       {/* Large Italic Serif Number */}
-                      <span className="font-serif italic text-2xl sm:text-3xl font-normal text-[#151515] dark:text-[#eae8e3] shrink-0 w-8">
+                      <span className={`font-serif italic text-2xl sm:text-3xl font-normal shrink-0 w-8 ${
+                        isDark ? "text-[#eae8e3]" : "text-[#151515]"
+                      }`}>
                         {numStr}
                       </span>
 
@@ -503,23 +529,31 @@ export default function Template2(props: TemplateProps) {
                               type="text"
                               value={itemTitle}
                               onChange={(e) => handleBulletTitleChange(idx, e.target.value)}
-                              className="w-full font-serif font-bold text-xl sm:text-2xl bg-transparent outline-none text-[#151515] dark:text-[#eae8e3] placeholder:opacity-40"
+                              className={`w-full font-serif font-bold text-xl sm:text-2xl bg-transparent outline-none placeholder:opacity-40 ${
+                                isDark ? "text-[#eae8e3]" : "text-[#151515]"
+                              }`}
                               placeholder={placeholderObj.title}
                             />
                             <input
                               type="text"
                               value={itemDesc}
                               onChange={(e) => handleBulletDescChange(idx, e.target.value)}
-                              className="w-full text-xs sm:text-sm font-sans text-[#151515]/80 dark:text-[#eae8e3]/80 bg-transparent outline-none placeholder:opacity-40"
+                              className={`w-full text-xs sm:text-sm font-sans bg-transparent outline-none placeholder:opacity-40 ${
+                                isDark ? "text-[#eae8e3]/80" : "text-[#151515]/80"
+                              }`}
                               placeholder={placeholderObj.desc}
                             />
                           </div>
                         ) : (
                           <>
-                            <h3 className="font-serif font-bold text-xl sm:text-2xl text-[#151515] dark:text-[#eae8e3] leading-snug">
+                            <h3 className={`font-serif font-bold text-xl sm:text-2xl leading-snug ${
+                              isDark ? "text-[#eae8e3]" : "text-[#151515]"
+                            }`}>
                               {itemTitle || placeholderObj.title}
                             </h3>
-                            <p className="text-xs sm:text-sm font-sans text-[#151515]/80 dark:text-[#eae8e3]/80 leading-relaxed">
+                            <p className={`text-xs sm:text-sm font-sans leading-relaxed ${
+                              isDark ? "text-[#eae8e3]/80" : "text-[#151515]/80"
+                            }`}>
                               {itemDesc || placeholderObj.desc}
                             </p>
                           </>
@@ -528,12 +562,16 @@ export default function Template2(props: TemplateProps) {
                     </div>
 
                     <div className="flex items-center gap-2 shrink-0 pt-1">
-                      <ArrowUpRight className="w-5 h-5 text-[#151515] dark:text-[#eae8e3] opacity-60 group-hover:opacity-100 transition-opacity" />
+                      <ArrowUpRight className={`w-5 h-5 opacity-60 group-hover:opacity-100 transition-opacity ${
+                        isDark ? "text-[#eae8e3]" : "text-[#151515]"
+                      }`} />
                       {isEditor && (
                         <button
                           type="button"
                           onClick={() => handleRemoveBullet(idx)}
-                          className="p-1 rounded-md text-zinc-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 transition-all cursor-pointer"
+                          className={`p-1 rounded-md text-zinc-400 hover:text-red-600 transition-all cursor-pointer ${
+                            isDark ? "hover:bg-red-950/30" : "hover:bg-red-50"
+                          }`}
                           title="Remove item"
                         >
                           <X className="w-4 h-4" />
@@ -545,7 +583,9 @@ export default function Template2(props: TemplateProps) {
               })}
 
               {displayBullets.length === 0 && isEditor && (
-                <div className="py-6 text-center text-xs italic opacity-60 font-sans border border-dashed border-[#151515]/20 dark:border-white/20">
+                <div className={`py-6 text-center text-xs italic opacity-60 font-sans border border-dashed ${
+                  isDark ? "border-white/20" : "border-[#151515]/20"
+                }`}>
                   No article rows. Click "+ ADD ARTICLE ROW" to add one.
                 </div>
               )}
@@ -555,7 +595,9 @@ export default function Template2(props: TemplateProps) {
               <button
                 type="button"
                 onClick={handleAddBullet}
-                className="inline-flex items-center gap-1.5 border border-dashed border-[#151515] dark:border-white/40 px-4 py-2 text-xs font-sans font-bold uppercase tracking-wider transition cursor-pointer hover:bg-black/5 dark:hover:bg-white/5"
+                className={`inline-flex items-center gap-1.5 border border-dashed px-4 py-2 text-xs font-sans font-bold uppercase tracking-wider transition cursor-pointer ${
+                  isDark ? "border-white/40 hover:bg-white/5" : "border-[#151515] hover:bg-black/5"
+                }`}
               >
                 <Plus className="w-3.5 h-3.5" />
                 <span>Add Article Row</span>
@@ -569,19 +611,25 @@ export default function Template2(props: TemplateProps) {
               <button
                 type="button"
                 onClick={() => setPitch?.(defaultQuotePlaceholder)}
-                className="inline-flex items-center gap-1.5 border border-dashed border-[#151515] dark:border-white/40 px-4 py-2 text-xs font-sans font-bold uppercase tracking-wider transition cursor-pointer hover:bg-black/5 dark:hover:bg-white/5"
+                className={`inline-flex items-center gap-1.5 border border-dashed px-4 py-2 text-xs font-sans font-bold uppercase tracking-wider transition cursor-pointer ${
+                  isDark ? "border-white/40 hover:bg-white/5" : "border-[#151515] hover:bg-black/5"
+                }`}
               >
                 <Plus className="w-3.5 h-3.5" />
                 <span>Add Pull Quote Card</span>
               </button>
             )
           ) : (
-            <div className="w-full overflow-hidden border-t-4 border-[#2544d8] bg-[#e7e2d7] dark:bg-[#1e1e24] p-6 sm:p-8 space-y-3 relative group">
+            <div className={`w-full overflow-hidden border-t-4 border-[#2544d8] p-6 sm:p-8 space-y-3 relative group ${
+              isDark ? "bg-[#1e1e24]" : "bg-[#e7e2d7]"
+            }`}>
               {isEditor && (
                 <button
                   type="button"
                   onClick={() => setPitch?.("__hidden__")}
-                  className="absolute top-3 right-3 p-1 rounded-md text-zinc-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 transition-all cursor-pointer z-10"
+                  className={`absolute top-3 right-3 p-1 rounded-md text-zinc-400 hover:text-red-600 transition-all cursor-pointer z-10 ${
+                    isDark ? "hover:bg-red-950/30" : "hover:bg-red-50"
+                  }`}
                   title="Remove quote card"
                 >
                   <X className="w-4 h-4" />
@@ -598,7 +646,11 @@ export default function Template2(props: TemplateProps) {
                       const nextVal = quoteAuthor ? `${e.target.value} ::: ${quoteAuthor}` : e.target.value;
                       setPitch?.(nextVal);
                     }}
-                    className="w-full font-serif italic text-lg sm:text-xl text-[#151515] dark:text-[#eae8e3] bg-transparent outline-none resize-none leading-snug placeholder:text-[#151515]/60 dark:placeholder:text-[#eae8e3]/60 placeholder:opacity-100"
+                    className={`w-full font-serif italic text-lg sm:text-xl bg-transparent outline-none resize-none leading-snug placeholder:opacity-100 ${
+                      isDark
+                        ? "text-[#eae8e3] placeholder:text-[#eae8e3]/60"
+                        : "text-[#151515] placeholder:text-[#151515]/60"
+                    }`}
                     placeholder={defaultQuotePlaceholder}
                   />
                   <div className="pt-1">
@@ -609,17 +661,25 @@ export default function Template2(props: TemplateProps) {
                         const q = quoteText || defaultQuotePlaceholder;
                         setPitch?.(`${q} ::: ${e.target.value}`);
                       }}
-                      className="w-full text-[10px] sm:text-[11px] font-sans font-bold uppercase tracking-[0.18em] text-[#151515]/80 dark:text-[#eae8e3]/80 bg-transparent outline-none placeholder:text-[#151515]/60 dark:placeholder:text-[#eae8e3]/60 placeholder:opacity-100"
+                      className={`w-full text-[10px] sm:text-[11px] font-sans font-bold uppercase tracking-[0.18em] bg-transparent outline-none placeholder:opacity-100 ${
+                        isDark
+                          ? "text-[#eae8e3]/80 placeholder:text-[#eae8e3]/60"
+                          : "text-[#151515]/80 placeholder:text-[#151515]/60"
+                      }`}
                       placeholder={defaultAuthorPlaceholder}
                     />
                   </div>
                 </div>
               ) : (
                 <>
-                  <blockquote className="font-serif italic text-lg sm:text-xl text-[#151515] dark:text-[#eae8e3] leading-snug">
+                  <blockquote className={`font-serif italic text-lg sm:text-xl leading-snug ${
+                    isDark ? "text-[#eae8e3]" : "text-[#151515]"
+                  }`}>
                     {quoteText || defaultQuotePlaceholder}
                   </blockquote>
-                  <div className="text-[10px] sm:text-[11px] font-sans font-bold uppercase tracking-[0.18em] text-[#151515]/80 dark:text-[#eae8e3]/80">
+                  <div className={`text-[10px] sm:text-[11px] font-sans font-bold uppercase tracking-[0.18em] ${
+                    isDark ? "text-[#eae8e3]/80" : "text-[#151515]/80"
+                  }`}>
                     {quoteAuthor || defaultAuthorPlaceholder}
                   </div>
                 </>
@@ -629,9 +689,13 @@ export default function Template2(props: TemplateProps) {
         </div>
 
         {/* RIGHT COLUMN: Digital Edition Form Panel (~35% width) */}
-        <div className="lg:col-span-4 border-t lg:border-t-0 lg:border-l border-[#151515] dark:border-white/20 p-6 sm:p-10 flex flex-col justify-start space-y-6">
+        <div className={`lg:col-span-4 border-t lg:border-t-0 lg:border-l p-6 sm:p-10 flex flex-col justify-start space-y-6 ${
+          isDark ? "border-white/20" : "border-[#151515]"
+        }`}>
           {/* Eyebrow: DIGITAL EDITION */}
-          <div className="text-[10px] sm:text-[11px] font-sans font-bold uppercase tracking-[0.18em] text-[#2544d8] dark:text-blue-400">
+          <div className={`text-[10px] sm:text-[11px] font-sans font-bold uppercase tracking-[0.18em] ${
+            isDark ? "text-blue-400" : "text-[#2544d8]"
+          }`}>
             DIGITAL EDITION
           </div>
 
@@ -644,7 +708,9 @@ export default function Template2(props: TemplateProps) {
                   value={formTitle || ""}
                   onChange={(e) => setFormTitle?.(e.target.value)}
                   placeholder="Keep the issue."
-                  className="w-full font-serif text-3xl sm:text-4xl font-normal text-[#151515] dark:text-[#eae8e3] bg-transparent outline-none placeholder:opacity-50"
+                  className={`w-full font-serif text-3xl sm:text-4xl font-normal bg-transparent outline-none placeholder:opacity-50 ${
+                    isDark ? "text-[#eae8e3]" : "text-[#151515]"
+                  }`}
                 />
                 <textarea
                   rows={2}
@@ -656,7 +722,9 @@ export default function Template2(props: TemplateProps) {
               </>
             ) : (
               <>
-                <h3 className="font-serif text-3xl sm:text-4xl font-normal text-[#151515] dark:text-[#eae8e3] leading-tight">
+                <h3 className={`font-serif text-3xl sm:text-4xl font-normal leading-tight ${
+                  isDark ? "text-[#eae8e3]" : "text-[#151515]"
+                }`}>
                   {formTitle || "Keep the issue."}
                 </h3>
                 <p className="text-xs sm:text-sm font-sans opacity-80 leading-relaxed">
@@ -677,10 +745,10 @@ export default function Template2(props: TemplateProps) {
                   type="text"
                   placeholder="Jane Holloway"
                   readOnly
-                  className={`w-full border border-[#151515] dark:border-white/30 px-3.5 py-2.5 text-xs outline-none font-sans ${
+                  className={`w-full border px-3.5 py-2.5 text-xs outline-none font-sans ${
                     isDark
-                      ? "bg-black/30 text-white placeholder:text-zinc-500"
-                      : "bg-[#ece7dc]/50 text-zinc-900 placeholder:text-zinc-400"
+                      ? "border-white/30 bg-black/30 text-white placeholder:text-zinc-500"
+                      : "border-[#151515] bg-[#ece7dc]/50 text-zinc-900 placeholder:text-zinc-400"
                   }`}
                 />
               </div>
@@ -693,10 +761,10 @@ export default function Template2(props: TemplateProps) {
                   type="email"
                   placeholder="jane@studio.com"
                   readOnly
-                  className={`w-full border border-[#151515] dark:border-white/30 px-3.5 py-2.5 text-xs outline-none font-sans ${
+                  className={`w-full border px-3.5 py-2.5 text-xs outline-none font-sans ${
                     isDark
-                      ? "bg-black/30 text-white placeholder:text-zinc-500"
-                      : "bg-[#ece7dc]/50 text-zinc-900 placeholder:text-zinc-400"
+                      ? "border-white/30 bg-black/30 text-white placeholder:text-zinc-500"
+                      : "border-[#151515] bg-[#ece7dc]/50 text-zinc-900 placeholder:text-zinc-400"
                   }`}
                 />
               </div>
@@ -710,10 +778,10 @@ export default function Template2(props: TemplateProps) {
                     type="text"
                     placeholder={`${field.label || "Value"}${field.required ? " *" : ""}`}
                     readOnly
-                    className={`w-full border border-[#151515] dark:border-white/30 px-3.5 py-2.5 text-xs outline-none font-sans ${
+                    className={`w-full border px-3.5 py-2.5 text-xs outline-none font-sans ${
                       isDark
-                        ? "bg-black/30 text-white placeholder:text-zinc-500"
-                        : "bg-[#ece7dc]/50 text-zinc-900 placeholder:text-zinc-400"
+                        ? "border-white/30 bg-black/30 text-white placeholder:text-zinc-500"
+                        : "border-[#151515] bg-[#ece7dc]/50 text-zinc-900 placeholder:text-zinc-400"
                     }`}
                   />
                 </div>
@@ -746,10 +814,10 @@ export default function Template2(props: TemplateProps) {
                   onChange={(e) =>
                     setPublicFormValues?.({ ...publicFormValues, name: e.target.value })
                   }
-                  className={`w-full border border-[#151515] dark:border-white/30 px-3.5 py-2.5 text-xs outline-none font-sans transition focus:border-[#2544d8] ${
+                  className={`w-full border px-3.5 py-2.5 text-xs outline-none font-sans transition focus:border-[#2544d8] ${
                     isDark
-                      ? "bg-black/30 text-white placeholder:text-zinc-500"
-                      : "bg-[#ece7dc]/50 text-zinc-900 placeholder:text-zinc-400"
+                      ? "border-white/30 bg-black/30 text-white placeholder:text-zinc-500"
+                      : "border-[#151515] bg-[#ece7dc]/50 text-zinc-900 placeholder:text-zinc-400"
                   }`}
                 />
               </div>
@@ -766,10 +834,10 @@ export default function Template2(props: TemplateProps) {
                   onChange={(e) =>
                     setPublicFormValues?.({ ...publicFormValues, email: e.target.value })
                   }
-                  className={`w-full border border-[#151515] dark:border-white/30 px-3.5 py-2.5 text-xs outline-none font-sans transition focus:border-[#2544d8] ${
+                  className={`w-full border px-3.5 py-2.5 text-xs outline-none font-sans transition focus:border-[#2544d8] ${
                     isDark
-                      ? "bg-black/30 text-white placeholder:text-zinc-500"
-                      : "bg-[#ece7dc]/50 text-zinc-900 placeholder:text-zinc-400"
+                      ? "border-white/30 bg-black/30 text-white placeholder:text-zinc-500"
+                      : "border-[#151515] bg-[#ece7dc]/50 text-zinc-900 placeholder:text-zinc-400"
                   }`}
                 />
               </div>
@@ -790,10 +858,10 @@ export default function Template2(props: TemplateProps) {
                         [field.id]: e.target.value,
                       })
                     }
-                    className={`w-full border border-[#151515] dark:border-white/30 px-3.5 py-2.5 text-xs outline-none font-sans transition focus:border-[#2544d8] ${
+                    className={`w-full border px-3.5 py-2.5 text-xs outline-none font-sans transition focus:border-[#2544d8] ${
                       isDark
-                        ? "bg-black/30 text-white placeholder:text-zinc-500"
-                        : "bg-[#ece7dc]/50 text-zinc-900 placeholder:text-zinc-400"
+                        ? "border-white/30 bg-black/30 text-white placeholder:text-zinc-500"
+                        : "border-[#151515] bg-[#ece7dc]/50 text-zinc-900 placeholder:text-zinc-400"
                     }`}
                   />
                 </div>

@@ -47,7 +47,7 @@ export default function MagnetSignupForm({
   customFormFields?: CustomFormField[];
   username?: string;
   isVariantB?: boolean;
-  layout?: "standard" | "horizontal-glass" | "split-panel" | "editorial" | "monograph" | "brutalist" | "poster" | "collage-zine";
+  layout?: "standard" | "horizontal-glass" | "split-panel" | "editorial" | "monograph" | "brutalist" | "poster" | "collage-zine" | "glass-aurora";
   afterSignupOption?: "standard" | "elsewhere" | "custom";
   destinationUrl?: string;
 }) {
@@ -262,6 +262,101 @@ export default function MagnetSignupForm({
             <ArrowRight className="h-4 w-4" />
             <span>📥 Click Here to Download Resource Immediately</span>
           </a>
+        </div>
+      ) : layout === "glass-aurora" ? (
+        <div className="w-full" suppressHydrationWarning>
+          <form onSubmit={handleSubmit} className="space-y-3" suppressHydrationWarning>
+            <div>
+              <input
+                required
+                type="text"
+                disabled={loading}
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Full name"
+                className="w-full px-4 py-3 rounded-xl border border-white/20 bg-[#0c0628]/45 text-white placeholder-[#9d94c8] text-sm outline-none transition focus:border-[#f0abfc] focus:bg-[#0c0628]/65 focus:ring-2 focus:ring-[#f0abfc]/30"
+              />
+            </div>
+            <div>
+              <input
+                required
+                type="email"
+                disabled={loading}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Work email"
+                className="w-full px-4 py-3 rounded-xl border border-white/20 bg-[#0c0628]/45 text-white placeholder-[#9d94c8] text-sm outline-none transition focus:border-[#f0abfc] focus:bg-[#0c0628]/65 focus:ring-2 focus:ring-[#f0abfc]/30"
+              />
+            </div>
+
+            {/* Custom Form Fields */}
+            {customFormFields &&
+              customFormFields.map((field) => (
+                <div key={field.id}>
+                  {field.type === "textarea" ? (
+                    <textarea
+                      rows={2}
+                      required={field.required}
+                      disabled={loading}
+                      value={customFieldValues[field.id] || ""}
+                      onChange={(e) => handleCustomFieldChange(field.id, e.target.value)}
+                      placeholder={`${field.label || "Details"}${field.required ? " *" : ""}`}
+                      className="w-full px-4 py-3 rounded-xl border border-white/20 bg-[#0c0628]/45 text-white placeholder-[#9d94c8] text-sm outline-none transition focus:border-[#f0abfc] focus:bg-[#0c0628]/65 focus:ring-2 focus:ring-[#f0abfc]/30 resize-none"
+                    />
+                  ) : field.type === "select" ? (
+                    <select
+                      required={field.required}
+                      disabled={loading}
+                      value={customFieldValues[field.id] || ""}
+                      onChange={(e) => handleCustomFieldChange(field.id, e.target.value)}
+                      className="w-full px-4 py-3 rounded-xl border border-white/20 bg-[#0c0628]/45 text-white text-sm outline-none transition focus:border-[#f0abfc]"
+                    >
+                      <option value="" className="bg-[#191038] text-white">
+                        {`${field.label || "Select option"}${field.required ? " *" : ""}`}
+                      </option>
+                      {(field.options || []).map((opt, idx) => (
+                        <option key={idx} value={opt} className="bg-[#191038] text-white">
+                          {opt}
+                        </option>
+                      ))}
+                    </select>
+                  ) : (
+                    <input
+                      type={field.type || "text"}
+                      required={field.required}
+                      disabled={loading}
+                      value={customFieldValues[field.id] || ""}
+                      onChange={(e) => handleCustomFieldChange(field.id, e.target.value)}
+                      placeholder={`${field.label || "Custom field"}${field.required ? " *" : ""}`}
+                      className="w-full px-4 py-3 rounded-xl border border-white/20 bg-[#0c0628]/45 text-white placeholder-[#9d94c8] text-sm outline-none transition focus:border-[#f0abfc] focus:bg-[#0c0628]/65 focus:ring-2 focus:ring-[#f0abfc]/30"
+                    />
+                  )}
+                </div>
+              ))}
+
+            {errorMsg && (
+              <div className="p-3 rounded-xl border border-rose-500/40 bg-rose-950/40 text-rose-200 text-xs font-semibold">
+                {errorMsg}
+              </div>
+            )}
+
+            <div className="pt-2">
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full py-3.5 px-4 rounded-xl font-bold text-sm text-[#2a1052] bg-gradient-to-r from-[#c4b5fd] to-[#f0abfc] hover:brightness-105 active:scale-[0.99] shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60"
+              >
+                {loading ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin text-[#2a1052]" />
+                    <span>Securing your dispatch...</span>
+                  </>
+                ) : (
+                  <span>{formButtonText || cta || "Receive the dispatch →"}</span>
+                )}
+              </button>
+            </div>
+          </form>
         </div>
       ) : layout === "collage-zine" ? (
         (() => {
