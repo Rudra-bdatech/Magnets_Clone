@@ -2524,33 +2524,28 @@ export default async function MagnetPageRoute({
           })()
         ) : (
           /* TEMPLATE 1 / Default: Modern Full-Width Split Layout */
-          <div className="w-full flex-1 flex flex-col justify-center py-1 lg:py-2">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 xl:gap-14 items-center w-full">
+          <div className="w-full flex-1 flex flex-col justify-center py-1 relative">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start w-full">
               {/* Left Content Column */}
-              <div className="lg:col-span-7 space-y-3 lg:space-y-4 xl:space-y-5 lg:pr-2 xl:pr-6 min-w-0">
-                <span className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-semibold shadow-xs ${themeMode === "dark"
-                  ? "border-[#252529] bg-[#161619] text-zinc-300"
-                  : "border-zinc-200 bg-zinc-50 text-zinc-700"
-                  }`}>
-                  <SparklesIcon className="h-3.5 w-3.5 text-brand-orange" />
-                  Free resource
-                </span>
-                <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-[2.6rem] xl:text-[3.2rem] 2xl:text-[3.6rem] font-black leading-[1.08] tracking-tight break-words [overflow-wrap:anywhere]">
-                  {activeHeadline}
-                </h1>
-                {page.subheadline && (
-                  <p className={`text-sm sm:text-base md:text-lg xl:text-xl font-medium leading-relaxed break-words [overflow-wrap:anywhere] ${themeMode === "dark" ? "text-zinc-300" : "text-zinc-700"
-                    }`}>
-                    {page.subheadline}
-                  </p>
-                )}
+              <div className="lg:col-span-7 space-y-4 py-1 min-w-0">
+                <div className="space-y-3">
+                  <h1 className="text-3xl sm:text-4xl md:text-5xl font-black leading-tight tracking-tight break-words [overflow-wrap:anywhere]">
+                    {activeHeadline}
+                  </h1>
+                  {page.subheadline && (
+                    <p className={`text-sm sm:text-base font-semibold leading-relaxed break-words [overflow-wrap:anywhere] ${themeMode === "dark" ? "text-zinc-300" : "text-zinc-700"
+                      }`}>
+                      {page.subheadline}
+                    </p>
+                  )}
 
-                {page.pitch && (
-                  <p className={`text-xs sm:text-sm md:text-base leading-relaxed whitespace-pre-line break-words [overflow-wrap:anywhere] ${themeMode === "dark" ? "text-zinc-400" : "text-zinc-500"
-                    }`}>
-                    {page.pitch}
-                  </p>
-                )}
+                  {page.pitch && (
+                    <p className={`text-xs sm:text-sm leading-relaxed whitespace-pre-line break-words [overflow-wrap:anywhere] ${themeMode === "dark" ? "text-zinc-400" : "text-zinc-500"
+                      }`}>
+                      {page.pitch}
+                    </p>
+                  )}
+                </div>
 
                 {page.bullets && page.bullets.length > 0 && (
                   <div className="space-y-3 pt-2 min-w-0">
@@ -2586,11 +2581,11 @@ export default async function MagnetPageRoute({
               </div>
 
               {/* Right Media Preview & Form Column */}
-              <div className="lg:col-span-5 space-y-3 xl:space-y-4 w-full lg:pt-1 xl:pt-2">
+              <div className="lg:col-span-5 space-y-4 w-full">
                 {/* Media Preview (Crisp proportion) */}
                 {activeImageUrl ? (
                   <div
-                    className="rounded-2xl border aspect-[16/8.5] max-h-[190px] sm:max-h-[220px] lg:max-h-[240px] xl:max-h-[260px] w-full flex items-center justify-center transition-all duration-300 relative overflow-hidden shadow-xl"
+                    className="rounded-2xl sm:rounded-3xl border h-[265px] sm:h-[275px] w-full flex items-center justify-center transition-all duration-300 relative overflow-hidden shadow-2xl border-zinc-200 dark:border-zinc-800/80 bg-zinc-100 dark:bg-[#121215]"
                     style={{
                       borderColor: `${brandColor}${Math.round((0.18 + (highlightIntensity / 100) * 0.5) * 255).toString(16).padStart(2, '0')}`,
                     }}
@@ -2603,7 +2598,7 @@ export default async function MagnetPageRoute({
                 <div className="w-full">
                   <MagnetSignupForm
                     cta={page.cta}
-                    formTitle={page.formTitle}
+                    formTitle={page.formTitle || "Download for free now"}
                     formSubtitle={page.formSubtitle}
                     formButtonText={page.formButtonText}
                     deliverable={page.deliverable}

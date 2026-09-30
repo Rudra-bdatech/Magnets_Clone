@@ -264,9 +264,9 @@ export default function Template1(props: TemplateProps) {
         </div>
 
         {/* RIGHT COLUMN: Cover Image + Form Card (~42% / 5 cols) */}
-        <div className="md:col-span-5 space-y-4 md:pt-4">
+        <div className="md:col-span-5 space-y-4">
           {/* Cover Image */}
-          <div className="relative rounded-xl border aspect-[16/11] w-full overflow-hidden shadow-xs border-zinc-200 dark:border-zinc-800/80 bg-zinc-100 dark:bg-[#121215] group">
+          <div className="relative rounded-2xl sm:rounded-3xl border h-[265px] sm:h-[275px] w-full overflow-hidden shadow-2xl border-zinc-200 dark:border-zinc-800/80 bg-zinc-100 dark:bg-[#121215] group">
             {imageUrl && imageUrl.trim() !== "" ? (
               <>
                 <img src={imageUrl} alt="Lead magnet media" className="w-full h-full object-cover" />

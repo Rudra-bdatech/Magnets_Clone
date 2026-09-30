@@ -30,41 +30,43 @@ const BrandTemplatePreview = memo(function BrandTemplatePreview({
     <>
       {/* TEMPLATE 1: Modern Split Layout */}
       {templateId === "template1" && (
-        <div className={`w-full py-1 ${themeMode === "dark" ? "text-white" : "text-zinc-900"}`}>
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-stretch">
-            <div className="md:col-span-7 flex flex-col justify-between h-full py-1">
-              <h3 className="text-xl md:text-3xl font-extrabold leading-tight tracking-tight">
-                {latestPage?.headline || latestPage?.name || "101 Winning Viral Templates That Get Results"}
-              </h3>
+        <div className={`w-full py-1 relative ${themeMode === "dark" ? "text-white" : "text-zinc-900"}`}>
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
+            <div className="md:col-span-7 space-y-4 py-1">
+              <div className="space-y-3">
+                <h3 className="text-3xl sm:text-4xl font-black leading-tight tracking-tight">
+                  {latestPage?.headline || latestPage?.name || "101 Winning Viral Templates That Get Results"}
+                </h3>
 
-              {latestPage?.subheadline ? (
-                <p className={`text-sm font-semibold leading-relaxed ${themeMode === "dark" ? "text-zinc-300" : "text-zinc-700"}`}>
-                  {latestPage.subheadline}
-                </p>
-              ) : (
-                <p className={`text-sm font-semibold leading-relaxed ${themeMode === "dark" ? "text-zinc-300" : "text-zinc-700"}`}>
-                  Stop staring at a blank page. Start creating content that actually connects.
-                </p>
-              )}
+                {latestPage?.subheadline ? (
+                  <p className={`text-sm font-semibold leading-relaxed ${themeMode === "dark" ? "text-zinc-300" : "text-zinc-700"}`}>
+                    {latestPage.subheadline}
+                  </p>
+                ) : (
+                  <p className={`text-sm font-semibold leading-relaxed ${themeMode === "dark" ? "text-zinc-300" : "text-zinc-700"}`}>
+                    Stop staring at a blank page. Start creating content that actually connects.
+                  </p>
+                )}
 
-              {latestPage?.pitch ? (
-                <p className={`text-xs leading-relaxed ${themeMode === "dark" ? "text-zinc-400" : "text-zinc-500"}`}>
-                  {latestPage.pitch}
-                </p>
-              ) : (
-                <p className={`text-xs leading-relaxed ${themeMode === "dark" ? "text-zinc-400" : "text-zinc-500"}`}>
-                  You know what works on LinkedIn. You&apos;ve seen the posts that blow up.
-                  <span className="block mt-2.5">
-                    That&apos;s where these templates come in. Real structures pulled from posts that actually performed.
-                  </span>
-                </p>
-              )}
+                {latestPage?.pitch ? (
+                  <p className={`text-xs leading-relaxed whitespace-pre-line ${themeMode === "dark" ? "text-zinc-400" : "text-zinc-500"}`}>
+                    {latestPage.pitch}
+                  </p>
+                ) : (
+                  <p className={`text-xs leading-relaxed whitespace-pre-line ${themeMode === "dark" ? "text-zinc-400" : "text-zinc-500"}`}>
+                    You know what works on LinkedIn. You&apos;ve seen the posts that blow up.
+                    <span className="block mt-2.5">
+                      That&apos;s where these templates come in. Real structures pulled from posts that actually performed.
+                    </span>
+                  </p>
+                )}
+              </div>
 
               <div className="space-y-3 pt-2">
                 <p className="text-xs font-bold uppercase tracking-wider text-[#9B9085]">
                   {latestPage?.bulletsTitle || "This playbook breaks down:"}
                 </p>
-                <ul className="space-y-3">
+                <ul className="space-y-2.5">
                   {(latestPage?.bullets && latestPage.bullets.length > 0
                     ? latestPage.bullets
                     : [
@@ -73,9 +75,9 @@ const BrandTemplatePreview = memo(function BrandTemplatePreview({
                         "Ready-to-use formats that let you focus on your message",
                       ]
                   ).map((item, idx) => (
-                    <li key={idx} className="flex items-start gap-2 text-xs">
+                    <li key={idx} className="flex items-center gap-2 text-xs">
                       <span
-                        className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full mt-0.5 transition-all duration-300"
+                        className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full transition-all duration-300"
                         style={{
                           backgroundColor: brandColor,
                           opacity: 0.5 + intensityRatio * 0.5,
@@ -96,23 +98,26 @@ const BrandTemplatePreview = memo(function BrandTemplatePreview({
               </div>
             </div>
 
-            <div className="md:col-span-5 space-y-3">
+            <div className="md:col-span-5 space-y-4">
               {latestPage?.imageUrl && latestPage.imageUrl.trim() !== "" ? (
-                <div className="rounded-xl border aspect-[16/11] w-full overflow-hidden shadow-xs border-zinc-200 dark:border-zinc-800">
+                <div className="rounded-2xl sm:rounded-3xl border h-[265px] sm:h-[275px] w-full overflow-hidden shadow-2xl border-zinc-200 dark:border-zinc-800/80 bg-zinc-100 dark:bg-[#121215]">
                   <img src={latestPage.imageUrl} alt="Lead magnet media" className="w-full h-full object-cover" />
                 </div>
               ) : (
                 <div
-                  className="rounded-xl border aspect-[16/11] w-full flex items-center justify-center transition-all duration-300"
+                  className="rounded-2xl sm:rounded-3xl border h-[265px] sm:h-[275px] w-full flex flex-col items-center justify-center p-4 text-center transition-all duration-300"
                   style={{
                     borderColor: hexWithAlpha(brandColor, 0.15 + intensityRatio * 0.5),
                     backgroundColor: hexWithAlpha(brandColor, 0.05 + intensityRatio * 0.25),
                   }}
-                />
+                >
+                  <ImageIcon className="h-8 w-8 mb-2 opacity-50" style={{ color: brandColor }} />
+                  <p className="text-xs font-bold text-zinc-500 dark:text-zinc-400">Cover Media Preview</p>
+                </div>
               )}
 
               <div
-                className={`rounded-xl border p-4 sm:p-5 transition-all duration-300 backdrop-blur-sm aspect-auto min-h-fit flex flex-col justify-center ${
+                className={`rounded-xl border p-4 transition-all duration-300 backdrop-blur-sm flex flex-col justify-between space-y-3 ${
                   themeMode === "dark" ? "text-white" : "text-zinc-900"
                 }`}
                 style={{
@@ -127,39 +132,41 @@ const BrandTemplatePreview = memo(function BrandTemplatePreview({
                       : `linear-gradient(135deg, ${hexWithAlpha(brandColor, 0.08 + intensityRatio * 0.3)} 0%, rgba(22, 22, 25, 0.95) 60%)`,
                 }}
               >
-                <p className="text-base sm:text-lg font-semibold text-center">{latestPage?.formTitle || "Download for free now"}</p>
-                <p className={`text-[11px] text-center mt-1 leading-normal ${themeMode === "dark" ? "text-zinc-400" : "text-zinc-500"}`}>
-                  {latestPage?.formSubtitle || "By opting in you consent to receive this resource by email."}
-                </p>
+                <div>
+                  <p className="text-base font-bold text-center">{latestPage?.formTitle || "Download for free now"}</p>
+                  <p className={`text-[11px] text-center mt-1 leading-normal ${themeMode === "dark" ? "text-zinc-400" : "text-zinc-500"}`}>
+                    {latestPage?.formSubtitle || "By opting in you consent to receive this resource by email."}
+                  </p>
+                </div>
 
-                <div className="mt-4 space-y-2.5">
-                  <input
-                    type="text"
-                    placeholder={latestPage?.namePlaceholder || "Name"}
-                    className={`w-full rounded-md border p-2.5 text-xs focus:outline-none transition pointer-events-none select-none ${
-                      themeMode === "dark"
-                        ? "bg-[#0E0E10] border-[#252529] text-white focus:border-zinc-700"
-                        : "border-[#e4e4e7] text-zinc-800 focus:border-[#0066B2]/50"
-                    }`}
-                    readOnly
-                  />
-                  <input
-                    type="email"
-                    placeholder={latestPage?.emailPlaceholder || "Email"}
-                    className={`w-full rounded-md border p-2.5 text-xs focus:outline-none transition pointer-events-none select-none ${
-                      themeMode === "dark"
-                        ? "bg-[#0E0E10] border-[#252529] text-white focus:border-zinc-700"
-                        : "border-[#e4e4e7] text-zinc-800 focus:border-[#0066B2]/50"
-                    }`}
-                    readOnly
-                  />
+                <div className="space-y-3 pt-1">
+                  <div className="space-y-2">
+                    <input
+                      type="text"
+                      placeholder={latestPage?.namePlaceholder || "Name"}
+                      className={`w-full rounded-xl border p-2.5 text-xs focus:outline-none transition pointer-events-none select-none ${
+                        themeMode === "dark" ? "bg-black/40 border-white/10 text-zinc-400" : "bg-white/80 border-black/10 text-zinc-500"
+                      }`}
+                      readOnly
+                    />
+                    <input
+                      type="email"
+                      placeholder={latestPage?.emailPlaceholder || "Email"}
+                      className={`w-full rounded-xl border p-2.5 text-xs focus:outline-none transition pointer-events-none select-none ${
+                        themeMode === "dark" ? "bg-black/40 border-white/10 text-zinc-400" : "bg-white/80 border-black/10 text-zinc-500"
+                      }`}
+                      readOnly
+                    />
+                  </div>
 
-                  <button
-                    className="w-full rounded-md py-2.5 text-xs font-bold text-white transition duration-200 shadow-md"
-                    style={{ backgroundColor: brandColor }}
-                  >
-                    {latestPage?.formButtonText || latestPage?.cta || "Send it to me"}
-                  </button>
+                  <div className="pt-1">
+                    <button
+                      className="w-full rounded-xl py-3 px-3 text-xs font-bold text-white text-center shadow-md transition"
+                      style={{ backgroundColor: brandColor }}
+                    >
+                      {latestPage?.formButtonText || latestPage?.cta || "Send it to me"}
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
