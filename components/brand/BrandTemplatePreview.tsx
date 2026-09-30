@@ -423,18 +423,18 @@ const BrandTemplatePreview = memo(function BrandTemplatePreview({
         <div className="w-full py-1">
           <div className="grid grid-cols-12 gap-5 items-stretch">
             {/* LEFT: Aurora Image Tile */}
-            <div className="col-span-12 md:col-span-5 relative flex flex-col items-center justify-center min-h-[360px] md:min-h-full">
-              {/* Brand Logo & Brand Name Centered above picture, aligned with right-side top text */}
+            <div className="col-span-12 md:col-span-5 flex flex-col items-center justify-center gap-3.5 min-h-[360px]">
+              {/* Brand Logo & Brand Name Centered above picture */}
               {(logo || businessName) && (
-                <div className="md:absolute md:top-0 md:left-0 md:right-0 flex items-center justify-center gap-2.5 mb-3 md:mb-0">
-                  <div className={`h-7 w-7 sm:h-8 sm:w-8 rounded-xl flex items-center justify-center bg-transparent overflow-hidden ${logo ? "border-none" : "border border-dashed border-[#a1a1aa]/45"}`}>
+                <div className="flex items-center justify-center gap-2.5">
+                  <div className={`h-8 w-8 sm:h-9 sm:w-9 rounded-xl flex items-center justify-center bg-transparent overflow-hidden ${logo ? "border-none" : "border border-dashed border-[#a1a1aa]/45"}`}>
                     {logo ? (
                       <img src={logo} alt="Logo" className="h-full w-full object-cover" />
                     ) : (
-                      <div className="h-3.5 w-3.5 rounded-sm border border-dashed border-[#a1a1aa]" />
+                      <div className="h-4 w-4 rounded-sm border border-dashed border-[#a1a1aa]" />
                     )}
                   </div>
-                  <span className={`text-xs sm:text-sm font-black tracking-wider uppercase ${themeMode === "dark" ? "text-white" : "text-black"}`}>
+                  <span className={`text-sm sm:text-base font-black tracking-wider uppercase ${themeMode === "dark" ? "text-white" : "text-black"}`}>
                     {businessName || "BDA"}
                   </span>
                 </div>
@@ -483,6 +483,11 @@ const BrandTemplatePreview = memo(function BrandTemplatePreview({
                 <p className={`text-xs leading-relaxed ${themeMode === "dark" ? "text-zinc-400" : "text-zinc-500"}`}>
                   {latestPage?.subheadline || "Stop staring at a blank page. Start creating content that actually connects."}
                 </p>
+                {latestPage?.pitch && (
+                  <p className={`text-xs leading-relaxed ${themeMode === "dark" ? "text-zinc-400" : "text-zinc-600"}`}>
+                    {latestPage.pitch}
+                  </p>
+                )}
               </div>
 
               {latestPage?.bullets && latestPage.bullets.length > 0 && (

@@ -666,10 +666,10 @@ export default async function MagnetPageRoute({
           <div className="w-full max-w-7xl mx-auto">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 items-center lg:items-stretch">
               {/* LEFT: Aurora Image Tile */}
-              <div className="col-span-12 lg:col-span-5 relative flex flex-col items-center justify-center min-h-[440px] lg:min-h-full">
-                {/* Brand Logo & Brand Name Centered above picture, aligned with right-side top text */}
+              <div className="col-span-12 lg:col-span-5 flex flex-col items-center justify-center gap-3.5 min-h-[380px]">
+                {/* Brand Logo & Brand Name Centered above picture */}
                 {(logo || businessName) && (
-                  <div className="lg:absolute lg:top-0 lg:left-0 lg:right-0 flex items-center justify-center gap-2.5 mb-4 lg:mb-0">
+                  <div className="flex items-center justify-center gap-2.5">
                     <div className={`h-8 w-8 sm:h-9 sm:w-9 rounded-xl flex items-center justify-center bg-transparent overflow-hidden shadow-xs ${logo ? "border-none" : "border-2 border-dashed border-[#a1a1aa]/50"}`}>
                       {logo ? (
                         <img src={logo} alt="Logo" className="h-full w-full object-cover" />
@@ -702,7 +702,11 @@ export default async function MagnetPageRoute({
                       </div>
                     </div>
                   )}
-                  <div className="absolute inset-0 pointer-events-none" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.5) 0%, transparent 50%)" }} />
+                  <div
+                    className="absolute inset-0 pointer-events-none"
+                    style={{ background: themeMode === "dark" ? "linear-gradient(to right, transparent 55%, #0c0c12 100%)" : "linear-gradient(to right, transparent 55%, #f7f8fc 100%)" }}
+                  />
+                  <div className="absolute inset-0 pointer-events-none" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 50%)" }} />
                 </div>
               </div>
 
