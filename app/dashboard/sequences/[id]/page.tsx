@@ -646,6 +646,10 @@ export default function SequenceEditor() {
   const { signedUp, delivered, opened, replied, stopped } = seq.stats;
   const overallOpenRate = delivered > 0 ? Math.round((opened / delivered) * 100) : 0;
 
+  // Aggregate email dispatch volume (Step 1 + all follow-up steps) for UI transparency
+  const totalEmailsDispatched = delivered + emailsWithBody.reduce((acc, e) => acc + (e.sent || 0), 0);
+  const totalEmailsOpened = opened + emailsWithBody.reduce((acc, e) => acc + (e.opened || 0), 0);
+
   return (
     <DashboardShell account={account} title={`Sequence - ${seq.name}`}>
       {/* Toast Notification */}
@@ -1137,25 +1141,58 @@ export default function SequenceEditor() {
                   </span>
                 </div>
 
-                <div className="space-y-3">
-                  {[
-                    { label: "Signed up", value: signedUp, icon: Users, color: "text-blue-500 bg-blue-500/10" },
-                    { label: "Delivered", value: delivered, icon: MailOpen, color: "text-indigo-500 bg-indigo-500/10" },
-                    { label: "Opened", value: opened, icon: CalendarClock, color: "text-emerald-500 bg-emerald-500/10" },
-                    { label: "Completed", value: seq.stats.completed || (delivered > 0 ? delivered : 0), icon: Check, color: "text-purple-500 bg-purple-500/10" },
-                    { label: "Replied", value: replied, icon: MessageSquare, color: "text-amber-500 bg-amber-500/10" },
-                    { label: "Stopped", value: stopped, icon: StopCircle, color: "text-rose-500 bg-rose-500/10" },
-                  ].map((row) => (
-                    <div key={row.label} className="flex items-center justify-between text-xs">
-                      <span className="flex items-center gap-2.5 font-medium text-zinc-600 dark:text-zinc-400">
-                        <span className={`flex h-6 w-6 items-center justify-center rounded-lg ${row.color}`}>
-                          <row.icon className="h-3.5 w-3.5" />
-                        </span>
-                        {row.label}
-                      </span>
-                      <span className="font-extrabold text-zinc-900 dark:text-white font-mono">{row.value.toLocaleString()}</span>
+                <div className="space-y-4">
+                  {/* Contacts Section */}
+                  <div className="space-y-2.5">
+                    <div className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 flex items-center gap-1.5">
+                      <Users className="h-3 w-3" />
+                      <span>Enrolled Contacts</span>
                     </div>
-                  ))}
+
+                    <div className="space-y-2 pl-0.5">
+                      {[
+                        { label: "Signed up", value: signedUp, icon: Users, color: "text-blue-500 bg-blue-500/10" },
+                        { label: "Completed", value: seq.stats.completed || (delivered > 0 ? delivered : 0), icon: Check, color: "text-purple-500 bg-purple-500/10" },
+                        { label: "Replied", value: replied, icon: MessageSquare, color: "text-amber-500 bg-amber-500/10" },
+                        { label: "Stopped", value: stopped, icon: StopCircle, color: "text-rose-500 bg-rose-500/10" },
+                      ].map((row) => (
+                        <div key={row.label} className="flex items-center justify-between text-xs">
+                          <span className="flex items-center gap-2.5 font-medium text-zinc-600 dark:text-zinc-400">
+                            <span className={`flex h-5 w-5 items-center justify-center rounded-md ${row.color}`}>
+                              <row.icon className="h-3 w-3" />
+                            </span>
+                            {row.label}
+                          </span>
+                          <span className="font-extrabold text-zinc-900 dark:text-white font-mono">{row.value.toLocaleString()}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Total Email Volume Section */}
+                  <div className="pt-3 border-t border-zinc-100 dark:border-zinc-800/80 space-y-2.5">
+                    <div className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 flex items-center gap-1.5">
+                      <Mail className="h-3 w-3" />
+                      <span>Total Email Sends</span>
+                    </div>
+
+                    <div className="space-y-2 pl-0.5">
+                      {[
+                        { label: "Total Delivered", value: totalEmailsDispatched, icon: Send, color: "text-indigo-500 bg-indigo-500/10" },
+                        { label: "Total Opened", value: totalEmailsOpened, icon: MailOpen, color: "text-emerald-500 bg-emerald-500/10" },
+                      ].map((row) => (
+                        <div key={row.label} className="flex items-center justify-between text-xs">
+                          <span className="flex items-center gap-2.5 font-medium text-zinc-600 dark:text-zinc-400">
+                            <span className={`flex h-5 w-5 items-center justify-center rounded-md ${row.color}`}>
+                              <row.icon className="h-3 w-3" />
+                            </span>
+                            {row.label}
+                          </span>
+                          <span className="font-extrabold text-zinc-900 dark:text-white font-mono">{row.value.toLocaleString()}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 </div>
 
                 {/* Open Rate Visual Bar */}
