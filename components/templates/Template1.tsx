@@ -1,6 +1,7 @@
 import React from "react";
-import { Check, Loader2, ImageIcon, Trash2, Plus, X, Sparkles } from "lucide-react";
+import { Check, Loader2, ImageIcon, Trash2, Plus, X, Sparkles, UploadCloud } from "lucide-react";
 import { type TemplateProps } from "./types";
+import { ImageGeneration } from "@/components/agents/image-generation";
 
 export default function Template1(props: TemplateProps) {
   const {
@@ -10,10 +11,13 @@ export default function Template1(props: TemplateProps) {
     pitch,
     bullets = [],
     bulletsTitle,
+    mastheadLeft,
+    mastheadRight,
     formTitle,
     formSubtitle,
     formButtonText,
     imageUrl,
+    deliverable,
     customFormFields = [],
     setCustomFormFields,
     fileInputRef,
@@ -28,6 +32,8 @@ export default function Template1(props: TemplateProps) {
     setPitch,
     setBullets,
     setBulletsTitle,
+    setMastheadLeft,
+    setMastheadRight,
     setFormTitle,
     setFormSubtitle,
     setImageUrl,
@@ -39,96 +45,269 @@ export default function Template1(props: TemplateProps) {
     onSubmitPublicForm,
   } = props as any;
 
-  const isEditor = mode === "editor";
-  const brandColor = account?.brandColor || "#0066B2";
-  const themeMode = account?.themeMode || "light";
-  const highlightIntensity = account?.highlightIntensity ?? 100;
-  const isDark = themeMode === "dark";
+  const rawProps = props as any;
+  const isEditor = props.mode ? props.mode === "editor" : rawProps.isEditor !== false;
 
-  const getHeadlineFontSize = (text: string) => {
-    const len = text ? text.length : 0;
-    if (len > 85) return "text-xl sm:text-2xl md:text-3xl font-extrabold";
-    if (len > 40) return "text-2xl sm:text-3xl md:text-4xl font-black";
-    return "text-3xl sm:text-4xl md:text-5xl font-black";
+  const brandColor = account?.brandColor || props.brandColor || "#fb4d6a";
+  const accentColor = brandColor;
+  const themeMode = account?.themeMode || props.themeMode || "dark";
+  const isDark = themeMode === "dark";
+  const logo = account?.logo || null;
+  const businessName = account?.brandName || account?.name || "The Executive Dispatch";
+  const currentYear = new Date().getFullYear();
+
+  // Helper to get initials
+  const getInitials = (name: string) => {
+    if (!name) return "ED";
+    const parts = name.trim().split(/\s+/);
+    if (parts.length >= 2) {
+      return (parts[0][0] + parts[1][0]).toUpperCase();
+    }
+    return name.slice(0, 2).toUpperCase();
   };
 
-  const hasCustomBullets = Array.isArray(bullets);
-  const displayBullets: string[] = hasCustomBullets
-    ? bullets
-    : [
-        "101 fill-in-the-blank templates for every content scenario",
-        "Proven structures for storytelling, advice, and transformation posts",
-        "Ready-to-use formats that let you focus on your message",
-      ];
+  const initials = getInitials(businessName);
 
-  const handleBulletChange = (index: number, value: string) => {
+  // Default bullets matching Template 10 — Premium Night reference
+  const defaultBullets = [
+    "The Signal-to-Noise Protocol — Audit attention and eliminate low-leverage activities through the Four Filters.",
+    "Recursive Hiring Loops — Build a talent engine that identifies multipliers before they reach the market.",
+    "Velocity Without Chaos — Replace recurring meetings with lightweight synchronization rituals.",
+  ];
+
+  const currentBullets: string[] =
+    bullets !== undefined && Array.isArray(bullets) ? bullets : defaultBullets;
+
+  const parseBullet = (item: string) => {
+    if (!item) return { title: "", desc: "" };
+    if (item.includes(":::")) {
+      const parts = item.split(":::");
+      if (parts.length >= 3) {
+        return { title: parts[1]?.trim() || "", desc: parts.slice(2).join(":::").trim() };
+      }
+      return { title: parts[0]?.trim() || "", desc: parts.slice(1).join(":::").trim() };
+    }
+    if (item.includes(" — ")) {
+      const [title, ...rest] = item.split(" — ");
+      return { title: title.trim(), desc: rest.join(" — ").trim() };
+    }
+    if (item.includes(" - ")) {
+      const [title, ...rest] = item.split(" - ");
+      return { title: title.trim(), desc: rest.join(" - ").trim() };
+    }
+    if (item.includes(": ")) {
+      const [title, ...rest] = item.split(": ");
+      return { title: title.trim(), desc: rest.join(": ").trim() };
+    }
+    return { title: item, desc: "" };
+  };
+
+  const handleBulletTitleChange = (index: number, newTitle: string) => {
     if (!setBullets) return;
-    const next = [...displayBullets];
-    next[index] = value;
+    const next = [...currentBullets];
+    const parsed = parseBullet(next[index] || "");
+    next[index] = parsed.desc ? `${newTitle} — ${parsed.desc}` : newTitle;
+    setBullets(next);
+  };
+
+  const handleBulletDescChange = (index: number, newDesc: string) => {
+    if (!setBullets) return;
+    const next = [...currentBullets];
+    const parsed = parseBullet(next[index] || "");
+    const title = parsed.title || `Framework ${index + 1}`;
+    next[index] = `${title} — ${newDesc}`;
     setBullets(next);
   };
 
   const handleAddBullet = () => {
     if (!setBullets) return;
-    const current = [...displayBullets];
-    setBullets([...current, ""]);
+    const next = [...currentBullets];
+    setBullets([...next, "New Framework — Description of what you will build or learn."]);
   };
 
   const handleRemoveBullet = (index: number) => {
     if (!setBullets) return;
-    const current = [...displayBullets];
-    setBullets(current.filter((_: any, i: number) => i !== index));
+    const next = currentBullets.filter((_, i) => i !== index);
+    setBullets(next);
   };
 
+  // Quote / Pitch parsing
+  const defaultQuote =
+    "“Speed is often a byproduct of clarity. Build the infrastructure that makes high performance inevitable.”";
+  const defaultAuthor = `${account?.name || "Marcus Vane"} · Founder, Arca`;
+
+  const parsePitch = (raw: string | undefined) => {
+    if (!raw || !raw.trim()) {
+      return { quote: defaultQuote, author: defaultAuthor };
+    }
+    if (raw.includes(":::")) {
+      const [q, ...a] = raw.split(":::");
+      return { quote: q.trim(), author: a.join(":::").trim() || defaultAuthor };
+    }
+    if (raw.includes("\n—") || raw.includes("\n-") || raw.includes("\n–")) {
+      const parts = raw.split(/\n[—–-]\s*/);
+      return { quote: parts[0].trim(), author: parts.slice(1).join(" ").trim() || defaultAuthor };
+    }
+    if (raw.includes(" — ")) {
+      const parts = raw.split(" — ");
+      return { quote: parts[0].trim(), author: parts.slice(1).join(" — ").trim() || defaultAuthor };
+    }
+    return { quote: raw.trim(), author: defaultAuthor };
+  };
+
+  const { quote: parsedQuote, author: parsedAuthor } = parsePitch(pitch);
+
+  const handleQuoteChange = (newQuote: string) => {
+    if (!setPitch) return;
+    setPitch(`${newQuote} ::: ${parsedAuthor}`);
+  };
+
+  const handleAuthorChange = (newAuthor: string) => {
+    if (!setPitch) return;
+    setPitch(`${parsedQuote} ::: ${newAuthor}`);
+  };
+
+  // Cover image fallback
+  const defaultCoverImage =
+    "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=1200&q=80";
+  const coverImage = imageUrl && imageUrl.trim() !== "" ? imageUrl : defaultCoverImage;
+
+  // Headline highlight parser for non-editor mode
+  const renderHighlightedHeadline = (text: string) => {
+    if (!text) {
+      return (
+        <>
+          The Architecture of <em style={{ fontStyle: "normal", color: accentColor }}>High-Output</em> Engineering
+        </>
+      );
+    }
+    // Match *text* or _text_ or <em>text</em>
+    const parts = text.split(/(\*[^*]+\*|_[^_]+_|<em>.*?<\/em>)/g);
+    return (
+      <>
+        {parts.map((part, i) => {
+          if (part.startsWith("*") && part.endsWith("*") && part.length > 2) {
+            return (
+              <em key={i} style={{ fontStyle: "normal", color: accentColor }}>
+                {part.slice(1, -1)}
+              </em>
+            );
+          }
+          if (part.startsWith("_") && part.endsWith("_") && part.length > 2) {
+            return (
+              <em key={i} style={{ fontStyle: "normal", color: accentColor }}>
+                {part.slice(1, -1)}
+              </em>
+            );
+          }
+          if (part.startsWith("<em>") && part.endsWith("</em>")) {
+            return (
+              <em key={i} style={{ fontStyle: "normal", color: accentColor }}>
+                {part.replace(/<\/?em>/g, "")}
+              </em>
+            );
+          }
+          return <React.Fragment key={i}>{part}</React.Fragment>;
+        })}
+      </>
+    );
+  };
 
   return (
-    <div className={`w-full mx-auto py-1 relative ${isDark ? "text-white" : "text-zinc-900"}`}>
+    <div
+      className={`template1-root w-full min-h-full font-['Plus_Jakarta_Sans',sans-serif] relative transition-colors duration-200 ${
+        isDark ? "bg-[#0c0d11] text-[#f2f3f7]" : "bg-[#f8f9fa] text-[#111217]"
+      }`}
+      style={{
+        fontFamily: "'Plus Jakarta Sans', sans-serif",
+      }}
+    >
+      {/* Ambient Glows */}
+      <div
+        className="pointer-events-none absolute inset-0 overflow-hidden"
+        style={{
+          backgroundImage: `radial-gradient(620px 380px at 18% 0%, ${accentColor}1c, transparent 70%), radial-gradient(520px 320px at 88% 96%, ${accentColor}10, transparent 70%)`,
+        }}
+      />
+
       {/* Upload progress overlay */}
       {uploadProgress !== null && uploadProgress !== undefined && (
-        <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-black/85 backdrop-blur-md p-6 text-center text-white rounded-2xl">
-          <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-[#0066B2]/20 border border-[#0066B2]/40 text-[#0066B2] dark:text-[#38BDF8]">
+        <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/85 backdrop-blur-md p-6 text-center text-white">
+          <div
+            className="mb-3 flex h-12 w-12 items-center justify-center rounded-full border text-white"
+            style={{ backgroundColor: `${accentColor}33`, borderColor: `${accentColor}66` }}
+          >
             {uploadProgress === 100 ? (
               <Check className="h-6 w-6 text-emerald-400" />
             ) : (
-              <Loader2 className="h-6 w-6 animate-spin text-[#0066B2] dark:text-[#38BDF8]" />
+              <Loader2 className="h-6 w-6 animate-spin text-white" />
             )}
           </div>
           <p className="text-sm font-bold">
-            {uploadProgress === 100 ? "Image uploaded!" : "Uploading cover image..."}
+            {uploadProgress === 100 ? "Cover image uploaded!" : "Uploading cover image..."}
           </p>
           <div className="mt-3 w-full max-w-xs overflow-hidden rounded-full bg-zinc-800 p-0.5 border border-zinc-700">
             <div
-              className="h-2 rounded-full bg-gradient-to-r from-[#0066B2] via-sky-400 to-emerald-400 transition-all duration-200"
-              style={{ width: `${uploadProgress}%` }}
+              className="h-2 rounded-full transition-all duration-200"
+              style={{
+                width: `${uploadProgress}%`,
+                background: `linear-gradient(90deg, ${accentColor}, #ff7b92)`,
+              }}
             />
           </div>
           <span className="mt-1 font-mono text-xs text-zinc-300 font-bold">{uploadProgress}%</span>
         </div>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
-        {/* LEFT COLUMN: Content & Bullets (~58% / 7 cols) */}
-        <div className="md:col-span-7 space-y-4 py-1">
-          <div className="space-y-3">
+      {/* Main Page Container */}
+      <div className="relative max-w-[1260px] mx-auto px-5 sm:px-8 py-8 sm:py-10">
+        {/* BRAND HEADER */}
+        <header className="flex items-center justify-center gap-3.5 mb-8 sm:mb-11">
+          <div
+            className="w-[46px] h-[46px] rounded-[14px] flex items-center justify-center font-extrabold text-[15px] tracking-[0.02em] text-white shrink-0 overflow-hidden shadow-lg"
+            style={{
+              background: `linear-gradient(135deg, ${accentColor}, #7a1830)`,
+              boxShadow: `0 8px 26px ${accentColor}33`,
+            }}
+          >
+            {logo ? (
+              <img src={logo} alt="Logo" className="w-full h-full object-cover" />
+            ) : (
+              <span>{initials}</span>
+            )}
+          </div>
+          <b className="text-[15px] font-extrabold tracking-[0.22em] uppercase leading-none">
+            {businessName}
+          </b>
+        </header>
+
+        {/* TWO-COLUMN GRID */}
+        <main className="grid grid-cols-1 lg:grid-cols-[1.12fr_0.88fr] gap-8 sm:gap-12 lg:gap-16 items-start">
+          {/* LEFT COLUMN: Editorial Content */}
+          <section className="space-y-0 min-w-0">
             {/* Headline */}
             {isEditor ? (
               <textarea
                 ref={headlineRef}
-                rows={1}
+                rows={2}
                 value={headline || ""}
                 onChange={(e) => {
                   setHeadline?.(e.target.value);
                   e.target.style.height = "auto";
                   e.target.style.height = `${e.target.scrollHeight}px`;
                 }}
-                className={`w-full ${getHeadlineFontSize(headline || "")} bg-transparent outline-none resize-none leading-tight tracking-tight ${
-                  isDark ? "text-white placeholder:text-zinc-600" : "text-zinc-900 placeholder:text-zinc-400"
+                className={`w-full text-3xl sm:text-4xl lg:text-[46px] leading-[1.06] font-extrabold tracking-[-0.02em] bg-transparent outline-none resize-none mb-5 ${
+                  isDark ? "text-white placeholder:text-zinc-600" : "text-[#111217] placeholder:text-zinc-400"
                 }`}
-                placeholder="101 Winning Viral Templates That Get Results"
+                placeholder="The Architecture of *High-Output* Engineering"
               />
             ) : (
-              <h1 className={`${getHeadlineFontSize(headline || "")} leading-tight tracking-tight`}>
-                {headline || "101 Winning Viral Templates That Get Results"}
+              <h1
+                className={`text-3xl sm:text-4xl lg:text-[46px] leading-[1.06] font-extrabold tracking-[-0.02em] mb-5 break-words [overflow-wrap:anywhere] ${
+                  isDark ? "text-white" : "text-[#111217]"
+                }`}
+              >
+                {renderHighlightedHeadline(headline)}
               </h1>
             )}
 
@@ -136,428 +315,533 @@ export default function Template1(props: TemplateProps) {
             {isEditor ? (
               <textarea
                 ref={subheadlineRef}
-                rows={1}
+                rows={2}
                 value={subheadline || ""}
                 onChange={(e) => {
                   setSubheadline?.(e.target.value);
                   e.target.style.height = "auto";
                   e.target.style.height = `${e.target.scrollHeight}px`;
                 }}
-                className={`w-full text-sm font-semibold leading-relaxed bg-transparent outline-none resize-none ${
-                  isDark ? "text-zinc-300 placeholder:text-zinc-600" : "text-zinc-700 placeholder:text-zinc-400"
+                className={`w-full text-[15.5px] leading-[1.75] bg-transparent outline-none resize-none max-w-[520px] ${
+                  isDark ? "text-[#a9acb8] placeholder:text-zinc-600" : "text-[#4b5563] placeholder:text-zinc-400"
                 }`}
-                placeholder="Stop staring at a blank page. Start creating content that actually connects."
+                placeholder="A 42-page field guide to the organizational systems used by ambitious teams to maintain velocity without burning out."
               />
             ) : (
-              subheadline && (
-                <p className={`text-sm font-semibold leading-relaxed ${isDark ? "text-zinc-300" : "text-zinc-700"}`}>
-                  {subheadline}
+              (subheadline || !headline) && (
+                <p
+                  className={`text-[15.5px] leading-[1.75] max-w-[520px] ${
+                    isDark ? "text-[#a9acb8]" : "text-[#4b5563]"
+                  }`}
+                >
+                  {subheadline ||
+                    "A 42-page field guide to the organizational systems used by ambitious teams to maintain velocity without burning out."}
                 </p>
               )
             )}
 
-            {/* Pitch */}
-            {isEditor ? (
-              <textarea
-                ref={pitchRef}
-                rows={2}
-                value={pitch || ""}
-                onChange={(e) => {
-                  setPitch?.(e.target.value);
-                  e.target.style.height = "auto";
-                  e.target.style.height = `${e.target.scrollHeight}px`;
-                }}
-                className={`w-full text-xs leading-relaxed bg-transparent outline-none resize-none ${
-                  isDark ? "text-zinc-400 placeholder:text-zinc-600" : "text-zinc-500 placeholder:text-zinc-400"
-                }`}
-                placeholder="You know what works on LinkedIn. You've seen the posts that blow up..."
-              />
-            ) : (
-              pitch && (
-                <p className={`text-xs leading-relaxed whitespace-pre-line ${isDark ? "text-zinc-400" : "text-zinc-500"}`}>
-                  {pitch}
-                </p>
-              )
-            )}
-          </div>
+            {/* Divider Rule & Bullets Section */}
+            {(isEditor || currentBullets.length > 0) && (
+              <>
+                <div
+                  className="h-[1px] my-7 sm:my-8"
+                  style={{ backgroundColor: isDark ? "#23242c" : "#e5e7eb" }}
+                />
 
-          {/* Bullets Section */}
-          <div className="space-y-3 pt-2">
-            {isEditor ? (
-              <input
-                type="text"
-                value={bulletsTitle || ""}
-                onChange={(e) => setBulletsTitle?.(e.target.value)}
-                className="w-full text-xs font-bold uppercase tracking-wider text-[#9B9085] bg-transparent outline-none"
-                placeholder="This playbook breaks down:"
-              />
-            ) : (
-              <p className="text-xs font-bold uppercase tracking-wider text-[#9B9085]">
-                {bulletsTitle || "This playbook breaks down:"}
-              </p>
-            )}
+                {/* Kicker / Bullets Title */}
+                <div className="mb-4">
+                  {isEditor ? (
+                    <input
+                      type="text"
+                      value={bulletsTitle || ""}
+                      onChange={(e) => setBulletsTitle?.(e.target.value)}
+                      className="text-[11px] font-bold tracking-[0.2em] uppercase bg-transparent outline-none w-full"
+                      style={{ color: accentColor }}
+                      placeholder="What you will create"
+                    />
+                  ) : (
+                    <p
+                      className="text-[11px] font-bold tracking-[0.2em] uppercase"
+                      style={{ color: accentColor }}
+                    >
+                      {bulletsTitle || "What you will create"}
+                    </p>
+                  )}
+                </div>
 
-            <ul className="space-y-2.5">
-              {displayBullets.map((item: string, idx: number) => (
-                <li key={idx} className="flex items-center gap-2 text-xs group">
-                  <span
-                    className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full transition-all duration-300"
+                {/* Checklist items */}
+                <div className="space-y-1">
+              {currentBullets.map((item, idx) => {
+                const parsed = parseBullet(item);
+                return (
+                  <div
+                    key={idx}
+                    className="grid grid-cols-[26px_1fr] gap-3.5 py-2.5 items-start group"
+                  >
+                    <span
+                      className="w-[26px] h-[26px] rounded-full flex items-center justify-center text-[12px] font-extrabold text-white shrink-0 mt-0.5 shadow-xs"
+                      style={{ backgroundColor: accentColor }}
+                    >
+                      ✓
+                    </span>
+                    <div className="min-w-0">
+                      {isEditor ? (
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-2">
+                            <input
+                              type="text"
+                              value={parsed.title}
+                              onChange={(e) => handleBulletTitleChange(idx, e.target.value)}
+                              className={`w-full text-[15px] font-bold bg-transparent outline-none ${
+                                isDark ? "text-white placeholder:text-zinc-600" : "text-[#111217] placeholder:text-zinc-400"
+                              }`}
+                              placeholder="Framework title..."
+                            />
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveBullet(idx)}
+                              className="opacity-0 group-hover:opacity-100 p-1 text-zinc-500 hover:text-red-400 transition"
+                              title="Delete item"
+                            >
+                              <X className="h-3.5 w-3.5" />
+                            </button>
+                          </div>
+                          <input
+                            type="text"
+                            value={parsed.desc}
+                            onChange={(e) => handleBulletDescChange(idx, e.target.value)}
+                            className={`w-full text-[13px] leading-[1.65] bg-transparent outline-none ${
+                              isDark ? "text-[#9a9da9] placeholder:text-zinc-600" : "text-[#6b7280] placeholder:text-zinc-400"
+                            }`}
+                            placeholder="Key description / takeaway..."
+                          />
+                        </div>
+                      ) : (
+                        <>
+                          <h3
+                            className={`text-[15px] font-bold mb-1 leading-snug ${
+                              isDark ? "text-white" : "text-[#111217]"
+                            }`}
+                          >
+                            {parsed.title}
+                          </h3>
+                          {parsed.desc && (
+                            <p
+                              className={`text-[13px] leading-[1.65] ${
+                                isDark ? "text-[#9a9da9]" : "text-[#6b7280]"
+                              }`}
+                            >
+                              {parsed.desc}
+                            </p>
+                          )}
+                        </>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+
+              {isEditor && (
+                <button
+                  type="button"
+                  onClick={handleAddBullet}
+                  className="flex items-center gap-1.5 text-xs font-bold pt-3 cursor-pointer transition hover:opacity-80"
+                  style={{ color: accentColor }}
+                >
+                  <Plus className="h-3.5 w-3.5" /> Add key framework
+                </button>
+              )}
+            </div>
+          </>
+        )}
+
+            {/* Quote / Pitch Block */}
+            {pitch === "__hidden__" || pitch === "__none__" || pitch === "__HIDDEN__" ? (
+              isEditor && (
+                <div className="mt-7">
+                  <button
+                    type="button"
+                    onClick={() => setPitch?.(`${defaultQuote} ::: ${defaultAuthor}`)}
+                    className="flex items-center gap-1.5 text-xs font-bold py-2 px-3.5 rounded-xl border border-dashed cursor-pointer transition hover:opacity-80"
                     style={{
-                      backgroundColor: brandColor,
-                      opacity: 0.5 + (highlightIntensity / 100) * 0.5,
-                      boxShadow:
-                        highlightIntensity > 30
-                          ? `0 0 ${Math.round(14 * (highlightIntensity / 100))}px ${brandColor}${Math.round(
-                              (highlightIntensity / 100) * 0.8 * 255
-                            ).toString(16).padStart(2, "0")}`
-                          : "none",
+                      color: accentColor,
+                      borderColor: `${accentColor}66`,
+                      backgroundColor: `${accentColor}11`,
                     }}
                   >
-                    <Check className="h-3 w-3 text-white stroke-[3px]" />
-                  </span>
-
-                  {isEditor ? (
-                    <div className="flex-1 flex items-center gap-2">
-                      <input
-                        type="text"
-                        value={item}
-                        onChange={(e) => handleBulletChange(idx, e.target.value)}
-                        className={`flex-1 text-xs bg-transparent outline-none py-0.5 border-b border-transparent focus:border-zinc-400 ${
-                          isDark ? "text-zinc-300" : "text-zinc-700"
-                        }`}
-                        placeholder="Key takeaway or feature bullet..."
-                      />
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveBullet(idx)}
-                        className="p-1 rounded-md text-zinc-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 transition-all cursor-pointer"
-                        title="Remove bullet"
-                      >
-                        <X className="h-3.5 w-3.5" />
-                      </button>
-                    </div>
-                  ) : (
-                    <span className={isDark ? "text-zinc-300" : "text-zinc-700"}>
-                      {item}
-                    </span>
-                  )}
-                </li>
-              ))}
-
-              {displayBullets.length === 0 && isEditor && (
-                <li className="text-xs italic text-zinc-400 py-1">
-                  No bullet points. Click "+ Add key bullet point" below to add one.
-                </li>
-              )}
-            </ul>
-
-            {isEditor && (
-              <button
-                type="button"
-                onClick={handleAddBullet}
-                className="flex items-center gap-1.5 text-xs font-bold text-[#0066B2] dark:text-[#38BDF8] hover:underline pt-1 cursor-pointer"
-              >
-                <Plus className="h-3.5 w-3.5" /> Add key bullet point
-              </button>
-            )}
-          </div>
-        </div>
-
-        {/* RIGHT COLUMN: Cover Image + Form Card (~42% / 5 cols) */}
-        <div className="md:col-span-5 space-y-4">
-          {/* Cover Image */}
-          <div className="relative rounded-2xl sm:rounded-3xl border h-[265px] sm:h-[275px] w-full overflow-hidden shadow-2xl border-zinc-200 dark:border-zinc-800/80 bg-zinc-100 dark:bg-[#121215] group">
-            {imageUrl && imageUrl.trim() !== "" ? (
-              <>
-                <img src={imageUrl} alt="Lead magnet media" className="w-full h-full object-cover" />
-                {isEditor && (
-                  <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 p-3">
-                    <button
-                      type="button"
-                      onClick={() => fileInputRef?.current?.click()}
-                      className="flex items-center gap-1.5 rounded-xl bg-black/80 hover:bg-black px-3 py-1.5 text-xs font-bold text-white shadow-xl border border-white/30 backdrop-blur-md transition cursor-pointer"
-                    >
-                      <ImageIcon className="h-3.5 w-3.5 text-sky-400" /> Replace
-                    </button>
-                    {setImageUrl && (
-                      <button
-                        type="button"
-                        onClick={() => setImageUrl(null)}
-                        className="flex items-center gap-1.5 rounded-xl bg-black/80 hover:bg-red-950 px-2.5 py-1.5 text-xs font-bold text-red-400 shadow-xl border border-white/30 backdrop-blur-md transition cursor-pointer"
-                      >
-                        <Trash2 className="h-3.5 w-3.5" /> Remove
-                      </button>
-                    )}
-                  </div>
-                )}
-              </>
+                    <Plus className="h-3.5 w-3.5" /> Add quote / perspective
+                  </button>
+                </div>
+              )
             ) : (
               <div
-                className="w-full h-full flex flex-col items-center justify-center p-4 text-center transition-all duration-300"
-                style={{
-                  borderColor: `${brandColor}${Math.round((0.15 + (highlightIntensity / 100) * 0.5) * 255).toString(16).padStart(2, "0")}`,
-                  backgroundColor: `${brandColor}${Math.round((0.05 + (highlightIntensity / 100) * 0.25) * 255).toString(16).padStart(2, "0")}`,
-                }}
+                className="mt-7 pl-4 sm:pl-5 space-y-1.5 relative group/quote"
+                style={{ borderLeft: `3px solid ${accentColor}` }}
               >
-                <ImageIcon className="h-8 w-8 mb-2 opacity-50" style={{ color: brandColor }} />
-                <p className="text-xs font-bold mb-3 text-zinc-500 dark:text-zinc-400">Cover Media Preview</p>
-
                 {isEditor && (
-                  <div className="flex flex-wrap items-center justify-center gap-2">
-                    <button
-                      type="button"
-                      onClick={() => fileInputRef?.current?.click()}
-                      className="flex items-center gap-1 rounded-lg bg-[#0066B2] px-3 py-1.5 text-[11px] font-bold text-white hover:bg-[#005799] transition shadow-xs cursor-pointer"
-                    >
-                      <ImageIcon className="h-3 w-3" /> Upload Image
-                    </button>
+                  <button
+                    type="button"
+                    onClick={() => setPitch?.("__hidden__")}
+                    className={`absolute -top-1.5 right-0 p-1.5 rounded-lg transition-all cursor-pointer z-10 opacity-70 hover:opacity-100 ${
+                      isDark ? "text-zinc-400 hover:text-red-400 hover:bg-red-950/40" : "text-zinc-500 hover:text-red-600 hover:bg-red-50"
+                    }`}
+                    title="Remove quote block"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                )}
+                {isEditor ? (
+                  <div className="space-y-1 pr-6">
+                    <textarea
+                      ref={pitchRef}
+                      rows={2}
+                      value={parsedQuote}
+                      onChange={(e) => handleQuoteChange(e.target.value)}
+                      className={`w-full italic text-[14px] leading-[1.7] bg-transparent outline-none resize-none ${
+                        isDark ? "text-[#c9ccd6] placeholder:text-zinc-600" : "text-[#374151] placeholder:text-zinc-400"
+                      }`}
+                      placeholder="“Speed is often a byproduct of clarity. Build the infrastructure that makes high performance inevitable.”"
+                    />
+                    <input
+                      type="text"
+                      value={parsedAuthor}
+                      onChange={(e) => handleAuthorChange(e.target.value)}
+                      className={`block text-[10px] font-bold tracking-[0.16em] uppercase bg-transparent outline-none w-full ${
+                        isDark ? "text-[#8b8e99] placeholder:text-zinc-600" : "text-[#9ca3af] placeholder:text-zinc-400"
+                      }`}
+                      placeholder="Marcus Vane · Founder, Arca"
+                    />
                   </div>
+                ) : (
+                  <>
+                    <p
+                      className={`italic text-[14px] leading-[1.7] ${
+                        isDark ? "text-[#c9ccd6]" : "text-[#374151]"
+                      }`}
+                    >
+                      {parsedQuote}
+                    </p>
+                    <small
+                      className={`block text-[10px] font-bold tracking-[0.16em] uppercase mt-2 ${
+                        isDark ? "text-[#8b8e99]" : "text-[#9ca3af]"
+                      }`}
+                    >
+                      {parsedAuthor}
+                    </small>
+                  </>
                 )}
               </div>
             )}
-          </div>
+          </section>
 
-          {/* Form Card */}
-          <div
-            className={`rounded-xl border p-4 transition-all duration-300 backdrop-blur-sm flex flex-col justify-between space-y-3 ${
-              isDark ? "text-white" : "text-zinc-900"
-            }`}
-            style={{
-              borderColor: `${brandColor}${Math.round((0.15 + (highlightIntensity / 100) * 0.55) * 255).toString(16).padStart(2, "0")}`,
-              boxShadow:
-                highlightIntensity > 20
-                  ? `0 8px 24px -4px ${brandColor}${Math.round((highlightIntensity / 100) * 0.35 * 255).toString(16).padStart(2, "0")}`
-                  : "0 2px 8px rgba(0,0,0,0.05)",
-              background: isDark
-                ? `linear-gradient(135deg, ${brandColor}${Math.round((0.08 + (highlightIntensity / 100) * 0.3) * 255).toString(16).padStart(2, "0")} 0%, rgba(22, 22, 25, 0.95) 60%)`
-                : `linear-gradient(135deg, ${brandColor}${Math.round((0.05 + (highlightIntensity / 100) * 0.25) * 255).toString(16).padStart(2, "0")} 0%, rgba(255, 255, 255, 0.95) 60%)`,
-            }}
-          >
-            <div>
-              {/* Form Title */}
+          {/* RIGHT COLUMN: Media Cover & Lead Capture Card */}
+          <aside className="space-y-6">
+            {/* Cover Media */}
+            <div className="relative w-full aspect-[3/2] rounded-[22px] overflow-hidden shadow-[0_24px_60px_#00000066] border border-white/10 group bg-zinc-900">
+              <img
+                src={coverImage}
+                alt="Report cover preview"
+                className="w-full h-full object-cover"
+              />
+
+              {isEditor && (
+                <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-2.5 p-4">
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef?.current?.click()}
+                      className="flex items-center gap-1.5 rounded-xl bg-white text-zinc-900 px-3.5 py-2 text-xs font-bold shadow-xl transition hover:bg-zinc-100 cursor-pointer"
+                    >
+                      <ImageIcon className="h-3.5 w-3.5" /> Upload Cover
+                    </button>
+                    {handleGenerateAICoverImage && (
+                      <button
+                        type="button"
+                        onClick={handleGenerateAICoverImage}
+                        disabled={isGeneratingAICover}
+                        className="flex items-center gap-1.5 rounded-xl bg-black/80 text-white border border-white/20 px-3.5 py-2 text-xs font-bold shadow-xl transition hover:bg-black disabled:opacity-50 cursor-pointer"
+                      >
+                        {isGeneratingAICover ? (
+                          <Loader2 className="h-3.5 w-3.5 animate-spin text-sky-400" />
+                        ) : (
+                          <Sparkles className="h-3.5 w-3.5 text-amber-400" />
+                        )}
+                        AI Cover
+                      </button>
+                    )}
+                  </div>
+                  {imageUrl && setImageUrl && (
+                    <button
+                      type="button"
+                      onClick={() => setImageUrl(null)}
+                      className="text-[11px] font-semibold text-red-400 hover:text-red-300 transition underline cursor-pointer"
+                    >
+                      Reset to Default
+                    </button>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* Sign-up Card */}
+            <div
+              className={`rounded-[22px] p-6 sm:p-7 border transition-all ${
+                isDark
+                  ? "bg-[#14151b] border-[#26272f] shadow-2xl"
+                  : "bg-white border-[#e5e7eb] shadow-xl"
+              }`}
+            >
+              {/* Card Title */}
               {isEditor ? (
                 <input
                   type="text"
                   value={formTitle || ""}
                   onChange={(e) => setFormTitle?.(e.target.value)}
-                  className={`w-full text-base font-bold text-center bg-transparent outline-none ${
-                    isDark ? "text-white placeholder:text-zinc-600" : "text-zinc-900 placeholder:text-zinc-400"
+                  className={`w-full text-[21px] font-extrabold mb-2 bg-transparent outline-none ${
+                    isDark ? "text-white placeholder:text-zinc-600" : "text-[#111217] placeholder:text-zinc-400"
                   }`}
-                  placeholder="Download for free now"
+                  placeholder="Get the full report"
                 />
               ) : (
-                <p className="text-base font-bold text-center">{formTitle || "Download for free now"}</p>
+                <h2
+                  className={`text-[21px] font-extrabold mb-2 ${
+                    isDark ? "text-white" : "text-[#111217]"
+                  }`}
+                >
+                  {formTitle || "Get the full report"}
+                </h2>
               )}
 
-              {/* Form Subtitle */}
+              {/* Card Subtitle */}
               {isEditor ? (
                 <input
                   type="text"
                   value={formSubtitle || ""}
                   onChange={(e) => setFormSubtitle?.(e.target.value)}
-                  className={`w-full text-[11px] text-center mt-0.5 bg-transparent outline-none ${
-                    isDark ? "text-zinc-400 placeholder:text-zinc-600" : "text-zinc-500 placeholder:text-zinc-400"
+                  className={`w-full text-[12.5px] leading-[1.6] mb-5 bg-transparent outline-none ${
+                    isDark ? "text-[#9a9da9] placeholder:text-zinc-600" : "text-[#6b7280] placeholder:text-zinc-400"
                   }`}
-                  placeholder="By opting in you consent to receive this resource by email."
+                  placeholder="The PDF and supplemental worksheets will arrive directly in your inbox."
                 />
               ) : (
-                <p className={`text-[11px] text-center mt-1 leading-normal ${isDark ? "text-zinc-400" : "text-zinc-500"}`}>
-                  {formSubtitle || "By opting in you consent to receive this resource by email."}
+                <p
+                  className={`text-[12.5px] leading-[1.6] mb-5 ${
+                    isDark ? "text-[#9a9da9]" : "text-[#6b7280]"
+                  }`}
+                >
+                  {formSubtitle ||
+                    "The PDF and supplemental worksheets will arrive directly in your inbox."}
                 </p>
               )}
-            </div>
 
-            {/* Inputs & Form Button */}
-            {isEditor ? (
-              <div className="space-y-3 pt-1">
-                {customFormFields && customFormFields.length > 0 ? (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+              {/* Form Body */}
+              {isEditor ? (
+                <div className="space-y-3.5">
+                  <div className="field">
                     <input
                       type="text"
-                      placeholder="Name"
-                      className={`w-full rounded-xl border p-2.5 text-xs focus:outline-none transition pointer-events-none select-none ${
-                        isDark ? "bg-black/40 border-white/10 text-zinc-400" : "bg-white/80 border-black/10 text-zinc-500"
-                      }`}
+                      placeholder="Full name"
                       readOnly
-                    />
-                    <input
-                      type="email"
-                      placeholder="Email"
-                      className={`w-full rounded-xl border p-2.5 text-xs focus:outline-none transition pointer-events-none select-none ${
-                        isDark ? "bg-black/40 border-white/10 text-zinc-400" : "bg-white/80 border-black/10 text-zinc-500"
+                      className={`w-full px-4 py-3.5 rounded-[14px] text-sm outline-none border transition pointer-events-none select-none ${
+                        isDark
+                          ? "bg-[#0c0d11] border-[#2c2d36] text-white placeholder:text-[#6f7280]"
+                          : "bg-[#f8fafc] border-[#cbd5e1] text-zinc-900 placeholder:text-zinc-400"
                       }`}
-                      readOnly
-                    />
-
-                    {customFormFields.map((field: any) => (
-                      <div
-                        key={field.id}
-                        className={field.type === "textarea" ? "col-span-1 sm:col-span-2" : ""}
-                      >
-                        <input
-                          type="text"
-                          placeholder={`${field.label || "New Field"}${field.required ? " *" : ""}`}
-                          readOnly
-                          className={`w-full rounded-xl border p-2.5 text-xs focus:outline-none transition pointer-events-none select-none ${
-                            isDark ? "bg-black/40 border-white/10 text-zinc-400" : "bg-white/80 border-black/10 text-zinc-500"
-                          }`}
-                        />
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="space-y-2">
-                    <input
-                      type="text"
-                      placeholder="Name"
-                      className={`w-full rounded-xl border p-2.5 text-xs focus:outline-none transition pointer-events-none select-none ${
-                        isDark ? "bg-black/40 border-white/10 text-zinc-400" : "bg-white/80 border-black/10 text-zinc-500"
-                      }`}
-                      readOnly
-                    />
-                    <input
-                      type="email"
-                      placeholder="Email"
-                      className={`w-full rounded-xl border p-2.5 text-xs focus:outline-none transition pointer-events-none select-none ${
-                        isDark ? "bg-black/40 border-white/10 text-zinc-400" : "bg-white/80 border-black/10 text-zinc-500"
-                      }`}
-                      readOnly
                     />
                   </div>
-                )}
-
-                <div className="pt-1">
-                  <input
-                    type="text"
-                    value={formButtonText || ""}
-                    onChange={(e) => setFormButtonText?.(e.target.value)}
-                    className="w-full rounded-xl py-3 px-3 text-xs font-bold text-white text-center shadow-md transition outline-none cursor-text"
-                    style={{ backgroundColor: brandColor }}
-                    placeholder="Send it to me"
-                  />
-                </div>
-              </div>
-            ) : (
-              <form onSubmit={onSubmitPublicForm} className="space-y-3 pt-1">
-                {customFormFields && customFormFields.length > 0 ? (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                    <input
-                      type="text"
-                      required
-                      placeholder="Name"
-                      value={publicFormValues.name || ""}
-                      onChange={(e) => setPublicFormValues?.({ ...publicFormValues, name: e.target.value })}
-                      className={`w-full rounded-xl border p-2.5 text-xs focus:outline-none transition ${
-                        isDark
-                          ? "bg-black/40 border-white/10 text-white focus:border-zinc-500"
-                          : "bg-white/80 border-black/10 text-zinc-800 focus:border-[#0066B2]/50"
-                      }`}
-                    />
+                  <div className="field">
                     <input
                       type="email"
-                      required
-                      placeholder="Email"
-                      value={publicFormValues.email || ""}
-                      onChange={(e) => setPublicFormValues?.({ ...publicFormValues, email: e.target.value })}
-                      className={`w-full rounded-xl border p-2.5 text-xs focus:outline-none transition ${
+                      placeholder="Work email"
+                      readOnly
+                      className={`w-full px-4 py-3.5 rounded-[14px] text-sm outline-none border transition pointer-events-none select-none ${
                         isDark
-                          ? "bg-black/40 border-white/10 text-white focus:border-zinc-500"
-                          : "bg-white/80 border-black/10 text-zinc-800 focus:border-[#0066B2]/50"
+                          ? "bg-[#0c0d11] border-[#2c2d36] text-white placeholder:text-[#6f7280]"
+                          : "bg-[#f8fafc] border-[#cbd5e1] text-zinc-900 placeholder:text-zinc-400"
                       }`}
                     />
+                  </div>
 
-                    {customFormFields.map((field: any) => (
-                      <div
-                        key={field.id}
-                        className={field.type === "textarea" ? "col-span-1 sm:col-span-2" : ""}
-                      >
-                        {field.type === "textarea" ? (
-                          <textarea
-                            required={field.required}
-                            placeholder={`${field.label || field.placeholder || "Answer"}${field.required ? " *" : ""}`}
-                            value={publicFormValues[field.id] || ""}
-                            onChange={(e) => setPublicFormValues?.({ ...publicFormValues, [field.id]: e.target.value })}
-                            rows={2}
-                            className={`w-full rounded-xl border p-2.5 text-xs focus:outline-none transition ${
-                              isDark
-                                ? "bg-black/40 border-white/10 text-white focus:border-zinc-500"
-                                : "bg-white/80 border-black/10 text-zinc-800 focus:border-[#0066B2]/50"
-                            }`}
-                          />
-                        ) : field.type === "select" ? (
-                          <select
-                            required={field.required}
-                            value={publicFormValues[field.id] || ""}
-                            onChange={(e) => setPublicFormValues?.({ ...publicFormValues, [field.id]: e.target.value })}
-                            className={`w-full rounded-xl border p-2.5 text-xs focus:outline-none transition ${
-                              isDark
-                                ? "bg-black/40 border-white/10 text-white focus:border-zinc-500"
-                                : "bg-white/80 border-black/10 text-zinc-800 focus:border-[#0066B2]/50"
-                            }`}
-                          >
-                            <option value="">{field.label || "Select..."}</option>
-                            {field.options?.map((opt: string) => (
-                              <option key={opt} value={opt}>{opt}</option>
-                            ))}
-                          </select>
-                        ) : (
+                  {/* Custom Form Fields in Editor */}
+                  {customFormFields && customFormFields.length > 0 && (
+                    <div className="space-y-3">
+                      {customFormFields.map((field: any) => (
+                        <div key={field.id} className="field">
                           <input
-                            type={field.type || "text"}
-                            required={field.required}
-                            placeholder={`${field.label || field.placeholder || "Answer"}${field.required ? " *" : ""}`}
-                            value={publicFormValues[field.id] || ""}
-                            onChange={(e) => setPublicFormValues?.({ ...publicFormValues, [field.id]: e.target.value })}
-                            className={`w-full rounded-xl border p-2.5 text-xs focus:outline-none transition ${
+                            type="text"
+                            placeholder={`${field.label || "Custom field"}${field.required ? " *" : ""}`}
+                            readOnly
+                            className={`w-full px-4 py-3.5 rounded-[14px] text-sm outline-none border transition pointer-events-none select-none ${
                               isDark
-                                ? "bg-black/40 border-white/10 text-white focus:border-zinc-500"
-                                : "bg-white/80 border-black/10 text-zinc-800 focus:border-[#0066B2]/50"
+                                ? "bg-[#0c0d11] border-[#2c2d36] text-white placeholder:text-[#6f7280]"
+                                : "bg-[#f8fafc] border-[#cbd5e1] text-zinc-900 placeholder:text-zinc-400"
                             }`}
                           />
-                        )}
-                      </div>
-                    ))}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  <div className="pt-1">
+                    <input
+                      type="text"
+                      value={formButtonText || ""}
+                      onChange={(e) => setFormButtonText?.(e.target.value)}
+                      className="w-full text-white py-4 px-4 rounded-[14px] font-extrabold text-sm tracking-[0.01em] text-center shadow-lg transition outline-none cursor-text hover:brightness-110"
+                      style={{ backgroundColor: accentColor }}
+                      placeholder="Receive the dispatch →"
+                    />
                   </div>
-                ) : (
-                  <div className="space-y-2">
+                </div>
+              ) : (
+                <form onSubmit={onSubmitPublicForm} className="space-y-3.5">
+                  <div className="field">
                     <input
                       type="text"
                       required
-                      placeholder="Name"
+                      placeholder="Full name"
                       value={publicFormValues.name || ""}
-                      onChange={(e) => setPublicFormValues?.({ ...publicFormValues, name: e.target.value })}
-                      className={`w-full rounded-xl border p-2.5 text-xs focus:outline-none transition ${
+                      onChange={(e) =>
+                        setPublicFormValues?.({ ...publicFormValues, name: e.target.value })
+                      }
+                      className={`w-full px-4 py-3.5 rounded-[14px] text-sm outline-none border transition ${
                         isDark
-                          ? "bg-black/40 border-white/10 text-white focus:border-zinc-500"
-                          : "bg-white/80 border-black/10 text-zinc-800 focus:border-[#0066B2]/50"
+                          ? "bg-[#0c0d11] border-[#2c2d36] text-white placeholder:text-[#6f7280] focus:border-[#fb4d6a]"
+                          : "bg-[#f8fafc] border-[#cbd5e1] text-zinc-900 placeholder:text-zinc-400 focus:border-[#fb4d6a]"
                       }`}
+                      style={{
+                        borderColor: publicFormValues.name ? accentColor : undefined,
+                      }}
                     />
+                  </div>
+                  <div className="field">
                     <input
                       type="email"
                       required
-                      placeholder="Email"
+                      placeholder="Work email"
                       value={publicFormValues.email || ""}
-                      onChange={(e) => setPublicFormValues?.({ ...publicFormValues, email: e.target.value })}
-                      className={`w-full rounded-xl border p-2.5 text-xs focus:outline-none transition ${
+                      onChange={(e) =>
+                        setPublicFormValues?.({ ...publicFormValues, email: e.target.value })
+                      }
+                      className={`w-full px-4 py-3.5 rounded-[14px] text-sm outline-none border transition ${
                         isDark
-                          ? "bg-black/40 border-white/10 text-white focus:border-zinc-500"
-                          : "bg-white/80 border-black/10 text-zinc-800 focus:border-[#0066B2]/50"
+                          ? "bg-[#0c0d11] border-[#2c2d36] text-white placeholder:text-[#6f7280] focus:border-[#fb4d6a]"
+                          : "bg-[#f8fafc] border-[#cbd5e1] text-zinc-900 placeholder:text-zinc-400 focus:border-[#fb4d6a]"
                       }`}
+                      style={{
+                        borderColor: publicFormValues.email ? accentColor : undefined,
+                      }}
                     />
                   </div>
-                )}
 
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="w-full rounded-xl py-3 text-xs font-bold text-white shadow-md transition cursor-pointer disabled:opacity-50"
-                  style={{ backgroundColor: brandColor }}
-                >
-                  {isSubmitting ? "Submitting..." : formButtonText || "Send it to me"}
-                </button>
-              </form>
-            )}
-          </div>
-        </div>
+                  {/* Custom Form Fields */}
+                  {customFormFields && customFormFields.length > 0 && (
+                    <div className="space-y-3">
+                      {customFormFields.map((field: any) => (
+                        <div key={field.id} className="field">
+                          {field.type === "textarea" ? (
+                            <textarea
+                              required={field.required}
+                              placeholder={`${field.label || field.placeholder || "Answer"}${field.required ? " *" : ""}`}
+                              value={publicFormValues[field.id] || ""}
+                              onChange={(e) =>
+                                setPublicFormValues?.({
+                                  ...publicFormValues,
+                                  [field.id]: e.target.value,
+                                })
+                              }
+                              rows={2}
+                              className={`w-full px-4 py-3.5 rounded-[14px] text-sm outline-none border transition ${
+                                isDark
+                                  ? "bg-[#0c0d11] border-[#2c2d36] text-white placeholder:text-[#6f7280]"
+                                  : "bg-[#f8fafc] border-[#cbd5e1] text-zinc-900 placeholder:text-zinc-400"
+                              }`}
+                            />
+                          ) : field.type === "select" ? (
+                            <select
+                              required={field.required}
+                              value={publicFormValues[field.id] || ""}
+                              onChange={(e) =>
+                                setPublicFormValues?.({
+                                  ...publicFormValues,
+                                  [field.id]: e.target.value,
+                                })
+                              }
+                              className={`w-full px-4 py-3.5 rounded-[14px] text-sm outline-none border transition ${
+                                isDark
+                                  ? "bg-[#0c0d11] border-[#2c2d36] text-white"
+                                  : "bg-[#f8fafc] border-[#cbd5e1] text-zinc-900"
+                              }`}
+                            >
+                              <option value="">{field.label || "Select..."}</option>
+                              {field.options?.map((opt: string) => (
+                                <option key={opt} value={opt}>
+                                  {opt}
+                                </option>
+                              ))}
+                            </select>
+                          ) : (
+                            <input
+                              type={field.type || "text"}
+                              required={field.required}
+                              placeholder={`${field.label || field.placeholder || "Answer"}${field.required ? " *" : ""}`}
+                              value={publicFormValues[field.id] || ""}
+                              onChange={(e) =>
+                                setPublicFormValues?.({
+                                  ...publicFormValues,
+                                  [field.id]: e.target.value,
+                                })
+                              }
+                              className={`w-full px-4 py-3.5 rounded-[14px] text-sm outline-none border transition ${
+                                isDark
+                                  ? "bg-[#0c0d11] border-[#2c2d36] text-white placeholder:text-[#6f7280]"
+                                  : "bg-[#f8fafc] border-[#cbd5e1] text-zinc-900 placeholder:text-zinc-400"
+                              }`}
+                            />
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="w-full text-white py-4 px-4 rounded-[14px] font-extrabold text-sm tracking-[0.01em] shadow-lg transition hover:brightness-110 active:scale-[0.99] disabled:opacity-50 cursor-pointer"
+                    style={{ backgroundColor: accentColor }}
+                  >
+                    {isSubmitting
+                      ? "Processing..."
+                      : formButtonText || "Receive the dispatch →"}
+                  </button>
+                </form>
+              )}
+
+              {/* Fine Print Note */}
+              <p
+                className={`text-center text-[10.5px] mt-4 ${
+                  isDark ? "text-[#7d8090]" : "text-[#9ca3af]"
+                }`}
+              >
+                No noise. Only occasional, high-signal notes.
+              </p>
+            </div>
+          </aside>
+        </main>
+
+        {/* FOOTER */}
+        <footer
+          className="mt-12 pt-5 flex justify-between gap-3 flex-wrap text-[10px] font-semibold tracking-[0.14em] uppercase"
+          style={{
+            borderTop: `1px solid ${isDark ? "#23242c" : "#e5e7eb"}`,
+            color: isDark ? "#7d8090" : "#9ca3af",
+          }}
+        >
+          <span>
+            © {currentYear} {businessName} · Private circulation
+          </span>
+          <span>By {account?.name || "Marcus Vane"}</span>
+        </footer>
       </div>
     </div>
   );

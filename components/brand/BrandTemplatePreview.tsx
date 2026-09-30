@@ -29,150 +29,264 @@ const BrandTemplatePreview = memo(function BrandTemplatePreview({
   return (
     <>
       {/* TEMPLATE 1: Modern Split Layout */}
-      {templateId === "template1" && (
-        <div className={`w-full py-1 relative ${themeMode === "dark" ? "text-white" : "text-zinc-900"}`}>
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
-            <div className="md:col-span-7 space-y-4 py-1">
-              <div className="space-y-3">
-                <h3 className="text-3xl sm:text-4xl font-black leading-tight tracking-tight">
-                  {latestPage?.headline || latestPage?.name || "101 Winning Viral Templates That Get Results"}
-                </h3>
+      {/* TEMPLATE 1: Template 10 — Premium Night (Editorial Dispatch) */}
+      {templateId === "template1" && (() => {
+        const isDark = themeMode === "dark";
+        const accentColor = brandColor || "#fb4d6a";
+        const getInitials = (name: string) => {
+          if (!name) return "ED";
+          const parts = name.trim().split(/\s+/);
+          return parts.length >= 2 ? (parts[0][0] + parts[1][0]).toUpperCase() : name.slice(0, 2).toUpperCase();
+        };
+        const initials = getInitials(businessName || "The Executive Dispatch");
+        const defaultBullets = [
+          "The Signal-to-Noise Protocol — Audit attention and eliminate low-leverage activities through the Four Filters.",
+          "Recursive Hiring Loops — Build a talent engine that identifies multipliers before they reach the market.",
+          "Velocity Without Chaos — Replace recurring meetings with lightweight synchronization rituals.",
+        ];
+        const displayBullets = latestPage?.bullets !== undefined && Array.isArray(latestPage.bullets) ? latestPage.bullets : defaultBullets;
 
-                {latestPage?.subheadline ? (
-                  <p className={`text-sm font-semibold leading-relaxed ${themeMode === "dark" ? "text-zinc-300" : "text-zinc-700"}`}>
-                    {latestPage.subheadline}
-                  </p>
-                ) : (
-                  <p className={`text-sm font-semibold leading-relaxed ${themeMode === "dark" ? "text-zinc-300" : "text-zinc-700"}`}>
-                    Stop staring at a blank page. Start creating content that actually connects.
-                  </p>
-                )}
+        const parseBullet = (item: string) => {
+          if (!item) return { title: "", desc: "" };
+          if (item.includes(":::")) {
+            const parts = item.split(":::");
+            if (parts.length >= 3) {
+              return { title: parts[1]?.trim() || "", desc: parts.slice(2).join(":::").trim() };
+            }
+            return { title: parts[0]?.trim() || "", desc: parts.slice(1).join(":::").trim() };
+          }
+          if (item.includes(" — ")) {
+            const [title, ...rest] = item.split(" — ");
+            return { title: title.trim(), desc: rest.join(" — ").trim() };
+          }
+          if (item.includes(" - ")) {
+            const [title, ...rest] = item.split(" - ");
+            return { title: title.trim(), desc: rest.join(" - ").trim() };
+          }
+          if (item.includes(": ")) {
+            const [title, ...rest] = item.split(": ");
+            return { title: title.trim(), desc: rest.join(": ").trim() };
+          }
+          return { title: item, desc: "" };
+        };
 
-                {latestPage?.pitch ? (
-                  <p className={`text-xs leading-relaxed whitespace-pre-line ${themeMode === "dark" ? "text-zinc-400" : "text-zinc-500"}`}>
-                    {latestPage.pitch}
-                  </p>
-                ) : (
-                  <p className={`text-xs leading-relaxed whitespace-pre-line ${themeMode === "dark" ? "text-zinc-400" : "text-zinc-500"}`}>
-                    You know what works on LinkedIn. You&apos;ve seen the posts that blow up.
-                    <span className="block mt-2.5">
-                      That&apos;s where these templates come in. Real structures pulled from posts that actually performed.
-                    </span>
-                  </p>
-                )}
-              </div>
+        const renderHighlightedHeadline = (text: string) => {
+          if (!text) {
+            return (
+              <>
+                The Architecture of <em style={{ fontStyle: "normal", color: accentColor }}>High-Output</em> Engineering
+              </>
+            );
+          }
+          const parts = text.split(/(\*[^*]+\*|_[^_]+_|<em>.*?<\/em>)/g);
+          return (
+            <>
+              {parts.map((part, i) => {
+                if ((part.startsWith("*") && part.endsWith("*") && part.length > 2) ||
+                    (part.startsWith("_") && part.endsWith("_") && part.length > 2)) {
+                  return (
+                    <em key={i} style={{ fontStyle: "normal", color: accentColor }}>
+                      {part.slice(1, -1)}
+                    </em>
+                  );
+                }
+                if (part.startsWith("<em>") && part.endsWith("</em>")) {
+                  return (
+                    <em key={i} style={{ fontStyle: "normal", color: accentColor }}>
+                      {part.replace(/<\/?em>/g, "")}
+                    </em>
+                  );
+                }
+                return <React.Fragment key={i}>{part}</React.Fragment>;
+              })}
+            </>
+          );
+        };
 
-              <div className="space-y-3 pt-2">
-                <p className="text-xs font-bold uppercase tracking-wider text-[#9B9085]">
-                  {latestPage?.bulletsTitle || "This playbook breaks down:"}
-                </p>
-                <ul className="space-y-2.5">
-                  {(latestPage?.bullets && latestPage.bullets.length > 0
-                    ? latestPage.bullets
-                    : [
-                        "101 fill-in-the-blank templates for every content scenario",
-                        "Proven structures for storytelling, advice, and transformation posts",
-                        "Ready-to-use formats that let you focus on your message",
-                      ]
-                  ).map((item, idx) => (
-                    <li key={idx} className="flex items-center gap-2 text-xs">
-                      <span
-                        className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full transition-all duration-300"
-                        style={{
-                          backgroundColor: brandColor,
-                          opacity: 0.5 + intensityRatio * 0.5,
-                          boxShadow:
-                            highlightIntensity > 30
-                              ? `0 0 ${Math.round(14 * intensityRatio)}px ${hexWithAlpha(brandColor, intensityRatio * 0.8)}`
-                              : "none",
-                        }}
-                      >
-                        <Check className="h-3 w-3 text-white stroke-[3px]" />
-                      </span>
-                      <span className={themeMode === "dark" ? "text-zinc-300" : "text-zinc-700"}>
-                        {item}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
+        const defaultCover = "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=1200&q=80";
+        const coverImg = latestPage?.imageUrl && latestPage.imageUrl.trim() !== "" ? latestPage.imageUrl : defaultCover;
 
-            <div className="md:col-span-5 space-y-4">
-              {latestPage?.imageUrl && latestPage.imageUrl.trim() !== "" ? (
-                <div className="rounded-2xl sm:rounded-3xl border h-[265px] sm:h-[275px] w-full overflow-hidden shadow-2xl border-zinc-200 dark:border-zinc-800/80 bg-zinc-100 dark:bg-[#121215]">
-                  <img src={latestPage.imageUrl} alt="Lead magnet media" className="w-full h-full object-cover" />
-                </div>
-              ) : (
+        return (
+          <div
+            className={`w-full py-4 px-3 sm:px-6 relative rounded-2xl overflow-hidden transition-colors duration-200 ${
+              isDark ? "bg-[#0c0d11] text-[#f2f3f7]" : "bg-[#f8f9fa] text-[#111217]"
+            }`}
+            style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
+          >
+            {/* Ambient Glows */}
+            <div
+              className="pointer-events-none absolute inset-0 overflow-hidden"
+              style={{
+                backgroundImage: `radial-gradient(520px 320px at 18% 0%, ${accentColor}1c, transparent 70%), radial-gradient(420px 260px at 88% 96%, ${accentColor}10, transparent 70%)`,
+              }}
+            />
+
+            <div className="relative max-w-[960px] mx-auto py-2">
+              {/* BRAND HEADER */}
+              <header className="flex items-center justify-center gap-3.5 mb-8">
                 <div
-                  className="rounded-2xl sm:rounded-3xl border h-[265px] sm:h-[275px] w-full flex flex-col items-center justify-center p-4 text-center transition-all duration-300"
+                  className="w-[42px] h-[42px] rounded-[12px] flex items-center justify-center font-extrabold text-[14px] tracking-[0.02em] text-white shrink-0 overflow-hidden shadow-lg"
                   style={{
-                    borderColor: hexWithAlpha(brandColor, 0.15 + intensityRatio * 0.5),
-                    backgroundColor: hexWithAlpha(brandColor, 0.05 + intensityRatio * 0.25),
+                    background: `linear-gradient(135deg, ${accentColor}, #7a1830)`,
+                    boxShadow: `0 8px 24px ${hexWithAlpha(accentColor, 0.3)}`,
                   }}
                 >
-                  <ImageIcon className="h-8 w-8 mb-2 opacity-50" style={{ color: brandColor }} />
-                  <p className="text-xs font-bold text-zinc-500 dark:text-zinc-400">Cover Media Preview</p>
+                  {logo ? (
+                    <img src={logo} alt="Logo" className="w-full h-full object-cover" />
+                  ) : (
+                    <span>{initials}</span>
+                  )}
                 </div>
-              )}
+                <b className="text-[14px] font-extrabold tracking-[0.22em] uppercase leading-none">
+                  {businessName || "The Executive Dispatch"}
+                </b>
+              </header>
 
-              <div
-                className={`rounded-xl border p-4 transition-all duration-300 backdrop-blur-sm flex flex-col justify-between space-y-3 ${
-                  themeMode === "dark" ? "text-white" : "text-zinc-900"
-                }`}
-                style={{
-                  borderColor: hexWithAlpha(brandColor, 0.15 + intensityRatio * 0.55),
-                  boxShadow:
-                    highlightIntensity > 20
-                      ? `0 8px 24px -4px ${hexWithAlpha(brandColor, intensityRatio * 0.35)}`
-                      : "0 2px 8px rgba(0,0,0,0.05)",
-                  background:
-                    themeMode === "light"
-                      ? `linear-gradient(135deg, ${hexWithAlpha(brandColor, 0.05 + intensityRatio * 0.25)} 0%, rgba(255, 255, 255, 0.95) 60%)`
-                      : `linear-gradient(135deg, ${hexWithAlpha(brandColor, 0.08 + intensityRatio * 0.3)} 0%, rgba(22, 22, 25, 0.95) 60%)`,
-                }}
-              >
-                <div>
-                  <p className="text-base font-bold text-center">{latestPage?.formTitle || "Download for free now"}</p>
-                  <p className={`text-[11px] text-center mt-1 leading-normal ${themeMode === "dark" ? "text-zinc-400" : "text-zinc-500"}`}>
-                    {latestPage?.formSubtitle || "By opting in you consent to receive this resource by email."}
+              {/* GRID */}
+              <div className="grid grid-cols-1 md:grid-cols-[1.1fr_0.9fr] gap-8 items-start">
+                {/* Left Column */}
+                <div className="space-y-0 min-w-0">
+                  <h3
+                    className={`text-2xl sm:text-3xl lg:text-4xl leading-[1.08] font-extrabold tracking-[-0.02em] mb-4 break-words [overflow-wrap:anywhere] ${
+                      isDark ? "text-white" : "text-[#111217]"
+                    }`}
+                  >
+                    {renderHighlightedHeadline(latestPage?.headline || latestPage?.name || "The Architecture of *High-Output* Engineering")}
+                  </h3>
+
+                  <p
+                    className={`text-[14px] leading-[1.7] max-w-[480px] ${
+                      isDark ? "text-[#a9acb8]" : "text-[#4b5563]"
+                    }`}
+                  >
+                    {latestPage?.subheadline || "A 42-page field guide to the organizational systems used by ambitious teams to maintain velocity without burning out."}
                   </p>
+
+                  {displayBullets.length > 0 && (
+                    <>
+                      <div
+                        className="h-[1px] my-6"
+                        style={{ backgroundColor: isDark ? "#23242c" : "#e5e7eb" }}
+                      />
+
+                      <p
+                        className="text-[10.5px] font-bold tracking-[0.2em] uppercase mb-3"
+                        style={{ color: accentColor }}
+                      >
+                        {latestPage?.bulletsTitle || "What you will create"}
+                      </p>
+
+                      <div className="space-y-2">
+                        {displayBullets.map((item, idx) => {
+                          const parsed = parseBullet(item);
+                          return (
+                            <div key={idx} className="grid grid-cols-[24px_1fr] gap-3 py-1.5 items-start">
+                              <span
+                                className="w-[24px] h-[24px] rounded-full flex items-center justify-center text-[11px] font-extrabold text-white shrink-0 mt-0.5 shadow-xs"
+                                style={{ backgroundColor: accentColor }}
+                              >
+                                ✓
+                              </span>
+                              <div>
+                                <h4 className={`text-[14px] font-bold mb-0.5 leading-snug ${isDark ? "text-white" : "text-[#111217]"}`}>
+                                  {parsed.title}
+                                </h4>
+                                {parsed.desc && (
+                                  <p className={`text-[12px] leading-[1.6] ${isDark ? "text-[#9a9da9]" : "text-[#6b7280]"}`}>
+                                    {parsed.desc}
+                                  </p>
+                                )}
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </>
+                  )}
+
+                  {/* Quote block */}
+                  {latestPage?.pitch !== "__hidden__" && latestPage?.pitch !== "__none__" && latestPage?.pitch !== "__HIDDEN__" && (
+                    <div
+                      className="mt-6 pl-4 space-y-1"
+                      style={{ borderLeft: `3px solid ${accentColor}` }}
+                    >
+                      <p className={`italic text-[13px] leading-[1.65] ${isDark ? "text-[#c9ccd6]" : "text-[#374151]"}`}>
+                        {latestPage?.pitch || "“Speed is often a byproduct of clarity. Build the infrastructure that makes high performance inevitable.”"}
+                      </p>
+                      <small className={`block text-[9.5px] font-bold tracking-[0.16em] uppercase mt-1.5 ${isDark ? "text-[#8b8e99]" : "text-[#9ca3af]"}`}>
+                        {businessName} · Private dispatch
+                      </small>
+                    </div>
+                  )}
                 </div>
 
-                <div className="space-y-3 pt-1">
-                  <div className="space-y-2">
-                    <input
-                      type="text"
-                      placeholder={latestPage?.namePlaceholder || "Name"}
-                      className={`w-full rounded-xl border p-2.5 text-xs focus:outline-none transition pointer-events-none select-none ${
-                        themeMode === "dark" ? "bg-black/40 border-white/10 text-zinc-400" : "bg-white/80 border-black/10 text-zinc-500"
-                      }`}
-                      readOnly
-                    />
-                    <input
-                      type="email"
-                      placeholder={latestPage?.emailPlaceholder || "Email"}
-                      className={`w-full rounded-xl border p-2.5 text-xs focus:outline-none transition pointer-events-none select-none ${
-                        themeMode === "dark" ? "bg-black/40 border-white/10 text-zinc-400" : "bg-white/80 border-black/10 text-zinc-500"
-                      }`}
-                      readOnly
-                    />
+                {/* Right Column */}
+                <div className="space-y-5">
+                  <div className="w-full aspect-[3/2] rounded-[18px] overflow-hidden shadow-xl border border-white/10 bg-zinc-900">
+                    <img src={coverImg} alt="Cover preview" className="w-full h-full object-cover" />
                   </div>
 
-                  <div className="pt-1">
-                    <button
-                      className="w-full rounded-xl py-3 px-3 text-xs font-bold text-white text-center shadow-md transition"
-                      style={{ backgroundColor: brandColor }}
-                    >
-                      {latestPage?.formButtonText || latestPage?.cta || "Send it to me"}
-                    </button>
+                  <div
+                    className={`rounded-[18px] p-5 sm:p-6 border transition-all ${
+                      isDark ? "bg-[#14151b] border-[#26272f] shadow-xl" : "bg-white border-[#e5e7eb] shadow-lg"
+                    }`}
+                  >
+                    <h4 className={`text-[18px] font-extrabold mb-1.5 ${isDark ? "text-white" : "text-[#111217]"}`}>
+                      {latestPage?.formTitle || "Get the full report"}
+                    </h4>
+                    <p className={`text-[11.5px] leading-[1.55] mb-4 ${isDark ? "text-[#9a9da9]" : "text-[#6b7280]"}`}>
+                      {latestPage?.formSubtitle || "The PDF and supplemental worksheets will arrive directly in your inbox."}
+                    </p>
+
+                    <div className="space-y-2.5">
+                      <input
+                        type="text"
+                        placeholder="Full name"
+                        readOnly
+                        className={`w-full px-3.5 py-3 rounded-[12px] text-xs outline-none border pointer-events-none select-none ${
+                          isDark ? "bg-[#0c0d11] border-[#2c2d36] text-white placeholder:text-[#6f7280]" : "bg-[#f8fafc] border-[#cbd5e1] text-zinc-900 placeholder:text-zinc-400"
+                        }`}
+                      />
+                      <input
+                        type="email"
+                        placeholder="Work email"
+                        readOnly
+                        className={`w-full px-3.5 py-3 rounded-[12px] text-xs outline-none border pointer-events-none select-none ${
+                          isDark ? "bg-[#0c0d11] border-[#2c2d36] text-white placeholder:text-[#6f7280]" : "bg-[#f8fafc] border-[#cbd5e1] text-zinc-900 placeholder:text-zinc-400"
+                        }`}
+                      />
+                      <button
+                        type="button"
+                        className="w-full text-white py-3.5 px-3 rounded-[12px] font-extrabold text-xs tracking-[0.01em] shadow-md transition pointer-events-none"
+                        style={{ backgroundColor: accentColor }}
+                      >
+                        {latestPage?.formButtonText || latestPage?.cta || "Receive the dispatch →"}
+                      </button>
+                    </div>
+
+                    <p className={`text-center text-[10px] mt-3.5 ${isDark ? "text-[#7d8090]" : "text-[#9ca3af]"}`}>
+                      No noise. Only occasional, high-signal notes.
+                    </p>
                   </div>
                 </div>
               </div>
+
+              {/* FOOTER */}
+              <footer
+                className="mt-10 pt-4 flex justify-between gap-3 flex-wrap text-[9.5px] font-semibold tracking-[0.14em] uppercase"
+                style={{
+                  borderTop: `1px solid ${isDark ? "#23242c" : "#e5e7eb"}`,
+                  color: isDark ? "#7d8090" : "#9ca3af",
+                }}
+              >
+                <span>© 2026 {businessName || "Vane Strategic Partners"} · Private circulation</span>
+                <span>By {businessName || "Marcus Vane"}</span>
+              </footer>
             </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
+
 
       {/* TEMPLATE 2: Signal / Noise Editorial Edition */}
       {templateId === "template2" && (

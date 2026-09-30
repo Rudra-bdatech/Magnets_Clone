@@ -278,6 +278,7 @@ export default async function MagnetPageRoute({
   const logo = accountDoc?.logo || null;
   const highlightIntensity = accountDoc?.highlightIntensity ?? 100;
   const businessName = accountDoc?.brandName || accountDoc?.name || "BDA";
+  const authorName = accountDoc?.name || rawUser || "Marcus Vane";
   const pageTemplate = (page.template as string);
   const accountTemplate = (accountDoc?.templateId as string);
   const activeTemplate = (pageTemplate && pageTemplate !== "classic")
@@ -292,6 +293,9 @@ export default async function MagnetPageRoute({
   const isTemplate6 = activeTemplate === "template6";
   const isTemplate7 = activeTemplate === "template7";
   const isTemplate8 = activeTemplate === "template8";
+  const isTemplate1 = !isTemplate2 && !isTemplate3 && !isTemplate4 && !isTemplate5 && !isTemplate6 && !isTemplate7 && !isTemplate8;
+
+  const accentColor = brandColor || "#fb4d6a";
 
   return (
     <main
@@ -306,6 +310,8 @@ export default async function MagnetPageRoute({
           ? (themeMode === "dark" ? "#141416" : "#f3f0e8")
           : isTemplate4
           ? (themeMode === "dark" ? "#0b0d12" : "#f5f1e8")
+          : isTemplate1
+          ? (themeMode === "dark" ? "#0c0d11" : "#f8f9fa")
           : (themeMode === "dark" ? "#0E0E10" : "#FAFAFA"),
         color: isTemplate8
           ? (themeMode === "dark" ? "#f4f4f5" : "#141414")
@@ -315,12 +321,16 @@ export default async function MagnetPageRoute({
           ? (themeMode === "dark" ? "#eae8e3" : "#151515")
           : isTemplate4
           ? (themeMode === "dark" ? "#f5f1e8" : "#0b0d12")
+          : isTemplate1
+          ? (themeMode === "dark" ? "#f2f3f7" : "#111217")
           : (themeMode === "dark" ? "#ffffff" : "#18181b"),
-        backgroundImage: (isTemplate2 || isTemplate7 || isTemplate4 || isTemplate8)
+        backgroundImage: (isTemplate2 || isTemplate7 || isTemplate4 || isTemplate8 || isTemplate1)
           ? (isTemplate8
             ? (themeMode === "dark"
               ? "radial-gradient(rgba(255, 255, 255, 0.15) 1px, transparent 1px)"
               : "radial-gradient(rgba(20, 20, 20, 0.18) 1px, transparent 1px)")
+            : isTemplate1
+            ? `radial-gradient(620px 380px at 18% 0%, ${accentColor}1c, transparent 70%), radial-gradient(520px 320px at 88% 96%, ${accentColor}10, transparent 70%)`
             : "none")
           : (themeMode === "light"
             ? `radial-gradient(circle at 0% 0%, ${brandColor}10 0%, transparent 40%), radial-gradient(circle at 100% 100%, ${brandColor}08 0%, transparent 40%)`
@@ -349,8 +359,8 @@ export default async function MagnetPageRoute({
           <span>⚠️ Draft Preview Mode — This magnet is not yet published. Only you can view this page.</span>
         </div>
       )}
-      {/* If template is not template2, template3, template4, template5, template6, template7, or template8, show the standard top header */}
-      {!isTemplate2 && !isTemplate3 && !isTemplate4 && !isTemplate5 && !isTemplate6 && !isTemplate7 && !isTemplate8 && (
+      {/* If template is not template1, template2, template3, template4, template5, template6, template7, or template8, show the standard top header */}
+      {!isTemplate1 && !isTemplate2 && !isTemplate3 && !isTemplate4 && !isTemplate5 && !isTemplate6 && !isTemplate7 && !isTemplate8 && (
         <header className="w-full flex items-center justify-center pt-3 sm:pt-4 pb-1 sm:pb-2 px-6 sm:px-10 relative shrink-0">
           <div className="flex items-center gap-2.5 sm:gap-3">
             <div className={`h-9 w-9 sm:h-10 sm:w-10 rounded-xl flex items-center justify-center bg-transparent overflow-hidden shadow-xs ${logo ? "border-none" : "border-2 border-dashed border-[#a1a1aa]/50"}`}>
@@ -368,7 +378,7 @@ export default async function MagnetPageRoute({
       )}
 
       {/* Main content area filling the screen properly with balanced vertical spacing */}
-      <div className={`flex-1 w-full flex flex-col justify-center ${(isTemplate2 || isTemplate7 || isTemplate8) ? "p-0" : "px-4 sm:px-6 md:px-8 lg:px-10 xl:px-14 pb-3 sm:pb-4"}`}>
+      <div className={`flex-1 w-full flex flex-col justify-center ${(isTemplate1 || isTemplate2 || isTemplate7 || isTemplate8) ? "p-0" : "px-4 sm:px-6 md:px-8 lg:px-10 xl:px-14 pb-3 sm:pb-4"}`}>
         {/* Dynamic Multi-Template View Renderer */}
         {isTemplate2 ? (
           /* TEMPLATE 2: Signal / Noise Editorial Edition (Full-Screen) */
@@ -2554,114 +2564,333 @@ export default async function MagnetPageRoute({
             );
           })()
         ) : (
-          /* TEMPLATE 1 / Default: Modern Full-Width Split Layout */
-          <div className="w-full flex-1 flex flex-col justify-center py-1 relative">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start w-full">
-              {/* Left Content Column */}
-              <div className="lg:col-span-7 space-y-4 py-1 min-w-0">
-                <div className="space-y-3">
-                  <h1 className="text-3xl sm:text-4xl md:text-5xl font-black leading-tight tracking-tight break-words [overflow-wrap:anywhere]">
-                    {activeHeadline}
-                  </h1>
-                  {page.subheadline && (
-                    <p className={`text-sm sm:text-base font-semibold leading-relaxed break-words [overflow-wrap:anywhere] ${themeMode === "dark" ? "text-zinc-300" : "text-zinc-700"
-                      }`}>
-                      {page.subheadline}
-                    </p>
-                  )}
+          /* TEMPLATE 1: Template 10 — Premium Night (Editorial Dispatch) */
+          (() => {
+            const currentYear = new Date().getFullYear();
+            const getInitials = (name: string) => {
+              if (!name) return "ED";
+              const parts = name.trim().split(/\s+/);
+              return parts.length >= 2 ? (parts[0][0] + parts[1][0]).toUpperCase() : name.slice(0, 2).toUpperCase();
+            };
+            const initials = getInitials(businessName);
 
-                  {page.pitch && (
-                    <p className={`text-xs sm:text-sm leading-relaxed whitespace-pre-line break-words [overflow-wrap:anywhere] ${themeMode === "dark" ? "text-zinc-400" : "text-zinc-500"
-                      }`}>
-                      {page.pitch}
-                    </p>
-                  )}
-                </div>
+            const defaultBullets = [
+              "The Signal-to-Noise Protocol — Audit attention and eliminate low-leverage activities through the Four Filters.",
+              "Recursive Hiring Loops — Build a talent engine that identifies multipliers before they reach the market.",
+              "Velocity Without Chaos — Replace recurring meetings with lightweight synchronization rituals.",
+            ];
 
-                {page.bullets && page.bullets.length > 0 && (
-                  <div className="space-y-3 pt-2 min-w-0">
-                    <p className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-[#9B9085]">
-                      {page.bulletsTitle || "What you will learn"}
-                    </p>
-                    <ul className="space-y-2.5">
-                      {page.bullets.map((line: string, idx: number) => (
-                        <li key={idx} className="flex items-center gap-2.5 text-xs sm:text-sm group min-w-0">
-                          <span
-                            className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full transition-all duration-300"
-                            style={{
-                              backgroundColor: brandColor,
-                              opacity: 0.5 + (highlightIntensity / 100) * 0.5,
-                              boxShadow:
-                                highlightIntensity > 30
-                                  ? `0 0 ${Math.round(14 * (highlightIntensity / 100))}px ${brandColor}${Math.round(
-                                      (highlightIntensity / 100) * 0.8 * 255
-                                    ).toString(16).padStart(2, "0")}`
-                                  : "none",
-                            }}
+            const displayBullets = page.bullets !== undefined && Array.isArray(page.bullets) ? page.bullets : defaultBullets;
+
+            const parseBullet = (item: string) => {
+              if (!item) return { title: "", desc: "" };
+              if (item.includes(":::")) {
+                const parts = item.split(":::");
+                if (parts.length >= 3) {
+                  return { title: parts[1]?.trim() || "", desc: parts.slice(2).join(":::").trim() };
+                }
+                return { title: parts[0]?.trim() || "", desc: parts.slice(1).join(":::").trim() };
+              }
+              if (item.includes(" — ")) {
+                const [title, ...rest] = item.split(" — ");
+                return { title: title.trim(), desc: rest.join(" — ").trim() };
+              }
+              if (item.includes(" - ")) {
+                const [title, ...rest] = item.split(" - ");
+                return { title: title.trim(), desc: rest.join(" - ").trim() };
+              }
+              if (item.includes(": ")) {
+                const [title, ...rest] = item.split(": ");
+                return { title: title.trim(), desc: rest.join(": ").trim() };
+              }
+              return { title: item, desc: "" };
+            };
+
+            const defaultQuote = "“Speed is often a byproduct of clarity. Build the infrastructure that makes high performance inevitable.”";
+            const defaultAuthor = `${accountDoc?.name || authorName || "Marcus Vane"} · Founder, Arca`;
+
+            const parsePitch = (raw: string | undefined) => {
+              if (!raw || !raw.trim()) {
+                return { quote: defaultQuote, author: defaultAuthor };
+              }
+              if (raw.includes(":::")) {
+                const [q, ...a] = raw.split(":::");
+                return { quote: q.trim(), author: a.join(":::").trim() || defaultAuthor };
+              }
+              if (raw.includes("\n—") || raw.includes("\n-") || raw.includes("\n–")) {
+                const parts = raw.split(/\n[—–-]\s*/);
+                return { quote: parts[0].trim(), author: parts.slice(1).join(" ").trim() || defaultAuthor };
+              }
+              if (raw.includes(" — ")) {
+                const parts = raw.split(" — ");
+                return { quote: parts[0].trim(), author: parts.slice(1).join(" — ").trim() || defaultAuthor };
+              }
+              return { quote: raw.trim(), author: defaultAuthor };
+            };
+
+            const { quote: parsedQuote, author: parsedAuthor } = parsePitch(page.pitch);
+
+            const renderHighlightedHeadline = (text: string) => {
+              if (!text) {
+                return (
+                  <>
+                    The Architecture of <em style={{ fontStyle: "normal", color: accentColor }}>High-Output</em> Engineering
+                  </>
+                );
+              }
+              const parts = text.split(/(\*[^*]+\*|_[^_]+_|<em>.*?<\/em>)/g);
+              return (
+                <>
+                  {parts.map((part, i) => {
+                    if ((part.startsWith("*") && part.endsWith("*") && part.length > 2) ||
+                        (part.startsWith("_") && part.endsWith("_") && part.length > 2)) {
+                      return (
+                        <em key={i} style={{ fontStyle: "normal", color: accentColor }}>
+                          {part.slice(1, -1)}
+                        </em>
+                      );
+                    }
+                    if (part.startsWith("<em>") && part.endsWith("</em>")) {
+                      return (
+                        <em key={i} style={{ fontStyle: "normal", color: accentColor }}>
+                          {part.replace(/<\/?em>/g, "")}
+                        </em>
+                      );
+                    }
+                    return <span key={i}>{part}</span>;
+                  })}
+                </>
+              );
+            };
+
+            const defaultCoverImage = "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=1200&q=80";
+            const coverImage = activeImageUrl && activeImageUrl.trim() !== "" ? activeImageUrl : defaultCoverImage;
+
+            return (
+              <div
+                className="w-full flex-1 flex flex-col justify-between py-6 sm:py-10 px-5 sm:px-8 relative font-['Plus_Jakarta_Sans',sans-serif]"
+                style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
+              >
+                <div className="relative max-w-[1260px] w-full mx-auto">
+                  {/* BRAND HEADER */}
+                  <header className="flex items-center justify-center gap-3.5 mb-8 sm:mb-11">
+                    <div
+                      className="w-[46px] h-[46px] rounded-[14px] flex items-center justify-center font-extrabold text-[15px] tracking-[0.02em] text-white shrink-0 overflow-hidden shadow-lg"
+                      style={{
+                        background: `linear-gradient(135deg, ${accentColor}, #7a1830)`,
+                        boxShadow: `0 8px 26px ${accentColor}33`,
+                      }}
+                    >
+                      {logo ? (
+                        <img src={logo} alt="Logo" className="w-full h-full object-cover" />
+                      ) : (
+                        <span>{initials}</span>
+                      )}
+                    </div>
+                    <b className="text-[15px] font-extrabold tracking-[0.22em] uppercase leading-none">
+                      {businessName}
+                    </b>
+                  </header>
+
+                  {/* TWO-COLUMN GRID */}
+                  <div className="grid grid-cols-1 lg:grid-cols-[1.12fr_0.88fr] gap-8 sm:gap-12 lg:gap-16 items-start">
+                    {/* LEFT COLUMN: Editorial Content */}
+                    <section className="space-y-0 min-w-0">
+                      {/* Headline */}
+                      <h1
+                        className={`text-3xl sm:text-4xl lg:text-[46px] leading-[1.06] font-extrabold tracking-[-0.02em] mb-5 break-words [overflow-wrap:anywhere] ${
+                          isDark ? "text-white" : "text-[#111217]"
+                        }`}
+                      >
+                        {renderHighlightedHeadline(activeHeadline)}
+                      </h1>
+
+                      {/* Subheadline */}
+                      {(page.subheadline || !activeHeadline) && (
+                        <p
+                          className={`text-[15.5px] leading-[1.75] max-w-[520px] ${
+                            isDark ? "text-[#a9acb8]" : "text-[#4b5563]"
+                          }`}
+                        >
+                          {page.subheadline ||
+                            "A 42-page field guide to the organizational systems used by ambitious teams to maintain velocity without burning out."}
+                        </p>
+                      )}
+
+                      {/* Divider & Checklist items (only if bullets exist) */}
+                      {displayBullets.length > 0 && (
+                        <>
+                          <div
+                            className="h-[1px] my-7 sm:my-8"
+                            style={{ backgroundColor: isDark ? "#23242c" : "#e5e7eb" }}
+                          />
+
+                          {/* Kicker / Bullets Title */}
+                          <div className="mb-4">
+                            <p
+                              className="text-[11px] font-bold tracking-[0.2em] uppercase"
+                              style={{ color: accentColor }}
+                            >
+                              {page.bulletsTitle || "What you will create"}
+                            </p>
+                          </div>
+
+                          {/* Checklist items */}
+                          <div className="space-y-1">
+                            {displayBullets.map((item, idx) => {
+                              const parsed = parseBullet(item);
+                              return (
+                                <div
+                                  key={idx}
+                                  className="grid grid-cols-[26px_1fr] gap-3.5 py-2.5 items-start"
+                                >
+                                  <span
+                                    className="w-[26px] h-[26px] rounded-full flex items-center justify-center text-[12px] font-extrabold text-white shrink-0 mt-0.5 shadow-xs"
+                                    style={{ backgroundColor: accentColor }}
+                                  >
+                                    ✓
+                                  </span>
+                                  <div className="min-w-0">
+                                    <h3
+                                      className={`text-[15px] font-bold mb-1 leading-snug ${
+                                        isDark ? "text-white" : "text-[#111217]"
+                                      }`}
+                                    >
+                                      {parsed.title}
+                                    </h3>
+                                    {parsed.desc && (
+                                      <p
+                                        className={`text-[13px] leading-[1.65] ${
+                                          isDark ? "text-[#9a9da9]" : "text-[#6b7280]"
+                                        }`}
+                                      >
+                                        {parsed.desc}
+                                      </p>
+                                    )}
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </>
+                      )}
+
+                      {/* Quote / Pitch Block */}
+                      {page.pitch !== "__hidden__" && page.pitch !== "__none__" && page.pitch !== "__HIDDEN__" && parsedQuote && (
+                        <div
+                          className="mt-7 pl-4 sm:pl-5 space-y-1.5"
+                          style={{ borderLeft: `3px solid ${accentColor}` }}
+                        >
+                          <p
+                            className={`italic text-[14px] leading-[1.7] ${
+                              isDark ? "text-[#c9ccd6]" : "text-[#374151]"
+                            }`}
                           >
-                            <Check className="h-3 w-3 text-white stroke-[3px]" />
-                          </span>
-                          <span className={`break-words [overflow-wrap:anywhere] ${themeMode === "dark" ? "text-zinc-300" : "text-zinc-700"}`}>
-                            {line}
-                          </span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-              </div>
+                            {parsedQuote}
+                          </p>
+                          <small
+                            className={`block text-[10px] font-bold tracking-[0.16em] uppercase mt-2 ${
+                              isDark ? "text-[#8b8e99]" : "text-[#9ca3af]"
+                            }`}
+                          >
+                            {parsedAuthor}
+                          </small>
+                        </div>
+                      )}
+                    </section>
 
-              {/* Right Media Preview & Form Column */}
-              <div className="lg:col-span-5 space-y-4 w-full">
-                {/* Media Preview (Crisp proportion) */}
-                {activeImageUrl ? (
-                  <div
-                    className="rounded-2xl sm:rounded-3xl border h-[265px] sm:h-[275px] w-full flex items-center justify-center transition-all duration-300 relative overflow-hidden shadow-2xl border-zinc-200 dark:border-zinc-800/80 bg-zinc-100 dark:bg-[#121215]"
+                    {/* RIGHT COLUMN: Media Cover & Lead Capture Card */}
+                    <aside className="space-y-6">
+                      {/* Cover Media */}
+                      <div className="relative w-full aspect-[3/2] rounded-[22px] overflow-hidden shadow-[0_24px_60px_#00000066] border border-white/10 bg-zinc-900">
+                        <img
+                          src={coverImage}
+                          alt="Report cover preview"
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+
+                      {/* Sign-up Card */}
+                      <div
+                        className={`rounded-[22px] p-6 sm:p-7 border transition-all ${
+                          isDark
+                            ? "bg-[#14151b] border-[#26272f] shadow-2xl"
+                            : "bg-white border-[#e5e7eb] shadow-xl"
+                        }`}
+                      >
+                        <h2
+                          className={`text-[21px] font-extrabold mb-2 ${
+                            isDark ? "text-white" : "text-[#111217]"
+                          }`}
+                        >
+                          {page.formTitle || "Get the full report"}
+                        </h2>
+
+                        <p
+                          className={`text-[12.5px] leading-[1.6] mb-5 ${
+                            isDark ? "text-[#9a9da9]" : "text-[#6b7280]"
+                          }`}
+                        >
+                          {page.formSubtitle ||
+                            "The PDF and supplemental worksheets will arrive directly in your inbox."}
+                        </p>
+
+                        <MagnetSignupForm
+                          cta={page.cta || "Get instant access"}
+                          layout="premium-night"
+                          formTitle={page.formTitle || "Get the full report"}
+                          formSubtitle={page.formSubtitle}
+                          formButtonText={page.formButtonText || page.cta || "Get instant access"}
+                          deliverable={page.deliverable}
+                          accent={page.accent}
+                          pageId={page.id}
+                          pageName={page.name}
+                          pageSlug={page.slug}
+                          pageOwnerEmail={(page as any).userEmail}
+                          brandColor={accentColor}
+                          highlightIntensity={highlightIntensity}
+                          themeMode={themeMode}
+                          customPromptQuestion={page.customPromptQuestion}
+                          customPromptPlaceholder={page.customPromptPlaceholder}
+                          enableAiPersonalizedDeliverable={page.enableAiPersonalizedDeliverable}
+                          customFormFields={page.customFormFields}
+                          username={params.username}
+                          isVariantB={isVariantB}
+                          afterSignupOption={page.afterSignupOption}
+                          destinationUrl={page.destinationUrl}
+                        />
+
+                        {/* Fine Print Note */}
+                        <p
+                          className={`text-center text-[10.5px] mt-4 ${
+                            isDark ? "text-[#7d8090]" : "text-[#9ca3af]"
+                          }`}
+                        >
+                          No noise. Only occasional, high-signal notes.
+                        </p>
+                      </div>
+                    </aside>
+                  </div>
+
+                  {/* FOOTER */}
+                  <footer
+                    className="mt-12 pt-5 flex justify-between gap-3 flex-wrap text-[10px] font-semibold tracking-[0.14em] uppercase"
                     style={{
-                      borderColor: `${brandColor}${Math.round((0.18 + (highlightIntensity / 100) * 0.5) * 255).toString(16).padStart(2, '0')}`,
+                      borderTop: `1px solid ${isDark ? "#23242c" : "#e5e7eb"}`,
+                      color: isDark ? "#7d8090" : "#9ca3af",
                     }}
                   >
-                    <img src={activeImageUrl} alt="Resource" className="h-full w-full object-cover" />
-                  </div>
-                ) : null}
-
-                {/* Form Card */}
-                <div className="w-full">
-                  <MagnetSignupForm
-                    cta={page.cta}
-                    formTitle={page.formTitle || "Download for free now"}
-                    formSubtitle={page.formSubtitle}
-                    formButtonText={page.formButtonText}
-                    deliverable={page.deliverable}
-                    accent={page.accent}
-                    pageId={page.id}
-                    pageName={page.name}
-                    pageSlug={page.slug}
-                    pageOwnerEmail={(page as any).userEmail}
-                    brandColor={brandColor}
-                    highlightIntensity={highlightIntensity}
-                    themeMode={themeMode}
-                    customPromptQuestion={page.customPromptQuestion}
-                    customPromptPlaceholder={page.customPromptPlaceholder}
-                    enableAiPersonalizedDeliverable={page.enableAiPersonalizedDeliverable}
-                    customFormFields={page.customFormFields}
-                    username={params.username}
-                    isVariantB={isVariantB}
-                    afterSignupOption={page.afterSignupOption}
-                    destinationUrl={page.destinationUrl}
-                  />
-                  {page.deliverable && (
-                    <p className={`mt-1.5 flex items-center justify-center gap-1.5 text-[11px] sm:text-xs font-medium ${themeMode === "dark" ? "text-zinc-400" : "text-zinc-600"
-                      }`}>
-                      <GiftIcon className="h-3.5 w-3.5" />
-                      {page.deliverable}
-                    </p>
-                  )}
+                    <span>
+                      © {currentYear} {businessName} · Private circulation
+                    </span>
+                    <span>By {accountDoc?.name || authorName || "Marcus Vane"}</span>
+                  </footer>
                 </div>
               </div>
-            </div>
-          </div>
+            );
+          })()
         )}
+
       </div>
 
       <footer className="w-full py-1.5 sm:py-2 text-center text-[10px] sm:text-[11px] text-[#5c5650] shrink-0">

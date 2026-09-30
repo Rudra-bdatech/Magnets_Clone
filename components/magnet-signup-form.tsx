@@ -47,7 +47,7 @@ export default function MagnetSignupForm({
   customFormFields?: CustomFormField[];
   username?: string;
   isVariantB?: boolean;
-  layout?: "standard" | "horizontal-glass" | "split-panel" | "editorial" | "monograph" | "brutalist" | "poster" | "collage-zine";
+  layout?: "standard" | "horizontal-glass" | "split-panel" | "editorial" | "monograph" | "brutalist" | "poster" | "collage-zine" | "premium-night";
   afterSignupOption?: "standard" | "elsewhere" | "custom";
   destinationUrl?: string;
 }) {
@@ -239,7 +239,7 @@ export default function MagnetSignupForm({
   };
 
   return (
-    <>
+    <div className="w-full" suppressHydrationWarning>
       {done ? (
         <div className={`rounded-2xl border p-5 text-left transition-colors duration-300 ${themeMode === "dark"
             ? "bg-[#161619] border-[#252529] text-white"
@@ -263,6 +263,148 @@ export default function MagnetSignupForm({
             <span>📥 Click Here to Download Resource Immediately</span>
           </a>
         </div>
+      ) : layout === "premium-night" ? (
+        (() => {
+          const isDark = themeMode === "dark";
+          const accentColor = brandColor || "#fb4d6a";
+
+          return (
+            <div className="w-full" suppressHydrationWarning style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+              <form onSubmit={handleSubmit} className="space-y-3.5" suppressHydrationWarning>
+                <div className="field">
+                  <input
+                    type="text"
+                    required
+                    disabled={loading}
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="Full name"
+                    className={`w-full px-4 py-3.5 rounded-[14px] text-sm outline-none border transition ${
+                      isDark
+                        ? "bg-[#0c0d11] border-[#2c2d36] text-white placeholder:text-[#6f7280] focus:border-[#fb4d6a]"
+                        : "bg-[#f8fafc] border-[#cbd5e1] text-zinc-900 placeholder:text-zinc-400 focus:border-[#fb4d6a]"
+                    }`}
+                  />
+                </div>
+                <div className="field">
+                  <input
+                    type="email"
+                    required
+                    disabled={loading}
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="Work email"
+                    className={`w-full px-4 py-3.5 rounded-[14px] text-sm outline-none border transition ${
+                      isDark
+                        ? "bg-[#0c0d11] border-[#2c2d36] text-white placeholder:text-[#6f7280] focus:border-[#fb4d6a]"
+                        : "bg-[#f8fafc] border-[#cbd5e1] text-zinc-900 placeholder:text-zinc-400 focus:border-[#fb4d6a]"
+                    }`}
+                  />
+                </div>
+
+                {/* Custom Form Fields */}
+                {customFormFields && customFormFields.length > 0 && (
+                  <div className="space-y-3">
+                    {customFormFields.map((field) => (
+                      <div key={field.id} className="field">
+                        {field.type === "textarea" ? (
+                          <textarea
+                            required={field.required}
+                            disabled={loading}
+                            placeholder={`${field.label || field.placeholder || "Answer"}${field.required ? " *" : ""}`}
+                            value={customFieldValues[field.id] || ""}
+                            onChange={(e) => handleCustomFieldChange(field.id, e.target.value)}
+                            rows={2}
+                            className={`w-full px-4 py-3.5 rounded-[14px] text-sm outline-none border transition ${
+                              isDark
+                                ? "bg-[#0c0d11] border-[#2c2d36] text-white placeholder:text-[#6f7280]"
+                                : "bg-[#f8fafc] border-[#cbd5e1] text-zinc-900 placeholder:text-zinc-400"
+                            }`}
+                          />
+                        ) : field.type === "select" ? (
+                          <select
+                            required={field.required}
+                            disabled={loading}
+                            value={customFieldValues[field.id] || ""}
+                            onChange={(e) => handleCustomFieldChange(field.id, e.target.value)}
+                            className={`w-full px-4 py-3.5 rounded-[14px] text-sm outline-none border transition ${
+                              isDark
+                                ? "bg-[#0c0d11] border-[#2c2d36] text-white"
+                                : "bg-[#f8fafc] border-[#cbd5e1] text-zinc-900"
+                            }`}
+                          >
+                            <option value="">{field.label || "Select..."}</option>
+                            {field.options?.map((opt: string) => (
+                              <option key={opt} value={opt}>{opt}</option>
+                            ))}
+                          </select>
+                        ) : (
+                          <input
+                            type={field.type || "text"}
+                            required={field.required}
+                            disabled={loading}
+                            placeholder={`${field.label || field.placeholder || "Answer"}${field.required ? " *" : ""}`}
+                            value={customFieldValues[field.id] || ""}
+                            onChange={(e) => handleCustomFieldChange(field.id, e.target.value)}
+                            className={`w-full px-4 py-3.5 rounded-[14px] text-sm outline-none border transition ${
+                              isDark
+                                ? "bg-[#0c0d11] border-[#2c2d36] text-white placeholder:text-[#6f7280]"
+                                : "bg-[#f8fafc] border-[#cbd5e1] text-zinc-900 placeholder:text-zinc-400"
+                            }`}
+                          />
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* AI Personalized Deliverable Field */}
+                {enableAiPersonalizedDeliverable && (
+                  <div className="field">
+                    <input
+                      type="text"
+                      required
+                      disabled={loading}
+                      value={customAnswer}
+                      onChange={(e) => setCustomAnswer(e.target.value)}
+                      placeholder={customPromptPlaceholder || customPromptQuestion || "Your focus / objective"}
+                      className={`w-full px-4 py-3.5 rounded-[14px] text-sm outline-none border transition ${
+                        isDark
+                          ? "bg-[#0c0d11] border-[#2c2d36] text-white placeholder:text-[#6f7280]"
+                          : "bg-[#f8fafc] border-[#cbd5e1] text-zinc-900 placeholder:text-zinc-400"
+                      }`}
+                    />
+                  </div>
+                )}
+
+                {errorMsg && (
+                  <div className="p-3 rounded-[12px] bg-rose-500/10 border border-rose-500/20 text-xs font-semibold text-rose-500 text-center">
+                    {errorMsg}
+                  </div>
+                )}
+
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full text-white py-3.5 px-6 rounded-[14px] font-extrabold text-sm tracking-[0.01em] shadow-lg transition hover:brightness-110 active:scale-[0.99] disabled:opacity-50 cursor-pointer"
+                  style={{ 
+                    backgroundColor: accentColor,
+                    boxShadow: `0 10px 24px -6px ${accentColor}66`
+                  }}
+                >
+                  {loading ? (
+                    <span className="flex items-center justify-center gap-2">
+                      <Loader2 className="h-4 w-4 animate-spin text-white" />
+                      <span>Processing...</span>
+                    </span>
+                  ) : (
+                    formButtonText || cta || "Get instant access"
+                  )}
+                </button>
+              </form>
+            </div>
+          );
+        })()
       ) : layout === "collage-zine" ? (
         (() => {
           const isDark = themeMode === "dark";
@@ -1476,6 +1618,6 @@ export default function MagnetSignupForm({
           </form>
         </div>
       )}
-    </>
+    </div>
   );
-}
+}

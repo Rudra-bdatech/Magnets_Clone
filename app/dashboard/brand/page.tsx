@@ -478,8 +478,8 @@ export default function BrandPage() {
                 >
                   {/* Mock page container */}
                   <div className="p-3.5 sm:p-5 md:p-6">
-                    {/* Header brand name / logo (Hidden for template2, template3, template4, template5, template6, template7, and template8) */}
-                    {templateId !== "template2" && templateId !== "template3" && templateId !== "template4" && templateId !== "template5" && templateId !== "template6" && templateId !== "template7" && templateId !== "template8" && (
+                    {/* Header brand name / logo (Hidden for templates with integrated headers) */}
+                    {templateId !== "template1" && templateId !== "template2" && templateId !== "template3" && templateId !== "template4" && templateId !== "template5" && templateId !== "template6" && templateId !== "template7" && templateId !== "template8" && (
                       <div className="flex items-center gap-3 mb-5 sm:mb-8 justify-center">
                         <div className={`h-10 w-10 sm:h-11 sm:w-11 rounded-xl flex items-center justify-center bg-transparent overflow-hidden ${logo ? "border-none" : "border border-dashed border-[#a1a1aa]/45"}`}>
                           {logo ? (
@@ -516,7 +516,7 @@ export default function BrandPage() {
                     </AnimatePresence>
 
                     {/* Footer inside Preview (Hidden for templates with integrated footers) */}
-                    {templateId !== "template2" && templateId !== "template5" && templateId !== "template6" && templateId !== "template7" && templateId !== "template8" && (
+                    {templateId !== "template1" && templateId !== "template2" && templateId !== "template5" && templateId !== "template6" && templateId !== "template7" && templateId !== "template8" && (
                       <div className={`mt-10 text-center text-[10px] border-t pt-4 transition-all duration-300 ${themeMode === "dark" ? "border-zinc-800 text-zinc-500" : "border-zinc-200 text-zinc-400"
                         }`}>
                         All rights reserved 2026
