@@ -562,7 +562,17 @@ export async function handleAddLead(data: any, req: Request, normEmail: string |
 
 export async function handleDeleteLead(data: any, normEmail: string | null) {
   const { id } = data;
-  await LeadModel.deleteOne({ id, userEmail: normEmail });
+  if (!id) return NextResponse.json({ success: false, message: "Missing lead id" }, { status: 400 });
+  const filter: any = { id };
+  if (normEmail) {
+    filter.$or = [
+      { userEmail: { $regex: new RegExp(`^${normEmail.trim()}$`, "i") } },
+      { userEmail: { $exists: false } },
+      { userEmail: null },
+      { userEmail: "" },
+    ];
+  }
+  await LeadModel.deleteOne(filter);
   return NextResponse.json({ success: true });
 }
 
