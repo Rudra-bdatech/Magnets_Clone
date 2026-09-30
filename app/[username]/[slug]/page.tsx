@@ -2725,10 +2725,12 @@ export default async function MagnetPageRoute({
                       {/* Divider & Checklist items (only if bullets exist) */}
                       {displayBullets.length > 0 && (
                         <>
-                          <div
-                            className="h-[1px] my-9 sm:my-11"
-                            style={{ backgroundColor: isDark ? "#23242c" : "#e5e7eb" }}
-                          />
+                          <div className="py-8 sm:py-10">
+                            <div
+                              className="h-[1px] w-full"
+                              style={{ backgroundColor: isDark ? "#23242c" : "#e5e7eb" }}
+                            />
+                          </div>
 
                           {/* Kicker / Bullets Title */}
                           <div className="mb-6">

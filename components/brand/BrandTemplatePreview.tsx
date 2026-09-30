@@ -160,7 +160,7 @@ const BrandTemplatePreview = memo(function BrandTemplatePreview({
                   </h3>
 
                   <p
-                    className={`text-[14.5px] leading-[1.75] max-w-[560px] ${
+                    className={`text-[15px] sm:text-[16px] leading-[1.8] max-w-[580px] mb-2 ${
                       isDark ? "text-[#a9acb8]" : "text-[#4b5563]"
                     }`}
                   >
@@ -169,13 +169,15 @@ const BrandTemplatePreview = memo(function BrandTemplatePreview({
 
                   {displayBullets.length > 0 && (
                     <>
-                      <div
-                        className="h-[1px] my-6"
-                        style={{ backgroundColor: isDark ? "#23242c" : "#e5e7eb" }}
-                      />
+                      <div className="py-8 sm:py-10">
+                        <div
+                          className="h-[1px] w-full"
+                          style={{ backgroundColor: isDark ? "#23242c" : "#e5e7eb" }}
+                        />
+                      </div>
 
                       <p
-                        className="text-[10.5px] font-bold tracking-[0.2em] uppercase mb-3"
+                        className="text-[11px] font-bold tracking-[0.2em] uppercase mb-6"
                         style={{ color: accentColor }}
                       >
                         {latestPage?.bulletsTitle || "What you will create"}
