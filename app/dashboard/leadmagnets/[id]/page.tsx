@@ -214,8 +214,8 @@ export default function EditLeadMagnetPage() {
           // Populate form fields once from DB (guarded by hasPopulatedForm ref)
           if (!hasPopulatedForm.current) {
             hasPopulatedForm.current = true;
-            const cleanHeadline = found.headline && found.headline !== "hi" ? found.headline : (found.name || "");
-            const cleanSubheadline = found.subheadline && found.subheadline !== "Enter your email to get instant access." ? found.subheadline : "";
+            const cleanHeadline = found.headline && found.headline !== "hi" && found.headline !== "Your headline goes here" ? found.headline : "";
+            const cleanSubheadline = found.subheadline && found.subheadline !== "Enter your email to get instant access." && found.subheadline !== "Tell visitors what they get and why it is worth their email." ? found.subheadline : "";
             setHeadline(cleanHeadline);
             setSubheadline(cleanSubheadline);
             if (found.pitch) setPitch(found.pitch);
@@ -367,8 +367,8 @@ export default function EditLeadMagnetPage() {
   }, [searchParams]);
 
   // Page Content Initial Values
-  const initialHeadline = page ? (page.headline && page.headline !== "hi" ? page.headline : (page.name || "")) : "";
-  const initialSubheadline = page ? (page.subheadline && page.subheadline !== "Enter your email to get instant access." ? page.subheadline : "") : "";
+  const initialHeadline = page ? (page.headline && page.headline !== "hi" && page.headline !== "Your headline goes here" ? page.headline : "") : "";
+  const initialSubheadline = page ? (page.subheadline && page.subheadline !== "Enter your email to get instant access." && page.subheadline !== "Tell visitors what they get and why it is worth their email." ? page.subheadline : "") : "";
   const initialPitch = page?.pitch || "";
   const initialBullets = Array.isArray(page?.bullets) ? page.bullets : [];
   const initialImage = page?.imageUrl !== undefined ? page.imageUrl : null;

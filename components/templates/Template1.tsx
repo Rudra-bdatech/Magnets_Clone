@@ -85,17 +85,34 @@ export default function Template1(props: TemplateProps) {
   }, [headline, subheadline, pitch, headlineRef, subheadlineRef, pitchRef]);
 
   // Default bullets matching Template 10 — Premium Night reference
-  const defaultBullets = [
-    "The Signal-to-Noise Protocol — Audit attention and eliminate low-leverage activities through the Four Filters.",
-    "Recursive Hiring Loops — Build a talent engine that identifies multipliers before they reach the market.",
-    "Velocity Without Chaos — Replace recurring meetings with lightweight synchronization rituals.",
+  const defaultBulletPlaceholders = [
+    {
+      title: "The Signal-to-Noise Protocol",
+      desc: "Audit attention and eliminate low-leverage activities through the Four Filters.",
+    },
+    {
+      title: "Recursive Hiring Loops",
+      desc: "Build a talent engine that identifies multipliers before they reach the market.",
+    },
+    {
+      title: "Velocity Without Chaos",
+      desc: "Replace recurring meetings with lightweight synchronization rituals.",
+    },
   ];
 
-  const isBulletsHidden = Array.isArray(bullets) && bullets.length === 1 && bullets[0] === "__hidden__";
+  const defaultBullets = defaultBulletPlaceholders.map(
+    (b) => `${b.title} — ${b.desc}`
+  );
+
+  const isBulletsHidden =
+    Array.isArray(bullets) && bullets.length === 1 && bullets[0] === "__hidden__";
+  const hasCustomBullets = Array.isArray(bullets) && bullets.length > 0 && !isBulletsHidden;
   const currentBullets: string[] = isBulletsHidden
     ? []
-    : Array.isArray(bullets) && bullets.length > 0
+    : hasCustomBullets
     ? bullets
+    : isEditor
+    ? ["", "", ""]
     : defaultBullets;
 
   const parseBullet = (item: string) => {
@@ -134,15 +151,15 @@ export default function Template1(props: TemplateProps) {
     if (!setBullets) return;
     const next = [...currentBullets];
     const parsed = parseBullet(next[index] || "");
-    const title = parsed.title || `Framework ${index + 1}`;
-    next[index] = `${title} — ${newDesc}`;
+    const title = parsed.title;
+    next[index] = title ? `${title} — ${newDesc}` : `— ${newDesc}`;
     setBullets(next);
   };
 
   const handleAddBullet = () => {
     if (!setBullets) return;
     const baseList = currentBullets.length > 0 ? currentBullets : [];
-    setBullets([...baseList, "New Framework — Description of what you will build or learn."]);
+    setBullets([...baseList, ""]);
   };
 
   const handleRemoveBullet = (index: number) => {
@@ -158,28 +175,28 @@ export default function Template1(props: TemplateProps) {
 
   const parsePitch = (raw: string | undefined) => {
     if (!raw || !raw.trim()) {
-      return { quote: defaultQuote, author: defaultAuthor };
+      return { quote: "", author: "" };
     }
     if (raw.includes(":::")) {
       const [q, ...a] = raw.split(":::");
-      return { quote: q.trim(), author: a.join(":::").trim() || defaultAuthor };
+      return { quote: q.trim(), author: a.join(":::").trim() };
     }
     if (raw.includes("\n—") || raw.includes("\n-") || raw.includes("\n–")) {
       const parts = raw.split(/\n[—–-]\s*/);
-      return { quote: parts[0].trim(), author: parts.slice(1).join(" ").trim() || defaultAuthor };
+      return { quote: parts[0].trim(), author: parts.slice(1).join(" ").trim() };
     }
     if (raw.includes(" — ")) {
       const parts = raw.split(" — ");
-      return { quote: parts[0].trim(), author: parts.slice(1).join(" — ").trim() || defaultAuthor };
+      return { quote: parts[0].trim(), author: parts.slice(1).join(" — ").trim() };
     }
-    return { quote: raw.trim(), author: defaultAuthor };
+    return { quote: raw.trim(), author: "" };
   };
 
   const { quote: parsedQuote, author: parsedAuthor } = parsePitch(pitch);
 
   const handleQuoteChange = (newQuote: string) => {
     if (!setPitch) return;
-    setPitch(`${newQuote} ::: ${parsedAuthor}`);
+    setPitch(parsedAuthor ? `${newQuote} ::: ${parsedAuthor}` : newQuote);
   };
 
   const handleAuthorChange = (newAuthor: string) => {
@@ -395,6 +412,12 @@ export default function Template1(props: TemplateProps) {
                 <div className="space-y-2">
               {currentBullets.map((item, idx) => {
                 const parsed = parseBullet(item);
+                const placeholderTitle =
+                  defaultBulletPlaceholders[idx % defaultBulletPlaceholders.length]?.title ||
+                  "Framework title...";
+                const placeholderDesc =
+                  defaultBulletPlaceholders[idx % defaultBulletPlaceholders.length]?.desc ||
+                  "Key description / takeaway...";
                 return (
                   <div
                     key={idx}
@@ -417,7 +440,7 @@ export default function Template1(props: TemplateProps) {
                               className={`w-full text-[15px] font-bold bg-transparent outline-none ${
                                 isDark ? "text-white placeholder:text-zinc-600" : "text-[#111217] placeholder:text-zinc-400"
                               }`}
-                              placeholder="Framework title..."
+                              placeholder={placeholderTitle}
                             />
                             <button
                               type="button"
@@ -435,7 +458,7 @@ export default function Template1(props: TemplateProps) {
                             className={`w-full text-[13px] leading-[1.65] bg-transparent outline-none ${
                               isDark ? "text-[#9a9da9] placeholder:text-zinc-600" : "text-[#6b7280] placeholder:text-zinc-400"
                             }`}
-                            placeholder="Key description / takeaway..."
+                            placeholder={placeholderDesc}
                           />
                         </div>
                       ) : (
@@ -445,15 +468,15 @@ export default function Template1(props: TemplateProps) {
                               isDark ? "text-white" : "text-[#111217]"
                             }`}
                           >
-                            {parsed.title}
+                            {parsed.title || placeholderTitle}
                           </h3>
-                          {parsed.desc && (
+                          {(parsed.desc || (!parsed.title && placeholderDesc)) && (
                             <p
                               className={`text-[13px] leading-[1.65] ${
                                 isDark ? "text-[#9a9da9]" : "text-[#6b7280]"
                               }`}
                             >
-                              {parsed.desc}
+                              {parsed.desc || placeholderDesc}
                             </p>
                           )}
                         </>
@@ -539,7 +562,7 @@ export default function Template1(props: TemplateProps) {
                       className={`w-full italic text-[14px] leading-[1.7] bg-transparent outline-none resize-none ${
                         isDark ? "text-[#c9ccd6] placeholder:text-zinc-600" : "text-[#374151] placeholder:text-zinc-400"
                       }`}
-                      placeholder="“Speed is often a byproduct of clarity. Build the infrastructure that makes high performance inevitable.”"
+                      placeholder={defaultQuote}
                     />
                     <input
                       type="text"
@@ -548,7 +571,7 @@ export default function Template1(props: TemplateProps) {
                       className={`block text-[10px] font-bold tracking-[0.16em] uppercase bg-transparent outline-none w-full ${
                         isDark ? "text-[#8b8e99] placeholder:text-zinc-600" : "text-[#9ca3af] placeholder:text-zinc-400"
                       }`}
-                      placeholder="Marcus Vane · Founder, Arca"
+                      placeholder={defaultAuthor}
                     />
                   </div>
                 ) : (
@@ -558,14 +581,14 @@ export default function Template1(props: TemplateProps) {
                         isDark ? "text-[#c9ccd6]" : "text-[#374151]"
                       }`}
                     >
-                      {parsedQuote}
+                      {parsedQuote || defaultQuote}
                     </p>
                     <small
                       className={`block text-[10px] font-bold tracking-[0.16em] uppercase mt-2 ${
                         isDark ? "text-[#8b8e99]" : "text-[#9ca3af]"
                       }`}
                     >
-                      {parsedAuthor}
+                      {parsedAuthor || defaultAuthor}
                     </small>
                   </>
                 )}

@@ -224,7 +224,7 @@ export default function SequenceTab({
             {/* Left Sidebar List of Sequence Emails */}
             <div className={`lg:col-span-4 rounded-2xl border p-4 space-y-3 transition-colors duration-200 ${(account?.themeMode || "light") === "dark" ? "border-[#27272A] bg-[#18181B] text-white" : "border-zinc-200 bg-white text-zinc-900"}`}>
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold uppercase tracking-wider text-zinc-400">
+                <span className="text-xs font-bold uppercase tracking-wider text-zinc-600 dark:text-zinc-400">
                   Sequence emails ({sequenceEmails.length})
                 </span>
                 <button
@@ -240,21 +240,21 @@ export default function SequenceTab({
 
               <div className="space-y-2 max-h-[520px] overflow-y-auto pr-1">
                 {/* Step 1: Initial Resource Delivery Milestone Indicator */}
-                <div className="rounded-xl p-2.5 border border-emerald-200 dark:border-emerald-900/60 bg-emerald-50/60 dark:bg-emerald-950/30 text-emerald-900 dark:text-emerald-200 flex items-center justify-between gap-2 shadow-2xs">
+                <div className="rounded-xl p-2.5 border border-emerald-300/90 dark:border-emerald-800/70 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-950 dark:text-emerald-100 flex items-center justify-between gap-2 shadow-2xs">
                   <div className="min-w-0 flex-1 flex items-center gap-2">
-                    <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-md bg-emerald-600 text-[10px] font-extrabold text-white">
+                    <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-md bg-emerald-600 text-[10px] font-extrabold text-white shadow-xs">
                       1
                     </span>
                     <div className="min-w-0 flex-1">
-                      <span className="block text-xs font-bold truncate">
+                      <span className="block text-xs font-extrabold text-emerald-950 dark:text-emerald-100 truncate">
                         ⚡ Instant Delivery Email
                       </span>
-                      <span className="block text-[10px] text-emerald-700 dark:text-emerald-400 font-medium truncate">
+                      <span className="block text-[10px] text-emerald-800 dark:text-emerald-300 font-semibold truncate">
                         Dispatched immediately upon signup
                       </span>
                     </div>
                   </div>
-                  <span className="text-[10px] font-extrabold text-emerald-700 dark:text-emerald-300 bg-emerald-100/80 dark:bg-emerald-950/80 px-1.5 py-0.5 rounded-md shrink-0 border border-emerald-200 dark:border-emerald-800">
+                  <span className="text-[10px] font-extrabold text-emerald-900 dark:text-emerald-200 bg-emerald-200/80 dark:bg-emerald-900/60 px-2 py-0.5 rounded-md shrink-0 border border-emerald-300 dark:border-emerald-700/60 shadow-2xs">
                     Step 1
                   </span>
                 </div>

@@ -912,9 +912,9 @@ export default function SequencesPage() {
                         <div className="mt-3 flex items-center gap-1.5 overflow-x-auto rounded-xl border border-zinc-100 dark:border-white/5 bg-zinc-50/80 dark:bg-white/[0.02] p-1.5 sm:p-2 scrollbar-none">
                           {/* Step 1: Instant Resource Delivery Node */}
                           <div className="flex items-center gap-1 shrink-0">
-                            <div className="flex items-center gap-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200/80 dark:border-emerald-800/40 px-2 py-1 text-[10px] sm:text-[10.5px] shadow-2xs">
-                              <Zap className="h-3 w-3 text-emerald-600 dark:text-emerald-400 shrink-0" />
-                              <span className="truncate font-bold text-emerald-800 dark:text-emerald-300">
+                            <div className="flex items-center gap-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-300/80 dark:border-emerald-800/60 px-2 py-1 text-[10px] sm:text-[10.5px] shadow-2xs">
+                              <Zap className="h-3 w-3 text-emerald-700 dark:text-emerald-400 shrink-0" />
+                              <span className="truncate font-extrabold text-emerald-950 dark:text-emerald-200">
                                 1. Instant Delivery
                               </span>
                             </div>

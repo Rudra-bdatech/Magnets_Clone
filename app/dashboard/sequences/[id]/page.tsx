@@ -822,21 +822,21 @@ export default function SequenceEditor() {
                       <span className="flex h-6 w-6 sm:h-7 sm:w-7 shrink-0 items-center justify-center rounded-lg sm:rounded-xl bg-emerald-600 text-xs font-extrabold text-white shadow-xs">
                         1
                       </span>
-                      <div className="flex items-center gap-1.5 rounded-xl border border-emerald-200 dark:border-emerald-800/60 bg-emerald-100/60 dark:bg-emerald-950/50 px-2 sm:px-2.5 py-1 text-xs font-bold text-emerald-800 dark:text-emerald-300">
-                        <Zap className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                      <div className="flex items-center gap-1.5 rounded-xl border border-emerald-300/80 dark:border-emerald-800/60 bg-emerald-100/80 dark:bg-emerald-950/50 px-2 sm:px-2.5 py-1 text-xs font-bold text-emerald-950 dark:text-emerald-200">
+                        <Zap className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-emerald-700 dark:text-emerald-400 shrink-0" />
                         <span>Instant Delivery (On Signup)</span>
                       </div>
-                      <span className="text-[11px] font-semibold text-zinc-500 dark:text-zinc-400">
+                      <span className="text-[11px] font-semibold text-zinc-600 dark:text-zinc-400">
                         Initial resource download email
                       </span>
                     </div>
 
                     <div className="flex items-center gap-1.5 sm:gap-2 ml-auto sm:ml-0">
-                      <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] sm:text-[11px] font-bold text-emerald-600 dark:text-emerald-400">
+                      <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] sm:text-[11px] font-bold text-emerald-700 dark:text-emerald-400">
                         <Check className="h-3 w-3 shrink-0" />
                         100% Delivered ({delivered.toLocaleString()})
                       </span>
-                      <span className="inline-flex items-center gap-1 rounded-full bg-indigo-500/10 px-2 py-0.5 text-[10px] sm:text-[11px] font-bold text-indigo-600 dark:text-indigo-400">
+                      <span className="inline-flex items-center gap-1 rounded-full bg-indigo-500/10 px-2 py-0.5 text-[10px] sm:text-[11px] font-bold text-indigo-700 dark:text-indigo-400">
                         <Eye className="h-3 w-3 shrink-0" />
                         {overallOpenRate}% Open Rate
                       </span>
@@ -846,7 +846,7 @@ export default function SequenceEditor() {
                   <div className="mt-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white/80 dark:bg-zinc-900/60 rounded-xl p-3 border border-emerald-100 dark:border-emerald-950/40">
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2">
-                        <p className="text-[10px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
+                        <p className="text-[10px] font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">
                           Resource Email Subject
                         </p>
                       </div>
