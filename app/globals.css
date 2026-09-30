@@ -1106,6 +1106,26 @@ textarea {
   min-height: 220px;
 }
 
+/* ─── TipTap & Prose Typography Fixes (Bold & Color Inheritance) ────────── */
+.ProseMirror strong,
+.ProseMirror b,
+.email-rendered-content strong,
+.email-rendered-content b {
+  color: inherit !important;
+  font-weight: 700;
+}
+
+.ProseMirror span[style*="color"] strong,
+.ProseMirror span[style*="color"] b,
+.ProseMirror strong span[style*="color"],
+.ProseMirror b span[style*="color"],
+.email-rendered-content span[style*="color"] strong,
+.email-rendered-content span[style*="color"] b,
+.email-rendered-content strong span[style*="color"],
+.email-rendered-content b span[style*="color"] {
+  color: inherit !important;
+}
+
 /* ─── Tiptap Table Styling — Clean Email Table Layout ──────────────────────── */
 .ProseMirror table {
   border-collapse: collapse;

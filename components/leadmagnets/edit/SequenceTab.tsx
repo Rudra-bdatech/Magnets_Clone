@@ -534,7 +534,7 @@ export default function SequenceTab({
                       <button
                         type="button"
                         disabled={!sequenceEnabled}
-                        onClick={() => editor?.chain().focus().unsetAllMarks().clearNodes().run()}
+                        onClick={() => editor?.chain().focus().unsetAllMarks().unsetColor().unsetTextAlign().clearNodes().run()}
                         title="Clear Format"
                         className="p-1.5 rounded transition hover:bg-zinc-200 dark:hover:bg-zinc-800 cursor-pointer disabled:opacity-50"
                       >
@@ -827,7 +827,7 @@ export default function SequenceTab({
                     <div className="p-4 min-h-[220px]">
                       <EditorContent
                         editor={editor}
-                        className={`prose dark:prose-invert max-w-none text-sm leading-relaxed outline-none focus:outline-none focus:ring-0 ring-0 border-none min-h-[220px] ${(account?.themeMode || "light") === "dark" ? "text-zinc-100" : "text-zinc-800"}`}
+                        className={`prose ${(account?.themeMode || "light") === "dark" ? "prose-invert text-zinc-100" : "text-zinc-800"} max-w-none text-sm leading-relaxed outline-none focus:outline-none focus:ring-0 ring-0 border-none min-h-[220px]`}
                       />
                     </div>
                   </div>
