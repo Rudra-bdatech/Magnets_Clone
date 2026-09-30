@@ -151,7 +151,7 @@ export default async function ThankYouPage({
 
   return (
     <main
-      className={`min-h-screen lg:h-screen lg:max-h-screen font-sans transition-colors duration-300 relative flex flex-col justify-between overflow-y-auto lg:overflow-hidden ${themeMode === "dark" ? "bg-[#0E0E10] text-white" : "bg-[#FAFAFA] text-[#18181b]"
+      className={`min-h-screen font-sans transition-colors duration-300 relative flex flex-col justify-between overflow-y-auto ${themeMode === "dark" ? "bg-[#0E0E10] text-white" : "bg-[#FAFAFA] text-[#18181b]"
         }`}
       style={{
         colorScheme: themeMode === "dark" ? "dark" : "light",
@@ -176,7 +176,7 @@ export default async function ThankYouPage({
       </header>
 
       {/* Main Animated Content */}
-      <div className="flex-1 flex flex-col items-center justify-center py-2">
+      <div className="flex-1 flex flex-col items-center justify-start sm:justify-center py-4 sm:py-8">
         <ThankYouAnimatedContent
           subscriberName={subscriberName}
           subscriberEmail={subscriberEmail}

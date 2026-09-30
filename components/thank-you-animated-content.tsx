@@ -298,7 +298,7 @@ export default function ThankYouAnimatedContent({
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto space-y-3.5 py-1 px-4 sm:px-6 relative">
+    <div className="w-full max-w-4xl mx-auto space-y-4 py-2 pb-6 px-4 sm:px-6 relative">
       {/* Confetti Explosion Component */}
       <ConfettiCanvas brandColor={brandColor} />
 
@@ -598,7 +598,7 @@ export default function ThankYouAnimatedContent({
             </div>
 
             {/* List of Resource Cards */}
-            <div className="space-y-2.5 pt-1">
+            <div className={`space-y-2.5 pt-1 ${resources.length > 3 ? "max-h-[290px] sm:max-h-[330px] overflow-y-auto pr-1.5 scrollbar-thin" : ""}`}>
               {resources.map((resItem, idx) => {
                 const isDownloaded = downloadedResMap[resItem.id];
                 const isDownloading = downloadingResId === resItem.id;
