@@ -2580,7 +2580,12 @@ export default async function MagnetPageRoute({
               "Velocity Without Chaos — Replace recurring meetings with lightweight synchronization rituals.",
             ];
 
-            const displayBullets = page.bullets !== undefined && Array.isArray(page.bullets) ? page.bullets : defaultBullets;
+            const isBulletsHidden = Array.isArray(page.bullets) && page.bullets.length === 1 && page.bullets[0] === "__hidden__";
+            const displayBullets = isBulletsHidden
+              ? []
+              : Array.isArray(page.bullets) && page.bullets.length > 0
+              ? page.bullets
+              : defaultBullets;
 
             const parseBullet = (item: string) => {
               if (!item) return { title: "", desc: "" };

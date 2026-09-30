@@ -44,7 +44,12 @@ const BrandTemplatePreview = memo(function BrandTemplatePreview({
           "Recursive Hiring Loops — Build a talent engine that identifies multipliers before they reach the market.",
           "Velocity Without Chaos — Replace recurring meetings with lightweight synchronization rituals.",
         ];
-        const displayBullets = latestPage?.bullets !== undefined && Array.isArray(latestPage.bullets) ? latestPage.bullets : defaultBullets;
+        const isBulletsHidden = Array.isArray(latestPage?.bullets) && latestPage.bullets.length === 1 && latestPage.bullets[0] === "__hidden__";
+        const displayBullets = isBulletsHidden
+          ? []
+          : Array.isArray(latestPage?.bullets) && latestPage.bullets.length > 0
+          ? latestPage.bullets
+          : defaultBullets;
 
         const parseBullet = (item: string) => {
           if (!item) return { title: "", desc: "" };

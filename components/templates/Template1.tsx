@@ -75,8 +75,12 @@ export default function Template1(props: TemplateProps) {
     "Velocity Without Chaos — Replace recurring meetings with lightweight synchronization rituals.",
   ];
 
-  const currentBullets: string[] =
-    bullets !== undefined && Array.isArray(bullets) ? bullets : defaultBullets;
+  const isBulletsHidden = Array.isArray(bullets) && bullets.length === 1 && bullets[0] === "__hidden__";
+  const currentBullets: string[] = isBulletsHidden
+    ? []
+    : Array.isArray(bullets) && bullets.length > 0
+    ? bullets
+    : defaultBullets;
 
   const parseBullet = (item: string) => {
     if (!item) return { title: "", desc: "" };
@@ -121,14 +125,14 @@ export default function Template1(props: TemplateProps) {
 
   const handleAddBullet = () => {
     if (!setBullets) return;
-    const next = [...currentBullets];
-    setBullets([...next, "New Framework — Description of what you will build or learn."]);
+    const baseList = currentBullets.length > 0 ? currentBullets : [];
+    setBullets([...baseList, "New Framework — Description of what you will build or learn."]);
   };
 
   const handleRemoveBullet = (index: number) => {
     if (!setBullets) return;
     const next = currentBullets.filter((_, i) => i !== index);
-    setBullets(next);
+    setBullets(next.length === 0 ? ["__hidden__"] : next);
   };
 
   // Quote / Pitch parsing
@@ -441,19 +445,36 @@ export default function Template1(props: TemplateProps) {
                 );
               })}
 
-              {isEditor && (
-                <button
-                  type="button"
-                  onClick={handleAddBullet}
-                  className="flex items-center gap-1.5 text-xs font-bold pt-3 cursor-pointer transition hover:opacity-80"
-                  style={{ color: accentColor }}
-                >
-                  <Plus className="h-3.5 w-3.5" /> Add key framework
-                </button>
-              )}
-            </div>
-          </>
-        )}
+                {isEditor && (
+                  currentBullets.length === 0 ? (
+                    <div className="pt-2">
+                      <button
+                        type="button"
+                        onClick={handleAddBullet}
+                        className="flex items-center gap-2 text-xs font-bold py-2.5 px-4 rounded-xl border border-dashed cursor-pointer transition hover:opacity-80"
+                        style={{
+                          color: accentColor,
+                          borderColor: `${accentColor}66`,
+                          backgroundColor: `${accentColor}11`,
+                        }}
+                      >
+                        <Plus className="h-4 w-4" /> Add key framework
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={handleAddBullet}
+                      className="flex items-center gap-1.5 text-xs font-bold pt-3 cursor-pointer transition hover:opacity-80"
+                      style={{ color: accentColor }}
+                    >
+                      <Plus className="h-3.5 w-3.5" /> Add key framework
+                    </button>
+                  )
+                )}
+              </div>
+            </>
+          )}
 
             {/* Quote / Pitch Block */}
             {pitch === "__hidden__" || pitch === "__none__" || pitch === "__HIDDEN__" ? (
