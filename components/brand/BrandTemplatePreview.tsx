@@ -480,9 +480,17 @@ const BrandTemplatePreview = memo(function BrandTemplatePreview({
                 <h3 className={`text-xl md:text-2xl font-black leading-tight tracking-tight ${themeMode === "dark" ? "text-white" : "text-zinc-900"}`}>
                   {latestPage?.headline || latestPage?.name || "101 Winning Viral Templates"}
                 </h3>
-                <p className={`text-xs leading-relaxed ${themeMode === "dark" ? "text-zinc-400" : "text-zinc-500"}`}>
-                  {latestPage?.subheadline || "Stop staring at a blank page. Start creating content that actually connects."}
-                </p>
+                {latestPage ? (
+                  latestPage.subheadline && (
+                    <p className={`text-xs leading-relaxed ${themeMode === "dark" ? "text-zinc-400" : "text-zinc-500"}`}>
+                      {latestPage.subheadline}
+                    </p>
+                  )
+                ) : (
+                  <p className={`text-xs leading-relaxed ${themeMode === "dark" ? "text-zinc-400" : "text-zinc-500"}`}>
+                    Stop staring at a blank page. Start creating content that actually connects.
+                  </p>
+                )}
                 {latestPage?.pitch && (
                   <p className={`text-xs leading-relaxed ${themeMode === "dark" ? "text-zinc-400" : "text-zinc-600"}`}>
                     {latestPage.pitch}
