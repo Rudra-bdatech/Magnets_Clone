@@ -53,6 +53,7 @@ import {
   handleTestCalendarToken,
 } from "@/lib/controllers/integrations";
 import { checkRateLimit } from "@/lib/rate-limit";
+import { parseFlexibleDate } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
@@ -89,7 +90,7 @@ const pageNames = (pages as any[]).map((p) => p.name).filter(Boolean);
 // The leads query uses the same wider $or that was previously run as a *second* serial query.
 // Result is byte-for-byte identical to the original code — no data is lost or changed.
 // The only difference: we eliminated one full extra DB round-trip.
-const [account, leads, sequences, integrations, resources] = await Promise.all([
+const [account, rawLeads, sequences, integrations, resources] = await Promise.all([
   AccountModel.findOne({ email: normEmail }).select("-password").lean(),
   LeadModel.find({
     $or: [
@@ -97,13 +98,21 @@ const [account, leads, sequences, integrations, resources] = await Promise.all([
       ...(pageIds.length   ? [{ pageId: { $in: pageIds } }]   : []),
       ...(pageNames.length ? [{ page:   { $in: pageNames } }] : []),
     ],
-  }).sort({ signedUpAt: -1, createdAt: -1, _id: -1 }).lean(),
+  }).sort({ createdAt: -1, _id: -1 }).lean(),
   SequenceModel.find({ userEmail: normEmail }).sort({ updatedAt: -1, createdAt: -1, _id: -1 }).lean(),
   IntegrationModel.find({ userEmail: normEmail }).lean(),
   ResourceModel.find({ userEmail: normEmail, isPageAsset: { $ne: true }, type: { $ne: "page_asset" } })
     .sort({ uploadedAt: -1, createdAt: -1, _id: -1 })
     .lean(),
 ]);
+
+const leads = Array.isArray(rawLeads)
+  ? [...rawLeads].sort((a: any, b: any) => {
+      const timeA = parseFlexibleDate(a.signedUpAt)?.getTime() || (a.createdAt ? new Date(a.createdAt).getTime() : 0);
+      const timeB = parseFlexibleDate(b.signedUpAt)?.getTime() || (b.createdAt ? new Date(b.createdAt).getTime() : 0);
+      return timeB - timeA;
+    })
+  : [];
 
 return NextResponse.json({
   account,

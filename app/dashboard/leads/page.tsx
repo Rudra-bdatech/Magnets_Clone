@@ -248,7 +248,7 @@ export default function LeadsPage() {
   // Filtered leads using React 18 Deferred Search Value
   const filtered = useMemo(() => {
     const q = deferredSearch.trim().toLowerCase();
-    return leads.filter((l) => {
+    const matched = leads.filter((l) => {
       let matchMagnet = false;
       const isLocked = checkIsLockedPdfLead(l);
       const isLinkedIn = checkIsLinkedInLead(l);
@@ -273,6 +273,12 @@ export default function LeadsPage() {
         (l.customFields?.linkedinProfile && String(l.customFields.linkedinProfile).toLowerCase().includes(q));
 
       return matchMagnet && matchSearch;
+    });
+
+    return matched.sort((a, b) => {
+      const timeA = parseFlexibleDate(a.signedUpAt)?.getTime() || 0;
+      const timeB = parseFlexibleDate(b.signedUpAt)?.getTime() || 0;
+      return timeB - timeA;
     });
   }, [leads, filterMagnet, deferredSearch, checkIsLockedPdfLead, checkIsLinkedInLead]);
 
