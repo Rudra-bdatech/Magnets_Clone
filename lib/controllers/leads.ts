@@ -205,7 +205,9 @@ export async function handleAddLead(data: any, req: Request, normEmail: string |
   }
 
   const parsedDate = parseFlexibleDate(data.signedUpAt);
-  const normalizedSignedUpAt = parsedDate ? parsedDate.toISOString() : new Date().toISOString();
+  const normalizedSignedUpAt = (parsedDate && parsedDate.getTime() <= Date.now())
+    ? parsedDate.toISOString()
+    : new Date().toISOString();
 
   if (!isUpgradedFromPending) {
     createdOrUpdatedLead = await LeadModel.create({

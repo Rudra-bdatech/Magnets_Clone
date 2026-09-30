@@ -126,8 +126,8 @@ export async function POST(req: NextRequest) {
         }
 
         const now = new Date();
-        const formattedDate = now.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) +
-          " at " + now.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", hour12: true });
+        const seqList = (pageDoc?.sequenceEmails && pageDoc.sequenceEmails.length > 0) ? pageDoc.sequenceEmails : [];
+        const hasSeq = pageDoc?.sequenceEnabled || seqList.length > 0;
 
         await LeadModel.create({
           id: `lead_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
@@ -139,7 +139,9 @@ export async function POST(req: NextRequest) {
           status: "new",
           source: "locked-pdf-otp",
           tags: ["locked-pdf"],
-          signedUpAt: formattedDate,
+          sequence: hasSeq ? `${pageTitle} Follow-up` : undefined,
+          sequenceStep: hasSeq ? `Step 1 of ${Math.max(1, seqList.length)} (In Progress)` : undefined,
+          signedUpAt: now.toISOString(),
           customFields,
           deviceType: isMobile ? "mobile" : "desktop",
           referrer: cleanReferrer,

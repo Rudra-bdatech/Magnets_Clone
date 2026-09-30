@@ -117,7 +117,7 @@ export default function MagnetSignupForm({
         userEmail: pageOwnerEmail || "",
         status: "new",
         source: liLeadId || liAuthorId ? "linkedin-comment" : "leadmagnets",
-        signedUpAt: `${new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })} at ${new Date().toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", hour12: true })}`,
+        signedUpAt: new Date().toISOString(),
         tags: enableAiPersonalizedDeliverable ? ["ai-personalized"] : [],
         customAnswer: customAnswer.trim(),
         customFields: {

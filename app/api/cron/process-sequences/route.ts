@@ -150,13 +150,22 @@ export async function GET(req: NextRequest) {
       const parsedDate = parseFlexibleDate(lead.signedUpAt);
       let signupTime = parsedDate ? parsedDate.getTime() : NaN;
 
-      if (isNaN(signupTime) && (lead as any).createdAt) {
-        const parsedCreated = parseFlexibleDate((lead as any).createdAt);
-        if (parsedCreated) signupTime = parsedCreated.getTime();
-      }
-
-      if (isNaN(signupTime)) {
-        signupTime = now;
+      // If signupTime is NaN or in the future (caused by client localized date string timezone offset),
+      // resolve the exact UTC creation timestamp directly from MongoDB _id or createdAt.
+      if (isNaN(signupTime) || signupTime > now) {
+        if ((lead as any).createdAt) {
+          const parsedCreated = parseFlexibleDate((lead as any).createdAt);
+          if (parsedCreated && parsedCreated.getTime() <= now) {
+            signupTime = parsedCreated.getTime();
+          }
+        }
+        if (isNaN(signupTime) || signupTime > now) {
+          if ((lead as any)._id && typeof (lead as any)._id.getTimestamp === "function") {
+            signupTime = (lead as any)._id.getTimestamp().getTime();
+          } else {
+            signupTime = now;
+          }
+        }
       }
 
       // Base time: For step 1 (idx 0), calculate from signupTime.
