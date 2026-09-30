@@ -264,9 +264,9 @@ export default function Template1(props: TemplateProps) {
       )}
 
       {/* Main Page Container */}
-      <div className="relative max-w-[1260px] mx-auto px-5 sm:px-8 py-8 sm:py-10">
+      <div className="relative max-w-[1260px] mx-auto px-6 sm:px-10 lg:px-12 py-10 sm:py-14">
         {/* BRAND HEADER */}
-        <header className="flex items-center justify-center gap-3.5 mb-8 sm:mb-11">
+        <header className="flex items-center justify-center gap-3.5 mb-9 sm:mb-12">
           <div
             className="w-[46px] h-[46px] rounded-[14px] flex items-center justify-center font-extrabold text-[15px] tracking-[0.02em] text-white shrink-0 overflow-hidden shadow-lg"
             style={{
@@ -286,7 +286,7 @@ export default function Template1(props: TemplateProps) {
         </header>
 
         {/* TWO-COLUMN GRID */}
-        <main className="grid grid-cols-1 lg:grid-cols-[1.12fr_0.88fr] gap-8 sm:gap-12 lg:gap-16 items-start">
+        <main className="grid grid-cols-1 lg:grid-cols-[1.12fr_0.88fr] gap-10 sm:gap-14 lg:gap-20 items-start">
           {/* LEFT COLUMN: Editorial Content */}
           <section className="space-y-0 min-w-0">
             {/* Headline */}
@@ -300,14 +300,14 @@ export default function Template1(props: TemplateProps) {
                   e.target.style.height = "auto";
                   e.target.style.height = `${e.target.scrollHeight}px`;
                 }}
-                className={`w-full text-3xl sm:text-4xl lg:text-[46px] leading-[1.06] font-extrabold tracking-[-0.02em] bg-transparent outline-none resize-none mb-5 ${
+                className={`w-full text-3xl sm:text-4xl lg:text-[46px] leading-[1.06] font-extrabold tracking-[-0.02em] bg-transparent outline-none resize-none mb-6 sm:mb-7 ${
                   isDark ? "text-white placeholder:text-zinc-600" : "text-[#111217] placeholder:text-zinc-400"
                 }`}
                 placeholder="The Architecture of *High-Output* Engineering"
               />
             ) : (
               <h1
-                className={`text-3xl sm:text-4xl lg:text-[46px] leading-[1.06] font-extrabold tracking-[-0.02em] mb-5 break-words [overflow-wrap:anywhere] ${
+                className={`text-3xl sm:text-4xl lg:text-[46px] leading-[1.08] font-extrabold tracking-[-0.02em] mb-6 sm:mb-7 break-words [overflow-wrap:anywhere] ${
                   isDark ? "text-white" : "text-[#111217]"
                 }`}
               >
@@ -326,7 +326,7 @@ export default function Template1(props: TemplateProps) {
                   e.target.style.height = "auto";
                   e.target.style.height = `${e.target.scrollHeight}px`;
                 }}
-                className={`w-full text-[15.5px] leading-[1.75] bg-transparent outline-none resize-none max-w-[520px] ${
+                className={`w-full text-[16.5px] leading-[1.85] bg-transparent outline-none resize-none max-w-[620px] ${
                   isDark ? "text-[#a9acb8] placeholder:text-zinc-600" : "text-[#4b5563] placeholder:text-zinc-400"
                 }`}
                 placeholder="A 42-page field guide to the organizational systems used by ambitious teams to maintain velocity without burning out."
@@ -334,7 +334,7 @@ export default function Template1(props: TemplateProps) {
             ) : (
               (subheadline || !headline) && (
                 <p
-                  className={`text-[15.5px] leading-[1.75] max-w-[520px] ${
+                  className={`text-[16.5px] leading-[1.85] max-w-[620px] ${
                     isDark ? "text-[#a9acb8]" : "text-[#4b5563]"
                   }`}
                 >
@@ -348,12 +348,12 @@ export default function Template1(props: TemplateProps) {
             {(isEditor || currentBullets.length > 0) && (
               <>
                 <div
-                  className="h-[1px] my-7 sm:my-8"
+                  className="h-[1px] my-9 sm:my-11"
                   style={{ backgroundColor: isDark ? "#23242c" : "#e5e7eb" }}
                 />
 
                 {/* Kicker / Bullets Title */}
-                <div className="mb-4">
+                <div className="mb-6">
                   {isEditor ? (
                     <input
                       type="text"
@@ -374,13 +374,13 @@ export default function Template1(props: TemplateProps) {
                 </div>
 
                 {/* Checklist items */}
-                <div className="space-y-1">
+                <div className="space-y-2">
               {currentBullets.map((item, idx) => {
                 const parsed = parseBullet(item);
                 return (
                   <div
                     key={idx}
-                    className="grid grid-cols-[26px_1fr] gap-3.5 py-2.5 items-start group"
+                    className="grid grid-cols-[26px_1fr] gap-4 sm:gap-5 py-3.5 sm:py-4 items-start group"
                   >
                     <span
                       className="w-[26px] h-[26px] rounded-full flex items-center justify-center text-[12px] font-extrabold text-white shrink-0 mt-0.5 shadow-xs"
@@ -479,11 +479,11 @@ export default function Template1(props: TemplateProps) {
             {/* Quote / Pitch Block */}
             {pitch === "__hidden__" || pitch === "__none__" || pitch === "__HIDDEN__" ? (
               isEditor && (
-                <div className="mt-7">
+                <div className="mt-8 sm:mt-10">
                   <button
                     type="button"
                     onClick={() => setPitch?.(`${defaultQuote} ::: ${defaultAuthor}`)}
-                    className="flex items-center gap-1.5 text-xs font-bold py-2 px-3.5 rounded-xl border border-dashed cursor-pointer transition hover:opacity-80"
+                    className="flex items-center gap-1.5 text-xs font-bold py-2.5 px-4 rounded-xl border border-dashed cursor-pointer transition hover:opacity-80"
                     style={{
                       color: accentColor,
                       borderColor: `${accentColor}66`,
@@ -496,7 +496,7 @@ export default function Template1(props: TemplateProps) {
               )
             ) : (
               <div
-                className="mt-7 pl-4 sm:pl-5 space-y-1.5 relative group/quote"
+                className="mt-8 sm:mt-10 pl-5 sm:pl-6 space-y-2 relative group/quote"
                 style={{ borderLeft: `3px solid ${accentColor}` }}
               >
                 {isEditor && (
@@ -512,7 +512,7 @@ export default function Template1(props: TemplateProps) {
                   </button>
                 )}
                 {isEditor ? (
-                  <div className="space-y-1 pr-6">
+                  <div className="space-y-1.5 pr-6">
                     <textarea
                       ref={pitchRef}
                       rows={2}
@@ -556,7 +556,7 @@ export default function Template1(props: TemplateProps) {
           </section>
 
           {/* RIGHT COLUMN: Media Cover & Lead Capture Card */}
-          <aside className="space-y-6">
+          <aside className="space-y-7 sm:space-y-8">
             {/* Cover Media */}
             <div className="relative w-full aspect-[3/2] rounded-[22px] overflow-hidden shadow-[0_24px_60px_#00000066] border border-white/10 group bg-zinc-900">
               <img
@@ -606,7 +606,7 @@ export default function Template1(props: TemplateProps) {
 
             {/* Sign-up Card */}
             <div
-              className={`rounded-[22px] p-6 sm:p-7 border transition-all ${
+              className={`rounded-[22px] p-7 sm:p-8 lg:p-9 border transition-all ${
                 isDark
                   ? "bg-[#14151b] border-[#26272f] shadow-2xl"
                   : "bg-white border-[#e5e7eb] shadow-xl"

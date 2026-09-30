@@ -2673,12 +2673,12 @@ export default async function MagnetPageRoute({
 
             return (
               <div
-                className="w-full flex-1 flex flex-col justify-between py-6 sm:py-10 px-5 sm:px-8 relative font-['Plus_Jakarta_Sans',sans-serif]"
+                className="w-full flex-1 flex flex-col justify-between py-10 sm:py-14 px-6 sm:px-10 lg:px-12 relative font-['Plus_Jakarta_Sans',sans-serif]"
                 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
               >
                 <div className="relative max-w-[1260px] w-full mx-auto">
                   {/* BRAND HEADER */}
-                  <header className="flex items-center justify-center gap-3.5 mb-8 sm:mb-11">
+                  <header className="flex items-center justify-center gap-3.5 mb-9 sm:mb-12">
                     <div
                       className="w-[46px] h-[46px] rounded-[14px] flex items-center justify-center font-extrabold text-[15px] tracking-[0.02em] text-white shrink-0 overflow-hidden shadow-lg"
                       style={{
@@ -2698,12 +2698,12 @@ export default async function MagnetPageRoute({
                   </header>
 
                   {/* TWO-COLUMN GRID */}
-                  <div className="grid grid-cols-1 lg:grid-cols-[1.12fr_0.88fr] gap-8 sm:gap-12 lg:gap-16 items-start">
+                  <div className="grid grid-cols-1 lg:grid-cols-[1.12fr_0.88fr] gap-10 sm:gap-14 lg:gap-20 items-start">
                     {/* LEFT COLUMN: Editorial Content */}
                     <section className="space-y-0 min-w-0">
                       {/* Headline */}
                       <h1
-                        className={`text-3xl sm:text-4xl lg:text-[46px] leading-[1.06] font-extrabold tracking-[-0.02em] mb-5 break-words [overflow-wrap:anywhere] ${
+                        className={`text-3xl sm:text-4xl lg:text-[46px] leading-[1.08] font-extrabold tracking-[-0.02em] mb-6 sm:mb-7 break-words [overflow-wrap:anywhere] ${
                           isDark ? "text-white" : "text-[#111217]"
                         }`}
                       >
@@ -2713,7 +2713,7 @@ export default async function MagnetPageRoute({
                       {/* Subheadline */}
                       {(page.subheadline || !activeHeadline) && (
                         <p
-                          className={`text-[15.5px] leading-[1.75] max-w-[520px] ${
+                          className={`text-[16.5px] leading-[1.85] max-w-[620px] ${
                             isDark ? "text-[#a9acb8]" : "text-[#4b5563]"
                           }`}
                         >
@@ -2726,12 +2726,12 @@ export default async function MagnetPageRoute({
                       {displayBullets.length > 0 && (
                         <>
                           <div
-                            className="h-[1px] my-7 sm:my-8"
+                            className="h-[1px] my-9 sm:my-11"
                             style={{ backgroundColor: isDark ? "#23242c" : "#e5e7eb" }}
                           />
 
                           {/* Kicker / Bullets Title */}
-                          <div className="mb-4">
+                          <div className="mb-6">
                             <p
                               className="text-[11px] font-bold tracking-[0.2em] uppercase"
                               style={{ color: accentColor }}
@@ -2741,13 +2741,13 @@ export default async function MagnetPageRoute({
                           </div>
 
                           {/* Checklist items */}
-                          <div className="space-y-1">
+                          <div className="space-y-2">
                             {displayBullets.map((item, idx) => {
                               const parsed = parseBullet(item);
                               return (
                                 <div
                                   key={idx}
-                                  className="grid grid-cols-[26px_1fr] gap-3.5 py-2.5 items-start"
+                                  className="grid grid-cols-[26px_1fr] gap-4 sm:gap-5 py-3.5 sm:py-4 items-start"
                                 >
                                   <span
                                     className="w-[26px] h-[26px] rounded-full flex items-center justify-center text-[12px] font-extrabold text-white shrink-0 mt-0.5 shadow-xs"
@@ -2783,7 +2783,7 @@ export default async function MagnetPageRoute({
                       {/* Quote / Pitch Block */}
                       {page.pitch !== "__hidden__" && page.pitch !== "__none__" && page.pitch !== "__HIDDEN__" && parsedQuote && (
                         <div
-                          className="mt-7 pl-4 sm:pl-5 space-y-1.5"
+                          className="mt-8 sm:mt-10 pl-5 sm:pl-6 space-y-2"
                           style={{ borderLeft: `3px solid ${accentColor}` }}
                         >
                           <p
@@ -2805,7 +2805,7 @@ export default async function MagnetPageRoute({
                     </section>
 
                     {/* RIGHT COLUMN: Media Cover & Lead Capture Card */}
-                    <aside className="space-y-6">
+                    <aside className="space-y-7 sm:space-y-8">
                       {/* Cover Media */}
                       <div className="relative w-full aspect-[3/2] rounded-[22px] overflow-hidden shadow-[0_24px_60px_#00000066] border border-white/10 bg-zinc-900">
                         <img
@@ -2817,7 +2817,7 @@ export default async function MagnetPageRoute({
 
                       {/* Sign-up Card */}
                       <div
-                        className={`rounded-[22px] p-6 sm:p-7 border transition-all ${
+                        className={`rounded-[22px] p-7 sm:p-8 lg:p-9 border transition-all ${
                           isDark
                             ? "bg-[#14151b] border-[#26272f] shadow-2xl"
                             : "bg-white border-[#e5e7eb] shadow-xl"

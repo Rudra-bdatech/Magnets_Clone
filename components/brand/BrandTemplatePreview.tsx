@@ -160,7 +160,7 @@ const BrandTemplatePreview = memo(function BrandTemplatePreview({
                   </h3>
 
                   <p
-                    className={`text-[14px] leading-[1.7] max-w-[480px] ${
+                    className={`text-[14.5px] leading-[1.75] max-w-[560px] ${
                       isDark ? "text-[#a9acb8]" : "text-[#4b5563]"
                     }`}
                   >
