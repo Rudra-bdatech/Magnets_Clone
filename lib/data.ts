@@ -24,7 +24,7 @@ export interface MagnetPage {
   updatedAt: string;
   createdAt?: string;
   publishedAt: string | null;
-  template: "classic" | "video" | "quiz" | "locked-pdf" | "template1" | "template2" | "template3" | "template4" | "template5" | "template6" | "template7" | "template8" | "template9" | (string & {});
+  template: "classic" | "video" | "quiz" | "locked-pdf" | "template1" | "template2" | "template3" | "template4" | "template5" | "template6" | "template7" | "template8" | (string & {});
   accent: string;
   imageUrl?: string | null;
   pitch?: string;

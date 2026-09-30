@@ -8,7 +8,6 @@ import Template5 from "./Template5";
 import Template6 from "./Template6";
 import Template7 from "./Template7";
 import Template8 from "./Template8";
-import Template9 from "./Template9";
 import TemplateLockedPdf from "./TemplateLockedPdf";
 
 export default function TemplateRenderer(props: TemplateProps) {
@@ -29,8 +28,6 @@ export default function TemplateRenderer(props: TemplateProps) {
       return <Template7 {...props} />;
     case "template8":
       return <Template8 {...props} />;
-    case "template9":
-      return <Template9 {...props} />;
     case "locked-pdf":
       return <TemplateLockedPdf {...props} />;
     case "template1":

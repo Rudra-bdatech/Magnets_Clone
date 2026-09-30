@@ -292,16 +292,13 @@ export default async function MagnetPageRoute({
   const isTemplate6 = activeTemplate === "template6";
   const isTemplate7 = activeTemplate === "template7";
   const isTemplate8 = activeTemplate === "template8";
-  const isTemplate9 = activeTemplate === "template9";
 
   return (
     <main
       className="flex min-h-screen flex-col font-sans transition-colors duration-300 relative overflow-x-clip"
       style={{
         colorScheme: themeMode === "dark" ? "dark" : "light",
-        backgroundColor: isTemplate9
-          ? "#191038"
-          : isTemplate8
+        backgroundColor: isTemplate8
           ? (themeMode === "dark" ? "#0d0e12" : "#eee9df")
           : isTemplate7
           ? (themeMode === "dark" ? "#0d0d0f" : "#f4ff3c")
@@ -310,9 +307,7 @@ export default async function MagnetPageRoute({
           : isTemplate4
           ? (themeMode === "dark" ? "#0b0d12" : "#f5f1e8")
           : (themeMode === "dark" ? "#0E0E10" : "#FAFAFA"),
-        color: isTemplate9
-          ? "#f4f2ff"
-          : isTemplate8
+        color: isTemplate8
           ? (themeMode === "dark" ? "#f4f4f5" : "#141414")
           : isTemplate7
           ? (themeMode === "dark" ? (brandColor || "#f4ff3c") : "#101010")
@@ -321,7 +316,7 @@ export default async function MagnetPageRoute({
           : isTemplate4
           ? (themeMode === "dark" ? "#f5f1e8" : "#0b0d12")
           : (themeMode === "dark" ? "#ffffff" : "#18181b"),
-        backgroundImage: (isTemplate2 || isTemplate7 || isTemplate4 || isTemplate8 || isTemplate9)
+        backgroundImage: (isTemplate2 || isTemplate7 || isTemplate4 || isTemplate8)
           ? (isTemplate8
             ? (themeMode === "dark"
               ? "radial-gradient(rgba(255, 255, 255, 0.15) 1px, transparent 1px)"
@@ -354,8 +349,8 @@ export default async function MagnetPageRoute({
           <span>⚠️ Draft Preview Mode — This magnet is not yet published. Only you can view this page.</span>
         </div>
       )}
-      {/* If template is not template2, template3, template4, template5, template6, template7, template8, or template9, show the standard top header */}
-      {!isTemplate2 && !isTemplate3 && !isTemplate4 && !isTemplate5 && !isTemplate6 && !isTemplate7 && !isTemplate8 && !isTemplate9 && (
+      {/* If template is not template2, template3, template4, template5, template6, template7, or template8, show the standard top header */}
+      {!isTemplate2 && !isTemplate3 && !isTemplate4 && !isTemplate5 && !isTemplate6 && !isTemplate7 && !isTemplate8 && (
         <header className="w-full flex items-center justify-center pt-3 sm:pt-4 pb-1 sm:pb-2 px-6 sm:px-10 relative shrink-0">
           <div className="flex items-center gap-2.5 sm:gap-3">
             <div className={`h-9 w-9 sm:h-10 sm:w-10 rounded-xl flex items-center justify-center bg-transparent overflow-hidden shadow-xs ${logo ? "border-none" : "border-2 border-dashed border-[#a1a1aa]/50"}`}>
@@ -373,7 +368,7 @@ export default async function MagnetPageRoute({
       )}
 
       {/* Main content area filling the screen properly with balanced vertical spacing */}
-      <div className={`flex-1 w-full flex flex-col justify-center ${(isTemplate2 || isTemplate7 || isTemplate8 || isTemplate9) ? "p-0" : "px-4 sm:px-6 md:px-8 lg:px-10 xl:px-14 pb-3 sm:pb-4"}`}>
+      <div className={`flex-1 w-full flex flex-col justify-center ${(isTemplate2 || isTemplate7 || isTemplate8) ? "p-0" : "px-4 sm:px-6 md:px-8 lg:px-10 xl:px-14 pb-3 sm:pb-4"}`}>
         {/* Dynamic Multi-Template View Renderer */}
         {isTemplate2 ? (
           /* TEMPLATE 2: Signal / Noise Editorial Edition (Full-Screen) */
@@ -1704,375 +1699,6 @@ export default async function MagnetPageRoute({
               © {new Date().getFullYear()} {businessName || "Vane Strategic Partners"} · Private circulation
             </footer>
           </div>
-        ) : isTemplate9 ? (
-          /* TEMPLATE 9: Glass Aurora Edition */
-          (() => {
-            const defaultBullets = [
-              "01:::The Signal-to-Noise Protocol:::Audit attention and eliminate low-leverage activities through the Four Filters.",
-              "02:::Recursive Hiring Loops:::Build a talent engine that identifies multipliers before they reach the market.",
-              "03:::Velocity Without Chaos:::Replace recurring meetings with lightweight synchronization rituals.",
-            ];
-
-            const currentBullets: string[] =
-              Array.isArray(page.bullets) && page.bullets.length > 0 ? page.bullets : defaultBullets;
-
-            const parseBullet = (item: string, defaultIdx: number) => {
-              if (!item) return { num: (defaultIdx + 1).toString().padStart(2, "0"), title: "", desc: "" };
-              if (item.includes(":::")) {
-                const parts = item.split(":::");
-                if (parts.length >= 3) {
-                  return {
-                    num: parts[0],
-                    title: parts[1].trim(),
-                    desc: parts.slice(2).join(":::").trim(),
-                  };
-                }
-                return {
-                  num: (defaultIdx + 1).toString().padStart(2, "0"),
-                  title: parts[0].trim(),
-                  desc: parts.slice(1).join(":::").trim(),
-                };
-              }
-              if (item.includes(" — ")) {
-                const [title, ...rest] = item.split(" — ");
-                return {
-                  num: (defaultIdx + 1).toString().padStart(2, "0"),
-                  title: title.trim(),
-                  desc: rest.join(" — ").trim(),
-                };
-              }
-              if (item.includes(" - ")) {
-                const [title, ...rest] = item.split(" - ");
-                return {
-                  num: (defaultIdx + 1).toString().padStart(2, "0"),
-                  title: title.trim(),
-                  desc: rest.join(" - ").trim(),
-                };
-              }
-              if (item.includes("\n")) {
-                const [title, ...rest] = item.split("\n");
-                return {
-                  num: (defaultIdx + 1).toString().padStart(2, "0"),
-                  title: title.trim(),
-                  desc: rest.join("\n").trim(),
-                };
-              }
-              return {
-                num: (defaultIdx + 1).toString().padStart(2, "0"),
-                title: item,
-                desc: "",
-              };
-            };
-
-            const getInitials = (name: string) => {
-              if (!name) return "ED";
-              const parts = name.trim().split(/\s+/);
-              if (parts.length === 1) return parts[0].substring(0, 2).toUpperCase();
-              return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
-            };
-            const logoInitials = getInitials(businessName);
-
-            return (
-              <div
-                className="w-full min-h-screen relative flex flex-col justify-between py-6 sm:py-9 px-4 sm:px-6 md:px-8 selection:bg-[#f0abfc] selection:text-[#2a1052]"
-                style={{
-                  fontFamily: "'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-                  color: "#f4f2ff",
-                  backgroundColor: "#191038",
-                }}
-              >
-                <style
-                  dangerouslySetInnerHTML={{
-                    __html: `
-                      @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap');
-                      .glass-aurora-card-pub {
-                        background: rgba(255, 255, 255, 0.08);
-                        border: 1px solid rgba(255, 255, 255, 0.18);
-                        border-radius: 26px;
-                        backdrop-filter: blur(22px);
-                        -webkit-backdrop-filter: blur(22px);
-                        box-shadow: 0 24px 70px rgba(10, 4, 40, 0.38);
-                      }
-                      @keyframes aurora-float {
-                        0%, 100% { transform: translateY(0) scale(1); }
-                        50% { transform: translateY(-20px) scale(1.05); }
-                      }
-                      .aurora-orb-pub {
-                        animation: aurora-float 12s ease-in-out infinite alternate;
-                      }
-                    `,
-                  }}
-                />
-
-                {/* Aurora Background Ambient Glows */}
-                <div className="fixed inset-0 overflow-hidden pointer-events-none -z-10 select-none">
-                  <div className="absolute inset-0 bg-[#191038]" />
-                  <i
-                    className="aurora-orb-pub absolute rounded-full opacity-75"
-                    style={{
-                      width: "560px",
-                      height: "560px",
-                      background: "#7c3aed",
-                      filter: "blur(100px)",
-                      top: "-160px",
-                      left: "-120px",
-                    }}
-                  />
-                  <i
-                    className="aurora-orb-pub absolute rounded-full opacity-75"
-                    style={{
-                      width: "480px",
-                      height: "480px",
-                      background: "#ec4899",
-                      filter: "blur(95px)",
-                      top: "22%",
-                      right: "-140px",
-                      animationDelay: "-3s",
-                    }}
-                  />
-                  <i
-                    className="aurora-orb-pub absolute rounded-full opacity-75"
-                    style={{
-                      width: "460px",
-                      height: "460px",
-                      background: "#22d3ee",
-                      filter: "blur(90px)",
-                      bottom: "-160px",
-                      left: "30%",
-                      animationDelay: "-6s",
-                    }}
-                  />
-                  <i
-                    className="aurora-orb-pub absolute rounded-full opacity-55"
-                    style={{
-                      width: "380px",
-                      height: "380px",
-                      background: "#4f46e5",
-                      filter: "blur(85px)",
-                      top: "40%",
-                      left: "12%",
-                      animationDelay: "-9s",
-                    }}
-                  />
-                  <div
-                    className="absolute inset-0"
-                    style={{
-                      background:
-                        "radial-gradient(1000px 500px at 50% -10%, rgba(255, 255, 255, 0.08), transparent 70%)",
-                    }}
-                  />
-                </div>
-
-                <div className="w-full max-w-[1140px] mx-auto flex-1 flex flex-col justify-between">
-                  {/* 1. Glass Navbar */}
-                  <header className="glass-aurora-card-pub flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3.5 px-5 py-3.5 sm:px-6 sm:py-4 mb-7 sm:mb-9">
-                    <div className="flex items-center gap-3.5">
-                      {logo ? (
-                        <img
-                          src={logo}
-                          alt="Brand Logo"
-                          className="w-10 h-10 rounded-xl object-cover border border-white/25 shadow-md shrink-0"
-                        />
-                      ) : (
-                        <span className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#a78bfa] to-[#f472b6] flex items-center justify-center font-extrabold text-sm text-white shadow-md shrink-0">
-                          {logoInitials}
-                        </span>
-                      )}
-                      <div>
-                        <div className="font-bold text-base sm:text-lg tracking-wide text-white">
-                          {(page as any).mastheadLeft || businessName || "The Executive Dispatch"}
-                        </div>
-                        <small className="block font-normal text-[10.5px] tracking-[0.18em] uppercase text-[#cfc8f2] mt-0.5">
-                          {(page as any).mastheadRight || "Intelligence Report · Issue 08 · 2026"}
-                        </small>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-2 self-end sm:self-auto">
-                      <span className="px-4 py-2 rounded-full border border-white/25 text-xs font-semibold bg-white/10 text-white backdrop-blur-md whitespace-nowrap shadow-xs">
-                        {page.deliverable ? `${page.deliverable} edition` : "Complimentary edition"}
-                      </span>
-                    </div>
-                  </header>
-
-                  {/* 2. Main Glass Hero */}
-                  <main className="glass-aurora-card-pub p-6 sm:p-9 md:p-11 lg:p-12 relative overflow-hidden flex-1">
-                    {/* Eyebrow badge */}
-                    <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full border border-white/22 bg-white/9 text-[11px] font-semibold tracking-[0.18em] uppercase text-[#e6e0ff] backdrop-blur-md mb-6">
-                      <span className="w-2 h-2 rounded-full bg-[#4ade80] shadow-[0_0_10px_#4ade80] animate-pulse" />
-                      <span>{page.bulletsTitle || "Strategic framework · 42 pages"}</span>
-                    </div>
-
-                    <div className="grid grid-cols-1 lg:grid-cols-[1.15fr_0.85fr] gap-9 lg:gap-12 items-start">
-                      {/* Left Column */}
-                      <section className="flex flex-col">
-                        <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-[54px] font-extrabold leading-[1.05] tracking-[-0.025em] mb-4 text-white">
-                          {page.headline ? (
-                            page.headline.includes("High-Output") ? (
-                              <>
-                                {page.headline.split("High-Output")[0]}
-                                <span className="bg-gradient-to-r from-[#a5b4fc] via-[#f0abfc] to-[#67e8f9] bg-clip-text text-transparent">
-                                  High-Output
-                                </span>
-                                {page.headline.split("High-Output")[1]}
-                              </>
-                            ) : (
-                              page.headline
-                            )
-                          ) : (
-                            <>
-                              The Architecture of{" "}
-                              <span className="bg-gradient-to-r from-[#a5b4fc] via-[#f0abfc] to-[#67e8f9] bg-clip-text text-transparent">
-                                High-Output
-                              </span>{" "}
-                              Engineering
-                            </>
-                          )}
-                        </h1>
-
-                        <p className="text-base sm:text-[15.5px] font-light leading-[1.75] text-[#d9d3f5] max-w-[540px] mb-7">
-                          {page.subheadline ||
-                            page.pitch ||
-                            "A 42-page field guide to the organizational systems used by ambitious teams to maintain velocity without burning out."}
-                        </p>
-
-                        {/* List */}
-                        <div className="space-y-3 mt-2">
-                          {currentBullets.map((bullet, idx) => {
-                            const parsed = parseBullet(bullet, idx);
-                            const isNumHidden = parsed.num === "__none__";
-                            const displayNum = isNumHidden
-                              ? ""
-                              : parsed.num || (idx + 1).toString().padStart(2, "0");
-
-                            return (
-                              <div
-                                key={idx}
-                                className="flex gap-3.5 items-start p-3.5 sm:p-4 rounded-[18px] border border-white/14 bg-white/6 backdrop-blur-md"
-                              >
-                                {!isNumHidden && displayNum && (
-                                  <span className="w-8 h-8 rounded-[10px] bg-gradient-to-br from-[#a78bfa] to-[#f472b6] flex items-center justify-center font-extrabold text-xs text-white shrink-0 shadow-sm">
-                                    {displayNum}
-                                  </span>
-                                )}
-
-                                <div className="flex-1 min-w-0">
-                                  <b className="block font-semibold text-[14.5px] text-white">
-                                    {parsed.title || `Protocol ${(idx + 1).toString().padStart(2, "0")}`}
-                                  </b>
-                                  <span className="block font-light text-[12.5px] leading-[1.55] text-[#c4bce8] mt-0.5">
-                                    {parsed.desc ||
-                                      "Audit attention and eliminate low-leverage activities through the Four Filters."}
-                                  </span>
-                                </div>
-                              </div>
-                            );
-                          })}
-                        </div>
-
-                        {/* Quote */}
-                        <div className="mt-6 p-5 sm:p-6 rounded-[18px] border border-white/14 bg-white/6 backdrop-blur-md">
-                          <p className="font-light italic text-[13.5px] leading-[1.7] text-[#e2dcf9] m-0">
-                            “Speed is often a byproduct of clarity. Build the infrastructure that makes high performance inevitable.”
-                          </p>
-                          <small className="block mt-2.5 font-semibold text-[10px] tracking-[0.16em] uppercase text-[#b1a7dd]">
-                            {businessName} · Strategic Intelligence
-                          </small>
-                        </div>
-                      </section>
-
-                      {/* Right Column: Media Cover & Signup */}
-                      <aside className="flex flex-col">
-                        <div className="relative rounded-[20px] overflow-hidden border border-white/22 shadow-xl bg-[#140d2e]">
-                          {page.imageUrl && page.imageUrl.trim() !== "" ? (
-                            <img
-                              src={page.imageUrl}
-                              alt={page.headline || "Report Cover"}
-                              className="w-full aspect-[3/2] object-cover block"
-                            />
-                          ) : (
-                            <div className="w-full aspect-[3/2] min-h-[260px] relative flex flex-col justify-between p-6 select-none bg-gradient-to-br from-[#2a1354] via-[#1a0f3d] to-[#0c0628] overflow-hidden">
-                              <div className="absolute -top-10 -right-10 w-48 h-48 rounded-full bg-gradient-to-br from-[#a78bfa] to-[#f472b6] opacity-30 blur-2xl pointer-events-none" />
-                              <div className="absolute -bottom-10 -left-10 w-48 h-48 rounded-full bg-gradient-to-tr from-[#22d3ee] to-[#7c3aed] opacity-30 blur-2xl pointer-events-none" />
-
-                              <div className="relative z-10 flex justify-between items-center">
-                                <span className="px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase bg-white/10 border border-white/20 text-[#e6e0ff] backdrop-blur-md">
-                                  VOL. {new Date().getFullYear()}
-                                </span>
-                                <span className="text-[11px] font-mono tracking-widest text-[#f0abfc] font-bold">
-                                  ISSUE 08
-                                </span>
-                              </div>
-
-                              <div className="relative z-10 my-auto py-3 text-center">
-                                <div className="inline-block px-5 py-3 rounded-2xl bg-white/10 backdrop-blur-lg border border-white/25 shadow-lg">
-                                  <span className="block text-2xl sm:text-3xl font-extrabold tracking-tight bg-gradient-to-r from-[#a5b4fc] via-[#f0abfc] to-[#67e8f9] bg-clip-text text-transparent">
-                                    AURORA FIELD REPORT
-                                  </span>
-                                </div>
-                              </div>
-
-                              <div className="relative z-10 text-center">
-                                <span className="text-[10px] font-medium tracking-[0.2em] uppercase text-[#cfc8f2]">
-                                  ★ SPECIAL EXECUTIVE BRIEFING ★
-                                </span>
-                              </div>
-                            </div>
-                          )}
-                        </div>
-
-                        {/* Glass Signup Box */}
-                        <div className="glass-aurora-card-pub p-6 sm:p-7 mt-6">
-                          <h2 className="text-xl sm:text-2xl font-bold text-white mb-1">
-                            {page.formTitle || "Get the full report"}
-                          </h2>
-                          <p className="text-[12.5px] font-light leading-[1.6] text-[#c4bce8] mb-5">
-                            {page.formSubtitle ||
-                              "The PDF and supplemental worksheets will arrive directly in your inbox."}
-                          </p>
-
-                          <MagnetSignupForm
-                            cta={page.cta}
-                            layout="glass-aurora"
-                            formTitle={page.formTitle || "Get the full report"}
-                            formSubtitle={page.formSubtitle}
-                            formButtonText={page.formButtonText || "Receive the dispatch →"}
-                            deliverable={page.deliverable}
-                            accent={page.accent}
-                            pageId={page.id}
-                            pageName={page.name}
-                            pageSlug={page.slug}
-                            pageOwnerEmail={(page as any).userEmail}
-                            brandColor={brandColor}
-                            highlightIntensity={highlightIntensity}
-                            themeMode={themeMode}
-                            customPromptQuestion={page.customPromptQuestion}
-                            customPromptPlaceholder={page.customPromptPlaceholder}
-                            enableAiPersonalizedDeliverable={page.enableAiPersonalizedDeliverable}
-                            customFormFields={page.customFormFields}
-                            username={params.username}
-                            isVariantB={isVariantB}
-                            afterSignupOption={page.afterSignupOption}
-                            destinationUrl={page.destinationUrl}
-                          />
-
-                          <p className="text-center text-[10.5px] font-light text-[#a89fd0] mt-3.5 mb-0">
-                            No noise. Only occasional, high-signal notes.
-                          </p>
-                        </div>
-                      </aside>
-                    </div>
-                  </main>
-
-                  {/* 3. Glass Footer */}
-                  <footer className="glass-aurora-card-pub mt-7 sm:mt-8 px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left text-[10.5px] font-normal tracking-[0.12em] uppercase text-[#b1a7dd]">
-                    <span>© {new Date().getFullYear()} {businessName} · Private circulation</span>
-                    <span>By {businessName} Strategic Partners</span>
-                  </footer>
-                </div>
-              </div>
-            );
-          })()
         ) : isTemplate8 ? (
           /* TEMPLATE 8: Collage Zine Edition */
           (() => {
