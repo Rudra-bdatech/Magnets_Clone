@@ -363,17 +363,29 @@ export default function SequenceTab({
                       min={1}
                       max={365}
                       disabled={!sequenceEnabled}
-                      value={activeEmail.delayDays === undefined || activeEmail.delayDays === null || isNaN(activeEmail.delayDays as any) ? "" : activeEmail.delayDays}
+                      value={activeEmail.delayDays === undefined || activeEmail.delayDays === null || (typeof activeEmail.delayDays === "number" && isNaN(activeEmail.delayDays)) || (activeEmail.delayDays as any) === "" ? "" : activeEmail.delayDays}
                       onChange={(e) => {
                         const raw = e.target.value;
-                        const val = raw === "" ? ("" as any) : parseInt(raw, 10);
+                        const val = raw === "" ? ("" as any) : isNaN(parseInt(raw, 10)) ? ("" as any) : parseInt(raw, 10);
                         setSequenceEmails(sequenceEmails.map((item, idx) => idx === selectedSequenceIndex ? { ...item, delayDays: val } : item));
                       }}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          (e.target as HTMLInputElement).blur();
+                        }
+                      }}
                       onBlur={(e) => {
-                        const raw = e.target.value;
+                        const raw = String(e.target.value || "").trim();
+                        if (raw === "") {
+                          // Allow field to stay empty if cleared
+                          return;
+                        }
                         const parsed = parseInt(raw, 10);
-                        const val = isNaN(parsed) || parsed < 1 ? 1 : Math.min(365, parsed);
-                        setSequenceEmails(sequenceEmails.map((item, idx) => idx === selectedSequenceIndex ? { ...item, delayDays: val } : item));
+                        if (!isNaN(parsed)) {
+                          const clamped = Math.max(1, Math.min(365, parsed));
+                          setSequenceEmails(sequenceEmails.map((item, idx) => idx === selectedSequenceIndex ? { ...item, delayDays: clamped } : item));
+                        }
                       }}
                       className={`w-24 rounded-xl border px-3 py-2 text-xs font-bold outline-none disabled:cursor-not-allowed ${(account?.themeMode || "light") === "dark" ? "border-[#27272A] bg-[#121216] text-white focus:border-[#0066B2]" : "border-zinc-200 bg-white text-zinc-900 focus:border-[#0066B2]"}`}
                     />
