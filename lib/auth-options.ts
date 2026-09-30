@@ -48,6 +48,62 @@ export const authOptions: NextAuthOptions = {
       },
     }),
   ],
+  pages: {
+    signIn: "/login",
+    error: "/login",
+  },
+  session: {
+    strategy: "jwt",
+    maxAge: 30 * 24 * 60 * 60, // 30 days
+  },
+  cookies: {
+    sessionToken: {
+      name: process.env.NODE_ENV === "production" ? "__Secure-next-auth.session-token" : "next-auth.session-token",
+      options: {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        secure: process.env.NODE_ENV === "production",
+      },
+    },
+    callbackUrl: {
+      name: process.env.NODE_ENV === "production" ? "__Secure-next-auth.callback-url" : "next-auth.callback-url",
+      options: {
+        sameSite: "lax",
+        path: "/",
+        secure: process.env.NODE_ENV === "production",
+      },
+    },
+    csrfToken: {
+      name: process.env.NODE_ENV === "production" ? "__Host-next-auth.csrf-token" : "next-auth.csrf-token",
+      options: {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        secure: process.env.NODE_ENV === "production",
+      },
+    },
+    pkceCodeVerifier: {
+      name: "next-auth.pkce.code_verifier",
+      options: {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        secure: process.env.NODE_ENV === "production",
+        maxAge: 900, // 15 minutes
+      },
+    },
+    state: {
+      name: "next-auth.state",
+      options: {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        secure: process.env.NODE_ENV === "production",
+        maxAge: 900, // 15 minutes
+      },
+    },
+  },
   callbacks: {
     async signIn({ user, account: oauthAccount }) {
       if (!user.email) return false;
@@ -123,6 +179,22 @@ export const authOptions: NextAuthOptions = {
         console.error("Error saving OAuth user to database:", err);
         return true;
       }
+    },
+    async jwt({ token, user }) {
+      if (user) {
+        token.email = user.email?.trim().toLowerCase();
+        token.name = user.name;
+        token.picture = user.image;
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      if (token && session.user) {
+        session.user.email = token.email as string;
+        session.user.name = token.name as string;
+        session.user.image = token.picture as string;
+      }
+      return session;
     },
     async redirect({ url, baseUrl }) {
       if (url && url.startsWith("/")) return `${baseUrl}${url}`;

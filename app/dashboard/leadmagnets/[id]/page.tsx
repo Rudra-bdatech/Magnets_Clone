@@ -1893,8 +1893,12 @@ export default function EditLeadMagnetPage() {
         <SocialCardModal
           isOpen={showSocialModal}
           onClose={() => setShowSocialModal(false)}
-          page={{ ...page, headline, subheadline }}
+          page={{ ...page, headline, subheadline, imageUrl }}
           account={account}
+          onSaveAsCover={(newImageUrl: string) => {
+            setImageUrl(newImageUrl);
+            update({ imageUrl: newImageUrl });
+          }}
         />
       )}
 

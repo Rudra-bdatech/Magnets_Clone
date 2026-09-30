@@ -418,10 +418,10 @@ export default function Template2(props: TemplateProps) {
                 <button
                   type="button"
                   onClick={() => setImageUrl(null)}
-                  className="flex items-center gap-1.5 bg-black/80 hover:bg-red-950 px-2.5 py-1.5 text-xs font-bold text-red-400 border border-white/30 backdrop-blur-md transition cursor-pointer"
+                  className="p-2 bg-black/80 hover:bg-red-950 text-red-400 border border-white/30 backdrop-blur-md transition cursor-pointer"
+                  title="Remove image"
                 >
                   <Trash2 className="h-3.5 w-3.5 text-red-400" />
-                  <span>Remove</span>
                 </button>
               )}
             </div>

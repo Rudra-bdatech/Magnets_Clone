@@ -507,17 +507,17 @@ export default function Template8(props: TemplateProps) {
                     className="flex items-center gap-1.5 px-3 py-2 bg-[#f5ed21] hover:bg-[#e5dd15] text-[#141414] font-dm-sans text-xs font-bold uppercase border-2 border-[#141414] shadow-[2px_2px_0px_#141414] transition-all active:translate-x-0.5 active:translate-y-0.5"
                   >
                     <UploadCloud className="h-3.5 w-3.5" />
-                    <span>Upload Image</span>
+                    <span>{imageUrl ? "Replace Image" : "Upload Image"}</span>
                   </button>
 
                   {imageUrl && setImageUrl && (
                     <button
                       type="button"
                       onClick={() => setImageUrl(null)}
-                      className="flex items-center gap-1.5 px-3 py-2 bg-red-600 hover:bg-red-700 text-white font-dm-sans text-xs font-bold uppercase border-2 border-[#141414] shadow-[2px_2px_0px_#141414] transition-all"
+                      className="p-2 bg-red-600 hover:bg-red-700 text-white font-dm-sans text-xs font-bold uppercase border-2 border-[#141414] shadow-[2px_2px_0px_#141414] transition-all cursor-pointer"
+                      title="Remove image"
                     >
                       <Trash2 className="h-3.5 w-3.5" />
-                      <span>Remove</span>
                     </button>
                   )}
                 </div>

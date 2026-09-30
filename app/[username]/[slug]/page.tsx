@@ -61,7 +61,8 @@ export async function generateMetadata({
   const description = rawDescription.replace(/<[^>]*>/g, "").trim().slice(0, 200);
   const authorName = accountDoc?.name || username;
   const canonicalUrl = `${appUrl}/${encodeURIComponent(username)}/${encodeURIComponent(slug)}`;
-  const ogImageUrl = pageDoc.imageUrl || accountDoc?.ogImageUrl || "/landing-dashboard.png";
+  const dynamicOgUrl = `${appUrl}/api/og?title=${encodeURIComponent(title)}&subtitle=${encodeURIComponent(description)}&author=${encodeURIComponent(authorName)}&username=${encodeURIComponent(username)}`;
+  const ogImageUrl = pageDoc.imageUrl || accountDoc?.ogImageUrl || dynamicOgUrl;
 
   return {
     title: `${title} | ${authorName}`,

@@ -18,10 +18,22 @@ function LoginForm() {
   const rawFrom = searchParams.get("from") || searchParams.get("callbackUrl") || "/dashboard";
   const redirectTarget = rawFrom.startsWith("/") && !rawFrom.startsWith("//") ? rawFrom : "/dashboard";
 
+  const authError = searchParams.get("error");
+  const getInitialError = () => {
+    if (!authError) return "";
+    if (authError === "OAuthCallback" || authError === "OAuthSignin") {
+      return "Sign-in was interrupted. Please try again.";
+    }
+    if (authError === "AccessDenied") {
+      return "Access was cancelled or denied. Please try again.";
+    }
+    return "Authentication failed. Please try again.";
+  };
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [status, setStatus] = useState<"idle" | "authenticating" | "opening_dashboard">("idle");
-  const [error, setError] = useState("");
+  const [error, setError] = useState(getInitialError);
 
   const loading = status !== "idle";
 

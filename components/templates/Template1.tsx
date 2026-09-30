@@ -1,5 +1,5 @@
 import React from "react";
-import { Check, Loader2, ImageIcon, Trash2, Plus, X, Sparkles, UploadCloud } from "lucide-react";
+import { Check, ImageIcon, Trash2, Plus, X, Loader2 } from "lucide-react";
 import { type TemplateProps } from "./types";
 import { ImageGeneration } from "@/components/agents/image-generation";
 
@@ -584,38 +584,24 @@ export default function Template1(props: TemplateProps) {
               />
 
               {isEditor && (
-                <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-2.5 p-4">
-                  <div className="flex items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={() => fileInputRef?.current?.click()}
-                      className="flex items-center gap-1.5 rounded-xl bg-white text-zinc-900 px-3.5 py-2 text-xs font-bold shadow-xl transition hover:bg-zinc-100 cursor-pointer"
-                    >
-                      <ImageIcon className="h-3.5 w-3.5" /> Upload Cover
-                    </button>
-                    {handleGenerateAICoverImage && (
-                      <button
-                        type="button"
-                        onClick={handleGenerateAICoverImage}
-                        disabled={isGeneratingAICover}
-                        className="flex items-center gap-1.5 rounded-xl bg-black/80 text-white border border-white/20 px-3.5 py-2 text-xs font-bold shadow-xl transition hover:bg-black disabled:opacity-50 cursor-pointer"
-                      >
-                        {isGeneratingAICover ? (
-                          <Loader2 className="h-3.5 w-3.5 animate-spin text-sky-400" />
-                        ) : (
-                          <Sparkles className="h-3.5 w-3.5 text-amber-400" />
-                        )}
-                        AI Cover
-                      </button>
-                    )}
-                  </div>
-                  {imageUrl && setImageUrl && (
+                <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 p-4">
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef?.current?.click()}
+                    className="flex items-center gap-1.5 rounded-xl bg-white text-zinc-900 px-3.5 py-2 text-xs font-bold shadow-xl transition hover:bg-zinc-100 cursor-pointer"
+                  >
+                    <ImageIcon className="h-3.5 w-3.5" />
+                    <span>{imageUrl && imageUrl.trim() !== "" ? "Replace Image" : "Upload Cover"}</span>
+                  </button>
+
+                  {imageUrl && imageUrl.trim() !== "" && setImageUrl && (
                     <button
                       type="button"
                       onClick={() => setImageUrl(null)}
-                      className="text-[11px] font-semibold text-red-400 hover:text-red-300 transition underline cursor-pointer"
+                      className="p-2 rounded-xl bg-red-600 hover:bg-red-700 text-white shadow-xl transition cursor-pointer"
+                      title="Remove image"
                     >
-                      Reset to Default
+                      <Trash2 className="h-3.5 w-3.5" />
                     </button>
                   )}
                 </div>
