@@ -40,6 +40,7 @@ const AccountSchema = new Schema({
   metaPixelId: { type: String, default: "" },
   faviconUrl: { type: String, default: "" },
   ogImageUrl: { type: String, default: "" },
+  substackPublication: { type: String, default: "" },
   spfVerified: { type: Boolean, default: false },
   dkimVerified: { type: Boolean, default: false },
   // LinkedIn Comment Automation

@@ -100,7 +100,9 @@ export async function handleSaveAccount(data: any, authEmail: string | null) {
     existing.ga4MeasurementId = data.ga4MeasurementId !== undefined ? data.ga4MeasurementId : existing.ga4MeasurementId;
     existing.metaPixelId = data.metaPixelId !== undefined ? data.metaPixelId : existing.metaPixelId;
     existing.faviconUrl = data.faviconUrl !== undefined ? data.faviconUrl : existing.faviconUrl;
-    existing.ogImageUrl = data.ogImageUrl !== undefined ? data.ogImageUrl : existing.ogImageUrl;
+    existing.privacyPolicy = data.privacyPolicy !== undefined ? data.privacyPolicy : existing.privacyPolicy;
+    existing.termsOfService = data.termsOfService !== undefined ? data.termsOfService : existing.termsOfService;
+    existing.substackPublication = data.substackPublication !== undefined ? data.substackPublication : existing.substackPublication;
     existing.spfVerified = data.spfVerified !== undefined ? data.spfVerified : existing.spfVerified;
     existing.dkimVerified = data.dkimVerified !== undefined ? data.dkimVerified : existing.dkimVerified;
 

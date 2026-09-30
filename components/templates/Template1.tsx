@@ -879,15 +879,45 @@ export default function Template1(props: TemplateProps) {
 
         {/* FOOTER */}
         <footer
-          className="mt-12 pt-5 flex justify-between gap-3 flex-wrap text-[10px] font-semibold tracking-[0.14em] uppercase"
+          className="mt-12 pt-5 flex justify-between gap-3 flex-wrap text-[10px] font-semibold tracking-[0.14em] uppercase items-center"
           style={{
             borderTop: `1px solid ${isDark ? "#23242c" : "#e5e7eb"}`,
             color: isDark ? "#7d8090" : "#9ca3af",
           }}
         >
-          <span>
-            © {currentYear} {businessName} · Private circulation
-          </span>
+          <div className="flex items-center gap-2 flex-wrap">
+            <span>
+              © {currentYear} {businessName} · Private circulation
+            </span>
+            {(account?.privacyPolicy || account?.termsOfService) && (
+              <div className="flex items-center gap-2 normal-case tracking-normal">
+                <span>·</span>
+                {account?.privacyPolicy && (
+                  <a
+                    href={account.privacyPolicy}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:underline text-[11px]"
+                  >
+                    Privacy Policy
+                  </a>
+                )}
+                {account?.privacyPolicy && account?.termsOfService && (
+                  <span>·</span>
+                )}
+                {account?.termsOfService && (
+                  <a
+                    href={account.termsOfService}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:underline text-[11px]"
+                  >
+                    Terms
+                  </a>
+                )}
+              </div>
+            )}
+          </div>
           <span>By {account?.name || "Marcus Vane"}</span>
         </footer>
       </div>

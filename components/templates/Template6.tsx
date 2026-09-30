@@ -797,11 +797,38 @@ export default function Template6(props: TemplateProps) {
 
         {/* FOOTER */}
         <footer
-          className={`border-t mt-14 pt-6 pb-4 text-[9px] font-bold tracking-[0.14em] uppercase transition-colors text-center sm:text-left ${
+          className={`border-t mt-14 pt-6 pb-4 text-[9px] font-bold tracking-[0.14em] uppercase transition-colors flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left ${
             isDark ? "border-[#33302c] text-[#8a817a]" : "border-[#ded9d4] text-[#8a817a]"
           }`}
         >
-          © {currentYear} {account?.brandName || authorName} · Private circulation
+          <span>© {currentYear} {account?.brandName || authorName} · Private circulation</span>
+          {(account?.privacyPolicy || account?.termsOfService) && (
+            <div className="flex items-center gap-2.5 font-medium normal-case tracking-normal text-[11px]">
+              {account?.privacyPolicy && (
+                <a
+                  href={account.privacyPolicy}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:underline hover:text-zinc-900 dark:hover:text-white transition"
+                >
+                  Privacy Policy
+                </a>
+              )}
+              {account?.privacyPolicy && account?.termsOfService && (
+                <span className="opacity-40">·</span>
+              )}
+              {account?.termsOfService && (
+                <a
+                  href={account.termsOfService}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:underline hover:text-zinc-900 dark:hover:text-white transition"
+                >
+                  Terms
+                </a>
+              )}
+            </div>
+          )}
         </footer>
       </div>
     </div>

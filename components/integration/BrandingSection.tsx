@@ -75,7 +75,7 @@ export const BrandingSection = memo(function BrandingSection({
           </div>
         </button>
         {openSections["legal-links"] && (
-          <div className="border-t border-[#E2E8F0] dark:border-[#2e2e38] px-5 py-5">
+          <div className="border-t border-[#E2E8F0] dark:border-[#2e2e38] px-5 py-5 space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-xs font-semibold text-zinc-700 dark:text-[#9B9085] mb-1.5">Privacy policy URL</label>
@@ -98,7 +98,7 @@ export const BrandingSection = memo(function BrandingSection({
                       addToast("Please enter a valid Privacy Policy URL (e.g. https://...)", "error");
                       return;
                     }
-                    handleSave();
+                    handleSave({ privacyPolicy: privacyPolicy.trim() });
                   }}
                   className={`w-full rounded-xl border bg-white dark:bg-[#0E0E10] px-3.5 py-2.5 text-xs text-zinc-900 dark:text-white outline-none placeholder:text-zinc-400 dark:placeholder:text-[#52525b] transition ${
                     privacyError ? "border-rose-500 focus:border-rose-500" : "border-[#E2E8F0] dark:border-[#2e2e38] focus:border-[#0066B2]"
@@ -134,7 +134,7 @@ export const BrandingSection = memo(function BrandingSection({
                       addToast("Please enter a valid Terms of Service URL (e.g. https://...)", "error");
                       return;
                     }
-                    handleSave();
+                    handleSave({ termsOfService: termsOfService.trim() });
                   }}
                   className={`w-full rounded-xl border bg-white dark:bg-[#0E0E10] px-3.5 py-2.5 text-xs text-zinc-900 dark:text-white outline-none placeholder:text-zinc-400 dark:placeholder:text-[#52525b] transition ${
                     termsError ? "border-rose-500 focus:border-rose-500" : "border-[#E5E3DD] dark:border-[#2e2e38] focus:border-[#0066B2]"
@@ -149,6 +149,32 @@ export const BrandingSection = memo(function BrandingSection({
                   <p className="mt-1 text-[11px] text-zinc-400 dark:text-[#666675]">Leave blank to hide this link.</p>
                 )}
               </div>
+            </div>
+
+            <div className="pt-2 border-t border-zinc-100 dark:border-white/5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <p className="text-[11px] text-zinc-500 dark:text-[#666675]">
+                Links appear in the footer of all published lead magnet pages.
+              </p>
+              <button
+                type="button"
+                onClick={() => {
+                  const defaultPrivacy = `${window.location.origin}/privacy`;
+                  const defaultTerms = `${window.location.origin}/terms`;
+                  setPrivacyPolicy(defaultPrivacy);
+                  setTermsOfService(defaultTerms);
+                  markDirty("privacyPolicy");
+                  markDirty("termsOfService");
+                  handleSave({
+                    privacyPolicy: defaultPrivacy,
+                    termsOfService: defaultTerms,
+                  });
+                  addToast("✅ Filled with built-in Privacy & Terms pages!", "success");
+                }}
+                className="inline-flex items-center gap-1.5 self-start sm:self-auto px-3.5 py-1.5 rounded-lg border border-zinc-200 bg-white dark:border-white/10 dark:bg-[#1E1E22] text-xs font-semibold text-zinc-700 dark:text-white hover:bg-zinc-100 dark:hover:bg-[#25252A] transition shrink-0 cursor-pointer shadow-xs"
+              >
+                <Sparkles className="h-3.5 w-3.5 text-[#0066B2] dark:text-[#38BDF8]" />
+                Use Built-in Default Pages
+              </button>
             </div>
           </div>
         )}

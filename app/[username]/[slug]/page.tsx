@@ -2901,10 +2901,42 @@ export default async function MagnetPageRoute({
 
       </div>
 
-      <footer className="w-full py-1.5 sm:py-2 text-center text-[10px] sm:text-[11px] text-[#5c5650] shrink-0">
-        <a href="/" className="inline-flex items-center gap-1 font-medium hover:text-[#FE6F34] transition">
-          Powered by LeadMagnets <MoveRightIcon className="h-2 w-2" />
-        </a>
+      <footer className="w-full py-2.5 sm:py-3 px-4 flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 text-[10.5px] sm:text-[11px] text-[#5c5650] dark:text-[#a1a1aa] shrink-0 border-t border-zinc-200/40 dark:border-white/5">
+        {(accountDoc?.privacyPolicy || accountDoc?.termsOfService) && (
+          <div className="flex items-center gap-3 font-medium">
+            {accountDoc?.privacyPolicy && (
+              <a
+                href={accountDoc.privacyPolicy}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:underline hover:text-zinc-900 dark:hover:text-white transition"
+              >
+                Privacy Policy
+              </a>
+            )}
+            {accountDoc?.privacyPolicy && accountDoc?.termsOfService && (
+              <span className="opacity-40">·</span>
+            )}
+            {accountDoc?.termsOfService && (
+              <a
+                href={accountDoc.termsOfService}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:underline hover:text-zinc-900 dark:hover:text-white transition"
+              >
+                Terms of Service
+              </a>
+            )}
+          </div>
+        )}
+        {(accountDoc?.privacyPolicy || accountDoc?.termsOfService) && (
+          <span className="hidden sm:inline opacity-30">|</span>
+        )}
+        <div className="flex items-center gap-1">
+          <a href="/" className="inline-flex items-center gap-1 font-medium hover:text-[#FE6F34] transition">
+            Powered by LeadMagnets <MoveRightIcon className="h-2 w-2" />
+          </a>
+        </div>
       </footer>
     </main>
   );
