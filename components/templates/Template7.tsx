@@ -77,7 +77,20 @@ export default function Template7(props: TemplateProps) {
     return yiq >= 135 ? "#000000" : "#ffffff";
   };
 
+  const isVeryDark = (hexColor: string) => {
+    if (!hexColor || !hexColor.startsWith("#")) return false;
+    const hex = hexColor.replace("#", "");
+    if (hex.length !== 6) return false;
+    const r = parseInt(hex.substring(0, 2), 16) || 0;
+    const g = parseInt(hex.substring(2, 4), 16) || 0;
+    const b = parseInt(hex.substring(4, 6), 16) || 0;
+    const yiq = (r * 299 + g * 587 + b * 114) / 1000;
+    return yiq < 35;
+  };
+
   const contrastOnAccent = getContrastColor(accentColor);
+  const darkAccent = isVeryDark(accentColor) ? "#ffffff" : accentColor;
+  const contrastOnDarkAccent = getContrastColor(darkAccent);
 
   // Default bullet items matching the Brutalist Ledger reference
   const defaultBullets = [
@@ -150,12 +163,12 @@ export default function Template7(props: TemplateProps) {
   return (
     <div
       className={`template7-root w-full min-h-full flex flex-col justify-between transition-colors duration-200 selection:bg-black selection:text-white ${
-        isDark ? "bg-[#0d0d0f]" : "bg-[#f4ff3c] text-[#101010]"
+        isDark ? "bg-[#0d0d0f] text-white" : "bg-[#f4ff3c] text-[#101010]"
       }`}
       style={{
         fontFamily: "'IBM Plex Mono', monospace, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas",
         borderColor: isDark ? "#2a2a2e" : "#101010",
-        color: isDark ? accentColor : "#101010",
+        color: isDark ? "#ffffff" : "#101010",
       }}
     >
       <style
@@ -267,7 +280,7 @@ export default function Template7(props: TemplateProps) {
                     placeholder="SYSTEMS FOR CREATIVE OPERATORS"
                     style={
                       isDark
-                        ? { backgroundColor: accentColor, color: contrastOnAccent, borderColor: accentColor }
+                        ? { backgroundColor: darkAccent, color: contrastOnDarkAccent, borderColor: darkAccent }
                         : { backgroundColor: "#101010", color: "#ffffff", borderColor: "#101010" }
                     }
                     className="font-ibm inline-block px-3 py-1.5 text-[10px] sm:text-[11px] font-bold tracking-wider uppercase border-2 outline-none placeholder:opacity-60"
@@ -276,7 +289,7 @@ export default function Template7(props: TemplateProps) {
                   <span
                     style={
                       isDark
-                        ? { backgroundColor: accentColor, color: contrastOnAccent, borderColor: accentColor }
+                        ? { backgroundColor: darkAccent, color: contrastOnDarkAccent, borderColor: darkAccent }
                         : { backgroundColor: "#101010", color: "#ffffff", borderColor: "#101010" }
                     }
                     className="font-ibm inline-block px-3 py-1.5 text-[10px] sm:text-[11px] font-bold tracking-wider uppercase border-2"
@@ -341,7 +354,7 @@ export default function Template7(props: TemplateProps) {
             {/* Subtle Industrial Footer Tag */}
             <div
               className={`pt-8 mt-8 border-t-2 text-[10px] font-ibm font-semibold uppercase tracking-widest ${
-                isDark ? "border-zinc-800 text-zinc-500" : "border-black/20 text-black/60"
+                isDark ? "border-zinc-800 text-zinc-400" : "border-black/20 text-black/60"
               }`}
             >
               LEDGER REF: LM-{new Date().getFullYear()}-007 · VERIFIED OUTPUT
@@ -359,24 +372,24 @@ export default function Template7(props: TemplateProps) {
               <div className="absolute inset-0 z-40 flex flex-col items-center justify-center bg-black/90 backdrop-blur-sm p-6 text-center text-white">
                 <div
                   className="mb-3 flex h-12 w-12 items-center justify-center border-2 bg-[#101010]"
-                  style={{ borderColor: accentColor, color: accentColor }}
+                  style={{ borderColor: isDark ? darkAccent : accentColor, color: isDark ? darkAccent : accentColor }}
                 >
                   {uploadProgress === 100 ? (
-                    <Check className="h-6 w-6" style={{ color: accentColor }} />
+                    <Check className="h-6 w-6" style={{ color: isDark ? darkAccent : accentColor }} />
                   ) : (
-                    <Loader2 className="h-6 w-6 animate-spin" style={{ color: accentColor }} />
+                    <Loader2 className="h-6 w-6 animate-spin" style={{ color: isDark ? darkAccent : accentColor }} />
                   )}
                 </div>
                 <p
                   className="text-xs sm:text-sm font-bold font-archivo tracking-wider uppercase"
-                  style={{ color: accentColor }}
+                  style={{ color: isDark ? darkAccent : accentColor }}
                 >
                   {uploadProgress === 100 ? "IMAGE PROCESSED 100%" : "UPLOADING LEDGER COVER..."}
                 </p>
                 <div className="mt-3 w-full max-w-[220px] border border-white bg-black p-0.5">
                   <div
                     className="h-2.5 transition-all duration-150"
-                    style={{ width: `${uploadProgress}%`, backgroundColor: accentColor }}
+                    style={{ width: `${uploadProgress}%`, backgroundColor: isDark ? darkAccent : accentColor }}
                   />
                 </div>
                 <span className="mt-1.5 font-ibm text-[10px] text-zinc-300 font-bold tracking-widest">
@@ -410,7 +423,7 @@ export default function Template7(props: TemplateProps) {
                   className="absolute inset-0 opacity-20 pointer-events-none"
                   style={{
                     backgroundImage: isDark
-                      ? `linear-gradient(${accentColor} 1.5px, transparent 1.5px), linear-gradient(90deg, ${accentColor} 1.5px, transparent 1.5px)`
+                      ? `linear-gradient(${darkAccent} 1.5px, transparent 1.5px), linear-gradient(90deg, ${darkAccent} 1.5px, transparent 1.5px)`
                       : "linear-gradient(#101010 1.5px, transparent 1.5px), linear-gradient(90deg, #101010 1.5px, transparent 1.5px)",
                     backgroundSize: "32px 32px",
                   }}
@@ -421,7 +434,7 @@ export default function Template7(props: TemplateProps) {
                     className="font-ibm text-xs font-bold border-2 px-2.5 py-1 uppercase"
                     style={
                       isDark
-                        ? { backgroundColor: "black", color: accentColor, borderColor: accentColor }
+                        ? { backgroundColor: "black", color: darkAccent, borderColor: darkAccent }
                         : { backgroundColor: "black", color: "white", borderColor: "black" }
                     }
                   >
@@ -442,10 +455,10 @@ export default function Template7(props: TemplateProps) {
                     style={
                       isDark
                         ? {
-                            borderColor: accentColor,
-                            color: accentColor,
+                            borderColor: darkAccent,
+                            color: darkAccent,
                             backgroundColor: "rgba(0,0,0,0.7)",
-                            boxShadow: `6px 6px 0px ${accentColor}`,
+                            boxShadow: `6px 6px 0px ${darkAccent}`,
                           }
                         : {
                             borderColor: "#101010",
@@ -480,9 +493,9 @@ export default function Template7(props: TemplateProps) {
                 isDark
                   ? {
                       backgroundColor: "#18181b",
-                      color: accentColor,
-                      borderColor: accentColor,
-                      boxShadow: `4px 4px 0px ${accentColor}`,
+                      color: darkAccent,
+                      borderColor: darkAccent,
+                      boxShadow: `4px 4px 0px ${darkAccent}`,
                       transform: "rotate(-3deg)",
                     }
                   : {
@@ -542,7 +555,7 @@ export default function Template7(props: TemplateProps) {
                 className="p-5 sm:p-6 border-b-2 flex items-center justify-between font-ibm text-xs font-bold tracking-wider uppercase"
                 style={
                   isDark
-                    ? { borderColor: "#2a2a2e", backgroundColor: "#121215", color: accentColor }
+                    ? { borderColor: "#2a2a2e", backgroundColor: "#121215", color: darkAccent }
                     : { borderColor: "#101010", backgroundColor: "#eef731", color: "#101010" }
                 }
               >
@@ -568,7 +581,7 @@ export default function Template7(props: TemplateProps) {
                       {/* Number Column */}
                       <strong
                         className="font-archivo text-2xl sm:text-3xl leading-none"
-                        style={{ color: isDark ? accentColor : "#101010" }}
+                        style={{ color: isDark ? darkAccent : "#101010" }}
                       >
                         {numStr}
                       </strong>
@@ -649,7 +662,7 @@ export default function Template7(props: TemplateProps) {
                   onClick={handleAddBullet}
                   style={
                     isDark
-                      ? { borderColor: `${accentColor}66`, color: accentColor }
+                      ? { borderColor: `${darkAccent}66`, color: darkAccent }
                       : { borderColor: "rgba(0,0,0,0.4)", color: "#101010" }
                   }
                   className="w-full py-3 px-4 font-ibm text-xs font-bold uppercase tracking-wider border-2 border-dashed flex items-center justify-center gap-2 transition cursor-pointer hover:bg-black/5"
@@ -682,13 +695,13 @@ export default function Template7(props: TemplateProps) {
                   value={formTitle || ""}
                   onChange={(e) => setFormTitle?.(e.target.value)}
                   placeholder="Take the manual."
-                  style={{ color: isDark ? accentColor : contrastOnAccent }}
+                  style={{ color: isDark ? darkAccent : contrastOnAccent }}
                   className="font-archivo text-3xl sm:text-4xl lg:text-[44px] leading-[0.95] uppercase tracking-tight bg-transparent outline-none w-full mb-3 placeholder:opacity-40"
                 />
               ) : (
                 <h2
                   className="font-archivo text-3xl sm:text-4xl lg:text-[44px] leading-[0.95] uppercase tracking-tight mb-3"
-                  style={{ color: isDark ? accentColor : contrastOnAccent }}
+                  style={{ color: isDark ? darkAccent : contrastOnAccent }}
                 >
                   {formTitle || "Take the manual."}
                 </h2>
@@ -738,7 +751,7 @@ export default function Template7(props: TemplateProps) {
                     className="p-3.5 sm:p-4 font-ibm text-[10px] sm:text-[11px] font-bold tracking-wider uppercase border-r-2 flex items-center shrink-0"
                     style={{
                       borderColor: isDark ? "#2a2a2e" : "#101010",
-                      color: isDark ? accentColor : contrastOnAccent,
+                      color: isDark ? darkAccent : contrastOnAccent,
                     }}
                   >
                     NAME
@@ -768,7 +781,7 @@ export default function Template7(props: TemplateProps) {
                     className="p-3.5 sm:p-4 font-ibm text-[10px] sm:text-[11px] font-bold tracking-wider uppercase border-r-2 flex items-center shrink-0"
                     style={{
                       borderColor: isDark ? "#2a2a2e" : "#101010",
-                      color: isDark ? accentColor : contrastOnAccent,
+                      color: isDark ? darkAccent : contrastOnAccent,
                     }}
                   >
                     EMAIL
@@ -805,7 +818,7 @@ export default function Template7(props: TemplateProps) {
                           className="p-3.5 sm:p-4 font-ibm text-[10px] sm:text-[11px] font-bold tracking-wider uppercase border-r-2 flex items-center shrink-0"
                           style={{
                             borderColor: isDark ? "#2a2a2e" : "#101010",
-                            color: isDark ? accentColor : contrastOnAccent,
+                            color: isDark ? darkAccent : contrastOnAccent,
                           }}
                         >
                           {cf.label || cf.name || "FIELD"}
@@ -849,10 +862,10 @@ export default function Template7(props: TemplateProps) {
                         style={
                           isDark
                             ? {
-                                backgroundColor: accentColor,
-                                color: contrastOnAccent,
-                                borderColor: accentColor,
-                                boxShadow: `4px 4px 0px ${accentColor}`,
+                                backgroundColor: darkAccent,
+                                color: contrastOnDarkAccent,
+                                borderColor: darkAccent,
+                                boxShadow: `4px 4px 0px ${darkAccent}`,
                               }
                             : {
                                 backgroundColor: "#101010",
@@ -885,10 +898,10 @@ export default function Template7(props: TemplateProps) {
                       style={
                         isDark
                           ? {
-                              backgroundColor: accentColor,
-                              color: contrastOnAccent,
-                              borderColor: accentColor,
-                              boxShadow: `5px 5px 0px ${accentColor}`,
+                              backgroundColor: darkAccent,
+                              color: contrastOnDarkAccent,
+                              borderColor: darkAccent,
+                              boxShadow: `5px 5px 0px ${darkAccent}`,
                             }
                           : {
                               backgroundColor: "#101010",
@@ -915,7 +928,7 @@ export default function Template7(props: TemplateProps) {
             {/* Privacy / Security Brutalist Note */}
             <div
               className={`pt-6 mt-6 border-t-2 text-[9px] sm:text-[10px] font-ibm font-bold uppercase tracking-wider flex justify-between items-center ${
-                isDark ? "border-zinc-800 text-zinc-500" : (contrastOnAccent === "#ffffff" ? "border-white/20 text-white/80" : "border-black/20 text-black/70")
+                isDark ? "border-zinc-800 text-zinc-400" : (contrastOnAccent === "#ffffff" ? "border-white/20 text-white/80" : "border-black/20 text-black/70")
               }`}
             >
               <span>🔒 ZERO SPAM PROMISE</span>
@@ -930,7 +943,7 @@ export default function Template7(props: TemplateProps) {
         className={`w-full py-3 px-4 border-t-4 overflow-hidden font-ibm text-[11px] sm:text-xs font-bold uppercase tracking-widest transition-colors ${
           isDark ? "border-[#2a2a2e] bg-[#000000]" : "border-[#101010] bg-[#101010]"
         }`}
-        style={{ color: isDark ? accentColor : "#f4ff3c" }}
+        style={{ color: isDark ? darkAccent : "#ffffff" }}
       >
         <div className="overflow-hidden whitespace-nowrap">
           <div className="animate-brutalist-ticker">

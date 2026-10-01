@@ -1645,7 +1645,20 @@ const BrandTemplatePreview = memo(function BrandTemplatePreview({
               const yiq = (r * 299 + g * 587 + b * 114) / 1000;
               return yiq >= 135 ? "#000000" : "#ffffff";
             };
+            const isVeryDark = (hexColor: string) => {
+              if (!hexColor || !hexColor.startsWith("#")) return false;
+              const hex = hexColor.replace("#", "");
+              if (hex.length !== 6) return false;
+              const r = parseInt(hex.substring(0, 2), 16) || 0;
+              const g = parseInt(hex.substring(2, 4), 16) || 0;
+              const b = parseInt(hex.substring(4, 6), 16) || 0;
+              const yiq = (r * 299 + g * 587 + b * 114) / 1000;
+              return yiq < 35;
+            };
+
             const contrastOnAccent = getContrastColor(accentColor);
+            const darkAccent = isVeryDark(accentColor) ? "#ffffff" : accentColor;
+            const contrastOnDarkAccent = getContrastColor(darkAccent);
 
             return (
               <>
@@ -1697,7 +1710,7 @@ const BrandTemplatePreview = memo(function BrandTemplatePreview({
                         className="inline-block font-ibm px-2 py-0.5 text-[8px] font-bold tracking-wider uppercase border-2 mb-2"
                         style={
                           themeMode === "dark"
-                            ? { backgroundColor: accentColor, color: contrastOnAccent, borderColor: accentColor }
+                            ? { backgroundColor: darkAccent, color: contrastOnDarkAccent, borderColor: darkAccent }
                             : { backgroundColor: "#101010", color: "#ffffff", borderColor: "#101010" }
                         }
                       >
@@ -1743,10 +1756,10 @@ const BrandTemplatePreview = memo(function BrandTemplatePreview({
                           style={
                             themeMode === "dark"
                               ? {
-                                  borderColor: accentColor,
-                                  color: accentColor,
+                                  borderColor: darkAccent,
+                                  color: darkAccent,
                                   backgroundColor: "black",
-                                  boxShadow: `3px 3px 0px ${accentColor}`,
+                                  boxShadow: `3px 3px 0px ${darkAccent}`,
                                 }
                               : {
                                   borderColor: "black",
@@ -1767,9 +1780,9 @@ const BrandTemplatePreview = memo(function BrandTemplatePreview({
                         themeMode === "dark"
                           ? {
                               backgroundColor: "#18181b",
-                              color: accentColor,
-                              borderColor: accentColor,
-                              boxShadow: `2px 2px 0px ${accentColor}`,
+                              color: darkAccent,
+                              borderColor: darkAccent,
+                              boxShadow: `2px 2px 0px ${darkAccent}`,
                               transform: "rotate(-3deg)",
                             }
                           : {
@@ -1810,7 +1823,7 @@ const BrandTemplatePreview = memo(function BrandTemplatePreview({
                               className="p-2.5 sm:p-3 border-b-2 flex items-center justify-between font-ibm text-[8px] sm:text-[9px] font-bold tracking-wider uppercase"
                               style={
                                 themeMode === "dark"
-                                  ? { borderColor: "#2a2a2e", backgroundColor: "#121215", color: accentColor }
+                                  ? { borderColor: "#2a2a2e", backgroundColor: "#121215", color: darkAccent }
                                   : { borderColor: "#101010", backgroundColor: "#eef731", color: "#101010" }
                               }
                             >
@@ -1833,7 +1846,7 @@ const BrandTemplatePreview = memo(function BrandTemplatePreview({
                                     <div key={idx} className="grid grid-cols-[35px_1fr] p-2.5 sm:p-3 items-start gap-2 border-b-2" style={{ borderColor: themeMode === "dark" ? "#2a2a2e" : "#101010" }}>
                                       <strong
                                         className="font-archivo text-sm sm:text-base"
-                                        style={{ color: themeMode === "dark" ? accentColor : "#101010" }}
+                                        style={{ color: themeMode === "dark" ? darkAccent : "#101010" }}
                                       >
                                         {numStr}
                                       </strong>
@@ -1880,7 +1893,7 @@ const BrandTemplatePreview = memo(function BrandTemplatePreview({
                     <div>
                       <h2
                         className="font-archivo text-xl sm:text-2xl leading-[0.95] uppercase tracking-tight mb-1.5"
-                        style={{ color: themeMode === "dark" ? accentColor : contrastOnAccent }}
+                        style={{ color: themeMode === "dark" ? darkAccent : contrastOnAccent }}
                       >
                         {latestPage?.formTitle || "DOWNLOAD HERE"}
                       </h2>
@@ -1907,7 +1920,7 @@ const BrandTemplatePreview = memo(function BrandTemplatePreview({
                             className="p-2 font-ibm text-[8px] font-bold tracking-wider uppercase border-r-2"
                             style={{
                               borderColor: themeMode === "dark" ? "#2a2a2e" : "#101010",
-                              color: themeMode === "dark" ? accentColor : contrastOnAccent,
+                              color: themeMode === "dark" ? darkAccent : contrastOnAccent,
                             }}
                           >
                             NAME
@@ -1933,7 +1946,7 @@ const BrandTemplatePreview = memo(function BrandTemplatePreview({
                             className="p-2 font-ibm text-[8px] font-bold tracking-wider uppercase border-r-2"
                             style={{
                               borderColor: themeMode === "dark" ? "#2a2a2e" : "#101010",
-                              color: themeMode === "dark" ? accentColor : contrastOnAccent,
+                              color: themeMode === "dark" ? darkAccent : contrastOnAccent,
                             }}
                           >
                             EMAIL
@@ -1963,7 +1976,7 @@ const BrandTemplatePreview = memo(function BrandTemplatePreview({
                                 className="p-2 font-ibm text-[8px] font-bold tracking-wider uppercase border-r-2 truncate"
                                 style={{
                                   borderColor: themeMode === "dark" ? "#2a2a2e" : "#101010",
-                                  color: themeMode === "dark" ? accentColor : contrastOnAccent,
+                                  color: themeMode === "dark" ? darkAccent : contrastOnAccent,
                                 }}
                               >
                                 {cf.label || cf.name || "FIELD"}
@@ -1988,10 +2001,10 @@ const BrandTemplatePreview = memo(function BrandTemplatePreview({
                           style={
                             themeMode === "dark"
                               ? {
-                                  backgroundColor: accentColor,
-                                  color: contrastOnAccent,
-                                  borderColor: accentColor,
-                                  boxShadow: `3px 3px 0px ${accentColor}`,
+                                  backgroundColor: darkAccent,
+                                  color: contrastOnDarkAccent,
+                                  borderColor: darkAccent,
+                                  boxShadow: `3px 3px 0px ${darkAccent}`,
                                 }
                               : {
                                   backgroundColor: "#101010",
@@ -2022,7 +2035,7 @@ const BrandTemplatePreview = memo(function BrandTemplatePreview({
                   className={`py-1.5 px-3 border-t-3 overflow-hidden font-ibm text-[9px] font-bold uppercase tracking-widest ${
                     themeMode === "dark" ? "border-[#2a2a2e] bg-black" : "border-[#101010] bg-[#101010]"
                   }`}
-                  style={{ color: themeMode === "dark" ? accentColor : "#f4ff3c" }}
+                  style={{ color: themeMode === "dark" ? darkAccent : "#ffffff" }}
                 >
                   NO FLUFF / NO HACKS / FIELD-TESTED FRAMEWORKS / INSTANT DIGITAL DELIVERY
                 </footer>

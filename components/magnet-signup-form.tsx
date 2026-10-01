@@ -706,7 +706,20 @@ export default function MagnetSignupForm({
             const yiq = (r * 299 + g * 587 + b * 114) / 1000;
             return yiq >= 135 ? "#000000" : "#ffffff";
           };
+          const isVeryDark = (hexColor: string) => {
+            if (!hexColor || !hexColor.startsWith("#")) return false;
+            const hex = hexColor.replace("#", "");
+            if (hex.length !== 6) return false;
+            const r = parseInt(hex.substring(0, 2), 16) || 0;
+            const g = parseInt(hex.substring(2, 4), 16) || 0;
+            const b = parseInt(hex.substring(4, 6), 16) || 0;
+            const yiq = (r * 299 + g * 587 + b * 114) / 1000;
+            return yiq < 35;
+          };
+
           const contrastOnAccent = getContrastColor(accentColor);
+          const darkAccent = isVeryDark(accentColor) ? "#ffffff" : accentColor;
+          const contrastOnDarkAccent = getContrastColor(darkAccent);
 
           return (
             <form
@@ -724,7 +737,7 @@ export default function MagnetSignupForm({
                   className="p-3.5 sm:p-4 font-ibm text-[10px] sm:text-[11px] font-bold tracking-wider uppercase border-r-2 flex items-center shrink-0"
                   style={{
                     borderColor: themeMode === "dark" ? "#2a2a2e" : "#101010",
-                    color: themeMode === "dark" ? accentColor : contrastOnAccent,
+                    color: themeMode === "dark" ? darkAccent : contrastOnAccent,
                   }}
                 >
                   NAME
@@ -754,7 +767,7 @@ export default function MagnetSignupForm({
                   className="p-3.5 sm:p-4 font-ibm text-[10px] sm:text-[11px] font-bold tracking-wider uppercase border-r-2 flex items-center shrink-0"
                   style={{
                     borderColor: themeMode === "dark" ? "#2a2a2e" : "#101010",
-                    color: themeMode === "dark" ? accentColor : contrastOnAccent,
+                    color: themeMode === "dark" ? darkAccent : contrastOnAccent,
                   }}
                 >
                   EMAIL
@@ -787,7 +800,7 @@ export default function MagnetSignupForm({
                       className="p-3.5 sm:p-4 font-ibm text-[10px] sm:text-[11px] font-bold tracking-wider uppercase border-r-2 flex items-center shrink-0"
                       style={{
                         borderColor: themeMode === "dark" ? "#2a2a2e" : "#101010",
-                        color: themeMode === "dark" ? accentColor : contrastOnAccent,
+                        color: themeMode === "dark" ? darkAccent : contrastOnAccent,
                       }}
                     >
                       {field.label?.toUpperCase() || "FIELD"}
@@ -855,7 +868,7 @@ export default function MagnetSignupForm({
                     className="p-3.5 sm:p-4 font-ibm text-[9px] sm:text-[10px] font-bold tracking-wider uppercase border-r-3 flex items-center shrink-0"
                     style={{
                       borderColor: themeMode === "dark" ? "#2a2a2e" : "#101010",
-                      color: themeMode === "dark" ? accentColor : contrastOnAccent,
+                      color: themeMode === "dark" ? darkAccent : contrastOnAccent,
                     }}
                   >
                     ✨ FOCUS
@@ -891,10 +904,10 @@ export default function MagnetSignupForm({
                   style={
                     themeMode === "dark"
                       ? {
-                          backgroundColor: accentColor,
-                          color: contrastOnAccent,
-                          borderColor: accentColor,
-                          boxShadow: `4px 4px 0px ${accentColor}`,
+                          backgroundColor: darkAccent,
+                          color: contrastOnDarkAccent,
+                          borderColor: darkAccent,
+                          boxShadow: `4px 4px 0px ${darkAccent}`,
                         }
                       : {
                           backgroundColor: "#101010",

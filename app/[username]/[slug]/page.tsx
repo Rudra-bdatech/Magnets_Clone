@@ -2126,7 +2126,20 @@ export default async function MagnetPageRoute({
               const yiq = (r * 299 + g * 587 + b * 114) / 1000;
               return yiq >= 135 ? "#000000" : "#ffffff";
             };
+            const isVeryDark = (hexColor: string) => {
+              if (!hexColor || !hexColor.startsWith("#")) return false;
+              const hex = hexColor.replace("#", "");
+              if (hex.length !== 6) return false;
+              const r = parseInt(hex.substring(0, 2), 16) || 0;
+              const g = parseInt(hex.substring(2, 4), 16) || 0;
+              const b = parseInt(hex.substring(4, 6), 16) || 0;
+              const yiq = (r * 299 + g * 587 + b * 114) / 1000;
+              return yiq < 35;
+            };
+
             const contrastOnAccent = getContrastColor(accentColor);
+            const darkAccent = isVeryDark(accentColor) ? "#ffffff" : accentColor;
+            const contrastOnDarkAccent = getContrastColor(darkAccent);
 
             return (
               <div
@@ -2137,7 +2150,7 @@ export default async function MagnetPageRoute({
                 }`}
                 style={{
                   fontFamily: "'IBM Plex Mono', monospace, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas",
-                  color: themeMode === "dark" ? accentColor : "#101010",
+                  color: themeMode === "dark" ? "#ffffff" : "#101010",
                 }}
               >
                 <style
@@ -2217,7 +2230,7 @@ export default async function MagnetPageRoute({
                             className="font-ibm inline-block px-3 py-1.5 text-[10px] sm:text-[11px] font-bold tracking-wider uppercase border-2"
                             style={
                               themeMode === "dark"
-                                ? { backgroundColor: accentColor, color: contrastOnAccent, borderColor: accentColor }
+                                ? { backgroundColor: darkAccent, color: contrastOnDarkAccent, borderColor: darkAccent }
                                 : { backgroundColor: "#101010", color: "#ffffff", borderColor: "#101010" }
                             }
                           >
@@ -2249,7 +2262,7 @@ export default async function MagnetPageRoute({
 
                       <div
                         className={`pt-8 mt-8 border-t-2 text-[10px] font-ibm font-semibold uppercase tracking-widest ${
-                          themeMode === "dark" ? "border-zinc-800 text-zinc-500" : "border-black/20 text-black/60"
+                          themeMode === "dark" ? "border-zinc-800 text-zinc-400" : "border-black/20 text-black/60"
                         }`}
                       >
                         LEDGER REF: LM-{new Date().getFullYear()}-007 · VERIFIED OUTPUT
@@ -2275,7 +2288,7 @@ export default async function MagnetPageRoute({
                             style={{
                               backgroundImage:
                                 themeMode === "dark"
-                                  ? `linear-gradient(${accentColor} 1.5px, transparent 1.5px), linear-gradient(90deg, ${accentColor} 1.5px, transparent 1.5px)`
+                                  ? `linear-gradient(${darkAccent} 1.5px, transparent 1.5px), linear-gradient(90deg, ${darkAccent} 1.5px, transparent 1.5px)`
                                   : "linear-gradient(#101010 1.5px, transparent 1.5px), linear-gradient(90deg, #101010 1.5px, transparent 1.5px)",
                               backgroundSize: "32px 32px",
                             }}
@@ -2285,7 +2298,7 @@ export default async function MagnetPageRoute({
                               className="font-ibm text-xs font-bold border-2 px-2.5 py-1 uppercase"
                               style={
                                 themeMode === "dark"
-                                  ? { backgroundColor: "black", color: accentColor, borderColor: accentColor }
+                                  ? { backgroundColor: "black", color: darkAccent, borderColor: darkAccent }
                                   : { backgroundColor: "black", color: "white", borderColor: "black" }
                               }
                             >
@@ -2306,10 +2319,10 @@ export default async function MagnetPageRoute({
                               style={
                                 themeMode === "dark"
                                   ? {
-                                      borderColor: accentColor,
-                                      color: accentColor,
+                                      borderColor: darkAccent,
+                                      color: darkAccent,
                                       backgroundColor: "rgba(0,0,0,0.7)",
-                                      boxShadow: `6px 6px 0px ${accentColor}`,
+                                      boxShadow: `6px 6px 0px ${darkAccent}`,
                                     }
                                   : {
                                       borderColor: "#101010",
@@ -2344,9 +2357,9 @@ export default async function MagnetPageRoute({
                           themeMode === "dark"
                             ? {
                                 backgroundColor: "#18181b",
-                                color: accentColor,
-                                borderColor: accentColor,
-                                boxShadow: `4px 4px 0px ${accentColor}`,
+                                color: darkAccent,
+                                borderColor: darkAccent,
+                                boxShadow: `4px 4px 0px ${darkAccent}`,
                                 transform: "rotate(-3deg)",
                               }
                             : {
@@ -2380,7 +2393,7 @@ export default async function MagnetPageRoute({
                           className="p-5 sm:p-6 border-b-2 flex items-center justify-between font-ibm text-xs font-bold tracking-wider uppercase"
                           style={
                             themeMode === "dark"
-                              ? { borderColor: "#2a2a2e", backgroundColor: "#121215", color: accentColor }
+                              ? { borderColor: "#2a2a2e", backgroundColor: "#121215", color: darkAccent }
                               : { borderColor: "#101010", backgroundColor: "#eef731", color: "#101010" }
                           }
                         >
@@ -2434,7 +2447,7 @@ export default async function MagnetPageRoute({
                                   >
                                     <strong
                                       className="font-archivo text-2xl sm:text-3xl leading-none"
-                                      style={{ color: themeMode === "dark" ? accentColor : "#101010" }}
+                                      style={{ color: themeMode === "dark" ? darkAccent : "#101010" }}
                                     >
                                       {numStr}
                                     </strong>
@@ -2481,7 +2494,7 @@ export default async function MagnetPageRoute({
                       <div>
                         <h2
                           className="font-archivo text-3xl sm:text-4xl lg:text-[44px] leading-[0.95] uppercase tracking-tight mb-3"
-                          style={{ color: themeMode === "dark" ? accentColor : contrastOnAccent }}
+                          style={{ color: themeMode === "dark" ? darkAccent : contrastOnAccent }}
                         >
                           {page.formTitle || "Take the manual."}
                         </h2>
@@ -2524,7 +2537,7 @@ export default async function MagnetPageRoute({
 
                       <div
                         className={`pt-6 mt-6 border-t-2 text-[9px] sm:text-[10px] font-ibm font-bold uppercase tracking-wider flex justify-between items-center ${
-                          themeMode === "dark" ? "border-zinc-800 text-zinc-500" : (contrastOnAccent === "#ffffff" ? "border-white/20 text-white/80" : "border-black/20 text-black/70")
+                          themeMode === "dark" ? "border-zinc-800 text-zinc-400" : (contrastOnAccent === "#ffffff" ? "border-white/20 text-white/80" : "border-black/20 text-black/70")
                         }`}
                       >
                         <span>🔒 ZERO SPAM PROMISE</span>
@@ -2539,7 +2552,7 @@ export default async function MagnetPageRoute({
                   className={`w-full py-3 px-4 border-t-4 overflow-hidden font-ibm text-[11px] sm:text-xs font-bold uppercase tracking-widest transition-colors ${
                     themeMode === "dark" ? "border-[#2a2a2e] bg-[#000000]" : "border-[#101010] bg-[#101010]"
                   }`}
-                  style={{ color: themeMode === "dark" ? accentColor : "#f4ff3c" }}
+                  style={{ color: themeMode === "dark" ? darkAccent : "#ffffff" }}
                 >
                   <div className="overflow-hidden whitespace-nowrap">
                     <div className="animate-brutalist-ticker">
