@@ -143,7 +143,7 @@ export default function LinkedInAutomationPage() {
 
   // Native In-House LinkedIn Connection state
   const [showConnectModal, setShowConnectModal] = useState(false);
-  const [connectTab, setConnectTab] = useState<"credentials" | "cookie">("credentials");
+  const [connectTab, setConnectTab] = useState<"extension" | "credentials" | "cookie">("extension");
   const [inputEmail, setInputEmail] = useState("");
   const [inputPassword, setInputPassword] = useState("");
   const [inputLiAt, setInputLiAt] = useState("");
@@ -194,8 +194,8 @@ export default function LinkedInAutomationPage() {
     setInputPassword("");
     setInputLiAt(account?.linkedinLiAt || "");
     setInputJSessionId(account?.linkedinJSessionId || "");
-    // On mobile, always default to OAuth tab (cookie tab is unusable without DevTools)
-    setConnectTab(isMobile ? "credentials" : "credentials");
+    // Default to Chrome extension (recommended, safe against Cloudflare)
+    setConnectTab(isMobile ? "credentials" : "extension");
     setShowConnectModal(true);
   };
 
@@ -1808,7 +1808,19 @@ export default function LinkedInAutomationPage() {
 
               {/* Mode Tabs - Cookie tab hidden on mobile */}
               {!requiresPin && (
-                <div className="flex rounded-xl bg-zinc-100 dark:bg-zinc-800/80 p-1 text-xs font-semibold">
+                <div className="flex rounded-xl bg-zinc-100 dark:bg-zinc-800/80 p-1 text-xs font-semibold gap-1">
+                  <button
+                    type="button"
+                    onClick={() => setConnectTab("extension")}
+                    className={`flex-1 rounded-lg py-2 transition flex items-center justify-center gap-1.5 ${
+                      connectTab === "extension"
+                        ? "bg-white dark:bg-[#18181B] text-[#0A66C2] dark:text-[#38BDF8] shadow-xs"
+                        : "text-zinc-500 hover:text-zinc-900 dark:text-zinc-400"
+                    }`}
+                  >
+                    <Download className="h-3.5 w-3.5" />
+                    <span>Extension (Recommended)</span>
+                  </button>
                   <button
                     type="button"
                     onClick={() => setConnectTab("credentials")}
@@ -1818,7 +1830,7 @@ export default function LinkedInAutomationPage() {
                         : "text-zinc-500 hover:text-zinc-900 dark:text-zinc-400"
                     }`}
                   >
-                    Sign In with LinkedIn
+                    Sign In
                   </button>
                   {!isMobile && (
                     <button
@@ -1830,7 +1842,7 @@ export default function LinkedInAutomationPage() {
                           : "text-zinc-500 hover:text-zinc-900 dark:text-zinc-400"
                       }`}
                     >
-                      Session Cookie (Desktop only)
+                      Cookie (Advanced)
                     </button>
                   )}
                 </div>
@@ -1885,6 +1897,59 @@ export default function LinkedInAutomationPage() {
                     </button>
                   </div>
                 </form>
+              ) : connectTab === "extension" ? (
+                /* ── Chrome Extension Primary Tab ── */
+                <div className="space-y-4">
+                  {/* Safety & Cloudflare banner */}
+                  <div className="rounded-xl border border-emerald-500/25 bg-emerald-50/70 dark:bg-emerald-500/10 p-3.5 space-y-1.5">
+                    <p className="text-xs font-bold text-emerald-800 dark:text-emerald-300 flex items-center gap-1.5">
+                      <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                      100% Cloudflare-Safe &amp; Anti-Ban Protected
+                    </p>
+                    <p className="text-[11px] text-zinc-700 dark:text-zinc-300 leading-relaxed">
+                      Runs directly inside your desktop browser using your residential IP. Completely bypasses LinkedIn Cloudflare challenges and datacenter IP blocks.
+                    </p>
+                  </div>
+
+                  {/* 3 Step Guide */}
+                  <div className="rounded-xl border border-zinc-200 dark:border-white/10 bg-zinc-50 dark:bg-[#121214] p-3.5 space-y-2.5 text-xs">
+                    <p className="font-bold text-zinc-900 dark:text-white">Quick 3-Step Setup (takes 30 seconds):</p>
+                    
+                    <div className="flex items-start gap-2.5">
+                      <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#0A66C2] text-[10px] font-bold text-white">1</span>
+                      <div>
+                        <p className="font-semibold text-zinc-800 dark:text-zinc-200">Download and unzip extension</p>
+                        <p className="text-[10.5px] text-zinc-500 dark:text-[#9B9085]">Click the button below and extract the ZIP file.</p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-start gap-2.5">
+                      <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#0A66C2] text-[10px] font-bold text-white">2</span>
+                      <div>
+                        <p className="font-semibold text-zinc-800 dark:text-zinc-200">Load into Chrome</p>
+                        <p className="text-[10.5px] text-zinc-500 dark:text-[#9B9085]">Go to <code className="font-mono bg-zinc-200 dark:bg-zinc-800 px-1 py-0.5 rounded text-[10px]">chrome://extensions</code> &rarr; Enable <strong>Developer mode</strong> &rarr; Click <strong>Load unpacked</strong> &rarr; Select folder.</p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-start gap-2.5">
+                      <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#0A66C2] text-[10px] font-bold text-white">3</span>
+                      <div>
+                        <p className="font-semibold text-zinc-800 dark:text-zinc-200">Connect &amp; Auto-Sync</p>
+                        <p className="text-[10.5px] text-zinc-500 dark:text-[#9B9085]">Click the extension icon in Chrome, verify your account email, and keep LinkedIn open in Chrome!</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Download Button */}
+                  <a
+                    href="/leadmagnets-extension.zip"
+                    download="leadmagnets-extension.zip"
+                    className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#0A66C2] hover:bg-[#004182] px-5 py-3 text-xs font-bold text-white shadow-md transition active:scale-[0.98] cursor-pointer"
+                  >
+                    <Download className="h-4 w-4 shrink-0" />
+                    <span>Download Chrome Extension (.ZIP)</span>
+                  </a>
+                </div>
               ) : connectTab === "credentials" ? (
                 /* â”€â”€ Official LinkedIn OAuth Tab â”€â”€ */
                 <div className="space-y-4">
