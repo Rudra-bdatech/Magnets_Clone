@@ -475,12 +475,6 @@ export default function DashboardHome({
     [sequences]
   );
 
-  // Top landing pages (excluding locked PDFs)
-  const topLandingPages = useMemo(
-    () => [...landingPages].sort((a, b) => (b.views || 0) - (a.views || 0)).slice(0, 4),
-    [landingPages]
-  );
-
   // Recent leads
   const recentLeads = useMemo(
     () =>
@@ -644,7 +638,53 @@ export default function DashboardHome({
           </motion.div>
 
           {/* ══════════════════════════════════════════════
-              SECTION 2 — Core Products Performance (Landing Pages & Locked PDFs)
+              SECTION 2 — Platform KPI Summary Cards
+          ══════════════════════════════════════════════ */}
+          <motion.div
+            variants={fadeUp}
+            className="grid grid-cols-2 gap-3.5 lg:grid-cols-4"
+          >
+            {kpiCards.map((card) => (
+              <Link
+                key={card.id}
+                href={card.href}
+                className="group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0066B2] rounded-2xl h-full flex flex-col"
+              >
+                <div className="relative h-full rounded-2xl border border-zinc-200/80 bg-white/90 dark:border-[#2e2e38] dark:bg-[#18181B]/90 p-4 shadow-sm backdrop-blur-sm hover:border-[#0066B2]/40 dark:hover:border-[#38BDF8]/25 hover:shadow-md transition-all duration-200 overflow-hidden flex items-center gap-3.5">
+                  {/* Left: Icon Badge */}
+                  <div
+                    className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${card.iconBg} ${card.iconColor}`}
+                  >
+                    <card.icon className="h-5 w-5" />
+                  </div>
+
+                  {/* Right: Label, Value & Subtext */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between gap-1">
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-[#9B9085] leading-none truncate">
+                        {card.label}
+                      </p>
+                      <ChevronRight className="h-3.5 w-3.5 text-zinc-300 dark:text-zinc-600 group-hover:text-[#0066B2] dark:group-hover:text-[#38BDF8] transition-all opacity-0 group-hover:opacity-100 group-hover:translate-x-0.5 shrink-0" />
+                    </div>
+
+                    <p className="text-xl font-extrabold tabular-nums text-zinc-900 dark:text-white mt-1 leading-none tracking-tight">
+                      {card.value}
+                    </p>
+
+                    <p className="mt-1 text-[10px] text-zinc-400 dark:text-[#9B9085] truncate">
+                      {card.sub}
+                    </p>
+                  </div>
+
+                  {/* Hover gradient overlay */}
+                  <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0066B2]/[0.04] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                </div>
+              </Link>
+            ))}
+          </motion.div>
+
+          {/* ══════════════════════════════════════════════
+              SECTION 2.5 — Core Products Performance (Landing Pages & Locked PDFs)
           ══════════════════════════════════════════════ */}
           <motion.div
             variants={fadeUp}
@@ -810,195 +850,7 @@ export default function DashboardHome({
           </motion.div>
 
           {/* ══════════════════════════════════════════════
-              SECTION 2.5 — Platform KPI Summary Cards
-          ══════════════════════════════════════════════ */}
-          <motion.div
-            variants={fadeUp}
-            className="grid grid-cols-2 gap-3.5 lg:grid-cols-4"
-          >
-            {kpiCards.map((card) => (
-              <Link
-                key={card.id}
-                href={card.href}
-                className="group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0066B2] rounded-2xl h-full flex flex-col"
-              >
-                <div className="relative h-full rounded-2xl border border-zinc-200/80 bg-white/90 dark:border-[#2e2e38] dark:bg-[#18181B]/90 p-4 shadow-sm backdrop-blur-sm hover:border-[#0066B2]/40 dark:hover:border-[#38BDF8]/25 hover:shadow-md transition-all duration-200 overflow-hidden flex items-center gap-3.5">
-                  {/* Left: Icon Badge */}
-                  <div
-                    className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${card.iconBg} ${card.iconColor}`}
-                  >
-                    <card.icon className="h-5 w-5" />
-                  </div>
-
-                  {/* Right: Label, Value & Subtext */}
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between gap-1">
-                      <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-[#9B9085] leading-none truncate">
-                        {card.label}
-                      </p>
-                      <ChevronRight className="h-3.5 w-3.5 text-zinc-300 dark:text-zinc-600 group-hover:text-[#0066B2] dark:group-hover:text-[#38BDF8] transition-all opacity-0 group-hover:opacity-100 group-hover:translate-x-0.5 shrink-0" />
-                    </div>
-
-                    <p className="text-xl font-extrabold tabular-nums text-zinc-900 dark:text-white mt-1 leading-none tracking-tight">
-                      {card.value}
-                    </p>
-
-                    <p className="mt-1 text-[10px] text-zinc-400 dark:text-[#9B9085] truncate">
-                      {card.sub}
-                    </p>
-                  </div>
-
-                  {/* Hover gradient overlay */}
-                  <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0066B2]/[0.04] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                </div>
-              </Link>
-            ))}
-          </motion.div>
-
-          {/* ══════════════════════════════════════════════
-              SECTION 3 — Lead Magnets Table
-          ══════════════════════════════════════════════ */}
-          <motion.div variants={fadeUp}>
-            <div className="rounded-2xl border border-zinc-200/80 bg-white/90 dark:border-[#2e2e38] dark:bg-[#18181B]/90 shadow-sm backdrop-blur-sm overflow-hidden">
-              {/* Table header */}
-              <div className="flex items-center justify-between px-5 py-4 border-b border-zinc-100 dark:border-[#1e1e26]">
-                <div>
-                  <h2 className="text-sm font-bold text-zinc-900 dark:text-white">
-                    Your Landing Pages
-                  </h2>
-                  <p className="text-[11px] text-zinc-500 dark:text-[#9B9085] mt-0.5">
-                    {landingPageCount} total · {landingPageLiveCount} live
-                  </p>
-                </div>
-                <Link
-                  href="/dashboard/landing-page"
-                  className="inline-flex items-center gap-1 text-xs font-semibold text-[#0066B2] dark:text-[#38BDF8] hover:underline underline-offset-2 transition-colors"
-                >
-                  View all
-                  <ArrowUpRight className="h-3 w-3" />
-                </Link>
-              </div>
-
-              {/* Rows */}
-              {topLandingPages.length > 0 ? (
-                <div className="divide-y divide-zinc-50 dark:divide-[#18181e]">
-                  {topLandingPages.map((page, idx) => (
-                    <div
-                      key={page.id}
-                      className="group flex items-center gap-3 px-5 py-3.5 hover:bg-zinc-50/80 dark:hover:bg-white/[0.025] transition-colors"
-                    >
-                      {/* Rank */}
-                      <span className="w-4 shrink-0 text-xs font-bold text-zinc-300 dark:text-zinc-700">
-                        {idx + 1}
-                      </span>
-
-                      {/* Icon */}
-                      <div className="h-8 w-8 shrink-0 rounded-lg bg-gradient-to-br from-[#EFF6FF] to-[#DBEAFE] dark:from-[#0066B2]/15 dark:to-[#38BDF8]/10 flex items-center justify-center">
-                        {page.template === "locked-pdf" ? (
-                          <Lock className="h-3.5 w-3.5 text-[#0066B2] dark:text-[#38BDF8]" />
-                        ) : (
-                          <FileText className="h-3.5 w-3.5 text-[#0066B2] dark:text-[#38BDF8]" />
-                        )}
-                      </div>
-
-                      {/* Name + slug */}
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-semibold text-zinc-800 dark:text-white truncate group-hover:text-[#0066B2] dark:group-hover:text-[#38BDF8] transition-colors leading-snug">
-                          {page.name}
-                        </p>
-                        <p className="text-[10px] text-zinc-400 dark:text-[#9B9085] truncate mt-0.5">
-                          /{page.slug}
-                        </p>
-                      </div>
-
-                      {/* Status badge */}
-                      <MagnetStatusBadge status={page.status} />
-
-                      {/* Stats grid */}
-                      <div className="hidden sm:flex items-center gap-0 shrink-0">
-                        <div className="w-16 text-center">
-                          <p className="text-xs font-bold text-zinc-800 dark:text-white tabular-nums leading-tight">
-                            {(page.views || 0).toLocaleString()}
-                          </p>
-                          <p className="text-[9px] font-semibold uppercase tracking-widest text-zinc-400 dark:text-zinc-600 mt-0.5">
-                            Views
-                          </p>
-                        </div>
-                        <div className="w-16 text-center">
-                          <p className="text-xs font-bold text-zinc-800 dark:text-white tabular-nums leading-tight">
-                            {(page.signups || 0).toLocaleString()}
-                          </p>
-                          <p className="text-[9px] font-semibold uppercase tracking-widest text-zinc-400 dark:text-zinc-600 mt-0.5">
-                            Leads
-                          </p>
-                        </div>
-                        <div className="w-16 text-center">
-                          <p className="text-xs font-bold text-emerald-600 dark:text-emerald-400 tabular-nums leading-tight">
-                            {(page.conversionRate || 0).toFixed(1)}%
-                          </p>
-                          <p className="text-[9px] font-semibold uppercase tracking-widest text-zinc-400 dark:text-zinc-600 mt-0.5">
-                            Conv.
-                          </p>
-                        </div>
-                      </div>
-
-                      {/* Action buttons */}
-                      <div className="flex items-center gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
-                        <Link
-                          href={`/dashboard/leadmagnets/${page.id}`}
-                          title="Edit"
-                          className="p-1.5 rounded-lg text-zinc-400 hover:text-[#0066B2] dark:hover:text-[#38BDF8] hover:bg-[#EFF6FF] dark:hover:bg-[#0066B2]/10 transition-all"
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          <svg
-                            className="h-3.5 w-3.5"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth={2}
-                          >
-                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
-                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
-                          </svg>
-                        </Link>
-                        <Link
-                          href={`/dashboard/leadmagnets/${page.id}/analytics`}
-                          title="Analytics"
-                          className="p-1.5 rounded-lg text-zinc-400 hover:text-violet-600 dark:hover:text-violet-400 hover:bg-violet-50 dark:hover:bg-violet-500/10 transition-all"
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          <BarChart3 className="h-3.5 w-3.5" />
-                        </Link>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                /* Empty state */
-                <div className="flex flex-col items-center justify-center py-14 text-center">
-                  <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#EFF6FF] dark:bg-[#0066B2]/20 border border-[#0066B2]/20 dark:border-[#38BDF8]/20 mb-4">
-                    <Sparkles className="h-7 w-7 text-[#0066B2] dark:text-[#38BDF8]" />
-                  </div>
-                  <h3 className="text-sm font-bold text-zinc-900 dark:text-white">
-                    No landing pages yet
-                  </h3>
-                  <p className="mt-1.5 text-xs text-zinc-500 dark:text-[#9B9085] max-w-xs leading-relaxed">
-                    Create your first landing page to start collecting subscribers.
-                  </p>
-                  <Link
-                    href="/dashboard/landing-page"
-                    className="mt-5 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#0066B2] text-white text-xs font-bold shadow-md hover:bg-[#005291] transition-all hover:-translate-y-0.5"
-                  >
-                    <Plus className="h-3.5 w-3.5" />
-                    Create Landing Page
-                  </Link>
-                </div>
-              )}
-            </div>
-          </motion.div>
-
-          {/* ══════════════════════════════════════════════
-              SECTION 4 — Two-column: Recent Leads + Active Sequences
+              SECTION 3 — Two-column: Recent Leads + Active Sequences
           ══════════════════════════════════════════════ */}
           <motion.div
             variants={fadeUp}
@@ -1203,130 +1055,7 @@ export default function DashboardHome({
           </motion.div>
 
           {/* ══════════════════════════════════════════════
-              SECTION 4.5 — Locked PDF Analytics & Security
-          ══════════════════════════════════════════════ */}
-          <motion.div variants={fadeUp}>
-            <div className="rounded-2xl border border-amber-200/80 bg-gradient-to-br from-amber-50/50 via-white to-orange-50/30 dark:border-amber-900/40 dark:from-amber-950/20 dark:via-[#18181B] dark:to-orange-950/10 shadow-sm backdrop-blur-sm overflow-hidden p-5">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-amber-100 dark:border-amber-900/30">
-                <div className="flex items-center gap-3">
-                  <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
-                    <Lock className="h-4 w-4" />
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <h2 className="text-sm font-bold text-zinc-900 dark:text-white">
-                        Locked PDF Security & Lead Analytics
-                      </h2>
-                      <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800/50">
-                        OTP Verified
-                      </span>
-                    </div>
-                    <p className="text-xs text-zinc-500 dark:text-[#9B9085]">
-                      Performance metrics for your password/OTP gated PDF documents
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Link
-                    href="/dashboard/locked-pdf"
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-600 text-white hover:bg-amber-700 text-xs font-semibold shadow-xs transition-all"
-                  >
-                    <Plus className="h-3.5 w-3.5" />
-                    Manage Locked PDFs
-                  </Link>
-                </div>
-              </div>
-
-              {/* Locked PDF Stats Bar */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 my-4">
-                <div className="p-3 rounded-xl bg-white/80 dark:bg-black/20 border border-amber-100 dark:border-amber-900/20">
-                  <span className="text-[10px] font-semibold text-zinc-400 dark:text-[#9B9085] uppercase tracking-wider">
-                    Locked PDFs
-                  </span>
-                  <p className="text-xl font-bold text-zinc-900 dark:text-white mt-0.5">
-                    {lockedPdfCount}
-                  </p>
-                </div>
-                <div className="p-3 rounded-xl bg-white/80 dark:bg-black/20 border border-amber-100 dark:border-amber-900/20">
-                  <span className="text-[10px] font-semibold text-zinc-400 dark:text-[#9B9085] uppercase tracking-wider">
-                    Total PDF Views
-                  </span>
-                  <p className="text-xl font-bold text-zinc-900 dark:text-white mt-0.5">
-                    {lockedPdfViews.toLocaleString()}
-                  </p>
-                </div>
-                <div className="p-3 rounded-xl bg-white/80 dark:bg-black/20 border border-amber-100 dark:border-amber-900/20">
-                  <span className="text-[10px] font-semibold text-zinc-400 dark:text-[#9B9085] uppercase tracking-wider">
-                    Unlocked Leads
-                  </span>
-                  <p className="text-xl font-bold text-amber-600 dark:text-amber-400 mt-0.5">
-                    {lockedPdfLeadsCount.toLocaleString()}
-                  </p>
-                </div>
-                <div className="p-3 rounded-xl bg-white/80 dark:bg-black/20 border border-amber-100 dark:border-amber-900/20">
-                  <span className="text-[10px] font-semibold text-zinc-400 dark:text-[#9B9085] uppercase tracking-wider">
-                    Unlock Rate
-                  </span>
-                  <p className="text-xl font-bold text-emerald-600 dark:text-emerald-400 mt-0.5">
-                    {lockedPdfViews > 0
-                      ? `${((lockedPdfLeadsCount / lockedPdfViews) * 100).toFixed(1)}%`
-                      : "0.0%"}
-                  </p>
-                </div>
-              </div>
-
-              {/* Locked PDF Magnets List */}
-              {lockedPdfPages.length > 0 ? (
-                <div className="space-y-2 mt-3">
-                  {lockedPdfPages.slice(0, 3).map((pdf) => (
-                    <div
-                      key={pdf.id}
-                      className="flex items-center justify-between p-3 rounded-xl bg-white/60 dark:bg-black/10 border border-zinc-200/50 dark:border-zinc-800/40 hover:bg-white dark:hover:bg-black/30 transition-colors"
-                    >
-                      <div className="flex items-center gap-3 min-w-0">
-                        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300">
-                          <FileText className="h-4 w-4" />
-                        </div>
-                        <div className="min-w-0">
-                          <p className="text-xs font-bold text-zinc-900 dark:text-white truncate">
-                            {pdf.name}
-                          </p>
-                          <p className="text-[10px] text-zinc-400 dark:text-[#9B9085]">
-                            {pdf.views || 0} views • {pdf.signups || 0} unlocks
-                          </p>
-                        </div>
-                      </div>
-                      <Link
-                        href={`/dashboard/locked-pdf?id=${pdf.id}`}
-                        className="text-xs font-semibold text-amber-600 dark:text-amber-400 hover:underline shrink-0 ml-2"
-                      >
-                        Edit PDF →
-                      </Link>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="flex flex-col items-center justify-center py-6 text-center">
-                  <Lock className="h-7 w-7 text-amber-400/50 mb-2" />
-                  <p className="text-xs text-zinc-600 dark:text-zinc-400 font-medium">
-                    No Locked PDF magnets set up yet
-                  </p>
-                  <p className="text-[11px] text-zinc-400 dark:text-[#9B9085] max-w-sm mt-0.5">
-                    Require users to enter an OTP email code before unlocking your high-value PDF documents.
-                  </p>
-                  <Link
-                    href="/dashboard/locked-pdf"
-                    className="mt-3 text-xs font-bold text-amber-600 dark:text-amber-400 hover:underline"
-                  >
-                    + Create a Locked PDF Magnet
-                  </Link>
-                </div>
-              )}
-            </div>
-          </motion.div>
-
-          {/* ══════════════════════════════════════════════
-              SECTION 5 — Quick Actions
+              SECTION 4 — Quick Actions
           ══════════════════════════════════════════════ */}
           <motion.div variants={fadeUp}>
             <div className="rounded-2xl border border-zinc-200/80 bg-white/90 dark:border-[#2e2e38] dark:bg-[#18181B]/90 shadow-sm backdrop-blur-sm px-5 py-5">
