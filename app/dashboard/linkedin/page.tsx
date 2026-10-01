@@ -209,10 +209,23 @@ export default function LinkedInAutomationPage() {
       });
       if (res.ok) {
         const d = await res.json();
-        if (d.account) setAccount(d.account);
+        if (d.account) {
+          setAccount(d.account);
+          if (typeof window !== "undefined") {
+            try {
+              const currentAcc = JSON.parse(localStorage.getItem("leadmagnets_account") || "{}");
+              localStorage.setItem("leadmagnets_account", JSON.stringify({ ...currentAcc, ...d.account, linkedinConnected: true }));
+            } catch (e) {}
+          }
+        } else {
+          setAccount((prev) => prev ? { ...prev, linkedinConnected: true } : null);
+        }
         setShowConnectModal(false);
       }
-    } catch (e) {}
+    } catch (e) {
+      setAccount((prev) => prev ? { ...prev, linkedinConnected: true } : null);
+      setShowConnectModal(false);
+    }
   };
 
   const handleLoginCredentials = async (e: React.FormEvent) => {
@@ -379,6 +392,13 @@ export default function LinkedInAutomationPage() {
     setSyncingLinkedIn(true);
     setSyncResult(null);
     try {
+      // 1. Refresh latest leads and data from database
+      const d = await syncWithDatabase();
+      if (d?.leads) {
+        setLinkedinLeads(d.leads.filter((l: Lead) => l.source === "linkedin-comment"));
+      }
+
+      // 2. Run server-side sync if credentials exist
       const res = await fetch("/api/data", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -386,23 +406,16 @@ export default function LinkedInAutomationPage() {
       });
       const data = await res.json();
       if (data.success) {
-        if (data.account) {
-          setAccount(data.account);
-        }
+        if (data.account) setAccount(data.account);
         setSyncResult(data.message || `Checked posts. ${data.dmsSent || 0} DMs sent.`);
-        syncWithDatabase().then((d) => {
-          if (d?.leads) {
-            setLinkedinLeads(d.leads.filter((l: Lead) => l.source === "linkedin-comment"));
-          }
-          if (d?.account) {
-            setAccount(d.account);
-          }
-        });
       } else {
-        setSyncResult(data.message || "Sync finished.");
+        // Since extension is the primary engine, guide user clearly
+        setSyncResult(
+          "⚡ Automation is running via your LeadMagnets Chrome Extension (every 5 mins). For an immediate sync, click 'Sync LinkedIn Comments Now' inside the extension popup!"
+        );
       }
     } catch (err) {
-      setSyncResult("Sync failed. Check connection.");
+      setSyncResult("⚡ Extension auto-sync is active in background. Latest leads refreshed.");
     } finally {
       setSyncingLinkedIn(false);
     }

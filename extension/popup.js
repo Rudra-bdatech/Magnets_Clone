@@ -18,6 +18,15 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   let currentEmail = "";
 
+  const resetDetectBtn = () => {
+    if (!autoDetectBtn) return;
+    autoDetectBtn.disabled = false;
+    autoDetectBtn.innerHTML = `
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+      <span>Auto-detect from open Dashboard</span>
+    `;
+  };
+
   // Auto-detect email from active or open LeadMagnets tabs
   async function detectEmailFromTabs() {
     try {
@@ -69,33 +78,32 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // Load and display current stats
   async function updateUI() {
-    return new Promise((resolve) => {
-      chrome.runtime.sendMessage({ action: "GET_STATUS" }, async (res) => {
-        if (chrome.runtime.lastError) { resolve(); return; }
-        if (res) {
-          const email = res.userEmail || "";
-          setAccountUI(email);
+    try {
+      const stored = await chrome.storage.local.get([
+        "userEmail", "totalDms", "totalReplies", "lastSync", "lastResult"
+      ]);
 
-          if (res.totalDms !== undefined) dmsCount.textContent = res.totalDms;
-          if (res.totalReplies !== undefined) commentsCount.textContent = res.totalReplies;
-          if (res.lastResult) statusText.textContent = res.lastResult;
-          if (res.lastSync) {
-            const d = new Date(res.lastSync);
-            lastSync.textContent = d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-          }
+      const email = stored.userEmail || "";
+      setAccountUI(email);
 
-          // If no email is set, try auto-detection quietly once
-          if (!email) {
-            const detected = await detectEmailFromTabs();
-            if (detected) {
-              emailInput.value = detected;
-              statusText.textContent = `Found logged-in account: ${detected}`;
-            }
-          }
+      if (stored.totalDms !== undefined) dmsCount.textContent = stored.totalDms;
+      if (stored.totalReplies !== undefined) commentsCount.textContent = stored.totalReplies;
+      if (stored.lastResult) statusText.textContent = stored.lastResult;
+      if (stored.lastSync) {
+        const d = new Date(stored.lastSync);
+        lastSync.textContent = d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+      }
+
+      if (!email) {
+        const detected = await detectEmailFromTabs();
+        if (detected) {
+          emailInput.value = detected;
+          statusText.textContent = `Found logged-in account: ${detected}`;
         }
-        resolve();
-      });
-    });
+      }
+    } catch (e) {
+      console.warn("updateUI error:", e);
+    }
   }
 
   await updateUI();
@@ -105,48 +113,68 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (setupView.style.display === "none") {
       setupView.style.display = "flex";
       connectedView.style.display = "none";
-      emailInput.value = currentEmail;
+      emailInput.value = currentEmail || "";
       changeAccountBtn.textContent = currentEmail ? "Cancel" : "";
       emailInput.focus();
+      resetDetectBtn();
     } else {
       setAccountUI(currentEmail);
     }
   });
 
-  // Save Email Button
-  saveEmailBtn.addEventListener("click", () => {
+  // Save Email Button (Saves immediately to storage!)
+  saveEmailBtn.addEventListener("click", async () => {
     const email = (emailInput.value || "").trim().toLowerCase();
     if (!email || !email.includes("@")) {
       statusText.textContent = "⚠️ Please enter a valid email address";
       return;
     }
 
-    chrome.runtime.sendMessage({ action: "SET_USER_EMAIL", email }, (res) => {
-      if (res?.success) {
-        setAccountUI(email);
-        statusText.textContent = `✅ Connected to ${email}`;
-      } else {
-        statusText.textContent = "⚠️ Could not save email.";
-      }
+    saveEmailBtn.disabled = true;
+    saveEmailBtn.textContent = "...";
+
+    // 1. Direct local storage update
+    await chrome.storage.local.set({
+      userEmail: email,
+      lastResult: `Connected to ${email}`
+    });
+
+    setAccountUI(email);
+    statusText.textContent = `✅ Saved & connected to ${email}`;
+    saveEmailBtn.disabled = false;
+    saveEmailBtn.textContent = "Save";
+
+    // 2. Notify background worker non-blockingly
+    chrome.runtime.sendMessage({ action: "SET_USER_EMAIL", email }, () => {
+      if (chrome.runtime.lastError) {}
     });
   });
 
   // Auto-detect Button
   autoDetectBtn.addEventListener("click", async () => {
+    autoDetectBtn.disabled = true;
     autoDetectBtn.innerHTML = `<span>Detecting...</span>`;
+    
     const detected = await detectEmailFromTabs();
+    resetDetectBtn();
+
     if (detected) {
       emailInput.value = detected;
-      chrome.runtime.sendMessage({ action: "SET_USER_EMAIL", email: detected }, (res) => {
-        setAccountUI(detected);
-        statusText.textContent = `✅ Saved & connected to ${detected}`;
+      
+      // Save directly
+      await chrome.storage.local.set({
+        userEmail: detected,
+        lastResult: `Connected to ${detected}`
+      });
+
+      setAccountUI(detected);
+      statusText.textContent = `✅ Detected & connected to ${detected}`;
+
+      chrome.runtime.sendMessage({ action: "SET_USER_EMAIL", email: detected }, () => {
+        if (chrome.runtime.lastError) {}
       });
     } else {
-      statusText.textContent = "⚠️ No active LeadMagnets dashboard tab found.";
-      autoDetectBtn.innerHTML = `
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
-        <span>Auto-detect from open Dashboard</span>
-      `;
+      statusText.textContent = "⚠️ No open LeadMagnets tab found. Please type email manually.";
     }
   });
 

@@ -95,21 +95,18 @@ chrome.runtime.onMessage.addListener((req, sender, sendResponse) => {
     chrome.storage.local.set({ 
       userEmail: email,
       lastResult: email ? `Connected to ${email}` : "Account email cleared"
-    }).then(async () => {
-      if (email) {
-        try {
-          await fetch(`${MAGNETS_SERVER}/api/data`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ action: "connectLinkedInExtension", email }),
-          });
-        } catch (e) {
-          console.warn("[LeadMagnets] Backend ping failed:", e);
-        }
-      }
-      sendResponse({ success: true, userEmail: email });
     });
-    return true;
+    if (email) {
+      try {
+        fetch(`${MAGNETS_SERVER}/api/data`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ action: "connectLinkedInExtension", email }),
+        }).catch(() => {});
+      } catch (e) {}
+    }
+    sendResponse({ success: true, userEmail: email });
+    return false;
   }
 
   if (req.action === "GET_STATUS") {
