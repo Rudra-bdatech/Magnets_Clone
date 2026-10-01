@@ -199,6 +199,8 @@ export default async function ThankYouPage({
           videoUrl={pageDoc.videoUrl || null}
           buttonLabel={pageDoc.buttonLabel || null}
           buttonUrl={pageDoc.buttonUrl || null}
+          quizFunnelEnabled={pageDoc.quizFunnelEnabled || false}
+          quizQuestions={Array.isArray(pageDoc.quizQuestions) ? pageDoc.quizQuestions : []}
         />
       </div>
 

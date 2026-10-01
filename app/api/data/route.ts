@@ -39,6 +39,7 @@ import {
   handleSaveLeads,
   handleSendTestLeadAlert,
   handleResendLeadEmail,
+  handleSaveLeadQuizAnswers,
 } from "@/lib/controllers/leads";
 import {
   handleSaveIntegrations,
@@ -285,6 +286,8 @@ export async function POST(req: Request) {
         return handleSendTestLeadAlert(data, normEmail);
       case "resendLeadEmail":
         return handleResendLeadEmail(data, normEmail);
+      case "saveLeadQuizAnswers":
+        return handleSaveLeadQuizAnswers(data, normEmail);
 
       // Integrations & Resources Controller
       case "saveIntegrations":

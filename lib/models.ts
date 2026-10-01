@@ -139,6 +139,7 @@ const MagnetPageSchema = new Schema({
   buttonLabel: { type: String, default: "" },
   buttonUrl: { type: String, default: "" },
   quizFunnelEnabled: { type: Boolean, default: false },
+  quizQuestions: { type: Array, default: [] },
 });
 
 MagnetPageSchema.index({ userEmail: 1, slug: 1 });

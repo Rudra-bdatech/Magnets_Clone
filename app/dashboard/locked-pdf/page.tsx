@@ -165,6 +165,7 @@ export default function LockedPdfPage() {
   const [buttonLabel, setButtonLabel] = useState("View Full PDF");
   const [buttonUrl, setButtonUrl] = useState("");
   const [quizFunnelEnabled, setQuizFunnelEnabled] = useState(false);
+  const [quizQuestions, setQuizQuestions] = useState<import("@/lib/data").QuizQuestion[]>([]);
 
   // Enterprise Keyboard Navigation & Accessibility (a11y) Refs
   const tabRefs = useRef<{ [key: string]: HTMLButtonElement | null }>({});
@@ -1308,6 +1309,8 @@ export default function LockedPdfPage() {
                 setButtonUrl={handleUpdateButtonUrl}
                 quizFunnelEnabled={quizFunnelEnabled}
                 setQuizFunnelEnabled={handleUpdateQuizFunnelEnabled}
+                quizQuestions={quizQuestions}
+                setQuizQuestions={setQuizQuestions}
               />
             )}
           </div>

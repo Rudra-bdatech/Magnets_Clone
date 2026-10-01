@@ -20,7 +20,9 @@ import {
   Lock,
   X,
   Clock,
+  ChevronRight,
 } from "lucide-react";
+import { type QuizQuestion } from "@/lib/data";
 
 export interface DeliverableResourceItem {
   id: string;
@@ -52,6 +54,8 @@ interface ThankYouAnimatedContentProps {
   videoUrl?: string | null;
   buttonLabel?: string | null;
   buttonUrl?: string | null;
+  quizFunnelEnabled?: boolean;
+  quizQuestions?: QuizQuestion[];
 }
 
 function getEmbedUrl(url?: string | null): string | null {
@@ -153,6 +157,8 @@ export default function ThankYouAnimatedContent({
   videoUrl,
   buttonLabel,
   buttonUrl,
+  quizFunnelEnabled = false,
+  quizQuestions = [],
 }: ThankYouAnimatedContentProps) {
   const [copiedAi, setCopiedAi] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
@@ -168,6 +174,13 @@ export default function ThankYouAnimatedContent({
   const [clientName, setClientName] = useState("");
   const [clientEmail, setClientEmail] = useState("");
   const [mounted, setMounted] = useState(false);
+
+  // ── Quiz state ────────────────────────────────────────────────────────────
+  const [quizCurrentQ, setQuizCurrentQ] = useState(0);
+  const [quizAnswers, setQuizAnswers] = useState<Record<string, string>>({}); // questionId -> optionLabel
+  const [quizDone, setQuizDone] = useState(false);
+  const [quizSaving, setQuizSaving] = useState(false);
+  const [quizRouteUrl, setQuizRouteUrl] = useState<string | null>(null);
 
   useEffect(() => {
     setMounted(true);
@@ -302,7 +315,7 @@ export default function ThankYouAnimatedContent({
       {/* Confetti Explosion Component */}
       <ConfettiCanvas brandColor={brandColor} />
 
-      {/* Background Layer: WebGL Aurora in Dark mode, Clean Ambient Brand Glow in Light mode */}
+      {/* Background Layer */}
       {isDark ? (
         <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden opacity-50">
           <Aurora
@@ -858,6 +871,185 @@ export default function ThankYouAnimatedContent({
             </button>
           </div>
         </motion.div>
+
+        {/* ── Quiz Funnel Card ────────────────────────────────────────────── */}
+        {quizFunnelEnabled && quizQuestions.length > 0 && (
+          <motion.div
+            initial={{ y: 25, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.28 }}
+            className={`rounded-2xl border p-5 sm:p-6 space-y-4 backdrop-blur-xl relative overflow-hidden transition-all ${
+              isDark
+                ? "bg-[#111218]/90 border-white/15 text-white shadow-2xl"
+                : "bg-white/95 border-zinc-200 text-zinc-900 shadow-xl"
+            }`}
+            style={{
+              boxShadow: isDark
+                ? `0 20px 45px -10px ${brandColor}35`
+                : `0 20px 40px -10px ${brandColor}20`,
+            }}
+          >
+            {/* Top accent */}
+            <div
+              className="absolute top-0 left-0 right-0 h-1.5"
+              style={{
+                background: `linear-gradient(90deg, ${brandColor}, #38BDF8, #8B5CF6, ${brandColor})`,
+              }}
+            />
+
+            {!quizDone ? (
+              <>
+                {/* Header */}
+                <div className="flex items-center gap-2 pt-1">
+                  <div
+                    className="h-7 w-7 rounded-lg flex items-center justify-center text-white text-xs font-black shadow-md shrink-0"
+                    style={{ backgroundColor: brandColor }}
+                  >
+                    <FileText className="h-4 w-4" />
+                  </div>
+                  <div>
+                    <span className="text-xs font-black uppercase tracking-wider" style={{ color: brandColor }}>
+                      Quick Survey — Question {quizCurrentQ + 1} of {quizQuestions.length}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Progress bar */}
+                <div className={`w-full h-1.5 rounded-full overflow-hidden ${isDark ? "bg-white/10" : "bg-zinc-100"}`}>
+                  <motion.div
+                    className="h-full rounded-full"
+                    style={{ backgroundColor: brandColor }}
+                    initial={{ width: `${(quizCurrentQ / quizQuestions.length) * 100}%` }}
+                    animate={{ width: `${((quizCurrentQ + 1) / quizQuestions.length) * 100}%` }}
+                    transition={{ duration: 0.4, ease: "easeOut" }}
+                  />
+                </div>
+
+                {/* Question */}
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={quizCurrentQ}
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -20 }}
+                    transition={{ duration: 0.25 }}
+                    className="space-y-3"
+                  >
+                    <p className={`text-sm sm:text-base font-bold leading-snug ${isDark ? "text-white" : "text-zinc-900"}`}>
+                      {quizQuestions[quizCurrentQ].question || `Question ${quizCurrentQ + 1}`}
+                    </p>
+
+                    <div className="space-y-2">
+                      {quizQuestions[quizCurrentQ].options.map((opt, idx) => (
+                        <button
+                          key={opt.id}
+                          type="button"
+                          onClick={() => {
+                            const q = quizQuestions[quizCurrentQ];
+                            const newAnswers = { ...quizAnswers, [q.id]: opt.label };
+                            setQuizAnswers(newAnswers);
+
+                            // Track route URL from selected option
+                            if (opt.routeUrl && opt.routeUrl.trim()) {
+                              setQuizRouteUrl(opt.routeUrl.trim());
+                            }
+
+                            const isLast = quizCurrentQ === quizQuestions.length - 1;
+                            if (!isLast) {
+                              setQuizCurrentQ((prev) => prev + 1);
+                            } else {
+                              // All questions answered — save to lead record
+                              setQuizSaving(true);
+                              const params = typeof window !== "undefined"
+                                ? new URLSearchParams(window.location.search)
+                                : new URLSearchParams();
+                              const leadEmail = params.get("email") || clientEmail || "";
+                              const pageId = params.get("pageId") || "";
+                              if (leadEmail) {
+                                fetch("/api/data", {
+                                  method: "POST",
+                                  headers: { "Content-Type": "application/json" },
+                                  body: JSON.stringify({
+                                    action: "saveLeadQuizAnswers",
+                                    data: {
+                                      email: leadEmail,
+                                      pageId,
+                                      quizAnswers: newAnswers,
+                                    },
+                                  }),
+                                })
+                                  .catch(() => {})
+                                  .finally(() => {
+                                    setQuizSaving(false);
+                                    setQuizDone(true);
+                                  });
+                              } else {
+                                setQuizSaving(false);
+                                setQuizDone(true);
+                              }
+                            }
+                          }}
+                          className={`w-full text-left px-4 py-3 rounded-xl border text-sm font-semibold transition-all duration-150 cursor-pointer group flex items-center gap-3 ${
+                            isDark
+                              ? "border-white/10 bg-white/5 hover:border-white/30 hover:bg-white/10 text-zinc-200"
+                              : "border-zinc-200 bg-zinc-50 hover:border-zinc-400 hover:bg-white text-zinc-800"
+                          }`}
+                        >
+                          <span
+                            className="h-6 w-6 rounded-lg flex items-center justify-center text-[11px] font-black shrink-0 text-white"
+                            style={{ backgroundColor: brandColor }}
+                          >
+                            {String.fromCharCode(65 + idx)}
+                          </span>
+                          <span className="flex-1">{opt.label || `Option ${String.fromCharCode(65 + idx)}`}</span>
+                          <ChevronRight className="h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity shrink-0" style={{ color: brandColor }} />
+                        </button>
+                      ))}
+                    </div>
+                  </motion.div>
+                </AnimatePresence>
+              </>
+            ) : (
+              /* Quiz Complete state */
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.35 }}
+                className="text-center py-4 space-y-3"
+              >
+                <div
+                  className="mx-auto h-14 w-14 rounded-2xl flex items-center justify-center text-white shadow-xl"
+                  style={{
+                    backgroundColor: brandColor,
+                    boxShadow: `0 10px 25px -5px ${brandColor}60`,
+                  }}
+                >
+                  <Check className="h-7 w-7" />
+                </div>
+                <div>
+                  <h3 className={`text-base font-extrabold ${isDark ? "text-white" : "text-zinc-900"}`}>
+                    Thanks for completing the survey!
+                  </h3>
+                  <p className={`text-xs mt-1 ${isDark ? "text-zinc-400" : "text-zinc-500"}`}>
+                    {quizSaving ? "Saving your answers..." : "Your answers have been saved."}
+                  </p>
+                </div>
+                {quizRouteUrl && (
+                  <a
+                    href={/^https?:\/\//i.test(quizRouteUrl) ? quizRouteUrl : `https://${quizRouteUrl}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold text-white shadow-md transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
+                    style={{ backgroundColor: brandColor }}
+                  >
+                    Continue
+                    <ArrowRight className="h-4 w-4" />
+                  </a>
+                )}
+              </motion.div>
+            )}
+          </motion.div>
+        )}
 
         {/* Return Home Link */}
         <div className="text-center pt-1">

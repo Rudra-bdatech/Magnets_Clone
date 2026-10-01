@@ -439,6 +439,7 @@ export default function EditLeadMagnetPage() {
   const [buttonLabel, setButtonLabel] = useState(page?.buttonLabel || "");
   const [buttonUrl, setButtonUrl] = useState(page?.buttonUrl || "");
   const [quizFunnelEnabled, setQuizFunnelEnabled] = useState(page?.quizFunnelEnabled || false);
+  const [quizQuestions, setQuizQuestions] = useState<import("@/lib/data").QuizQuestion[]>(page?.quizQuestions || []);
 
   // Comprehensive Undo/Redo History State across All 4 Tabs
   const [history, setHistory] = useState<{
@@ -461,6 +462,7 @@ export default function EditLeadMagnetPage() {
     buttonLabel: string;
     buttonUrl: string;
     quizFunnelEnabled: boolean;
+    quizQuestions: import("@/lib/data").QuizQuestion[];
     bulletsTitle: string;
     mastheadLeft: string;
     mastheadRight: string;
@@ -488,6 +490,7 @@ export default function EditLeadMagnetPage() {
       buttonLabel: page?.buttonLabel || "",
       buttonUrl: page?.buttonUrl || "",
       quizFunnelEnabled: page?.quizFunnelEnabled || false,
+      quizQuestions: page?.quizQuestions || [],
       bulletsTitle: page?.bulletsTitle && page.bulletsTitle !== "What they will learn" ? page.bulletsTitle : "",
       mastheadLeft: page?.mastheadLeft || "",
       mastheadRight: page?.mastheadRight || "",
@@ -935,6 +938,7 @@ export default function EditLeadMagnetPage() {
         buttonLabel,
         buttonUrl,
         quizFunnelEnabled,
+        quizQuestions,
         bulletsTitle,
         mastheadLeft,
         mastheadRight,
@@ -971,6 +975,7 @@ export default function EditLeadMagnetPage() {
           a.buttonLabel !== b.buttonLabel ||
           a.buttonUrl !== b.buttonUrl ||
           a.quizFunnelEnabled !== b.quizFunnelEnabled ||
+          a.quizQuestions !== b.quizQuestions ||
           a.bulletsTitle !== b.bulletsTitle ||
           a.mastheadLeft !== b.mastheadLeft ||
           a.mastheadRight !== b.mastheadRight ||
@@ -1003,7 +1008,7 @@ export default function EditLeadMagnetPage() {
     headline, subheadline, pitch, bullets, imageUrl,
     emailSubject, emailPreviewText, emailBody,
     sequenceEnabled, stopOnCall, sequenceEmails,
-    afterSignupOption, destinationUrl, customHeading, customMessage, videoUrl, buttonLabel, buttonUrl, quizFunnelEnabled,
+    afterSignupOption, destinationUrl, customHeading, customMessage, videoUrl, buttonLabel, buttonUrl, quizFunnelEnabled, quizQuestions,
     bulletsTitle, mastheadLeft, mastheadRight,
     formTitle, formSubtitle, formButtonText,
     historyIndex, history
@@ -1062,6 +1067,7 @@ export default function EditLeadMagnetPage() {
           buttonLabel,
           buttonUrl,
           quizFunnelEnabled,
+          quizQuestions,
           hasVariantB,
           testStarted,
           variantBImage,
@@ -1111,7 +1117,7 @@ export default function EditLeadMagnetPage() {
     headline, subheadline, pitch, bullets, imageUrl,
     emailSubject, emailPreviewText, emailBody,
     sequenceEnabled, stopOnCall, sequenceEmails,
-    afterSignupOption, destinationUrl, customHeading, customMessage, videoUrl, buttonLabel, buttonUrl, quizFunnelEnabled,
+    afterSignupOption, destinationUrl, customHeading, customMessage, videoUrl, buttonLabel, buttonUrl, quizFunnelEnabled, quizQuestions,
     hasVariantB, testStarted, variantBImage, variantBTitle,
     customPromptQuestion, customPromptPlaceholder, enableAiPersonalizedDeliverable,
     customFormFields, bulletsTitle, mastheadLeft, mastheadRight, formTitle, formSubtitle, formButtonText,
@@ -1142,6 +1148,7 @@ export default function EditLeadMagnetPage() {
         buttonLabel,
         buttonUrl,
         quizFunnelEnabled,
+        quizQuestions,
         hasVariantB,
         testStarted,
         variantBImage,
@@ -1226,6 +1233,7 @@ export default function EditLeadMagnetPage() {
       buttonLabel,
       buttonUrl,
       quizFunnelEnabled,
+      quizQuestions,
       hasVariantB,
       testStarted,
       variantBImage,
@@ -1289,6 +1297,7 @@ export default function EditLeadMagnetPage() {
         buttonLabel,
         buttonUrl,
         quizFunnelEnabled,
+        quizQuestions,
         hasVariantB,
         testStarted,
         variantBImage,
@@ -1852,6 +1861,8 @@ export default function EditLeadMagnetPage() {
                   setButtonUrl={setButtonUrl}
                   quizFunnelEnabled={quizFunnelEnabled}
                   setQuizFunnelEnabled={setQuizFunnelEnabled}
+                  quizQuestions={quizQuestions}
+                  setQuizQuestions={setQuizQuestions}
                 />
               )}
 

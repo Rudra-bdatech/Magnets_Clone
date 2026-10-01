@@ -651,3 +651,34 @@ export async function handleResendLeadEmail(data: any, normEmail: string | null)
 
   return NextResponse.json(result);
 }
+
+export async function handleSaveLeadQuizAnswers(data: any, normEmail: string | null) {
+  const { email: leadEmail, pageId, quizAnswers } = data;
+  if (!leadEmail || !quizAnswers) {
+    return NextResponse.json({ error: "Missing email or quizAnswers." }, { status: 400 });
+  }
+
+  const normalizedEmail = leadEmail.trim().toLowerCase();
+
+  // Find the most-recent matching lead for this subscriber + page
+  const query: any = { email: normalizedEmail };
+  if (pageId) query.pageId = pageId;
+
+  const result = await LeadModel.findOneAndUpdate(
+    query,
+    {
+      $set: {
+        "customFields.quizAnswers": quizAnswers,
+        "customFields.quizCompletedAt": new Date().toISOString(),
+      },
+    },
+    { sort: { _id: -1 }, new: true }
+  );
+
+  if (!result) {
+    return NextResponse.json({ success: false, message: "Lead not found." });
+  }
+
+  return NextResponse.json({ success: true });
+}
+

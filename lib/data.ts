@@ -7,6 +7,18 @@ export interface CustomFormField {
   options?: string[];
 }
 
+export interface QuizOption {
+  id: string;
+  label: string;
+  routeUrl?: string; // optional URL to redirect subscriber based on this answer
+}
+
+export interface QuizQuestion {
+  id: string;
+  question: string;
+  options: QuizOption[];
+}
+
 export type MagnetStatus = "draft" | "live" | "paused";
 
 export interface MagnetPage {
@@ -50,6 +62,7 @@ export interface MagnetPage {
   buttonLabel?: string;
   buttonUrl?: string;
   quizFunnelEnabled?: boolean;
+  quizQuestions?: QuizQuestion[];
   hasVariantB?: boolean;
   testStarted?: boolean;
   variantBImage?: string | null;
