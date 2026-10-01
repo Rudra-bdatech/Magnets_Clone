@@ -28,6 +28,8 @@ import {
   Link2,
   Minus,
   Sparkles,
+  Lock,
+  FileText,
 } from "lucide-react";
 import { type Account } from "@/lib/data";
 
@@ -50,6 +52,8 @@ export interface DeliveryEmailTabProps {
   setCustomPromptQuestion: (q: string) => void;
   customPromptPlaceholder: string;
   setCustomPromptPlaceholder: (p: string) => void;
+  isLockedPdf?: boolean;
+  lockedPdfResources?: Array<{ id: string; name: string; url: string }>;
 }
 
 export default function DeliveryEmailTab({
@@ -71,6 +75,8 @@ export default function DeliveryEmailTab({
   setCustomPromptQuestion,
   customPromptPlaceholder,
   setCustomPromptPlaceholder,
+  isLockedPdf = false,
+  lockedPdfResources = [],
 }: DeliveryEmailTabProps) {
   const internalEditor = useEditor({
     immediatelyRender: false,
@@ -208,7 +214,7 @@ export default function DeliveryEmailTab({
             <label className={`text-xs font-bold block ${(account?.themeMode || "light") === "dark" ? "text-zinc-400" : "text-zinc-700"}`}>Body</label>
 
             {/* Rich Text Editor Container */}
-            <div className={`rounded-2xl border overflow-hidden shadow-xs ${(account?.themeMode || "light") === "dark" ? "border-[#27272A] bg-[#18181B]" : "border-zinc-200/90 bg-white"}`}>
+            <div className={`rounded-2xl border shadow-xs ${(account?.themeMode || "light") === "dark" ? "border-[#27272A] bg-[#18181B]" : "border-zinc-200/90 bg-white"}`}>
               {/* Toolbar matching exact screenshot design */}
               <div ref={toolbarRef} className={`flex flex-wrap items-center gap-1.5 border-b px-3 py-2 text-xs font-semibold ${(account?.themeMode || "light") === "dark" ? "border-[#27272A] bg-[#18181B] text-zinc-300" : "border-zinc-200 bg-[#F9F9FB] text-zinc-600"}`}>
                 {/* Headings Dropdown: T ⌄ */}
@@ -531,7 +537,7 @@ export default function DeliveryEmailTab({
 
                 <div className={`h-4 w-px mx-0.5 ${(account?.themeMode || "light") === "dark" ? "bg-[#27272A]" : "bg-zinc-300"}`} />
 
-                {/* + Insert Resource Dropdown Button (100% Untouched connection to Hosted Resources) */}
+                {/* + Insert Resource Dropdown Button */}
                 <div className="relative">
                   <button
                     type="button"
@@ -543,34 +549,49 @@ export default function DeliveryEmailTab({
                   </button>
 
                   {showInsertResourceMenu && (
-                    <div className={`absolute left-0 top-full mt-1.5 w-64 rounded-xl border p-1.5 shadow-xl z-50 space-y-1 ${(account?.themeMode || "light") === "dark" ? "border-[#27272A] bg-[#1E1E24] text-white" : "border-zinc-200 bg-white text-zinc-800"}`}>
-                      <div className="px-2 py-1 text-[10px] font-bold text-zinc-400 uppercase tracking-wider">
-                        SELECT HOSTED RESOURCE
+                    <div className={`absolute right-0 top-full mt-1.5 w-72 max-h-72 rounded-xl border p-1.5 shadow-xl z-50 flex flex-col overflow-hidden ${(account?.themeMode || "light") === "dark" ? "border-[#27272A] bg-[#1E1E24] text-white" : "border-zinc-200 bg-white text-zinc-800"}`}>
+                      {/* Sticky Header */}
+                      <div className={`px-2 py-1.5 text-[10px] font-bold text-zinc-400 uppercase tracking-wider flex items-center justify-between border-b pb-1.5 mb-1 shrink-0 ${(account?.themeMode || "light") === "dark" ? "border-[#27272A] bg-[#1E1E24]" : "border-zinc-100 bg-white"}`}>
+                        <span>{isLockedPdf ? "SELECT LOCKED PDF" : "SELECT HOSTED RESOURCE"}</span>
+                        {isLockedPdf && <Lock className="h-3 w-3 text-[#0066B2] dark:text-[#38BDF8]" />}
                       </div>
-                      {hostedResources.length === 0 ? (
-                        <div className="px-2 py-2 text-xs text-zinc-400 italic">
-                          No hosted resources found. Upload one in Hosted resources first!
-                        </div>
-                      ) : (
-                        hostedResources.map((res) => (
-                          <button
-                            key={res.id}
-                            type="button"
-                            onClick={() => {
-                              if (editor) {
-                                editor.chain().focus().insertContent(`<p><a href="${res.url}" target="_blank" rel="noopener noreferrer">${res.name}</a></p>`).run();
-                              } else {
-                                setEmailBody((prev) => prev + `\n${res.url}\n`);
-                              }
-                              setShowInsertResourceMenu(false);
-                            }}
-                            className="w-full text-left px-2.5 py-2 rounded-lg hover:bg-[#0066B2]/20 hover:text-[#38BDF8] text-xs transition flex flex-col gap-0.5 cursor-pointer"
-                          >
-                            <span className="font-semibold truncate">{res.name}</span>
-                            <span className="text-[10px] text-zinc-400 font-mono truncate">{res.url}</span>
-                          </button>
-                        ))
-                      )}
+
+                      {/* Scrollable Items Container */}
+                      <div className="overflow-y-auto overscroll-contain pr-0.5 space-y-1 max-h-60">
+                        {((isLockedPdf ? lockedPdfResources : hostedResources) || []).length === 0 ? (
+                          <div className="px-2 py-3 text-xs text-zinc-400 italic text-center">
+                            {isLockedPdf
+                              ? "No locked PDFs found. Create one in Locked PDFs first!"
+                              : "No hosted resources found. Upload one in Hosted resources first!"}
+                          </div>
+                        ) : (
+                          ((isLockedPdf ? lockedPdfResources : hostedResources) || []).map((res) => (
+                            <button
+                              key={res.id}
+                              type="button"
+                              onClick={() => {
+                                if (editor) {
+                                  editor.chain().focus().insertContent(`<p><a href="${res.url}" target="_blank" rel="noopener noreferrer">${res.name}</a></p>`).run();
+                                } else {
+                                  setEmailBody((prev) => prev + `\n${res.url}\n`);
+                                }
+                                setShowInsertResourceMenu(false);
+                              }}
+                              className="w-full text-left px-2.5 py-2 rounded-lg hover:bg-[#0066B2]/20 hover:text-[#38BDF8] text-xs transition flex items-start gap-2.5 cursor-pointer group"
+                            >
+                              {isLockedPdf ? (
+                                <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-[#0066B2]/10 text-[#0066B2] dark:text-[#38BDF8] group-hover:bg-[#0066B2] group-hover:text-white transition mt-0.5">
+                                  <Lock className="h-3 w-3" />
+                                </div>
+                              ) : null}
+                              <div className="flex flex-col gap-0.5 min-w-0 flex-1">
+                                <span className="font-semibold truncate">{res.name}</span>
+                                <span className="text-[10px] text-zinc-400 font-mono truncate">{res.url}</span>
+                              </div>
+                            </button>
+                          ))
+                        )}
+                      </div>
                     </div>
                   )}
                 </div>

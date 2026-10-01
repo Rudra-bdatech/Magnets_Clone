@@ -51,10 +51,11 @@ import {
   Minus,
   MoreVertical,
 } from "lucide-react";
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useEffect, useState, useRef, useCallback, useMemo } from "react";
 import DashboardShell from "@/components/dashboard/dashboard-shell";
 import { type MagnetPage, type Account } from "@/lib/data";
 import { loadPages, savePages, deletePage, loadAccount, loadResources, syncWithDatabase } from "@/lib/store";
+import { getMagnetSortTimestamp } from "@/lib/utils";
 import dynamic from "next/dynamic";
 
 import AIMagnetModal from "@/components/leadmagnets/ai-magnet-modal";
@@ -117,6 +118,10 @@ export default function EditLeadMagnetPage() {
     if (typeof window !== "undefined") return loadAccount();
     return null;
   });
+  const [allPages, setAllPages] = useState<MagnetPage[]>(() => {
+    if (typeof window !== "undefined") return loadPages();
+    return [];
+  });
   const [page, setPage] = useState<MagnetPage | undefined>(() => {
     if (typeof window !== "undefined") return loadPages().find((p) => p.id === params.id);
     return undefined;
@@ -133,7 +138,12 @@ export default function EditLeadMagnetPage() {
     const localAcc = loadAccount();
     if (localAcc) setAccount(localAcc);
 
-    const localP = loadPages().find((p) => p.id === params.id);
+    const localPages = loadPages();
+    if (localPages && localPages.length > 0) {
+      setAllPages(localPages);
+    }
+
+    const localP = localPages.find((p) => p.id === params.id);
     if (localP) {
       setPage(localP);
       pageRef.current = localP;
@@ -184,7 +194,8 @@ export default function EditLeadMagnetPage() {
       }
 
       // Fan out: page data + templateId + form fields
-      if (data.pages) {
+      if (data.pages && Array.isArray(data.pages)) {
+        setAllPages(data.pages);
         const found = data.pages.find((p: any) => p.id === params.id);
         if (found) {
           setPage((prev) => {
@@ -1518,6 +1529,27 @@ export default function EditLeadMagnetPage() {
     templateId === "locked-pdf" ||
     page?.template === "locked-pdf";
 
+  const lockedPdfResources = useMemo(() => {
+    const base = typeof window !== "undefined" ? window.location.origin : "";
+    const list = (allPages || []).filter((p) => p.template === "locked-pdf");
+    // Ensure the active page is present in list if it is a locked PDF
+    if (page && (page.template === "locked-pdf" || isLockedPdf)) {
+      if (!list.some((p) => p.id === page.id)) {
+        list.unshift(page);
+      }
+    }
+    const sorted = [...list].sort((a, b) => {
+      const diff = getMagnetSortTimestamp(b) - getMagnetSortTimestamp(a);
+      if (diff !== 0) return diff;
+      return String(b.id).localeCompare(String(a.id));
+    });
+    return sorted.map((p) => ({
+      id: p.id,
+      name: p.pdfTitle || p.name || "Locked PDF Document",
+      url: `${base}/pdf-viewer/${p.id}`,
+    }));
+  }, [allPages, page, isLockedPdf]);
+
   return (
     <DashboardShell
       account={account}
@@ -1848,6 +1880,8 @@ export default function EditLeadMagnetPage() {
                   setCustomPromptQuestion={setCustomPromptQuestion}
                   customPromptPlaceholder={customPromptPlaceholder}
                   setCustomPromptPlaceholder={setCustomPromptPlaceholder}
+                  isLockedPdf={isLockedPdf}
+                  lockedPdfResources={lockedPdfResources}
                 />
               )}
 
@@ -1867,6 +1901,8 @@ export default function EditLeadMagnetPage() {
                   removeSequenceEmail={removeSequenceEmail}
                   setShowSequencePreviewModal={setShowSequencePreviewModal}
                   setPreviewSequenceIndex={setPreviewSequenceIndex}
+                  isLockedPdf={isLockedPdf}
+                  lockedPdfResources={lockedPdfResources}
                 />
               )}
 
