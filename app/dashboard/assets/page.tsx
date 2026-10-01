@@ -676,9 +676,6 @@ export default function ResourcesPage() {
                     : "Uploading documents..."
                   : "Drag & Drop lead magnet files here"}
               </h3>
-              <p className="mt-1 text-xs text-zinc-500 dark:text-[#9B9085]">
-                PDF, DOCX, ZIP, Images, MP4, MP3 & any file type · Up to 15 MB per file · Multi-file supported
-              </p>
               <button className="mt-5 inline-flex items-center gap-2 rounded-xl bg-[#0066B2] px-5 py-2.5 text-xs font-bold text-white shadow-sm hover:bg-[#005291] transition cursor-pointer">
                 <UploadCloud className="h-4 w-4" /> Browse Files from Device
               </button>
