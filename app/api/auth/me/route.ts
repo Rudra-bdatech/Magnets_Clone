@@ -30,7 +30,11 @@ export async function GET() {
         name = nextAuthSession.user.name || undefined;
       }
       if (nextAuthSession.user.image) {
-        nextAuthImage = nextAuthSession.user.image;
+        let cleanImage = nextAuthSession.user.image;
+        if (cleanImage.includes("googleusercontent.com") && cleanImage.includes("=s")) {
+          cleanImage = cleanImage.replace(/=s\d+(-c)?/, "=s256-c");
+        }
+        nextAuthImage = cleanImage;
       }
     }
 

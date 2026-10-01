@@ -66,6 +66,11 @@ export const authOptions: NextAuthOptions = {
         const cleanEmail = user.email.trim().toLowerCase();
         const isLinkedIn = oauthAccount?.provider === "linkedin";
 
+        let userAvatar = user.image || null;
+        if (userAvatar && userAvatar.includes("googleusercontent.com") && userAvatar.includes("=s")) {
+          userAvatar = userAvatar.replace(/=s\d+(-c)?/, "=s256-c");
+        }
+
         // Check if user account already exists in MongoDB
         let existing = await AccountModel.findOne({ email: cleanEmail });
 
@@ -87,7 +92,7 @@ export const authOptions: NextAuthOptions = {
             plan: "Free",
             brandColor: "#0066B2",
             logo: null,
-            avatar: user.image || null,
+            avatar: userAvatar,
             joinedAt: new Date().toLocaleDateString("en-US", { month: "long", year: "numeric" }),
             isNewAccount: true,
             // If signing up via LinkedIn OAuth, mark their LinkedIn as connected for identity
@@ -101,13 +106,14 @@ export const authOptions: NextAuthOptions = {
           });
         } else {
           let modified = false;
-          if (user.image && existing.avatar !== user.image) {
-            existing.avatar = user.image;
+          if (userAvatar && existing.avatar !== userAvatar) {
+            existing.avatar = userAvatar;
             modified = true;
           }
           if (
             existing.logo &&
             (existing.logo === user.image ||
+              existing.logo === userAvatar ||
               existing.logo.includes("googleusercontent.com") ||
               existing.logo.includes("media.licdn.com"))
           ) {
@@ -137,7 +143,11 @@ export const authOptions: NextAuthOptions = {
       if (user) {
         token.email = user.email?.trim().toLowerCase();
         token.name = user.name;
-        token.picture = user.image;
+        let picture = user.image;
+        if (picture && picture.includes("googleusercontent.com") && picture.includes("=s")) {
+          picture = picture.replace(/=s\d+(-c)?/, "=s256-c");
+        }
+        token.picture = picture;
       }
       return token;
     },

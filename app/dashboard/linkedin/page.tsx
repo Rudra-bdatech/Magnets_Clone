@@ -758,6 +758,8 @@ export default function LinkedInAutomationPage() {
                       <img
                         src={account.linkedinProfileImage || account.avatar || ""}
                         alt={account.linkedinAccountName || account.name || "LinkedIn Profile"}
+                        referrerPolicy="no-referrer"
+                        crossOrigin="anonymous"
                         className="h-11 w-11 rounded-xl object-cover border border-zinc-200 dark:border-white/10 shadow-md"
                       />
                       <span className="absolute -bottom-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-[#0A66C2] text-white ring-2 ring-white dark:ring-[#18181B] shadow-xs">

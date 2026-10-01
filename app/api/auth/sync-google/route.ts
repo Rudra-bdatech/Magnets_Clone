@@ -32,7 +32,7 @@ export async function POST() {
       return NextResponse.json({ success: false, error: "Unauthorized. Please log in first." }, { status: 401 });
     }
 
-    const googleImage = nextAuthSession?.user?.image || null;
+    let googleImage = nextAuthSession?.user?.image || null;
 
     if (!googleImage) {
       return NextResponse.json({
@@ -40,6 +40,11 @@ export async function POST() {
         requireReauth: true,
         message: "No active Google session found. Please authenticate with Google to sync photo.",
       });
+    }
+
+    // Enhance to high-resolution Google avatar if applicable
+    if (googleImage.includes("googleusercontent.com") && googleImage.includes("=s")) {
+      googleImage = googleImage.replace(/=s\d+(-c)?/, "=s256-c");
     }
 
     await dbConnect();

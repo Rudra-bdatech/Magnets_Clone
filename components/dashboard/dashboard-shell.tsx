@@ -528,6 +528,8 @@ export default function DashboardShell({
                   <img
                     src={displayAccount.avatar}
                     alt={displayAccount.name}
+                    referrerPolicy="no-referrer"
+                    crossOrigin="anonymous"
                     onError={() => setAvatarError(true)}
                     className="h-8 w-8 shrink-0 rounded-full object-cover border border-[#0066B2]/40"
                   />

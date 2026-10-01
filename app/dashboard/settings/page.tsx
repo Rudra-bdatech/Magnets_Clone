@@ -171,6 +171,7 @@ export default function AccountSettingsPage() {
   const [confirmPassword, setConfirmPassword] = useState("");
 
   const [avatar, setAvatar] = useState<string | null>(null);
+  const [avatarLoadError, setAvatarLoadError] = useState(false);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [syncingGoogle, setSyncingGoogle] = useState(false);
   const avatarInputRef = useRef<HTMLInputElement>(null);
@@ -339,6 +340,7 @@ export default function AccountSettingsPage() {
         if (res.ok && (data.data?.fileUrl || data.data?.url)) {
           const avatarUrl = data.data.fileUrl || data.data.url;
           setAvatar(avatarUrl);
+          setAvatarLoadError(false);
           const updated = { ...account, avatar: avatarUrl };
           await saveAccount(updated as any);
           setAccount(updated as any);
@@ -362,6 +364,7 @@ export default function AccountSettingsPage() {
 
   const handleRemoveAvatar = useCallback(async () => {
     setAvatar(null);
+    setAvatarLoadError(false);
     const updated = { ...account, avatar: null };
     await saveAccount(updated as any);
     setAccount(updated as any);
@@ -379,6 +382,7 @@ export default function AccountSettingsPage() {
       const data = await res.json();
       if (res.ok && data.success && data.avatar) {
         setAvatar(data.avatar);
+        setAvatarLoadError(false);
         const updated = { ...(account || {}), avatar: data.avatar };
         setAccount(updated as any);
         if (typeof window !== "undefined") {
@@ -414,7 +418,10 @@ export default function AccountSettingsPage() {
         syncWithDatabase().then((data) => {
           if (data?.account) {
             setAccount(data.account);
-            if (data.account.avatar) setAvatar(data.account.avatar);
+            if (data.account.avatar) {
+              setAvatar(data.account.avatar);
+              setAvatarLoadError(false);
+            }
             window.dispatchEvent(new Event("accountUpdated"));
           }
         });
@@ -682,24 +689,28 @@ export default function AccountSettingsPage() {
                     {/* Profile Avatar Upload */}
                     <div className="flex items-center gap-5 pb-4 border-b border-zinc-100 dark:border-zinc-800/80">
                       <div className="relative group shrink-0">
-                        {avatar ? (
+                        {avatar && !avatarLoadError ? (
                           <img
                             src={avatar}
                             alt="Profile Avatar"
+                            referrerPolicy="no-referrer"
+                            crossOrigin="anonymous"
+                            onError={() => setAvatarLoadError(true)}
                             decoding="async"
                             fetchPriority="high"
-                            className="h-20 w-20 rounded-full object-cover border-2 border-[#0066B2] shadow-md"
+                            className="h-20 w-20 rounded-full object-cover border-2 border-[#0066B2] shadow-md bg-zinc-100 dark:bg-zinc-800"
                           />
                         ) : (
-                          <div className="flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-[#0066B2] to-[#004B82] text-white font-extrabold text-2xl shadow-md border-2 border-[#0066B2]/40">
+                          <div className="flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-[#0066B2] to-[#004B82] text-white font-extrabold text-2xl shadow-md border-2 border-[#0066B2]/40 select-none">
                             {name
                               ? name
                                   .split(" ")
+                                  .filter(Boolean)
                                   .map((n) => n[0])
                                   .join("")
                                   .toUpperCase()
                                   .slice(0, 2)
-                              : "U"}
+                              : "RK"}
                           </div>
                         )}
                         <button
