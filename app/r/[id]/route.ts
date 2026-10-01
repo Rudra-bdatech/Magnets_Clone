@@ -87,6 +87,8 @@ export async function GET(
         const parsed = parseCloudinaryUrl(resource.fileUrl);
         if (parsed && process.env.CLOUDINARY_API_SECRET) {
           try {
+            // Generate a signed Cloudinary download URL and redirect the browser
+            // directly to it — no bytes pass through Vercel, eliminating bandwidth costs.
             const signedUrl = cloudinary.utils.private_download_url(
               parsed.publicId,
               parsed.format,
@@ -97,37 +99,18 @@ export async function GET(
                 attachment: true,
               }
             );
-            const upstream = await fetch(signedUrl);
-            if (upstream.ok) {
-              const arrayBuffer = await upstream.arrayBuffer();
-              const buffer = Buffer.from(arrayBuffer);
-              return new NextResponse(buffer, {
-                headers: {
-                  "Content-Type": isPdf ? "application/pdf" : (upstream.headers.get("content-type") || "application/octet-stream"),
-                  "Content-Disposition": `attachment; filename="${encodeURIComponent(downloadFilename)}"`,
-                  "Cache-Control": "public, max-age=31536000, immutable",
-                },
-              });
-            }
+            // 302 redirect: browser downloads the file straight from Cloudinary.
+            // User experience is identical — file still downloads immediately.
+            return NextResponse.redirect(signedUrl, 302);
           } catch (signErr) {
-            console.warn("Cloudinary signed stream warning:", signErr);
+            console.warn("Cloudinary signed URL error, falling back:", signErr);
           }
         }
 
-        // Try raw fallback URL variant (swapping /image/upload/ to /raw/upload/)
+        // Fallback: if API secret is missing or signing failed, redirect to the
+        // raw/upload variant of the Cloudinary URL (still zero Vercel bandwidth).
         const rawFallbackUrl = resource.fileUrl.replace("/image/upload/", "/raw/upload/");
-        try {
-          const rawUpstream = await fetch(rawFallbackUrl);
-          if (rawUpstream.ok && rawUpstream.body) {
-            return new NextResponse(rawUpstream.body, {
-              headers: {
-                "Content-Type": isPdf ? "application/pdf" : (rawUpstream.headers.get("content-type") || "application/octet-stream"),
-                "Content-Disposition": `attachment; filename="${encodeURIComponent(downloadFilename)}"`,
-                "Cache-Control": "public, max-age=31536000, immutable",
-              },
-            });
-          }
-        } catch (_) {}
+        return NextResponse.redirect(rawFallbackUrl, 302);
       }
 
       try {
