@@ -39,6 +39,11 @@
       "matches": ["https://*.linkedin.com/*"],
       "js": ["content.js"],
       "run_at": "document_idle"
+    },
+    {
+      "matches": ["http://localhost:3000/*", "https://magnets.bdatech.in/*"],
+      "js": ["web-bridge.js"],
+      "run_at": "document_start"
     }
   ]
 }

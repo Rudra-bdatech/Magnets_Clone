@@ -186,6 +186,53 @@ export default function LinkedInAutomationPage() {
     }
   }, [account]);
 
+  // Extension Bridge listener
+  const [extensionInstalled, setExtensionInstalled] = useState(false);
+  useEffect(() => {
+    const checkExt = () => {
+      if (typeof document !== "undefined" && document.documentElement.dataset.leadmagnetsExtensionInstalled === "true") {
+        setExtensionInstalled(true);
+      }
+    };
+    checkExt();
+    window.addEventListener("LM_EXTENSION_LOADED", checkExt);
+
+    const handleMessage = (e: MessageEvent) => {
+      if (e.source !== window || !e.data) return;
+      if (e.data.type === "LM_CONNECT_LINKEDIN_RESPONSE") {
+        setConnectingLinkedIn(false);
+        if (e.data.success) {
+          syncWithDatabase().then((d) => {
+            if (d?.account) setAccount(d.account);
+          });
+          setShowConnectModal(false);
+        } else {
+          setConnectError(e.data.message || "Could not connect to LinkedIn.");
+        }
+      }
+    };
+    window.addEventListener("message", handleMessage);
+    return () => {
+      window.removeEventListener("LM_EXTENSION_LOADED", checkExt);
+      window.removeEventListener("message", handleMessage);
+    };
+  }, []);
+
+  const handle1ClickConnect = () => {
+    const isInstalled = (typeof document !== "undefined" && document.documentElement.dataset.leadmagnetsExtensionInstalled === "true") || extensionInstalled;
+    if (isInstalled) {
+      setConnectingLinkedIn(true);
+      setConnectError(null);
+      const activeEmail = account?.email || (typeof window !== "undefined" ? localStorage.getItem("currentUserEmail") || "" : "");
+      window.postMessage({ type: "LM_CONNECT_LINKEDIN_TRIGGER", email: activeEmail }, "*");
+      setTimeout(() => {
+        setConnectingLinkedIn(false);
+      }, 5000);
+    } else {
+      handleOpenConnectModal();
+    }
+  };
+
   const handleOpenConnectModal = () => {
     setConnectError(null);
     setRequiresPin(false);
@@ -865,11 +912,11 @@ export default function LinkedInAutomationPage() {
                     <button
                       type="button"
                       disabled={connectingLinkedIn}
-                      onClick={handleOpenConnectModal}
+                      onClick={handle1ClickConnect}
                       className="inline-flex items-center gap-2 rounded-xl bg-[#0A66C2] hover:bg-[#004182] px-5 py-2.5 text-xs font-bold text-white shadow-md transition cursor-pointer disabled:opacity-50"
                     >
-                      <Linkedin className="h-4 w-4" />
-                      Connect LinkedIn (Direct In-House)
+                      {connectingLinkedIn ? <Loader2 className="h-4 w-4 animate-spin" /> : <Linkedin className="h-4 w-4" />}
+                      {connectingLinkedIn ? "Connecting..." : "Connect LinkedIn (1-Click)"}
                     </button>
                   )}
                 </div>
@@ -1848,18 +1895,7 @@ export default function LinkedInAutomationPage() {
                     }`}
                   >
                     <Download className="h-3.5 w-3.5" />
-                    <span>Extension (Recommended)</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setConnectTab("credentials")}
-                    className={`flex-1 rounded-lg py-2 transition ${
-                      connectTab === "credentials"
-                        ? "bg-white dark:bg-[#18181B] text-[#0A66C2] dark:text-[#38BDF8] shadow-xs"
-                        : "text-zinc-500 hover:text-zinc-900 dark:text-zinc-400"
-                    }`}
-                  >
-                    Sign In
+                    <span>Chrome Extension (Recommended)</span>
                   </button>
                   {!isMobile && (
                     <button
@@ -1871,7 +1907,7 @@ export default function LinkedInAutomationPage() {
                           : "text-zinc-500 hover:text-zinc-900 dark:text-zinc-400"
                       }`}
                     >
-                      Cookie (Advanced)
+                      Session Cookie (Advanced)
                     </button>
                   )}
                 </div>
@@ -1988,58 +2024,6 @@ export default function LinkedInAutomationPage() {
                       <span>I&apos;ve Saved My Email in Extension (Activate Dashboard)</span>
                     </button>
                   </div>
-                </div>
-              ) : connectTab === "credentials" ? (
-                /* â”€â”€ Official LinkedIn OAuth Tab â”€â”€ */
-                <div className="space-y-4">
-                  {/* What this does */}
-                  <div className="rounded-xl border border-[#0A66C2]/20 bg-[#EFF6FF] dark:bg-[#0A66C2]/10 p-4 space-y-2">
-                    <p className="text-xs font-bold text-[#0A66C2] dark:text-[#38BDF8] flex items-center gap-1.5">
-                      <CheckCircle2 className="h-3.5 w-3.5" /> How this works
-                    </p>
-                    <ul className="text-[11.5px] text-zinc-700 dark:text-zinc-300 space-y-1.5 leading-relaxed">
-                      <li className="flex items-start gap-1.5">
-                        <span className="text-[#0A66C2] mt-0.5">â†’</span>
-                        You click the button below and are taken to <strong>LinkedIn&apos;s official website</strong>.
-                      </li>
-                      <li className="flex items-start gap-1.5">
-                        <span className="text-[#0A66C2] mt-0.5">â†’</span>
-                        You enter your email &amp; password <strong>directly on LinkedIn.com</strong> â€” we never see it.
-                      </li>
-                      <li className="flex items-start gap-1.5">
-                        <span className="text-[#0A66C2] mt-0.5">â†’</span>
-                        LinkedIn sends us your name, email, and profile photo to link your account.
-                      </li>
-                    </ul>
-                  </div>
-
-                  {/* Safety notice */}
-                  <div className="flex items-center gap-2 rounded-xl border border-emerald-500/20 bg-emerald-50/60 dark:bg-emerald-500/10 p-3 text-[11px] text-emerald-800 dark:text-emerald-300 font-medium">
-                    <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
-                    <span>
-                      <strong>100% Secure:</strong> Uses the same OAuth standard as &ldquo;Sign in with Google&rdquo;. Your password never touches our servers.
-                    </span>
-                  </div>
-
-                  {/* The actual OAuth button */}
-                  <a
-                    href="/api/auth/signin/linkedin?callbackUrl=/dashboard/linkedin"
-                    className="flex w-full items-center justify-center gap-2.5 rounded-xl bg-[#0A66C2] hover:bg-[#004182] px-5 py-3 text-sm font-bold text-white shadow-md transition active:scale-[0.98] cursor-pointer"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-4 w-4 shrink-0"
-                      viewBox="0 0 24 24"
-                      fill="currentColor"
-                    >
-                      <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
-                    </svg>
-                    Continue with LinkedIn
-                  </a>
-
-                  <p className="text-center text-[10.5px] text-zinc-400 dark:text-zinc-500">
-                    Need automation only? Use the <button type="button" className="text-[#0A66C2] dark:text-[#38BDF8] font-semibold hover:underline" onClick={() => setConnectTab("cookie")}>Session Cookie tab</button> instead.
-                  </p>
                 </div>
               ) : (
                 /* â”€â”€ Cookie Option Form â”€â”€ */

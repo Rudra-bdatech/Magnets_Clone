@@ -157,7 +157,90 @@ chrome.runtime.onMessage.addListener((req, sender, sendResponse) => {
     });
     return true;
   }
+
+  if (req.action === "CONNECT_LINKEDIN_FROM_WEB") {
+    resolveLinkedInSession().then(async ({ liAt, jsessionId }) => {
+      if (!liAt) {
+        sendResponse({
+          success: false,
+          error: "Please log into linkedin.com in your Chrome browser first, then try again.",
+        });
+        return;
+      }
+
+      const email = (req.email || "").trim().toLowerCase();
+      if (email) {
+        await chrome.storage.local.set({ userEmail: email, lastResult: `Connected to ${email}` });
+      }
+
+      const profile = await getMyLinkedInProfile(liAt, jsessionId);
+      const accountName = profile?.fullName || "LinkedIn Profile";
+      const avatarUrl = profile?.avatarUrl || "";
+
+      // Ping backend database with full LinkedIn details
+      if (email) {
+        try {
+          await fetch(`${MAGNETS_SERVER}/api/data`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              action: "connectLinkedInExtension",
+              email,
+              accountName,
+              avatarUrl,
+            }),
+          });
+        } catch (e) {
+          console.warn("[LeadMagnets] Backend ping error:", e);
+        }
+      }
+
+      sendResponse({
+        success: true,
+        message: "LinkedIn connected successfully!",
+        profile: {
+          name: accountName,
+          avatar: avatarUrl,
+        },
+      });
+    });
+    return true;
+  }
 });
+
+async function getMyLinkedInProfile(liAt, jsessionId) {
+  try {
+    const headers = buildHeaders(liAt, jsessionId);
+    const res = await fetch("https://www.linkedin.com/voyager/api/me", {
+      headers,
+      credentials: "include",
+    });
+    if (res.ok) {
+      const data = await res.json();
+      const mini = data.miniProfile || {};
+      const firstName = mini.firstName || "";
+      const lastName = mini.lastName || "";
+      const fullName = `${firstName} ${lastName}`.trim();
+      const publicIdentifier = mini.publicIdentifier || "";
+      let avatarUrl = "";
+      const pictureObj = mini.picture?.["com.linkedin.common.VectorImage"];
+      if (pictureObj?.rootUrl && pictureObj?.artifacts?.length) {
+        const lastArt = pictureObj.artifacts[pictureObj.artifacts.length - 1];
+        avatarUrl = `${pictureObj.rootUrl}${lastArt.fileIdentifyingUrlPathSegment}`;
+      }
+      return {
+        success: true,
+        fullName: fullName || "LinkedIn User",
+        publicIdentifier,
+        avatarUrl,
+        entityUrn: mini.entityUrn,
+      };
+    }
+  } catch (e) {
+    console.warn("[LeadMagnets] /voyager/api/me warning:", e.message);
+  }
+  return { success: true, fullName: "LinkedIn Profile", avatarUrl: "" };
+}
 
 // ─────────────────────────────────────────────────────
 // Step 1: Resolve LinkedIn session cookies

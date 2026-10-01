@@ -123,7 +123,7 @@ export async function handleIncrementViews(data: any) {
   const updated = await MagnetPageModel.findOneAndUpdate(
     { id: pageId },
     { $inc: { views: 1, ...variantInc } },
-    { new: true, select: "views signups" } // return updated doc for conversionRate
+    { returnDocument: 'after', select: "views signups" } // return updated doc for conversionRate
   );
 
   if (updated && updated.views > 0) {

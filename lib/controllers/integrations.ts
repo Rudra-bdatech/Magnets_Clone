@@ -78,7 +78,7 @@ export async function handleUpdateResource(data: any, normEmail: string | null) 
   let updated = await ResourceModel.findOneAndUpdate(
     query,
     { $set: { name: cleanName } },
-    { new: true }
+    { returnDocument: 'after' }
   ).lean();
 
   if (!updated) {
@@ -86,7 +86,7 @@ export async function handleUpdateResource(data: any, normEmail: string | null) 
     updated = await ResourceModel.findOneAndUpdate(
       { id },
       { $set: { name: cleanName } },
-      { new: true }
+      { returnDocument: 'after' }
     ).lean();
   }
 

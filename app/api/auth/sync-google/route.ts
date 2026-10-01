@@ -51,7 +51,7 @@ export async function POST() {
     const updated = await AccountModel.findOneAndUpdate(
       { email },
       { avatar: googleImage },
-      { new: true }
+      { returnDocument: 'after' }
     );
 
     if (!updated) {

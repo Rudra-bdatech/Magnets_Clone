@@ -234,7 +234,7 @@ export async function handleAddLead(data: any, req: Request, normEmail: string |
     const updatedPage = await MagnetPageModel.findOneAndUpdate(
       { id: data.pageId },
       { $inc: signupInc },
-      { new: true, select: "signups views" }
+      { returnDocument: 'after', select: "signups views" }
     );
 
     if (updatedPage && updatedPage.views > 0) {
@@ -672,7 +672,7 @@ export async function handleSaveLeadQuizAnswers(data: any, normEmail: string | n
         "customFields.quizCompletedAt": new Date().toISOString(),
       },
     },
-    { sort: { _id: -1 }, new: true }
+    { sort: { _id: -1 }, returnDocument: 'after' }
   );
 
   if (!result) {
