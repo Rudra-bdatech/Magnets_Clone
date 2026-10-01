@@ -104,7 +104,6 @@ export default function LockedPdfPage() {
   const [createMagnetName, setCreateMagnetName] = useState("");
   const [customSlug, setCustomSlug] = useState("");
   const [isCustomSlugEdited, setIsCustomSlugEdited] = useState(false);
-  const [isGeneratingTitle, setIsGeneratingTitle] = useState(false);
 
   // Delivery Email tab state
   const [emailSubject, setEmailSubject] = useState("Your PDF resource is inside!");
@@ -644,35 +643,6 @@ export default function LockedPdfPage() {
         .replace(/\s+/g, "-") || "locked-pdf"
     );
   }, [createMagnetName]);
-
-  const handleGenerateAiTitle = async () => {
-    setIsGeneratingTitle(true);
-    try {
-      const res = await fetch("/api/ai/optimize", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "suggest_titles", magnetTitle: createMagnetName.trim() || "AI Pipeline Playbook" }),
-      });
-      const data = await res.json();
-      if (data.suggestions?.length) {
-        const randomTitle = data.suggestions[Math.floor(Math.random() * data.suggestions.length)];
-        setCreateMagnetName(randomTitle);
-        if (!isCustomSlugEdited) {
-          setCustomSlug(
-            randomTitle
-              .toLowerCase()
-              .trim()
-              .replace(/[^a-z0-9\s-]/g, "")
-              .replace(/\s+/g, "-")
-          );
-        }
-      }
-    } catch (e) {
-      console.error("AI Title Generator Error:", e);
-    } finally {
-      setIsGeneratingTitle(false);
-    }
-  };
 
   const handleCreateLockedPdf = () => {
     const name = createMagnetName.trim() || "Locked PDF Document";
@@ -1446,22 +1416,7 @@ export default function LockedPdfPage() {
               <div className="space-y-4">
                 {/* Page Name Field */}
                 <div className="space-y-1.5">
-                  <div className="flex items-center justify-between">
-                    <label className="text-xs font-semibold text-zinc-700 dark:text-[#d4c8bc]">Page name</label>
-                    <button
-                      type="button"
-                      disabled={isGeneratingTitle}
-                      onClick={handleGenerateAiTitle}
-                      className="flex items-center gap-1 text-[11px] font-bold text-[#0066B2] dark:text-[#38BDF8] hover:underline cursor-pointer disabled:opacity-50"
-                    >
-                      {isGeneratingTitle ? (
-                        <Loader2 className="h-3 w-3 animate-spin text-[#0066B2] dark:text-[#38BDF8]" />
-                      ) : (
-                        <Sparkles className="h-3 w-3 text-[#0066B2] dark:text-[#38BDF8]" />
-                      )}
-                      <span>AI Title Generator</span>
-                    </button>
-                  </div>
+                  <label className="block text-xs font-semibold text-zinc-700 dark:text-[#d4c8bc]">Page name</label>
                   <input
                     type="text"
                     autoFocus

@@ -290,19 +290,6 @@ export default function DashboardHome({
   const [createModalType, setCreateModalType] = useState<"classic" | "locked-pdf" | null>(null);
   const [createMagnetName, setCreateMagnetName] = useState("");
 
-  const handleGenerateAiTitle = () => {
-    const titles = [
-      "AI Pipeline Playbook",
-      "SaaS Growth Engine Blueprint",
-      "High-Converting Copywriting Vault",
-      "Full-Stack Dev Starter Kit",
-      "5-Minute Lead Magnet Checklist",
-      "Ultimate Cold Email Secrets",
-    ];
-    const picked = titles[Math.floor(Math.random() * titles.length)];
-    setCreateMagnetName(picked);
-  };
-
   const handleCreateMagnet = (templateType: "classic" | "locked-pdf") => {
     const name = createMagnetName.trim() || (templateType === "locked-pdf" ? "Locked PDF Document" : "Untitled Page");
     const cleanSlug = createMagnetName
@@ -1559,19 +1546,9 @@ export default function DashboardHome({
               <div className="space-y-4">
                 {/* Page Name */}
                 <div className="space-y-1.5">
-                  <div className="flex items-center justify-between">
-                    <label className="text-xs font-semibold text-zinc-700 dark:text-[#d4c8bc]">
-                      Page name
-                    </label>
-                    <button
-                      type="button"
-                      onClick={handleGenerateAiTitle}
-                      className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#0066B2] dark:text-[#38BDF8] hover:underline cursor-pointer"
-                    >
-                      <Sparkles className="h-3 w-3" />
-                      AI Title Generator
-                    </button>
-                  </div>
+                  <label className="block text-xs font-semibold text-zinc-700 dark:text-[#d4c8bc]">
+                    Page name
+                  </label>
                   <input
                     type="text"
                     autoFocus
