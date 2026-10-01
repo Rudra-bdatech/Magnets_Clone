@@ -707,9 +707,6 @@ export default function DashboardHome({
                           {landingPageLiveCount} Active
                         </span>
                       </div>
-                      <p className="text-xs text-zinc-500 dark:text-[#9B9085]">
-                        Standard Opt-in Lead Magnets
-                      </p>
                     </div>
                   </div>
                   <Link
@@ -786,9 +783,6 @@ export default function DashboardHome({
                           {lockedPdfLiveCount} Active
                         </span>
                       </div>
-                      <p className="text-xs text-zinc-500 dark:text-[#9B9085]">
-                        OTP Verified PDF Documents
-                      </p>
                     </div>
                   </div>
                   <Link
