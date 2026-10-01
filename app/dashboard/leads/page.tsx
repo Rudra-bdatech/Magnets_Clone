@@ -18,7 +18,6 @@ import {
   ChevronRight,
   Lock,
   TrendingUp,
-  BarChart3,
   FileText,
   Layers,
   Linkedin,
@@ -551,10 +550,7 @@ export default function LeadsPage() {
     }).length;
   }, [leads]);
 
-  const avgConversion = useMemo(() => {
-    if (magnetPages.length === 0) return "0.0";
-    return (magnetPages.reduce((acc, p) => acc + (p.conversionRate || 0), 0) / magnetPages.length).toFixed(1);
-  }, [magnetPages]);
+
 
   // Helper to render sequence column per lead
   const renderSequenceStatus = useCallback(
@@ -677,7 +673,7 @@ export default function LeadsPage() {
           </div>
 
           {/* Stat cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-6">
             {/* Unique signups */}
             <div className="flex items-center rounded-2xl border border-zinc-200/80 bg-white/80 dark:border-[#2e2e38] dark:bg-[#18181B]/80 px-6 py-5 shadow-sm backdrop-blur-sm">
               <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-[#0066B2]/30 bg-[#EFF6FF] text-[#0066B2] dark:border-[#0066B2]/30 dark:bg-[#0066B2]/20 dark:text-[#38BDF8] mr-4">
@@ -697,17 +693,6 @@ export default function LeadsPage() {
               <div>
                 <p className="text-[11px] font-bold uppercase tracking-wider text-zinc-500 dark:text-[#9B9085]">New This Month</p>
                 <p className="text-2xl font-bold text-zinc-900 dark:text-white mt-0.5 leading-none">+{recentMonthCount}</p>
-              </div>
-            </div>
-
-            {/* Average Conversion Rate */}
-            <div className="flex items-center rounded-2xl border border-zinc-200/80 bg-white/80 dark:border-[#2e2e38] dark:bg-[#18181B]/80 px-6 py-5 shadow-sm backdrop-blur-sm">
-              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-[#0066B2]/30 bg-[#EFF6FF] text-[#0066B2] dark:border-[#0066B2]/30 dark:bg-[#0066B2]/20 dark:text-[#38BDF8] mr-4">
-                <BarChart3 className="h-5 w-5" />
-              </div>
-              <div>
-                <p className="text-[11px] font-bold uppercase tracking-wider text-zinc-500 dark:text-[#9B9085]">Avg Conversion Rate</p>
-                <p className="text-2xl font-bold text-zinc-900 dark:text-white mt-0.5 leading-none">{avgConversion}%</p>
               </div>
             </div>
           </div>
