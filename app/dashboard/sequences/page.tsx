@@ -33,6 +33,7 @@ import {
   X,
   Filter,
   Zap,
+  Info,
 } from "lucide-react";
 import DashboardShell from "@/components/dashboard/dashboard-shell";
 import StatusBadge from "@/components/dashboard/status-badge";
@@ -1129,41 +1130,80 @@ export default function SequencesPage() {
                   </div>
                 </div>
 
-                {/* Feature Highlights Grid */}
+                {/* Feature Highlights Grid (Clean cards with pure hover 'i' Info tooltips) */}
                 <div className="mt-4 grid gap-3.5 sm:grid-cols-3">
-                  <div className="flex gap-3 rounded-2xl border border-zinc-200/80 dark:border-white/10 bg-white dark:bg-[#18181B] p-4 shadow-2xs">
-                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-[#EFF6FF] text-[#0066B2] dark:bg-[#0066B2]/20 dark:text-[#38BDF8]">
-                      <MailOpen className="h-4 w-4" />
+                  {/* Card 1: Instant Trigger */}
+                  <div className="relative flex items-center justify-between rounded-2xl border border-zinc-200/80 dark:border-white/10 bg-white dark:bg-[#18181B] p-4 shadow-2xs">
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#EFF6FF] text-[#0066B2] dark:bg-[#0066B2]/20 dark:text-[#38BDF8]">
+                        <MailOpen className="h-4.5 w-4.5" />
+                      </div>
+                      <h4 className="text-xs font-bold text-zinc-900 dark:text-white truncate">Instant Trigger</h4>
                     </div>
-                    <div>
-                      <h4 className="text-xs font-bold text-zinc-900 dark:text-white mb-0.5">Instant Trigger</h4>
-                      <p className="text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed">
+
+                    <div className="relative group/info shrink-0 ml-2">
+                      <div
+                        className="flex h-6 w-6 items-center justify-center rounded-full bg-zinc-100 text-zinc-400 hover:text-[#0066B2] hover:bg-blue-50 dark:bg-white/10 dark:text-zinc-400 dark:hover:text-[#38BDF8] dark:hover:bg-[#0066B2]/20 transition cursor-help"
+                        aria-label="Info about Instant Trigger"
+                      >
+                        <Info className="h-3.5 w-3.5" />
+                      </div>
+
+                      {/* Pure CSS Hover Tooltip */}
+                      <div className="pointer-events-none absolute right-0 bottom-full mb-2 z-50 w-60 rounded-xl border border-zinc-200 dark:border-white/10 bg-zinc-900 text-white dark:bg-[#1C1C20] dark:text-zinc-200 p-2.5 text-[11px] leading-relaxed shadow-xl opacity-0 translate-y-1 group-hover/info:opacity-100 group-hover/info:translate-y-0 transition-all duration-200">
                         The first email sends the moment someone signs up. No manual work.
-                      </p>
+                        <div className="absolute right-2 top-full border-4 border-transparent border-t-zinc-900 dark:border-t-[#1C1C20]" />
+                      </div>
                     </div>
                   </div>
 
-                  <div className="flex gap-3 rounded-2xl border border-zinc-200/80 dark:border-white/10 bg-white dark:bg-[#18181B] p-4 shadow-2xs">
-                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-[#EFF6FF] text-[#0066B2] dark:bg-[#0066B2]/20 dark:text-[#38BDF8]">
-                      <Pause className="h-4 w-4" />
+                  {/* Card 2: Custom Delays */}
+                  <div className="relative flex items-center justify-between rounded-2xl border border-zinc-200/80 dark:border-white/10 bg-white dark:bg-[#18181B] p-4 shadow-2xs">
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#EFF6FF] text-[#0066B2] dark:bg-[#0066B2]/20 dark:text-[#38BDF8]">
+                        <Pause className="h-4.5 w-4.5" />
+                      </div>
+                      <h4 className="text-xs font-bold text-zinc-900 dark:text-white truncate">Custom Delays</h4>
                     </div>
-                    <div>
-                      <h4 className="text-xs font-bold text-zinc-900 dark:text-white mb-0.5">Custom Delays</h4>
-                      <p className="text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed">
+
+                    <div className="relative group/info shrink-0 ml-2">
+                      <div
+                        className="flex h-6 w-6 items-center justify-center rounded-full bg-zinc-100 text-zinc-400 hover:text-[#0066B2] hover:bg-blue-50 dark:bg-white/10 dark:text-zinc-400 dark:hover:text-[#38BDF8] dark:hover:bg-[#0066B2]/20 transition cursor-help"
+                        aria-label="Info about Custom Delays"
+                      >
+                        <Info className="h-3.5 w-3.5" />
+                      </div>
+
+                      {/* Pure CSS Hover Tooltip */}
+                      <div className="pointer-events-none absolute right-0 bottom-full mb-2 z-50 w-60 rounded-xl border border-zinc-200 dark:border-white/10 bg-zinc-900 text-white dark:bg-[#1C1C20] dark:text-zinc-200 p-2.5 text-[11px] leading-relaxed shadow-xl opacity-0 translate-y-1 group-hover/info:opacity-100 group-hover/info:translate-y-0 transition-all duration-200">
                         Control the delay for each email. Pause or stop the sequence anytime.
-                      </p>
+                        <div className="absolute right-2 top-full border-4 border-transparent border-t-zinc-900 dark:border-t-[#1C1C20]" />
+                      </div>
                     </div>
                   </div>
 
-                  <div className="flex gap-3 rounded-2xl border border-zinc-200/80 dark:border-white/10 bg-white dark:bg-[#18181B] p-4 shadow-2xs">
-                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-[#EFF6FF] text-[#0066B2] dark:bg-[#0066B2]/20 dark:text-[#38BDF8]">
-                      <StopCircle className="h-4 w-4" />
+                  {/* Card 3: Smart Calendar Stop */}
+                  <div className="relative flex items-center justify-between rounded-2xl border border-zinc-200/80 dark:border-white/10 bg-white dark:bg-[#18181B] p-4 shadow-2xs">
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#EFF6FF] text-[#0066B2] dark:bg-[#0066B2]/20 dark:text-[#38BDF8]">
+                        <StopCircle className="h-4.5 w-4.5" />
+                      </div>
+                      <h4 className="text-xs font-bold text-zinc-900 dark:text-white truncate">Smart Calendar Stop</h4>
                     </div>
-                    <div>
-                      <h4 className="text-xs font-bold text-zinc-900 dark:text-white mb-0.5">Smart Calendar Stop</h4>
-                      <p className="text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed">
+
+                    <div className="relative group/info shrink-0 ml-2">
+                      <div
+                        className="flex h-6 w-6 items-center justify-center rounded-full bg-zinc-100 text-zinc-400 hover:text-[#0066B2] hover:bg-blue-50 dark:bg-white/10 dark:text-zinc-400 dark:hover:text-[#38BDF8] dark:hover:bg-[#0066B2]/20 transition cursor-help"
+                        aria-label="Info about Smart Calendar Stop"
+                      >
+                        <Info className="h-3.5 w-3.5" />
+                      </div>
+
+                      {/* Pure CSS Hover Tooltip */}
+                      <div className="pointer-events-none absolute right-0 bottom-full mb-2 z-50 w-60 rounded-xl border border-zinc-200 dark:border-white/10 bg-zinc-900 text-white dark:bg-[#1C1C20] dark:text-zinc-200 p-2.5 text-[11px] leading-relaxed shadow-xl opacity-0 translate-y-1 group-hover/info:opacity-100 group-hover/info:translate-y-0 transition-all duration-200">
                         Stops automatically when a lead books a call via Calendly or Cal.com.
-                      </p>
+                        <div className="absolute right-2 top-full border-4 border-transparent border-t-zinc-900 dark:border-t-[#1C1C20]" />
+                      </div>
                     </div>
                   </div>
                 </div>
