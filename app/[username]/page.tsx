@@ -28,13 +28,40 @@ export default async function UserProfileRoute({
       escapedUsername ? { username: { $regex: new RegExp(`^${escapedUsername}$`, "i") } } : {}
     ).lean();
 
+    if (!accountDoc) {
+      // Fallback 1: Check if rawUser is actually a Lead Magnet slug
+      const matchedPage = await MagnetPageModel.findOne({
+        $or: [{ id: rawUser }, { slug: rawUser }]
+      }).lean();
+
+      if (matchedPage && matchedPage.userEmail) {
+        const ownerAccount = await AccountModel.findOne({
+          email: matchedPage.userEmail.trim().toLowerCase()
+        }).lean();
+
+        if (ownerAccount && ownerAccount.username) {
+          const { redirect } = await import("next/navigation");
+          redirect(`/${ownerAccount.username}/${matchedPage.slug || matchedPage.id}`);
+        }
+      }
+
+      // Fallback 2: Check if rawUser matches a custom domain
+      accountDoc = await AccountModel.findOne({
+        $or: [
+          { customDomain: rawUser.toLowerCase() },
+          { customDomain: { $regex: new RegExp(escapedUsername, "i") } }
+        ]
+      }).lean();
+    }
+
     if (accountDoc && accountDoc.email) {
       pages = await MagnetPageModel.find({
         userEmail: accountDoc.email.trim().toLowerCase(),
         status: "live",
       }).lean();
     }
-  } catch (err) {
+  } catch (err: any) {
+    if (err?.digest?.startsWith("NEXT_REDIRECT")) throw err;
     console.warn("MongoDB query error in UserProfileRoute:", err);
   }
 

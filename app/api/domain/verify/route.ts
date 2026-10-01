@@ -75,6 +75,36 @@ export async function POST(req: Request) {
       cnameMessage = `Unable to reach CNAME resolution server for ${fullSubdomainHost}.`;
     }
 
+    // Auto-provision domain on Vercel programmatically if VERCEL API credentials are provided
+    const vercelToken = process.env.VERCEL_AUTH_TOKEN || process.env.VERCEL_TOKEN;
+    const vercelProjectId = process.env.VERCEL_PROJECT_ID || process.env.PROJECT_ID_VERCEL;
+    const vercelTeamId = process.env.VERCEL_TEAM_ID;
+
+    if (vercelToken && vercelProjectId && (isVerified || cnameVerified)) {
+      try {
+        const teamParam = vercelTeamId ? `?teamId=${vercelTeamId}` : "";
+        // 1. Add domain to project
+        await fetch(`https://api.vercel.com/v10/projects/${vercelProjectId}/domains${teamParam}`, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${vercelToken}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ name: fullSubdomainHost }),
+        });
+
+        // 2. Trigger instant SSL/DNS verification on Vercel's edge network
+        await fetch(`https://api.vercel.com/v9/projects/${vercelProjectId}/domains/${fullSubdomainHost}/verify${teamParam}`, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${vercelToken}`,
+          },
+        });
+      } catch (vercelErr) {
+        console.warn("Automated Vercel domain provisioning notice:", vercelErr);
+      }
+    }
+
     // Determine SSL certificate status
     const sslStatus = (isVerified || cnameVerified) ? "active" : "pending";
 
