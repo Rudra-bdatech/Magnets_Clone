@@ -59,6 +59,18 @@ export default function Template4(props: TemplateProps) {
   const rawProps = props as any;
   const isEditor = props.mode ? props.mode === "editor" : rawProps.isEditor !== false;
 
+  const isVeryDark = (hexColor: string) => {
+    if (!hexColor || typeof hexColor !== "string" || !hexColor.startsWith("#")) return false;
+    const hex = hexColor.replace("#", "").trim();
+    if (hex.length !== 6 && hex.length !== 3) return false;
+    const fullHex = hex.length === 3 ? hex.split("").map((c) => c + c).join("") : hex;
+    const r = parseInt(fullHex.substring(0, 2), 16) || 0;
+    const g = parseInt(fullHex.substring(2, 4), 16) || 0;
+    const b = parseInt(fullHex.substring(4, 6), 16) || 0;
+    const yiq = (r * 299 + g * 587 + b * 114) / 1000;
+    return yiq < 60;
+  };
+
   // Colors & Brand Settings
   const brandColor = account?.brandColor || props.brandColor || "#ff5038";
   const themeMode = account?.themeMode || props.themeMode || "dark";
@@ -73,7 +85,8 @@ export default function Template4(props: TemplateProps) {
   const mutedText = isDark ? "#b9bbc3" : "#4b5563";
   const dimText = isDark ? "#8d9099" : "#6b7280";
   const borderColor = isDark ? "rgba(255, 255, 255, 0.17)" : "rgba(11, 13, 18, 0.16)";
-  const accentColor = brandColor || "#ff5038";
+  const rawAccent = brandColor || "#ff5038";
+  const accentColor = isDark && isVeryDark(rawAccent) ? "#ff5038" : rawAccent;
   const numberTeal = isDark ? "#2dd4bf" : "#0d9488";
 
   // Formbox Theme Colors

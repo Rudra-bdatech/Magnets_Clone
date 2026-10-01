@@ -296,7 +296,20 @@ export default async function MagnetPageRoute({
   const isTemplate8 = activeTemplate === "template8";
   const isTemplate1 = !isTemplate2 && !isTemplate3 && !isTemplate4 && !isTemplate5 && !isTemplate6 && !isTemplate7 && !isTemplate8;
 
-  const accentColor = brandColor || "#fb4d6a";
+  const isVeryDark = (hexColor: string) => {
+    if (!hexColor || typeof hexColor !== "string" || !hexColor.startsWith("#")) return false;
+    const hex = hexColor.replace("#", "").trim();
+    if (hex.length !== 6 && hex.length !== 3) return false;
+    const fullHex = hex.length === 3 ? hex.split("").map((c) => c + c).join("") : hex;
+    const r = parseInt(fullHex.substring(0, 2), 16) || 0;
+    const g = parseInt(fullHex.substring(2, 4), 16) || 0;
+    const b = parseInt(fullHex.substring(4, 6), 16) || 0;
+    const yiq = (r * 299 + g * 587 + b * 114) / 1000;
+    return yiq < 60;
+  };
+
+  const rawAccent = brandColor || "#fb4d6a";
+  const accentColor = isDark && isVeryDark(rawAccent) ? "#fb4d6a" : rawAccent;
 
   return (
     <main
@@ -829,7 +842,8 @@ export default async function MagnetPageRoute({
             const mutedText = isDark ? "#b9bbc3" : "#4b5563";
             const dimText = isDark ? "#8d9099" : "#6b7280";
             const borderColor = isDark ? "rgba(255, 255, 255, 0.17)" : "rgba(11, 13, 18, 0.16)";
-            const accentColor = brandColor || "#ff5038";
+            const rawAccent4 = brandColor || "#ff5038";
+            const accentColor = isDark && isVeryDark(rawAccent4) ? "#ff5038" : rawAccent4;
             const numberTeal = isDark ? "#2dd4bf" : "#0d9488";
             const currentYear = new Date().getFullYear();
 

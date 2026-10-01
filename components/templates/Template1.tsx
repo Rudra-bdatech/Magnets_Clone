@@ -48,10 +48,23 @@ export default function Template1(props: TemplateProps) {
   const rawProps = props as any;
   const isEditor = props.mode ? props.mode === "editor" : rawProps.isEditor !== false;
 
+  const isVeryDark = (hexColor: string) => {
+    if (!hexColor || typeof hexColor !== "string" || !hexColor.startsWith("#")) return false;
+    const hex = hexColor.replace("#", "").trim();
+    if (hex.length !== 6 && hex.length !== 3) return false;
+    const fullHex = hex.length === 3 ? hex.split("").map((c) => c + c).join("") : hex;
+    const r = parseInt(fullHex.substring(0, 2), 16) || 0;
+    const g = parseInt(fullHex.substring(2, 4), 16) || 0;
+    const b = parseInt(fullHex.substring(4, 6), 16) || 0;
+    const yiq = (r * 299 + g * 587 + b * 114) / 1000;
+    return yiq < 60;
+  };
+
   const brandColor = account?.brandColor || props.brandColor || "#fb4d6a";
-  const accentColor = brandColor;
   const themeMode = account?.themeMode || props.themeMode || "dark";
   const isDark = themeMode === "dark";
+  const rawAccent = brandColor;
+  const accentColor = isDark && isVeryDark(rawAccent) ? "#fb4d6a" : rawAccent;
   const logo = account?.logo || null;
   const businessName = account?.brandName || account?.name || "The Executive Dispatch";
   const currentYear = new Date().getFullYear();
