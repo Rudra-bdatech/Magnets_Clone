@@ -1698,7 +1698,7 @@ const BrandTemplatePreview = memo(function BrandTemplatePreview({
                         style={
                           themeMode === "dark"
                             ? { backgroundColor: accentColor, color: contrastOnAccent, borderColor: accentColor }
-                            : { backgroundColor: "#101010", color: accentColor, borderColor: "#101010" }
+                            : { backgroundColor: "#101010", color: "#ffffff", borderColor: "#101010" }
                         }
                       >
                         {latestPage?.bulletsTitle || "SYSTEMS FOR CREATIVE OPERATORS"}
@@ -2022,7 +2022,7 @@ const BrandTemplatePreview = memo(function BrandTemplatePreview({
                   className={`py-1.5 px-3 border-t-3 overflow-hidden font-ibm text-[9px] font-bold uppercase tracking-widest ${
                     themeMode === "dark" ? "border-[#2a2a2e] bg-black" : "border-[#101010] bg-[#101010]"
                   }`}
-                  style={{ color: accentColor }}
+                  style={{ color: themeMode === "dark" ? accentColor : "#f4ff3c" }}
                 >
                   NO FLUFF / NO HACKS / FIELD-TESTED FRAMEWORKS / INSTANT DIGITAL DELIVERY
                 </footer>

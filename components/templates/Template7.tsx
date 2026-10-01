@@ -268,16 +268,16 @@ export default function Template7(props: TemplateProps) {
                     style={
                       isDark
                         ? { backgroundColor: accentColor, color: contrastOnAccent, borderColor: accentColor }
-                        : { backgroundColor: "#101010", color: accentColor, borderColor: "#101010" }
+                        : { backgroundColor: "#101010", color: "#ffffff", borderColor: "#101010" }
                     }
-                    className="font-ibm inline-block px-3 py-1.5 text-[10px] sm:text-[11px] font-bold tracking-wider uppercase border-2 outline-none"
+                    className="font-ibm inline-block px-3 py-1.5 text-[10px] sm:text-[11px] font-bold tracking-wider uppercase border-2 outline-none placeholder:opacity-60"
                   />
                 ) : (
                   <span
                     style={
                       isDark
                         ? { backgroundColor: accentColor, color: contrastOnAccent, borderColor: accentColor }
-                        : { backgroundColor: "#101010", color: accentColor, borderColor: "#101010" }
+                        : { backgroundColor: "#101010", color: "#ffffff", borderColor: "#101010" }
                     }
                     className="font-ibm inline-block px-3 py-1.5 text-[10px] sm:text-[11px] font-bold tracking-wider uppercase border-2"
                   >
@@ -930,7 +930,7 @@ export default function Template7(props: TemplateProps) {
         className={`w-full py-3 px-4 border-t-4 overflow-hidden font-ibm text-[11px] sm:text-xs font-bold uppercase tracking-widest transition-colors ${
           isDark ? "border-[#2a2a2e] bg-[#000000]" : "border-[#101010] bg-[#101010]"
         }`}
-        style={{ color: accentColor }}
+        style={{ color: isDark ? accentColor : "#f4ff3c" }}
       >
         <div className="overflow-hidden whitespace-nowrap">
           <div className="animate-brutalist-ticker">

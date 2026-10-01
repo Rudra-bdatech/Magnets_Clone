@@ -2218,7 +2218,7 @@ export default async function MagnetPageRoute({
                             style={
                               themeMode === "dark"
                                 ? { backgroundColor: accentColor, color: contrastOnAccent, borderColor: accentColor }
-                                : { backgroundColor: "#101010", color: accentColor, borderColor: "#101010" }
+                                : { backgroundColor: "#101010", color: "#ffffff", borderColor: "#101010" }
                             }
                           >
                             {page.bulletsTitle || "SYSTEMS FOR CREATIVE OPERATORS"}
@@ -2539,7 +2539,7 @@ export default async function MagnetPageRoute({
                   className={`w-full py-3 px-4 border-t-4 overflow-hidden font-ibm text-[11px] sm:text-xs font-bold uppercase tracking-widest transition-colors ${
                     themeMode === "dark" ? "border-[#2a2a2e] bg-[#000000]" : "border-[#101010] bg-[#101010]"
                   }`}
-                  style={{ color: accentColor }}
+                  style={{ color: themeMode === "dark" ? accentColor : "#f4ff3c" }}
                 >
                   <div className="overflow-hidden whitespace-nowrap">
                     <div className="animate-brutalist-ticker">
