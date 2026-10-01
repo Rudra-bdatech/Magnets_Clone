@@ -10,9 +10,7 @@ import {
   Check,
   Calendar,
   Sparkles,
-  Share2,
   ArrowRight,
-  ExternalLink,
   Mail,
   ShieldCheck,
   FileText,
@@ -161,7 +159,6 @@ export default function ThankYouAnimatedContent({
   quizQuestions = [],
 }: ThankYouAnimatedContentProps) {
   const [copiedAi, setCopiedAi] = useState(false);
-  const [copiedLink, setCopiedLink] = useState(false);
   const [downloading, setDownloading] = useState(false);
   const [downloadCompleted, setDownloadCompleted] = useState(false);
   const [downloadedResMap, setDownloadedResMap] = useState<Record<string, boolean>>({});
@@ -198,10 +195,6 @@ export default function ThankYouAnimatedContent({
   }, [subscriberName, subscriberEmail]);
 
   const isDark = themeMode === "dark";
-  const shareUrl =
-    typeof window !== "undefined"
-      ? `${window.location.origin}/${username}/${magnetSlug}`
-      : `/${username}/${magnetSlug}`;
 
   const handleCopyAiOutput = () => {
     if (!aiPersonalizedOutput) return;
@@ -217,21 +210,6 @@ export default function ThankYouAnimatedContent({
     }
     setCopiedAi(true);
     setTimeout(() => setCopiedAi(false), 2500);
-  };
-
-  const handleCopyShareLink = () => {
-    try {
-      navigator.clipboard.writeText(shareUrl);
-    } catch (_) {
-      const el = document.createElement("textarea");
-      el.value = shareUrl;
-      document.body.appendChild(el);
-      el.select();
-      document.execCommand("copy");
-      document.body.removeChild(el);
-    }
-    setCopiedLink(true);
-    setTimeout(() => setCopiedLink(false), 2500);
   };
 
   const handleDownloadClick = async (e: React.MouseEvent) => {
@@ -806,71 +784,7 @@ export default function ThankYouAnimatedContent({
           </motion.div>
         )}
 
-        {/* Social Share & Spread the Word Card */}
-        <motion.div
-          initial={{ y: 25, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.5, delay: 0.35 }}
-          className={`rounded-xl border p-3.5 sm:p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3.5 backdrop-blur-xl transition-all ${isDark
-              ? "bg-[#111218]/80 border-white/10 text-white shadow-lg"
-              : "bg-white/85 border-zinc-200 text-zinc-900 shadow-sm"
-            }`}
-          style={{
-            boxShadow: isDark
-              ? `0 10px 25px -5px rgba(0, 0, 0, 0.4)`
-              : `0 8px 20px -5px rgba(0, 0, 0, 0.05)`,
-          }}
-        >
-          <div className="flex items-center gap-2 min-w-0">
-            <div className="h-8 w-8 rounded-lg bg-sky-500/15 text-sky-400 flex items-center justify-center shrink-0 border border-sky-400/20">
-              <Share2 className="h-4 w-4" />
-            </div>
-            <div className="min-w-0">
-              <h3 className={`text-xs sm:text-sm font-extrabold truncate ${isDark ? "text-white" : "text-zinc-900"}`}>Spread the Word & Help Others</h3>
-              <p className={`text-xs ${isDark ? "text-zinc-400" : "text-zinc-600"} truncate`}>
-                Know colleagues or friends who would benefit from this free guide?
-              </p>
-            </div>
-          </div>
 
-          <div className="flex items-center gap-2 shrink-0 self-end sm:self-auto">
-            <a
-              href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(`Check out this free resource: ${pageName}`)}&url=${encodeURIComponent(shareUrl)}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              title="Share on X"
-              aria-label="Share on X"
-              className="h-9 w-9 rounded-lg flex items-center justify-center bg-black text-white hover:bg-zinc-800 border border-white/15 transition-all hover:scale-105 shadow-sm cursor-pointer shrink-0"
-            >
-              <svg className="h-4 w-4 fill-current" viewBox="0 0 24 24">
-                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-              </svg>
-            </a>
-
-            <a
-              href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              title="Share on LinkedIn"
-              aria-label="Share on LinkedIn"
-              className="h-9 w-9 rounded-lg flex items-center justify-center bg-[#0A66C2] text-white hover:bg-[#084e96] border border-white/10 transition-all hover:scale-105 shadow-sm cursor-pointer shrink-0"
-            >
-              <svg className="h-4 w-4 fill-current" viewBox="0 0 24 24">
-                <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.239-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
-              </svg>
-            </a>
-
-            <button
-              onClick={handleCopyShareLink}
-              title={copiedLink ? "Link Copied!" : "Copy Page Link"}
-              aria-label="Copy Page Link"
-              className={`h-9 w-9 rounded-lg flex items-center justify-center border transition-all hover:scale-105 shadow-sm cursor-pointer shrink-0 ${isDark ? "border-white/15 bg-white/10 hover:bg-white/20 text-white" : "border-zinc-300 bg-zinc-100 hover:bg-zinc-200 text-zinc-800"
-                }`}
-            >
-              {copiedLink ? <Check className="h-4 w-4 text-emerald-400" /> : <Copy className="h-4 w-4" />}
-            </button>
-          </div>
-        </motion.div>
 
         {/* ── Quiz Funnel Card ────────────────────────────────────────────── */}
         {quizFunnelEnabled && quizQuestions.length > 0 && (
@@ -1051,17 +965,7 @@ export default function ThankYouAnimatedContent({
           </motion.div>
         )}
 
-        {/* Return Home Link */}
-        <div className="text-center pt-1">
-          <a
-            href={`/${username}/${magnetSlug}`}
-            className={`inline-flex items-center gap-1.5 text-xs font-bold hover:underline transition-colors ${isDark ? "text-zinc-400 hover:text-white" : "text-zinc-600 hover:text-black"
-              }`}
-          >
-            <ExternalLink className="h-3.5 w-3.5" />
-            View Original Magnet Page
-          </a>
-        </div>
+
       </div>
 
       {/* Strategy Session Booking Modal */}
