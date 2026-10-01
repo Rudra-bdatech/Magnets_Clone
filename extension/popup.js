@@ -139,7 +139,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       emailInput.value = detected;
       chrome.runtime.sendMessage({ action: "SET_USER_EMAIL", email: detected }, (res) => {
         setAccountUI(detected);
-        statusText.textContent = `✅ Connected to ${detected}`;
+        statusText.textContent = `✅ Saved & connected to ${detected}`;
       });
     } else {
       statusText.textContent = "⚠️ No active LeadMagnets dashboard tab found.";
