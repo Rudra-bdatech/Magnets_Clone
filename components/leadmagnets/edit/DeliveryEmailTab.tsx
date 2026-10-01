@@ -296,7 +296,10 @@ export default function DeliveryEmailTab({
                 {/* Clear Format: 🧹 */}
                 <button
                   type="button"
-                  onClick={() => editor?.chain().focus().unsetAllMarks().unsetColor().unsetTextAlign().clearNodes().run()}
+                  onClick={() => {
+                    if (!editor) return;
+                    editor.chain().focus().clearNodes().unsetAllMarks().unsetTextAlign().run();
+                  }}
                   title="Clear Format"
                   className="p-1.5 rounded transition hover:bg-zinc-200 dark:hover:bg-zinc-800 cursor-pointer"
                 >
