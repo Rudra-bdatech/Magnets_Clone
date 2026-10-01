@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, memo } from "react";
-import { ChevronDown, Check, Eye, EyeOff, Slack, Zap, Mail, Sparkles } from "lucide-react";
+import { ChevronDown, Check, Eye, EyeOff, Slack, Zap, Mail } from "lucide-react";
 import { type Account } from "@/lib/data";
 
 interface AutomationsSectionProps {
@@ -489,62 +489,6 @@ export const AutomationsSection = memo(function AutomationsSection({
               </div>
             </div>
           </div>
-        </div>
-      </div>
-
-      {/* AUDIENCE SYNC Section */}
-      <div className="space-y-3">
-        <div>
-          <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 dark:text-[#9B9085]">AUDIENCE SYNC</p>
-          <p className="text-xs text-zinc-500 dark:text-[#666675]">Forward signups into an existing newsletter audience.</p>
-        </div>
-
-        {/* Newsletter Box */}
-        <div className="group rounded-2xl border border-[#0066B2]/30 bg-white dark:border-[#0066B2]/35 dark:bg-[#121214] overflow-hidden shadow-sm hover:bg-[#EFF6FF] dark:hover:bg-[#18181c] transition-colors">
-          <button
-            type="button"
-            onClick={() => toggle("newsletter")}
-            className="flex w-full items-center justify-between p-4 text-left cursor-pointer"
-          >
-            <div className="flex items-center gap-3">
-              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#FEF3C7] text-[#D97706] border border-[#FDE68A] dark:bg-[#2e2208]">
-                <Sparkles className="h-4.5 w-4.5 text-[#D97706]" />
-              </div>
-              <div>
-                <h5 className="text-xs font-bold text-zinc-900 dark:text-white">Newsletter</h5>
-                <p className="text-xs text-zinc-500 dark:text-[#9B9085] mt-0.5">
-                  Forward signups to Substack or Kit (ConvertKit). Signups are always saved in LeadMagnets too.
-                </p>
-              </div>
-            </div>
-            <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-[#E2E8F0] bg-white text-zinc-500 shadow-sm dark:border-[#2e2e38] dark:bg-[#18181B]">
-              <ChevronDown className={`h-3.5 w-3.5 transition-transform ${openSections["newsletter"] ? "rotate-180" : ""}`} />
-            </div>
-          </button>
-          {openSections["newsletter"] && (
-            <div className="border-t border-[#E2E8F0] dark:border-[#2e2e38] px-5 py-5 space-y-4 bg-zinc-50/50 dark:bg-[#151518]">
-              <div>
-                <label className="block text-xs font-semibold text-zinc-700 dark:text-[#9B9085] mb-1.5 flex items-center gap-1">
-                  <span>Substack publication</span>
-                  <span className="text-zinc-400 dark:text-[#666675] cursor-help" title="Subdomain of your Substack e.g. myletter for myletter.substack.com">?</span>
-                </label>
-                <input
-                  type="text"
-                  placeholder="myletter"
-                  value={substackPublication}
-                  onChange={(e) => {
-                    markDirty("substackPublication");
-                    setSubstackPublication(e.target.value);
-                  }}
-                  onBlur={() => handleSave()}
-                  className="w-full rounded-xl border border-[#E2E8F0] dark:border-[#2e2e38] bg-white dark:bg-[#0E0E10] px-3.5 py-2.5 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-[#52525b] outline-none focus:border-[#0066B2] transition font-mono"
-                />
-                <p className="mt-1 text-[11px] text-zinc-400 dark:text-[#666675]">
-                  Just the subdomain (e.g. <code className="text-[#0066B2] dark:text-[#38BDF8]">myletter</code> for <code className="text-[#0066B2] dark:text-[#38BDF8]">myletter.substack.com</code>). 100% Free forever.
-                </p>
-              </div>
-            </div>
-          )}
         </div>
       </div>
     </div>
