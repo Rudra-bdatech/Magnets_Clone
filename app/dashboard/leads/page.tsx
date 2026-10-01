@@ -643,9 +643,6 @@ export default function LeadsPage() {
                   <Check className="h-3 w-3" /> Live Email Alerts Active
                 </span>
               </div>
-              <p className="text-xs text-zinc-500 dark:text-[#9B9085] mt-1">
-                Subscribers who entered their email across your lead magnet forms.
-              </p>
             </div>
 
             <div className="flex items-center gap-2 shrink-0 flex-wrap">
