@@ -1718,18 +1718,20 @@ export default function EditLeadMagnetPage() {
                   )}
                 </div>
 
-                {/* Status Pill */}
-                <button
-                  onClick={() => update({ status: live ? "draft" : "live", publishedAt: live ? page?.publishedAt : new Date().toISOString() })}
-                  className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-bold transition cursor-pointer shadow-xs ${
-                    live
-                      ? "bg-emerald-50 text-emerald-700 border border-emerald-300 hover:bg-emerald-100 dark:bg-emerald-950/80 dark:text-emerald-300 dark:border-emerald-700/60"
-                      : "bg-zinc-100 text-zinc-700 border border-zinc-300 hover:bg-zinc-200 dark:bg-[#1E1E24] dark:text-zinc-300 dark:border-[#27272A] dark:hover:bg-[#27272A]"
-                  }`}
-                >
-                  <span className={`h-2 w-2 rounded-full ${live ? "bg-emerald-500" : "bg-zinc-400"}`} />
-                  <span>{live ? "Published" : "Draft"}</span>
-                </button>
+                {/* Status Pill (Only for regular Landing Pages) */}
+                {!isLockedPdf && (
+                  <button
+                    onClick={() => update({ status: live ? "draft" : "live", publishedAt: live ? page?.publishedAt : new Date().toISOString() })}
+                    className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-bold transition cursor-pointer shadow-xs ${
+                      live
+                        ? "bg-emerald-50 text-emerald-700 border border-emerald-300 hover:bg-emerald-100 dark:bg-emerald-950/80 dark:text-emerald-300 dark:border-emerald-700/60"
+                        : "bg-zinc-100 text-zinc-700 border border-zinc-300 hover:bg-zinc-200 dark:bg-[#1E1E24] dark:text-zinc-300 dark:border-[#27272A] dark:hover:bg-[#27272A]"
+                    }`}
+                  >
+                    <span className={`h-2 w-2 rounded-full ${live ? "bg-emerald-500" : "bg-zinc-400"}`} />
+                    <span>{live ? "Published" : "Draft"}</span>
+                  </button>
+                )}
               </div>
             </div>
 

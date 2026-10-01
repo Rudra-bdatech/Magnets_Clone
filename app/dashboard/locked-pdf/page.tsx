@@ -688,7 +688,7 @@ export default function LockedPdfPage() {
       userEmail: account?.email,
       name,
       slug: cleanSlug,
-      status: "draft",
+      status: "live",
       views: 0,
       signups: 0,
       conversionRate: 0,
@@ -698,7 +698,7 @@ export default function LockedPdfPage() {
       deliverable: "Locked PDF Document",
       updatedAt: new Date().toISOString(),
       createdAt: new Date().toISOString(),
-      publishedAt: null,
+      publishedAt: new Date().toISOString(),
       template: "locked-pdf",
       accent: account?.brandColor || "#0066B2",
       pdfPages: [],
@@ -945,33 +945,8 @@ export default function LockedPdfPage() {
               </div>
 
               <div className="flex items-center gap-2 shrink-0 justify-between sm:justify-end">
-                <div className="flex items-center p-1 bg-zinc-100 dark:bg-[#1C1C20] rounded-xl text-xs font-semibold">
-                  {[
-                    { id: "all", label: `All (${total})` },
-                    { id: "live", label: `Live (${liveCount})` },
-                    { id: "draft", label: `Draft (${draftCount})` },
-                  ].map((tab) => (
-                    <button
-                      key={tab.id}
-                      onClick={() => setStatusFilter(tab.id as any)}
-                      className={`relative px-3 py-1 rounded-lg transition-colors duration-200 cursor-pointer ${
-                        statusFilter === tab.id
-                          ? tab.id === "live"
-                            ? "text-emerald-600 dark:text-emerald-400 font-bold"
-                            : "text-zinc-900 dark:text-white font-bold"
-                          : "text-zinc-500 hover:text-zinc-900 dark:hover:text-white"
-                      }`}
-                    >
-                      {statusFilter === tab.id && (
-                        <motion.div
-                          layoutId="activeStatusFilterTabLockedPdf"
-                          className="absolute inset-0 bg-white dark:bg-[#2A2A30] rounded-lg shadow-xs"
-                          transition={{ type: "spring", stiffness: 500, damping: 32 }}
-                        />
-                      )}
-                      <span className="relative z-10">{tab.label}</span>
-                    </button>
-                  ))}
+                <div className="flex items-center px-3 py-1.5 bg-zinc-100 dark:bg-[#1C1C20] rounded-xl text-xs font-bold text-zinc-700 dark:text-zinc-300">
+                  <span>{total} {total === 1 ? "Locked PDF" : "Locked PDFs"}</span>
                 </div>
 
                 <div className="flex items-center p-1 bg-zinc-100 dark:bg-[#1C1C20] rounded-xl">
@@ -1225,7 +1200,6 @@ export default function LockedPdfPage() {
                     <thead className="bg-zinc-50 dark:bg-[#1A1A1E] text-zinc-500 font-bold border-b border-zinc-200/60 dark:border-zinc-800/60">
                       <tr>
                         <th className="px-4 py-3">Document</th>
-                        <th className="px-4 py-3">Status</th>
                         <th className="px-4 py-3 text-right">Pages</th>
                         <th className="px-4 py-3 text-right">Views</th>
                         <th className="px-4 py-3 text-right">Unlocks</th>
@@ -1269,13 +1243,6 @@ export default function LockedPdfPage() {
                                   <p className="text-[11px] font-mono text-zinc-400">/pdf-viewer/{pdf.id}</p>
                                 </div>
                               </div>
-                            </td>
-                            <td className="px-4 py-3">
-                              {pdf.status === "live" && (
-                                <span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400">
-                                  Published
-                                </span>
-                              )}
                             </td>
                             <td className="px-4 py-3 text-right font-medium text-zinc-900 dark:text-white">
                               {pdf.pdfPageCount || (pdf.pdfPages ? pdf.pdfPages.length : 1)}P
@@ -1332,11 +1299,6 @@ export default function LockedPdfPage() {
                       {activePage.name}
                     </h3>
                   </div>
-                  {activePage.status === "live" && (
-                    <span className="rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/50">
-                      Published
-                    </span>
-                  )}
                 </div>
 
                 <div className="rounded-xl bg-zinc-50 dark:bg-[#1A1A1E] p-3 border border-zinc-200/60 dark:border-zinc-800/60 space-y-2">
