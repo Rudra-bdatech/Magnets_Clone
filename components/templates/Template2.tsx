@@ -470,13 +470,6 @@ export default function Template2(props: TemplateProps) {
               )}
             </>
           )}
-
-          {/* Bottom Metadata Byline */}
-          <div className="flex flex-wrap items-center gap-6 pt-4 text-[10px] sm:text-[11px] font-sans font-bold uppercase tracking-[0.18em] text-white/90">
-            <span>12 MIN READ</span>
-            <span>BY {businessName}</span>
-            <span>VISUAL ESSAY</span>
-          </div>
         </div>
       </div>
 

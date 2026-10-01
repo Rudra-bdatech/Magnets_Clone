@@ -537,13 +537,6 @@ export default async function MagnetPageRoute({
                 <p className="text-base sm:text-lg md:text-xl text-white/90 leading-relaxed font-sans max-w-2xl">
                   {page.subheadline || "A practical field guide to hooks, visual systems, and narrative devices that turn a passing glance into lasting interest."}
                 </p>
-
-                {/* Bottom Metadata Byline */}
-                <div className="flex flex-wrap items-center gap-6 pt-4 text-[10px] sm:text-[11px] font-sans font-bold uppercase tracking-[0.18em] text-white/90">
-                  <span>12 MIN READ</span>
-                  <span>BY {businessName || "MARA VALE"}</span>
-                  <span>VISUAL ESSAY</span>
-                </div>
               </div>
             </div>
 

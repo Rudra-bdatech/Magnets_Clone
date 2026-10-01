@@ -459,11 +459,6 @@ const BrandTemplatePreview = memo(function BrandTemplatePreview({
                   {latestPage.subheadline}
                 </p>
               )}
-              <div className="flex items-center gap-4 pt-2 text-[9px] font-sans font-bold uppercase tracking-wider text-white/80">
-                <span>12 MIN READ</span>
-                <span>BY {businessName || "MARA VALE"}</span>
-                <span>VISUAL ESSAY</span>
-              </div>
             </div>
           </div>
 
