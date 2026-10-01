@@ -146,17 +146,22 @@ export default function EditLeadMagnetPage() {
       if (localP.pdfTitle) {
         setLockedPdfTitle(localP.pdfTitle);
       }
-      const pTpl = (localP.template as string);
-      // Always respect the page's own template field first (covers all template1-7)
-      if (pTpl && pTpl !== "classic") {
-        setTemplateId(pTpl);
-      } else if (localAcc?.templateId) {
-        setTemplateId(localAcc.templateId);
+      if (searchParams.get("type") === "locked-pdf" || localP.template === "locked-pdf") {
+        setTemplateId("locked-pdf");
+      } else {
+        const pTpl = (localP.template as string);
+        if (pTpl && pTpl !== "classic" && pTpl !== "locked-pdf") {
+          setTemplateId(pTpl);
+        } else if (localAcc?.templateId && localAcc.templateId !== "locked-pdf") {
+          setTemplateId(localAcc.templateId);
+        } else {
+          setTemplateId("template1");
+        }
       }
       if (localP.customFormFields && localP.customFormFields.length > 0) {
         setCustomFormFields(localP.customFormFields);
       }
-    } else if (localAcc?.templateId) {
+    } else if (localAcc?.templateId && localAcc.templateId !== "locked-pdf") {
       setTemplateId(localAcc.templateId);
     }
 
@@ -204,11 +209,15 @@ export default function EditLeadMagnetPage() {
           }
 
           // Template resolution: page template → account template → fallback
-          const upTpl = (found.template as string);
-          if (upTpl && upTpl !== "classic") {
-            setTemplateId(upTpl);
-          } else if (data.account?.templateId) {
-            setTemplateId(data.account.templateId);
+          if (searchParams.get("type") === "locked-pdf" || found.template === "locked-pdf") {
+            setTemplateId("locked-pdf");
+          } else {
+            const upTpl = (found.template as string);
+            if (upTpl && upTpl !== "classic" && upTpl !== "locked-pdf") {
+              setTemplateId(upTpl);
+            } else if (data.account?.templateId && data.account.templateId !== "locked-pdf") {
+              setTemplateId(data.account.templateId);
+            }
           }
 
           // Populate form fields once from DB (guarded by hasPopulatedForm ref)
@@ -377,7 +386,15 @@ export default function EditLeadMagnetPage() {
   const initialEmailBody = page?.emailBody || "Hey {name},\n\nThank you for requesting this resource! Click the link below to get instant access.\n\nEnjoy!";
 
   // Page Content State (Tab 1: Landing)
-  const [templateId, setTemplateId] = useState<string>(page?.template || account?.templateId || "template1");
+  const [templateId, setTemplateId] = useState<string>(() => {
+    if (searchParams.get("type") === "locked-pdf" || searchParams.get("template") === "locked-pdf" || page?.template === "locked-pdf") {
+      return "locked-pdf";
+    }
+    if (page?.template && page.template !== "classic" && page.template !== "locked-pdf") {
+      return page.template;
+    }
+    return (account?.templateId && account.templateId !== "locked-pdf") ? account.templateId : "template1";
+  });
   const [headline, setHeadline] = useState(initialHeadline);
   const [subheadline, setSubheadline] = useState(initialSubheadline);
   const [pitch, setPitch] = useState(initialPitch);
@@ -1369,7 +1386,11 @@ export default function EditLeadMagnetPage() {
     setShowDeleteModal(false);
     if (!page) return;
     deletePage(page.id);
-    router.push("/dashboard/landing-page");
+    if (isLockedPdf) {
+      router.push("/dashboard/locked-pdf");
+    } else {
+      router.push("/dashboard/landing-page");
+    }
   };
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -1491,9 +1512,18 @@ export default function EditLeadMagnetPage() {
     );
   };
 
+  const isLockedPdf =
+    searchParams.get("type") === "locked-pdf" ||
+    searchParams.get("template") === "locked-pdf" ||
+    templateId === "locked-pdf" ||
+    page?.template === "locked-pdf";
 
   return (
-    <DashboardShell account={account} title="Edit lead magnet">
+    <DashboardShell
+      account={account}
+      title={isLockedPdf ? "Edit Locked PDF" : "Edit lead magnet"}
+      activeNavHref={isLockedPdf ? "/dashboard/locked-pdf" : "/dashboard/landing-page"}
+    >
       <div className="flex flex-col min-h-[calc(100vh-3rem)] bg-gradient-to-b from-[#EFF6FF]/60 via-[#F8FBFF] to-[#F8FBFF] dark:bg-none dark:bg-[#0E0E10] text-zinc-900 dark:text-white transition-colors duration-200">
         <div className="flex-1 px-4 py-6 sm:px-6 lg:px-8 w-full max-w-7xl mx-auto">
 
@@ -1501,11 +1531,11 @@ export default function EditLeadMagnetPage() {
           <div className="mb-6 flex items-center justify-between">
             <div>
               <h2 className="flex items-center gap-2 text-2xl sm:text-3xl font-extrabold text-zinc-900 dark:text-white">
-                Edit lead magnet
-                <span className="cursor-help flex h-5 w-5 items-center justify-center rounded-full border border-zinc-200 dark:border-[#2e2e38] text-xs font-normal text-zinc-500 dark:text-[#9B9085] hover:bg-zinc-100 dark:hover:bg-[#18181B]" title="Edit the page copy, design, emails, and post-signup flow">?</span>
+                {isLockedPdf ? "Edit Locked PDF" : "Edit lead magnet"}
+                <span className="cursor-help flex h-5 w-5 items-center justify-center rounded-full border border-zinc-200 dark:border-[#2e2e38] text-xs font-normal text-zinc-500 dark:text-[#9B9085] hover:bg-zinc-100 dark:hover:bg-[#18181B]" title={isLockedPdf ? "Edit the PDF, delivery emails, and post-signup flow" : "Edit the page copy, design, emails, and post-signup flow"}>?</span>
               </h2>
               <p className="text-xs text-zinc-500 dark:text-[#9B9085] mt-1">
-                Edit the page, emails, and post-signup experience
+                {isLockedPdf ? "Edit the PDF document, emails, and post-signup experience" : "Edit the page, emails, and post-signup experience"}
               </p>
             </div>
           </div>
@@ -1518,20 +1548,19 @@ export default function EditLeadMagnetPage() {
               {/* Left Back link & Page Name/Slug */}
               <div className="flex items-center gap-3">
                 <Link
-                  href="/dashboard/landing-page"
+                  href={isLockedPdf ? "/dashboard/locked-pdf" : "/dashboard/landing-page"}
                   prefetch={true}
-                  onClick={handleGoBack}
                   className={`flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-bold active:scale-95 transition-all shadow-xs cursor-pointer ${(account?.themeMode || "light") === "dark"
                     ? "border-[#27272A] bg-[#1E1E24] text-zinc-200 hover:bg-[#27272A]"
                     : "border-zinc-300 bg-white text-zinc-900 hover:bg-zinc-100"
                     }`}
                 >
                   <ArrowLeft className="h-3.5 w-3.5 stroke-[2.5px]" />
-                  <span>Landing Page</span>
+                  <span>{isLockedPdf ? "Locked PDF" : "Landing Page"}</span>
                 </Link>
                 <div className="flex flex-col justify-center">
-                  <span className={`text-xs font-black uppercase tracking-wide leading-tight ${(account?.themeMode || "light") === "dark" ? "text-white" : "text-zinc-900"}`}>{page.name}</span>
-                  <span className={`text-[11px] leading-none mt-0.5 ${(account?.themeMode || "light") === "dark" ? "text-zinc-400" : "text-zinc-500"}`}>/{page.slug}</span>
+                  <span className={`text-xs font-black uppercase tracking-wide leading-tight ${(account?.themeMode || "light") === "dark" ? "text-white" : "text-zinc-900"}`}>{page?.name || "Document"}</span>
+                  <span className={`text-[11px] leading-none mt-0.5 ${(account?.themeMode || "light") === "dark" ? "text-zinc-400" : "text-zinc-500"}`}>/{page?.slug || "page"}</span>
                 </div>
               </div>
 
@@ -1597,7 +1626,7 @@ export default function EditLeadMagnetPage() {
 
                 {/* Copy Link / Open Preview */}
                 <a
-                  href={`/${account?.username || "user"}/${page.slug}`}
+                  href={isLockedPdf ? (page ? `/pdf-viewer/${page.id}` : "/dashboard/locked-pdf") : (page ? `/${account?.username || "user"}/${page.slug}` : "/dashboard/landing-page")}
                   target="_blank"
                   rel="noopener noreferrer"
                   className={`p-1.5 rounded-lg transition cursor-pointer ${(account?.themeMode || "light") === "dark"
@@ -1655,7 +1684,7 @@ export default function EditLeadMagnetPage() {
 
                 {/* Status Pill */}
                 <button
-                  onClick={() => update({ status: live ? "draft" : "live", publishedAt: live ? page.publishedAt : new Date().toISOString() })}
+                  onClick={() => update({ status: live ? "draft" : "live", publishedAt: live ? page?.publishedAt : new Date().toISOString() })}
                   className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-bold transition cursor-pointer shadow-xs ${
                     live
                       ? "bg-emerald-50 text-emerald-700 border border-emerald-300 hover:bg-emerald-100 dark:bg-emerald-950/80 dark:text-emerald-300 dark:border-emerald-700/60"
@@ -1676,9 +1705,9 @@ export default function EditLeadMagnetPage() {
               {[
                 {
                   id: "landing",
-                  label: (templateId === "locked-pdf" || page?.template === "locked-pdf") ? "Locked PDF" : "Landing page",
-                  desc: (templateId === "locked-pdf" || page?.template === "locked-pdf") ? "Design the PDF" : "Design the page",
-                  icon: (templateId === "locked-pdf" || page?.template === "locked-pdf") ? Lock : Monitor,
+                  label: isLockedPdf ? "Locked PDF" : "Landing page",
+                  desc: isLockedPdf ? "Design the PDF" : "Design the page",
+                  icon: isLockedPdf ? Lock : Monitor,
                 },
                 { id: "email", label: "Delivery email", desc: "Send the resource", icon: Mail },
                 { id: "sequence", label: "Sequence", desc: "Nurture leads", icon: Clock },

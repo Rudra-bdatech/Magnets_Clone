@@ -134,6 +134,44 @@ export default function LandingPageTab({
 }: LandingPageTabProps) {
   if (!page) return null;
 
+  if (templateId === "locked-pdf" || page?.template === "locked-pdf") {
+    return (
+      <div className="space-y-4">
+        <LockedPdfSetup
+          key={page.id}
+          magnetId={page.id}
+          userEmail={account?.email || ""}
+          pdfPages={lockedPdfPages || []}
+          pdfFreePages={lockedPdfFreePages !== undefined ? lockedPdfFreePages : 2}
+          pdfTitle={lockedPdfTitle || page.name}
+          pageName={page.name}
+          pageSlug={page.slug}
+          appUrl={process.env.NEXT_PUBLIC_APP_URL || (typeof window !== "undefined" ? window.location.origin : "https://magnets.bdatech.in")}
+          onSave={async (updates) => {
+            setLockedPdfPages(updates.pdfPages);
+            setLockedPdfFreePages(updates.pdfFreePages);
+            setLockedPdfTitle(updates.pdfTitle);
+            setTemplateId("locked-pdf");
+            const next = {
+              ...page,
+              name: updates.name?.trim() || updates.pdfTitle?.trim() || page.name,
+              slug: updates.slug?.trim() || page.slug,
+              pdfPages: updates.pdfPages,
+              pdfFreePages: updates.pdfFreePages,
+              pdfTitle: updates.pdfTitle,
+              pdfPageCount: updates.pdfPageCount,
+              template: "locked-pdf" as any,
+              updatedAt: "Just now",
+            };
+            setPage(next);
+            savePages(loadPages().map((p) => (p.id === next.id ? next : p)));
+            update(next);
+          }}
+        />
+      </div>
+    );
+  }
+
   return (
     <>
       <div className="space-y-8">
@@ -490,37 +528,6 @@ export default function LandingPageTab({
           )}
         </div>
       </div>
-
-      {/* LOCKED PDF TAB — only shown when template is locked-pdf */}
-      {(templateId as string) === "locked-pdf" && (
-        <div className="mt-4">
-          <LockedPdfSetup
-            magnetId={page.id}
-            userEmail={account?.email || ""}
-            pdfPages={lockedPdfPages}
-            pdfFreePages={lockedPdfFreePages}
-            pdfTitle={lockedPdfTitle || page.name}
-            appUrl={process.env.NEXT_PUBLIC_APP_URL || "https://magnets.bdatech.in"}
-            onSave={async (updates) => {
-              setLockedPdfPages(updates.pdfPages);
-              setLockedPdfFreePages(updates.pdfFreePages);
-              setLockedPdfTitle(updates.pdfTitle);
-              setTemplateId("locked-pdf");
-              const next = {
-                ...page,
-                pdfPages: updates.pdfPages,
-                pdfFreePages: updates.pdfFreePages,
-                pdfTitle: updates.pdfTitle,
-                pdfPageCount: updates.pdfPageCount,
-                template: "locked-pdf" as any,
-                updatedAt: "Just now",
-              };
-              setPage(next);
-              savePages(loadPages().map((p) => p.id === next.id ? next : p));
-            }}
-          />
-        </div>
-      )}
     </>
   );
 }

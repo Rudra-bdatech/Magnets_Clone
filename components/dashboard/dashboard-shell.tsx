@@ -32,10 +32,12 @@ const mobileNav: { href: string; label: string; icon: any; isModal?: boolean }[]
 export default function DashboardShell({
   account,
   title,
+  activeNavHref,
   children,
 }: {
   account?: Account | null;
   title: string;
+  activeNavHref?: string;
   children: React.ReactNode;
 }) {
   const [currentAccount, setCurrentAccount] = useState<Account | null>(account || null);
@@ -289,11 +291,13 @@ export default function DashboardShell({
             onMouseLeave={() => setHoveredNavHref(null)}
           >
             {mobileNav.map((item, idx) => {
-              const active = item.href === "/dashboard"
-                ? pathname === "/dashboard"
-                : item.href === "/dashboard/landing-page"
-                  ? (pathname === "/dashboard/landing-page" || pathname === "/dashboard/leadmagnets" || pathname.startsWith("/dashboard/leadmagnets/"))
-                  : (pathname === item.href || (item.href !== "/dashboard" && item.href !== "/dashboard/landing-page" && pathname.startsWith(`${item.href}/`)));
+              const active = activeNavHref
+                ? item.href === activeNavHref
+                : item.href === "/dashboard"
+                  ? pathname === "/dashboard"
+                  : item.href === "/dashboard/landing-page"
+                    ? (pathname === "/dashboard/landing-page" || pathname === "/dashboard/leadmagnets" || pathname.startsWith("/dashboard/leadmagnets/"))
+                    : (pathname === item.href || (item.href !== "/dashboard" && item.href !== "/dashboard/landing-page" && pathname.startsWith(`${item.href}/`)));
               const isHovered = hoveredNavHref === item.href;
               const isDividerAfter = item.href === "/dashboard/locked-pdf"; // Divider after Locked PDF
               const isDividerBefore = item.href === "/dashboard/linkedin"; // Divider before LinkedIn (Growth section)
@@ -571,11 +575,13 @@ export default function DashboardShell({
               {/* Navigation links */}
               <nav className="flex-1 overflow-y-auto space-y-1.5 pr-1" aria-label="Dashboard">
                 {mobileNav.map((item) => {
-                  const active = item.href === "/dashboard"
-                    ? pathname === "/dashboard"
-                    : item.href === "/dashboard/landing-page"
-                      ? (pathname === "/dashboard/landing-page" || pathname === "/dashboard/leadmagnets" || pathname.startsWith("/dashboard/leadmagnets/"))
-                      : (pathname === item.href || (item.href !== "/dashboard" && item.href !== "/dashboard/landing-page" && pathname.startsWith(`${item.href}/`)));
+                  const active = activeNavHref
+                    ? item.href === activeNavHref
+                    : item.href === "/dashboard"
+                      ? pathname === "/dashboard"
+                      : item.href === "/dashboard/landing-page"
+                        ? (pathname === "/dashboard/landing-page" || pathname === "/dashboard/leadmagnets" || pathname.startsWith("/dashboard/leadmagnets/"))
+                        : (pathname === item.href || (item.href !== "/dashboard" && item.href !== "/dashboard/landing-page" && pathname.startsWith(`${item.href}/`)));
                   const isDividerBeforeMobile = item.href === "/dashboard/linkedin";
                   if (item.isModal) {
                     return (
