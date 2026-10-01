@@ -16,8 +16,32 @@
       <span class="badge" id="statusBadge">Active</span>
     </div>
 
-    <div class="desc">
-      100% In-House LinkedIn Comment Auto-Reply & DM Delivery Engine.
+    <!-- Account Connection Card -->
+    <div class="account-card" id="accountCard">
+      <div class="account-header">
+        <span class="account-label">ACCOUNT</span>
+        <button type="button" id="changeAccountBtn" class="link-btn">Change</button>
+      </div>
+      
+      <!-- Connected State -->
+      <div id="connectedView" class="account-connected">
+        <div class="account-avatar">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        </div>
+        <span id="connectedEmail" class="account-email" title="Account Email">not set</span>
+      </div>
+
+      <!-- Edit / Setup State -->
+      <div id="setupView" class="account-setup" style="display: none;">
+        <div class="input-row">
+          <input type="email" id="emailInput" placeholder="Enter account email" class="email-input" />
+          <button type="button" id="saveEmailBtn" class="small-btn primary">Save</button>
+        </div>
+        <button type="button" id="autoDetectBtn" class="detect-btn">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+          <span>Auto-detect from open Dashboard</span>
+        </button>
+      </div>
     </div>
 
     <div class="metrics">
@@ -32,7 +56,7 @@
     </div>
 
     <div class="status-box" id="statusBox">
-      <div class="status-dot"></div>
+      <div class="status-dot" id="statusDot"></div>
       <div class="status-text" id="statusText">Ready to sync comments</div>
     </div>
 
@@ -41,7 +65,7 @@
       <span>Sync LinkedIn Comments Now</span>
     </button>
 
-    <button id="sendChatBtn" class="action-btn" style="background:#238636; border:1px solid rgba(255,255,255,0.1); color:#fff; padding:9px 12px; border-radius:6px; font-size:12px; font-weight:600; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;">
+    <button id="sendChatBtn" class="action-btn">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
       <span>Send Lead Magnet in Current Chat</span>
     </button>

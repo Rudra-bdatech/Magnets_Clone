@@ -16,7 +16,7 @@ body {
 .card {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 12px;
 }
 
 .header {
@@ -56,10 +56,137 @@ body {
   border-radius: 12px;
 }
 
-.desc {
-  font-size: 12px;
+.badge.warning {
+  background: rgba(210, 153, 34, 0.15);
+  color: #d29922;
+  border-color: rgba(210, 153, 34, 0.4);
+}
+
+/* Account Connection Box */
+.account-card {
+  background: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 8px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.account-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.account-label {
+  font-size: 10px;
+  font-weight: 700;
   color: #8b949e;
-  line-height: 1.4;
+  letter-spacing: 0.5px;
+}
+
+.link-btn {
+  background: none;
+  border: none;
+  color: #58a6ff;
+  font-size: 11px;
+  cursor: pointer;
+  padding: 0;
+}
+
+.link-btn:hover {
+  text-decoration: underline;
+}
+
+.account-connected {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.03);
+  padding: 6px 8px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.account-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #58a6ff;
+}
+
+.account-email {
+  font-size: 12px;
+  font-weight: 500;
+  color: #e6edf3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 230px;
+}
+
+.account-setup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.input-row {
+  display: flex;
+  gap: 6px;
+}
+
+.email-input {
+  flex: 1;
+  background: #0d1117;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  padding: 6px 8px;
+  font-size: 12px;
+  color: #f0f6fc;
+  outline: none;
+}
+
+.email-input:focus {
+  border-color: #58a6ff;
+}
+
+.small-btn {
+  background: #238636;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.small-btn:hover {
+  opacity: 0.9;
+}
+
+.detect-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: transparent;
+  border: 1px dashed #30363d;
+  border-radius: 6px;
+  padding: 5px;
+  color: #8b949e;
+  font-size: 11px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.detect-btn:hover {
+  color: #58a6ff;
+  border-color: #58a6ff;
+  background: rgba(88, 166, 255, 0.05);
 }
 
 .metrics {
@@ -72,7 +199,7 @@ body {
   background: #161b22;
   border: 1px solid #30363d;
   border-radius: 8px;
-  padding: 10px;
+  padding: 8px;
   text-align: center;
 }
 
@@ -103,8 +230,19 @@ body {
 .status-dot {
   width: 6px;
   height: 6px;
+  min-width: 6px;
   border-radius: 50%;
   background: #3fb950;
+}
+
+.status-dot.warning {
+  background: #d29922;
+}
+
+.status-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .primary-btn {
@@ -116,8 +254,8 @@ body {
   color: #ffffff;
   border: none;
   border-radius: 8px;
-  padding: 10px 14px;
-  font-size: 13px;
+  padding: 9px 14px;
+  font-size: 12px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -128,11 +266,33 @@ body {
   transform: translateY(-1px);
 }
 
-.primary-btn:active {
-  transform: translateY(0);
+.primary-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
 }
 
-.primary-btn:disabled {
+.action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: #238636;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  padding: 9px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.action-btn:hover {
+  background: #2ea043;
+}
+
+.action-btn:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }

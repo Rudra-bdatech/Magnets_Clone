@@ -50,13 +50,14 @@ function delay(ms) {
 chrome.runtime.onInstalled.addListener(async () => {
   console.log("[LeadMagnets] Extension installed. Setting up 5-min sync alarm...");
   await chrome.alarms.create("lm_sync", { periodInMinutes: 5 });
+  const existing = await chrome.storage.local.get(["userEmail"]);
   await chrome.storage.local.set({
     autoSync: true,
-    userEmail: "rudranath@bda.co.in",
+    userEmail: existing.userEmail || "",
     totalDms: 0,
     totalReplies: 0,
     lastSync: null,
-    lastResult: "Waiting for first sync...",
+    lastResult: existing.userEmail ? "Ready to sync comments" : "Please connect your LeadMagnets account email",
     repliedCommentIds: [], // persist across restarts
   });
 });
@@ -89,6 +90,17 @@ chrome.runtime.onMessage.addListener((req, sender, sendResponse) => {
     return true;
   }
 
+  if (req.action === "SET_USER_EMAIL") {
+    const email = (req.email || "").trim().toLowerCase();
+    chrome.storage.local.set({ 
+      userEmail: email,
+      lastResult: email ? `Connected to ${email}` : "Account email cleared"
+    }).then(() => {
+      sendResponse({ success: true, userEmail: email });
+    });
+    return true;
+  }
+
   if (req.action === "GET_STATUS") {
     chrome.storage.local.get([
       "autoSync", "userEmail", "lastSync", "lastResult", "totalDms", "totalReplies"
@@ -112,13 +124,15 @@ chrome.runtime.onMessage.addListener((req, sender, sendResponse) => {
       await chrome.storage.local.set(updates);
 
       // Log lead to CRM
-      await logLeadToCRM({
-        userEmail: d.userEmail || "rudranath@bda.co.in",
-        authorName: req.authorName,
-        authorLink: req.authorLink,
-        commentText: req.commentText || "",
-        postId: req.postId || "",
-      });
+      if (d.userEmail) {
+        await logLeadToCRM({
+          userEmail: d.userEmail,
+          authorName: req.authorName,
+          authorLink: req.authorLink,
+          commentText: req.commentText || "",
+          postId: req.postId || "",
+        });
+      }
     });
     sendResponse({ success: true });
     return true;
@@ -477,7 +491,13 @@ async function runFullSync() {
     "userEmail", "totalDms", "totalReplies", "repliedCommentIds"
   ]);
 
-  const userEmail = storage.userEmail || "rudranath@bda.co.in";
+  const userEmail = (storage.userEmail || "").trim().toLowerCase();
+  if (!userEmail) {
+    const msg = "⚠️ LeadMagnets account email not set. Please open popup and enter your account email.";
+    await chrome.storage.local.set({ lastResult: msg, lastSync: new Date().toISOString() });
+    return { success: false, message: msg };
+  }
+
   const repliedIds = new Set(storage.repliedCommentIds || []);
   let totalDms = storage.totalDms || 0;
   let totalReplies = storage.totalReplies || 0;
