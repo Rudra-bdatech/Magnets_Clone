@@ -400,7 +400,23 @@ export const LeadDetailsModal = memo(function LeadDetailsModal({
                       </span>
                       <span className="text-[10px] text-zinc-400 font-mono shrink-0">
                         {step.delayLabel ||
-                          (idx === 0 ? "Instantly" : `${idx} day later`)}
+                          (step.delayDays !== undefined
+                            ? step.delayUnit === "minutes"
+                              ? `${step.delayDays} min${step.delayDays > 1 ? "s" : ""} later`
+                              : step.delayUnit === "hours"
+                              ? `${step.delayDays} hr${step.delayDays > 1 ? "s" : ""} later`
+                              : `${step.delayDays} day${step.delayDays > 1 ? "s" : ""} later`
+                            : step.delayMinutes !== undefined
+                            ? step.delayMinutes === 0
+                              ? "Instantly"
+                              : step.delayMinutes < 60
+                              ? `${step.delayMinutes} min${step.delayMinutes > 1 ? "s" : ""} later`
+                              : step.delayMinutes < 1440
+                              ? `${Math.round(step.delayMinutes / 60)} hr${Math.round(step.delayMinutes / 60) > 1 ? "s" : ""} later`
+                              : `${Math.round(step.delayMinutes / 1440)} day${Math.round(step.delayMinutes / 1440) > 1 ? "s" : ""} later`
+                            : idx === 0
+                            ? "Instantly"
+                            : `${idx} day later`)}
                       </span>
                     </div>
                   );
