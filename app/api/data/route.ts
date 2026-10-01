@@ -14,7 +14,6 @@ import {
   handleSendVerificationEmail,
   handleGetLinkedInConfig,
   handleRegenerateLinkedInSecret,
-  handleGetLinkedInAuthLink,
   handleConnectLinkedInNative,
   handleLoginLinkedInCredentials,
   handleSubmitLinkedInPin,
@@ -205,9 +204,6 @@ export async function POST(req: Request) {
         return handleGetLinkedInConfig(authEmail);
       case "regenerateLinkedInSecret":
         return handleRegenerateLinkedInSecret(authEmail);
-      case "getLinkedInAuthLink":
-        const authOrigin = req.headers.get("origin") || req.headers.get("referer") || "https://magnets.bdatech.in";
-        return handleGetLinkedInAuthLink(authEmail, authOrigin);
       case "connectLinkedInNative":
       case "connectLinkedIn":
         return handleConnectLinkedInNative(data, normEmail);

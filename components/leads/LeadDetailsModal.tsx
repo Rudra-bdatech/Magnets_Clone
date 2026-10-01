@@ -39,6 +39,8 @@ function formatFieldKey(key: string): string {
     isconverted: "Conversion Status",
     convertedat: "Converted At",
     verifiedemail: "Verified Email",
+    commentid: "Comment ID",
+    postid: "Post ID",
     unipilecommentid: "Comment ID",
     unipilepostid: "Post ID",
     lileadid: "LinkedIn Lead ID",

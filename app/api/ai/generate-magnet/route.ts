@@ -18,7 +18,7 @@ export async function POST(req: Request) {
     }
 
     const cleanTopic = topic.trim();
-    const audience = targetAudience?.trim() || "creators and founders";
+    const audience = targetAudience?.trim() || "ideal target audience";
     const selectedFormat = format || "Interactive Checklist";
 
     const apiKey =
@@ -28,7 +28,7 @@ export async function POST(req: Request) {
       process.env.GOOGLE_API_KEY;
 
     if (apiKey) {
-      const candidateModels = ["gemini-3.1-flash-lite", "gemini-3.6-flash", "gemini-flash-latest"];
+      const candidateModels = ["gemini-flash-lite-latest", "gemini-3.5-flash-lite", "gemini-3.1-flash-lite", "gemini-3.8-flash"];
       const genAI = new GoogleGenerativeAI(apiKey);
 
       const prompt = `You are a world-class copywriter and conversion rate optimization expert. 

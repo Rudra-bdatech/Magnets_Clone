@@ -466,65 +466,7 @@ export async function handleRegenerateLinkedInSecret(authEmail: string | null) {
   });
 }
 
-/**
- * Generates a 1-click Unipile Hosted Authentication Link for the user.
- * Opens a secure LinkedIn login popup so the user can connect in 10 seconds.
- */
-export async function handleGetLinkedInAuthLink(authEmail: string | null, clientOrigin?: string) {
-  if (!authEmail) {
-    return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
-  }
 
-  const UNIPILE_DSN = "https://api36.unipile.com:16619";
-  const UNIPILE_API_KEY = "wOFSf6du.f/PTCdwTaeOqSSw5PaLUCTPVwks++2G3tUtqBXh8gfU=";
-  
-  // Use client origin for browser redirect so user stays on localhost or production domain
-  let browserOrigin = (clientOrigin || process.env.NEXT_PUBLIC_APP_URL || "https://magnets.bdatech.in").replace(/\/$/, "");
-  if (browserOrigin.includes("api/")) {
-    browserOrigin = browserOrigin.split("/api")[0];
-  }
-  
-  // Production URL for Unipile server-to-server webhook callback
-  const prodWebhookUrl = (process.env.NEXT_PUBLIC_APP_URL || "https://magnets.bdatech.in").replace(/\/$/, "");
-
-  try {
-    const expiresOn = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
-    const notifyUrl = `${prodWebhookUrl}/api/webhooks/unipile?userEmail=${encodeURIComponent(authEmail.trim().toLowerCase())}`;
-
-    const res = await fetch(`${UNIPILE_DSN}/api/v1/hosted/accounts/link`, {
-      method: "POST",
-      headers: {
-        "X-API-KEY": UNIPILE_API_KEY,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        type: "create",
-        providers: ["LINKEDIN"],
-        api_url: UNIPILE_DSN,
-        expiresOn,
-        success_redirect_url: `${browserOrigin}/dashboard/linkedin?connected=true`,
-        failure_redirect_url: `${browserOrigin}/dashboard/linkedin?error=true`,
-        notify_url: notifyUrl,
-        name: authEmail.trim().toLowerCase(),
-      }),
-    });
-
-    if (!res.ok) {
-      const errText = await res.text();
-      console.error("[Unipile Hosted Auth Error]:", errText);
-      return NextResponse.json({ error: "Failed to generate LinkedIn login link." }, { status: 500 });
-    }
-
-    const data = await res.json();
-    return NextResponse.json({
-      success: true,
-      url: data.url,
-    });
-  } catch (err: any) {
-    console.error("[Unipile Auth Link Exception]:", err);
-    return NextResponse.json({ error: err.message }, { status: 500 });
-  }
-}
 
 /**
  * Directly connects LinkedIn using in-house native session cookie (li_at).

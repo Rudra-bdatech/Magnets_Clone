@@ -1682,7 +1682,7 @@ export default function LinkedInAutomationPage() {
                     {selectedTab === "all" ? "No LinkedIn leads yet" : `No ${selectedTab} leads found`}
                   </p>
                   <p className="text-[11px] text-zinc-500 dark:text-[#9B9085] mt-1">
-                    Once n8n or Unipile sends comment data, leads will update in real time.
+                    Connect your LinkedIn account above and click &quot;Sync Comments Now&quot; to start capturing leads automatically.
                   </p>
                 </div>
               ) : (

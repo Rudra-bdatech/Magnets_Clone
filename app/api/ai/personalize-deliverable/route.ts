@@ -27,7 +27,7 @@ export async function POST(req: Request) {
       try {
         const { GoogleGenerativeAI } = await import("@google/generative-ai");
         const genAI = new GoogleGenerativeAI(apiKey);
-        const model = genAI.getGenerativeModel({ model: "gemini-3.6-flash" });
+        const model = genAI.getGenerativeModel({ model: "gemini-flash-lite-latest" });
 
         const prompt = `You are a high-level consultant. Write a personalized, highly tailored Markdown report for ${lead} who just opted into the lead magnet "${topic}".
 Their answer to the custom intake question ("${question || "What is your main focus?"}") was: "${leadInput}".
