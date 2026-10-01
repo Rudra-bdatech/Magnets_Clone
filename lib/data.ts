@@ -393,7 +393,7 @@ export function getAppUrl(): string {
   if (typeof window !== "undefined" && window.location?.origin) {
     return window.location.origin;
   }
-  return "https://magnets-jade.vercel.app";
+  return "https://magnets.bdatech.in";
 }
 
 export function getAppDomain(): string {

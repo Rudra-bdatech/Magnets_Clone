@@ -36,7 +36,7 @@ export default function WorkspaceSetupPage() {
   const [domainError, setDomainError] = useState("");
   const [cnameError, setCnameError] = useState("");
   const [saving, setSaving] = useState(false);
-  const [appBaseUrl, setAppBaseUrl] = useState("https://magnets-jade.vercel.app");
+  const [appBaseUrl, setAppBaseUrl] = useState("https://magnets.bdatech.in");
 
   const [ga4MeasurementId, setGa4MeasurementId] = useState("");
   const [metaPixelId, setMetaPixelId] = useState("");
