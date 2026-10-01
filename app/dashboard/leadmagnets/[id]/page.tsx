@@ -1603,26 +1603,30 @@ export default function EditLeadMagnetPage() {
                   {saveStatus === "saving" ? "Waiting to autosave..." : "Autosaved"}
                 </span>
 
-                {/* AI Autofill & Social Studio */}
-                <button
-                  onClick={() => setShowAIModal(true)}
-                  className="flex items-center gap-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 px-3 py-1.5 text-xs font-bold text-white shadow-xs transition cursor-pointer"
-                  title="AI Autofill: Regenerate headlines & copy"
-                >
-                  <Sparkles className="h-3.5 w-3.5" />
-                  <span>AI Autofill</span>
-                </button>
+                {/* AI Autofill & Social Studio (Only on Landing Pages) */}
+                {!isLockedPdf && (
+                  <>
+                    <button
+                      onClick={() => setShowAIModal(true)}
+                      className="flex items-center gap-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 px-3 py-1.5 text-xs font-bold text-white shadow-xs transition cursor-pointer"
+                      title="AI Autofill: Regenerate headlines & copy"
+                    >
+                      <Sparkles className="h-3.5 w-3.5" />
+                      <span>AI Autofill</span>
+                    </button>
 
-                <button
-                  onClick={() => setShowSocialModal(true)}
-                  className="group flex items-center gap-1.5 rounded-lg border border-indigo-500/30 bg-indigo-500/10 px-3 py-1.5 text-xs font-bold text-indigo-400 hover:bg-indigo-600 hover:text-white transition shadow-xs cursor-pointer"
-                  title="Generate Social Media Graphic Cards"
-                >
-                  <ImageIcon className="h-3.5 w-3.5 text-indigo-400 group-hover:text-white transition-colors" />
-                  <span>Social Cards</span>
-                </button>
+                    <button
+                      onClick={() => setShowSocialModal(true)}
+                      className="group flex items-center gap-1.5 rounded-lg border border-indigo-500/30 bg-indigo-500/10 px-3 py-1.5 text-xs font-bold text-indigo-400 hover:bg-indigo-600 hover:text-white transition shadow-xs cursor-pointer"
+                      title="Generate Social Media Graphic Cards"
+                    >
+                      <ImageIcon className="h-3.5 w-3.5 text-indigo-400 group-hover:text-white transition-colors" />
+                      <span>Social Cards</span>
+                    </button>
 
-                <div className="h-4 w-px bg-zinc-200 dark:bg-[#27272A] mx-1" />
+                    <div className="h-4 w-px bg-zinc-200 dark:bg-[#27272A] mx-1" />
+                  </>
+                )}
 
                 {/* Undo / Redo */}
                 <button
