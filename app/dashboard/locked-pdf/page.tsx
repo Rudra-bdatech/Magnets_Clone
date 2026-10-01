@@ -780,114 +780,121 @@ export default function LockedPdfPage() {
         </AnimatePresence>
       </div>
 
-      <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 space-y-6">
-        {/* Header Section */}
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-          <div>
-            <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-zinc-900 dark:text-white">
-              Locked PDF
-            </h1>
-            <p className="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 mt-0.5">
-              Upload your document, set free preview pages, configure delivery emails and lead nurture sequences.
-            </p>
+      <div className="flex flex-col min-h-[calc(100vh-3.5rem)] bg-zinc-50/50 dark:bg-[#0B0B0D]">
+        {/* Top Executive Header */}
+        <div className="px-6 pt-6 lg:px-8 border-b border-zinc-200/80 dark:border-zinc-800/60 bg-white/80 dark:bg-[#121215] dark:bg-opacity-85 backdrop-blur-md sticky top-0 z-30 shadow-xs">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6">
+            <div>
+              <div className="flex items-center gap-2">
+                <h1 className="text-3xl font-bold tracking-tight text-zinc-900 dark:text-white">
+                  Locked PDF
+                </h1>
+              </div>
+              <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
+                Upload your document, set free preview pages, configure delivery emails and lead nurture sequences.
+              </p>
+            </div>
+
+            {/* Actions: Save Status Badge, Choose Assets, Create Locked PDF */}
+            <div className="flex items-center gap-3 shrink-0">
+              {saveStatus === "saving" ? (
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 shadow-2xs">
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  <span>Saving changes...</span>
+                </span>
+              ) : (
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 shadow-2xs">
+                  <CheckCircle2 className="h-3.5 w-3.5" />
+                  <span>All changes saved</span>
+                </span>
+              )}
+
+              <button
+                type="button"
+                onClick={() => {
+                  const fresh = loadResources().filter((r: any) => !r.isPageAsset && r.type !== "page_asset");
+                  setHostedResources(fresh);
+                  setShowAssetPickerModal(true);
+                }}
+                className="flex items-center gap-1.5 rounded-xl border border-zinc-200 dark:border-[#27272A] bg-white dark:bg-[#1E1E24] px-4 py-2.5 text-xs font-bold text-zinc-800 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-[#27272A] transition shadow-xs cursor-pointer active:scale-95"
+              >
+                <HardDrive className="h-4 w-4 text-[#0066B2] dark:text-[#38BDF8]" />
+                <span>Choose Assets</span>
+              </button>
+
+              <button
+                onClick={() => {
+                  setCreateMagnetName("");
+                  setCustomSlug("");
+                  setIsCustomSlugEdited(false);
+                  setShowCreateModal(true);
+                }}
+                className="flex items-center gap-1.5 rounded-xl bg-[#0066B2] px-5 py-2.5 text-xs font-bold text-white hover:bg-[#005799] transition shadow-md shadow-[#0066B2]/20 cursor-pointer active:scale-95"
+              >
+                <Plus className="h-4 w-4 stroke-[2.5px]" />
+                <span>Create Locked PDF</span>
+              </button>
+            </div>
           </div>
 
-          {/* Production-grade Keystroke Auto-Save Status Badge & Create Action */}
-          <div className="flex items-center gap-3 shrink-0">
-            {saveStatus === "saving" ? (
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 shadow-2xs">
-                <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                <span>Saving changes...</span>
-              </span>
-            ) : (
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 shadow-2xs">
-                <CheckCircle2 className="h-3.5 w-3.5" />
-                <span>All changes saved</span>
-              </span>
-            )}
+          {/* Quick Metrics Bar */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 py-3 text-xs">
+            {/* Pages & Preview Limit */}
+            <div className="flex items-center gap-3">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#EFF6FF] dark:bg-[#0066B2]/15 text-[#0066B2] dark:text-[#38BDF8]">
+                <FileText className="h-4 w-4" />
+              </div>
+              <div>
+                <p className="text-[11px] font-medium text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">Pages & Preview</p>
+                <p className="text-base font-bold text-zinc-900 dark:text-white">
+                  {activePdfStats.pagesCount} <span className="text-xs font-normal text-zinc-400">({activePdfStats.freePages} Free Preview)</span>
+                </p>
+              </div>
+            </div>
 
-            <button
-              type="button"
-              onClick={() => {
-                const fresh = loadResources().filter((r: any) => !r.isPageAsset && r.type !== "page_asset");
-                setHostedResources(fresh);
-                setShowAssetPickerModal(true);
-              }}
-              className="flex items-center gap-1.5 rounded-xl border border-zinc-200 dark:border-[#27272A] bg-white dark:bg-[#1E1E24] px-4 py-2.5 text-xs font-bold text-zinc-800 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-[#27272A] transition shadow-xs cursor-pointer active:scale-95"
-            >
-              <HardDrive className="h-4 w-4 text-[#0066B2] dark:text-[#38BDF8]" />
-              <span>Choose Assets</span>
-            </button>
+            {/* Preview Traffic */}
+            <div className="flex items-center gap-3">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400">
+                <Eye className="h-4 w-4" />
+              </div>
+              <div>
+                <p className="text-[11px] font-medium text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">Preview Traffic</p>
+                <p className="text-base font-bold text-zinc-900 dark:text-white">
+                  {activePdfStats.views.toLocaleString()}
+                </p>
+              </div>
+            </div>
 
-            <button
-              onClick={() => {
-                setCreateMagnetName("");
-                setCustomSlug("");
-                setIsCustomSlugEdited(false);
-                setShowCreateModal(true);
-              }}
-              className="flex items-center gap-1.5 rounded-xl bg-[#0066B2] px-5 py-2.5 text-xs font-bold text-white hover:bg-[#005799] transition shadow-md shadow-[#0066B2]/20 cursor-pointer active:scale-95"
-            >
-              <Plus className="h-4 w-4 stroke-[2.5px]" />
-              <span>Create Locked PDF</span>
-            </button>
+            {/* OTP Unlocks */}
+            <div className="flex items-center gap-3">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-purple-50 dark:bg-purple-950/40 text-purple-600 dark:text-purple-400">
+                <Lock className="h-4 w-4" />
+              </div>
+              <div>
+                <p className="text-[11px] font-medium text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">OTP Unlocks</p>
+                <p className="text-base font-bold text-zinc-900 dark:text-white">
+                  {activePdfStats.signups.toLocaleString()}
+                </p>
+              </div>
+            </div>
+
+            {/* Unlock Rate */}
+            <div className="flex items-center gap-3">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400">
+                <TrendingUp className="h-4 w-4" />
+              </div>
+              <div>
+                <p className="text-[11px] font-medium text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">Unlock Rate</p>
+                <p className="text-base font-bold text-zinc-900 dark:text-white">
+                  {activePdfStats.convRate}
+                </p>
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Locked PDF Statistics Bar */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4">
-          {/* Pages & Preview Limit */}
-          <div className="flex items-center gap-3.5 rounded-2xl border border-zinc-200/80 bg-white dark:border-[#1F1F24] dark:bg-[#151518] p-4 shadow-xs">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#0066B2]/10 text-[#0066B2] dark:bg-[#0066B2]/20 dark:text-[#38BDF8]">
-              <FileText className="h-5 w-5" />
-            </div>
-            <div>
-              <p className="text-[11px] font-bold tracking-wider text-zinc-500 dark:text-[#9B9085] uppercase">Pages & Preview</p>
-              <p className="text-lg font-extrabold text-zinc-900 dark:text-white mt-0.5">
-                {activePdfStats.pagesCount} <span className="text-xs font-semibold text-zinc-400">({activePdfStats.freePages} Free Preview)</span>
-              </p>
-            </div>
-          </div>
-
-          {/* Preview Traffic */}
-          <div className="flex items-center gap-3.5 rounded-2xl border border-zinc-200/80 bg-white dark:border-[#1F1F24] dark:bg-[#151518] p-4 shadow-xs">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
-              <Eye className="h-5 w-5" />
-            </div>
-            <div>
-              <p className="text-[11px] font-bold tracking-wider text-zinc-500 dark:text-[#9B9085] uppercase">Preview Traffic</p>
-              <p className="text-lg font-extrabold text-zinc-900 dark:text-white mt-0.5">
-                {activePdfStats.views.toLocaleString()}
-              </p>
-            </div>
-          </div>
-
-          {/* OTP Unlocks */}
-          <div className="flex items-center gap-3.5 rounded-2xl border border-zinc-200/80 bg-white dark:border-[#1F1F24] dark:bg-[#151518] p-4 shadow-xs">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400">
-              <Lock className="h-5 w-5" />
-            </div>
-            <div>
-              <p className="text-[11px] font-bold tracking-wider text-zinc-500 dark:text-[#9B9085] uppercase">OTP Unlocks</p>
-              <p className="text-lg font-extrabold text-zinc-900 dark:text-white mt-0.5">
-                {activePdfStats.signups.toLocaleString()}
-              </p>
-            </div>
-          </div>
-
-          {/* Unlock Rate */}
-          <div className="flex items-center gap-3.5 rounded-2xl border border-zinc-200/80 bg-white dark:border-[#1F1F24] dark:bg-[#151518] p-4 shadow-xs">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400">
-              <TrendingUp className="h-5 w-5" />
-            </div>
-            <div>
-              <p className="text-[11px] font-bold tracking-wider text-zinc-500 dark:text-[#9B9085] uppercase">Unlock Rate</p>
-              <p className="text-lg font-extrabold text-zinc-900 dark:text-white mt-0.5">
-                {activePdfStats.convRate}
-              </p>
-            </div>
-          </div>
-        </div>
+        {/* Main Content Area */}
+        <div className="flex-1 px-4 py-6 sm:px-6 lg:px-8 space-y-6 max-w-7xl mx-auto w-full">
 
         {/* 4 Tabs Bar — Workflow Navigation (WAI-ARIA Compliant) */}
         <div
@@ -1305,6 +1312,7 @@ export default function LockedPdfPage() {
           </div>
         )}
 
+        </div>
       </div>
 
       {/* Email Preview Modal */}
