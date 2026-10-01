@@ -199,6 +199,22 @@ export default function LinkedInAutomationPage() {
     setShowConnectModal(true);
   };
 
+  const handleConfirmExtensionConnected = async () => {
+    try {
+      const activeEmail = account?.email || (typeof window !== "undefined" ? localStorage.getItem("currentUserEmail") || "" : "");
+      const res = await fetch("/api/data", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "connectLinkedInExtension", email: activeEmail }),
+      });
+      if (res.ok) {
+        const d = await res.json();
+        if (d.account) setAccount(d.account);
+        setShowConnectModal(false);
+      }
+    } catch (e) {}
+  };
+
   const handleLoginCredentials = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!inputEmail || !inputPassword) {
@@ -1940,15 +1956,25 @@ export default function LinkedInAutomationPage() {
                     </div>
                   </div>
 
-                  {/* Download Button */}
-                  <a
-                    href="/leadmagnets-extension.zip"
-                    download="leadmagnets-extension.zip"
-                    className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#0A66C2] hover:bg-[#004182] px-5 py-3 text-xs font-bold text-white shadow-md transition active:scale-[0.98] cursor-pointer"
-                  >
-                    <Download className="h-4 w-4 shrink-0" />
-                    <span>Download Chrome Extension (.ZIP)</span>
-                  </a>
+                  {/* Action Buttons */}
+                  <div className="flex flex-col gap-2">
+                    <a
+                      href="/leadmagnets-extension.zip"
+                      download="leadmagnets-extension.zip"
+                      className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#0A66C2] hover:bg-[#004182] px-5 py-3 text-xs font-bold text-white shadow-md transition active:scale-[0.98] cursor-pointer"
+                    >
+                      <Download className="h-4 w-4 shrink-0" />
+                      <span>Download Chrome Extension (.ZIP)</span>
+                    </a>
+                    <button
+                      type="button"
+                      onClick={handleConfirmExtensionConnected}
+                      className="flex w-full items-center justify-center gap-2 rounded-xl border border-emerald-500/30 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 px-5 py-2.5 text-xs font-bold transition cursor-pointer"
+                    >
+                      <CheckCircle2 className="h-4 w-4" />
+                      <span>I&apos;ve Saved My Email in Extension (Activate Dashboard)</span>
+                    </button>
+                  </div>
                 </div>
               ) : connectTab === "credentials" ? (
                 /* â”€â”€ Official LinkedIn OAuth Tab â”€â”€ */

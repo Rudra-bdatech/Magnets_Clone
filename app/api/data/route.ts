@@ -14,6 +14,7 @@ import {
   handleSendVerificationEmail,
   handleGetLinkedInConfig,
   handleRegenerateLinkedInSecret,
+  handleConnectLinkedInExtension,
   handleConnectLinkedInNative,
   handleLoginLinkedInCredentials,
   handleSubmitLinkedInPin,
@@ -204,6 +205,9 @@ export async function POST(req: Request) {
         return handleGetLinkedInConfig(authEmail);
       case "regenerateLinkedInSecret":
         return handleRegenerateLinkedInSecret(authEmail);
+      case "connectLinkedInExtension":
+      case "setLinkedInExtensionConnected":
+        return handleConnectLinkedInExtension(data, normEmail);
       case "connectLinkedInNative":
       case "connectLinkedIn":
         return handleConnectLinkedInNative(data, normEmail);

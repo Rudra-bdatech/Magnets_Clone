@@ -628,6 +628,37 @@ export async function handleSubmitLinkedInPin(data: any, authEmail: string | nul
 }
 
 /**
+ * Connects / marks LinkedIn as connected via Chrome Extension.
+ */
+export async function handleConnectLinkedInExtension(data: any, authEmail: string | null) {
+  const email = (authEmail || data?.email || "").trim().toLowerCase();
+  if (!email) {
+    return NextResponse.json({ error: "Email required." }, { status: 400 });
+  }
+
+  const account = await AccountModel.findOne({ email });
+  if (!account) {
+    return NextResponse.json({ error: "Account not found." }, { status: 404 });
+  }
+
+  account.linkedinConnected = true;
+  account.linkedinConnectedVia = "extension";
+  if (data?.accountName && !account.linkedinAccountName) {
+    account.linkedinAccountName = data.accountName;
+  }
+  if (data?.avatarUrl && !account.linkedinProfileImage) {
+    account.linkedinProfileImage = data.avatarUrl;
+  }
+  await account.save();
+
+  return NextResponse.json({
+    success: true,
+    message: "LinkedIn connected via Chrome Extension!",
+    account,
+  });
+}
+
+/**
  * Disconnects the user's LinkedIn account.
  */
 export async function handleDisconnectLinkedIn(authEmail: string | null) {
