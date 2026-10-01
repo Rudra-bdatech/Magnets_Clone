@@ -61,14 +61,14 @@ export async function POST(req: Request) {
 
       if (cnameData.Answer && Array.isArray(cnameData.Answer)) {
         const cnameRecords = cnameData.Answer.map((ans: any) => (ans.data || "").replace(/\.$/, "").toLowerCase().trim());
-        if (cnameRecords.some((rec: string) => rec.includes("leadmagnets") || rec.includes(targetCname))) {
+        if (cnameRecords.some((rec: string) => rec.includes("leadmagnets") || rec.includes("bdatech") || rec.includes("vercel") || rec.includes(targetCname))) {
           cnameVerified = true;
-          cnameMessage = `Traffic successfully routed! ${fullSubdomainHost} points to ${targetCname}.`;
+          cnameMessage = `Traffic successfully routed! ${fullSubdomainHost} points to ${cnameRecords[0] || targetCname}.`;
         }
       }
 
       if (!cnameVerified) {
-        cnameMessage = `No CNAME record found pointing ${fullSubdomainHost} to ${targetCname}. Check your DNS settings.`;
+        cnameMessage = `No CNAME record found pointing ${fullSubdomainHost} to magnets.bdatech.in. Check your DNS settings.`;
       }
     } catch (cnameErr) {
       console.warn("DNS CNAME check failed:", cnameErr);

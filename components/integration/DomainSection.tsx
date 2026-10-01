@@ -424,10 +424,10 @@ export const DomainSection = memo(function DomainSection({
                             TARGET VALUE
                           </span>
                           <div className="flex items-center justify-between rounded-lg border border-zinc-200 dark:border-white/10 bg-zinc-50 dark:bg-[#121214] px-3 py-2 text-xs font-mono text-zinc-900 dark:text-white">
-                            <span>cname.leadmagnets.so</span>
+                            <span>{sanitizeDomain(appBaseUrl) || "magnets.bdatech.in"}</span>
                             <button
                               type="button"
-                              onClick={() => copyToClipboard("cname.leadmagnets.so", "cnameValue", "CNAME target copied!")}
+                              onClick={() => copyToClipboard(sanitizeDomain(appBaseUrl) || "magnets.bdatech.in", "cnameValue", "CNAME target copied!")}
                               className="text-zinc-400 hover:text-zinc-700 dark:hover:text-white transition ml-2 cursor-pointer shrink-0"
                               title="Copy CNAME Target Value"
                             >
