@@ -613,9 +613,6 @@ export default function DashboardHome({
               <h1 className="text-2xl font-extrabold tracking-tight text-zinc-900 dark:text-white sm:text-3xl">
                 {getGreeting(account?.name)}
               </h1>
-              <p className="mt-1 text-sm text-zinc-500 dark:text-[#9B9085]">
-                Here's what's happening with your lead magnets today.
-              </p>
             </div>
 
             <div className="flex items-center gap-2 shrink-0 flex-wrap">
@@ -1048,71 +1045,7 @@ export default function DashboardHome({
             </div>
           </motion.div>
 
-          {/* ══════════════════════════════════════════════
-              SECTION 4 — Quick Actions
-          ══════════════════════════════════════════════ */}
-          <motion.div variants={fadeUp}>
-            <div className="rounded-2xl border border-zinc-200/80 bg-white/90 dark:border-[#2e2e38] dark:bg-[#18181B]/90 shadow-sm backdrop-blur-sm px-5 py-5">
-              <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-[#9B9085] mb-3.5">
-                Quick Actions
-              </p>
-              <div className="flex flex-wrap gap-2">
-                {[
-                  {
-                    label: "New Landing Page",
-                    icon: FileText,
-                    href: "/dashboard/landing-page",
-                    colorText: "text-[#0066B2] dark:text-[#38BDF8]",
-                    colorBg: "bg-[#EFF6FF] dark:bg-[#0066B2]/15 hover:bg-[#DBEAFE] dark:hover:bg-[#0066B2]/25",
-                  },
-                  {
-                    label: "New Locked PDF",
-                    icon: Lock,
-                    href: "/dashboard/locked-pdf",
-                    colorText: "text-amber-600 dark:text-amber-400",
-                    colorBg: "bg-amber-50 dark:bg-amber-500/15 hover:bg-amber-100 dark:hover:bg-amber-500/25",
-                  },
-                  {
-                    label: "New Sequence",
-                    icon: Mail,
-                    href: "/dashboard/sequences/new",
-                    colorText: "text-emerald-600 dark:text-emerald-400",
-                    colorBg: "bg-emerald-50 dark:bg-emerald-500/15 hover:bg-emerald-100 dark:hover:bg-emerald-500/25",
-                  },
-                  {
-                    label: "Analytics",
-                    icon: BarChart3,
-                    href: "/dashboard/analytics",
-                    colorText: "text-violet-600 dark:text-violet-400",
-                    colorBg: "bg-violet-50 dark:bg-violet-500/15 hover:bg-violet-100 dark:hover:bg-violet-500/25",
-                  },
-                  {
-                    label: "Integrations",
-                    icon: Zap,
-                    href: "/dashboard/integration",
-                    colorText: "text-rose-600 dark:text-rose-400",
-                    colorBg: "bg-rose-50 dark:bg-rose-500/15 hover:bg-rose-100 dark:hover:bg-rose-500/25",
-                  },
-                  {
-                    label: "Brand Kit",
-                    icon: Palette,
-                    href: "/dashboard/brand",
-                    colorText: "text-indigo-600 dark:text-indigo-400",
-                    colorBg: "bg-indigo-50 dark:bg-indigo-500/15 hover:bg-indigo-100 dark:hover:bg-indigo-500/25",
-                  },
-                ].map((action) => (
-                  <Link
-                    key={action.label}
-                    href={action.href}
-                    className={`inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold ${action.colorText} ${action.colorBg} transition-all duration-150 hover:-translate-y-0.5 active:scale-95`}
-                  >
-                    <action.icon className="h-3.5 w-3.5" />
-                    {action.label}
-                  </Link>
-                ))}
-              </div>
-            </div>
-          </motion.div>
+
 
 
 

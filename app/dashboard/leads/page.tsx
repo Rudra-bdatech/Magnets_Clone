@@ -702,7 +702,6 @@ export default function LeadsPage() {
               <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                 <div>
                   <h3 className="text-base font-bold text-zinc-900 dark:text-white">All Subscribers</h3>
-                  <p className="text-xs text-zinc-500 dark:text-[#9B9085] mt-0.5">Deduplicated email records across all published magnets.</p>
                 </div>
 
                 <div className="flex flex-wrap items-center gap-2">
