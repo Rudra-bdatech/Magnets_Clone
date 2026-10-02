@@ -344,7 +344,7 @@ export default function DashboardShell({
       <div className="dashboard-canvas flex min-h-screen relative">
 
         <aside className="shadow-sm hidden h-screen w-[14.5rem] shrink-0 flex-col border-r border-[#E0EDFB] bg-[#F0F7FF] text-zinc-900 sticky top-0 md:flex z-50 dark:border-white/10 dark:bg-[#18181B] dark:text-[#9B9085]">
-          <div className="flex shrink-0 items-center border-b border-[#E0EDFB] px-3.5 py-2.5 dark:border-white/10">
+          <div className="flex shrink-0 items-center px-3.5 py-2.5">
             <Link href="/dashboard" aria-label="Dashboard" className="flex items-center">
               <BrandLogo height="h-9" />
             </Link>
@@ -363,8 +363,6 @@ export default function DashboardShell({
                     ? (pathname === "/dashboard/landing-page" || pathname === "/dashboard/leadmagnets" || pathname.startsWith("/dashboard/leadmagnets/"))
                     : (pathname === item.href || (item.href !== "/dashboard" && item.href !== "/dashboard/landing-page" && pathname.startsWith(`${item.href}/`)));
               const isHovered = hoveredNavHref === item.href;
-              const isDividerAfter = item.href === "/dashboard/locked-pdf"; // Divider after Locked PDF
-              const isDividerBefore = item.href === "/dashboard/linkedin"; // Divider before LinkedIn (Growth section)
 
               if (item.isModal) {
                 return (
@@ -394,14 +392,12 @@ export default function DashboardShell({
                         </span>
                       </motion.button>
                     </ExpandableScreenTrigger>
-                    {isDividerAfter && <div className="my-2.5 border-t border-[#E0EDFB] dark:border-white/10" />}
                   </div>
                 );
               }
 
               return (
                 <div key={item.href} onMouseEnter={() => setHoveredNavHref(item.href)}>
-                  {isDividerBefore && <div className="my-2.5 border-t border-[#E0EDFB] dark:border-white/10" />}
                   <motion.div
                     whileTap={{ scale: 0.97 }}
                     transition={{ type: "spring", stiffness: 600, damping: 28 }}
@@ -450,12 +446,11 @@ export default function DashboardShell({
                       </span>
                     </Link>
                   </motion.div>
-                  {isDividerAfter && <div className="my-2.5 border-t border-[#E0EDFB] dark:border-white/10" />}
                 </div>
               );
             })}
           </nav>
-          <div className="border-t border-[#E0EDFB] px-1.5 py-2.5 dark:border-white/10">
+          <div className="px-1.5 py-2.5">
             <div ref={profileMenuRef} className="relative">
               {/* Profile Popover Menu */}
               <AnimatePresence>
@@ -641,7 +636,7 @@ export default function DashboardShell({
               className="flex h-full w-72 flex-col bg-[#F0F7FF] dark:bg-[#18181B] border-r border-[#E0EDFB] dark:border-white/10 p-4 text-zinc-900 dark:text-[#9B9085]"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="mb-4 flex items-center justify-between border-b border-[#E0EDFB] dark:border-white/10 pb-3">
+              <div className="mb-4 flex items-center justify-between pb-3">
                 <Link href="/dashboard" aria-label="Dashboard" onClick={() => setMenuOpen(false)}>
                   <BrandLogo height="h-9" />
                 </Link>
@@ -664,7 +659,6 @@ export default function DashboardShell({
                       : item.href === "/dashboard/landing-page"
                         ? (pathname === "/dashboard/landing-page" || pathname === "/dashboard/leadmagnets" || pathname.startsWith("/dashboard/leadmagnets/"))
                         : (pathname === item.href || (item.href !== "/dashboard" && item.href !== "/dashboard/landing-page" && pathname.startsWith(`${item.href}/`)));
-                  const isDividerBeforeMobile = item.href === "/dashboard/linkedin";
                   if (item.isModal) {
                     return (
                       <button
@@ -689,7 +683,6 @@ export default function DashboardShell({
                   }
                   return (
                     <div key={item.href}>
-                      {isDividerBeforeMobile && <div className="my-1.5 border-t border-[#E0EDFB] dark:border-white/10" />}
                       <Link
                         href={item.href}
                         onClick={(e) => {
@@ -724,7 +717,7 @@ export default function DashboardShell({
               </nav>
 
               {/* Bottom Profile Section in Mobile Drawer */}
-              <div ref={mobileDrawerProfileMenuRef} className="pt-3 border-t border-[#E0EDFB] dark:border-white/10 relative">
+              <div ref={mobileDrawerProfileMenuRef} className="pt-3 relative">
                 <AnimatePresence>
                   {showDrawerProfileMenu && (
                     <motion.div
