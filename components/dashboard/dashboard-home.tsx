@@ -285,7 +285,6 @@ export default function DashboardHome({
   const [sequences, setSequences] = useState<Sequence[]>([]);
   const [resources, setResources] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [checklistDismissed, setChecklistDismissed] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [createModalType, setCreateModalType] = useState<"classic" | "locked-pdf" | null>(null);
   const [createMagnetName, setCreateMagnetName] = useState("");
@@ -345,13 +344,6 @@ export default function DashboardHome({
   };
 
   useEffect(() => {
-    // Read persisted dismissal
-    try {
-      if (localStorage.getItem("dashboard_checklist_dismissed") === "true") {
-        setChecklistDismissed(true);
-      }
-    } catch (_) {}
-
     // Instant hydration from localStorage
     const localPages = loadPages();
     const localLeads = loadLeads();
@@ -381,13 +373,6 @@ export default function DashboardHome({
         );
       }
     });
-  }, []);
-
-  const dismissChecklist = useCallback(() => {
-    setChecklistDismissed(true);
-    try {
-      localStorage.setItem("dashboard_checklist_dismissed", "true");
-    } catch (_) {}
   }, []);
 
   // ── Derived KPIs ──────────────────────────────
@@ -497,42 +482,6 @@ export default function DashboardHome({
   // Count-up values
   const countLeads = useCountUp(totalLeads, 900);
   const countViews = useCountUp(totalViews, 900);
-
-  // Onboarding checklist
-  const checklistItems = useMemo(
-    () => [
-      { id: "account", label: "Created your account", done: true, href: undefined },
-      {
-        id: "magnet",
-        label: "Create your first lead magnet",
-        done: pages.length > 0,
-        href: "/dashboard/landing-page",
-      },
-      {
-        id: "live",
-        label: "Publish a magnet live",
-        done: pages.some((p) => p.status === "live"),
-        href: "/dashboard/landing-page",
-      },
-      {
-        id: "sequence",
-        label: "Set up an email sequence",
-        done: sequences.length > 0,
-        href: "/dashboard/sequences/new",
-      },
-      {
-        id: "brand",
-        label: "Set your brand color & logo",
-        done: !!(account?.brandColor && account?.brandColor !== "#0066B2" || account?.logo),
-        href: "/dashboard/brand",
-      },
-    ],
-    [pages, sequences, account]
-  );
-
-  const checklistAllDone = checklistItems.every((c) => c.done);
-  const checklistDoneCount = checklistItems.filter((c) => c.done).length;
-  const showChecklist = !checklistDismissed && !checklistAllDone && !loading;
 
   // ── KPI card definitions ──────────────────
   const kpiCards = [
@@ -1048,112 +997,6 @@ export default function DashboardHome({
 
 
 
-
-          {/* ══════════════════════════════════════════════
-              SECTION 7 — Onboarding Checklist (dismissible)
-          ══════════════════════════════════════════════ */}
-          <AnimatePresence>
-            {showChecklist && (
-              <motion.div
-                variants={fadeUp}
-                initial="hidden"
-                animate="show"
-                exit={{ opacity: 0, y: -8, transition: { duration: 0.2 } }}
-              >
-                <div className="relative rounded-2xl border border-[#0066B2]/20 dark:border-[#38BDF8]/15 overflow-hidden shadow-sm">
-                  {/* Top accent bar */}
-                  <div className="h-0.5 w-full bg-gradient-to-r from-[#0066B2] via-[#38BDF8] to-[#7C3AED]" />
-
-                  <div className="bg-gradient-to-br from-[#F0F7FF] to-white dark:from-[#0066B2]/[0.07] dark:to-[#18181B] px-5 py-5">
-                    {/* Checklist header */}
-                    <div className="flex items-start justify-between gap-4 mb-4">
-                      <div>
-                        <div className="flex items-center gap-2 mb-1">
-                          <Rocket className="h-4 w-4 text-[#0066B2] dark:text-[#38BDF8]" />
-                          <h2 className="text-sm font-bold text-zinc-900 dark:text-white">
-                            Getting Started
-                          </h2>
-                          <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-[#0066B2]/10 dark:bg-[#38BDF8]/20 text-[10px] font-bold text-[#0066B2] dark:text-[#38BDF8]">
-                            {checklistDoneCount}/{checklistItems.length} done
-                          </span>
-                        </div>
-                        <p className="text-[11px] text-zinc-500 dark:text-[#9B9085]">
-                          Complete these steps to get the most out of LeadMagnets.
-                        </p>
-                      </div>
-                      <button
-                        onClick={dismissChecklist}
-                        className="shrink-0 p-1.5 rounded-lg text-zinc-300 dark:text-zinc-600 hover:text-zinc-500 dark:hover:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all"
-                        title="Dismiss checklist"
-                      >
-                        <X className="h-4 w-4" />
-                      </button>
-                    </div>
-
-                    {/* Progress bar */}
-                    <div className="mb-4 h-1 w-full rounded-full bg-zinc-100 dark:bg-zinc-800 overflow-hidden">
-                      <motion.div
-                        initial={{ width: 0 }}
-                        animate={{
-                          width: `${(checklistDoneCount / checklistItems.length) * 100}%`,
-                        }}
-                        transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-                        className="h-full rounded-full bg-gradient-to-r from-[#0066B2] to-[#38BDF8]"
-                      />
-                    </div>
-
-                    {/* Items */}
-                    <div className="space-y-2">
-                      {checklistItems.map((ci) => (
-                        <div
-                          key={ci.id}
-                          className={`flex items-center gap-3 rounded-xl px-3.5 py-2.5 transition-colors ${
-                            ci.done
-                              ? "opacity-55"
-                              : "bg-white/70 dark:bg-white/[0.04] border border-zinc-100/80 dark:border-white/[0.06]"
-                          }`}
-                        >
-                          {/* Checkbox */}
-                          <div
-                            className={`h-5 w-5 shrink-0 rounded-full flex items-center justify-center border-2 transition-all ${
-                              ci.done
-                                ? "bg-emerald-500 border-emerald-500"
-                                : "border-zinc-300 dark:border-zinc-600"
-                            }`}
-                          >
-                            {ci.done && (
-                              <Check className="h-3 w-3 text-white" strokeWidth={3} />
-                            )}
-                          </div>
-
-                          {/* Label */}
-                          <span
-                            className={`flex-1 text-xs font-medium ${
-                              ci.done
-                                ? "line-through text-zinc-400 dark:text-zinc-600"
-                                : "text-zinc-700 dark:text-zinc-300"
-                            }`}
-                          >
-                            {ci.label}
-                          </span>
-
-                          {/* CTA link */}
-                          {!ci.done && ci.href && (
-                            <Link
-                              href={ci.href}
-                              className="shrink-0 text-[10px] font-bold text-[#0066B2] dark:text-[#38BDF8] hover:underline underline-offset-2"
-                            >
-                              Do it →
-                            </Link>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
 
         </motion.div>
       </div>

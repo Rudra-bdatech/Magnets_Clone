@@ -3,21 +3,22 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { FileText, FolderOpen, Users, Sliders, Palette, User, CircleHelp, Menu, X, Search, ChevronRight, HelpCircle, Sun, Moon, Monitor, Bug, Lightbulb, LogOut, BookOpen, Gift, Compass, Send, GitFork, Calendar, Settings, Globe, Mail, Share2, Cpu, Slack, Zap, Link as LinkIcon, BarChart3, PlayCircle, CheckCircle2, ArrowLeft, Sparkles, Rocket, ExternalLink, ListChecks, Loader2, FileLock, Lock, LayoutDashboard, Linkedin } from "lucide-react";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import ThemeToggle from "@/components/theme-toggle";
 import BrandLogo from "@/components/brand";
 import type { Account } from "@/lib/data";
 import { motion, AnimatePresence } from "framer-motion";
 import dynamic from "next/dynamic";
 import { ExpandableScreen, ExpandableScreenTrigger } from "@/components/ui/expandable-screen";
-import { isSessionValid, loadAccount, setSessionExpiry } from "@/lib/store";
+import { isSessionValid, loadAccount, setSessionExpiry, loadPages, loadSequences, loadIntegrations } from "@/lib/store";
+import { computeOnboardingStatus, type OnboardingStatus } from "@/lib/onboarding";
 import { signOut } from "next-auth/react";
 
 const HelpCenterContent = dynamic(() => import("./HelpCenterContent"), {
   ssr: false,
 });
 
-const mobileNav: { href: string; label: string; icon: any; isModal?: boolean }[] = [
+const baseNavItems: { href: string; label: string; icon: any; isModal?: boolean; badge?: string }[] = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/dashboard/leads", label: "Leads", icon: Users },
   { href: "/dashboard/landing-page", label: "Landing Page", icon: FileText },
@@ -242,6 +243,68 @@ export default function DashboardShell({
     };
   }, [pathname, router]);
 
+  const [onboardingStatus, setOnboardingStatus] = useState<OnboardingStatus | null>(null);
+
+  const refreshOnboarding = useCallback(() => {
+    const p = loadPages();
+    const s = loadSequences();
+    const a = loadAccount() || currentAccount;
+    const i = loadIntegrations();
+    setOnboardingStatus(computeOnboardingStatus({ pages: p, sequences: s, account: a, integrations: i }));
+  }, [currentAccount]);
+
+  useEffect(() => {
+    refreshOnboarding();
+
+    const handleStorage = (e: StorageEvent) => {
+      if (
+        e.key === "currentUserPages" ||
+        e.key === "currentUserAccount" ||
+        e.key === "currentUserSequences" ||
+        e.key === "currentUserIntegrations" ||
+        e.key === "leadmagnets_last_sync"
+      ) {
+        refreshOnboarding();
+      }
+    };
+
+    window.addEventListener("storage", handleStorage);
+
+    let bc: BroadcastChannel | null = null;
+    try {
+      if ("BroadcastChannel" in window) {
+        bc = new BroadcastChannel("leadmagnets_live_sync");
+        bc.onmessage = () => {
+          refreshOnboarding();
+        };
+      }
+    } catch (_) {}
+
+    return () => {
+      window.removeEventListener("storage", handleStorage);
+      if (bc) bc.close();
+    };
+  }, [refreshOnboarding]);
+
+  const computedNav = useMemo(() => {
+    const isGetStartedPage = pathname === "/dashboard/get-started";
+    const showGetStarted = isGetStartedPage || (onboardingStatus !== null && !onboardingStatus.isAllCompleted);
+
+    if (!showGetStarted) {
+      return baseNavItems;
+    }
+
+    const getStartedItem: { href: string; label: string; icon: any; isModal?: boolean; badge?: string } = {
+      href: "/dashboard/get-started",
+      label: "Get Started",
+      icon: Rocket,
+      badge: onboardingStatus ? `${onboardingStatus.completedCount}/${onboardingStatus.totalCount}` : undefined,
+    };
+
+    const list = [getStartedItem, ...baseNavItems];
+    return list;
+  }, [onboardingStatus, pathname]);
+
   const rawAccount = currentAccount || account;
   const activeEmail = (typeof window !== "undefined" ? localStorage.getItem("currentUserEmail") : null) || rawAccount?.email || "";
   const displayAccount = {
@@ -290,7 +353,7 @@ export default function DashboardShell({
             aria-label="Dashboard"
             onMouseLeave={() => setHoveredNavHref(null)}
           >
-            {mobileNav.map((item, idx) => {
+            {computedNav.map((item, idx) => {
               const active = activeNavHref
                 ? item.href === activeNavHref
                 : item.href === "/dashboard"
@@ -320,7 +383,14 @@ export default function DashboardShell({
                           />
                         )}
                         <item.icon className="h-4 w-4 shrink-0 relative z-10 text-zinc-500 group-hover:text-zinc-900 dark:text-[#9B9085] dark:group-hover:text-white" aria-hidden="true" />
-                        <span className="flex-1 text-left relative z-10">{item.label}</span>
+                        <span className="flex-1 text-left relative z-10 flex items-center justify-between">
+                          <span>{item.label}</span>
+                          {item.badge && (
+                            <span className="text-[10px] font-bold px-1.5 py-0.2 rounded-full bg-[#0066B2]/10 text-[#0066B2] dark:bg-[#38BDF8]/15 dark:text-[#38BDF8]">
+                              {item.badge}
+                            </span>
+                          )}
+                        </span>
                       </motion.button>
                     </ExpandableScreenTrigger>
                     {isDividerAfter && <div className="my-2.5 border-t border-[#E0EDFB] dark:border-white/10" />}
@@ -365,7 +435,18 @@ export default function DashboardShell({
                         />
                       )}
                       <item.icon className={`h-4 w-4 shrink-0 relative z-10 ${active ? "text-white" : "text-zinc-500 group-hover:text-zinc-900 dark:text-[#9B9085] dark:group-hover:text-white"}`} aria-hidden="true" />
-                      <span className="flex-1 relative z-10">{item.label}</span>
+                      <span className="flex-1 relative z-10 flex items-center justify-between">
+                        <span>{item.label}</span>
+                        {item.badge && (
+                          <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-md ${
+                            active
+                              ? "bg-white/20 text-white"
+                              : "bg-[#0066B2]/10 text-[#0066B2] dark:bg-[#38BDF8]/15 dark:text-[#38BDF8]"
+                          }`}>
+                            {item.badge}
+                          </span>
+                        )}
+                      </span>
                     </Link>
                   </motion.div>
                   {isDividerAfter && <div className="my-2.5 border-t border-[#E0EDFB] dark:border-white/10" />}
@@ -574,7 +655,7 @@ export default function DashboardShell({
 
               {/* Navigation links */}
               <nav className="flex-1 overflow-y-auto space-y-1.5 pr-1" aria-label="Dashboard">
-                {mobileNav.map((item) => {
+                {computedNav.map((item) => {
                   const active = activeNavHref
                     ? item.href === activeNavHref
                     : item.href === "/dashboard"
@@ -594,7 +675,14 @@ export default function DashboardShell({
                         className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition text-zinc-600 hover:bg-[#E2F0FD] hover:text-zinc-900 dark:text-[#9B9085] dark:hover:bg-[#0066B2]/15 dark:hover:text-white cursor-pointer"
                       >
                         <item.icon className="h-4 w-4 shrink-0 text-zinc-500 dark:text-[#9B9085]" aria-hidden="true" />
-                        <span>{item.label}</span>
+                        <span className="flex-1 text-left flex items-center justify-between">
+                          <span>{item.label}</span>
+                          {item.badge && (
+                            <span className="text-[10px] font-bold px-1.5 py-0.2 rounded-full bg-[#0066B2]/10 text-[#0066B2] dark:bg-[#38BDF8]/15 dark:text-[#38BDF8]">
+                              {item.badge}
+                            </span>
+                          )}
+                        </span>
                       </button>
                     );
                   }
@@ -616,7 +704,18 @@ export default function DashboardShell({
                           }`}
                       >
                         <item.icon className={`h-4 w-4 shrink-0 ${active ? "text-white dark:text-[#38BDF8]" : "text-zinc-500 dark:text-[#9B9085]"}`} aria-hidden="true" />
-                        <span>{item.label}</span>
+                        <span className="flex-1 flex items-center justify-between">
+                          <span>{item.label}</span>
+                          {item.badge && (
+                            <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-md ${
+                              active
+                                ? "bg-white/20 text-white"
+                                : "bg-[#0066B2]/10 text-[#0066B2] dark:bg-[#38BDF8]/15 dark:text-[#38BDF8]"
+                            }`}>
+                              {item.badge}
+                            </span>
+                          )}
+                        </span>
                       </Link>
                     </div>
                   );
