@@ -20,6 +20,7 @@ const HelpCenterContent = dynamic(() => import("./HelpCenterContent"), {
 
 const baseNavItems: { href: string; label: string; icon: any; isModal?: boolean; badge?: string }[] = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/dashboard/analytics", label: "Analytics", icon: BarChart3 },
   { href: "/dashboard/leads", label: "Leads", icon: Users },
   { href: "/dashboard/landing-page", label: "Landing Page", icon: FileText },
   { href: "/dashboard/locked-pdf", label: "Locked PDF", icon: Lock },

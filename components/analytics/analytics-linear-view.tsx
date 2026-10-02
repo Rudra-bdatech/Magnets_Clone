@@ -272,7 +272,7 @@ export default function AnalyticsLinearView({
         {/* 1. LINEAR HEADER BAR */}
         <motion.header
           variants={itemVariants}
-          className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-zinc-200/80 dark:border-white/[0.08]"
+          className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2"
         >
           <div className="space-y-1">
             <div className="flex items-center gap-3">
