@@ -350,7 +350,7 @@ export default function DashboardShell({
             </Link>
           </div>
           <nav
-            className="mt-3 flex-1 space-y-1 px-3.5"
+            className="mt-3 flex-1 space-y-1 px-1.5"
             aria-label="Dashboard"
             onMouseLeave={() => setHoveredNavHref(null)}
           >
@@ -374,7 +374,7 @@ export default function DashboardShell({
                         type="button"
                         whileTap={{ scale: 0.97 }}
                         transition={{ type: "spring", stiffness: 600, damping: 28 }}
-                        className="relative group flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors text-zinc-600 dark:text-[#9B9085] dark:hover:text-white cursor-pointer"
+                        className="relative group flex w-full items-center gap-2.5 rounded-lg px-2 py-2 text-sm font-medium transition-colors text-zinc-600 dark:text-[#9B9085] dark:hover:text-white cursor-pointer"
                       >
                         {isHovered && (
                           <motion.div
@@ -408,7 +408,7 @@ export default function DashboardShell({
                   >
                     <Link
                       href={item.href}
-                      className={`relative group flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors cursor-pointer ${active
+                      className={`relative group flex items-center gap-2.5 rounded-lg px-2 py-2 text-sm font-medium transition-colors cursor-pointer ${active
                         ? "text-white font-bold dark:text-white"
                         : "text-zinc-600 dark:text-[#9B9085] dark:hover:text-white"
                         }`}
@@ -455,7 +455,7 @@ export default function DashboardShell({
               );
             })}
           </nav>
-          <div className="border-t border-[#E0EDFB] px-3.5 py-2.5 dark:border-white/10">
+          <div className="border-t border-[#E0EDFB] px-1.5 py-2.5 dark:border-white/10">
             <div ref={profileMenuRef} className="relative">
               {/* Profile Popover Menu */}
               <AnimatePresence>
@@ -673,7 +673,7 @@ export default function DashboardShell({
                           setMenuOpen(false);
                           setShowHelp(true);
                         }}
-                        className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition text-zinc-600 hover:bg-[#E2F0FD] hover:text-zinc-900 dark:text-[#9B9085] dark:hover:bg-[#0066B2]/15 dark:hover:text-white cursor-pointer"
+                        className="flex w-full items-center gap-2 rounded-lg px-2 py-2 text-sm font-medium transition text-zinc-600 hover:bg-[#E2F0FD] hover:text-zinc-900 dark:text-[#9B9085] dark:hover:bg-[#0066B2]/15 dark:hover:text-white cursor-pointer"
                       >
                         <item.icon className="h-4 w-4 shrink-0 text-zinc-500 dark:text-[#9B9085]" aria-hidden="true" />
                         <span className="flex-1 text-left flex items-center justify-between">
@@ -699,7 +699,7 @@ export default function DashboardShell({
                             router.push(item.href);
                           }
                         }}
-                        className={`flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition cursor-pointer ${active
+                        className={`flex items-center gap-2 rounded-lg px-2 py-2 text-sm font-medium transition cursor-pointer ${active
                           ? "bg-[#0066B2] text-white font-bold dark:bg-[#0066B2]/20 dark:text-[#38BDF8]"
                           : "text-zinc-600 hover:bg-[#E2F0FD] hover:text-zinc-900 dark:text-[#9B9085] dark:hover:bg-[#0066B2]/15 dark:hover:text-white"
                           }`}
