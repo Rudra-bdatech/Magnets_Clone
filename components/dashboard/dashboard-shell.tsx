@@ -344,13 +344,13 @@ export default function DashboardShell({
       <div className="dashboard-canvas flex min-h-screen relative">
 
         <aside className="shadow-sm hidden h-screen w-[14.5rem] shrink-0 flex-col border-r border-[#E0EDFB] bg-[#F0F7FF] text-zinc-900 sticky top-0 md:flex z-50 dark:border-white/10 dark:bg-[#18181B] dark:text-[#9B9085]">
-          <div className="flex shrink-0 items-center px-3.5 py-2.5">
+          <div className="flex shrink-0 items-center px-3.5 pt-3 pb-1">
             <Link href="/dashboard" aria-label="Dashboard" className="flex items-center">
               <BrandLogo height="h-9" />
             </Link>
           </div>
           <nav
-            className="mt-3 flex-1 space-y-1 px-1.5"
+            className="mt-1 flex-1 space-y-1 px-1.5"
             aria-label="Dashboard"
             onMouseLeave={() => setHoveredNavHref(null)}
           >
