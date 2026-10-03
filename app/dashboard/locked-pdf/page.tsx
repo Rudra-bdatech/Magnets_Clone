@@ -863,9 +863,6 @@ export default function LockedPdfPage() {
                   Locked PDF
                 </h1>
               </div>
-              <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
-                Upload your document, set free preview pages, configure delivery emails and lead nurture sequences.
-              </p>
             </div>
 
             {/* Actions: Choose Assets, Create Locked PDF */}

@@ -362,7 +362,6 @@ export default function BrandPage() {
                 ?
               </button>
             </h2>
-            <p className="text-xs text-zinc-500 dark:text-[#9B9085] mt-1">Configure logo, color scheme, and appearance of your public pages.</p>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">

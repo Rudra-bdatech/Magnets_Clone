@@ -462,9 +462,6 @@ export default function SequencesPage() {
                   <Check className="h-3 w-3" /> {metrics.liveCount} Active Flows
                 </span>
               </div>
-              <p className="text-xs text-zinc-500 dark:text-[#9B9085] mt-1">
-                Automate email delivery & nurture high-intent leads while the problem is top of mind.
-              </p>
             </div>
 
             <div className="flex items-center gap-2 shrink-0 flex-wrap">

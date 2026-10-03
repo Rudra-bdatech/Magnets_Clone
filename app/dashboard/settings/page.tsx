@@ -596,9 +596,6 @@ export default function AccountSettingsPage() {
                   ?
                 </button>
               </h2>
-              <p className="text-xs text-zinc-500 dark:text-[#9B9085] mt-1">
-                Manage your identity, security, notifications, and workspace resources.
-              </p>
             </div>
           </div>
 

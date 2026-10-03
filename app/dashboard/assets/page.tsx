@@ -579,9 +579,6 @@ export default function ResourcesPage() {
                   <Check className="h-3 w-3" /> Ready for Email Delivery
                 </span>
               </div>
-              <p className="text-xs text-zinc-500 dark:text-[#9B9085] mt-1">
-                Upload lead magnet files once, then seamlessly deliver download links to your leads upon signup.
-              </p>
             </div>
 
             <div className="relative group shrink-0">

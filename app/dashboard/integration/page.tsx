@@ -220,11 +220,6 @@ export default function WorkspaceSetupPage() {
                 ?
               </button>
             </h2>
-            <p className="text-xs text-zinc-500 dark:text-[#9B9085] mt-1">
-              Manage your publishing address,{" "}
-              <span className="text-[#0066B2] font-semibold">email delivery</span>, and{" "}
-              <span className="text-[#0066B2] font-semibold">connections</span>
-            </p>
           </div>
 
           {/* Workspace Essentials banner */}

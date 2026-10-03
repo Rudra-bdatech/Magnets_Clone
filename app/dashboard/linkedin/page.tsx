@@ -779,11 +779,6 @@ export default function LinkedInAutomationPage() {
               <Linkedin className="h-7 w-7 text-[#0A66C2]" />
               LinkedIn Auto-Reply
             </h2>
-            <p className="text-xs text-zinc-500 dark:text-[#9B9085] mt-1">
-              Automatically deliver your lead magnet to anyone who{" "}
-              <span className="text-[#0066B2] font-semibold">comments on your LinkedIn posts</span>.
-              100% In-House Engine with Anti-Ban Protection.
-            </p>
           </div>
 
           {/* â”€â”€ Funnel KPI Cards â”€â”€ */}

@@ -358,9 +358,6 @@ export default function PagesPage() {
                   Landing Page
                 </h1>
               </div>
-              <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
-                Manage landing pages, live lead conversion performance, and direct distribution links.
-              </p>
             </div>
 
             <div className="flex items-center gap-3">
