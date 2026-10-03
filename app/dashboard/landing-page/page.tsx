@@ -126,7 +126,7 @@ const MagnetCard = React.memo(
             </p>
           </div>
 
-          <div className="pt-3 border-t border-zinc-100 dark:border-zinc-800/60 flex items-center justify-between text-xs">
+          <div className="pt-1 flex items-center justify-between text-xs">
             <span className="text-[11px] font-mono text-zinc-400 truncate max-w-[140px]">/{page.slug}</span>
 
             <div className="flex items-center gap-1.5" onClick={(e) => e.stopPropagation()}>
