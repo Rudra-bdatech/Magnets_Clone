@@ -27,8 +27,8 @@ import {
   ChevronDown,
   Pencil
 } from "lucide-react";
-import { syncWithDatabase, loadResources, loadAccount } from "@/lib/store";
-import type { Account } from "@/lib/data";
+import { syncWithDatabase, loadResources, loadAccount, loadPages, loadLeads } from "@/lib/store";
+import type { Account, MagnetPage, Lead } from "@/lib/data";
 
 interface Resource {
   id: string;
@@ -57,6 +57,8 @@ interface UploadProgressState {
 export default function ResourcesPage() {
   const [account, setAccount] = useState<Account | null>(null);
   const [resources, setResources] = useState<Resource[]>([]);
+  const [magnetPages, setMagnetPages] = useState<MagnetPage[]>([]);
+  const [leads, setLeads] = useState<Lead[]>([]);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState<UploadProgressState | null>(null);
@@ -91,18 +93,24 @@ export default function ResourcesPage() {
     // Load local data instantly
     const localResources = loadResources().filter((r: any) => !r.isPageAsset && r.type !== "page_asset");
     const localAccount = loadAccount();
+    const localPages = loadPages();
+    const localLeads = loadLeads();
     if (localResources.length > 0) setResources(localResources);
     if (localAccount) setAccount(localAccount);
+    if (localPages.length > 0) setMagnetPages(localPages);
+    if (localLeads.length > 0) setLeads(localLeads);
     setLoading(false);
 
     // Sync in background silently
     syncWithDatabase().then((data) => {
       if (data) {
-        setAccount(data.account);
+        if (data.account) setAccount(data.account);
         if (data.resources) {
           const filtered = data.resources.filter((r: any) => !r.isPageAsset && r.type !== "page_asset");
           setResources(filtered);
         }
+        if (data.pages) setMagnetPages(data.pages);
+        if (data.leads) setLeads(data.leads);
       }
     });
   }, []);
@@ -526,6 +534,48 @@ export default function ResourcesPage() {
     return Math.min(100, Math.round((totalSizeBytes / maxStorageBytes) * 100));
   }, [totalSizeBytes]);
 
+  // Check which lead magnets link to a given resource
+  const getResourceLinkedPages = useCallback(
+    (resId: string) => {
+      return magnetPages.filter(
+        (p) =>
+          p.resourceId === resId ||
+          (p.assetUrl && p.assetUrl.includes(resId)) ||
+          (p.emailBody && p.emailBody.includes(resId)) ||
+          p.id === resId ||
+          (p.pdfUrl && p.pdfUrl.includes(resId))
+      );
+    },
+    [magnetPages]
+  );
+
+  // Calculate linked magnets statistics
+  const linkedStats = useMemo(() => {
+    let linkedCount = 0;
+    resources.forEach((r) => {
+      const isLinked = magnetPages.some((p) =>
+        p.resourceId === r.id ||
+        (p.assetUrl && p.assetUrl.includes(r.id)) ||
+        (p.emailBody && p.emailBody.includes(r.id)) ||
+        p.id === r.id ||
+        (p.pdfUrl && p.pdfUrl.includes(r.id))
+      );
+      if (isLinked) linkedCount++;
+    });
+    const unlinkedCount = Math.max(0, resources.length - linkedCount);
+    return { linkedCount, unlinkedCount };
+  }, [resources, magnetPages]);
+
+  // Calculate total deliveries from leads data
+  const totalDeliveries = useMemo(() => {
+    return leads.filter((l) => {
+      if (l.status === "delivered" || l.status === "completed" || l.status === "opened" || l.status === "replied") return true;
+      const page = magnetPages.find((p) => p.id === l.pageId || p.name === l.page);
+      if (page && (page.resourceId || page.assetUrl || page.template === "locked-pdf")) return true;
+      return false;
+    }).length;
+  }, [leads, magnetPages]);
+
   const filteredResources = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
     return resources
@@ -613,24 +663,33 @@ export default function ResourcesPage() {
             </div>
           </div>
 
-          {/* Premium Overview Metrics Bar */}
-          <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
-            <div className="rounded-2xl border border-zinc-200/80 bg-white/80 p-4 backdrop-blur-sm dark:border-[#2e2e38] dark:bg-[#18181B]/80 shadow-sm flex items-center gap-3">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#EFF6FF] text-[#0066B2] dark:bg-[#0066B2]/20 dark:text-[#38BDF8]">
+          {/* Premium Overview Metrics Bar (Production 4-Card Responsive Grid) */}
+          <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {/* 1. Total Resources */}
+            <div className="rounded-2xl border border-zinc-200/80 bg-white/80 p-4 backdrop-blur-sm dark:border-[#2e2e38] dark:bg-[#18181B]/80 shadow-sm flex items-center gap-3.5 transition-all hover:border-zinc-300 dark:hover:border-[#3e3e4a]">
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-indigo-500/30 bg-indigo-50 text-indigo-600 dark:border-indigo-500/30 dark:bg-indigo-500/20 dark:text-indigo-400">
                 <Layers className="h-5 w-5" />
               </div>
-              <div>
-                <p className="text-[11px] font-semibold text-zinc-500 dark:text-[#9B9085] uppercase tracking-wider">Total Resources</p>
-                <p className="text-xl font-bold text-zinc-900 dark:text-white mt-0.5">{resources.length} {resources.length === 1 ? "File" : "Files"}</p>
+              <div className="min-w-0">
+                <p className="text-[11px] font-bold uppercase tracking-wider text-zinc-500 dark:text-[#9B9085] truncate">Total Resources</p>
+                <div className="flex items-baseline gap-2 mt-0.5">
+                  <p className="text-2xl font-bold text-zinc-900 dark:text-white leading-none">{resources.length}</p>
+                  <span className="text-[11px] font-medium text-zinc-400 dark:text-zinc-500 hidden xl:inline">
+                    {resources.length === 1 ? "file hosted" : "files hosted"}
+                  </span>
+                </div>
               </div>
             </div>
 
-            <div className="rounded-2xl border border-zinc-200/80 bg-white/80 p-4 backdrop-blur-sm dark:border-[#2e2e38] dark:bg-[#18181B]/80 shadow-sm flex flex-col justify-center">
+            {/* 2. Storage Used */}
+            <div className="rounded-2xl border border-zinc-200/80 bg-white/80 p-4 backdrop-blur-sm dark:border-[#2e2e38] dark:bg-[#18181B]/80 shadow-sm flex flex-col justify-center transition-all hover:border-zinc-300 dark:hover:border-[#3e3e4a]">
               <div className="flex items-center justify-between">
-                <p className="text-[11px] font-semibold text-zinc-500 dark:text-[#9B9085] uppercase tracking-wider flex items-center gap-1.5">
+                <p className="text-[11px] font-bold uppercase tracking-wider text-zinc-500 dark:text-[#9B9085] truncate flex items-center gap-1.5">
                   <HardDrive className="h-3.5 w-3.5 text-[#0066B2]" /> Storage Used
                 </p>
-                <span className="text-xs font-bold text-zinc-700 dark:text-zinc-300">{formatBytes(totalSizeBytes)}</span>
+                <span className="text-xs font-bold text-zinc-700 dark:text-zinc-300">
+                  {formatBytes(totalSizeBytes)} <span className="font-normal text-zinc-400 dark:text-zinc-500">/ 500 MB</span>
+                </span>
               </div>
               <div className="mt-2.5 h-2 w-full overflow-hidden rounded-full bg-zinc-100 dark:bg-[#25252A]">
                 <div
@@ -638,17 +697,39 @@ export default function ResourcesPage() {
                   style={{ width: `${Math.max(storagePercentage, 2)}%` }}
                 />
               </div>
+              <div className="mt-1.5 flex items-center justify-between text-[10px] text-zinc-400 dark:text-zinc-500">
+                <span>{storagePercentage}% used</span>
+                <span>{Math.max(0, 500 - Math.round(totalSizeBytes / (1024 * 1024)))} MB free</span>
+              </div>
             </div>
 
-            <div className="rounded-2xl border border-zinc-200/80 bg-white/80 p-4 backdrop-blur-sm dark:border-[#2e2e38] dark:bg-[#18181B]/80 shadow-sm flex items-center gap-3">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+            {/* 3. Active in Magnets */}
+            <div className="rounded-2xl border border-zinc-200/80 bg-white/80 p-4 backdrop-blur-sm dark:border-[#2e2e38] dark:bg-[#18181B]/80 shadow-sm flex items-center gap-3.5 transition-all hover:border-zinc-300 dark:hover:border-[#3e3e4a]">
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-sky-500/30 bg-sky-50 text-sky-600 dark:border-sky-500/30 dark:bg-sky-500/20 dark:text-sky-400">
+                <Link2 className="h-5 w-5" />
+              </div>
+              <div className="min-w-0">
+                <p className="text-[11px] font-bold uppercase tracking-wider text-zinc-500 dark:text-[#9B9085] truncate">Active In Magnets</p>
+                <div className="flex items-baseline gap-2 mt-0.5">
+                  <p className="text-2xl font-bold text-zinc-900 dark:text-white leading-none">{linkedStats.linkedCount}</p>
+                  <span className="text-[11px] font-medium text-zinc-400 dark:text-zinc-500 hidden xl:inline">
+                    {linkedStats.unlinkedCount > 0 ? `${linkedStats.unlinkedCount} unlinked` : "all connected"}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* 4. Total Deliveries */}
+            <div className="rounded-2xl border border-zinc-200/80 bg-white/80 p-4 backdrop-blur-sm dark:border-[#2e2e38] dark:bg-[#18181B]/80 shadow-sm flex items-center gap-3.5 transition-all hover:border-zinc-300 dark:hover:border-[#3e3e4a]">
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-emerald-500/30 bg-emerald-50 text-emerald-600 dark:border-emerald-500/30 dark:bg-emerald-500/20 dark:text-emerald-400">
                 <Send className="h-5 w-5" />
               </div>
-              <div>
-                <p className="text-[11px] font-semibold text-zinc-500 dark:text-[#9B9085] uppercase tracking-wider">Email Delivery Status</p>
-                <p className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 mt-0.5 flex items-center gap-1">
-                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" /> Active & Automated
-                </p>
+              <div className="min-w-0">
+                <p className="text-[11px] font-bold uppercase tracking-wider text-zinc-500 dark:text-[#9B9085] truncate">Total Deliveries</p>
+                <div className="flex items-baseline gap-2 mt-0.5">
+                  <p className="text-2xl font-bold text-zinc-900 dark:text-white leading-none">{totalDeliveries}</p>
+                  <span className="text-[11px] font-medium text-zinc-400 dark:text-zinc-500 hidden xl:inline">sent to leads</span>
+                </div>
               </div>
             </div>
           </div>
@@ -870,6 +951,7 @@ export default function ResourcesPage() {
                           const badge = getFileBadge(resource.name);
                           const isCopied = copiedId === resource.id;
                           const isSelected = selectedResourceIds.includes(resource.id);
+                          const linkedPages = getResourceLinkedPages(resource.id);
 
                           return (
                             <tr key={resource.id} className={`transition-colors ${isSelected ? "bg-[#EFF6FF] dark:bg-[#0066B2]/10" : "hover:bg-[#EFF6FF]/40 dark:hover:bg-[#1C1C22]/60"}`}>
@@ -925,24 +1007,38 @@ export default function ResourcesPage() {
                                         </button>
                                       </div>
                                     ) : (
-                                      <div className="group/title flex items-center gap-2">
-                                        <p
-                                          onDoubleClick={() => startRenaming(resource)}
-                                          className="text-sm font-semibold text-zinc-900 dark:text-white truncate max-w-xs md:max-w-md cursor-pointer hover:text-[#0066B2] dark:hover:text-[#38BDF8] transition-colors"
-                                          title="Double-click or click pencil to rename"
-                                        >
-                                          {resource.name}
-                                        </p>
-                                        <button
-                                          onClick={() => startRenaming(resource)}
-                                          className="opacity-0 group-hover/title:opacity-100 p-1 text-zinc-400 hover:text-[#0066B2] dark:hover:text-[#38BDF8] transition cursor-pointer rounded-md hover:bg-zinc-100 dark:hover:bg-zinc-800 shrink-0"
-                                          title="Rename asset"
-                                        >
-                                          <Pencil className="h-3 w-3" />
-                                        </button>
-                                        <span className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider shrink-0">
-                                          {badge.ext}
-                                        </span>
+                                      <div>
+                                        <div className="group/title flex items-center gap-2">
+                                          <p
+                                            onDoubleClick={() => startRenaming(resource)}
+                                            className="text-sm font-semibold text-zinc-900 dark:text-white truncate max-w-xs md:max-w-md cursor-pointer hover:text-[#0066B2] dark:hover:text-[#38BDF8] transition-colors"
+                                            title="Double-click or click pencil to rename"
+                                          >
+                                            {resource.name}
+                                          </p>
+                                          <button
+                                            onClick={() => startRenaming(resource)}
+                                            className="opacity-0 group-hover/title:opacity-100 p-1 text-zinc-400 hover:text-[#0066B2] dark:hover:text-[#38BDF8] transition cursor-pointer rounded-md hover:bg-zinc-100 dark:hover:bg-zinc-800 shrink-0"
+                                            title="Rename asset"
+                                          >
+                                            <Pencil className="h-3 w-3" />
+                                          </button>
+                                          <span className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider shrink-0">
+                                            {badge.ext}
+                                          </span>
+                                        </div>
+                                        <div className="flex items-center gap-1.5 mt-0.5">
+                                          {linkedPages.length > 0 ? (
+                                            <span className="inline-flex items-center gap-1 text-[11px] font-medium text-sky-600 dark:text-sky-400 truncate max-w-xs">
+                                              <Link2 className="h-3 w-3 shrink-0" />
+                                              <span>{linkedPages.length === 1 ? `Attached to "${linkedPages[0].name}"` : `Attached to ${linkedPages.length} magnets`}</span>
+                                            </span>
+                                          ) : (
+                                            <span className="inline-flex items-center gap-1 text-[11px] font-normal text-zinc-400 dark:text-zinc-500">
+                                              Unlinked
+                                            </span>
+                                          )}
+                                        </div>
                                       </div>
                                     )}
                                   </div>

@@ -12,7 +12,6 @@ import {
 } from "@/lib/domain-verify";
 
 import { DomainSection } from "@/components/integration/DomainSection";
-import { EmailSchedulingSection } from "@/components/integration/EmailSchedulingSection";
 import { AutomationsSection } from "@/components/integration/AutomationsSection";
 import { AnalyticsSection } from "@/components/integration/AnalyticsSection";
 import { BrandingSection } from "@/components/integration/BrandingSection";
@@ -68,8 +67,6 @@ export default function WorkspaceSetupPage() {
     "public-url": true,
     "custom-domain": true,
     "connections": false,
-    "sender-domain": false,
-    "calendar-booking": false,
     "slack-webhook": false,
     "zapier-webhook": false,
     "pipedrive-webhook": false,
@@ -302,7 +299,7 @@ export default function WorkspaceSetupPage() {
               addToast={addToast}
             />
 
-            {/* 2. Optional connections wrapper (Email & Scheduling + Automations) */}
+            {/* 2. Optional connections wrapper (Automations) */}
             <div id="connections-section" className="rounded-2xl border border-[#0066B2]/30 bg-white dark:border-[#0066B2]/35 dark:bg-[#18181B] shadow-sm transition-colors overflow-hidden">
               <button
                 type="button"
@@ -314,15 +311,15 @@ export default function WorkspaceSetupPage() {
                     <Plug className="h-4.5 w-4.5" />
                   </div>
                   <div>
-                    <h4 className="text-[14.2px] font-bold text-zinc-900 dark:text-white">Optional connections</h4>
+                    <h4 className="text-[14.2px] font-bold text-zinc-900 dark:text-white">Optional automations</h4>
                     <p className="text-xs text-zinc-500 dark:text-[#9B9085] mt-0.5">
-                      Your page and first email work without these. Add a connection only when it helps your workflow.
+                      Sync new signups directly to your external tools (Slack, Zapier, Kit, Pipedrive, Substack).
                     </p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2.5 shrink-0">
                   <span className="rounded-full border border-[#BBF7D0] bg-[#DCFCE7] px-2.5 py-0.5 text-[11px] font-semibold text-[#16a34a] dark:border-emerald-700/50 dark:bg-emerald-950/40 dark:text-emerald-400">
-                    Email ready
+                    Ready
                   </span>
                   <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-[#E2E8F0] bg-white text-zinc-500 shadow-sm dark:border-[#2e2e38] dark:bg-[#18181B] dark:text-[#9B9085]">
                     <ChevronDown className={`h-3.5 w-3.5 transition-transform ${openSections["connections"] ? "rotate-180" : ""}`} />
@@ -331,18 +328,6 @@ export default function WorkspaceSetupPage() {
               </button>
               {openSections["connections"] && (
                 <div className="border-t border-[#E2E8F0] bg-white dark:border-[#2e2e38] dark:bg-[#0E0E10]/50 px-5 py-5 space-y-6">
-                  {/* Email and Calendar scheduling sub-section */}
-                  <EmailSchedulingSection
-                    account={account}
-                    setAccount={setAccount}
-                    appBaseUrl={appBaseUrl}
-                    openSections={openSections}
-                    toggle={toggle}
-                    markDirty={markDirty}
-                    handleSave={handleSave}
-                    addToast={addToast}
-                  />
-
                   {/* Automations (Slack, Zapier, Pipedrive, Kit, Substack) */}
                   <AutomationsSection
                     account={account}

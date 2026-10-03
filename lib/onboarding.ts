@@ -43,17 +43,6 @@ export function computeOnboardingStatus({
     account?.customDomain
   );
 
-  const hasIntegration = Boolean(
-    account?.kitConnected ||
-    account?.zapierWebhookUrl ||
-    account?.slackWebhookUrl ||
-    account?.ga4MeasurementId ||
-    account?.metaPixelId ||
-    account?.linkedinConnected ||
-    account?.calendarConnected ||
-    integrations?.some((i) => i.connected)
-  );
-
   const steps: OnboardingStep[] = [
     {
       id: "create-magnet",
@@ -94,16 +83,6 @@ export function computeOnboardingStatus({
       href: "/dashboard/brand",
       category: "Identity",
       iconName: "Palette",
-    },
-    {
-      id: "connect-integration",
-      title: "Connect an Integration or LinkedIn",
-      description: "Sync captured leads to Kit, Zapier, Webhooks, or enable LinkedIn Auto-Reply.",
-      done: hasIntegration,
-      ctaText: hasIntegration ? "Manage Integrations" : "Connect Tools",
-      href: "/dashboard/integration",
-      category: "Automation",
-      iconName: "Sliders",
     },
   ];
 

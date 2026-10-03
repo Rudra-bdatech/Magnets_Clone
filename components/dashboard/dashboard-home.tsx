@@ -664,7 +664,7 @@ export default function DashboardHome({
                 </div>
 
                 {/* Performance stats grid */}
-                <div className="grid grid-cols-3 gap-2 mt-4 pt-4 border-t border-blue-100 dark:border-blue-900/30">
+                <div className="grid grid-cols-3 gap-2 mt-4">
                   <div className="p-2.5 rounded-xl bg-white/80 dark:bg-black/20 border border-blue-100/60 dark:border-blue-900/20">
                     <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-[#9B9085]">
                       Views
@@ -740,7 +740,7 @@ export default function DashboardHome({
                 </div>
 
                 {/* Performance stats grid */}
-                <div className="grid grid-cols-3 gap-2 mt-4 pt-4 border-t border-amber-100 dark:border-amber-900/30">
+                <div className="grid grid-cols-3 gap-2 mt-4">
                   <div className="p-2.5 rounded-xl bg-white/80 dark:bg-black/20 border border-amber-100/60 dark:border-amber-900/20">
                     <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-[#9B9085]">
                       Views
