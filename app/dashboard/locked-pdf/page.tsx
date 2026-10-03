@@ -825,20 +825,8 @@ export default function LockedPdfPage() {
               </p>
             </div>
 
-            {/* Actions: Save Status Badge, Choose Assets, Create Locked PDF */}
+            {/* Actions: Choose Assets, Create Locked PDF */}
             <div className="flex items-center gap-3 shrink-0">
-              {saveStatus === "saving" ? (
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 shadow-2xs">
-                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                  <span>Saving changes...</span>
-                </span>
-              ) : (
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 shadow-2xs">
-                  <CheckCircle2 className="h-3.5 w-3.5" />
-                  <span>All changes saved</span>
-                </span>
-              )}
-
               <button
                 type="button"
                 onClick={() => {
@@ -1133,7 +1121,7 @@ export default function LockedPdfPage() {
                           </div>
 
                           {/* Bottom Action Row */}
-                          <div className="pt-2 border-t border-zinc-100 dark:border-zinc-800/60 flex items-center justify-between gap-1.5">
+                          <div className="pt-1 flex items-center justify-between gap-1.5">
                             <button
                               type="button"
                               onClick={(e) => {
