@@ -461,10 +461,11 @@ export default function DashboardShell({
                     exit={{ opacity: 0, scale: 0.95, y: 4 }}
                     transition={{ duration: 0.15, ease: [0.16, 1, 0.3, 1] }}
                     style={{ transformOrigin: "bottom left" }}
-                    className="absolute bottom-full mb-2 left-0 w-52 rounded-xl border border-[#E0EDFB] bg-white p-1.5 shadow-xl z-[70] text-zinc-900 flex flex-col gap-0.5 dark:border-zinc-800/80 dark:bg-[#18181b] dark:text-white dark:shadow-[0_8px_30px_rgb(0,0,0,0.5)]"
+                    className="absolute bottom-full mb-2 left-0 w-56 rounded-2xl border border-zinc-200/80 bg-white/95 p-1.5 shadow-2xl backdrop-blur-md z-[70] text-zinc-900 flex flex-col gap-0.5 dark:border-zinc-800/90 dark:bg-[#18181b]/95 dark:text-white dark:shadow-[0_12px_36px_-6px_rgba(0,0,0,0.6),0_0_0_1px_rgba(255,255,255,0.06)]"
                     onClick={(e) => e.stopPropagation()}
                   >
-                    <div className="relative flex items-center justify-between p-1 bg-zinc-100 dark:bg-zinc-800/70 rounded-xl border border-zinc-200/80 dark:border-zinc-700/50 my-0.5 select-none">
+                    {/* Theme Switcher Segmented Control */}
+                    <div className="relative flex items-center justify-between p-1 bg-zinc-100/90 dark:bg-zinc-900/80 rounded-xl border border-zinc-200/80 dark:border-zinc-800/90 mb-1 select-none">
                       {(["light", "dark", "system"] as const).map((mode) => {
                         const Icon = mode === "light" ? Sun : mode === "dark" ? Moon : Monitor;
                         const isActive = themeMode === mode;
@@ -483,17 +484,19 @@ export default function DashboardShell({
                               <motion.div
                                 layoutId="activeThemePillSidebar"
                                 transition={{ type: "spring", stiffness: 450, damping: 35 }}
-                                className="absolute inset-0 bg-white dark:bg-zinc-900 rounded-lg shadow-sm"
+                                className="absolute inset-0.5 bg-white dark:bg-zinc-800/90 rounded-[9px] shadow-sm border border-black/[0.04] dark:border-white/[0.08]"
                               />
                             )}
                             <span className="relative z-10 flex items-center justify-center">
-                              <Icon className="h-4 w-4" />
+                              <Icon className="h-3.5 w-3.5" strokeWidth={1.85} />
                             </span>
                           </button>
                         );
                       })}
                     </div>
+
                     <div onMouseLeave={() => setHoveredProfileMenuKey(null)} className="flex flex-col gap-0.5">
+                      {/* Account / User Section */}
                       <motion.button
                         type="button"
                         whileTap={{ scale: 0.97 }}
@@ -503,19 +506,25 @@ export default function DashboardShell({
                           setShowProfileMenu(false);
                           router.push("/dashboard/settings");
                         }}
-                        className="relative flex items-center gap-2.5 rounded-lg px-3 py-2 text-left text-xs font-medium text-zinc-600 transition-colors w-full dark:text-zinc-400 dark:hover:text-white cursor-pointer"
+                        className="relative flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-left text-xs font-medium text-zinc-600 transition-colors w-full dark:text-zinc-400 dark:hover:text-white cursor-pointer"
                       >
                         {hoveredProfileMenuKey === "account" && (
                           <motion.div
                             layoutId="profileMenuHoverPill"
                             transition={{ type: "spring", stiffness: 500, damping: 32 }}
-                            className="absolute inset-0 rounded-lg bg-[#E2F0FD] dark:bg-zinc-800"
+                            className="absolute inset-0 rounded-lg bg-[#E2F0FD] dark:bg-zinc-800/80"
                           />
                         )}
-                        <User className="h-4 w-4 relative z-10 text-zinc-500 dark:text-zinc-400" />
+                        <span className="relative z-10 flex h-4 w-4 shrink-0 items-center justify-center">
+                          <User className="h-4 w-4 text-zinc-500 dark:text-zinc-400" strokeWidth={1.85} />
+                        </span>
                         <span className="relative z-10">Account</span>
                       </motion.button>
 
+                      {/* Semantic Divider between Account and Support */}
+                      <div className="my-1 border-t border-zinc-100 dark:border-zinc-800/70" />
+
+                      {/* Support & Feedback Section */}
                       <motion.button
                         type="button"
                         whileTap={{ scale: 0.97 }}
@@ -525,16 +534,18 @@ export default function DashboardShell({
                           setShowProfileMenu(false);
                           setShowHelp(true);
                         }}
-                        className="relative flex items-center gap-2.5 rounded-lg px-3 py-2 text-left text-xs font-medium text-zinc-600 transition-colors w-full dark:text-zinc-400 dark:hover:text-white cursor-pointer"
+                        className="relative flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-left text-xs font-medium text-zinc-600 transition-colors w-full dark:text-zinc-400 dark:hover:text-white cursor-pointer"
                       >
                         {hoveredProfileMenuKey === "help" && (
                           <motion.div
                             layoutId="profileMenuHoverPill"
                             transition={{ type: "spring", stiffness: 500, damping: 32 }}
-                            className="absolute inset-0 rounded-lg bg-[#E2F0FD] dark:bg-zinc-800"
+                            className="absolute inset-0 rounded-lg bg-[#E2F0FD] dark:bg-zinc-800/80"
                           />
                         )}
-                        <CircleHelp className="h-4 w-4 relative z-10 text-zinc-500 dark:text-zinc-400" />
+                        <span className="relative z-10 flex h-4 w-4 shrink-0 items-center justify-center">
+                          <CircleHelp className="h-4 w-4 text-zinc-500 dark:text-zinc-400" strokeWidth={1.85} />
+                        </span>
                         <span className="relative z-10">Help</span>
                       </motion.button>
 
@@ -547,16 +558,18 @@ export default function DashboardShell({
                           openGmailCompose("bug");
                           setShowProfileMenu(false);
                         }}
-                        className="relative flex items-center gap-2.5 rounded-lg px-3 py-2 text-left text-xs font-medium text-zinc-600 transition-colors w-full dark:text-zinc-400 dark:hover:text-white cursor-pointer"
+                        className="relative flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-left text-xs font-medium text-zinc-600 transition-colors w-full dark:text-zinc-400 dark:hover:text-white cursor-pointer"
                       >
                         {hoveredProfileMenuKey === "bug" && (
                           <motion.div
                             layoutId="profileMenuHoverPill"
                             transition={{ type: "spring", stiffness: 500, damping: 32 }}
-                            className="absolute inset-0 rounded-lg bg-[#E2F0FD] dark:bg-zinc-800"
+                            className="absolute inset-0 rounded-lg bg-[#E2F0FD] dark:bg-zinc-800/80"
                           />
                         )}
-                        <Bug className="h-4 w-4 relative z-10 text-zinc-500 dark:text-zinc-400" />
+                        <span className="relative z-10 flex h-4 w-4 shrink-0 items-center justify-center">
+                          <Bug className="h-4 w-4 text-zinc-500 dark:text-zinc-400" strokeWidth={1.85} />
+                        </span>
                         <span className="relative z-10">Report a bug</span>
                       </motion.button>
 
@@ -569,21 +582,24 @@ export default function DashboardShell({
                           openGmailCompose("feature");
                           setShowProfileMenu(false);
                         }}
-                        className="relative flex items-center gap-2.5 rounded-lg px-3 py-2 text-left text-xs font-medium text-zinc-600 transition-colors w-full dark:text-zinc-400 dark:hover:text-white cursor-pointer"
+                        className="relative flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-left text-xs font-medium text-zinc-600 transition-colors w-full dark:text-zinc-400 dark:hover:text-white cursor-pointer"
                       >
                         {hoveredProfileMenuKey === "feature" && (
                           <motion.div
                             layoutId="profileMenuHoverPill"
                             transition={{ type: "spring", stiffness: 500, damping: 32 }}
-                            className="absolute inset-0 rounded-lg bg-[#E2F0FD] dark:bg-zinc-800"
+                            className="absolute inset-0 rounded-lg bg-[#E2F0FD] dark:bg-zinc-800/80"
                           />
                         )}
-                        <Sparkles className="h-4 w-4 relative z-10 text-zinc-500 dark:text-zinc-400" />
+                        <span className="relative z-10 flex h-4 w-4 shrink-0 items-center justify-center">
+                          <Sparkles className="h-4 w-4 text-zinc-500 dark:text-zinc-400" strokeWidth={1.85} />
+                        </span>
                         <span className="relative z-10">Request a feature</span>
                       </motion.button>
                     </div>
 
-                    <div className="my-1 border-t border-zinc-100 dark:border-zinc-800" />
+                    {/* Divider before Destructive Action */}
+                    <div className="my-1 border-t border-zinc-100 dark:border-zinc-800/70" />
 
                     <motion.button
                       type="button"
@@ -593,9 +609,12 @@ export default function DashboardShell({
                         setShowProfileMenu(false);
                         handleLogout();
                       }}
-                      className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-left text-xs font-semibold text-rose-600 hover:bg-rose-50 transition-colors w-full dark:text-rose-400 dark:hover:bg-rose-950/30 cursor-pointer"
+                      className="flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-left text-xs font-medium text-rose-600 hover:bg-rose-50/80 transition-colors w-full dark:text-rose-400 dark:hover:bg-rose-950/30 cursor-pointer"
                     >
-                      <LogOut className="h-4 w-4 text-rose-500" /> Sign out
+                      <span className="flex h-4 w-4 shrink-0 items-center justify-center">
+                        <LogOut className="h-4 w-4 text-rose-500 dark:text-rose-400" strokeWidth={1.85} />
+                      </span>
+                      <span>Sign out</span>
                     </motion.button>
                   </motion.div>
                 )}
@@ -726,10 +745,11 @@ export default function DashboardShell({
                       exit={{ opacity: 0, scale: 0.95, y: 4 }}
                       transition={{ duration: 0.15, ease: [0.16, 1, 0.3, 1] }}
                       style={{ transformOrigin: "bottom left" }}
-                      className="absolute bottom-full mb-2 left-0 w-full rounded-xl border border-[#E0EDFB] bg-white p-1.5 shadow-xl z-50 text-zinc-900 flex flex-col gap-0.5 dark:border-zinc-800 dark:bg-[#18181b] dark:text-white"
+                      className="absolute bottom-full mb-2 left-0 w-full rounded-2xl border border-zinc-200/80 bg-white/95 p-1.5 shadow-2xl backdrop-blur-md z-50 text-zinc-900 flex flex-col gap-0.5 dark:border-zinc-800/90 dark:bg-[#18181b]/95 dark:text-white dark:shadow-[0_12px_36px_-6px_rgba(0,0,0,0.6),0_0_0_1px_rgba(255,255,255,0.06)]"
                       onClick={(e) => e.stopPropagation()}
                     >
-                      <div className="relative flex items-center justify-between p-1 bg-zinc-100 dark:bg-zinc-800/70 rounded-xl border border-zinc-200/80 dark:border-zinc-700/50 my-0.5 select-none">
+                      {/* Theme Switcher Segmented Control */}
+                      <div className="relative flex items-center justify-between p-1 bg-zinc-100/90 dark:bg-zinc-900/80 rounded-xl border border-zinc-200/80 dark:border-zinc-800/90 mb-1 select-none">
                         {(["light", "dark", "system"] as const).map((mode) => {
                           const Icon = mode === "light" ? Sun : mode === "dark" ? Moon : Monitor;
                           const isActive = themeMode === mode;
@@ -748,11 +768,11 @@ export default function DashboardShell({
                                 <motion.div
                                   layoutId="activeThemePillDrawer"
                                   transition={{ type: "spring", stiffness: 450, damping: 35 }}
-                                  className="absolute inset-0 bg-white dark:bg-zinc-900 rounded-lg shadow-sm"
+                                  className="absolute inset-0.5 bg-white dark:bg-zinc-800/90 rounded-[9px] shadow-sm border border-black/[0.04] dark:border-white/[0.08]"
                                 />
                               )}
                               <span className="relative z-10 flex items-center justify-center">
-                                <Icon className="h-4 w-4" />
+                                <Icon className="h-3.5 w-3.5" strokeWidth={1.85} />
                               </span>
                             </button>
                           );
@@ -760,6 +780,7 @@ export default function DashboardShell({
                       </div>
 
                       <div className="flex flex-col gap-0.5">
+                        {/* Account / User Section */}
                         <button
                           type="button"
                           onClick={() => {
@@ -767,12 +788,18 @@ export default function DashboardShell({
                             setMenuOpen(false);
                             router.push("/dashboard/settings");
                           }}
-                          className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-left text-xs font-medium text-zinc-600 hover:bg-[#E2F0FD] hover:text-zinc-900 transition-colors w-full dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-white cursor-pointer"
+                          className="flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-left text-xs font-medium text-zinc-600 hover:bg-[#E2F0FD] hover:text-zinc-900 transition-colors w-full dark:text-zinc-400 dark:hover:bg-zinc-800/80 dark:hover:text-white cursor-pointer"
                         >
-                          <User className="h-4 w-4 text-zinc-500 dark:text-zinc-400" />
+                          <span className="flex h-4 w-4 shrink-0 items-center justify-center">
+                            <User className="h-4 w-4 text-zinc-500 dark:text-zinc-400" strokeWidth={1.85} />
+                          </span>
                           <span>Account</span>
                         </button>
 
+                        {/* Semantic Divider between Account and Support */}
+                        <div className="my-1 border-t border-zinc-100 dark:border-zinc-800/70" />
+
+                        {/* Support & Feedback Section */}
                         <button
                           type="button"
                           onClick={() => {
@@ -780,9 +807,11 @@ export default function DashboardShell({
                             setMenuOpen(false);
                             setShowHelp(true);
                           }}
-                          className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-left text-xs font-medium text-zinc-600 hover:bg-[#E2F0FD] hover:text-zinc-900 transition-colors w-full dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-white cursor-pointer"
+                          className="flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-left text-xs font-medium text-zinc-600 hover:bg-[#E2F0FD] hover:text-zinc-900 transition-colors w-full dark:text-zinc-400 dark:hover:bg-zinc-800/80 dark:hover:text-white cursor-pointer"
                         >
-                          <CircleHelp className="h-4 w-4 text-zinc-500 dark:text-zinc-400" />
+                          <span className="flex h-4 w-4 shrink-0 items-center justify-center">
+                            <CircleHelp className="h-4 w-4 text-zinc-500 dark:text-zinc-400" strokeWidth={1.85} />
+                          </span>
                           <span>Help</span>
                         </button>
 
@@ -792,9 +821,11 @@ export default function DashboardShell({
                             setShowDrawerProfileMenu(false);
                             openGmailCompose("bug");
                           }}
-                          className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-left text-xs font-medium text-zinc-600 hover:bg-[#E2F0FD] hover:text-zinc-900 transition-colors w-full dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-white cursor-pointer"
+                          className="flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-left text-xs font-medium text-zinc-600 hover:bg-[#E2F0FD] hover:text-zinc-900 transition-colors w-full dark:text-zinc-400 dark:hover:bg-zinc-800/80 dark:hover:text-white cursor-pointer"
                         >
-                          <Bug className="h-4 w-4 text-zinc-500 dark:text-zinc-400" />
+                          <span className="flex h-4 w-4 shrink-0 items-center justify-center">
+                            <Bug className="h-4 w-4 text-zinc-500 dark:text-zinc-400" strokeWidth={1.85} />
+                          </span>
                           <span>Report a bug</span>
                         </button>
 
@@ -804,14 +835,17 @@ export default function DashboardShell({
                             setShowDrawerProfileMenu(false);
                             openGmailCompose("feature");
                           }}
-                          className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-left text-xs font-medium text-zinc-600 hover:bg-[#E2F0FD] hover:text-zinc-900 transition-colors w-full dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-white cursor-pointer"
+                          className="flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-left text-xs font-medium text-zinc-600 hover:bg-[#E2F0FD] hover:text-zinc-900 transition-colors w-full dark:text-zinc-400 dark:hover:bg-zinc-800/80 dark:hover:text-white cursor-pointer"
                         >
-                          <Sparkles className="h-4 w-4 text-zinc-500 dark:text-zinc-400" />
+                          <span className="flex h-4 w-4 shrink-0 items-center justify-center">
+                            <Sparkles className="h-4 w-4 text-zinc-500 dark:text-zinc-400" strokeWidth={1.85} />
+                          </span>
                           <span>Request a feature</span>
                         </button>
                       </div>
 
-                      <div className="my-1 border-t border-zinc-100 dark:border-zinc-800" />
+                      {/* Divider before Destructive Action */}
+                      <div className="my-1 border-t border-zinc-100 dark:border-zinc-800/70" />
 
                       <button
                         type="button"
@@ -820,9 +854,12 @@ export default function DashboardShell({
                           setMenuOpen(false);
                           handleLogout();
                         }}
-                        className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-left text-xs font-semibold text-rose-600 hover:bg-rose-50 transition-colors w-full dark:text-rose-400 dark:hover:bg-rose-950/30 cursor-pointer"
+                        className="flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-left text-xs font-medium text-rose-600 hover:bg-rose-50/80 transition-colors w-full dark:text-rose-400 dark:hover:bg-rose-950/30 cursor-pointer"
                       >
-                        <LogOut className="h-4 w-4 text-rose-500" /> Sign out
+                        <span className="flex h-4 w-4 shrink-0 items-center justify-center">
+                          <LogOut className="h-4 w-4 text-rose-500 dark:text-rose-400" strokeWidth={1.85} />
+                        </span>
+                        <span>Sign out</span>
                       </button>
                     </motion.div>
                   )}
