@@ -218,6 +218,12 @@ export default function EditLeadMagnetPage() {
           if (found.pdfTitle) {
             setLockedPdfTitle(found.pdfTitle);
           }
+          if (found.pdfUrl) {
+            setLockedPdfUrl(found.pdfUrl);
+          }
+          if (found.pdfPageCount !== undefined) {
+            setLockedPdfPageCount(found.pdfPageCount);
+          }
 
           // Template resolution: page template → account template → fallback
           if (searchParams.get("type") === "locked-pdf" || found.template === "locked-pdf") {
@@ -457,6 +463,8 @@ export default function EditLeadMagnetPage() {
   const [lockedPdfPages, setLockedPdfPages] = useState<string[]>(page?.pdfPages || []);
   const [lockedPdfFreePages, setLockedPdfFreePages] = useState<number>(page?.pdfFreePages ?? 2);
   const [lockedPdfTitle, setLockedPdfTitle] = useState<string>(page?.pdfTitle || "");
+  const [lockedPdfUrl, setLockedPdfUrl] = useState<string>(page?.pdfUrl || "");
+  const [lockedPdfPageCount, setLockedPdfPageCount] = useState<number>(page?.pdfPageCount || 0);
 
   // After Signup State (Tab 4: After Signup)
   const [afterSignupOption, setAfterSignupOption] = useState<"standard" | "elsewhere" | "custom">(page?.afterSignupOption || "standard");
@@ -1114,6 +1122,8 @@ export default function EditLeadMagnetPage() {
           pdfPages: lockedPdfPages,
           pdfFreePages: lockedPdfFreePages,
           pdfTitle: lockedPdfTitle,
+          pdfUrl: lockedPdfUrl || (current as any)?.pdfUrl || (page as any)?.pdfUrl || "",
+          pdfPageCount: lockedPdfPageCount || (current as any)?.pdfPageCount || (page as any)?.pdfPageCount || lockedPdfPages.length,
           template: (templateId as any),
           updatedAt: "Just now"
         };
@@ -1149,7 +1159,7 @@ export default function EditLeadMagnetPage() {
     hasVariantB, testStarted, variantBImage, variantBTitle,
     customPromptQuestion, customPromptPlaceholder, enableAiPersonalizedDeliverable,
     customFormFields, bulletsTitle, mastheadLeft, mastheadRight, formTitle, formSubtitle, formButtonText,
-    lockedPdfPages, lockedPdfFreePages, lockedPdfTitle, templateId
+    lockedPdfPages, lockedPdfFreePages, lockedPdfTitle, lockedPdfUrl, lockedPdfPageCount, templateId
   ]);
 
   const handleGoBack = () => {
@@ -1195,6 +1205,8 @@ export default function EditLeadMagnetPage() {
         pdfPages: lockedPdfPages,
         pdfFreePages: lockedPdfFreePages,
         pdfTitle: lockedPdfTitle,
+        pdfUrl: lockedPdfUrl || (current as any)?.pdfUrl || (page as any)?.pdfUrl || "",
+        pdfPageCount: lockedPdfPageCount || (current as any)?.pdfPageCount || (page as any)?.pdfPageCount || lockedPdfPages.length,
         template: (templateId as any),
         updatedAt: "Just now"
       };
@@ -1278,6 +1290,8 @@ export default function EditLeadMagnetPage() {
       pdfPages: lockedPdfPages,
       pdfFreePages: lockedPdfFreePages,
       pdfTitle: lockedPdfTitle,
+      pdfUrl: lockedPdfUrl || (current as any)?.pdfUrl || (page as any)?.pdfUrl || "",
+      pdfPageCount: lockedPdfPageCount || (current as any)?.pdfPageCount || (page as any)?.pdfPageCount || lockedPdfPages.length,
       template: (templateId as any),
       ...patch
     };
@@ -1342,6 +1356,8 @@ export default function EditLeadMagnetPage() {
         pdfPages: lockedPdfPages,
         pdfFreePages: lockedPdfFreePages,
         pdfTitle: lockedPdfTitle,
+        pdfUrl: lockedPdfUrl || (current as any)?.pdfUrl || (page as any)?.pdfUrl || "",
+        pdfPageCount: lockedPdfPageCount || (current as any)?.pdfPageCount || (page as any)?.pdfPageCount || lockedPdfPages.length,
         template: (templateId as any),
         updatedAt: "Just now"
       };
@@ -1846,6 +1862,10 @@ export default function EditLeadMagnetPage() {
                   setLockedPdfFreePages={setLockedPdfFreePages}
                   lockedPdfTitle={lockedPdfTitle}
                   setLockedPdfTitle={setLockedPdfTitle}
+                  lockedPdfUrl={lockedPdfUrl}
+                  setLockedPdfUrl={setLockedPdfUrl}
+                  lockedPdfPageCount={lockedPdfPageCount}
+                  setLockedPdfPageCount={setLockedPdfPageCount}
                   setPage={setPage}
                   update={update}
                   testStarted={testStarted}

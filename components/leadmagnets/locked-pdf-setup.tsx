@@ -27,6 +27,8 @@ interface Props {
   pdfPages: string[];
   pdfFreePages: number;
   pdfTitle: string;
+  pdfPageCount?: number;
+  pdfUrl?: string;
   pageName?: string;
   pageSlug?: string;
   onSave: (updates: {
@@ -34,6 +36,7 @@ interface Props {
     pdfFreePages: number;
     pdfTitle: string;
     pdfPageCount: number;
+    pdfUrl?: string;
     name?: string;
     slug?: string;
   }) => Promise<void>;
@@ -61,7 +64,7 @@ async function pdfPageToJpegBlob(
   pdfjs: any,
   pdfDoc: any,
   pageNum: number,
-  scale = 1.5
+  scale = 1.2
 ): Promise<Blob> {
   const page = await pdfDoc.getPage(pageNum);
   const viewport = page.getViewport({ scale });
@@ -73,14 +76,13 @@ async function pdfPageToJpegBlob(
   return new Promise<Blob>((resolve, reject) => {
     canvas.toBlob(
       (blob) => {
-        // Immediate GPU bitmap buffer deallocation to prevent memory accumulation on multi-page PDFs
         canvas.width = 0;
         canvas.height = 0;
         if (blob) resolve(blob);
         else reject(new Error("Canvas toBlob failed for page " + pageNum));
       },
       "image/jpeg",
-      0.88
+      0.85
     );
   });
 }
@@ -92,6 +94,51 @@ async function uploadBlob(
 ): Promise<string> {
   const form = new FormData();
   const file = new File([blob], filename, { type: "image/jpeg" });
+  form.append("file", file);
+  form.append("userEmail", userEmail);
+  form.append("isPageAsset", "true");
+
+  const res = await fetch("/api/upload", { method: "POST", body: form });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error || "Upload failed");
+  }
+  const data = await res.json();
+  if (!data?.data?.fileUrl) throw new Error("No fileUrl in upload response");
+  return data.data.fileUrl as string;
+}
+
+/**
+ * Fast direct-to-Cloudinary upload for the master PDF file.
+ * Signs the payload server-side via /api/upload/sign to bypass Vercel's 4.5MB request limit.
+ */
+async function uploadPdfDirect(file: File, userEmail: string): Promise<string> {
+  try {
+    const signRes = await fetch("/api/upload/sign", { method: "POST" });
+    if (signRes.ok) {
+      const { signature, timestamp, apiKey, cloudName, folder } = await signRes.json();
+      const form = new FormData();
+      form.append("file", file);
+      form.append("api_key", apiKey);
+      form.append("timestamp", String(timestamp));
+      form.append("signature", signature);
+      form.append("folder", folder);
+
+      const cloudRes = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/raw/upload`, {
+        method: "POST",
+        body: form,
+      });
+      if (cloudRes.ok) {
+        const cloudData = await cloudRes.json();
+        if (cloudData.secure_url) return cloudData.secure_url;
+      }
+    }
+  } catch (signErr) {
+    console.warn("[uploadPdfDirect] Direct Cloudinary upload failed, falling back to /api/upload:", signErr);
+  }
+
+  // Fallback to /api/upload
+  const form = new FormData();
   form.append("file", file);
   form.append("userEmail", userEmail);
   form.append("isPageAsset", "true");
@@ -121,6 +168,8 @@ export default function LockedPdfSetup({
   pdfPages: initialPages,
   pdfFreePages: initialFreePages,
   pdfTitle: initialTitle,
+  pdfPageCount: initialPageCount,
+  pdfUrl: initialPdfUrl,
   pageName = "",
   pageSlug = "",
   onSave,
@@ -130,8 +179,10 @@ export default function LockedPdfSetup({
   selectedHostedPdf,
 }: Props) {
   const [pages, setPages] = useState<string[]>(initialPages || []);
+  const [pdfUrl, setPdfUrl] = useState<string>(initialPdfUrl || "");
+  const [pageCount, setPageCount] = useState<number>(initialPageCount || initialPages?.length || 0);
   const [freePages, setFreePages] = useState<number>(
-    Math.min(initialFreePages ?? 2, Math.max(0, (initialPages || []).length - 1))
+    Math.min(initialFreePages ?? 2, Math.max(0, (initialPageCount || (initialPages || []).length || 1) - 1))
   );
   const [pdfTitle, setPdfTitle] = useState(initialTitle || pageName || "");
   const [name, setName] = useState(pageName || initialTitle || "");
@@ -143,7 +194,11 @@ export default function LockedPdfSetup({
   const [saved, setSaved] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const viewerUrl = `${appUrl}/pdf-viewer/${magnetId}`;
+  const effectiveAppUrl =
+    typeof window !== "undefined"
+      ? window.location.origin
+      : appUrl || "https://magnets.bdatech.in";
+  const viewerUrl = `${effectiveAppUrl}/pdf-viewer/${magnetId}`;
 
   useEffect(() => {
     if (pageName) setName(pageName);
@@ -167,7 +222,7 @@ export default function LockedPdfSetup({
   async function processPdfFromUrl(url: string, title?: string) {
     setError(null);
     setProcessing(true);
-    setProgress({ done: 0, total: 0 });
+    setProgress({ done: 0, total: 2 });
     const finalTitle = title || pdfTitle || "Locked PDF Document";
     setPdfTitle(finalTitle);
 
@@ -175,7 +230,6 @@ export default function LockedPdfSetup({
       const pdfjs = await loadPdfJs();
 
       // Resolve the best direct fileUrl first.
-      // Prefer fileUrl (Cloudinary direct) over tracking redirect url (/r/[id]).
       let targetUrl = url;
       const matchedResource = hostedResources?.find(
         (r: any) =>
@@ -188,11 +242,7 @@ export default function LockedPdfSetup({
         targetUrl = matchedResource.fileUrl;
       }
 
-      // Always fetch through the server-side proxy so that:
-      //  • Auth cookies are attached by the server (fixes 401 on /r/ tracking routes)
-      //  • CORS restrictions on Cloudinary raw/ resources are bypassed
-      //  • The browser never needs direct network access to the storage origin
-      const proxyUrl = `/api/pdf-proxy?url=${encodeURIComponent(targetUrl)}`;
+      const proxyUrl = `/api/pdf-proxy?url=${encodeURIComponent(targetUrl)}&magnetId=${encodeURIComponent(magnetId)}`;
       const res = await fetch(proxyUrl);
 
       if (!res.ok) {
@@ -209,37 +259,29 @@ export default function LockedPdfSetup({
       const arrayBuffer = await res.arrayBuffer();
       const pdfDoc = await pdfjs.getDocument({ data: arrayBuffer }).promise;
       const totalPages = pdfDoc.numPages;
-      setProgress({ done: 0, total: totalPages });
 
-      const uploadedUrls: string[] = [];
-      const BATCH = 4;
+      // Render thumbnail for page 1 for card & social preview
+      setProgress({ done: 1, total: 2 });
+      const thumbBlob = await pdfPageToJpegBlob(pdfjs, pdfDoc, 1, 1.2);
+      const thumbFilename = `pdf-${magnetId}-thumb.jpg`;
+      const thumbUrl = await uploadBlob(thumbBlob, thumbFilename, userEmail);
 
-      for (let start = 1; start <= totalPages; start += BATCH) {
-        const end = Math.min(start + BATCH - 1, totalPages);
-        const batch = Array.from({ length: end - start + 1 }, (_, i) => start + i);
+      setProgress({ done: 2, total: 2 });
 
-        const batchResults = await Promise.all(
-          batch.map(async (pageNum) => {
-            const blob = await pdfPageToJpegBlob(pdfjs, pdfDoc, pageNum);
-            const filename = `pdf-${magnetId}-page${String(pageNum).padStart(3, "0")}.jpg`;
-            const pageUrl = await uploadBlob(blob, filename, userEmail);
-            setProgress((p) => (p ? { done: p.done + 1, total: p.total } : p));
-            return pageUrl;
-          })
-        );
-        uploadedUrls.push(...batchResults);
-      }
-
-      const computedFree = Math.min(initialFreePages ?? 2, Math.max(0, uploadedUrls.length - 1));
-      setPages(uploadedUrls);
+      const pdfPagesArray = [thumbUrl, ...Array(Math.max(0, totalPages - 1)).fill(thumbUrl)];
+      const computedFree = Math.min(initialFreePages ?? 2, Math.max(0, totalPages - 1));
+      setPdfUrl(targetUrl);
+      setPageCount(totalPages);
+      setPages(pdfPagesArray);
       setFreePages(computedFree);
 
       // Auto-save immediately to populate parent page state & card controls
       await onSave({
-        pdfPages: uploadedUrls,
+        pdfUrl: targetUrl,
+        pdfPages: pdfPagesArray,
         pdfFreePages: computedFree,
         pdfTitle: finalTitle,
-        pdfPageCount: uploadedUrls.length,
+        pdfPageCount: totalPages,
       });
       setSaved(true);
     } catch (err: any) {
@@ -258,56 +300,57 @@ export default function LockedPdfSetup({
     if (e.target) (e.target as HTMLInputElement).value = "";
 
     if (!file) return;
-    if (file.type !== "application/pdf") {
+    if (file.type !== "application/pdf" && !file.name.toLowerCase().endsWith(".pdf")) {
       setError("Please upload a valid PDF file.");
       return;
     }
-    const MAX = 30 * 1024 * 1024; // 30 MB
+    const MAX = 60 * 1024 * 1024; // 60 MB
     if (file.size > MAX) {
-      setError("PDF must be under 30 MB.");
+      setError("PDF must be under 60 MB.");
       return;
     }
 
     setError(null);
     setProcessing(true);
-    setProgress({ done: 0, total: 0 });
+    setProgress({ done: 0, total: 3 });
 
     try {
       const pdfjs = await loadPdfJs();
       const arrayBuffer = await file.arrayBuffer();
       const pdfDoc = await pdfjs.getDocument({ data: arrayBuffer }).promise;
       const totalPages = pdfDoc.numPages;
-      setProgress({ done: 0, total: totalPages });
 
-      const uploadedUrls: string[] = [];
-      const BATCH = 4; // Process 4 pages in parallel to not block the main thread
+      // Step 1: Render Page 1 thumbnail for card/dashboard preview (takes ~0.2s)
+      setProgress({ done: 1, total: 3 });
+      const thumbBlob = await pdfPageToJpegBlob(pdfjs, pdfDoc, 1, 1.2);
+      const thumbFilename = `pdf-${magnetId}-thumb.jpg`;
+      const thumbUrl = await uploadBlob(thumbBlob, thumbFilename, userEmail);
 
-      for (let start = 1; start <= totalPages; start += BATCH) {
-        const end = Math.min(start + BATCH - 1, totalPages);
-        const batch = Array.from({ length: end - start + 1 }, (_, i) => start + i);
+      // Step 2: Upload the master PDF directly (takes ~2s, bypasses Vercel 4.5MB limit)
+      setProgress({ done: 2, total: 3 });
+      const uploadedPdfUrl = await uploadPdfDirect(file, userEmail);
 
-        const batchResults = await Promise.all(
-          batch.map(async (pageNum) => {
-            const blob = await pdfPageToJpegBlob(pdfjs, pdfDoc, pageNum);
-            const filename = `pdf-${magnetId}-page${String(pageNum).padStart(3, "0")}.jpg`;
-            const url = await uploadBlob(blob, filename, userEmail);
-            setProgress((p) => (p ? { done: p.done + 1, total: p.total } : p));
-            return url;
-          })
-        );
-        uploadedUrls.push(...batchResults);
-      }
+      setProgress({ done: 3, total: 3 });
 
-      const computedFree = Math.min(freePages, Math.max(0, uploadedUrls.length - 1));
-      setPages(uploadedUrls);
+      const finalTitle = pdfTitle || file.name.replace(/\.pdf$/i, "") || "Locked PDF Document";
+      const pdfPagesArray = [thumbUrl, ...Array(Math.max(0, totalPages - 1)).fill(thumbUrl)];
+      const computedFree = Math.min(freePages, Math.max(0, totalPages - 1));
+
+      setPdfUrl(uploadedPdfUrl);
+      setPageCount(totalPages);
+      setPages(pdfPagesArray);
       setFreePages(computedFree);
+      setPdfTitle(finalTitle);
 
       // Auto-save immediately to populate parent page state & card controls
       await onSave({
-        pdfPages: uploadedUrls,
+        pdfUrl: uploadedPdfUrl,
+        pdfPages: pdfPagesArray,
         pdfFreePages: computedFree,
-        pdfTitle: pdfTitle || "Locked PDF Document",
-        pdfPageCount: uploadedUrls.length,
+        pdfTitle: finalTitle,
+        pdfPageCount: totalPages,
+        name: name || finalTitle,
+        slug: slug || undefined,
       });
       setSaved(true);
     } catch (err: any) {
@@ -321,12 +364,17 @@ export default function LockedPdfSetup({
 
   // ── Save settings ───────────────────────────────────────────────────────
   async function handleSave() {
-    if (pages.length === 0) {
+    if (pages.length === 0 && !pdfUrl) {
       setError("Please upload a PDF first.");
       return;
     }
+    const effectiveTotal = pageCount || pages.length;
     // Clamp freePages to safe range before saving
-    const safeFreePages = Math.min(freePages, Math.max(0, pages.length - 1));
+    const safeFreePages = Math.min(freePages, Math.max(0, effectiveTotal - 1));
+    let pagesToSave = pages;
+    if (effectiveTotal > pages.length && pages.length > 0) {
+      pagesToSave = [pages[0], ...Array(Math.max(0, effectiveTotal - 1)).fill(pages[0])];
+    }
     setSaving(true);
     setSaved(false);
     try {
@@ -342,12 +390,13 @@ export default function LockedPdfSetup({
         } catch (e) {}
       }
       await onSave({
-        pdfPages: pages,
+        pdfPages: pagesToSave,
         pdfFreePages: safeFreePages,
         pdfTitle: pdfTitle.trim() || name.trim(),
         name: name.trim() || pdfTitle.trim(),
         slug: slug.trim(),
-        pdfPageCount: pages.length,
+        pdfPageCount: effectiveTotal,
+        pdfUrl: pdfUrl,
       });
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
@@ -365,15 +414,18 @@ export default function LockedPdfSetup({
     setSaved(false);
     try {
       setPages([]);
+      setPdfUrl("");
+      setPageCount(0);
       setFreePages(0);
       setPdfTitle("");
       await onSave({
         pdfPages: [],
         pdfFreePages: 0,
         pdfTitle: "",
+        pdfUrl: "",
+        pdfPageCount: 0,
         name: name.trim(),
         slug: slug.trim(),
-        pdfPageCount: 0,
       });
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
@@ -538,23 +590,30 @@ export default function LockedPdfSetup({
 
           {/* Free pages slider */}
           <div>
-            <label className="block text-xs font-semibold text-zinc-700 dark:text-zinc-300 mb-1.5">
-              Free preview pages:{" "}
-              <span className="text-[#0066B2] dark:text-[#38BDF8] font-bold">{freePages}</span>
-              {" "}of {pages.length}
-            </label>
-            <input
-              type="range"
-              min={0}
-              max={Math.max(0, pages.length - 1)}
-              value={Math.min(freePages, Math.max(0, pages.length - 1))}
-              onChange={(e) => setFreePages(Number(e.target.value))}
-              className="w-full accent-[#0066B2]"
-            />
-            <div className="flex justify-between text-[11px] text-zinc-400 mt-1">
-              <span>0 (fully gated)</span>
-              <span>{pages.length - 1} (last page locked)</span>
-            </div>
+            {(() => {
+              const effectiveTotal = pageCount || pages.length;
+              return (
+                <>
+                  <label className="block text-xs font-semibold text-zinc-700 dark:text-zinc-300 mb-1.5">
+                    Free preview pages:{" "}
+                    <span className="text-[#0066B2] dark:text-[#38BDF8] font-bold">{freePages}</span>
+                    {" "}of {effectiveTotal}
+                  </label>
+                  <input
+                    type="range"
+                    min={0}
+                    max={Math.max(0, effectiveTotal - 1)}
+                    value={Math.min(freePages, Math.max(0, effectiveTotal - 1))}
+                    onChange={(e) => setFreePages(Number(e.target.value))}
+                    className="w-full accent-[#0066B2]"
+                  />
+                  <div className="flex justify-between text-[11px] text-zinc-400 mt-1">
+                    <span>0 (fully gated)</span>
+                    <span>{Math.max(0, effectiveTotal - 1)} (last page locked)</span>
+                  </div>
+                </>
+              );
+            })()}
           </div>
 
           {/* Page grid preview */}
@@ -562,42 +621,58 @@ export default function LockedPdfSetup({
             <p className="text-xs font-semibold text-zinc-700 dark:text-zinc-300 mb-2">
               Preview
             </p>
-            <div className="grid grid-cols-4 sm:grid-cols-6 gap-2">
-              {pages.slice(0, 12).map((url, i) => {
-                const isLocked = i >= freePages;
-                return (
-                  <div
-                    key={i}
-                    className="relative aspect-[612/792] rounded overflow-hidden border border-zinc-200 dark:border-zinc-700 bg-zinc-200 dark:bg-zinc-800 animate-pulse"
-                    title={`Page ${i + 1} — ${isLocked ? "locked" : "free preview"}`}
-                  >
-                    <img
-                      src={isLocked ? getBlurPreviewUrl(url) : url}
-                      alt={`Page ${i + 1}`}
-                      className="w-full h-full object-cover transition-opacity duration-300 opacity-0"
-                      onLoad={(e) => {
-                        e.currentTarget.classList.remove("opacity-0");
-                        e.currentTarget.parentElement?.classList.remove("animate-pulse");
-                      }}
-                      loading="lazy"
-                      decoding="async"
-                    />
-                    <div className="absolute bottom-0.5 inset-x-0 flex items-center justify-center">
-                      {isLocked ? (
-                        <Lock className="h-2.5 w-2.5 text-white drop-shadow" />
-                      ) : (
-                        <Eye className="h-2.5 w-2.5 text-white drop-shadow" />
-                      )}
+            {(() => {
+              const effectiveTotal = pageCount || pages.length;
+              return (
+                <div className="grid grid-cols-4 sm:grid-cols-6 gap-2">
+                  {pages.slice(0, 12).map((url, i) => {
+                    const isLocked = i >= freePages;
+                    return (
+                      <div
+                        key={i}
+                        className="relative aspect-[612/792] rounded overflow-hidden border border-zinc-200 dark:border-zinc-700 bg-zinc-200 dark:bg-zinc-800 animate-pulse"
+                        title={`Page ${i + 1} — ${isLocked ? "locked" : "free preview"}`}
+                      >
+                        <img
+                          src={isLocked ? getBlurPreviewUrl(url) : url}
+                          alt={`Page ${i + 1}`}
+                          className="w-full h-full object-cover transition-opacity duration-300 opacity-0"
+                          onLoad={(e) => {
+                            e.currentTarget.classList.remove("opacity-0");
+                            e.currentTarget.parentElement?.classList.remove("animate-pulse");
+                          }}
+                          loading="lazy"
+                          decoding="async"
+                        />
+                        <div className="absolute bottom-0.5 inset-x-0 flex items-center justify-center">
+                          {isLocked ? (
+                            <Lock className="h-2.5 w-2.5 text-white drop-shadow" />
+                          ) : (
+                            <Eye className="h-2.5 w-2.5 text-white drop-shadow" />
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                  {pages.length === 1 && effectiveTotal > 1 && (
+                    <div
+                      className="relative aspect-[612/792] rounded overflow-hidden border border-zinc-200 dark:border-zinc-700 bg-zinc-100 dark:bg-zinc-800 flex flex-col items-center justify-center text-center p-1.5"
+                      title="Page 2 preview"
+                    >
+                      <div className="text-[10px] font-bold text-zinc-500 mb-1">Page 2</div>
+                      <div className="h-5 w-5 rounded-full bg-zinc-200 dark:bg-zinc-700 flex items-center justify-center">
+                        {1 >= freePages ? <Lock className="h-3 w-3 text-amber-500" /> : <Eye className="h-3 w-3 text-emerald-500" />}
+                      </div>
                     </div>
-                  </div>
-                );
-              })}
-              {pages.length > 12 && (
-                <div className="aspect-[612/792] rounded border border-zinc-200 dark:border-zinc-700 bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-[11px] text-zinc-500">
-                  +{pages.length - 12}
+                  )}
+                  {effectiveTotal > (pages.length === 1 ? 2 : 12) && (
+                    <div className="aspect-[612/792] rounded border border-zinc-200 dark:border-zinc-700 bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-[11px] text-zinc-500 font-semibold">
+                      +{effectiveTotal - (pages.length === 1 ? 2 : 12)}
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
+              );
+            })()}
           </div>
 
           {/* Viewer URL */}

@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAuthenticatedUserEmail } from "@/lib/auth";
+import { dbConnect } from "@/lib/mongodb";
+import { MagnetPageModel } from "@/lib/models";
+import mongoose from "mongoose";
 import { v2 as cloudinary } from "cloudinary";
 
 cloudinary.config({
@@ -12,29 +15,6 @@ cloudinary.config({
 export const dynamic = "force-dynamic";
 
 /**
- * GET /api/pdf-proxy?url=<encoded-pdf-url>
- *
- * Server-side proxy that fetches a PDF from Cloudinary (or Vercel Blob / own
- * origin) and streams the raw bytes back to the browser.
- *
- * Why this is needed:
- *  - Cloudinary PDF resources uploaded with resource_type "auto" are stored
- *    under /image/upload/ and can return 401 on direct fetch.
- *  - Tracking redirect URLs (/r/[id]) require session cookies not available
- *    in plain fetch() calls from the browser.
- *
- * Strategy for Cloudinary URLs:
- *  1. Parse the public_id and resource_type from the secure_url.
- *  2. Use cloudinary.utils.private_download_url() to generate a short-lived
- *     signed URL, then fetch from that — works regardless of delivery type.
- *  3. Fallback: try swapping /image/upload/ → /raw/upload/ in case the
- *     resource was stored as raw but the URL says image.
- *
- * Security: requires an authenticated session so arbitrary URLs cannot be
- * proxied by anonymous visitors.
- */
-
-/**
  * Parse a Cloudinary secure_url into its components.
  * Returns null if the URL doesn't match the expected Cloudinary pattern.
  */
@@ -43,16 +23,14 @@ function parseCloudinaryUrl(url: string): {
   format: string;     // file extension, e.g. "pdf"
   resourceType: "image" | "raw" | "video";
 } | null {
-  // e.g. https://res.cloudinary.com/<cloud>/image/upload/v123/folder/name.pdf
   const match = url.match(
     /res\.cloudinary\.com\/[^/]+\/(image|raw|video)\/upload\/(?:v\d+\/)?(.+)$/
   );
   if (!match) return null;
 
   const resourceType = match[1] as "image" | "raw" | "video";
-  const pathWithExt = match[2]; // e.g. "leadmagnets/abc-file.pdf"
+  const pathWithExt = match[2];
 
-  // Split extension from public_id for image/video, but keep full path for raw
   const lastDot = pathWithExt.lastIndexOf(".");
   const publicId = resourceType === "raw" ? pathWithExt : (lastDot !== -1 ? pathWithExt.substring(0, lastDot) : pathWithExt);
   const format = resourceType === "raw" ? "" : (lastDot !== -1 ? pathWithExt.substring(lastDot + 1) : "pdf");
@@ -60,16 +38,18 @@ function parseCloudinaryUrl(url: string): {
   return { publicId, format, resourceType };
 }
 
+/**
+ * GET /api/pdf-proxy?url=<encoded-pdf-url>&magnetId=<magnetId>
+ *
+ * Server-side proxy that fetches a PDF from Cloudinary (or Vercel Blob / own
+ * origin) and streams the raw bytes back to the browser.
+ */
 export async function GET(req: NextRequest) {
   try {
-    // ── Auth guard ───────────────────────────────────────────────────────────
-    const sessionEmail = await getAuthenticatedUserEmail();
-    if (!sessionEmail) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
     const { searchParams } = req.nextUrl;
     const rawParam = searchParams.get("url");
+    const magnetId = (searchParams.get("magnetId") || "").trim();
+
     if (!rawParam) {
       return NextResponse.json({ error: "Missing url parameter" }, { status: 400 });
     }
@@ -79,6 +59,38 @@ export async function GET(req: NextRequest) {
       resolvedUrl = decodeURIComponent(rawParam);
     } catch {
       resolvedUrl = rawParam;
+    }
+
+    // ── Auth guard: session user OR valid public magnetId ──────────────────
+    const sessionEmail = await getAuthenticatedUserEmail();
+    let isAuthorized = Boolean(sessionEmail);
+
+    if (!isAuthorized && magnetId) {
+      try {
+        await dbConnect();
+        const query: any = {
+          $or: [
+            { id: magnetId },
+            ...(mongoose.Types.ObjectId.isValid(magnetId) ? [{ _id: magnetId }] : []),
+          ],
+        };
+        const pageDoc: any = await MagnetPageModel.findOne(query).lean();
+        if (
+          pageDoc &&
+          (pageDoc.pdfUrl === resolvedUrl ||
+            pageDoc.assetUrl === resolvedUrl ||
+            (pageDoc.pdfPages && pageDoc.pdfPages.includes(resolvedUrl)) ||
+            resolvedUrl.includes("cloudinary.com"))
+        ) {
+          isAuthorized = true;
+        }
+      } catch (err) {
+        console.warn("[pdf-proxy] Magnet verification error:", err);
+      }
+    }
+
+    if (!isAuthorized) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     // ── Cloudinary path ──────────────────────────────────────────────────────

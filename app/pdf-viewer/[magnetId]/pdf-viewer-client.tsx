@@ -29,11 +29,203 @@ function getBlurUrl(url: string): string {
   return url;
 }
 
+// ─── PDF.js loader ────────────────────────────────────────────────────────────
+async function loadPdfJs(): Promise<any> {
+  const pdfjs = await import(/* webpackChunkName: "pdfjs-dist" */ "pdfjs-dist");
+  if (typeof window !== "undefined") {
+    pdfjs.GlobalWorkerOptions.workerSrc = new URL(
+      "/pdf.worker.min.mjs",
+      window.location.origin
+    ).toString();
+  }
+  return pdfjs;
+}
+
+// ─── High-performance On-Demand Canvas Renderer ───────────────────────────────
+function PdfPageCanvas({
+  pdfDoc,
+  pageNum,
+  rotation,
+  isLocked,
+  zoomScale,
+}: {
+  pdfDoc: any;
+  pageNum: number;
+  rotation: number;
+  isLocked: boolean;
+  zoomScale: number;
+}) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [isVisible, setIsVisible] = useState(false);
+  const [rendered, setRendered] = useState(false);
+  const [aspectRatio, setAspectRatio] = useState(612 / 792);
+
+  // Lazy visibility observer — only render when page is near the screen viewport
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) {
+            setIsVisible(true);
+          }
+        });
+      },
+      { rootMargin: "450px 0px" }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!pdfDoc || !isVisible || isLocked) return;
+    let cancel = false;
+    let renderTask: any = null;
+
+    async function renderPage() {
+      try {
+        const page = await pdfDoc.getPage(pageNum);
+        if (cancel) return;
+        const viewport = page.getViewport({ scale: 1.5, rotation });
+        setAspectRatio(viewport.width / viewport.height);
+
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return;
+
+        renderTask = page.render({ canvasContext: ctx, viewport });
+        await renderTask.promise;
+        if (!cancel) setRendered(true);
+      } catch (e: any) {
+        if (e?.name !== "RenderingCancelledException") {
+          console.warn(`[PdfViewer] Error rendering page ${pageNum}:`, e);
+        }
+      }
+    }
+
+    renderPage();
+    return () => {
+      cancel = true;
+      if (renderTask) renderTask.cancel();
+    };
+  }, [pdfDoc, pageNum, rotation, isVisible, isLocked]);
+
+  return (
+    <div
+      ref={containerRef}
+      style={{
+        position: "relative",
+        width: "100%",
+        aspectRatio: `${aspectRatio}`,
+        background: "#ffffff",
+        borderRadius: "4px",
+        overflow: "hidden",
+        boxShadow: "0 4px 20px rgba(0,0,0,0.25)",
+      }}
+    >
+      {isLocked ? (
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            background: "linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%)",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "24px",
+            textAlign: "center",
+          }}
+        >
+          {/* Blurred document skeleton lines */}
+          <div
+            style={{
+              position: "absolute",
+              inset: 24,
+              opacity: 0.15,
+              display: "flex",
+              flexDirection: "column",
+              gap: 16,
+              filter: "blur(2px)",
+            }}
+          >
+            <div style={{ height: 28, width: "65%", background: "#000", borderRadius: 4 }} />
+            <div style={{ height: 14, width: "95%", background: "#000", borderRadius: 4 }} />
+            <div style={{ height: 14, width: "90%", background: "#000", borderRadius: 4 }} />
+            <div style={{ height: 14, width: "92%", background: "#000", borderRadius: 4 }} />
+            <div style={{ height: 180, width: "100%", background: "#000", borderRadius: 6, marginTop: 12 }} />
+            <div style={{ height: 14, width: "88%", background: "#000", borderRadius: 4 }} />
+            <div style={{ height: 14, width: "85%", background: "#000", borderRadius: 4 }} />
+          </div>
+
+          {/* Frosted lock badge */}
+          <div
+            style={{
+              position: "relative",
+              zIndex: 2,
+              background: "rgba(15, 23, 42, 0.85)",
+              backdropFilter: "blur(12px)",
+              color: "#fff",
+              padding: "18px 32px",
+              borderRadius: "16px",
+              boxShadow: "0 12px 32px rgba(0,0,0,0.35)",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: "10px",
+              border: "1px solid rgba(255,255,255,0.15)",
+            }}
+          >
+            <div
+              style={{
+                width: 46,
+                height: 46,
+                borderRadius: "50%",
+                background: "rgba(255,255,255,0.15)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <Lock size={22} color="#f59e0b" />
+            </div>
+            <div style={{ fontSize: 15, fontWeight: 700, letterSpacing: "-0.2px" }}>
+              Page {pageNum} is Locked
+            </div>
+            <div style={{ fontSize: 12, opacity: 0.8, maxWidth: 220 }}>
+              Verify your details below to unlock all pages.
+            </div>
+          </div>
+        </div>
+      ) : (
+        <canvas
+          ref={canvasRef}
+          className="adobe-page-img"
+          style={{
+            width: "100%",
+            height: "100%",
+            display: "block",
+            opacity: rendered ? 1 : 0,
+            transition: "opacity 0.2s ease-in-out",
+          }}
+        />
+      )}
+    </div>
+  );
+}
+
 interface Props {
   magnetId: string;
   pdfTitle: string;
   pdfPages: string[];
   pdfFreePages: number;
+  pdfPageCount?: number;
+  pdfUrl?: string;
   businessName: string;
   brandColor: string;
   customFormFields?: import("@/lib/data").CustomFormField[];
@@ -44,11 +236,64 @@ export default function PdfViewerClient({
   pdfTitle,
   pdfPages,
   pdfFreePages,
+  pdfPageCount,
+  pdfUrl,
   businessName,
   brandColor,
   customFormFields = [],
 }: Props) {
-  const totalPages = pdfPages.length;
+  const isStreamingPdf = Boolean(pdfUrl);
+  const [pdfDoc, setPdfDoc] = useState<any>(null);
+  const [loadingPdf, setLoadingPdf] = useState(isStreamingPdf);
+  const [pdfLoadError, setPdfLoadError] = useState<string | null>(null);
+
+  const totalPages = isStreamingPdf
+    ? (pdfDoc?.numPages || pdfPageCount || pdfPages.length || 1)
+    : pdfPages.length;
+
+  useEffect(() => {
+    if (!pdfUrl) return;
+    let cancel = false;
+
+    async function initPdf() {
+      try {
+        setLoadingPdf(true);
+        const pdfjs = await loadPdfJs();
+        if (cancel) return;
+
+        const proxyUrl = `/api/pdf-proxy?url=${encodeURIComponent(pdfUrl!)}&magnetId=${encodeURIComponent(magnetId)}`;
+        const doc = await pdfjs.getDocument({
+          url: proxyUrl,
+          rangeChunkSize: 65536,
+        }).promise;
+
+        if (!cancel) {
+          setPdfDoc(doc);
+          setLoadingPdf(false);
+        }
+      } catch (err: any) {
+        console.warn("[pdf-viewer] Proxy stream attempt failed, trying direct URL:", err);
+        try {
+          const pdfjs = await loadPdfJs();
+          const doc = await pdfjs.getDocument({ url: pdfUrl }).promise;
+          if (!cancel) {
+            setPdfDoc(doc);
+            setLoadingPdf(false);
+          }
+        } catch (fallbackErr: any) {
+          if (!cancel) {
+            setPdfLoadError("Failed to load PDF document.");
+            setLoadingPdf(false);
+          }
+        }
+      }
+    }
+
+    initPdf();
+    return () => {
+      cancel = true;
+    };
+  }, [pdfUrl, magnetId]);
 
   // ── State ──────────────────────────────────────────────────────────────────
   const [unlocked, setUnlocked] = useState(false);
@@ -256,7 +501,7 @@ export default function PdfViewerClient({
       counterObs.disconnect();
       gateObs.disconnect();
     };
-  }, [pdfFreePages, sidebarOpen, updateGate]);
+  }, [pdfFreePages, sidebarOpen, updateGate, totalPages, loadingPdf]);
 
   // ── Auto-scroll thumbnail sidebar when current page changes ───────────────
   useEffect(() => {
@@ -501,9 +746,10 @@ export default function PdfViewerClient({
             <div className="adobe-thumb-panel">
               <div className="adobe-thumb-header">Page Thumbnails</div>
               <div className="adobe-thumb-list" data-lenis-prevent>
-                {pdfPages.map((url, idx) => {
+                {Array.from({ length: totalPages }, (_, idx) => {
                   const isLocked = !unlocked && idx >= pdfFreePages;
-                  const displayUrl = isLocked ? getBlurUrl(url) : url;
+                  const thumbImgUrl = pdfPages[idx] || (idx === 0 ? pdfPages[0] : null);
+                  const displayUrl = isLocked && thumbImgUrl ? getBlurUrl(thumbImgUrl) : thumbImgUrl;
                   return (
                     <button
                       key={idx}
@@ -515,14 +761,24 @@ export default function PdfViewerClient({
                       onClick={() => scrollToPage(idx)}
                     >
                       <div className="adobe-thumb-frame">
-                        <img
-                          src={displayUrl}
-                          alt={`Thumbnail page ${idx + 1}`}
-                          className="adobe-thumb-img"
-                          loading="lazy"
-                          decoding="async"
-                          draggable={false}
-                        />
+                        {isLocked ? (
+                          <div className="w-full h-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
+                            <Lock size={14} className="text-amber-500" />
+                          </div>
+                        ) : displayUrl ? (
+                          <img
+                            src={displayUrl}
+                            alt={`Thumbnail page ${idx + 1}`}
+                            className="adobe-thumb-img"
+                            loading="lazy"
+                            decoding="async"
+                            draggable={false}
+                          />
+                        ) : (
+                          <div className="w-full h-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center font-mono text-[10px] text-zinc-500">
+                            {idx + 1}
+                          </div>
+                        )}
                       </div>
                       <span className="adobe-thumb-num">{idx + 1}</span>
                     </button>
@@ -535,34 +791,72 @@ export default function PdfViewerClient({
 
         {/* Document View Canvas */}
         <main className="adobe-doc-viewport" ref={docRef} data-lenis-prevent>
-          {pdfPages.map((url, idx) => {
-            const isLocked = !unlocked && idx >= pdfFreePages;
-            const displayUrl = isLocked ? getBlurUrl(url) : url;
-            const computedWidth = Math.round(860 * (zoomScale / 100));
+          {loadingPdf ? (
+            <div className="flex flex-col items-center justify-center py-36 text-white gap-3">
+              <div className="w-8 h-8 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+              <p className="text-sm font-medium opacity-80">Streaming document…</p>
+            </div>
+          ) : isStreamingPdf && pdfDoc ? (
+            Array.from({ length: totalPages }, (_, idx) => {
+              const isLocked = !unlocked && idx >= pdfFreePages;
+              const computedWidth = Math.round(860 * (zoomScale / 100));
 
-            return (
-              <div
-                key={idx}
-                ref={(el) => { pageRefs.current[idx] = el; }}
-                data-page-index={idx}
-                className={`adobe-page-wrapper ${isLocked ? "is-locked" : ""}`}
-                style={{
-                  width: `${computedWidth}px`,
-                  maxWidth: zoomScale === 100 ? "min(860px, 92vw)" : undefined,
-                  ...(rotation !== 0 ? { transform: `rotate(${rotation}deg)` } : {}),
-                }}
-              >
-                <img
-                  src={displayUrl}
-                  alt={`Document Page ${idx + 1}`}
-                  className="adobe-page-img"
-                  loading={idx < 3 ? "eager" : "lazy"}
-                  decoding="async"
-                  draggable={false}
-                />
-              </div>
-            );
-          })}
+              return (
+                <div
+                  key={idx}
+                  ref={(el) => {
+                    pageRefs.current[idx] = el;
+                  }}
+                  data-page-index={idx}
+                  className={`adobe-page-wrapper ${isLocked ? "is-locked" : ""}`}
+                  style={{
+                    width: `${computedWidth}px`,
+                    maxWidth: zoomScale === 100 ? "min(860px, 92vw)" : undefined,
+                    ...(rotation !== 0 ? { transform: `rotate(${rotation}deg)` } : {}),
+                  }}
+                >
+                  <PdfPageCanvas
+                    pdfDoc={pdfDoc}
+                    pageNum={idx + 1}
+                    rotation={rotation}
+                    isLocked={isLocked}
+                    zoomScale={zoomScale}
+                  />
+                </div>
+              );
+            })
+          ) : (
+            pdfPages.map((url, idx) => {
+              const isLocked = !unlocked && idx >= pdfFreePages;
+              const displayUrl = isLocked ? getBlurUrl(url) : url;
+              const computedWidth = Math.round(860 * (zoomScale / 100));
+
+              return (
+                <div
+                  key={idx}
+                  ref={(el) => {
+                    pageRefs.current[idx] = el;
+                  }}
+                  data-page-index={idx}
+                  className={`adobe-page-wrapper ${isLocked ? "is-locked" : ""}`}
+                  style={{
+                    width: `${computedWidth}px`,
+                    maxWidth: zoomScale === 100 ? "min(860px, 92vw)" : undefined,
+                    ...(rotation !== 0 ? { transform: `rotate(${rotation}deg)` } : {}),
+                  }}
+                >
+                  <img
+                    src={displayUrl}
+                    alt={`Document Page ${idx + 1}`}
+                    className="adobe-page-img"
+                    loading={idx < 3 ? "eager" : "lazy"}
+                    decoding="async"
+                    draggable={false}
+                  />
+                </div>
+              );
+            })
+          )}
         </main>
       </div>
 

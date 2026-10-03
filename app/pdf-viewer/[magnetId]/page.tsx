@@ -78,8 +78,14 @@ export default async function PdfViewerPage({ params, searchParams }: Props) {
   const pdfTitle = page.pdfTitle || page.name || "Document";
   const customFormFields = Array.isArray(page.customFormFields) ? page.customFormFields : [];
 
+  const pdfUrl = (pageDoc.pdfUrl || pageDoc.assetUrl || "").trim();
+  const pdfPageCount =
+    typeof pageDoc.pdfPageCount === "number" && pageDoc.pdfPageCount > 0
+      ? pageDoc.pdfPageCount
+      : effectivePdfPages.length;
+
   // PDF pages not uploaded yet — show a setup pending screen
-  if (effectivePdfPages.length === 0) {
+  if (effectivePdfPages.length === 0 && !pdfUrl) {
     return (
       <div
         style={{
@@ -117,6 +123,8 @@ export default async function PdfViewerPage({ params, searchParams }: Props) {
         pdfTitle={pdfTitle}
         pdfPages={effectivePdfPages}
         pdfFreePages={pdfFreePages}
+        pdfPageCount={pdfPageCount}
+        pdfUrl={pdfUrl}
         businessName={businessName}
         brandColor={brandColor}
         customFormFields={customFormFields}

@@ -91,6 +91,7 @@ export interface MagnetPage {
   pdfFreePages?: number;     // How many pages to show freely before the gate (default: 2)
   pdfTitle?: string;         // Title shown in the PDF viewer top bar
   pdfPageCount?: number;     // Total number of pages (stored at upload time)
+  pdfUrl?: string;           // Direct or proxied URL to the original PDF for on-demand streaming
   // Explicit Asset / Deliverable fields for Landing Pages
   resourceId?: string;
   assetUrl?: string;

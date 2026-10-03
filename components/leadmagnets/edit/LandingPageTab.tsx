@@ -57,6 +57,10 @@ export interface LandingPageTabProps {
   setLockedPdfFreePages: (free: number) => void;
   lockedPdfTitle: string;
   setLockedPdfTitle: (title: string) => void;
+  lockedPdfUrl?: string;
+  setLockedPdfUrl?: (url: string) => void;
+  lockedPdfPageCount?: number;
+  setLockedPdfPageCount?: (count: number) => void;
   setPage: React.Dispatch<React.SetStateAction<MagnetPage | undefined>>;
   update: (patch: Partial<MagnetPage>) => void;
   // A/B Testing Props
@@ -117,6 +121,10 @@ export default function LandingPageTab({
   setLockedPdfFreePages,
   lockedPdfTitle,
   setLockedPdfTitle,
+  lockedPdfUrl,
+  setLockedPdfUrl,
+  lockedPdfPageCount,
+  setLockedPdfPageCount,
   setPage,
   update,
   testStarted,
@@ -141,16 +149,20 @@ export default function LandingPageTab({
           key={page.id}
           magnetId={page.id}
           userEmail={account?.email || ""}
-          pdfPages={lockedPdfPages || []}
+          pdfPages={lockedPdfPages || page.pdfPages || []}
           pdfFreePages={lockedPdfFreePages !== undefined ? lockedPdfFreePages : 2}
-          pdfTitle={lockedPdfTitle || page.name}
+          pdfTitle={lockedPdfTitle || page.pdfTitle || page.name}
+          pdfPageCount={lockedPdfPageCount || page.pdfPageCount || (lockedPdfPages?.length || 0)}
+          pdfUrl={lockedPdfUrl || page.pdfUrl}
           pageName={page.name}
           pageSlug={page.slug}
-          appUrl={process.env.NEXT_PUBLIC_APP_URL || (typeof window !== "undefined" ? window.location.origin : "https://magnets.bdatech.in")}
+          appUrl={typeof window !== "undefined" ? window.location.origin : (process.env.NEXT_PUBLIC_APP_URL || "https://magnets.bdatech.in")}
           onSave={async (updates) => {
             setLockedPdfPages(updates.pdfPages);
             setLockedPdfFreePages(updates.pdfFreePages);
             setLockedPdfTitle(updates.pdfTitle);
+            if (updates.pdfUrl && setLockedPdfUrl) setLockedPdfUrl(updates.pdfUrl);
+            if (updates.pdfPageCount !== undefined && setLockedPdfPageCount) setLockedPdfPageCount(updates.pdfPageCount);
             setTemplateId("locked-pdf");
             const next = {
               ...page,
@@ -160,6 +172,7 @@ export default function LandingPageTab({
               pdfFreePages: updates.pdfFreePages,
               pdfTitle: updates.pdfTitle,
               pdfPageCount: updates.pdfPageCount,
+              pdfUrl: updates.pdfUrl || page.pdfUrl,
               template: "locked-pdf" as any,
               updatedAt: "Just now",
             };
