@@ -549,7 +549,7 @@ export default function DashboardHome({
           variants={container}
           initial="hidden"
           animate="show"
-          className="flex flex-col gap-5"
+          className="flex flex-col gap-4"
         >
           {/* ══════════════════════════════════════════════
               SECTION 1 — Welcome Hero
@@ -588,7 +588,7 @@ export default function DashboardHome({
           ══════════════════════════════════════════════ */}
           <motion.div
             variants={fadeUp}
-            className="grid grid-cols-2 gap-3.5 lg:grid-cols-4"
+            className="grid grid-cols-2 gap-4 lg:grid-cols-4"
           >
             {kpiCards.map((card) => (
               <Link
@@ -794,7 +794,7 @@ export default function DashboardHome({
           ══════════════════════════════════════════════ */}
           <motion.div
             variants={fadeUp}
-            className="grid grid-cols-1 gap-3.5 lg:grid-cols-2"
+            className="grid grid-cols-1 gap-4 lg:grid-cols-2"
           >
             {/* ── Recent Leads ── */}
             <div className="rounded-2xl border border-zinc-200/80 bg-white/90 dark:border-[#2e2e38] dark:bg-[#18181B]/90 shadow-sm backdrop-blur-sm overflow-hidden">
@@ -849,7 +849,7 @@ export default function DashboardHome({
             </div>
 
             {/* ── Right Column (50% Width): Stacked 50% Active Sequences (Top) + 50% Integrations Status (Bottom) ── */}
-            <div className="flex flex-col gap-3.5 h-full">
+            <div className="flex flex-col gap-4 h-full">
               {/* Top 50%: Active Sequences */}
               <div className="rounded-2xl border border-zinc-200/80 bg-white/90 dark:border-[#2e2e38] dark:bg-[#18181B]/90 shadow-sm backdrop-blur-sm overflow-hidden flex-1 flex flex-col justify-between">
                 <div className="flex items-center justify-between px-5 py-3.5 border-b border-zinc-100 dark:border-[#1e1e26]">
