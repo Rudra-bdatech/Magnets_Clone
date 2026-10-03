@@ -21,6 +21,7 @@ import {
   FileText,
   Layers,
   Linkedin,
+  Zap,
 } from "lucide-react";
 import {
   syncWithDatabase,
@@ -537,7 +538,12 @@ export default function LeadsPage() {
   }, [selectedLeadIds, filtered, magnetPages, sequences, filterMagnet, addToast]);
 
   // Metrics
-  const uniqueSignups = useMemo(() => new Set(leads.map((l) => l.email)).size, [leads]);
+  const totalLeads = leads.length;
+
+  const uniqueSignups = useMemo(
+    () => new Set(leads.map((l) => (l.email ? l.email.toLowerCase().trim() : ""))).size,
+    [leads]
+  );
 
   const recentMonthCount = useMemo(() => {
     const thirtyDaysAgo = new Date();
@@ -549,6 +555,22 @@ export default function LeadsPage() {
       return d >= thirtyDaysAgo;
     }).length;
   }, [leads]);
+
+  const activeInSequenceCount = useMemo(() => {
+    return leads.filter((lead) => {
+      const page = magnetPages.find((p) => p.id === lead.pageId || p.name === lead.page);
+      const foundSeq = sequences.find(
+        (s) => s.id === page?.id || s.pageId === page?.id || (page && s.name.includes(page.name))
+      );
+      const isEnabled = page ? page.sequenceEnabled || (page.sequenceEmails && page.sequenceEmails.length > 0) : false;
+      const isSeqLive = foundSeq ? foundSeq.status === "live" : isEnabled;
+      if (!isSeqLive) return false;
+      if (lead.status === "stopped" || lead.status === "completed" || lead.status === "delivered") {
+        return false;
+      }
+      return true;
+    }).length;
+  }, [leads, magnetPages, sequences]);
 
 
 
@@ -670,26 +692,60 @@ export default function LeadsPage() {
           </div>
 
           {/* Stat cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-6">
-            {/* Unique signups */}
-            <div className="flex items-center rounded-2xl border border-zinc-200/80 bg-white/80 dark:border-[#2e2e38] dark:bg-[#18181B]/80 px-6 py-5 shadow-sm backdrop-blur-sm">
-              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-[#0066B2]/30 bg-[#EFF6FF] text-[#0066B2] dark:border-[#0066B2]/30 dark:bg-[#0066B2]/20 dark:text-[#38BDF8] mr-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 mb-6">
+            {/* Total Subscribers */}
+            <div className="flex items-center rounded-2xl border border-zinc-200/80 bg-white/80 dark:border-[#2e2e38] dark:bg-[#18181B]/80 px-5 py-4 sm:py-5 shadow-sm backdrop-blur-sm transition-all hover:border-zinc-300 dark:hover:border-[#3e3e4a]">
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-indigo-500/30 bg-indigo-50 text-indigo-600 dark:border-indigo-500/30 dark:bg-indigo-500/20 dark:text-indigo-400 mr-3.5">
+                <Layers className="h-5 w-5" />
+              </div>
+              <div className="min-w-0">
+                <p className="text-[11px] font-bold uppercase tracking-wider text-zinc-500 dark:text-[#9B9085] truncate">Total Subscribers</p>
+                <div className="flex items-baseline gap-2 mt-0.5">
+                  <p className="text-2xl font-bold text-zinc-900 dark:text-white leading-none">{totalLeads}</p>
+                  <span className="text-[11px] font-medium text-zinc-400 dark:text-zinc-500 hidden xl:inline">all captures</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Unique Subscribers */}
+            <div className="flex items-center rounded-2xl border border-zinc-200/80 bg-white/80 dark:border-[#2e2e38] dark:bg-[#18181B]/80 px-5 py-4 sm:py-5 shadow-sm backdrop-blur-sm transition-all hover:border-zinc-300 dark:hover:border-[#3e3e4a]">
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-[#0066B2]/30 bg-[#EFF6FF] text-[#0066B2] dark:border-[#0066B2]/30 dark:bg-[#0066B2]/20 dark:text-[#38BDF8] mr-3.5">
                 <Users className="h-5 w-5" />
               </div>
-              <div>
-                <p className="text-[11px] font-bold uppercase tracking-wider text-zinc-500 dark:text-[#9B9085]">Unique Subscribers</p>
-                <p className="text-2xl font-bold text-zinc-900 dark:text-white mt-0.5 leading-none">{uniqueSignups}</p>
+              <div className="min-w-0">
+                <p className="text-[11px] font-bold uppercase tracking-wider text-zinc-500 dark:text-[#9B9085] truncate">Unique Subscribers</p>
+                <div className="flex items-baseline gap-2 mt-0.5">
+                  <p className="text-2xl font-bold text-zinc-900 dark:text-white leading-none">{uniqueSignups}</p>
+                  <span className="text-[11px] font-medium text-zinc-400 dark:text-zinc-500 hidden xl:inline">distinct emails</span>
+                </div>
               </div>
             </div>
 
             {/* Monthly Growth */}
-            <div className="flex items-center rounded-2xl border border-zinc-200/80 bg-white/80 dark:border-[#2e2e38] dark:bg-[#18181B]/80 px-6 py-5 shadow-sm backdrop-blur-sm">
-              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-emerald-500/30 bg-emerald-50 text-emerald-600 dark:border-emerald-500/30 dark:bg-emerald-500/20 dark:text-emerald-400 mr-4">
+            <div className="flex items-center rounded-2xl border border-zinc-200/80 bg-white/80 dark:border-[#2e2e38] dark:bg-[#18181B]/80 px-5 py-4 sm:py-5 shadow-sm backdrop-blur-sm transition-all hover:border-zinc-300 dark:hover:border-[#3e3e4a]">
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-emerald-500/30 bg-emerald-50 text-emerald-600 dark:border-emerald-500/30 dark:bg-emerald-500/20 dark:text-emerald-400 mr-3.5">
                 <TrendingUp className="h-5 w-5" />
               </div>
-              <div>
-                <p className="text-[11px] font-bold uppercase tracking-wider text-zinc-500 dark:text-[#9B9085]">New This Month</p>
-                <p className="text-2xl font-bold text-zinc-900 dark:text-white mt-0.5 leading-none">+{recentMonthCount}</p>
+              <div className="min-w-0">
+                <p className="text-[11px] font-bold uppercase tracking-wider text-zinc-500 dark:text-[#9B9085] truncate">New This Month</p>
+                <div className="flex items-baseline gap-2 mt-0.5">
+                  <p className="text-2xl font-bold text-zinc-900 dark:text-white leading-none">+{recentMonthCount}</p>
+                  <span className="text-[11px] font-medium text-zinc-400 dark:text-zinc-500 hidden xl:inline">past 30 days</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Active in Sequence */}
+            <div className="flex items-center rounded-2xl border border-zinc-200/80 bg-white/80 dark:border-[#2e2e38] dark:bg-[#18181B]/80 px-5 py-4 sm:py-5 shadow-sm backdrop-blur-sm transition-all hover:border-zinc-300 dark:hover:border-[#3e3e4a]">
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-purple-500/30 bg-purple-50 text-purple-600 dark:border-purple-500/30 dark:bg-purple-500/20 dark:text-purple-400 mr-3.5">
+                <Zap className="h-5 w-5" />
+              </div>
+              <div className="min-w-0">
+                <p className="text-[11px] font-bold uppercase tracking-wider text-zinc-500 dark:text-[#9B9085] truncate">Active In Sequence</p>
+                <div className="flex items-baseline gap-2 mt-0.5">
+                  <p className="text-2xl font-bold text-zinc-900 dark:text-white leading-none">{activeInSequenceCount}</p>
+                  <span className="text-[11px] font-medium text-zinc-400 dark:text-zinc-500 hidden xl:inline">in automation</span>
+                </div>
               </div>
             </div>
           </div>
