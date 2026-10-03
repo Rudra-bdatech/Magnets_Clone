@@ -7,7 +7,6 @@ import {
   AlertTriangle,
   Check,
   Trash2,
-  BarChart3,
   Bell,
   Send,
   Camera,
@@ -16,20 +15,13 @@ import {
   X,
   AlertCircle,
   Info,
-  Layers,
-  Database,
   Mail,
-  Zap,
 } from "lucide-react";
 import DashboardShell from "@/components/dashboard/dashboard-shell";
 import {
   saveAccount,
   syncWithDatabase,
   loadAccount,
-  loadPages,
-  loadLeads,
-  loadSequences,
-  loadResources,
 } from "@/lib/store";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
@@ -185,7 +177,7 @@ export default function AccountSettingsPage() {
   const [deleteError, setDeleteError] = useState("");
 
   // Tab Navigation State
-  const [activeTab, setActiveTab] = useState<"profile" | "security" | "notifications" | "usage" | "danger">("profile");
+  const [activeTab, setActiveTab] = useState<"profile" | "security" | "notifications" | "danger">("profile");
   const [hoveredTab, setHoveredTab] = useState<string | null>(null);
 
   // Instant Lead Alerts State
@@ -209,40 +201,6 @@ export default function AccountSettingsPage() {
     setToasts((prev) => prev.filter((t) => t.id !== id));
   }, []);
 
-  // Data Source State for Workspace Metrics
-  const [pagesData, setPagesData] = useState<any[]>([]);
-  const [leadsData, setLeadsData] = useState<any[]>([]);
-  const [sequencesData, setSequencesData] = useState<any[]>([]);
-  const [resourcesData, setResourcesData] = useState<any[]>([]);
-
-  const isDemo = useMemo(() => {
-    return !account?.email || account.email === "alex@rivera.studio";
-  }, [account?.email]);
-
-  // Workspace Metrics Calculations
-  const leadCount = useMemo(() => {
-    const pageSignups = (pagesData || []).reduce((sum: number, p: any) => sum + (p.signups || 0), 0);
-    const leadsLen = (leadsData || []).length;
-    return isDemo ? Math.max(740, pageSignups, leadsLen) : Math.max(pageSignups, leadsLen);
-  }, [pagesData, leadsData, isDemo]);
-
-  const activeSequencesCount = useMemo(() => {
-    const liveSeqCount = (sequencesData || []).filter((s) => s.status === "live").length;
-    return isDemo ? Math.max(3, liveSeqCount) : liveSeqCount;
-  }, [sequencesData, isDemo]);
-
-  const totalPagesCount = useMemo(() => {
-    const pagesLen = (pagesData || []).length;
-    return isDemo ? Math.max(4, pagesLen) : pagesLen;
-  }, [pagesData, isDemo]);
-
-  const storageMb = useMemo(() => {
-    const resourceCount = (resourcesData || []).length;
-    return isDemo
-      ? parseFloat(Math.max(18.5, resourceCount * 2.8).toFixed(1))
-      : parseFloat((resourceCount * 2.8).toFixed(1));
-  }, [resourcesData, isDemo]);
-
   useEffect(() => {
     // Load local data instantly
     const localAccount = loadAccount();
@@ -255,32 +213,15 @@ export default function AccountSettingsPage() {
       setNotifyEmail(localAccount.notifyEmail || localAccount.email || "");
     }
 
-    const localPages = loadPages() || [];
-    const localLeads = loadLeads() || [];
-    const localSeqs = loadSequences() || [];
-    const localRes = loadResources() || [];
-
-    setPagesData(localPages);
-    setLeadsData(localLeads);
-    setSequencesData(localSeqs);
-    setResourcesData(localRes);
-
     // Sync in background silently
     syncWithDatabase().then((data) => {
-      if (data) {
-        if (data.account) {
-          setAccount(data.account);
-          setName(data.account.name || "");
-          setEmail(data.account.email || "");
-          setAvatar(data.account.avatar || null);
-          setLeadAlertsEnabled(data.account.leadAlertsEnabled !== false);
-          setNotifyEmail(data.account.notifyEmail || data.account.email || "");
-        }
-
-        if (data.pages) setPagesData(data.pages);
-        if (data.leads) setLeadsData(data.leads);
-        if (data.sequences) setSequencesData(data.sequences);
-        if (data.resources) setResourcesData(data.resources);
+      if (data && data.account) {
+        setAccount(data.account);
+        setName(data.account.name || "");
+        setEmail(data.account.email || "");
+        setAvatar(data.account.avatar || null);
+        setLeadAlertsEnabled(data.account.leadAlertsEnabled !== false);
+        setNotifyEmail(data.account.notifyEmail || data.account.email || "");
       }
     });
   }, []);
@@ -608,7 +549,6 @@ export default function AccountSettingsPage() {
               { id: "profile", label: "Profile & Identity", icon: User },
               { id: "security", label: "Security & Password", icon: KeyRound },
               { id: "notifications", label: "Instant Lead Alerts", icon: Bell },
-              { id: "usage", label: "Workspace Metrics", icon: BarChart3 },
               { id: "danger", label: "Danger Zone", icon: AlertTriangle, danger: true },
             ].map((t) => {
               const Icon = t.icon;
@@ -684,7 +624,7 @@ export default function AccountSettingsPage() {
 
                   <div className="mt-5 pl-12 space-y-5 max-w-2xl">
                     {/* Profile Avatar Upload */}
-                    <div className="flex items-center gap-5 pb-4 border-b border-zinc-100 dark:border-zinc-800/80">
+                    <div className="flex items-center gap-5">
                       <div className="relative group shrink-0">
                         {avatar && !avatarLoadError ? (
                           <img
@@ -1010,88 +950,7 @@ export default function AccountSettingsPage() {
                 </motion.section>
               )}
 
-              {/* TAB 4: Workspace Metrics & Storage */}
-              {activeTab === "usage" && (
-                <motion.section
-                  key="usage"
-                  initial={{ opacity: 0, y: 8, scale: 0.99 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: -6, scale: 0.99 }}
-                  transition={{ duration: 0.1, ease: [0.16, 1, 0.3, 1] }}
-                  className="rounded-2xl border border-zinc-200/80 bg-white dark:border-[#2e2e38] dark:bg-[#18181B] p-6 shadow-sm"
-                >
-                  <div className="flex items-start gap-3">
-                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-[#0066B2]/30 bg-[#EFF6FF] dark:border-[#0066B2]/30 dark:bg-[#1a2638] text-[#0066B2]">
-                      <BarChart3 className="h-4.5 w-4.5" />
-                    </div>
-                    <div>
-                      <h4 className="text-[14.2px] font-bold text-zinc-900 dark:text-white">
-                        Workspace Metrics & Resources
-                      </h4>
-                      <p className="text-[12.2px] text-[#71717a] dark:text-[#9B9085] mt-0.5">
-                        Real-time overview of your captured leads, cloud storage, and automation resources.
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* High Level Stats Grid */}
-                  <div className="mt-6 pl-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 max-w-4xl">
-                    <div className="p-4 rounded-xl border border-zinc-200 dark:border-zinc-800/80 bg-zinc-50/50 dark:bg-zinc-900/40">
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="text-[11px] font-semibold text-zinc-500 dark:text-zinc-400">Total Leads</span>
-                        <div className="p-1.5 rounded-lg bg-[#EFF6FF] dark:bg-[#1a2638] text-[#0066B2]">
-                          <User className="h-3.5 w-3.5" />
-                        </div>
-                      </div>
-                      <div className="text-2xl font-extrabold text-zinc-900 dark:text-white">
-                        {leadCount.toLocaleString()}
-                      </div>
-                      <span className="text-[10px] text-zinc-500 dark:text-zinc-400">Captured across all magnets</span>
-                    </div>
-
-                    <div className="p-4 rounded-xl border border-zinc-200 dark:border-zinc-800/80 bg-zinc-50/50 dark:bg-zinc-900/40">
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="text-[11px] font-semibold text-zinc-500 dark:text-zinc-400">Lead Magnets</span>
-                        <div className="p-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400">
-                          <Layers className="h-3.5 w-3.5" />
-                        </div>
-                      </div>
-                      <div className="text-2xl font-extrabold text-zinc-900 dark:text-white">
-                        {totalPagesCount}
-                      </div>
-                      <span className="text-[10px] text-zinc-500 dark:text-zinc-400">Published landing pages</span>
-                    </div>
-
-                    <div className="p-4 rounded-xl border border-zinc-200 dark:border-zinc-800/80 bg-zinc-50/50 dark:bg-zinc-900/40">
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="text-[11px] font-semibold text-zinc-500 dark:text-zinc-400">Live Sequences</span>
-                        <div className="p-1.5 rounded-lg bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400">
-                          <Zap className="h-3.5 w-3.5" />
-                        </div>
-                      </div>
-                      <div className="text-2xl font-extrabold text-zinc-900 dark:text-white">
-                        {activeSequencesCount}
-                      </div>
-                      <span className="text-[10px] text-zinc-500 dark:text-zinc-400">Active email automations</span>
-                    </div>
-
-                    <div className="p-4 rounded-xl border border-zinc-200 dark:border-zinc-800/80 bg-zinc-50/50 dark:bg-zinc-900/40">
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="text-[11px] font-semibold text-zinc-500 dark:text-zinc-400">Storage Used</span>
-                        <div className="p-1.5 rounded-lg bg-sky-50 dark:bg-sky-950/60 text-sky-600 dark:text-sky-400">
-                          <Database className="h-3.5 w-3.5" />
-                        </div>
-                      </div>
-                      <div className="text-2xl font-extrabold text-zinc-900 dark:text-white">
-                        {storageMb} MB
-                      </div>
-                      <span className="text-[10px] text-zinc-500 dark:text-zinc-400">PDFs, images & assets</span>
-                    </div>
-                  </div>
-                </motion.section>
-              )}
-
-              {/* TAB 5: Danger Zone */}
+              {/* TAB 4: Danger Zone */}
               {activeTab === "danger" && (
                 <motion.section
                   key="danger"
