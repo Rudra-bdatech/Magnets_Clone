@@ -1148,7 +1148,7 @@ export default function LockedPdfPage() {
                           <button
                             type="button"
                             onClick={(e) => handleToggleCheck(pdf.id, e)}
-                            className={`absolute top-2.5 right-2.5 z-30 flex h-6 w-6 items-center justify-center rounded-lg border transition-all cursor-pointer ${
+                            className={`absolute top-2.5 right-2.5 z-10 flex h-6 w-6 items-center justify-center rounded-lg border transition-all cursor-pointer ${
                               isChecked
                                 ? "bg-[#0066B2] border-[#0066B2] text-white shadow-md scale-105"
                                 : "bg-white/90 dark:bg-[#18181D]/90 border-zinc-300 dark:border-zinc-700 text-transparent hover:border-[#0066B2] dark:hover:border-[#38BDF8]"
@@ -1203,7 +1203,7 @@ export default function LockedPdfPage() {
                           </div>
 
                           {/* Page Count Tag */}
-                          <div className="absolute bottom-1.5 right-2 z-20">
+                          <div className="absolute bottom-1.5 right-2 z-10">
                             <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[8.5px] font-mono font-medium bg-zinc-900/80 text-zinc-300 border border-zinc-700/60 backdrop-blur-md shadow-xs">
                               <FileText className="h-2.5 w-2.5 text-zinc-400" />
                               {pdf.pdfPageCount || (pdf.pdfPages ? pdf.pdfPages.length : 1)}P
