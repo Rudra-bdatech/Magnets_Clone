@@ -1566,9 +1566,6 @@ export default function EditLeadMagnetPage() {
                 {isLockedPdf ? "Edit Locked PDF" : "Edit lead magnet"}
                 <span className="cursor-help flex h-5 w-5 items-center justify-center rounded-full border border-zinc-200 dark:border-[#2e2e38] text-xs font-normal text-zinc-500 dark:text-[#9B9085] hover:bg-zinc-100 dark:hover:bg-[#18181B]" title={isLockedPdf ? "Edit the PDF, delivery emails, and post-signup flow" : "Edit the page copy, design, emails, and post-signup flow"}>?</span>
               </h2>
-              <p className="text-xs text-zinc-500 dark:text-[#9B9085] mt-1">
-                {isLockedPdf ? "Edit the PDF document, emails, and post-signup experience" : "Edit the page, emails, and post-signup experience"}
-              </p>
             </div>
           </div>
 
