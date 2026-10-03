@@ -483,16 +483,7 @@ export default function SequencesPage() {
           {sequences.length > 0 && (
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4 mb-2">
               {/* Card 1: Active Sequences */}
-              <button
-                type="button"
-                onClick={() => setStatusFilter(statusFilter === "live" ? "all" : "live")}
-                className={`flex items-center rounded-2xl border p-3 sm:px-5 sm:py-4 shadow-sm backdrop-blur-sm transition-all text-left cursor-pointer ${
-                  statusFilter === "live"
-                    ? "border-[#0066B2] dark:border-[#38BDF8] bg-[#EFF6FF]/90 dark:bg-[#0066B2]/20 ring-1 ring-[#0066B2] dark:ring-[#38BDF8]"
-                    : "border-zinc-200/80 bg-white/80 dark:border-[#2e2e38] dark:bg-[#18181B]/80 hover:border-zinc-300 dark:hover:border-zinc-700"
-                }`}
-                title="Click to filter by Active Sequences"
-              >
+              <div className="flex items-center rounded-2xl border border-zinc-200/80 bg-white/80 dark:border-[#2e2e38] dark:bg-[#18181B]/80 p-3 sm:px-5 sm:py-4 shadow-sm backdrop-blur-sm text-left">
                 <div className="flex h-9 w-9 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-lg sm:rounded-xl border border-emerald-500/30 bg-emerald-50 text-emerald-600 dark:border-emerald-500/30 dark:bg-emerald-500/20 dark:text-emerald-400 mr-2.5 sm:mr-3.5">
                   <Rocket className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
                 </div>
@@ -507,19 +498,10 @@ export default function SequencesPage() {
                     <span className="text-[10px] sm:text-xs font-semibold text-zinc-400">/ {metrics.totalSequences}</span>
                   </div>
                 </div>
-              </button>
+              </div>
 
               {/* Card 2: Total Delivered */}
-              <button
-                type="button"
-                onClick={() => setSortBy(sortBy === "delivered" ? "recent" : "delivered")}
-                className={`flex items-center rounded-2xl border p-3 sm:px-5 sm:py-4 shadow-sm backdrop-blur-sm transition-all text-left cursor-pointer ${
-                  sortBy === "delivered"
-                    ? "border-[#0066B2] dark:border-[#38BDF8] bg-[#EFF6FF]/90 dark:bg-[#0066B2]/20 ring-1 ring-[#0066B2] dark:ring-[#38BDF8]"
-                    : "border-zinc-200/80 bg-white/80 dark:border-[#2e2e38] dark:bg-[#18181B]/80 hover:border-zinc-300 dark:hover:border-zinc-700"
-                }`}
-                title="Click to sort by Most Delivered"
-              >
+              <div className="flex items-center rounded-2xl border border-zinc-200/80 bg-white/80 dark:border-[#2e2e38] dark:bg-[#18181B]/80 p-3 sm:px-5 sm:py-4 shadow-sm backdrop-blur-sm text-left">
                 <div className="flex h-9 w-9 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-lg sm:rounded-xl border border-[#0066B2]/30 bg-[#EFF6FF] text-[#0066B2] dark:border-[#0066B2]/30 dark:bg-[#0066B2]/20 dark:text-[#38BDF8] mr-2.5 sm:mr-3.5">
                   <Send className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
                 </div>
@@ -534,19 +516,10 @@ export default function SequencesPage() {
                     <span className="text-[10px] sm:text-xs font-semibold text-zinc-400">sent</span>
                   </div>
                 </div>
-              </button>
+              </div>
 
               {/* Card 3: Avg Open Rate */}
-              <button
-                type="button"
-                onClick={() => setSortBy(sortBy === "open_rate" ? "recent" : "open_rate")}
-                className={`flex items-center rounded-2xl border p-3 sm:px-5 sm:py-4 shadow-sm backdrop-blur-sm transition-all text-left cursor-pointer ${
-                  sortBy === "open_rate"
-                    ? "border-[#0066B2] dark:border-[#38BDF8] bg-[#EFF6FF]/90 dark:bg-[#0066B2]/20 ring-1 ring-[#0066B2] dark:ring-[#38BDF8]"
-                    : "border-zinc-200/80 bg-white/80 dark:border-[#2e2e38] dark:bg-[#18181B]/80 hover:border-zinc-300 dark:hover:border-zinc-700"
-                }`}
-                title="Click to sort by Highest Open Rate"
-              >
+              <div className="flex items-center rounded-2xl border border-zinc-200/80 bg-white/80 dark:border-[#2e2e38] dark:bg-[#18181B]/80 p-3 sm:px-5 sm:py-4 shadow-sm backdrop-blur-sm text-left">
                 <div className="flex h-9 w-9 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-lg sm:rounded-xl border border-indigo-500/30 bg-indigo-50 text-indigo-600 dark:border-indigo-500/30 dark:bg-indigo-500/20 dark:text-indigo-400 mr-2.5 sm:mr-3.5">
                   <TrendingUp className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
                 </div>
@@ -563,19 +536,10 @@ export default function SequencesPage() {
                     </span>
                   </div>
                 </div>
-              </button>
+              </div>
 
               {/* Card 4: Sequence Completed */}
-              <button
-                type="button"
-                onClick={() => setStatusFilter(statusFilter === "has_leads" ? "all" : "has_leads")}
-                className={`flex items-center rounded-2xl border p-3 sm:px-5 sm:py-4 shadow-sm backdrop-blur-sm transition-all text-left cursor-pointer ${
-                  statusFilter === "has_leads"
-                    ? "border-[#0066B2] dark:border-[#38BDF8] bg-[#EFF6FF]/90 dark:bg-[#0066B2]/20 ring-1 ring-[#0066B2] dark:ring-[#38BDF8]"
-                    : "border-zinc-200/80 bg-white/80 dark:border-[#2e2e38] dark:bg-[#18181B]/80 hover:border-zinc-300 dark:hover:border-zinc-700"
-                }`}
-                title="Click to filter by Sequences With Leads"
-              >
+              <div className="flex items-center rounded-2xl border border-zinc-200/80 bg-white/80 dark:border-[#2e2e38] dark:bg-[#18181B]/80 p-3 sm:px-5 sm:py-4 shadow-sm backdrop-blur-sm text-left">
                 <div className="flex h-9 w-9 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-lg sm:rounded-xl border border-emerald-500/30 bg-emerald-50 text-emerald-600 dark:border-emerald-500/30 dark:bg-emerald-500/20 dark:text-emerald-400 mr-2.5 sm:mr-3.5">
                   <CheckCircle2 className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
                 </div>
@@ -590,7 +554,7 @@ export default function SequencesPage() {
                     <span className="text-[10px] sm:text-xs font-semibold text-zinc-400">leads</span>
                   </div>
                 </div>
-              </button>
+              </div>
             </div>
           )}
 
