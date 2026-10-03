@@ -42,8 +42,14 @@ export default function LeadMagnetAnalyticsPage() {
     });
   }, [params.id]);
 
+  const isLockedPdf = page?.template === "locked-pdf" || (page as any)?.pdfFreePages !== undefined;
+
   return (
-    <DashboardShell account={account} title="Analytics">
+    <DashboardShell
+      account={account}
+      title="Analytics"
+      activeNavHref={isLockedPdf ? "/dashboard/locked-pdf" : "/dashboard/landing-page"}
+    >
       <AnalyticsLinearView
         account={account}
         page={page}
