@@ -16,8 +16,11 @@ import {
   Mail,
   Clock,
   Home,
+  Globe,
+  MousePointer,
   CheckCircle2,
   AlertCircle,
+  AlertTriangle,
   Loader2,
   Trash2,
   X,
@@ -106,6 +109,8 @@ export default function LockedPdfPage() {
   const [toasts, setToasts] = useState<Toast[]>([]);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [showBulkDeleteModal, setShowBulkDeleteModal] = useState(false);
+  const [checkedIds, setCheckedIds] = useState<string[]>([]);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [createMagnetName, setCreateMagnetName] = useState("");
   const [customSlug, setCustomSlug] = useState("");
@@ -247,7 +252,7 @@ export default function LockedPdfPage() {
   }, []);
 
   useEffect(() => {
-    const anyOpen = showEmailPreviewModal || showSequencePreviewModal || showDeleteModal || showCreateModal || showAssetPickerModal;
+    const anyOpen = showEmailPreviewModal || showSequencePreviewModal || showDeleteModal || showCreateModal || showAssetPickerModal || showBulkDeleteModal;
     const lenis = typeof window !== "undefined" ? (window as any).__lenis : null;
     if (anyOpen) {
       document.body.style.overflow = "hidden";
@@ -263,7 +268,7 @@ export default function LockedPdfPage() {
       document.documentElement.style.overflow = "";
       if (lenis && typeof lenis.start === "function") lenis.start();
     };
-  }, [showEmailPreviewModal, showSequencePreviewModal, showDeleteModal, showCreateModal, showAssetPickerModal]);
+  }, [showEmailPreviewModal, showSequencePreviewModal, showDeleteModal, showCreateModal, showAssetPickerModal, showBulkDeleteModal]);
 
   // Ensure unmount cleanup flushes any pending unsaved state
   useEffect(() => {
@@ -331,6 +336,10 @@ export default function LockedPdfPage() {
   const total = lockedPdfPages.length;
   const liveCount = useMemo(() => lockedPdfPages.filter((p) => p.status === "live").length, [lockedPdfPages]);
   const draftCount = useMemo(() => lockedPdfPages.filter((p) => p.status !== "live").length, [lockedPdfPages]);
+
+  const totalViews = useMemo(() => lockedPdfPages.reduce((sum, p) => sum + (p.views || 0), 0), [lockedPdfPages]);
+  const totalSignups = useMemo(() => lockedPdfPages.reduce((sum, p) => sum + (p.signups || 0), 0), [lockedPdfPages]);
+  const avgConversion = useMemo(() => totalViews > 0 ? ((totalSignups / totalViews) * 100).toFixed(1) : "0.0", [totalViews, totalSignups]);
 
   // Filtered locked PDFs based on search and status
   const filtered = useMemo(() => {
@@ -750,6 +759,39 @@ export default function LockedPdfPage() {
     router.push(`/dashboard/leadmagnets/${newId}`);
   };
 
+  const handleToggleCheck = useCallback((id: string, e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    setCheckedIds((prev) => (prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]));
+  }, []);
+
+  const handleToggleSelectAll = useCallback(() => {
+    if (filtered.length === 0) return;
+    const allFilteredIds = filtered.map((p) => p.id);
+    const isAllChecked = allFilteredIds.every((id) => checkedIds.includes(id));
+    if (isAllChecked) {
+      setCheckedIds((prev) => prev.filter((id) => !allFilteredIds.includes(id)));
+    } else {
+      setCheckedIds((prev) => Array.from(new Set([...prev, ...allFilteredIds])));
+    }
+  }, [filtered, checkedIds]);
+
+  const confirmBulkDeletion = useCallback(() => {
+    if (checkedIds.length === 0) return;
+    const remaining = pages.filter((p) => !checkedIds.includes(p.id));
+    setPages(remaining);
+    savePages(remaining);
+    checkedIds.forEach((id) => deletePage(id));
+
+    if (selectedPageId && checkedIds.includes(selectedPageId)) {
+      const remainingLocked = remaining.filter((p) => p.template === "locked-pdf" || p.pdfFreePages !== undefined);
+      setSelectedPageId(remainingLocked[0]?.id || remaining[0]?.id || null);
+    }
+    addToast(`Deleted ${checkedIds.length} locked PDF${checkedIds.length > 1 ? "s" : ""}.`);
+    setCheckedIds([]);
+    setShowBulkDeleteModal(false);
+    router.refresh();
+  }, [checkedIds, pages, selectedPageId, router]);
+
   const handleDeleteActiveDocument = () => {
     if (!activePage) return;
     setIsDeleting(true);
@@ -758,6 +800,7 @@ export default function LockedPdfPage() {
       const remaining = pages.filter((p) => p.id !== activePage.id);
       setPages(remaining);
       savePages(remaining);
+      setCheckedIds((prev) => prev.filter((id) => id !== activePage.id));
 
       const remainingLocked = remaining.filter(
         (p) => p.template === "locked-pdf" || p.pdfFreePages !== undefined
@@ -857,54 +900,54 @@ export default function LockedPdfPage() {
 
           {/* Quick Metrics Bar */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 py-3 text-xs">
-            {/* Pages & Preview Limit */}
+            {/* Active Pages */}
             <div className="flex items-center gap-3">
               <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#EFF6FF] dark:bg-[#0066B2]/15 text-[#0066B2] dark:text-[#38BDF8]">
-                <FileText className="h-4 w-4" />
+                <Globe className="h-4 w-4" />
               </div>
               <div>
-                <p className="text-[11px] font-medium text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">Pages & Preview</p>
+                <p className="text-[11px] font-medium text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">Active Pages</p>
                 <p className="text-base font-bold text-zinc-900 dark:text-white">
-                  {activePdfStats.pagesCount} <span className="text-xs font-normal text-zinc-400">({activePdfStats.freePages} Free Preview)</span>
+                  {liveCount} <span className="text-xs font-normal text-zinc-400">/ {total}</span>
                 </p>
               </div>
             </div>
 
-            {/* Preview Traffic */}
+            {/* Total Traffic */}
             <div className="flex items-center gap-3">
               <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400">
                 <Eye className="h-4 w-4" />
               </div>
               <div>
-                <p className="text-[11px] font-medium text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">Preview Traffic</p>
+                <p className="text-[11px] font-medium text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">Total Traffic</p>
                 <p className="text-base font-bold text-zinc-900 dark:text-white">
-                  {activePdfStats.views.toLocaleString()}
+                  {totalViews.toLocaleString()}
                 </p>
               </div>
             </div>
 
-            {/* OTP Unlocks */}
+            {/* Leads Collected */}
             <div className="flex items-center gap-3">
               <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-purple-50 dark:bg-purple-950/40 text-purple-600 dark:text-purple-400">
-                <Lock className="h-4 w-4" />
+                <MousePointer className="h-4 w-4" />
               </div>
               <div>
-                <p className="text-[11px] font-medium text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">OTP Unlocks</p>
+                <p className="text-[11px] font-medium text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">Leads Collected</p>
                 <p className="text-base font-bold text-zinc-900 dark:text-white">
-                  {activePdfStats.signups.toLocaleString()}
+                  {totalSignups.toLocaleString()}
                 </p>
               </div>
             </div>
 
-            {/* Unlock Rate */}
+            {/* Avg Conv. Rate */}
             <div className="flex items-center gap-3">
               <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400">
                 <TrendingUp className="h-4 w-4" />
               </div>
               <div>
-                <p className="text-[11px] font-medium text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">Unlock Rate</p>
+                <p className="text-[11px] font-medium text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">Avg. Conv. Rate</p>
                 <p className="text-base font-bold text-zinc-900 dark:text-white">
-                  {activePdfStats.convRate}
+                  {avgConversion}%
                 </p>
               </div>
             </div>
@@ -933,8 +976,31 @@ export default function LockedPdfPage() {
               </div>
 
               <div className="flex items-center gap-2 shrink-0 justify-between sm:justify-end">
-                <div className="flex items-center px-3 py-1.5 bg-zinc-100 dark:bg-[#1C1C20] rounded-xl text-xs font-bold text-zinc-700 dark:text-zinc-300">
-                  <span>{total} {total === 1 ? "Locked PDF" : "Locked PDFs"}</span>
+                <div className="flex items-center p-1 bg-zinc-100 dark:bg-[#1C1C20] rounded-xl text-xs">
+                  {[
+                    { id: "all", label: `All (${total})` },
+                    { id: "live", label: `Live (${liveCount})` },
+                    { id: "draft", label: `Draft (${draftCount})` },
+                  ].map((tab) => (
+                    <button
+                      key={tab.id}
+                      onClick={() => setStatusFilter(tab.id as any)}
+                      className={`relative px-3 py-1 font-semibold rounded-lg transition-colors duration-150 cursor-pointer ${
+                        statusFilter === tab.id
+                          ? "text-zinc-900 dark:text-white"
+                          : "text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200"
+                      }`}
+                    >
+                      {statusFilter === tab.id && (
+                        <motion.div
+                          layoutId="activeStatusFilterTabLockedPdf"
+                          className="absolute inset-0 bg-white dark:bg-[#2A2A30] rounded-lg shadow-xs"
+                          transition={{ type: "spring", stiffness: 500, damping: 32 }}
+                        />
+                      )}
+                      <span className="relative z-10">{tab.label}</span>
+                    </button>
+                  ))}
                 </div>
 
                 <div className="flex items-center p-1 bg-zinc-100 dark:bg-[#1C1C20] rounded-xl">
@@ -974,6 +1040,47 @@ export default function LockedPdfPage() {
                 </div>
               </div>
             </div>
+
+            {/* Bulk Selection Action Bar */}
+            {checkedIds.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: -6 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -6 }}
+                className="flex items-center justify-between rounded-xl border border-[#0066B2]/30 bg-[#0066B2]/10 dark:bg-[#0066B2]/15 px-4 py-2.5 text-xs shadow-xs"
+              >
+                <div className="flex items-center gap-3">
+                  <span className="font-bold text-[#0066B2] dark:text-[#38BDF8]">
+                    {checkedIds.length} locked PDF{checkedIds.length > 1 ? "s" : ""} selected
+                  </span>
+                  <button
+                    onClick={handleToggleSelectAll}
+                    className="text-[11px] font-semibold text-zinc-600 dark:text-zinc-300 hover:underline cursor-pointer"
+                  >
+                    {filtered.length > 0 && filtered.every((p) => checkedIds.includes(p.id))
+                      ? "Deselect All"
+                      : "Select All"}
+                  </button>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setCheckedIds([])}
+                    className="px-3 py-1 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-[#1A1A1E] font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition cursor-pointer"
+                  >
+                    Clear Selection
+                  </button>
+
+                  <button
+                    onClick={() => setShowBulkDeleteModal(true)}
+                    className="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-rose-600 hover:bg-rose-700 text-white font-bold transition shadow-xs cursor-pointer"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                    <span>Delete Selected ({checkedIds.length})</span>
+                  </button>
+                </div>
+              </motion.div>
+            )}
 
             {/* Cards Library Grid */}
             <AnimatePresence mode="popLayout">
@@ -1016,6 +1123,7 @@ export default function LockedPdfPage() {
                 >
                   {filtered.map((pdf) => {
                     const isSelected = activePage?.id === pdf.id;
+                    const isChecked = checkedIds.includes(pdf.id);
                     const shareUrl = typeof window !== "undefined"
                       ? `${window.location.origin}/pdf-viewer/${pdf.id}`
                       : `/pdf-viewer/${pdf.id}`;
@@ -1025,15 +1133,30 @@ export default function LockedPdfPage() {
                         key={pdf.id}
                         onClick={() => setSelectedPageId(pdf.id)}
                         className={`group relative rounded-2xl border transition-all duration-300 cursor-pointer overflow-hidden flex flex-col justify-between ${
-                          isSelected
-                            ? "border-[#0066B2] dark:border-[#38BDF8]/80 bg-gradient-to-b from-[#0066B2]/[0.08] via-[#0066B2]/[0.02] to-transparent ring-1 ring-[#0066B2]/30 dark:ring-[#38BDF8]/30 shadow-[0_0_20px_rgba(0,102,178,0.15)]"
-                            : "border-zinc-200/80 dark:border-[#1F1F24] bg-white dark:bg-[#151518] hover:border-zinc-300 dark:hover:border-[#27272A] shadow-xs hover:shadow-xl hover:-translate-y-0.5"
+                          isChecked
+                            ? "border-[#0066B2] dark:border-[#38BDF8] bg-white dark:bg-[#18181C] ring-2 ring-[#0066B2]/40 dark:ring-[#38BDF8]/40 shadow-md"
+                            : isSelected
+                              ? "border-[#0066B2] dark:border-[#38BDF8]/80 bg-gradient-to-b from-[#0066B2]/[0.08] via-[#0066B2]/[0.02] to-transparent ring-1 ring-[#0066B2]/30 dark:ring-[#38BDF8]/30 shadow-[0_0_20px_rgba(0,102,178,0.15)]"
+                              : "border-zinc-200/80 dark:border-[#1F1F24] bg-white dark:bg-[#151518] hover:border-zinc-300 dark:hover:border-[#27272A] shadow-xs hover:shadow-xl hover:-translate-y-0.5"
                         }`}
                       >
 
 
                         {/* PDF Canvas Preview Box */}
                         <div className="relative pt-4 px-3 pb-2 bg-gradient-to-b from-zinc-100 to-zinc-200/60 dark:from-[#18181D] dark:to-[#0F0F12] border-b border-zinc-200/70 dark:border-[#1F1F24] overflow-hidden flex flex-col items-center justify-center min-h-[135px]">
+                          {/* Selection Checkbox */}
+                          <button
+                            type="button"
+                            onClick={(e) => handleToggleCheck(pdf.id, e)}
+                            className={`absolute top-2.5 right-2.5 z-30 flex h-6 w-6 items-center justify-center rounded-lg border transition-all cursor-pointer ${
+                              isChecked
+                                ? "bg-[#0066B2] border-[#0066B2] text-white shadow-md scale-105"
+                                : "bg-white/90 dark:bg-[#18181D]/90 border-zinc-300 dark:border-zinc-700 text-transparent hover:border-[#0066B2] dark:hover:border-[#38BDF8]"
+                            }`}
+                            title={isChecked ? "Deselect PDF" : "Select PDF"}
+                          >
+                            <Check className={`h-3.5 w-3.5 stroke-[3px] ${isChecked ? "opacity-100" : "opacity-0"}`} />
+                          </button>
                           {/* Stacked Paper Pages Background (depth effect) */}
                           <div className="absolute inset-x-8 top-2.5 h-[105px] bg-zinc-200/80 dark:bg-zinc-800/60 rounded-t-lg transform scale-95 border border-zinc-300/50 dark:border-zinc-700/50 shadow-xs" />
                           <div className="absolute inset-x-6 top-3 h-[108px] bg-zinc-100 dark:bg-zinc-800/90 rounded-t-lg transform scale-[0.98] border border-zinc-300/60 dark:border-zinc-700/60 shadow-xs" />
@@ -1187,6 +1310,19 @@ export default function LockedPdfPage() {
                   <table className="w-full text-left text-xs">
                     <thead className="bg-zinc-50 dark:bg-[#1A1A1E] text-zinc-500 font-bold border-b border-zinc-200/60 dark:border-zinc-800/60">
                       <tr>
+                        <th className="px-3 py-3 w-8">
+                          <button
+                            type="button"
+                            onClick={handleToggleSelectAll}
+                            className={`flex h-4 w-4 items-center justify-center rounded border transition cursor-pointer ${
+                              filtered.length > 0 && filtered.every((p) => checkedIds.includes(p.id))
+                                ? "bg-[#0066B2] border-[#0066B2] text-white"
+                                : "bg-white dark:bg-zinc-800 border-zinc-300 dark:border-zinc-600 text-transparent"
+                            }`}
+                          >
+                            <Check className={`h-3 w-3 stroke-[3px] ${filtered.length > 0 && filtered.every((p) => checkedIds.includes(p.id)) ? "opacity-100" : "opacity-0"}`} />
+                          </button>
+                        </th>
                         <th className="px-4 py-3">Document</th>
                         <th className="px-4 py-3 text-right">Pages</th>
                         <th className="px-4 py-3 text-right">Views</th>
@@ -1197,6 +1333,7 @@ export default function LockedPdfPage() {
                     <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800/60">
                       {filtered.map((pdf) => {
                         const isSelected = activePage?.id === pdf.id;
+                        const isChecked = checkedIds.includes(pdf.id);
                         const shareUrl = typeof window !== "undefined"
                           ? `${window.location.origin}/pdf-viewer/${pdf.id}`
                           : `/pdf-viewer/${pdf.id}`;
@@ -1205,11 +1342,26 @@ export default function LockedPdfPage() {
                             key={pdf.id}
                             onClick={() => setSelectedPageId(pdf.id)}
                             className={`cursor-pointer transition ${
-                              isSelected
-                                ? "bg-[#EFF6FF]/60 dark:bg-[#0066B2]/10"
-                                : "hover:bg-zinc-50 dark:hover:bg-[#1A1A1E]/50"
+                              isChecked
+                                ? "bg-[#EFF6FF] dark:bg-[#0066B2]/20"
+                                : isSelected
+                                  ? "bg-[#EFF6FF]/60 dark:bg-[#0066B2]/10"
+                                  : "hover:bg-zinc-50 dark:hover:bg-[#1A1A1E]/50"
                             }`}
                           >
+                            <td className="px-3 py-3 w-8" onClick={(e) => e.stopPropagation()}>
+                              <button
+                                type="button"
+                                onClick={(e) => handleToggleCheck(pdf.id, e)}
+                                className={`flex h-4 w-4 items-center justify-center rounded border transition cursor-pointer ${
+                                  isChecked
+                                    ? "bg-[#0066B2] border-[#0066B2] text-white"
+                                    : "bg-white dark:bg-zinc-800 border-zinc-300 dark:border-zinc-600 text-transparent hover:border-[#0066B2]"
+                                }`}
+                              >
+                                <Check className={`h-3 w-3 stroke-[3px] ${isChecked ? "opacity-100" : "opacity-0"}`} />
+                              </button>
+                            </td>
                             <td className="px-4 py-3 font-semibold text-zinc-900 dark:text-white">
                               <div className="flex items-center gap-3">
                                 <div className="relative h-9 w-9 rounded-lg bg-zinc-100 dark:bg-zinc-800 shrink-0 overflow-hidden flex items-center justify-center">
@@ -1688,6 +1840,62 @@ export default function LockedPdfPage() {
                 className="rounded-xl border border-zinc-200 dark:border-zinc-700 px-4 py-2 text-xs font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition cursor-pointer"
               >
                 Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Bulk Delete Modal */}
+      {showBulkDeleteModal && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 transition-all duration-200 animate-in fade-in duration-150"
+          onClick={() => setShowBulkDeleteModal(false)}
+        >
+          <div
+            className="relative w-full max-w-[440px] rounded-3xl border border-zinc-800 bg-[#18181B] p-6 text-white shadow-2xl space-y-4 animate-in zoom-in-95 duration-150"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-start justify-between">
+              <div className="flex items-center gap-3">
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-500">
+                  <AlertTriangle className="h-5 w-5" />
+                </div>
+                <h3 className="text-lg font-bold text-white tracking-tight">
+                  Delete {checkedIds.length} locked PDF{checkedIds.length > 1 ? "s" : ""}?
+                </h3>
+              </div>
+              <button
+                onClick={() => setShowBulkDeleteModal(false)}
+                className="rounded-lg p-1 text-zinc-400 hover:bg-zinc-800 hover:text-white transition-colors cursor-pointer"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+
+            <div className="space-y-2 pt-1 text-xs leading-relaxed text-zinc-400">
+              <p>
+                This will permanently delete the <span className="font-bold text-white">{checkedIds.length}</span> selected locked PDF{checkedIds.length > 1 ? "s" : ""} and stop serving them on their URLs. Any signups already collected will stay on your list.
+              </p>
+              <p className="text-zinc-500 font-medium">
+                This action cannot be undone.
+              </p>
+            </div>
+
+            <div className="pt-4 flex items-center justify-end gap-3">
+              <button
+                type="button"
+                onClick={() => setShowBulkDeleteModal(false)}
+                className="rounded-xl border border-zinc-800 bg-[#25252A] px-4 py-2.5 text-xs font-semibold text-zinc-300 hover:bg-zinc-800 hover:text-white transition-all cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={confirmBulkDeletion}
+                className="rounded-xl border border-rose-500/30 bg-rose-500/15 px-4 py-2.5 text-xs font-bold text-rose-400 hover:bg-rose-500 hover:text-white transition-all cursor-pointer shadow-sm"
+              >
+                Delete {checkedIds.length} locked PDF{checkedIds.length > 1 ? "s" : ""}
               </button>
             </div>
           </div>
