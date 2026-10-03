@@ -372,10 +372,10 @@ export default function AnalyticsLinearView({
           </div>
         </motion.header>
 
-        {/* 2. THE 5 CORE METRIC CARDS */}
+        {/* 2. THE 4 CORE METRIC CARDS */}
         <motion.div
           variants={itemVariants}
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3.5"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5"
         >
           {/* Card 1: Visits */}
           <motion.div
@@ -441,23 +441,6 @@ export default function AnalyticsLinearView({
               <div className="text-3xl font-mono font-bold text-zinc-900 dark:text-white tracking-tight">{signupsCount}</div>
               <div className="text-[11px] font-mono text-orange-600 dark:text-orange-400 mt-1">
                 {statsInRange.signupsInRange} in {rangeLabel}
-              </div>
-            </div>
-          </motion.div>
-
-          {/* Card 5: Average Engaged Time */}
-          <motion.div
-            whileHover={{ y: -2 }}
-            className="rounded-2xl bg-white/80 dark:bg-[#0E0E11] border border-zinc-200/80 dark:border-white/[0.08] p-5 space-y-2.5 transition-all shadow-sm backdrop-blur-sm sm:col-span-2 lg:col-span-1 xl:col-span-1"
-          >
-            <div className="flex items-center justify-between">
-              <span className="text-[11px] font-mono tracking-wider uppercase text-zinc-500 dark:text-zinc-400">Engaged Time</span>
-              <Clock className="h-3.5 w-3.5 text-amber-500 dark:text-amber-400" />
-            </div>
-            <div>
-              <div className="text-3xl font-mono font-bold text-zinc-900 dark:text-white tracking-tight">0s</div>
-              <div className="text-[11px] font-mono text-zinc-500 dark:text-zinc-400 mt-1 truncate">
-                Time page was visible
               </div>
             </div>
           </motion.div>
