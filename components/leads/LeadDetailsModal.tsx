@@ -201,7 +201,7 @@ export const LeadDetailsModal = memo(function LeadDetailsModal({
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
-          <div className="flex items-start justify-between border-b border-zinc-100 dark:border-white/10 pb-4 gap-3">
+          <div className="flex items-start justify-between pb-1 gap-3">
             <div className="flex items-center gap-3 min-w-0">
               <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#0066B2]/10 text-[#0066B2] dark:bg-[#38BDF8]/20 dark:text-[#38BDF8] text-sm font-bold uppercase border border-[#0066B2]/20 dark:border-[#38BDF8]/30">
                 {(selectedLead.name || selectedLead.email || "U").slice(0, 2)}
@@ -241,9 +241,9 @@ export const LeadDetailsModal = memo(function LeadDetailsModal({
             </button>
           </div>
 
-          <div className="space-y-3.5 text-xs">
+          <div className="space-y-4 text-xs">
             {/* Top Grid Info */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 py-1 border-b border-zinc-100 dark:border-white/5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3.5 py-1">
               <div>
                 <span className="block text-[11px] font-medium text-zinc-500 dark:text-[#9B9085]">
                   Signup Method / Gate
@@ -252,22 +252,22 @@ export const LeadDetailsModal = memo(function LeadDetailsModal({
                   {isLinkedIn ? (
                     <span className="inline-flex items-center gap-1.5 rounded-lg bg-[#0A66C2]/10 px-2.5 py-1 text-xs font-bold text-[#0A66C2] dark:text-[#38BDF8] border border-[#0A66C2]/20">
                       <Linkedin className="h-3.5 w-3.5 text-[#0A66C2] dark:text-[#38BDF8] shrink-0" />
-                      <span>💬 LinkedIn Auto-DM</span>
+                      <span>LinkedIn Auto-DM</span>
                     </span>
                   ) : isLockedPdf ? (
                     <span className="inline-flex items-center gap-1.5 rounded-lg bg-amber-500/10 px-2.5 py-1 text-xs font-bold text-amber-600 dark:text-amber-400 border border-amber-500/20">
                       <Lock className="h-3.5 w-3.5 text-amber-500 shrink-0" />
-                      <span>🔒 Locked PDF Gate (OTP)</span>
+                      <span>Locked PDF Gate (OTP)</span>
                     </span>
                   ) : isManual ? (
                     <span className="inline-flex items-center gap-1.5 rounded-lg bg-purple-500/10 px-2.5 py-1 text-xs font-bold text-purple-600 dark:text-purple-400 border border-purple-500/20">
                       <Upload className="h-3.5 w-3.5 text-purple-500 shrink-0" />
-                      <span>📥 Manual Import</span>
+                      <span>Manual Import</span>
                     </span>
                   ) : (
                     <span className="inline-flex items-center gap-1.5 rounded-lg bg-sky-500/10 px-2.5 py-1 text-xs font-bold text-sky-600 dark:text-sky-400 border border-sky-500/20">
                       <Sparkles className="h-3.5 w-3.5 text-sky-500 shrink-0" />
-                      <span>⚡ Landing Page Form</span>
+                      <span>Landing Page Form</span>
                     </span>
                   )}
                 </div>
@@ -280,9 +280,6 @@ export const LeadDetailsModal = memo(function LeadDetailsModal({
                   {selectedLead.page}
                 </strong>
               </div>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 py-1 border-b border-zinc-100 dark:border-white/5">
               <div>
                 <span className="block text-[11px] font-medium text-zinc-500 dark:text-[#9B9085]">
                   Signup Date & Time
@@ -307,7 +304,7 @@ export const LeadDetailsModal = memo(function LeadDetailsModal({
             {/* Custom Fields / LinkedIn Data */}
             {selectedLead.customFields &&
               Object.keys(selectedLead.customFields).length > 0 && (
-                <div className="py-2.5 border-b border-zinc-100 dark:border-white/5 space-y-2.5">
+                <div className="space-y-2.5">
                   <div className="flex items-center justify-between">
                     <span className="font-bold text-zinc-900 dark:text-white block text-xs">
                       {isLinkedIn ? "LinkedIn Interaction & Prospect Data" : "Form Submissions"}
@@ -336,7 +333,7 @@ export const LeadDetailsModal = memo(function LeadDetailsModal({
 
             {/* Visitor Prompt Answer */}
             {selectedLead.customAnswer && (
-              <div className="py-2 border-b border-zinc-100 dark:border-white/5 space-y-1.5">
+              <div className="space-y-1.5">
                 <span className="text-[11px] font-bold text-amber-500 dark:text-amber-400 block">
                   ✨ Visitor Prompt Answer
                 </span>
@@ -426,7 +423,7 @@ export const LeadDetailsModal = memo(function LeadDetailsModal({
           </div>
 
           {/* Bottom Actions */}
-          <div className="pt-4 border-t border-zinc-100 dark:border-white/10 flex flex-wrap gap-2 justify-between items-center">
+          <div className="pt-2 flex flex-wrap gap-2 justify-between items-center">
             <div className="flex items-center gap-2">
               <button
                 type="button"
