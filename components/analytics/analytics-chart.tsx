@@ -189,22 +189,22 @@ export default function AnalyticsChart({
   const activeDay = hoveredIndex !== null ? days[hoveredIndex] : null;
 
   return (
-    <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#18181B] p-6 space-y-5 shadow-xs">
+    <div className="rounded-2xl border border-zinc-200/80 dark:border-white/[0.08] bg-white/80 dark:bg-[#0E0E11] p-4 sm:p-6 space-y-4 sm:space-y-5 shadow-xs backdrop-blur-sm">
       {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-3">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <h3 className="text-sm font-bold text-zinc-900 dark:text-white flex items-center gap-2">
             {title}
-            <span className="text-[10px] font-semibold px-2 py-0.5 rounded-md bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 uppercase">
+            <span className="text-[10px] font-semibold px-2 py-0.5 rounded-md bg-zinc-100 dark:bg-white/[0.08] text-zinc-600 dark:text-zinc-400 uppercase">
               {range}
             </span>
           </h3>
           <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">{subtitle}</p>
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center justify-between sm:justify-end gap-3 sm:gap-4">
           {/* Clean Minimal Legend */}
-          <div className="flex items-center gap-4 text-xs text-zinc-500 dark:text-zinc-400 font-medium">
+          <div className="flex items-center gap-3 text-xs text-zinc-500 dark:text-zinc-400 font-medium">
             <span className="flex items-center gap-1.5">
               <span className="h-2 w-2 rounded-full bg-[#0066B2]" />
               Visits
@@ -217,11 +217,11 @@ export default function AnalyticsChart({
 
           {/* Clean Segmented Control Switcher */}
           {hasData && (
-            <div className="flex items-center p-0.5 rounded-lg bg-zinc-100 dark:bg-zinc-800/80 border border-zinc-200/80 dark:border-zinc-700/60 text-xs">
+            <div className="flex items-center p-0.5 rounded-lg bg-zinc-100 dark:bg-white/[0.06] border border-zinc-200/80 dark:border-white/[0.08] text-xs">
               <button
                 type="button"
                 onClick={() => setChartMode("bar")}
-                className={`flex items-center gap-1.5 px-3 py-1 rounded-md text-[11px] font-semibold transition-all ${
+                className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-md text-[11px] font-semibold transition-all ${
                   chartMode === "bar"
                     ? "bg-white dark:bg-[#222226] text-zinc-900 dark:text-white shadow-xs"
                     : "text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200"
@@ -233,7 +233,7 @@ export default function AnalyticsChart({
               <button
                 type="button"
                 onClick={() => setChartMode("line")}
-                className={`flex items-center gap-1.5 px-3 py-1 rounded-md text-[11px] font-semibold transition-all ${
+                className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-md text-[11px] font-semibold transition-all ${
                   chartMode === "line"
                     ? "bg-white dark:bg-[#222226] text-zinc-900 dark:text-white shadow-xs"
                     : "text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200"
@@ -249,7 +249,7 @@ export default function AnalyticsChart({
 
       {!hasData ? (
         /* Minimal Empty State */
-        <div className="flex flex-col items-center justify-center py-16 px-4 border border-zinc-200/80 dark:border-zinc-800/80 rounded-xl bg-zinc-50/50 dark:bg-[#121214]">
+        <div className="flex flex-col items-center justify-center py-12 sm:py-16 px-4 border border-zinc-200/80 dark:border-white/[0.08] rounded-xl bg-zinc-50/50 dark:bg-[#121214]">
           <BarChart2 className="h-8 w-8 text-zinc-400 dark:text-zinc-600 mb-3" />
           <h4 className="text-sm font-bold text-zinc-900 dark:text-white">No visits recorded yet</h4>
           <p className="text-xs text-zinc-500 dark:text-zinc-400 text-center max-w-md mt-1 leading-relaxed">
@@ -259,15 +259,15 @@ export default function AnalyticsChart({
       ) : (
         /* Active Clean Production Chart Area */
         <div className="space-y-3">
-          {/* Subtle Hover Inspector Bar */}
-          <div className="h-8 flex items-center justify-between px-3.5 py-1 rounded-xl bg-zinc-50 dark:bg-[#141417] border border-zinc-200/60 dark:border-zinc-800/80 text-xs">
+          {/* Subtle Hover / Tap Inspector Bar */}
+          <div className="min-h-8 flex flex-col sm:flex-row sm:items-center justify-between px-3.5 py-1.5 sm:py-1 rounded-xl bg-zinc-50 dark:bg-[#141417] border border-zinc-200/60 dark:border-zinc-800/80 text-xs gap-1 sm:gap-0">
             {activeDay ? (
               <>
                 <span className="text-zinc-900 dark:text-white font-bold flex items-center gap-2">
                   <span className="h-2 w-2 rounded-full bg-[#0066B2]" />
                   {activeDay.label}
                 </span>
-                <div className="flex items-center gap-5 text-[11px] font-medium">
+                <div className="flex flex-wrap items-center gap-3 sm:gap-5 text-[11px] font-medium">
                   <span className="text-zinc-600 dark:text-zinc-300">
                     Visits: <strong className="text-zinc-950 dark:text-white">{activeDay.visits}</strong>
                   </span>
@@ -275,19 +275,19 @@ export default function AnalyticsChart({
                     Conversions: <strong>{activeDay.signups}</strong>
                   </span>
                   <span className="text-emerald-600 dark:text-emerald-400 font-semibold">
-                    Conversion Rate: {activeDay.visits > 0 ? ((activeDay.signups / activeDay.visits) * 100).toFixed(1) : "0.0"}%
+                    Rate: {activeDay.visits > 0 ? ((activeDay.signups / activeDay.visits) * 100).toFixed(1) : "0.0"}%
                   </span>
                 </div>
               </>
             ) : (
               <span className="text-zinc-400 dark:text-zinc-500 text-[11px]">
-                Hover over any bar or date point to inspect daily performance metrics
+                Tap or hover over any bar/date to inspect performance metrics
               </span>
             )}
           </div>
 
           {/* Canvas Box */}
-          <div className="relative h-52 w-full border border-zinc-200 dark:border-zinc-800/80 rounded-xl bg-zinc-50/40 dark:bg-[#121214] overflow-hidden">
+          <div className="relative h-44 sm:h-52 w-full border border-zinc-200 dark:border-zinc-800/80 rounded-xl bg-zinc-50/40 dark:bg-[#121214] overflow-hidden">
             {/* Subtle Gridlines */}
             <div className="absolute inset-x-0 top-1/4 border-b border-zinc-200/50 dark:border-zinc-800/50 pointer-events-none" />
             <div className="absolute inset-x-0 top-2/4 border-b border-zinc-200/50 dark:border-zinc-800/50 pointer-events-none" />
@@ -350,6 +350,7 @@ export default function AnalyticsChart({
                   {days.map((_, i) => (
                     <div
                       key={i}
+                      onClick={() => setHoveredIndex(i)}
                       onMouseEnter={() => setHoveredIndex(i)}
                       onMouseLeave={() => setHoveredIndex(null)}
                       className="flex-1 cursor-pointer"
@@ -358,7 +359,7 @@ export default function AnalyticsChart({
                 </div>
               </div>
             ) : (
-              <div className="h-full w-full flex items-end justify-between gap-1 sm:gap-1.5 pt-6 pb-2.5 px-3 sm:px-4">
+              <div className="h-full w-full flex items-end justify-between gap-1 sm:gap-1.5 pt-6 pb-2.5 px-2 sm:px-4">
                 {days.map((day, idx) => {
                   const visitHeightPct = day.visits > 0 ? Math.max(6, (day.visits / maxVal) * 100) : 0;
                   const signupHeightPct = day.signups > 0 ? Math.max(6, (day.signups / maxVal) * 100) : 0;
@@ -367,11 +368,12 @@ export default function AnalyticsChart({
                   return (
                     <div
                       key={day.isoDate + idx}
+                      onClick={() => setHoveredIndex(idx)}
                       onMouseEnter={() => setHoveredIndex(idx)}
                       onMouseLeave={() => setHoveredIndex(null)}
                       className="relative flex-1 h-full flex items-end justify-center cursor-pointer group"
                     >
-                      <div className="w-full max-w-[12px] sm:max-w-[18px] h-full flex items-end justify-center relative rounded-t-sm overflow-hidden">
+                      <div className="w-full max-w-[10px] sm:max-w-[18px] h-full flex items-end justify-center relative rounded-t-sm overflow-hidden">
                         {day.visits > 0 ? (
                           <div
                             style={{ height: `${visitHeightPct}%` }}
@@ -402,13 +404,13 @@ export default function AnalyticsChart({
           </div>
 
           {/* X-Axis Date Ticks */}
-          <div className="flex justify-between text-[11px] text-zinc-500 dark:text-zinc-400 font-medium px-1">
+          <div className="flex justify-between text-[10px] sm:text-[11px] text-zinc-500 dark:text-zinc-400 font-medium px-1">
             <span>{days[0].label}</span>
-            <span>{days[Math.floor(numDays * 0.25)].label}</span>
+            <span className="hidden sm:inline">{days[Math.floor(numDays * 0.25)].label}</span>
             <span>{days[Math.floor(numDays * 0.5)].label}</span>
-            <span>{days[Math.floor(numDays * 0.75)].label}</span>
+            <span className="hidden sm:inline">{days[Math.floor(numDays * 0.75)].label}</span>
             <span className="font-semibold text-zinc-900 dark:text-white">
-              Today ({days[numDays - 1].label})
+              Today ({days[numDays - 1].shortLabel})
             </span>
           </div>
         </div>

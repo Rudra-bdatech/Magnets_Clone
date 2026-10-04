@@ -24,6 +24,7 @@ import {
   TrendingUp,
 } from "lucide-react";
 import AnalyticsChart, { type TimeRange } from "./analytics-chart";
+import MobileConversionCard from "./MobileConversionCard";
 import { type MagnetPage, type Account, type Lead } from "@/lib/data";
 
 interface AnalyticsLinearViewProps {
@@ -98,6 +99,10 @@ export default function AnalyticsLinearView({
         : timeRange === "all"
           ? "all time"
           : "last 30 days";
+
+  const isLockedPdf = page?.template === "locked-pdf" || (page as any)?.pdfFreePages !== undefined;
+  const backHref = isLockedPdf ? "/dashboard/locked-pdf" : "/dashboard/landing-page";
+  const editHref = isLockedPdf ? `/dashboard/leadmagnets/${targetMagnetId}?type=locked-pdf` : `/dashboard/leadmagnets/${targetMagnetId}`;
 
   // Production-Grade Formatted Excel Spreadsheet Export Handler
   const exportToCSV = () => {
@@ -269,10 +274,10 @@ export default function AnalyticsLinearView({
     >
       <div className="max-w-[1600px] mx-auto space-y-6">
 
-        {/* 1. LINEAR HEADER BAR */}
+        {/* 1. DESKTOP HEADER BAR */}
         <motion.header
           variants={itemVariants}
-          className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2"
+          className="hidden md:flex flex-row items-center justify-between gap-4 pb-2"
         >
           <div className="space-y-1">
             <div className="flex items-center gap-3">
@@ -305,8 +310,9 @@ export default function AnalyticsLinearView({
                     key={r}
                     type="button"
                     onClick={() => setTimeRange(r)}
-                    className={`relative z-10 px-3.5 py-1.5 rounded-lg font-mono text-[11px] font-semibold transition-colors duration-200 cursor-pointer ${isActive ? "text-zinc-900 dark:text-white" : "text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200"
-                      }`}
+                    className={`relative z-10 px-3.5 py-1.5 rounded-lg font-mono text-[11px] font-semibold transition-colors duration-200 cursor-pointer ${
+                      isActive ? "text-zinc-900 dark:text-white" : "text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200"
+                    }`}
                   >
                     {isActive && (
                       <motion.div
@@ -334,48 +340,134 @@ export default function AnalyticsLinearView({
               <span>Export CSV</span>
             </motion.button>
 
-            {(() => {
-              const isLockedPdf = page?.template === "locked-pdf" || (page as any)?.pdfFreePages !== undefined;
-              const backHref = isLockedPdf ? "/dashboard/locked-pdf" : "/dashboard/landing-page";
-              const editHref = isLockedPdf ? `/dashboard/leadmagnets/${targetMagnetId}?type=locked-pdf` : `/dashboard/leadmagnets/${targetMagnetId}`;
+            <Link
+              href={backHref}
+              onClick={(e) => {
+                e.preventDefault();
+                window.location.href = backHref;
+              }}
+              className="relative z-20 flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-white dark:bg-[#121215] border border-zinc-200/80 dark:border-white/[0.08] hover:bg-zinc-50 dark:hover:border-white/[0.2] dark:hover:bg-zinc-800/60 text-xs font-semibold text-zinc-700 dark:text-zinc-200 transition-all shadow-xs cursor-pointer select-none"
+            >
+              <ArrowLeft className="h-3.5 w-3.5 text-zinc-400" />
+              <span>{isLockedPdf ? "Locked PDFs" : "All pages"}</span>
+            </Link>
 
-              return (
-                <>
-                  <Link
-                    href={backHref}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      window.location.href = backHref;
-                    }}
-                    className="relative z-20 flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-white dark:bg-[#121215] border border-zinc-200/80 dark:border-white/[0.08] hover:bg-zinc-50 dark:hover:border-white/[0.2] dark:hover:bg-zinc-800/60 text-xs font-semibold text-zinc-700 dark:text-zinc-200 transition-all shadow-xs cursor-pointer select-none"
-                  >
-                    <ArrowLeft className="h-3.5 w-3.5 text-zinc-400" />
-                    <span>{isLockedPdf ? "Locked PDFs" : "All pages"}</span>
-                  </Link>
-
-                  {isPerMagnet && targetMagnetId && (
-                    <Link
-                      href={editHref}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        window.location.href = editHref;
-                      }}
-                      className="relative z-20 flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-[#0066B2] text-white hover:bg-[#005291] dark:bg-white dark:text-zinc-950 font-bold text-xs dark:hover:bg-zinc-200 transition-all shadow-md cursor-pointer select-none"
-                    >
-                      <Pencil className="h-3.5 w-3.5" />
-                      <span>Edit magnet</span>
-                    </Link>
-                  )}
-                </>
-              );
-            })()}
+            {isPerMagnet && targetMagnetId && (
+              <Link
+                href={editHref}
+                onClick={(e) => {
+                  e.preventDefault();
+                  window.location.href = editHref;
+                }}
+                className="relative z-20 flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-[#0066B2] text-white hover:bg-[#005291] dark:bg-white dark:text-zinc-950 font-bold text-xs dark:hover:bg-zinc-200 transition-all shadow-md cursor-pointer select-none"
+              >
+                <Pencil className="h-3.5 w-3.5" />
+                <span>Edit magnet</span>
+              </Link>
+            )}
           </div>
         </motion.header>
 
-        {/* 2. THE 4 CORE METRIC CARDS */}
+        {/* 1. MOBILE HEADER BAR */}
+        <motion.header
+          variants={itemVariants}
+          className="flex md:hidden flex-col gap-2.5 pb-1"
+        >
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2">
+              <h1 className="text-2xl font-black tracking-tight text-zinc-900 dark:text-white">
+                Analytics
+              </h1>
+              <button
+                type="button"
+                onClick={onOpenHelp}
+                className="cursor-pointer flex h-5 w-5 items-center justify-center rounded-full border border-zinc-200 dark:border-white/[0.12] bg-white dark:bg-[#121215] text-[11px] font-mono text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-all"
+                title="Analytics Help"
+              >
+                ?
+              </button>
+            </div>
+
+            {/* Back / Edit on Mobile */}
+            <div className="flex items-center gap-1.5">
+              <Link
+                href={backHref}
+                onClick={(e) => {
+                  e.preventDefault();
+                  window.location.href = backHref;
+                }}
+                className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-white dark:bg-[#121215] border border-zinc-200/80 dark:border-white/[0.08] text-xs font-semibold text-zinc-700 dark:text-zinc-200 shadow-xs"
+              >
+                <ArrowLeft className="h-3 w-3 text-zinc-400" />
+                <span>{isLockedPdf ? "PDFs" : "Pages"}</span>
+              </Link>
+              {isPerMagnet && targetMagnetId && (
+                <Link
+                  href={editHref}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    window.location.href = editHref;
+                  }}
+                  className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-[#0066B2] text-white font-bold text-xs shadow-xs"
+                >
+                  <Pencil className="h-3 w-3" />
+                  <span>Edit</span>
+                </Link>
+              )}
+            </div>
+          </div>
+
+          <p className="text-xs text-zinc-500 dark:text-zinc-400 font-medium">
+            {isPerMagnet
+              ? page?.name || "Magnet Analytics"
+              : `${account?.name || "LeadMagnets"} · Performance`}
+          </p>
+
+          {/* Timeframe & Export on Mobile */}
+          <div className="flex items-center gap-2 pt-0.5">
+            <div className="relative flex-1 flex items-center p-1 rounded-xl bg-white/80 dark:bg-[#121215] border border-zinc-200/80 dark:border-white/[0.08] text-xs shadow-xs backdrop-blur-sm">
+              {(["7d", "30d", "90d", "all"] as TimeRange[]).map((r) => {
+                const isActive = timeRange === r;
+                return (
+                  <button
+                    key={r}
+                    type="button"
+                    onClick={() => setTimeRange(r)}
+                    className={`relative z-10 flex-1 py-1.5 rounded-lg font-mono text-[11px] font-semibold text-center transition-colors duration-200 cursor-pointer ${
+                      isActive ? "text-zinc-900 dark:text-white" : "text-zinc-500 dark:text-zinc-400"
+                    }`}
+                  >
+                    {isActive && (
+                      <motion.div
+                        layoutId="analyticsActiveTimeframePillMobile"
+                        transition={{ type: "spring", stiffness: 450, damping: 32 }}
+                        className="absolute inset-0 rounded-lg bg-zinc-100 dark:bg-white/[0.12] border border-zinc-200/80 dark:border-white/[0.16] shadow-xs"
+                      />
+                    )}
+                    <span className="relative z-10">
+                      {r === "7d" ? "7D" : r === "30d" ? "30D" : r === "90d" ? "90D" : "ALL"}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+
+            <motion.button
+              whileTap={{ scale: 0.96 }}
+              type="button"
+              onClick={exportToCSV}
+              className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white dark:bg-[#121215] border border-zinc-200/80 dark:border-white/[0.08] text-xs font-semibold text-zinc-700 dark:text-zinc-200 shadow-xs cursor-pointer shrink-0"
+            >
+              <Download className="h-3.5 w-3.5 text-zinc-400" />
+              <span>Export</span>
+            </motion.button>
+          </div>
+        </motion.header>
+
+        {/* 2. DESKTOP CORE 4 METRIC CARDS */}
         <motion.div
           variants={itemVariants}
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5"
+          className="hidden md:grid md:grid-cols-4 gap-3.5"
         >
           {/* Card 1: Visits */}
           <motion.div
@@ -446,6 +538,68 @@ export default function AnalyticsLinearView({
           </motion.div>
         </motion.div>
 
+        {/* 2. MOBILE 2x2 CORE METRIC GRID */}
+        <motion.div
+          variants={itemVariants}
+          className="grid md:hidden grid-cols-2 gap-2.5"
+        >
+          {/* Mobile Card 1: Visits */}
+          <div className="rounded-2xl bg-white/90 dark:bg-[#0E0E11] border border-zinc-200/80 dark:border-white/[0.08] p-3.5 space-y-1.5 shadow-xs">
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-mono font-bold tracking-wider uppercase text-zinc-500 dark:text-zinc-400">Visits</span>
+              <Sparkles className="h-3.5 w-3.5 text-[#0066B2] dark:text-cyan-400" />
+            </div>
+            <div>
+              <div className="text-2xl font-mono font-bold text-zinc-900 dark:text-white tracking-tight">{visitsCount}</div>
+              <div className="text-[10px] font-mono text-[#0066B2] dark:text-cyan-400 mt-0.5 truncate">
+                {statsInRange.visitsInRange} in {rangeLabel}
+              </div>
+            </div>
+          </div>
+
+          {/* Mobile Card 2: Total Signups */}
+          <div className="rounded-2xl bg-white/90 dark:bg-[#0E0E11] border border-zinc-200/80 dark:border-white/[0.08] p-3.5 space-y-1.5 shadow-xs">
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-mono font-bold tracking-wider uppercase text-zinc-500 dark:text-zinc-400">Signups</span>
+              <Users className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
+            </div>
+            <div>
+              <div className="text-2xl font-mono font-bold text-zinc-900 dark:text-white tracking-tight">{signupsCount}</div>
+              <div className="text-[10px] font-mono text-emerald-600 dark:text-emerald-400 mt-0.5 truncate">
+                {statsInRange.signupsInRange} in range
+              </div>
+            </div>
+          </div>
+
+          {/* Mobile Card 3: Conversion Rate */}
+          <div className="rounded-2xl bg-white/90 dark:bg-[#0E0E11] border border-zinc-200/80 dark:border-white/[0.08] p-3.5 space-y-1.5 shadow-xs">
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-mono font-bold tracking-wider uppercase text-zinc-500 dark:text-zinc-400">Conv. Rate</span>
+              <BarChart2 className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
+            </div>
+            <div>
+              <div className="text-2xl font-mono font-bold text-zinc-900 dark:text-white tracking-tight">{conversionRate}</div>
+              <div className="text-[10px] font-mono text-zinc-500 dark:text-zinc-400 mt-0.5 truncate">
+                Tracked ÷ visits
+              </div>
+            </div>
+          </div>
+
+          {/* Mobile Card 4: Tracked Conversions */}
+          <div className="rounded-2xl bg-white/90 dark:bg-[#0E0E11] border border-zinc-200/80 dark:border-white/[0.08] p-3.5 space-y-1.5 shadow-xs">
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-mono font-bold tracking-wider uppercase text-zinc-500 dark:text-zinc-400">Conversions</span>
+              <CheckCircle2 className="h-3.5 w-3.5 text-orange-600 dark:text-orange-400" />
+            </div>
+            <div>
+              <div className="text-2xl font-mono font-bold text-zinc-900 dark:text-white tracking-tight">{signupsCount}</div>
+              <div className="text-[10px] font-mono text-orange-600 dark:text-orange-400 mt-0.5 truncate">
+                {statsInRange.signupsInRange} in {rangeLabel}
+              </div>
+            </div>
+          </div>
+        </motion.div>
+
         {/* 3. VISITS OVER TIME (CHART CONTAINER) */}
         <motion.div variants={itemVariants}>
           <AnalyticsChart
@@ -463,7 +617,7 @@ export default function AnalyticsLinearView({
         {isPerMagnet && (page?.hasVariantB || page?.testStarted) && (
           <motion.div
             variants={itemVariants}
-            className="rounded-2xl bg-white/80 dark:bg-[#0E0E11] border border-zinc-200/80 dark:border-white/[0.08] p-6 space-y-4 shadow-sm backdrop-blur-sm"
+            className="rounded-2xl bg-white/80 dark:bg-[#0E0E11] border border-zinc-200/80 dark:border-white/[0.08] p-4 sm:p-6 space-y-4 shadow-sm backdrop-blur-sm"
           >
             <div className="flex items-center justify-between border-b border-zinc-200/80 dark:border-white/[0.08] pb-3">
               <div className="flex items-center gap-2">
@@ -477,7 +631,7 @@ export default function AnalyticsLinearView({
               </span>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
               {/* Variant A */}
               <div
                 className={`p-4 rounded-xl border space-y-2 transition-all ${!isBWinning
@@ -549,17 +703,17 @@ export default function AnalyticsLinearView({
           </motion.div>
         )}
 
-        {/* 5. BREAKDOWN CARDS (DEVICE BREAKDOWN & TRAFFIC REFERRERS) */}
-        <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* 5. BREAKDOWN CARDS (DESKTOP & MOBILE) */}
+        <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
           {/* Device Breakdown Card */}
-          <div className="rounded-2xl bg-white/80 dark:bg-[#0E0E11] border border-zinc-200/80 dark:border-white/[0.08] p-5 space-y-4 shadow-sm backdrop-blur-sm">
+          <div className="rounded-2xl bg-white/80 dark:bg-[#0E0E11] border border-zinc-200/80 dark:border-white/[0.08] p-4 sm:p-5 space-y-3.5 sm:space-y-4 shadow-sm backdrop-blur-sm">
             <div className="flex items-center justify-between border-b border-zinc-200/80 dark:border-white/[0.08] pb-3">
               <div>
                 <h3 className="text-sm font-bold text-zinc-900 dark:text-white flex items-center gap-2">
                   <Laptop className="h-4 w-4 text-[#0066B2] dark:text-cyan-400" />
                   <span>Device Breakdown</span>
                 </h3>
-                <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">Desktop vs Mobile & Tablet Visitors</p>
+                <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">Desktop vs Mobile Visitors</p>
               </div>
               <span className="text-xs font-mono px-2.5 py-0.5 rounded-md bg-zinc-100 dark:bg-white/[0.05] border border-zinc-200 dark:border-white/[0.08] text-zinc-700 dark:text-zinc-300">
                 {desktopPct}% / {mobilePct}%
@@ -584,7 +738,7 @@ export default function AnalyticsLinearView({
                 <div className="flex justify-between text-xs font-semibold text-zinc-700 dark:text-zinc-300 mb-1.5">
                   <span className="flex items-center gap-2">
                     <Smartphone className="h-3.5 w-3.5 text-orange-500 dark:text-orange-400" />
-                    Mobile & Tablet Visitors
+                    Mobile Visitors
                   </span>
                   <span className="font-mono text-zinc-900 dark:text-white">{mobilePct}%</span>
                 </div>
@@ -596,7 +750,7 @@ export default function AnalyticsLinearView({
           </div>
 
           {/* Top Traffic Referrers Card */}
-          <div className="rounded-2xl bg-white/80 dark:bg-[#0E0E11] border border-zinc-200/80 dark:border-white/[0.08] p-5 space-y-4 shadow-sm backdrop-blur-sm">
+          <div className="rounded-2xl bg-white/80 dark:bg-[#0E0E11] border border-zinc-200/80 dark:border-white/[0.08] p-4 sm:p-5 space-y-3.5 sm:space-y-4 shadow-sm backdrop-blur-sm">
             <div className="flex items-center justify-between border-b border-zinc-200/80 dark:border-white/[0.08] pb-3">
               <div>
                 <h3 className="text-sm font-bold text-zinc-900 dark:text-white flex items-center gap-2">
@@ -641,7 +795,7 @@ export default function AnalyticsLinearView({
         {/* 6. RECENT CONVERSIONS ACTIVITY STREAM */}
         <motion.div
           variants={itemVariants}
-          className="rounded-2xl bg-white/80 dark:bg-[#0E0E11] border border-zinc-200/80 dark:border-white/[0.08] p-6 space-y-4 shadow-sm backdrop-blur-sm"
+          className="rounded-2xl bg-white/80 dark:bg-[#0E0E11] border border-zinc-200/80 dark:border-white/[0.08] p-4 sm:p-6 space-y-4 shadow-sm backdrop-blur-sm"
         >
           <div className="flex items-center justify-between border-b border-zinc-200/80 dark:border-white/[0.08] pb-3">
             <div>
@@ -665,44 +819,54 @@ export default function AnalyticsLinearView({
               No recent lead signups recorded yet.
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs font-sans">
-                <thead>
-                  <tr className="border-b border-zinc-200/80 dark:border-white/[0.08] text-zinc-500 dark:text-zinc-400 font-mono text-[11px] uppercase tracking-wider">
-                    <th className="pb-2.5">Subscriber Name</th>
-                    <th className="pb-2.5">Email</th>
-                    {!isPerMagnet && <th className="pb-2.5">Lead Magnet</th>}
-                    <th className="pb-2.5">Signed Up At</th>
-                    <th className="pb-2.5">Status</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-zinc-200/60 dark:divide-white/[0.04] font-medium text-zinc-700 dark:text-zinc-300">
-                  {leads.slice(0, 5).map((lead) => (
-                    <tr
-                      key={lead.id}
-                      className="hover:bg-zinc-50/50 dark:hover:bg-white/[0.02] transition-colors"
-                    >
-                      <td className="py-3 font-bold text-zinc-900 dark:text-white">{lead.name}</td>
-                      <td className="py-3 font-mono text-zinc-500 dark:text-zinc-400">{lead.email}</td>
-                      {!isPerMagnet && <td className="py-3">{lead.page}</td>}
-                      <td className="py-3 font-mono text-zinc-500 dark:text-zinc-400">{lead.signedUpAt}</td>
-                      <td className="py-3">
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-                          {lead.status || "delivered"}
-                        </span>
-                      </td>
+            <>
+              {/* Desktop Table View */}
+              <div className="hidden md:block overflow-x-auto">
+                <table className="w-full text-left text-xs font-sans">
+                  <thead>
+                    <tr className="border-b border-zinc-200/80 dark:border-white/[0.08] text-zinc-500 dark:text-zinc-400 font-mono text-[11px] uppercase tracking-wider">
+                      <th className="pb-2.5">Subscriber Name</th>
+                      <th className="pb-2.5">Email</th>
+                      {!isPerMagnet && <th className="pb-2.5">Lead Magnet</th>}
+                      <th className="pb-2.5">Signed Up At</th>
+                      <th className="pb-2.5">Status</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody className="divide-y divide-zinc-200/60 dark:divide-white/[0.04] font-medium text-zinc-700 dark:text-zinc-300">
+                    {leads.slice(0, 5).map((lead) => (
+                      <tr
+                        key={lead.id}
+                        className="hover:bg-zinc-50/50 dark:hover:bg-white/[0.02] transition-colors"
+                      >
+                        <td className="py-3 font-bold text-zinc-900 dark:text-white">{lead.name}</td>
+                        <td className="py-3 font-mono text-zinc-500 dark:text-zinc-400">{lead.email}</td>
+                        {!isPerMagnet && <td className="py-3">{lead.page}</td>}
+                        <td className="py-3 font-mono text-zinc-500 dark:text-zinc-400">{lead.signedUpAt}</td>
+                        <td className="py-3">
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                            {lead.status || "delivered"}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Mobile Cards View */}
+              <div className="block md:hidden space-y-2.5">
+                {leads.slice(0, 6).map((lead) => (
+                  <MobileConversionCard key={lead.id} lead={lead} isPerMagnet={isPerMagnet} />
+                ))}
+              </div>
+            </>
           )}
         </motion.div>
 
         {/* 7. METHODOLOGY NOTICE */}
         <motion.footer
           variants={itemVariants}
-          className="rounded-2xl border border-zinc-200/80 bg-white/80 dark:border-white/[0.08] dark:bg-[#0C0C0E] p-5 text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed font-normal shadow-xs backdrop-blur-sm"
+          className="rounded-2xl border border-zinc-200/80 bg-white/80 dark:border-white/[0.08] dark:bg-[#0C0C0E] p-4 sm:p-5 text-[11px] sm:text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed font-normal shadow-xs backdrop-blur-sm"
         >
           Total signups count every successful submission, including repeat requests from the same person. The unique people figure deduplicates those records by email address. A tracked conversion is a successful signup matched to an anonymous browser-tab visit; tracked conversions are used for the conversion rate, chart, and A/B tests. Refreshing the same page does not inflate visits. Engaged time only counts while the page is visible. A video play is one successful signup explicitly pressing Play, counted once. A quiz completion requires every configured answer to be saved. No names, emails, cookies, or raw IP addresses are stored in visit analytics. Historical visit activity from before tracking began cannot be reconstructed.
         </motion.footer>

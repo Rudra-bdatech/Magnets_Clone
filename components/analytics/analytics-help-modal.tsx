@@ -36,7 +36,7 @@ export default function AnalyticsHelpModal({ isOpen, onClose }: AnalyticsHelpMod
   const modalJSX = (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-[99999] flex items-center justify-center p-3 sm:p-6">
+        <div className="fixed inset-0 z-[99999] flex items-end sm:items-center justify-center p-0 sm:p-6">
           {/* Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
@@ -44,21 +44,26 @@ export default function AnalyticsHelpModal({ isOpen, onClose }: AnalyticsHelpMod
             exit={{ opacity: 0 }}
             transition={{ duration: 0.25, ease: [0.32, 0.72, 0, 1] }}
             onClick={onClose}
-            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            className="absolute inset-0 bg-black/60 sm:bg-black/50 backdrop-blur-sm"
           />
 
           {/* Modal Dialog Container */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 10 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 10 }}
-            transition={{ type: "spring", stiffness: 400, damping: 30, mass: 0.8 }}
+            initial={{ opacity: 0, y: "100%", scale: 1 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: "100%", scale: 1 }}
+            transition={{ type: "spring", stiffness: 400, damping: 32, mass: 0.8 }}
             onWheel={(e) => e.stopPropagation()}
             onTouchMove={(e) => e.stopPropagation()}
-            className="relative w-full max-w-3xl rounded-2xl bg-white dark:bg-[#111318] text-zinc-900 dark:text-white border border-zinc-200 dark:border-zinc-800/90 shadow-2xl overflow-hidden flex flex-col max-h-[88vh] z-10 font-sans"
+            className="relative w-full max-w-3xl rounded-t-3xl sm:rounded-2xl bg-white dark:bg-[#111318] text-zinc-900 dark:text-white border-t sm:border border-zinc-200 dark:border-zinc-800/90 shadow-2xl overflow-hidden flex flex-col max-h-[90vh] sm:max-h-[88vh] z-10 font-sans"
           >
+            {/* Mobile Drag Indicator */}
+            <div className="flex sm:hidden justify-center pt-2.5 pb-1 bg-zinc-50 dark:bg-[#15171D]">
+              <div className="w-10 h-1 rounded-full bg-zinc-300 dark:bg-zinc-700" />
+            </div>
+
             {/* Top Navigation Bar */}
-            <div className="flex items-center justify-between px-6 py-4 border-b border-zinc-100 dark:border-zinc-800/80 bg-zinc-50 dark:bg-[#15171D] shrink-0">
+            <div className="flex items-center justify-between px-5 sm:px-6 py-3.5 sm:py-4 border-b border-zinc-100 dark:border-zinc-800/80 bg-zinc-50 dark:bg-[#15171D] shrink-0">
               <div className="flex items-center gap-3">
                 <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#0066B2] text-white shadow-xs">
                   <ListChecks className="h-5 w-5" />
