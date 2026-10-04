@@ -120,7 +120,7 @@ export default async function LeadDetail({ params }: { params: { id: string } })
                 <SourceLabel source={lead.source} />
                 <Link
                   href={`/dashboard/leadmagnets/${lead.pageId}`}
-                  className="inline-flex items-center gap-1 text-sm font-medium text-ink-700 underline-offset-4 hover:text-ink-950 hover:underline dark:text-ink-300 dark:hover:text-white"
+                  className="inline-flex items-center gap-1 text-sm font-medium text-ink-700 hover:text-ink-950 dark:text-ink-300 dark:hover:text-white transition"
                 >
                   {lead.page} <ArrowUpRight className="h-3.5 w-3.5" aria-hidden="true" />
                 </Link>
@@ -135,7 +135,7 @@ export default async function LeadDetail({ params }: { params: { id: string } })
                     <Rocket className="h-4 w-4 text-ink-400" aria-hidden="true" />
                     <Link
                       href="/dashboard/sequences"
-                      className="font-medium text-ink-900 underline-offset-4 hover:underline dark:text-white"
+                      className="font-medium text-ink-900 hover:opacity-80 dark:text-white transition"
                     >
                       {lead.sequence}
                     </Link>
@@ -190,7 +190,7 @@ export default async function LeadDetail({ params }: { params: { id: string } })
                               href={strVal}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="text-[#0066B2] dark:text-[#38BDF8] hover:underline font-semibold text-xs truncate block max-w-[260px]"
+                              className="text-[#0066B2] dark:text-[#38BDF8] hover:opacity-80 font-semibold text-xs truncate block max-w-[260px] transition"
                             >
                               {strVal}
                             </a>

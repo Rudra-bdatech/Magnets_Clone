@@ -197,7 +197,7 @@ export const LeadDetailsModal = memo(function LeadDetailsModal({
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.94, y: 6 }}
           transition={{ type: "spring", damping: 26, stiffness: 360 }}
-          className="w-full max-w-xl sm:max-w-2xl rounded-2xl border border-zinc-200/80 bg-white dark:border-[#2e2e38] dark:bg-[#18181B] p-5 sm:p-6 shadow-2xl relative space-y-4 my-auto max-h-[90vh] overflow-y-auto scrollbar-thin"
+          className="w-full max-w-xl sm:max-w-2xl rounded-2xl border border-zinc-200/80 bg-white dark:border-[#2e2e38] dark:bg-[#18181B] p-4 sm:p-6 shadow-2xl relative space-y-4 my-auto max-h-[92vh] overflow-y-auto scrollbar-thin"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
@@ -302,19 +302,37 @@ export const LeadDetailsModal = memo(function LeadDetailsModal({
             </div>
 
             {/* Custom Fields / LinkedIn Data */}
-            {selectedLead.customFields &&
-              Object.keys(selectedLead.customFields).length > 0 && (
+            {(() => {
+              const HIDDEN_INTERNAL_KEYS = new Set([
+                "lileadid",
+                "liauthorid",
+                "commentid",
+                "postid",
+                "unipilecommentid",
+                "unipilepostid",
+                "id",
+                "leadid",
+              ]);
+              const validCustomFields = Object.entries(selectedLead.customFields || {}).filter(
+                ([key, val]) => {
+                  const norm = key.toLowerCase().replace(/[^a-z0-9]/g, "");
+                  if (HIDDEN_INTERNAL_KEYS.has(norm)) return false;
+                  return val !== undefined && val !== null && String(val).trim() !== "";
+                }
+              );
+              if (validCustomFields.length === 0) return null;
+              return (
                 <div className="space-y-2.5">
                   <div className="flex items-center justify-between">
                     <span className="font-bold text-zinc-900 dark:text-white block text-xs">
                       {isLinkedIn ? "LinkedIn Interaction & Prospect Data" : "Form Submissions"}
                     </span>
                     <span className="text-[10px] text-zinc-400 font-medium">
-                      {Object.keys(selectedLead.customFields).length} fields recorded
+                      {validCustomFields.length} field{validCustomFields.length === 1 ? "" : "s"} recorded
                     </span>
                   </div>
                   <div className="space-y-2">
-                    {Object.entries(selectedLead.customFields).map(([key, val]) => (
+                    {validCustomFields.map(([key, val]) => (
                       <div
                         key={key}
                         className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-2.5 rounded-xl bg-zinc-50 dark:bg-[#121214] border border-zinc-100 dark:border-white/5 overflow-hidden"
@@ -329,7 +347,8 @@ export const LeadDetailsModal = memo(function LeadDetailsModal({
                     ))}
                   </div>
                 </div>
-              )}
+              );
+            })()}
 
             {/* Visitor Prompt Answer */}
             {selectedLead.customAnswer && (
@@ -423,19 +442,19 @@ export const LeadDetailsModal = memo(function LeadDetailsModal({
           </div>
 
           {/* Bottom Actions */}
-          <div className="pt-2 flex flex-wrap gap-2 justify-between items-center">
-            <div className="flex items-center gap-2">
+          <div className="pt-2 flex flex-col-reverse sm:flex-row gap-2.5 sm:justify-between sm:items-center mt-2">
+            <div className="flex items-center gap-2 w-full sm:w-auto">
               <button
                 type="button"
                 onClick={() => onResendEmail(selectedLead)}
-                className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold border border-zinc-200 dark:border-[#2e2e38] bg-white dark:bg-[#202026] text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-[#282830] transition cursor-pointer"
+                className="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-3.5 py-2.5 sm:py-2 rounded-xl text-xs font-semibold border border-zinc-200 dark:border-[#2e2e38] bg-white dark:bg-[#202026] text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-[#282830] transition cursor-pointer"
               >
                 <Send className="h-3.5 w-3.5 text-emerald-500" /> Resend Email
               </button>
               <button
                 type="button"
                 onClick={() => onDelete(selectedLead)}
-                className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 transition cursor-pointer"
+                className="flex items-center justify-center gap-1.5 px-3.5 py-2.5 sm:py-2 rounded-xl text-xs font-semibold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 transition cursor-pointer"
               >
                 <Trash2 className="h-3.5 w-3.5" />
                 Delete
@@ -444,7 +463,7 @@ export const LeadDetailsModal = memo(function LeadDetailsModal({
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 rounded-xl bg-[#0066B2] text-xs font-semibold text-white hover:bg-[#005799] transition cursor-pointer"
+              className="w-full sm:w-auto px-5 py-2.5 sm:py-2 rounded-xl bg-[#0066B2] text-xs font-semibold text-white hover:bg-[#005799] transition cursor-pointer text-center"
             >
               Close
             </button>

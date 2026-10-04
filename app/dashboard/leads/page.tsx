@@ -36,6 +36,7 @@ import type { Account, Lead, MagnetPage, Sequence } from "@/lib/data";
 
 import dynamic from "next/dynamic";
 import { LeadTableRow } from "@/components/leads/LeadTableRow";
+import { MobileLeadCard } from "@/components/leads/MobileLeadCard";
 import { LeadToastContainer, type Toast } from "@/components/leads/LeadToastContainer";
 
 const AddLeadModal = dynamic(() => import("@/components/leads/AddLeadModal").then((mod) => mod.AddLeadModal), { ssr: false });
@@ -99,6 +100,7 @@ export default function LeadsPage() {
 
   // Bulk Selection & Bulk Delete State
   const [selectedLeadIds, setSelectedLeadIds] = useState<string[]>([]);
+  const [isMobileSelectionMode, setIsMobileSelectionMode] = useState(false);
   const [showBulkDeleteModal, setShowBulkDeleteModal] = useState(false);
   const [isBulkDeleting, setIsBulkDeleting] = useState(false);
 
@@ -317,6 +319,7 @@ export default function LeadsPage() {
 
       addToast("info", `Successfully deleted ${selectedLeadIds.length} selected leads.`);
       setSelectedLeadIds([]);
+      setIsMobileSelectionMode(false);
       setShowBulkDeleteModal(false);
     } catch (err) {
       console.error("Error bulk deleting leads:", err);
@@ -654,8 +657,10 @@ export default function LeadsPage() {
       <div className="flex flex-col min-h-[calc(100vh-3rem)] bg-gradient-to-b from-[#EFF6FF]/50 via-[#F8FBFF] to-[#F8FBFF] dark:bg-none dark:bg-[#0E0E10]">
         <div className="flex-1 px-3.5 sm:px-6 py-4 sm:py-6 lg:px-8 max-w-7xl mx-auto w-full">
 
-          {/* Page heading */}
-          <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center mb-6">
+          {/* ========================================================================= */}
+          {/* 1. DESKTOP Page Heading (hidden md:flex) - Preserved 100% Unchanged       */}
+          {/* ========================================================================= */}
+          <div className="hidden md:flex flex-col justify-between gap-4 md:flex-row md:items-center mb-6">
             <div>
               <div className="flex items-center gap-2">
                 <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-900 dark:text-white">
@@ -691,8 +696,54 @@ export default function LeadsPage() {
             </div>
           </div>
 
-          {/* Stat cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 mb-6">
+          {/* ========================================================================= */}
+          {/* 1. MOBILE Page Heading (flex md:hidden) - Senior Designer Crafted         */}
+          {/* ========================================================================= */}
+          <div className="flex md:hidden flex-col gap-3 mb-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <h2 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-white">
+                  Leads
+                </h2>
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                  Live
+                </span>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setShowAddModal(true)}
+                className="flex items-center gap-1.5 rounded-xl bg-[#0066B2] px-3.5 py-2 text-xs font-bold text-white hover:bg-[#005291] active:scale-95 transition shadow-sm cursor-pointer"
+              >
+                <UserPlus className="h-3.5 w-3.5" />
+                <span>+ Add</span>
+              </button>
+            </div>
+
+            {/* Mobile Actions Quick Bar */}
+            <div className="grid grid-cols-2 gap-2">
+              <label className="flex items-center justify-center gap-1.5 rounded-xl border border-zinc-200/90 bg-white py-2 px-3 text-xs font-semibold text-zinc-700 hover:bg-zinc-50 dark:border-[#2e2e38] dark:bg-[#18181B] dark:text-zinc-300 active:scale-98 transition cursor-pointer shadow-2xs">
+                <Download className="h-3.5 w-3.5 text-[#0066B2] shrink-0" />
+                <span className="truncate">Import CSV</span>
+                <input type="file" accept=".csv" onChange={handleCSVFileSelect} className="hidden" />
+              </label>
+
+              <button
+                type="button"
+                onClick={handleExportCSV}
+                className="flex items-center justify-center gap-1.5 rounded-xl border border-zinc-200/90 bg-white py-2 px-3 text-xs font-semibold text-zinc-700 hover:bg-zinc-50 dark:border-[#2e2e38] dark:bg-[#18181B] dark:text-zinc-300 active:scale-98 transition cursor-pointer shadow-2xs"
+              >
+                <Upload className="h-3.5 w-3.5 text-[#0066B2] shrink-0" />
+                <span className="truncate">Export CSV</span>
+              </button>
+            </div>
+          </div>
+
+          {/* ========================================================================= */}
+          {/* 2. DESKTOP Stat Cards (hidden md:grid) - Preserved 100% Unchanged         */}
+          {/* ========================================================================= */}
+          <div className="hidden md:grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 mb-6">
             {/* Total Subscribers */}
             <div className="flex items-center rounded-2xl border border-zinc-200/80 bg-white/80 dark:border-[#2e2e38] dark:bg-[#18181B]/80 px-5 py-4 sm:py-5 shadow-sm backdrop-blur-sm transition-all hover:border-zinc-300 dark:hover:border-[#3e3e4a]">
               <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-indigo-500/30 bg-indigo-50 text-indigo-600 dark:border-indigo-500/30 dark:bg-indigo-500/20 dark:text-indigo-400 mr-3.5">
@@ -750,11 +801,62 @@ export default function LeadsPage() {
             </div>
           </div>
 
+          {/* ========================================================================= */}
+          {/* 2. MOBILE Stat Cards (grid md:hidden) - Ergonomic, High-Density Scannable  */}
+          {/* ========================================================================= */}
+          <div className="grid md:hidden grid-cols-2 gap-2 mb-4">
+            {/* Total Subscribers */}
+            <div className="flex items-center rounded-xl border border-zinc-200/80 bg-white/90 dark:border-[#282832] dark:bg-[#18181C]/90 p-2.5 shadow-2xs backdrop-blur-sm">
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-indigo-500/30 bg-indigo-50 text-indigo-600 dark:border-indigo-500/30 dark:bg-indigo-500/20 dark:text-indigo-400 mr-2.5">
+                <Layers className="h-4 w-4" />
+              </div>
+              <div className="min-w-0">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 dark:text-[#9B9085] truncate">Total</p>
+                <p className="text-base font-bold text-zinc-900 dark:text-white leading-tight mt-0.5">{totalLeads}</p>
+              </div>
+            </div>
+
+            {/* Unique Subscribers */}
+            <div className="flex items-center rounded-xl border border-zinc-200/80 bg-white/90 dark:border-[#282832] dark:bg-[#18181C]/90 p-2.5 shadow-2xs backdrop-blur-sm">
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-[#0066B2]/30 bg-[#EFF6FF] text-[#0066B2] dark:border-[#0066B2]/30 dark:bg-[#0066B2]/20 dark:text-[#38BDF8] mr-2.5">
+                <Users className="h-4 w-4" />
+              </div>
+              <div className="min-w-0">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 dark:text-[#9B9085] truncate">Unique</p>
+                <p className="text-base font-bold text-zinc-900 dark:text-white leading-tight mt-0.5">{uniqueSignups}</p>
+              </div>
+            </div>
+
+            {/* Monthly Growth */}
+            <div className="flex items-center rounded-xl border border-zinc-200/80 bg-white/90 dark:border-[#282832] dark:bg-[#18181C]/90 p-2.5 shadow-2xs backdrop-blur-sm">
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-emerald-500/30 bg-emerald-50 text-emerald-600 dark:border-emerald-500/30 dark:bg-emerald-500/20 dark:text-emerald-400 mr-2.5">
+                <TrendingUp className="h-4 w-4" />
+              </div>
+              <div className="min-w-0">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 dark:text-[#9B9085] truncate">30d Growth</p>
+                <p className="text-base font-bold text-zinc-900 dark:text-white leading-tight mt-0.5">+{recentMonthCount}</p>
+              </div>
+            </div>
+
+            {/* Active in Sequence */}
+            <div className="flex items-center rounded-xl border border-zinc-200/80 bg-white/90 dark:border-[#282832] dark:bg-[#18181C]/90 p-2.5 shadow-2xs backdrop-blur-sm">
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-purple-500/30 bg-purple-50 text-purple-600 dark:border-purple-500/30 dark:bg-purple-500/20 dark:text-purple-400 mr-2.5">
+                <Zap className="h-4 w-4" />
+              </div>
+              <div className="min-w-0">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 dark:text-[#9B9085] truncate">In Sequence</p>
+                <p className="text-base font-bold text-zinc-900 dark:text-white leading-tight mt-0.5">{activeInSequenceCount}</p>
+              </div>
+            </div>
+          </div>
+
           {/* Table Container */}
           <div className="rounded-2xl border border-zinc-200/80 bg-white/90 dark:border-[#2e2e38] dark:bg-[#18181B]/90 shadow-sm backdrop-blur-sm relative">
 
-            {/* Toolbar */}
-            <div className="p-3.5 sm:p-5 border-b border-zinc-200/80 dark:border-[#2e2e38]">
+            {/* ========================================================================= */}
+            {/* 3. DESKTOP Toolbar (hidden md:block) - Preserved 100% Unchanged           */}
+            {/* ========================================================================= */}
+            <div className="hidden md:block p-3.5 sm:p-5 border-b border-zinc-200/80 dark:border-[#2e2e38]">
               <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                 <div>
                   <h3 className="text-base font-bold text-zinc-900 dark:text-white">All Subscribers</h3>
@@ -949,8 +1051,182 @@ export default function LeadsPage() {
               </div>
             </div>
 
-            {/* Table */}
-            <div className="overflow-x-auto">
+            {/* ========================================================================= */}
+            {/* 3. MOBILE Toolbar (block md:hidden) - One-Tap Chips & Native Search       */}
+            {/* ========================================================================= */}
+            <div className="block md:hidden p-3.5 border-b border-zinc-200/80 dark:border-[#2e2e38] space-y-3">
+              {/* Full Width Search Input with Instant Clear */}
+              <div className="relative">
+                <Search className="absolute left-3.5 top-3 h-4 w-4 text-zinc-400" />
+                <input
+                  type="text"
+                  placeholder="Search email, name, or magnet..."
+                  value={search}
+                  onChange={(e) => {
+                    setSearch(e.target.value);
+                    setCurrentPage(1);
+                  }}
+                  className="w-full rounded-xl border border-zinc-200/90 bg-zinc-50/70 py-2.5 pl-10 pr-9 text-xs text-zinc-900 placeholder-zinc-400 focus:border-[#0066B2] focus:bg-white focus:outline-none dark:border-[#2e2e38] dark:bg-[#1C1C22] dark:text-white dark:placeholder-zinc-500 transition-all shadow-2xs"
+                />
+                {search && (
+                  <button
+                    type="button"
+                    onClick={() => setSearch("")}
+                    className="absolute right-3 top-2.5 p-1 rounded-full text-zinc-400 hover:text-zinc-600 dark:hover:text-white cursor-pointer"
+                  >
+                    <X className="h-3.5 w-3.5" />
+                  </button>
+                )}
+              </div>
+
+              {/* Horizontal Scrollable Quick-Filter Chips */}
+              <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-0.5 pt-0.5">
+                {/* Chip: All */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setFilterMagnet("All lead magnets");
+                    setCurrentPage(1);
+                  }}
+                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all shrink-0 cursor-pointer ${
+                    filterMagnet === "All lead magnets"
+                      ? "bg-[#0066B2] text-white shadow-xs"
+                      : "bg-zinc-100/90 text-zinc-700 hover:bg-zinc-200/70 dark:bg-[#202028] dark:text-zinc-300"
+                  }`}
+                >
+                  <Layers className="h-3 w-3" />
+                  <span>All</span>
+                  <span className={`px-1.5 py-0.2 rounded text-[10px] font-bold ${
+                    filterMagnet === "All lead magnets"
+                      ? "bg-white/20 text-white"
+                      : "bg-zinc-200/80 text-zinc-600 dark:bg-white/10 dark:text-zinc-300"
+                  }`}>
+                    {filterCounts.all}
+                  </span>
+                </button>
+
+                {/* Chip: LinkedIn */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setFilterMagnet("All LinkedIn Leads");
+                    setCurrentPage(1);
+                  }}
+                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all shrink-0 cursor-pointer ${
+                    filterMagnet === "All LinkedIn Leads"
+                      ? "bg-[#0A66C2] text-white shadow-xs"
+                      : "bg-zinc-100/90 text-zinc-700 hover:bg-zinc-200/70 dark:bg-[#202028] dark:text-zinc-300"
+                  }`}
+                >
+                  <Linkedin className="h-3 w-3" />
+                  <span>LinkedIn</span>
+                  <span className={`px-1.5 py-0.2 rounded text-[10px] font-bold ${
+                    filterMagnet === "All LinkedIn Leads"
+                      ? "bg-white/20 text-white"
+                      : "bg-zinc-200/80 text-zinc-600 dark:bg-white/10 dark:text-zinc-300"
+                  }`}>
+                    {filterCounts.linkedIn}
+                  </span>
+                </button>
+
+                {/* Chip: Locked PDFs */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setFilterMagnet("All Locked PDFs");
+                    setCurrentPage(1);
+                  }}
+                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all shrink-0 cursor-pointer ${
+                    filterMagnet === "All Locked PDFs"
+                      ? "bg-amber-600 text-white shadow-xs"
+                      : "bg-zinc-100/90 text-zinc-700 hover:bg-zinc-200/70 dark:bg-[#202028] dark:text-zinc-300"
+                  }`}
+                >
+                  <Lock className="h-3 w-3" />
+                  <span>Locked PDF</span>
+                  <span className={`px-1.5 py-0.2 rounded text-[10px] font-bold ${
+                    filterMagnet === "All Locked PDFs"
+                      ? "bg-white/20 text-white"
+                      : "bg-zinc-200/80 text-zinc-600 dark:bg-white/10 dark:text-zinc-300"
+                  }`}>
+                    {filterCounts.lockedPdf}
+                  </span>
+                </button>
+
+                {/* Chip: Form Magnets */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setFilterMagnet("All Form Magnets");
+                    setCurrentPage(1);
+                  }}
+                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all shrink-0 cursor-pointer ${
+                    filterMagnet === "All Form Magnets"
+                      ? "bg-sky-600 text-white shadow-xs"
+                      : "bg-zinc-100/90 text-zinc-700 hover:bg-zinc-200/70 dark:bg-[#202028] dark:text-zinc-300"
+                  }`}
+                >
+                  <FileText className="h-3 w-3" />
+                  <span>Forms</span>
+                  <span className={`px-1.5 py-0.2 rounded text-[10px] font-bold ${
+                    filterMagnet === "All Form Magnets"
+                      ? "bg-white/20 text-white"
+                      : "bg-zinc-200/80 text-zinc-600 dark:bg-white/10 dark:text-zinc-300"
+                  }`}>
+                    {filterCounts.forms}
+                  </span>
+                </button>
+              </div>
+
+              {/* Mobile Selection Mode Bar / Subtitle Strip */}
+              <div className="pt-1 text-xs">
+                {isMobileSelectionMode ? (
+                  <div className="flex items-center justify-between">
+                    <label className="flex items-center gap-2 cursor-pointer select-none">
+                      <input
+                        type="checkbox"
+                        checked={paginatedLeads.length > 0 && paginatedLeads.every((l) => selectedLeadIds.includes(l.id))}
+                        onChange={toggleSelectAll}
+                        className="h-4 w-4 rounded border-zinc-300 dark:border-zinc-700 bg-white dark:bg-[#202026] text-[#0066B2] focus:ring-[#0066B2] cursor-pointer"
+                      />
+                      <span className="font-bold text-zinc-900 dark:text-white">
+                        Select All ({paginatedLeads.length})
+                      </span>
+                    </label>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsMobileSelectionMode(false);
+                        setSelectedLeadIds([]);
+                      }}
+                      className="px-2.5 py-1 rounded-lg text-xs font-bold text-[#0066B2] hover:bg-[#0066B2]/10 dark:text-[#38BDF8] dark:hover:bg-[#38BDF8]/10 transition cursor-pointer"
+                    >
+                      Done
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-between">
+                    <span className="font-semibold text-zinc-600 dark:text-zinc-400">
+                      All Subscribers ({filtered.length})
+                    </span>
+
+                    <button
+                      type="button"
+                      onClick={() => setIsMobileSelectionMode(true)}
+                      className="inline-flex items-center gap-1 px-3 py-1 rounded-lg border border-zinc-200/90 bg-white dark:border-[#2e2e38] dark:bg-[#202026] text-xs font-bold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-[#282830] transition cursor-pointer shadow-2xs"
+                    >
+                      <span>Select</span>
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* ========================================================================= */}
+            {/* 4. DESKTOP Table View (hidden md:block) - Preserved 100% Unchanged        */}
+            {/* ========================================================================= */}
+            <div className="hidden md:block overflow-x-auto">
               <table className="w-full text-left divide-y divide-zinc-200/80 dark:divide-[#2e2e38]">
                 <thead className="bg-[#F8FBFF] dark:bg-[#151518]">
                   <tr>
@@ -1003,7 +1279,7 @@ export default function LeadsPage() {
                 </tbody>
               </table>
 
-              {/* Empty state */}
+              {/* Empty state desktop */}
               {filtered.length === 0 && (
                 <div className="py-16 text-center">
                   <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-[#EFF6FF] text-[#0066B2] dark:bg-[#0066B2]/20 dark:text-[#38BDF8] mb-3">
@@ -1021,9 +1297,85 @@ export default function LeadsPage() {
               )}
             </div>
 
-            {/* Pagination & Records Count Bar */}
+            {/* ========================================================================= */}
+            {/* 4. MOBILE Card-Based Leads List (block md:hidden) - Senior UX Engineered  */}
+            {/* ========================================================================= */}
+            <div className="block md:hidden p-3 space-y-2.5">
+              {paginatedLeads.map((lead) => {
+                const isSelected = selectedLeadIds.includes(lead.id);
+                const isLinkedIn = checkIsLinkedInLead(lead);
+                const isLockedPdf = !isLinkedIn && checkIsLockedPdfLead(lead);
+                const isManual =
+                  !isLinkedIn &&
+                  (lead.source === "integration" ||
+                  (lead.source as string) === "manual" ||
+                  lead.page === "Direct Manual Add" ||
+                  lead.sequence === "Imported Contact");
+
+                return (
+                  <MobileLeadCard
+                    key={lead.id}
+                    lead={lead}
+                    isSelected={isSelected}
+                    isSelectionMode={isMobileSelectionMode}
+                    isLockedPdf={isLockedPdf}
+                    isManual={isManual}
+                    isLinkedIn={isLinkedIn}
+                    formattedDate={formatDateOnly(lead.signedUpAt)}
+                    sequenceStatusNode={renderSequenceStatus(lead)}
+                    onToggleSelect={toggleSelectLead}
+                    onEnterSelectionMode={(id) => {
+                      setIsMobileSelectionMode(true);
+                      setSelectedLeadIds((prev) => (prev.includes(id) ? prev : [...prev, id]));
+                    }}
+                    onViewDetails={setSelectedLead}
+                    onDelete={setLeadToDelete}
+                    onCopyEmail={copyEmailToClipboard}
+                  />
+                );
+              })}
+
+              {/* Empty state mobile */}
+              {filtered.length === 0 && (
+                <div className="py-12 px-4 text-center">
+                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-[#EFF6FF] text-[#0066B2] dark:bg-[#0066B2]/20 dark:text-[#38BDF8] mb-3">
+                    <Users className="h-6 w-6" />
+                  </div>
+                  <p className="text-sm font-bold text-zinc-900 dark:text-white mb-1">
+                    {search ? "No matching leads found" : "No leads yet"}
+                  </p>
+                  <p className="text-xs text-zinc-500 dark:text-[#9B9085] max-w-xs mx-auto mb-4">
+                    {search
+                      ? "Try searching for a different name, email, or magnet."
+                      : "Leads appear automatically when users enter their email on a published magnet."}
+                  </p>
+                  {search ? (
+                    <button
+                      type="button"
+                      onClick={() => setSearch("")}
+                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-xs font-bold text-zinc-700 dark:text-zinc-200 transition cursor-pointer"
+                    >
+                      Clear Search
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => setShowAddModal(true)}
+                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#0066B2] text-xs font-bold text-white shadow-sm cursor-pointer"
+                    >
+                      <UserPlus className="h-3.5 w-3.5" />
+                      <span>+ Add Subscriber</span>
+                    </button>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* ========================================================================= */}
+            {/* 5. DESKTOP Pagination (hidden md:flex) - Preserved 100% Unchanged         */}
+            {/* ========================================================================= */}
             {filtered.length > 0 && (
-              <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-4 sm:px-6 py-2.5 border-t border-zinc-200/80 dark:border-[#2e2e38] bg-[#F8FBFF]/50 dark:bg-[#151518]/50 text-xs text-zinc-600 dark:text-[#9B9085]">
+              <div className="hidden md:flex flex-col sm:flex-row items-center justify-between gap-3 px-4 sm:px-6 py-2.5 border-t border-zinc-200/80 dark:border-[#2e2e38] bg-[#F8FBFF]/50 dark:bg-[#151518]/50 text-xs text-zinc-600 dark:text-[#9B9085]">
                 <div>
                   Showing <strong className="text-zinc-900 dark:text-white">{(currentPage - 1) * pageSize + 1}</strong> to{" "}
                   <strong className="text-zinc-900 dark:text-white">{Math.min(currentPage * pageSize, filtered.length)}</strong> of{" "}
@@ -1071,8 +1423,112 @@ export default function LeadsPage() {
                 </div>
               </div>
             )}
+
+            {/* ========================================================================= */}
+            {/* 5. MOBILE Pagination (flex md:hidden) - Ergonomic Thumb Buttons           */}
+            {/* ========================================================================= */}
+            {filtered.length > 0 && (
+              <div className="flex md:hidden flex-col gap-2.5 p-3.5 border-t border-zinc-200/80 dark:border-[#2e2e38] bg-[#F8FBFF]/50 dark:bg-[#151518]/50">
+                <div className="flex items-center justify-between text-xs text-zinc-600 dark:text-[#9B9085]">
+                  <div>
+                    Showing <strong className="text-zinc-900 dark:text-white">{(currentPage - 1) * pageSize + 1}</strong>-
+                    <strong className="text-zinc-900 dark:text-white">{Math.min(currentPage * pageSize, filtered.length)}</strong> of{" "}
+                    <strong className="text-zinc-900 dark:text-white">{filtered.length}</strong>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[11px]">Rows:</span>
+                    <select
+                      value={pageSize}
+                      onChange={(e) => {
+                        setPageSize(Number(e.target.value));
+                        setCurrentPage(1);
+                      }}
+                      className="rounded-lg border border-zinc-200 bg-white px-2 py-0.5 text-xs font-semibold text-zinc-700 dark:border-[#2e2e38] dark:bg-[#202026] dark:text-zinc-300 focus:outline-none cursor-pointer"
+                    >
+                      <option value={10}>10</option>
+                      <option value={25}>25</option>
+                      <option value={50}>50</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between gap-2 pt-0.5">
+                  <button
+                    type="button"
+                    disabled={currentPage === 1}
+                    onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                    className="flex-1 flex items-center justify-center gap-1 py-2 px-3 rounded-xl border border-zinc-200 bg-white text-xs font-bold text-zinc-700 hover:bg-zinc-50 disabled:opacity-40 dark:border-[#2e2e38] dark:bg-[#202026] dark:text-zinc-300 transition shadow-2xs cursor-pointer"
+                  >
+                    <ChevronLeft className="h-4 w-4" /> Previous
+                  </button>
+
+                  <span className="px-3 text-xs font-bold text-zinc-900 dark:text-white shrink-0">
+                    {currentPage} / {totalPages}
+                  </span>
+
+                  <button
+                    type="button"
+                    disabled={currentPage >= totalPages}
+                    onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                    className="flex-1 flex items-center justify-center gap-1 py-2 px-3 rounded-xl border border-zinc-200 bg-white text-xs font-bold text-zinc-700 hover:bg-zinc-50 disabled:opacity-40 dark:border-[#2e2e38] dark:bg-[#202026] dark:text-zinc-300 transition shadow-2xs cursor-pointer"
+                  >
+                    Next <ChevronRight className="h-4 w-4" />
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
+
+        {/* ========================================================================= */}
+        {/* 6. MOBILE Floating Bulk Action Bar (fixed bottom pill)                     */}
+        {/* ========================================================================= */}
+        <AnimatePresence>
+          {selectedLeadIds.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 30 }}
+              transition={{ type: "spring", damping: 25, stiffness: 350 }}
+              className="fixed bottom-4 left-3 right-3 z-40 flex md:hidden items-center justify-between rounded-2xl border border-zinc-200/90 dark:border-white/10 bg-white/95 dark:bg-[#18181F]/95 px-4 py-3 shadow-2xl backdrop-blur-xl"
+            >
+              <div className="flex items-center gap-2.5">
+                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#0066B2] text-xs font-bold text-white shadow-xs">
+                  {selectedLeadIds.length}
+                </span>
+                <span className="text-xs font-bold text-zinc-900 dark:text-white">Selected</span>
+                <button
+                  type="button"
+                  onClick={toggleSelectAll}
+                  className="text-xs font-semibold text-[#0066B2] dark:text-[#38BDF8] hover:opacity-80 transition cursor-pointer ml-1"
+                >
+                  {selectedLeadIds.length === paginatedLeads.length ? "Deselect" : "Select All"}
+                </button>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelectedLeadIds([]);
+                    setIsMobileSelectionMode(false);
+                  }}
+                  className="px-3 py-1.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-[#222228] text-xs font-semibold text-zinc-700 dark:text-zinc-200 transition cursor-pointer"
+                >
+                  Clear
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowBulkDeleteModal(true)}
+                  className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-red-600 hover:bg-red-700 text-xs font-bold text-white transition shadow-sm cursor-pointer"
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
+                  <span>Delete ({selectedLeadIds.length})</span>
+                </button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* 1. Add Subscriber Manually Modal */}
         <AddLeadModal
