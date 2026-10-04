@@ -29,6 +29,7 @@ import {
 } from "lucide-react";
 import { syncWithDatabase, loadResources, loadAccount, loadPages, loadLeads } from "@/lib/store";
 import type { Account, MagnetPage, Lead } from "@/lib/data";
+import { MobileAssetCard } from "@/components/assets/MobileAssetCard";
 
 interface Resource {
   id: string;
@@ -74,6 +75,11 @@ export default function ResourcesPage() {
   const [hoveredCategory, setHoveredCategory] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState<"newest" | "oldest" | "size" | "name">("newest");
   const [isSortOpen, setIsSortOpen] = useState(false);
+  const [isMobileCategoryOpen, setIsMobileCategoryOpen] = useState(false);
+  const mobileCategoryRef = useRef<HTMLDivElement>(null);
+  const [isMobileSortOpen, setIsMobileSortOpen] = useState(false);
+  const mobileSortRef = useRef<HTMLDivElement>(null);
+  const [isMobileSelectionMode, setIsMobileSelectionMode] = useState(false);
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [selectedResourceIds, setSelectedResourceIds] = useState<string[]>([]);
   const [showBulkDeleteModal, setShowBulkDeleteModal] = useState(false);
@@ -86,6 +92,24 @@ export default function ResourcesPage() {
   const [editingResourceId, setEditingResourceId] = useState<string | null>(null);
   const [editingName, setEditingName] = useState("");
   const [isSavingName, setIsSavingName] = useState(false);
+
+  // Close mobile popovers on outside click
+  useEffect(() => {
+    function handler(e: MouseEvent | TouchEvent) {
+      if (mobileCategoryRef.current && !mobileCategoryRef.current.contains(e.target as Node)) {
+        setIsMobileCategoryOpen(false);
+      }
+      if (mobileSortRef.current && !mobileSortRef.current.contains(e.target as Node)) {
+        setIsMobileSortOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handler);
+    document.addEventListener("touchstart", handler);
+    return () => {
+      document.removeEventListener("mousedown", handler);
+      document.removeEventListener("touchstart", handler);
+    };
+  }, []);
 
 
 
@@ -576,6 +600,25 @@ export default function ResourcesPage() {
     }).length;
   }, [leads, magnetPages]);
 
+  // Category counts memo
+  const categoryCounts = useMemo(() => {
+    const valid = resources.filter(
+      (r: any) =>
+        !(
+          r.isPageAsset === true ||
+          r.type === "page_asset" ||
+          (r.name && r.name.startsWith("page_asset_"))
+        )
+    );
+    return {
+      all: valid.length,
+      docs: valid.filter((r) => getFileCategory(r.name) === "docs").length,
+      images: valid.filter((r) => getFileCategory(r.name) === "images").length,
+      media: valid.filter((r) => getFileCategory(r.name) === "media").length,
+      archives: valid.filter((r) => getFileCategory(r.name) === "archives").length,
+    };
+  }, [resources, getFileCategory]);
+
   const filteredResources = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
     return resources
@@ -595,6 +638,20 @@ export default function ResourcesPage() {
         return b.id.localeCompare(a.id);
       });
   }, [resources, searchQuery, activeCategory, sortBy, getFileCategory]);
+
+  const toggleSelectResource = useCallback((id: string) => {
+    setSelectedResourceIds((prev) =>
+      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
+    );
+  }, []);
+
+  const toggleSelectAll = useCallback(() => {
+    if (selectedResourceIds.length === filteredResources.length && filteredResources.length > 0) {
+      setSelectedResourceIds([]);
+    } else {
+      setSelectedResourceIds(filteredResources.map((r) => r.id));
+    }
+  }, [selectedResourceIds.length, filteredResources]);
 
   return (
     <DashboardShell account={account} title="Assets">
@@ -616,10 +673,12 @@ export default function ResourcesPage() {
           </div>
         )}
 
-        <div className="flex-1 px-6 py-6 lg:px-8 max-w-7xl mx-auto w-full">
+        <div className="flex-1 px-3.5 sm:px-6 py-4 sm:py-6 lg:px-8 max-w-7xl mx-auto w-full">
 
-          {/* Header */}
-          <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
+          {/* ========================================================================= */}
+          {/* 1. DESKTOP Page Heading (hidden md:flex) - Preserved 100% Unchanged       */}
+          {/* ========================================================================= */}
+          <div className="hidden md:flex flex-col justify-between gap-4 md:flex-row md:items-center">
             <div>
               <div className="flex items-center gap-2">
                 <h2 className="text-3xl font-bold tracking-tight text-zinc-900 dark:text-white">
@@ -663,8 +722,54 @@ export default function ResourcesPage() {
             </div>
           </div>
 
-          {/* Premium Overview Metrics Bar (Production 4-Card Responsive Grid) */}
-          <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {/* ========================================================================= */}
+          {/* 1. MOBILE Page Heading (flex md:hidden) - Senior Designer Crafted         */}
+          {/* ========================================================================= */}
+          <div className="flex md:hidden flex-col gap-3 mb-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <h2 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-white">
+                  Assets
+                </h2>
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                  Ready
+                </span>
+              </div>
+
+              <div className="relative shrink-0">
+                <input
+                  type="file"
+                  id="resource-upload-mobile-header"
+                  multiple
+                  className="absolute inset-0 w-full h-full cursor-pointer opacity-0 z-20"
+                  onChange={handleSimulatedUpload}
+                  disabled={uploading}
+                />
+                <button
+                  disabled={uploading}
+                  className="flex items-center gap-1.5 rounded-xl bg-[#0066B2] hover:bg-[#005291] px-3.5 py-2 text-xs font-bold text-white shadow-sm active:scale-95 transition cursor-pointer disabled:opacity-60"
+                >
+                  {uploading ? (
+                    <>
+                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                      <span>Uploading...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Plus className="h-3.5 w-3.5 stroke-[2.5]" />
+                      <span>Upload</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* ========================================================================= */}
+          {/* 2. DESKTOP Overview Metrics Bar (hidden md:grid) - 100% Preserved         */}
+          {/* ========================================================================= */}
+          <div className="hidden md:grid mt-6 grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {/* 1. Total Resources */}
             <div className="rounded-2xl border border-zinc-200/80 bg-white/80 p-4 backdrop-blur-sm dark:border-[#2e2e38] dark:bg-[#18181B]/80 shadow-sm flex items-center gap-3.5 transition-all hover:border-zinc-300 dark:hover:border-[#3e3e4a]">
               <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-indigo-500/30 bg-indigo-50 text-indigo-600 dark:border-indigo-500/30 dark:bg-indigo-500/20 dark:text-indigo-400">
@@ -734,6 +839,55 @@ export default function ResourcesPage() {
             </div>
           </div>
 
+          {/* ========================================================================= */}
+          {/* 2. MOBILE Overview Metrics Bar (grid md:hidden) - Ergonomic 2x2 Grid      */}
+          {/* ========================================================================= */}
+          <div className="grid md:hidden grid-cols-2 gap-2 mb-4">
+            {/* 1. Total Resources */}
+            <div className="flex items-center rounded-xl border border-zinc-200/80 bg-white/90 dark:border-[#282832] dark:bg-[#18181C]/90 p-2.5 shadow-2xs backdrop-blur-sm">
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-indigo-500/30 bg-indigo-50 text-indigo-600 dark:border-indigo-500/30 dark:bg-indigo-500/20 dark:text-indigo-400 mr-2.5">
+                <Layers className="h-4 w-4" />
+              </div>
+              <div className="min-w-0">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 dark:text-[#9B9085] truncate">Total Files</p>
+                <p className="text-base font-bold text-zinc-900 dark:text-white leading-tight mt-0.5">{resources.length}</p>
+              </div>
+            </div>
+
+            {/* 2. Storage Used */}
+            <div className="flex items-center rounded-xl border border-zinc-200/80 bg-white/90 dark:border-[#282832] dark:bg-[#18181C]/90 p-2.5 shadow-2xs backdrop-blur-sm">
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-[#0066B2]/30 bg-[#EFF6FF] text-[#0066B2] dark:border-[#0066B2]/30 dark:bg-[#0066B2]/20 dark:text-[#38BDF8] mr-2.5">
+                <HardDrive className="h-4 w-4" />
+              </div>
+              <div className="min-w-0">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 dark:text-[#9B9085] truncate">Storage</p>
+                <p className="text-base font-bold text-zinc-900 dark:text-white leading-tight mt-0.5 truncate">{formatBytes(totalSizeBytes)}</p>
+              </div>
+            </div>
+
+            {/* 3. In Magnets */}
+            <div className="flex items-center rounded-xl border border-zinc-200/80 bg-white/90 dark:border-[#282832] dark:bg-[#18181C]/90 p-2.5 shadow-2xs backdrop-blur-sm">
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-sky-500/30 bg-sky-50 text-sky-600 dark:border-sky-500/30 dark:bg-sky-500/20 dark:text-sky-400 mr-2.5">
+                <Link2 className="h-4 w-4" />
+              </div>
+              <div className="min-w-0">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 dark:text-[#9B9085] truncate">In Magnets</p>
+                <p className="text-base font-bold text-zinc-900 dark:text-white leading-tight mt-0.5">{linkedStats.linkedCount}</p>
+              </div>
+            </div>
+
+            {/* 4. Total Deliveries */}
+            <div className="flex items-center rounded-xl border border-zinc-200/80 bg-white/90 dark:border-[#282832] dark:bg-[#18181C]/90 p-2.5 shadow-2xs backdrop-blur-sm">
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-emerald-500/30 bg-emerald-50 text-emerald-600 dark:border-emerald-500/30 dark:bg-emerald-500/20 dark:text-emerald-400 mr-2.5">
+                <Send className="h-4 w-4" />
+              </div>
+              <div className="min-w-0">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 dark:text-[#9B9085] truncate">Deliveries</p>
+                <p className="text-base font-bold text-zinc-900 dark:text-white leading-tight mt-0.5">{totalDeliveries}</p>
+              </div>
+            </div>
+          </div>
+
           {/* Option 1: SMART EMPTY STATE DROPZONE (Only rendered when user has NO files) */}
           {resources.length === 0 && (
             <div className="relative mt-6 rounded-2xl border-2 border-dashed border-[#0066B2]/40 bg-white/90 p-12 text-center backdrop-blur-sm hover:border-[#0066B2] dark:border-[#0066B2]/40 dark:bg-[#18181B]/90 shadow-sm transition-all">
@@ -762,9 +916,11 @@ export default function ResourcesPage() {
 
 
 
-          {/* Search & Filter Toolbar (Only when files exist or searching) */}
+          {/* ========================================================================= */}
+          {/* 3. DESKTOP Search & Filter Toolbar (hidden md:flex) - 100% Preserved      */}
+          {/* ========================================================================= */}
           {resources.length > 0 && (
-            <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="hidden md:flex mt-6 flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               {/* Category Tabs with Framer Motion Spring Pill */}
               <div
                 onMouseLeave={() => setHoveredCategory(null)}
@@ -903,10 +1059,221 @@ export default function ResourcesPage() {
               </div>
             </div>
           )}
-
-          {/* Resources Table Container */}
+          {/* ========================================================================= */}
+          {/* 3. MOBILE Toolbar (block md:hidden) - 50/50 Search & Filter Dropdown      */}
+          {/* ========================================================================= */}
           {resources.length > 0 && (
-            <div className="mt-4">
+            <div className="block md:hidden space-y-2.5 mb-3 mt-4">
+              {/* 50/50 Row: Search Input & Category Filter Dropdown */}
+              <div className="grid grid-cols-2 gap-2">
+                {/* 50% Search Input */}
+                <div className="relative">
+                  <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-zinc-400" />
+                  <input
+                    type="text"
+                    placeholder="Search files..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full rounded-xl border border-zinc-200/90 bg-zinc-50/70 py-2 pl-7 pr-6 text-xs text-zinc-900 placeholder-zinc-400 focus:border-[#0066B2] focus:bg-white focus:outline-none dark:border-[#2e2e38] dark:bg-[#1C1C22] dark:text-white dark:placeholder-zinc-500 transition-all shadow-2xs"
+                  />
+                  {searchQuery && (
+                    <button
+                      type="button"
+                      onClick={() => setSearchQuery("")}
+                      className="absolute right-2 top-2 p-0.5 rounded-full text-zinc-400 hover:text-zinc-600 dark:hover:text-white cursor-pointer"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  )}
+                </div>
+
+                {/* 50% Category Filter Dropdown */}
+                <div className="relative" ref={mobileCategoryRef}>
+                  <button
+                    type="button"
+                    onClick={() => setIsMobileCategoryOpen((v) => !v)}
+                    className="flex w-full items-center justify-between gap-1 rounded-xl border border-zinc-200/90 bg-white py-2 px-2.5 text-xs font-semibold text-zinc-700 hover:bg-zinc-50 dark:border-[#2e2e38] dark:bg-[#1C1C22] dark:text-zinc-200 active:scale-98 transition cursor-pointer shadow-2xs select-none"
+                  >
+                    <div className="flex items-center gap-1.5 truncate">
+                      {activeCategory === "docs" ? (
+                        <FileText className="h-3.5 w-3.5 text-[#0066B2] dark:text-[#38BDF8] shrink-0" />
+                      ) : activeCategory === "images" ? (
+                        <ImageIcon className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
+                      ) : activeCategory === "media" ? (
+                        <Film className="h-3.5 w-3.5 text-purple-500 shrink-0" />
+                      ) : activeCategory === "archives" ? (
+                        <Archive className="h-3.5 w-3.5 text-amber-500 shrink-0" />
+                      ) : (
+                        <Layers className="h-3.5 w-3.5 text-zinc-400 shrink-0" />
+                      )}
+                      <span className="truncate text-[11px]">
+                        {activeCategory === "all"
+                          ? "All Files"
+                          : activeCategory === "docs"
+                          ? "Docs"
+                          : activeCategory === "images"
+                          ? "Images"
+                          : activeCategory === "media"
+                          ? "Media"
+                          : "Archives"}
+                      </span>
+                    </div>
+                    <ChevronDown
+                      className={`h-3.5 w-3.5 text-zinc-400 transition-transform duration-200 shrink-0 ${
+                        isMobileCategoryOpen ? "rotate-180" : ""
+                      }`}
+                    />
+                  </button>
+
+                  <AnimatePresence>
+                    {isMobileCategoryOpen && (
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0.95, y: -4 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.95, y: -4 }}
+                        transition={{ duration: 0.15 }}
+                        className="absolute right-0 top-full z-40 mt-1.5 w-56 rounded-xl border border-zinc-200/90 bg-white/95 p-1.5 shadow-2xl backdrop-blur-xl dark:border-white/10 dark:bg-[#18181F]/95 dark:text-white"
+                      >
+                        {[
+                          { id: "all", label: "All Files", icon: <Layers className="h-3.5 w-3.5 text-zinc-400 shrink-0" />, count: categoryCounts.all },
+                          { id: "docs", label: "Documents", icon: <FileText className="h-3.5 w-3.5 text-[#0066B2] dark:text-[#38BDF8] shrink-0" />, count: categoryCounts.docs },
+                          { id: "images", label: "Images", icon: <ImageIcon className="h-3.5 w-3.5 text-emerald-500 shrink-0" />, count: categoryCounts.images },
+                          { id: "media", label: "Audio & Video", icon: <Film className="h-3.5 w-3.5 text-purple-500 shrink-0" />, count: categoryCounts.media },
+                          { id: "archives", label: "Archives", icon: <Archive className="h-3.5 w-3.5 text-amber-500 shrink-0" />, count: categoryCounts.archives },
+                        ].map((cat) => {
+                          const isCatActive = activeCategory === cat.id;
+                          return (
+                            <button
+                              key={cat.id}
+                              type="button"
+                              onClick={() => {
+                                setActiveCategory(cat.id as any);
+                                setIsMobileCategoryOpen(false);
+                              }}
+                              className={`flex w-full items-center justify-between rounded-lg px-2.5 py-2 text-xs font-medium transition-all cursor-pointer ${
+                                isCatActive
+                                  ? "bg-[#0066B2]/10 text-[#0066B2] font-bold dark:bg-[#38BDF8]/20 dark:text-[#38BDF8]"
+                                  : "text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-white/5"
+                              }`}
+                            >
+                              <span className="flex items-center gap-2 truncate">
+                                {cat.icon}
+                                {cat.label}
+                              </span>
+                              <div className="flex items-center gap-1.5 shrink-0">
+                                <span className="px-1.5 py-0.2 rounded bg-zinc-200/60 text-[9px] font-semibold text-zinc-600 dark:bg-white/10 dark:text-zinc-300">
+                                  {cat.count}
+                                </span>
+                                {isCatActive && <Check className="h-3.5 w-3.5 text-current shrink-0" />}
+                              </div>
+                            </button>
+                          );
+                        })}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              </div>
+
+              {/* Mobile Subtitle Strip & Sort / Selection Mode Toggle */}
+              <div className="pt-0.5 text-xs flex items-center justify-between">
+                {isMobileSelectionMode ? (
+                  <div className="flex items-center justify-between w-full">
+                    <label className="flex items-center gap-2 cursor-pointer select-none">
+                      <input
+                        type="checkbox"
+                        checked={filteredResources.length > 0 && selectedResourceIds.length === filteredResources.length}
+                        onChange={toggleSelectAll}
+                        className="h-4 w-4 rounded border-zinc-300 dark:border-zinc-700 bg-white dark:bg-[#202026] text-[#0066B2] focus:ring-[#0066B2] cursor-pointer"
+                      />
+                      <span className="font-bold text-zinc-900 dark:text-white">
+                        Select All ({filteredResources.length})
+                      </span>
+                    </label>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsMobileSelectionMode(false);
+                        setSelectedResourceIds([]);
+                      }}
+                      className="px-2.5 py-1 rounded-lg text-xs font-bold text-[#0066B2] hover:bg-[#0066B2]/10 dark:text-[#38BDF8] dark:hover:bg-[#38BDF8]/10 transition cursor-pointer"
+                    >
+                      Done
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-between w-full">
+                    <div className="flex items-center gap-2">
+                      <span className="font-semibold text-zinc-600 dark:text-zinc-400 text-xs">
+                        All Files ({filteredResources.length})
+                      </span>
+
+                      {/* Mobile Compact Sort Trigger */}
+                      <div className="relative" ref={mobileSortRef}>
+                        <button
+                          type="button"
+                          onClick={() => setIsMobileSortOpen((v) => !v)}
+                          className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-semibold text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200 transition cursor-pointer"
+                        >
+                          <span>
+                            {sortBy === "newest" ? "Newest" : sortBy === "oldest" ? "Oldest" : sortBy === "size" ? "Size" : "Name"}
+                          </span>
+                          <ChevronDown className="h-3 w-3 text-zinc-400" />
+                        </button>
+
+                        <AnimatePresence>
+                          {isMobileSortOpen && (
+                            <motion.div
+                              initial={{ opacity: 0, scale: 0.95, y: -4 }}
+                              animate={{ opacity: 1, scale: 1, y: 0 }}
+                              exit={{ opacity: 0, scale: 0.95, y: -4 }}
+                              transition={{ duration: 0.15 }}
+                              className="absolute left-0 top-full z-40 mt-1 w-40 rounded-xl border border-zinc-200/90 bg-white/95 p-1 shadow-xl backdrop-blur-xl dark:border-white/10 dark:bg-[#18181F]/95 dark:text-white"
+                            >
+                              {[
+                                { id: "newest", label: "Newest" },
+                                { id: "oldest", label: "Oldest" },
+                                { id: "size", label: "File Size" },
+                                { id: "name", label: "Name (A-Z)" },
+                              ].map((opt) => (
+                                <button
+                                  key={opt.id}
+                                  type="button"
+                                  onClick={() => {
+                                    setSortBy(opt.id as any);
+                                    setIsMobileSortOpen(false);
+                                  }}
+                                  className={`flex w-full items-center justify-between rounded-lg px-2.5 py-1.5 text-xs font-medium cursor-pointer ${
+                                    sortBy === opt.id
+                                      ? "bg-[#0066B2]/10 text-[#0066B2] font-bold dark:bg-[#38BDF8]/20 dark:text-[#38BDF8]"
+                                      : "text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-white/5"
+                                  }`}
+                                >
+                                  <span>{opt.label}</span>
+                                  {sortBy === opt.id && <Check className="h-3 w-3 text-current" />}
+                                </button>
+                              ))}
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      </div>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => setIsMobileSelectionMode(true)}
+                      className="inline-flex items-center gap-1 px-3 py-1 rounded-lg border border-zinc-200/90 bg-white dark:border-[#2e2e38] dark:bg-[#202026] text-xs font-bold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-[#282830] transition cursor-pointer shadow-2xs"
+                    >
+                      <span>Select</span>
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+          {resources.length > 0 && (
+            <div className="mt-2 sm:mt-4">
               {filteredResources.length === 0 ? (
                 <div className="rounded-2xl border border-dashed border-zinc-200 bg-white/80 py-12 text-center dark:border-[#2e2e38] dark:bg-[#18181B]/80 shadow-sm backdrop-blur-sm">
                   <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-xl bg-[#EFF6FF] text-[#0066B2] dark:bg-[#0066B2]/20 dark:text-[#38BDF8]">
@@ -920,192 +1287,288 @@ export default function ResourcesPage() {
                   </p>
                 </div>
               ) : (
-                <div className="overflow-hidden rounded-2xl border border-zinc-200/80 bg-white/90 dark:border-[#2e2e38] dark:bg-[#18181B]/90 shadow-sm backdrop-blur-sm">
-                  <div className="overflow-x-auto">
-                    <table className="min-w-full divide-y divide-zinc-200/80 dark:divide-[#2e2e38]">
-                      <thead className="bg-[#F8FBFF] dark:bg-[#151518]">
-                        <tr>
-                          <th className="px-4 py-3.5 text-center w-10">
-                            <input
-                              type="checkbox"
-                              checked={filteredResources.length > 0 && selectedResourceIds.length === filteredResources.length}
-                              onChange={(e) => {
-                                if (e.target.checked) {
-                                  setSelectedResourceIds(filteredResources.map((r) => r.id));
-                                } else {
-                                  setSelectedResourceIds([]);
-                                }
-                              }}
-                              className="h-4 w-4 rounded border-zinc-300 dark:border-zinc-700 bg-white dark:bg-[#202026] text-[#0066B2] focus:ring-[#0066B2] cursor-pointer"
-                              title="Select All On Page"
-                            />
-                          </th>
-                          <th className="px-6 py-3.5 text-left text-[11px] font-semibold tracking-wider text-zinc-500 dark:text-[#9B9085] uppercase">Resource Name</th>
-                          <th className="px-6 py-3.5 text-left text-[11px] font-semibold tracking-wider text-zinc-500 dark:text-[#9B9085] uppercase">Size</th>
-                          <th className="px-6 py-3.5 text-left text-[11px] font-semibold tracking-wider text-zinc-500 dark:text-[#9B9085] uppercase">Uploaded Date & Time</th>
-                          <th className="px-6 py-3.5 text-right text-[11px] font-semibold tracking-wider text-zinc-500 dark:text-[#9B9085] uppercase">Actions</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-zinc-100 bg-white dark:divide-[#222228] dark:bg-[#18181B]">
-                        {filteredResources.map((resource) => {
-                          const badge = getFileBadge(resource.name);
-                          const isCopied = copiedId === resource.id;
-                          const isSelected = selectedResourceIds.includes(resource.id);
-                          const linkedPages = getResourceLinkedPages(resource.id);
+                <>
+                  {/* ========================================================================= */}
+                  {/* 4. DESKTOP Table View (hidden md:block) - Preserved 100% Unchanged        */}
+                  {/* ========================================================================= */}
+                  <div className="hidden md:block overflow-hidden rounded-2xl border border-zinc-200/80 bg-white/90 dark:border-[#2e2e38] dark:bg-[#18181B]/90 shadow-sm backdrop-blur-sm">
+                    <div className="overflow-x-auto">
+                      <table className="min-w-full divide-y divide-zinc-200/80 dark:divide-[#2e2e38]">
+                        <thead className="bg-[#F8FBFF] dark:bg-[#151518]">
+                          <tr>
+                            <th className="px-4 py-3.5 text-center w-10">
+                              <input
+                                type="checkbox"
+                                checked={filteredResources.length > 0 && selectedResourceIds.length === filteredResources.length}
+                                onChange={(e) => {
+                                  if (e.target.checked) {
+                                    setSelectedResourceIds(filteredResources.map((r) => r.id));
+                                  } else {
+                                    setSelectedResourceIds([]);
+                                  }
+                                }}
+                                className="h-4 w-4 rounded border-zinc-300 dark:border-zinc-700 bg-white dark:bg-[#202026] text-[#0066B2] focus:ring-[#0066B2] cursor-pointer"
+                                title="Select All On Page"
+                              />
+                            </th>
+                            <th className="px-6 py-3.5 text-left text-[11px] font-semibold tracking-wider text-zinc-500 dark:text-[#9B9085] uppercase">Resource Name</th>
+                            <th className="px-6 py-3.5 text-left text-[11px] font-semibold tracking-wider text-zinc-500 dark:text-[#9B9085] uppercase">Size</th>
+                            <th className="px-6 py-3.5 text-left text-[11px] font-semibold tracking-wider text-zinc-500 dark:text-[#9B9085] uppercase">Uploaded Date & Time</th>
+                            <th className="px-6 py-3.5 text-right text-[11px] font-semibold tracking-wider text-zinc-500 dark:text-[#9B9085] uppercase">Actions</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-zinc-100 bg-white dark:divide-[#222228] dark:bg-[#18181B]">
+                          {filteredResources.map((resource) => {
+                            const badge = getFileBadge(resource.name);
+                            const isCopied = copiedId === resource.id;
+                            const isSelected = selectedResourceIds.includes(resource.id);
+                            const linkedPages = getResourceLinkedPages(resource.id);
 
-                          return (
-                            <tr key={resource.id} className={`transition-colors ${isSelected ? "bg-[#EFF6FF] dark:bg-[#0066B2]/10" : "hover:bg-[#EFF6FF]/40 dark:hover:bg-[#1C1C22]/60"}`}>
-                              <td className="px-4 py-4 text-center w-10">
-                                <input
-                                  type="checkbox"
-                                  checked={isSelected}
-                                  onChange={(e) => {
-                                    if (e.target.checked) {
-                                      setSelectedResourceIds((prev) => [...prev, resource.id]);
-                                    } else {
-                                      setSelectedResourceIds((prev) => prev.filter((id) => id !== resource.id));
-                                    }
-                                  }}
-                                  className="h-4 w-4 rounded border-zinc-300 dark:border-zinc-700 bg-white dark:bg-[#202026] text-[#0066B2] focus:ring-[#0066B2] cursor-pointer"
-                                />
-                              </td>
-                              <td className="whitespace-nowrap px-6 py-4">
-                                <div className="flex items-center gap-3">
-                                  <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border ${badge.bg}`}>
-                                    {badge.icon}
-                                  </div>
-                                  <div className="flex-1 min-w-0">
-                                    {editingResourceId === resource.id ? (
-                                      <div className="flex items-center gap-1.5" onClick={(e) => e.stopPropagation()}>
-                                        <input
-                                          type="text"
-                                          value={editingName}
-                                          onChange={(e) => setEditingName(e.target.value)}
-                                          onKeyDown={(e) => {
-                                            if (e.key === "Enter") handleSaveRename(resource);
-                                            if (e.key === "Escape") setEditingResourceId(null);
-                                          }}
-                                          autoFocus
-                                          disabled={isSavingName}
-                                          className="w-full min-w-[200px] max-w-sm rounded-lg border border-[#0066B2] bg-white px-2.5 py-1 text-xs font-semibold text-zinc-900 focus:outline-none focus:ring-2 focus:ring-[#0066B2]/20 dark:border-[#38BDF8] dark:bg-[#202026] dark:text-white"
-                                        />
-                                        <button
-                                          onClick={() => handleSaveRename(resource)}
-                                          disabled={isSavingName}
-                                          className="rounded-lg bg-[#0066B2] p-1.5 text-white hover:bg-[#005291] transition cursor-pointer"
-                                          title="Save Name"
-                                        >
-                                          {isSavingName ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Check className="h-3.5 w-3.5" />}
-                                        </button>
-                                        <button
-                                          onClick={() => setEditingResourceId(null)}
-                                          disabled={isSavingName}
-                                          className="rounded-lg border border-zinc-200 bg-white p-1.5 text-zinc-500 hover:bg-zinc-100 dark:border-zinc-700 dark:bg-[#202026] dark:text-zinc-400 transition cursor-pointer"
-                                          title="Cancel"
-                                        >
-                                          <X className="h-3.5 w-3.5" />
-                                        </button>
-                                      </div>
-                                    ) : (
-                                      <div>
-                                        <div className="group/title flex items-center gap-2">
-                                          <p
-                                            onDoubleClick={() => startRenaming(resource)}
-                                            className="text-sm font-semibold text-zinc-900 dark:text-white truncate max-w-xs md:max-w-md cursor-pointer hover:text-[#0066B2] dark:hover:text-[#38BDF8] transition-colors"
-                                            title="Double-click or click pencil to rename"
-                                          >
-                                            {resource.name}
-                                          </p>
+                            return (
+                              <tr key={resource.id} className={`transition-colors ${isSelected ? "bg-[#EFF6FF] dark:bg-[#0066B2]/10" : "hover:bg-[#EFF6FF]/40 dark:hover:bg-[#1C1C22]/60"}`}>
+                                <td className="px-4 py-4 text-center w-10">
+                                  <input
+                                    type="checkbox"
+                                    checked={isSelected}
+                                    onChange={(e) => {
+                                      if (e.target.checked) {
+                                        setSelectedResourceIds((prev) => [...prev, resource.id]);
+                                      } else {
+                                        setSelectedResourceIds((prev) => prev.filter((id) => id !== resource.id));
+                                      }
+                                    }}
+                                    className="h-4 w-4 rounded border-zinc-300 dark:border-zinc-700 bg-white dark:bg-[#202026] text-[#0066B2] focus:ring-[#0066B2] cursor-pointer"
+                                  />
+                                </td>
+                                <td className="whitespace-nowrap px-6 py-4">
+                                  <div className="flex items-center gap-3">
+                                    <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border ${badge.bg}`}>
+                                      {badge.icon}
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                      {editingResourceId === resource.id ? (
+                                        <div className="flex items-center gap-1.5" onClick={(e) => e.stopPropagation()}>
+                                          <input
+                                            type="text"
+                                            value={editingName}
+                                            onChange={(e) => setEditingName(e.target.value)}
+                                            onKeyDown={(e) => {
+                                              if (e.key === "Enter") handleSaveRename(resource);
+                                              if (e.key === "Escape") setEditingResourceId(null);
+                                            }}
+                                            autoFocus
+                                            disabled={isSavingName}
+                                            className="w-full min-w-[200px] max-w-sm rounded-lg border border-[#0066B2] bg-white px-2.5 py-1 text-xs font-semibold text-zinc-900 focus:outline-none focus:ring-2 focus:ring-[#0066B2]/20 dark:border-[#38BDF8] dark:bg-[#202026] dark:text-white"
+                                          />
                                           <button
-                                            onClick={() => startRenaming(resource)}
-                                            className="opacity-0 group-hover/title:opacity-100 p-1 text-zinc-400 hover:text-[#0066B2] dark:hover:text-[#38BDF8] transition cursor-pointer rounded-md hover:bg-zinc-100 dark:hover:bg-zinc-800 shrink-0"
-                                            title="Rename asset"
+                                            onClick={() => handleSaveRename(resource)}
+                                            disabled={isSavingName}
+                                            className="rounded-lg bg-[#0066B2] p-1.5 text-white hover:bg-[#005291] transition cursor-pointer"
+                                            title="Save Name"
                                           >
-                                            <Pencil className="h-3 w-3" />
+                                            {isSavingName ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Check className="h-3.5 w-3.5" />}
                                           </button>
-                                          <span className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider shrink-0">
-                                            {badge.ext}
-                                          </span>
+                                          <button
+                                            onClick={() => setEditingResourceId(null)}
+                                            disabled={isSavingName}
+                                            className="rounded-lg border border-zinc-200 bg-white p-1.5 text-zinc-500 hover:bg-zinc-100 dark:border-zinc-700 dark:bg-[#202026] dark:text-zinc-400 transition cursor-pointer"
+                                            title="Cancel"
+                                          >
+                                            <X className="h-3.5 w-3.5" />
+                                          </button>
                                         </div>
-                                        <div className="flex items-center gap-1.5 mt-0.5">
-                                          {linkedPages.length > 0 ? (
-                                            <span className="inline-flex items-center gap-1 text-[11px] font-medium text-sky-600 dark:text-sky-400 truncate max-w-xs">
-                                              <Link2 className="h-3 w-3 shrink-0" />
-                                              <span>{linkedPages.length === 1 ? `Attached to "${linkedPages[0].name}"` : `Attached to ${linkedPages.length} magnets`}</span>
+                                      ) : (
+                                        <div>
+                                          <div className="group/title flex items-center gap-2">
+                                            <p
+                                              onDoubleClick={() => startRenaming(resource)}
+                                              className="text-sm font-semibold text-zinc-900 dark:text-white truncate max-w-xs md:max-w-md cursor-pointer hover:text-[#0066B2] dark:hover:text-[#38BDF8] transition-colors"
+                                              title="Double-click or click pencil to rename"
+                                            >
+                                              {resource.name}
+                                            </p>
+                                            <button
+                                              onClick={() => startRenaming(resource)}
+                                              className="opacity-0 group-hover/title:opacity-100 p-1 text-zinc-400 hover:text-[#0066B2] dark:hover:text-[#38BDF8] transition cursor-pointer rounded-md hover:bg-zinc-100 dark:hover:bg-zinc-800 shrink-0"
+                                              title="Rename asset"
+                                            >
+                                              <Pencil className="h-3 w-3" />
+                                            </button>
+                                            <span className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider shrink-0">
+                                              {badge.ext}
                                             </span>
-                                          ) : (
-                                            <span className="inline-flex items-center gap-1 text-[11px] font-normal text-zinc-400 dark:text-zinc-500">
-                                              Unlinked
-                                            </span>
-                                          )}
+                                          </div>
+                                          <div className="flex items-center gap-1.5 mt-0.5">
+                                            {linkedPages.length > 0 ? (
+                                              <span className="inline-flex items-center gap-1 text-[11px] font-medium text-sky-600 dark:text-sky-400 truncate max-w-xs">
+                                                <Link2 className="h-3 w-3 shrink-0" />
+                                                <span>{linkedPages.length === 1 ? `Attached to "${linkedPages[0].name}"` : `Attached to ${linkedPages.length} magnets`}</span>
+                                              </span>
+                                            ) : (
+                                              <span className="inline-flex items-center gap-1 text-[11px] font-normal text-zinc-400 dark:text-zinc-500">
+                                                Unlinked
+                                              </span>
+                                            )}
+                                          </div>
                                         </div>
-                                      </div>
-                                    )}
+                                      )}
+                                    </div>
                                   </div>
-                                </div>
-                              </td>
+                                </td>
 
-                              <td className="whitespace-nowrap px-6 py-4 text-xs font-medium text-zinc-600 dark:text-zinc-400">
-                                {formatBytes(resource.size)}
-                              </td>
+                                <td className="whitespace-nowrap px-6 py-4 text-xs font-medium text-zinc-600 dark:text-zinc-400">
+                                  {formatBytes(resource.size)}
+                                </td>
 
-                              <td className="whitespace-nowrap px-6 py-4 text-xs font-medium text-zinc-600 dark:text-zinc-400">
-                                {resource.uploadedAt}
-                              </td>
+                                <td className="whitespace-nowrap px-6 py-4 text-xs font-medium text-zinc-600 dark:text-zinc-400">
+                                  {resource.uploadedAt}
+                                </td>
 
-                              <td className="whitespace-nowrap px-6 py-4 text-right">
-                                <div className="flex items-center justify-end gap-2">
-                                  {/* Direct Download Link */}
-                                  <a
-                                    href={resource.url}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    title="Test download file"
-                                    className="flex items-center gap-1.5 rounded-lg border border-zinc-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-zinc-700 hover:bg-zinc-50 dark:border-[#2e2e38] dark:bg-[#202026] dark:text-zinc-300 dark:hover:bg-[#282830] transition shadow-xs"
-                                  >
-                                    <Download className="h-3.5 w-3.5 text-zinc-500" /> Direct Test
-                                  </a>
+                                <td className="whitespace-nowrap px-6 py-4 text-right">
+                                  <div className="flex items-center justify-end gap-2">
+                                    {/* Direct Download Link */}
+                                    <a
+                                      href={resource.url}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      title="Test download file"
+                                      className="flex items-center gap-1.5 rounded-lg border border-zinc-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-zinc-700 hover:bg-zinc-50 dark:border-[#2e2e38] dark:bg-[#202026] dark:text-zinc-300 dark:hover:bg-[#282830] transition shadow-xs"
+                                    >
+                                      <Download className="h-3.5 w-3.5 text-zinc-500" /> Direct Test
+                                    </a>
 
-                                  {/* Copy Link Button */}
-                                  <button
-                                    onClick={() => copyToClipboard(resource.url, resource.id)}
-                                    className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition shadow-xs cursor-pointer ${isCopied
-                                      ? "bg-emerald-500 text-white"
-                                      : "bg-[#0066B2] text-white hover:bg-[#005291]"
-                                      }`}
-                                  >
-                                    {isCopied ? (
-                                      <>
-                                        <Check className="h-3.5 w-3.5 text-white" /> Copied!
-                                      </>
-                                    ) : (
-                                      <>
-                                        <Link2 className="h-3.5 w-3.5" /> Copy Link
-                                      </>
-                                    )}
-                                  </button>
+                                    {/* Copy Link Button */}
+                                    <button
+                                      onClick={() => copyToClipboard(resource.url, resource.id)}
+                                      className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition shadow-xs cursor-pointer ${isCopied
+                                        ? "bg-emerald-500 text-white"
+                                        : "bg-[#0066B2] text-white hover:bg-[#005291]"
+                                        }`}
+                                    >
+                                      {isCopied ? (
+                                        <>
+                                          <Check className="h-3.5 w-3.5 text-white" /> Copied!
+                                        </>
+                                      ) : (
+                                        <>
+                                          <Link2 className="h-3.5 w-3.5" /> Copy Link
+                                        </>
+                                      )}
+                                    </button>
 
-                                  {/* Delete Button */}
-                                  <button
-                                    onClick={() => setResourceToDelete(resource)}
-                                    className="rounded-lg p-1.5 text-zinc-400 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950/30 dark:hover:text-red-400 transition cursor-pointer"
-                                    title="Delete Resource"
-                                  >
-                                    <Trash2 className="h-4 w-4" />
-                                  </button>
-                                </div>
-                              </td>
-                            </tr>
-                          );
-                        })}
-                      </tbody>
-                    </table>
+                                    {/* Delete Button */}
+                                    <button
+                                      onClick={() => setResourceToDelete(resource)}
+                                      className="rounded-lg p-1.5 text-zinc-400 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950/30 dark:hover:text-red-400 transition cursor-pointer"
+                                      title="Delete Resource"
+                                    >
+                                      <Trash2 className="h-4 w-4" />
+                                    </button>
+                                  </div>
+                                </td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
-                </div>
+
+                  {/* ========================================================================= */}
+                  {/* 4. MOBILE Card-Based Asset List (block md:hidden) - Senior UX Engineered   */}
+                  {/* ========================================================================= */}
+                  <div className="block md:hidden space-y-2.5">
+                    {filteredResources.map((resource) => {
+                      const badge = getFileBadge(resource.name);
+                      const isCopied = copiedId === resource.id;
+                      const isSelected = selectedResourceIds.includes(resource.id);
+                      const linkedPages = getResourceLinkedPages(resource.id);
+
+                      return (
+                        <MobileAssetCard
+                          key={resource.id}
+                          resource={resource}
+                          badge={badge}
+                          linkedPages={linkedPages}
+                          isSelected={isSelected}
+                          isSelectionMode={isMobileSelectionMode}
+                          isCopied={isCopied}
+                          formattedSize={formatBytes(resource.size)}
+                          isEditing={editingResourceId === resource.id}
+                          editingName={editingName}
+                          isSavingName={isSavingName}
+                          onToggleSelect={toggleSelectResource}
+                          onEnterSelectionMode={(id) => {
+                            setIsMobileSelectionMode(true);
+                            setSelectedResourceIds((prev) =>
+                              prev.includes(id) ? prev : [...prev, id]
+                            );
+                          }}
+                          onCopyLink={copyToClipboard}
+                          onStartRenaming={startRenaming}
+                          onEditingNameChange={setEditingName}
+                          onSaveRename={handleSaveRename}
+                          onCancelRename={() => setEditingResourceId(null)}
+                          onDelete={setResourceToDelete}
+                        />
+                      );
+                    })}
+                  </div>
+                </>
               )}
             </div>
           )}
         </div>
+
+        {/* ========================================================================= */}
+        {/* 5. MOBILE Floating Bulk Action Bar (fixed bottom pill)                     */}
+        {/* ========================================================================= */}
+        <AnimatePresence>
+          {selectedResourceIds.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 30 }}
+              transition={{ type: "spring", damping: 25, stiffness: 350 }}
+              className="fixed bottom-4 left-3 right-3 z-40 flex md:hidden items-center justify-between rounded-2xl border border-zinc-200/90 dark:border-white/10 bg-white/95 dark:bg-[#18181F]/95 px-4 py-3 shadow-2xl backdrop-blur-xl"
+            >
+              <div className="flex items-center gap-2.5">
+                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#0066B2] text-xs font-bold text-white shadow-xs">
+                  {selectedResourceIds.length}
+                </span>
+                <span className="text-xs font-bold text-zinc-900 dark:text-white">Selected</span>
+                <button
+                  type="button"
+                  onClick={toggleSelectAll}
+                  className="text-xs font-semibold text-[#0066B2] dark:text-[#38BDF8] hover:opacity-80 transition cursor-pointer ml-1"
+                >
+                  {selectedResourceIds.length === filteredResources.length ? "Deselect" : "Select All"}
+                </button>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelectedResourceIds([]);
+                    setIsMobileSelectionMode(false);
+                  }}
+                  className="px-3 py-1.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-[#222228] text-xs font-semibold text-zinc-700 dark:text-zinc-200 transition cursor-pointer"
+                >
+                  Clear
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowBulkDeleteModal(true)}
+                  className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-red-600 hover:bg-red-700 text-xs font-bold text-white transition shadow-sm cursor-pointer"
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
+                  <span>Delete ({selectedResourceIds.length})</span>
+                </button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Bulk Delete Confirmation Modal */}
         <AnimatePresence>
@@ -1115,17 +1578,20 @@ export default function ResourcesPage() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
+              className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50 backdrop-blur-sm p-0 sm:p-4"
               onClick={() => setShowBulkDeleteModal(false)}
             >
               <motion.div
-                initial={{ opacity: 0, scale: 0.92, y: 10 }}
+                initial={{ opacity: 0, scale: 0.94, y: 40 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.94, y: 8 }}
+                exit={{ opacity: 0, scale: 0.94, y: 40 }}
                 transition={{ type: "spring", damping: 25, stiffness: 350 }}
-                className="w-full max-w-md rounded-2xl bg-white p-6 dark:bg-[#18181B] shadow-2xl border border-zinc-200 dark:border-[#2e2e38]"
+                className="w-full max-w-md rounded-t-3xl sm:rounded-2xl bg-white p-6 dark:bg-[#18181B] shadow-2xl border-t sm:border border-zinc-200 dark:border-[#2e2e38]"
                 onClick={(e) => e.stopPropagation()}
               >
+                {/* Mobile Drag Indicator */}
+                <div className="w-12 h-1 bg-zinc-300 dark:bg-zinc-700 rounded-full mx-auto mb-4 sm:hidden" />
+
                 <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-red-500/10 text-red-600 dark:text-red-400">
                   <AlertCircle className="h-6 w-6" />
                 </div>
@@ -1140,17 +1606,17 @@ export default function ResourcesPage() {
                   <button
                     disabled={isBulkDeleting}
                     onClick={() => setShowBulkDeleteModal(false)}
-                    className="rounded-xl border border-zinc-200 bg-white px-4 py-2 text-xs font-semibold text-zinc-700 hover:bg-zinc-50 dark:border-[#2e2e38] dark:bg-[#202026] dark:text-zinc-300 transition cursor-pointer"
+                    className="flex-1 sm:flex-initial rounded-xl border border-zinc-200 bg-white px-4 py-2.5 sm:py-2 text-xs font-semibold text-zinc-700 hover:bg-zinc-50 dark:border-[#2e2e38] dark:bg-[#202026] dark:text-zinc-300 transition cursor-pointer text-center"
                   >
                     Cancel
                   </button>
                   <button
                     disabled={isBulkDeleting}
                     onClick={confirmBulkDelete}
-                    className="flex items-center gap-1.5 rounded-xl bg-red-600 px-4 py-2 text-xs font-bold text-white hover:bg-red-700 disabled:opacity-50 transition cursor-pointer shadow-sm"
+                    className="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 rounded-xl bg-red-600 px-4 py-2.5 sm:py-2 text-xs font-bold text-white hover:bg-red-700 disabled:opacity-50 transition cursor-pointer shadow-sm text-center"
                   >
                     {isBulkDeleting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Trash2 className="h-3.5 w-3.5" />}
-                    <span>Delete {selectedResourceIds.length} Resources</span>
+                    <span>Delete {selectedResourceIds.length} Files</span>
                   </button>
                 </div>
               </motion.div>
@@ -1166,17 +1632,20 @@ export default function ResourcesPage() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
+              className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50 backdrop-blur-sm p-0 sm:p-4"
               onClick={() => setResourceToDelete(null)}
             >
               <motion.div
-                initial={{ opacity: 0, scale: 0.92, y: 10 }}
+                initial={{ opacity: 0, scale: 0.94, y: 40 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.94, y: 8 }}
+                exit={{ opacity: 0, scale: 0.94, y: 40 }}
                 transition={{ type: "spring", damping: 25, stiffness: 350 }}
-                className="w-full max-w-md rounded-2xl bg-white p-6 dark:bg-[#18181B] shadow-2xl border border-zinc-200 dark:border-[#2e2e38]"
+                className="w-full max-w-md rounded-t-3xl sm:rounded-2xl bg-white p-6 dark:bg-[#18181B] shadow-2xl border-t sm:border border-zinc-200 dark:border-[#2e2e38]"
                 onClick={(e) => e.stopPropagation()}
               >
+                {/* Mobile Drag Indicator */}
+                <div className="w-12 h-1 bg-zinc-300 dark:bg-zinc-700 rounded-full mx-auto mb-4 sm:hidden" />
+
                 <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-red-500/10 text-red-600 dark:text-red-400">
                   <AlertCircle className="h-6 w-6" />
                 </div>
@@ -1189,14 +1658,14 @@ export default function ResourcesPage() {
                   <button
                     disabled={isDeleting}
                     onClick={() => setResourceToDelete(null)}
-                    className="rounded-xl border border-zinc-200 bg-white px-4 py-2 text-xs font-semibold text-zinc-700 hover:bg-zinc-100 dark:border-[#2e2e38] dark:bg-[#202026] dark:text-zinc-300 dark:hover:bg-[#282830] transition cursor-pointer"
+                    className="flex-1 sm:flex-initial rounded-xl border border-zinc-200 bg-white px-4 py-2.5 sm:py-2 text-xs font-semibold text-zinc-700 hover:bg-zinc-100 dark:border-[#2e2e38] dark:bg-[#202026] dark:text-zinc-300 dark:hover:bg-[#282830] transition cursor-pointer text-center"
                   >
                     Cancel
                   </button>
                   <button
                     disabled={isDeleting}
                     onClick={confirmDelete}
-                    className="flex items-center gap-1.5 rounded-xl bg-red-600 px-4 py-2 text-xs font-bold text-white hover:bg-red-700 disabled:opacity-50 transition cursor-pointer shadow-sm"
+                    className="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 rounded-xl bg-red-600 px-4 py-2.5 sm:py-2 text-xs font-bold text-white hover:bg-red-700 disabled:opacity-50 transition cursor-pointer shadow-sm text-center"
                   >
                     {isDeleting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Trash2 className="h-3.5 w-3.5" />}
                     <span>Delete Resource</span>
