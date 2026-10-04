@@ -1007,17 +1007,22 @@ export default function DashboardHome({
       <AnimatePresence>
         {showCreateModal && (
           <div
-            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 transition-all duration-200"
+            className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm p-0 sm:p-4 transition-all duration-200"
             onClick={() => setShowCreateModal(false)}
           >
             <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              transition={{ duration: 0.15 }}
-              className="relative w-full max-w-[460px] rounded-2xl border border-zinc-200/80 dark:border-[#2e2e38] bg-white dark:bg-[#18181c] p-6 text-zinc-900 dark:text-white shadow-2xl space-y-5"
+              initial={{ opacity: 0, y: "100%", scale: 1 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: "100%", scale: 1 }}
+              transition={{ type: "spring", stiffness: 400, damping: 32, mass: 0.8 }}
+              className="relative w-full max-w-[460px] rounded-t-3xl sm:rounded-2xl border-t sm:border border-zinc-200/80 dark:border-[#2e2e38] bg-white dark:bg-[#18181c] p-5 sm:p-6 text-zinc-900 dark:text-white shadow-2xl space-y-4 sm:space-y-5 max-h-[90vh] overflow-y-auto"
               onClick={(e) => e.stopPropagation()}
             >
+              {/* Mobile Drag Indicator */}
+              <div className="flex sm:hidden justify-center pb-1">
+                <div className="w-10 h-1 rounded-full bg-zinc-300 dark:bg-zinc-700" />
+              </div>
+
               {/* Modal Header */}
               <div className="flex items-start justify-between">
                 <div>
