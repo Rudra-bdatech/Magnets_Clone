@@ -181,25 +181,31 @@ export const LeadDetailsModal = memo(function LeadDetailsModal({
   ];
 
   return (
-    <AnimatePresence>
+    <motion.div
+      key="lead-details-backdrop"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.22, ease: "easeOut" }}
+      className="fixed inset-0 z-50 flex flex-col justify-end sm:justify-center sm:items-center bg-black/60 backdrop-blur-sm p-0 sm:p-4 overflow-hidden"
+      onWheel={(e) => e.stopPropagation()}
+      onTouchMove={(e) => e.stopPropagation()}
+      onClick={onClose}
+    >
       <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        transition={{ duration: 0.2 }}
-        className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-3 sm:p-4 overflow-y-auto"
-        onWheel={(e) => e.stopPropagation()}
-        onTouchMove={(e) => e.stopPropagation()}
-        onClick={onClose}
+        key="lead-details-sheet"
+        initial={{ opacity: 0, y: 120 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: 120 }}
+        transition={{ type: "spring", damping: 30, stiffness: 360, mass: 0.8 }}
+        className="w-full max-w-xl sm:max-w-2xl rounded-t-3xl sm:rounded-2xl border-t sm:border border-zinc-200/80 bg-white dark:border-[#2e2e38] dark:bg-[#18181B] p-5 sm:p-6 shadow-2xl relative space-y-4 max-h-[88vh] overflow-y-auto scrollbar-thin pb-8 sm:pb-6 mt-auto sm:mt-0"
+        onClick={(e) => e.stopPropagation()}
       >
-        <motion.div
-          initial={{ opacity: 0, scale: 0.94, y: 8 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.94, y: 6 }}
-          transition={{ type: "spring", damping: 26, stiffness: 360 }}
-          className="w-full max-w-xl sm:max-w-2xl rounded-2xl border border-zinc-200/80 bg-white dark:border-[#2e2e38] dark:bg-[#18181B] p-4 sm:p-6 shadow-2xl relative space-y-4 my-auto max-h-[92vh] overflow-y-auto scrollbar-thin"
-          onClick={(e) => e.stopPropagation()}
-        >
+        {/* Mobile Bottom Sheet Grab Handle */}
+        <div className="sm:hidden flex justify-center pb-1 -mt-1">
+          <div className="h-1.5 w-12 rounded-full bg-zinc-300 dark:bg-zinc-700/80" />
+        </div>
+
           {/* Header */}
           <div className="flex items-start justify-between pb-1 gap-3">
             <div className="flex items-center gap-3 min-w-0">
@@ -470,6 +476,5 @@ export const LeadDetailsModal = memo(function LeadDetailsModal({
           </div>
         </motion.div>
       </motion.div>
-    </AnimatePresence>
-  );
-});
+    );
+  });

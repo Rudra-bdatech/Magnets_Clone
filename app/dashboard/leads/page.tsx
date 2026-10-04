@@ -1573,18 +1573,23 @@ export default function LeadsPage() {
         />
 
         {/* 5. Lead Details Modal */}
-        <LeadDetailsModal
-          selectedLead={selectedLead}
-          magnetPages={magnetPages}
-          sequences={sequences}
-          account={account}
-          onClose={() => setSelectedLead(null)}
-          onDelete={(lead) => {
-            setSelectedLead(null);
-            setLeadToDelete(lead);
-          }}
-          onResendEmail={handleResendEmail}
-        />
+        <AnimatePresence>
+          {selectedLead && (
+            <LeadDetailsModal
+              key="lead-details-modal"
+              selectedLead={selectedLead}
+              magnetPages={magnetPages}
+              sequences={sequences}
+              account={account}
+              onClose={() => setSelectedLead(null)}
+              onDelete={(lead) => {
+                setSelectedLead(null);
+                setLeadToDelete(lead);
+              }}
+              onResendEmail={handleResendEmail}
+            />
+          )}
+        </AnimatePresence>
 
         {/* 6. Floating Toast Notification Container */}
         <LeadToastContainer toasts={toasts} onRemoveToast={removeToast} />
