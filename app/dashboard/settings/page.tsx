@@ -47,7 +47,7 @@ function AccountToastContainer({
   onRemoveToast: (id: string) => void;
 }) {
   return (
-    <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-2.5 pointer-events-none max-w-sm w-full">
+    <div className="fixed bottom-4 sm:bottom-6 left-4 right-4 sm:left-auto sm:right-6 z-50 flex flex-col gap-2.5 pointer-events-none max-w-md sm:max-w-sm w-auto sm:w-full mx-auto sm:mx-0">
       <AnimatePresence>
         {toasts.map((toast) => (
           <motion.div
@@ -509,18 +509,18 @@ export default function AccountSettingsPage() {
   );
 
   const inputClass =
-    "w-full max-w-lg rounded-xl border border-[#E2E8F0] bg-white dark:border-[#2e2e38] dark:bg-[#18181B] px-3.5 py-2.5 text-[14.2px] text-zinc-900 dark:text-white outline-none placeholder:text-zinc-400 dark:placeholder:text-[#9B9085] focus:border-[#0066B2] transition";
+    "w-full max-w-lg rounded-xl border border-[#E2E8F0] bg-white dark:border-[#2e2e38] dark:bg-[#18181B] px-3.5 py-2.5 text-sm sm:text-[14.2px] text-zinc-900 dark:text-white outline-none placeholder:text-zinc-400 dark:placeholder:text-[#9B9085] focus:border-[#0066B2] transition";
 
-  const labelClass = "block text-[12.2px] font-semibold text-zinc-700 dark:text-[#9B9085] mb-1.5";
+  const labelClass = "block text-xs sm:text-[12.2px] font-semibold text-zinc-700 dark:text-[#9B9085] mb-1.5";
 
   return (
     <DashboardShell account={account} title="Account">
       <div className="flex flex-col min-h-full bg-gradient-to-b from-[#EFF6FF]/60 via-[#F8FBFF] to-[#F8FBFF] dark:bg-none dark:bg-[#0E0E10]">
-        <div className="flex-1 px-6 py-6 lg:px-8 w-full">
+        <div className="flex-1 px-4 py-5 sm:px-6 sm:py-6 lg:px-8 w-full max-w-5xl">
           {/* Page heading */}
-          <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
+          <div className="mb-4 sm:mb-6 flex flex-wrap items-center justify-between gap-4">
             <div>
-              <h2 className="flex items-center gap-2 text-3xl font-bold text-zinc-900 dark:text-white">
+              <h2 className="flex items-center gap-2 text-2xl sm:text-3xl font-bold text-zinc-900 dark:text-white">
                 Account Settings
                 <button
                   type="button"
@@ -540,9 +540,9 @@ export default function AccountSettingsPage() {
             </div>
           </div>
 
-          {/* Segmented Tab Navigation Bar */}
+          {/* Segmented Tab Navigation Bar (Swipeable on Mobile, Flex on Desktop) */}
           <div
-            className="flex flex-wrap items-center gap-2 mb-6 relative"
+            className="flex items-center gap-1.5 sm:gap-2 mb-5 sm:mb-6 relative overflow-x-auto scrollbar-none pb-1 -mx-2 px-2 sm:mx-0 sm:px-0 sm:overflow-visible sm:flex-wrap"
             onMouseLeave={() => setHoveredTab(null)}
           >
             {[
@@ -563,7 +563,7 @@ export default function AccountSettingsPage() {
                   transition={{ type: "spring", stiffness: 600, damping: 28 }}
                   onMouseEnter={() => setHoveredTab(t.id)}
                   onClick={() => setActiveTab(t.id as any)}
-                  className={`relative flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-colors cursor-pointer ${
+                  className={`relative shrink-0 flex items-center gap-1.5 sm:gap-2 px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl text-xs font-bold transition-colors cursor-pointer ${
                     isActive
                       ? "text-white"
                       : t.danger
@@ -593,8 +593,8 @@ export default function AccountSettingsPage() {
                       }`}
                     />
                   )}
-                  <Icon className="h-4 w-4 relative z-10" />
-                  <span className="relative z-10">{t.label}</span>
+                  <Icon className="h-4 w-4 relative z-10 shrink-0" />
+                  <span className="relative z-10 whitespace-nowrap">{t.label}</span>
                 </motion.button>
               );
             })}
@@ -610,67 +610,74 @@ export default function AccountSettingsPage() {
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: -6, scale: 0.99 }}
                   transition={{ duration: 0.1, ease: [0.16, 1, 0.3, 1] }}
-                  className="rounded-2xl border border-zinc-200/80 bg-white dark:border-[#2e2e38] dark:bg-[#18181B] p-6 shadow-sm"
+                  className="rounded-2xl border border-zinc-200/80 bg-white dark:border-[#2e2e38] dark:bg-[#18181B] p-4 sm:p-6 shadow-sm"
                 >
                   <div className="flex items-start gap-3">
                     <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-[#0066B2]/30 bg-[#EFF6FF] dark:border-[#0066B2]/30 dark:bg-[#1a2638] text-[#0066B2]">
                       <User className="h-4.5 w-4.5" />
                     </div>
                     <div>
-                      <h4 className="text-[14.2px] font-bold text-zinc-900 dark:text-white">Who you are</h4>
-                      <p className="text-[12.2px] text-[#71717a] dark:text-[#9B9085] mt-0.5">{email}</p>
+                      <h4 className="text-sm sm:text-[14.2px] font-bold text-zinc-900 dark:text-white">Who you are</h4>
+                      <p className="text-xs sm:text-[12.2px] text-[#71717a] dark:text-[#9B9085] mt-0.5">{email}</p>
                     </div>
                   </div>
 
-                  <div className="mt-5 pl-12 space-y-5 max-w-2xl">
+                  <div className="mt-5 pl-0 sm:pl-12 space-y-4 sm:space-y-5 max-w-2xl">
                     {/* Profile Avatar Upload */}
-                    <div className="flex items-center gap-5">
-                      <div className="relative group shrink-0">
-                        {avatar && !avatarLoadError ? (
-                          <img
-                            src={avatar}
-                            alt="Profile Avatar"
-                            referrerPolicy="no-referrer"
-                            crossOrigin="anonymous"
-                            onError={() => setAvatarLoadError(true)}
-                            decoding="async"
-                            fetchPriority="high"
-                            className="h-20 w-20 rounded-full object-cover border-2 border-[#0066B2] shadow-md bg-zinc-100 dark:bg-zinc-800"
-                          />
-                        ) : (
-                          <div className="flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-[#0066B2] to-[#004B82] text-white font-extrabold text-2xl shadow-md border-2 border-[#0066B2]/40 select-none">
-                            {name
-                              ? name
-                                  .split(" ")
-                                  .filter(Boolean)
-                                  .map((n) => n[0])
-                                  .join("")
-                                  .toUpperCase()
-                                  .slice(0, 2)
-                              : "RK"}
-                          </div>
-                        )}
-                        <button
-                          type="button"
-                          onClick={() => avatarInputRef.current?.click()}
-                          disabled={uploadingAvatar}
-                          className="absolute bottom-0 right-0 flex h-7 w-7 items-center justify-center rounded-full bg-white dark:bg-zinc-800 text-zinc-700 dark:text-zinc-200 border border-zinc-200 dark:border-zinc-700 shadow-md hover:bg-zinc-100 dark:hover:bg-zinc-700 transition cursor-pointer"
-                          title="Upload profile photo"
-                        >
-                          {uploadingAvatar ? (
-                            <Loader2 className="h-3.5 w-3.5 animate-spin text-[#0066B2]" />
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-5 p-3 sm:p-0 rounded-xl bg-zinc-50/60 sm:bg-transparent dark:bg-white/[0.02] sm:dark:bg-transparent border sm:border-0 border-zinc-200/60 dark:border-white/[0.06]">
+                      <div className="flex items-center gap-4">
+                        <div className="relative group shrink-0">
+                          {avatar && !avatarLoadError ? (
+                            <img
+                              src={avatar}
+                              alt="Profile Avatar"
+                              referrerPolicy="no-referrer"
+                              crossOrigin="anonymous"
+                              onError={() => setAvatarLoadError(true)}
+                              decoding="async"
+                              fetchPriority="high"
+                              className="h-16 w-16 sm:h-20 sm:w-20 rounded-full object-cover border-2 border-[#0066B2] shadow-md bg-zinc-100 dark:bg-zinc-800"
+                            />
                           ) : (
-                            <Camera className="h-3.5 w-3.5 text-[#0066B2]" />
+                            <div className="flex h-16 w-16 sm:h-20 sm:w-20 items-center justify-center rounded-full bg-gradient-to-br from-[#0066B2] to-[#004B82] text-white font-extrabold text-xl sm:text-2xl shadow-md border-2 border-[#0066B2]/40 select-none">
+                              {name
+                                ? name
+                                    .split(" ")
+                                    .filter(Boolean)
+                                    .map((n) => n[0])
+                                    .join("")
+                                    .toUpperCase()
+                                    .slice(0, 2)
+                                : "RK"}
+                            </div>
                           )}
-                        </button>
+                          <button
+                            type="button"
+                            onClick={() => avatarInputRef.current?.click()}
+                            disabled={uploadingAvatar}
+                            className="absolute bottom-0 right-0 flex h-6 w-6 sm:h-7 sm:w-7 items-center justify-center rounded-full bg-white dark:bg-zinc-800 text-zinc-700 dark:text-zinc-200 border border-zinc-200 dark:border-zinc-700 shadow-md hover:bg-zinc-100 dark:hover:bg-zinc-700 transition cursor-pointer"
+                            title="Upload profile photo"
+                          >
+                            {uploadingAvatar ? (
+                              <Loader2 className="h-3 w-3 sm:h-3.5 sm:w-3.5 animate-spin text-[#0066B2]" />
+                            ) : (
+                              <Camera className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-[#0066B2]" />
+                            )}
+                          </button>
+                        </div>
+
+                        <div className="sm:hidden space-y-0.5 min-w-0">
+                          <h5 className="text-xs font-bold text-zinc-900 dark:text-white">Profile Photo</h5>
+                          <p className="text-[11px] text-zinc-500 dark:text-zinc-400">JPG, PNG, WEBP (Max 5 MB)</p>
+                        </div>
                       </div>
 
-                      <div className="space-y-1.5">
-                        <h5 className="text-xs font-bold text-zinc-900 dark:text-white">Profile Photo</h5>
-                        <p className="text-[11px] text-zinc-500 dark:text-zinc-400">
+                      <div className="space-y-1.5 flex-1 min-w-0">
+                        <h5 className="hidden sm:block text-xs font-bold text-zinc-900 dark:text-white">Profile Photo</h5>
+                        <p className="hidden sm:block text-[11px] text-zinc-500 dark:text-zinc-400">
                           JPG, PNG or WEBP (Max 5 MB). Compressed automatically to high-speed WebP.
                         </p>
-                        <div className="flex items-center gap-2.5 pt-1">
+                        <div className="flex flex-wrap items-center gap-2 pt-0.5 sm:pt-1">
                           <input
                             type="file"
                             ref={avatarInputRef}
@@ -682,37 +689,37 @@ export default function AccountSettingsPage() {
                             type="button"
                             onClick={() => avatarInputRef.current?.click()}
                             disabled={uploadingAvatar || syncingGoogle}
-                            className="flex items-center gap-1.5 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-[#121214] px-3.5 py-1.5 text-xs font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition cursor-pointer disabled:opacity-50"
+                            className="flex items-center gap-1.5 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-[#121214] px-3 py-1.5 text-xs font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition cursor-pointer disabled:opacity-50 shadow-2xs"
                           >
                             <Upload className="h-3.5 w-3.5 text-[#0066B2]" />
-                            {uploadingAvatar ? "Uploading..." : "Upload Photo"}
+                            <span>{uploadingAvatar ? "Uploading..." : "Upload Photo"}</span>
                           </button>
 
                           <button
                             type="button"
                             onClick={handleSyncGoogle}
                             disabled={syncingGoogle || uploadingAvatar}
-                            className="flex items-center gap-2 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-[#121214] px-3.5 py-1.5 text-xs font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition cursor-pointer disabled:opacity-50"
+                            className="flex items-center gap-1.5 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-[#121214] px-3 py-1.5 text-xs font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition cursor-pointer disabled:opacity-50 shadow-2xs"
                             title="Sync avatar from your Google account"
                           >
                             {syncingGoogle ? (
                               <Loader2 className="h-3.5 w-3.5 animate-spin text-[#0066B2]" />
                             ) : (
-                              <svg width={14} height={14} viewBox="0 0 24 24" className="shrink-0">
+                              <svg width={13} height={13} viewBox="0 0 24 24" className="shrink-0">
                                 <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
                                 <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
                                 <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" />
                                 <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" />
                               </svg>
                             )}
-                            <span>{syncingGoogle ? "Syncing..." : "Sync with Google"}</span>
+                            <span className="whitespace-nowrap">{syncingGoogle ? "Syncing..." : "Sync Google"}</span>
                           </button>
 
                           {avatar && (
                             <button
                               type="button"
                               onClick={handleRemoveAvatar}
-                              className="text-xs font-semibold text-red-600 hover:text-red-700 dark:text-red-400 hover:underline transition cursor-pointer"
+                              className="text-xs font-semibold text-red-600 hover:text-red-700 dark:text-red-400 hover:underline transition cursor-pointer px-1 py-1"
                             >
                               Remove
                             </button>
@@ -722,7 +729,7 @@ export default function AccountSettingsPage() {
                     </div>
 
                     <div>
-                      <label className="block text-[12.2px] font-semibold text-[#71717a] dark:text-[#9B9085] mb-1.5">
+                      <label className="block text-xs sm:text-[12.2px] font-semibold text-[#71717a] dark:text-[#9B9085] mb-1.5">
                         Full Name
                       </label>
                       <input
@@ -734,14 +741,14 @@ export default function AccountSettingsPage() {
                       />
                     </div>
                     <div>
-                      <label className="block text-[12.2px] font-semibold text-[#71717a] dark:text-[#9B9085] mb-1.5">
+                      <label className="block text-xs sm:text-[12.2px] font-semibold text-[#71717a] dark:text-[#9B9085] mb-1.5">
                         Email Address
                       </label>
                       <input
                         type="email"
                         value={email}
                         disabled
-                        className="w-full max-w-lg rounded-xl border border-[#E2E8F0] bg-zinc-50 dark:border-[#2e2e38] dark:bg-[#18181B] px-3.5 py-2.5 text-[14.2px] text-zinc-500 dark:text-white outline-none opacity-60 cursor-not-allowed transition"
+                        className="w-full max-w-lg rounded-xl border border-[#E2E8F0] bg-zinc-50 dark:border-[#2e2e38] dark:bg-[#18181B] px-3.5 py-2.5 text-sm sm:text-[14.2px] text-zinc-500 dark:text-white outline-none opacity-60 cursor-not-allowed transition"
                       />
                       <p className="text-[11px] text-zinc-400 dark:text-zinc-500 mt-1">
                         Primary account identifier. Contact support to change your account email.
@@ -752,7 +759,7 @@ export default function AccountSettingsPage() {
                       <button
                         onClick={handleUpdateName}
                         disabled={updatingName}
-                        className="flex items-center gap-1.5 rounded-lg bg-[#0066B2] px-5 py-2.5 text-[12.2px] font-bold text-white hover:bg-[#005799] disabled:opacity-60 transition shadow-sm cursor-pointer"
+                        className="w-full sm:w-auto flex items-center justify-center gap-1.5 rounded-lg bg-[#0066B2] px-5 py-2.5 text-xs sm:text-[12.2px] font-bold text-white hover:bg-[#005799] disabled:opacity-60 transition shadow-sm cursor-pointer"
                       >
                         {updatingName ? (
                           <Loader2 className="h-3.5 w-3.5 animate-spin text-white" />
@@ -774,23 +781,23 @@ export default function AccountSettingsPage() {
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: -6, scale: 0.99 }}
                   transition={{ duration: 0.1, ease: [0.16, 1, 0.3, 1] }}
-                  className="rounded-2xl border border-zinc-200/80 bg-white dark:border-[#2e2e38] dark:bg-[#18181B] p-6 shadow-sm"
+                  className="rounded-2xl border border-zinc-200/80 bg-white dark:border-[#2e2e38] dark:bg-[#18181B] p-4 sm:p-6 shadow-sm"
                 >
                   <div className="flex items-start gap-3">
                     <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-[#0066B2]/30 bg-[#EFF6FF] dark:border-[#0066B2]/30 dark:bg-[#1a2638] text-[#0066B2]">
                       <KeyRound className="h-4.5 w-4.5" />
                     </div>
                     <div>
-                      <h4 className="text-[14.2px] font-bold text-zinc-900 dark:text-white">Change password</h4>
-                      <p className="text-[12.2px] text-[#71717a] dark:text-[#9B9085] mt-0.5">
+                      <h4 className="text-sm sm:text-[14.2px] font-bold text-zinc-900 dark:text-white">Change password</h4>
+                      <p className="text-xs sm:text-[12.2px] text-[#71717a] dark:text-[#9B9085] mt-0.5">
                         Use at least 8 characters with numbers and symbols.
                       </p>
                     </div>
                   </div>
 
-                  <div className="mt-5 pl-12 space-y-4 max-w-lg">
+                  <div className="mt-5 pl-0 sm:pl-12 space-y-4 max-w-lg">
                     <div>
-                      <label className="block text-[12.2px] font-semibold text-[#71717a] dark:text-[#9B9085] mb-1.5">
+                      <label className="block text-xs sm:text-[12.2px] font-semibold text-[#71717a] dark:text-[#9B9085] mb-1.5">
                         Current password
                       </label>
                       <PasswordInputWithStrength
@@ -802,7 +809,7 @@ export default function AccountSettingsPage() {
                       />
                     </div>
                     <div>
-                      <label className="block text-[12.2px] font-semibold text-[#71717a] dark:text-[#9B9085] mb-1.5">
+                      <label className="block text-xs sm:text-[12.2px] font-semibold text-[#71717a] dark:text-[#9B9085] mb-1.5">
                         New password
                       </label>
                       <PasswordInputWithStrength
@@ -814,7 +821,7 @@ export default function AccountSettingsPage() {
                       />
                     </div>
                     <div>
-                      <label className="block text-[12.2px] font-semibold text-[#71717a] dark:text-[#9B9085] mb-1.5">
+                      <label className="block text-xs sm:text-[12.2px] font-semibold text-[#71717a] dark:text-[#9B9085] mb-1.5">
                         Confirm new password
                       </label>
                       <PasswordInputWithStrength
@@ -830,7 +837,7 @@ export default function AccountSettingsPage() {
                       <button
                         onClick={handleUpdatePassword}
                         disabled={updatingPassword}
-                        className="flex items-center gap-1.5 rounded-lg bg-[#0066B2] px-5 py-2.5 text-[12.2px] font-bold text-white hover:bg-[#005799] disabled:opacity-60 transition shadow-sm cursor-pointer"
+                        className="w-full sm:w-auto flex items-center justify-center gap-1.5 rounded-lg bg-[#0066B2] px-5 py-2.5 text-xs sm:text-[12.2px] font-bold text-white hover:bg-[#005799] disabled:opacity-60 transition shadow-sm cursor-pointer"
                       >
                         {updatingPassword ? (
                           <Loader2 className="h-3.5 w-3.5 animate-spin text-white" />
@@ -852,7 +859,7 @@ export default function AccountSettingsPage() {
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: -6, scale: 0.99 }}
                   transition={{ duration: 0.1, ease: [0.16, 1, 0.3, 1] }}
-                  className="rounded-2xl border border-zinc-200/80 bg-white dark:border-[#2e2e38] dark:bg-[#18181B] p-6 shadow-sm"
+                  className="rounded-2xl border border-zinc-200/80 bg-white dark:border-[#2e2e38] dark:bg-[#18181B] p-4 sm:p-6 shadow-sm"
                 >
                   <div className="flex items-start gap-3">
                     <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-[#0066B2]/30 bg-[#EFF6FF] dark:border-[#0066B2]/30 dark:bg-[#1a2638] text-[#0066B2]">
@@ -861,13 +868,13 @@ export default function AccountSettingsPage() {
                     <div className="flex-1">
                       <div className="flex flex-wrap items-center justify-between gap-3">
                         <div>
-                          <h4 className="text-[14.2px] font-bold text-zinc-900 dark:text-white flex items-center gap-2">
+                          <h4 className="text-sm sm:text-[14.2px] font-bold text-zinc-900 dark:text-white flex items-center gap-2">
                             Instant Lead Email Alerts
                             <span className="inline-flex items-center rounded-full bg-emerald-100 dark:bg-emerald-950/80 px-2 py-0.5 text-[10px] font-bold text-emerald-700 dark:text-emerald-400">
-                              Active Feature
+                              Active
                             </span>
                           </h4>
-                          <p className="text-[12.2px] text-[#71717a] dark:text-[#9B9085] mt-0.5">
+                          <p className="text-xs sm:text-[12.2px] text-[#71717a] dark:text-[#9B9085] mt-0.5">
                             Receive instant email notifications as soon as a new visitor submits their email on any lead magnet.
                           </p>
                         </div>
@@ -891,9 +898,9 @@ export default function AccountSettingsPage() {
                   </div>
 
                   {leadAlertsEnabled && (
-                    <div className="mt-5 pl-12 space-y-4 max-w-lg">
+                    <div className="mt-5 pl-0 sm:pl-12 space-y-4 max-w-lg">
                       <div>
-                        <label className="block text-[12.2px] font-semibold text-[#71717a] dark:text-[#9B9085] mb-1.5">
+                        <label className="block text-xs sm:text-[12.2px] font-semibold text-[#71717a] dark:text-[#9B9085] mb-1.5">
                           Target Notification Inbox Email
                         </label>
                         <div className="flex items-center gap-2">
@@ -902,7 +909,7 @@ export default function AccountSettingsPage() {
                             value={notifyEmail}
                             onChange={(e) => setNotifyEmail(e.target.value)}
                             placeholder={email || "your-email@example.com"}
-                            className="w-full rounded-xl border border-[#E2E8F0] bg-white dark:border-[#2e2e38] dark:bg-[#18181B] px-3.5 py-2.5 text-[14.2px] text-zinc-900 dark:text-white outline-none placeholder:text-[#9B9085] focus:border-[#0066B2] transition"
+                            className="w-full rounded-xl border border-[#E2E8F0] bg-white dark:border-[#2e2e38] dark:bg-[#18181B] px-3.5 py-2.5 text-sm sm:text-[14.2px] text-zinc-900 dark:text-white outline-none placeholder:text-[#9B9085] focus:border-[#0066B2] transition"
                           />
                         </div>
                         <p className="text-[11px] text-zinc-500 dark:text-zinc-400 mt-1">
@@ -916,12 +923,12 @@ export default function AccountSettingsPage() {
                         </div>
                       )}
 
-                      <div className="pt-2 flex flex-wrap items-center justify-between gap-3">
+                      <div className="pt-2 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2.5 sm:gap-3">
                         <button
                           type="button"
                           onClick={handleSendTestAlert}
                           disabled={sendingTestAlert}
-                          className="flex items-center gap-1.5 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-[#121214] px-4 py-2 text-[12px] font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition cursor-pointer"
+                          className="w-full sm:w-auto flex items-center justify-center gap-1.5 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-[#121214] px-4 py-2.5 sm:py-2 text-xs sm:text-[12px] font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition cursor-pointer"
                         >
                           {sendingTestAlert ? (
                             <Loader2 className="h-3.5 w-3.5 animate-spin text-[#0066B2]" />
@@ -935,7 +942,7 @@ export default function AccountSettingsPage() {
                           type="button"
                           onClick={handleSaveLeadAlerts}
                           disabled={savingAlerts}
-                          className="flex items-center gap-1.5 rounded-lg bg-[#0066B2] px-5 py-2 text-[12.2px] font-bold text-white hover:bg-[#005799] disabled:opacity-60 transition shadow-sm cursor-pointer"
+                          className="w-full sm:w-auto flex items-center justify-center gap-1.5 rounded-lg bg-[#0066B2] px-5 py-2.5 sm:py-2 text-xs sm:text-[12.2px] font-bold text-white hover:bg-[#005799] disabled:opacity-60 transition shadow-sm cursor-pointer"
                         >
                           {savingAlerts ? (
                             <Loader2 className="h-3.5 w-3.5 animate-spin text-white" />
@@ -958,15 +965,15 @@ export default function AccountSettingsPage() {
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: -6, scale: 0.99 }}
                   transition={{ duration: 0.1, ease: [0.16, 1, 0.3, 1] }}
-                  className="rounded-2xl border border-red-200 dark:border-red-900/60 bg-white dark:bg-[#18181B] p-6 transition-colors shadow-sm"
+                  className="rounded-2xl border border-red-200 dark:border-red-900/60 bg-white dark:bg-[#18181B] p-4 sm:p-6 transition-colors shadow-sm"
                 >
                   <div className="flex items-start gap-3">
                     <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-red-200 bg-red-50 dark:border-[#552e2e] dark:bg-[#2a1414] text-red-600 dark:text-[#FF8585]">
                       <AlertTriangle className="h-4.5 w-4.5" />
                     </div>
                     <div className="flex-1">
-                      <h4 className="text-[14.2px] font-bold text-red-600 dark:text-[#FF8585]">Danger zone</h4>
-                      <p className="text-[12.2px] text-[#9B9085] leading-relaxed mt-1">
+                      <h4 className="text-sm sm:text-[14.2px] font-bold text-red-600 dark:text-[#FF8585]">Danger zone</h4>
+                      <p className="text-xs sm:text-[12.2px] text-[#9B9085] leading-relaxed mt-1">
                         Deleting your account removes your magnets, signups, integrations, and any custom domains attached to your account. This is permanent. There is no recovery.
                       </p>
 
@@ -980,7 +987,7 @@ export default function AccountSettingsPage() {
                         <div className="mt-5 flex justify-start">
                           <button
                             onClick={() => setShowDeleteConfirm(true)}
-                            className="flex items-center gap-1.5 rounded-md border border-red-200 bg-white dark:border-[#2e2e38] dark:bg-[#18181B] px-[14px] py-[8px] text-sm font-extrabold text-red-600 dark:text-[#FF8585] hover:border-red-400 dark:hover:border-red-800 transition cursor-pointer"
+                            className="w-full sm:w-auto flex items-center justify-center gap-1.5 rounded-md border border-red-200 bg-white dark:border-[#2e2e38] dark:bg-[#18181B] px-[14px] py-[8px] text-xs sm:text-sm font-extrabold text-red-600 dark:text-[#FF8585] hover:border-red-400 dark:hover:border-red-800 transition cursor-pointer"
                           >
                             <Trash2 className="h-4 w-4 stroke-[3px]" />
                             Delete account
@@ -1023,14 +1030,14 @@ export default function AccountSettingsPage() {
                                 setDeleteConfirmText("");
                                 setDeleteError("");
                               }}
-                              className="rounded-md border border-[#E2E8F0] bg-white dark:border-[#2e2e38] dark:bg-[#18181B] px-[14px] py-[8px] text-sm font-semibold text-zinc-700 dark:text-white hover:bg-zinc-100 dark:hover:bg-[#2e2e38] transition cursor-pointer"
+                              className="rounded-md border border-[#E2E8F0] bg-white dark:border-[#2e2e38] dark:bg-[#18181B] px-[14px] py-[8px] text-xs sm:text-sm font-semibold text-zinc-700 dark:text-white hover:bg-zinc-100 dark:hover:bg-[#2e2e38] transition cursor-pointer"
                             >
                               Cancel
                             </button>
                             <button
                               type="submit"
                               disabled={deleting}
-                              className="flex items-center gap-1.5 rounded-md border border-red-200 bg-white dark:border-[#2e2e38] dark:bg-[#18181B] px-[14px] py-[8px] text-sm font-extrabold text-red-600 dark:text-[#FF8585] hover:border-red-400 dark:hover:border-red-800 disabled:opacity-60 transition cursor-pointer"
+                              className="flex items-center gap-1.5 rounded-md border border-red-200 bg-white dark:border-[#2e2e38] dark:bg-[#18181B] px-[14px] py-[8px] text-xs sm:text-sm font-extrabold text-red-600 dark:text-[#FF8585] hover:border-red-400 dark:hover:border-red-800 disabled:opacity-60 transition cursor-pointer"
                             >
                               {deleting ? (
                                 <Loader2 className="h-4 w-4 animate-spin text-red-600" />
