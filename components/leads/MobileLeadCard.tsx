@@ -189,7 +189,7 @@ export const MobileLeadCard = memo(function MobileLeadCard({
       </div>
 
       {/* Middle Context Row: Magnet Name & Sequence Status */}
-      <div className="mt-2.5 pt-2.5 border-t border-zinc-100 dark:border-[#24242e] flex flex-wrap items-center justify-between gap-2">
+      <div className="mt-2.5 flex flex-wrap items-center justify-between gap-2">
         <div className="flex items-center gap-1.5 min-w-0 max-w-[200px]">
           <Layers className="h-3 w-3 text-zinc-400 shrink-0" />
           <span
