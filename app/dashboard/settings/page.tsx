@@ -17,7 +17,6 @@ import {
   Info,
   Mail,
 } from "lucide-react";
-import DashboardShell from "@/components/dashboard/dashboard-shell";
 import {
   saveAccount,
   syncWithDatabase,
@@ -514,7 +513,7 @@ export default function AccountSettingsPage() {
   const labelClass = "block text-xs sm:text-[12.2px] font-semibold text-zinc-700 dark:text-[#9B9085] mb-1.5";
 
   return (
-    <DashboardShell account={account} title="Account">
+    <>
       <div className="flex flex-col min-h-full bg-gradient-to-b from-[#EFF6FF]/60 via-[#F8FBFF] to-[#F8FBFF] dark:bg-none dark:bg-[#0E0E10]">
         <div className="flex-1 px-4 py-5 sm:px-6 sm:py-6 lg:px-8 w-full max-w-5xl">
           {/* Page heading */}
@@ -1060,6 +1059,6 @@ export default function AccountSettingsPage() {
 
       {/* Modern Non-Blocking Toast Notification Container */}
       <AccountToastContainer toasts={toasts} onRemoveToast={removeToast} />
-    </DashboardShell>
+    </>
   );
 }

@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import DashboardShell from "@/components/dashboard/dashboard-shell";
 import { Sparkles, Plug, ChevronDown } from "lucide-react";
 import { syncWithDatabase, saveAccount, loadAccount } from "@/lib/store";
 import { type Account, getAppUrl } from "@/lib/data";
@@ -200,7 +199,7 @@ export default function WorkspaceSetupPage() {
   };
 
   return (
-    <DashboardShell account={account} title="Integration">
+    <>
       <div className="flex flex-col min-h-[calc(100vh-3rem)] bg-[#F8FBFF] dark:bg-[#0E0E10]">
         <div className="flex-1 px-3.5 sm:px-6 py-4 sm:py-6 lg:px-8 max-w-7xl mx-auto w-full">
 
@@ -391,6 +390,6 @@ export default function WorkspaceSetupPage() {
         toasts={toasts}
         onRemoveToast={removeToast}
       />
-    </DashboardShell>
+    </>
   );
 }

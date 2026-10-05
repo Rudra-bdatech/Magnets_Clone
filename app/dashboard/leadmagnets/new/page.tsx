@@ -4,7 +4,6 @@ import { useRouter } from "next/navigation";
 import { ArrowLeft, ArrowRight, SlidersHorizontal, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import DashboardShell from "@/components/dashboard/dashboard-shell";
 import Button from "@/components/ui/button";
 import Input, { FieldLabel } from "@/components/ui/input";
 import { type MagnetPage, type Sequence, type Account } from "@/lib/data";
@@ -109,8 +108,7 @@ export default function NewPage() {
   }
 
   return (
-    <DashboardShell account={account} title="New page">
-      <div className="mx-auto max-w-2xl px-4 py-10 sm:px-6">
+    <div className="mx-auto max-w-2xl px-4 py-10 sm:px-6">
         <Link
           href="/dashboard/leadmagnets"
           className="inline-flex h-8 items-center gap-1.5 text-sm font-medium text-ink-600 transition hover:text-ink-950 dark:text-ink-300 dark:hover:text-white"
@@ -178,6 +176,5 @@ export default function NewPage() {
           onGenerated={handleAIGenerated}
         />
       </div>
-    </DashboardShell>
-  );
+    );
 }

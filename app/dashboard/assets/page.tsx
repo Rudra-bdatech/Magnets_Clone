@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import DashboardShell from "@/components/dashboard/dashboard-shell";
 import {
   UploadCloud,
   Lock,
@@ -654,9 +653,8 @@ export default function ResourcesPage() {
   }, [selectedResourceIds.length, filteredResources]);
 
   return (
-    <DashboardShell account={account} title="Assets">
-      <div
-        onDrop={handleDrop}
+    <div
+      onDrop={handleDrop}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         className="relative flex flex-col min-h-[calc(100vh-3rem)] bg-gradient-to-b from-[#EFF6FF]/50 via-[#F8FBFF] to-[#F8FBFF] dark:bg-none dark:bg-[#0E0E10]"
@@ -1775,6 +1773,5 @@ export default function ResourcesPage() {
           })}
         </div>
       </div>
-    </DashboardShell>
-  );
+    );
 }

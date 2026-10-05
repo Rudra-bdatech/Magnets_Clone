@@ -4,7 +4,6 @@ export const dynamic = "force-dynamic";
 
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import DashboardShell from "@/components/dashboard/dashboard-shell";
 import AnalyticsLinearView from "@/components/analytics/analytics-linear-view";
 import AnalyticsHelpModal from "@/components/analytics/analytics-help-modal";
 import { type MagnetPage, type Account, type Lead } from "@/lib/data";
@@ -42,14 +41,8 @@ export default function LeadMagnetAnalyticsPage() {
     });
   }, [params.id]);
 
-  const isLockedPdf = page?.template === "locked-pdf" || (page as any)?.pdfFreePages !== undefined;
-
   return (
-    <DashboardShell
-      account={account}
-      title="Analytics"
-      activeNavHref={isLockedPdf ? "/dashboard/locked-pdf" : "/dashboard/landing-page"}
-    >
+    <>
       <AnalyticsLinearView
         account={account}
         page={page}
@@ -58,6 +51,6 @@ export default function LeadMagnetAnalyticsPage() {
         isPerMagnet={true}
       />
       <AnalyticsHelpModal isOpen={helpOpen} onClose={() => setHelpOpen(false)} />
-    </DashboardShell>
+    </>
   );
 }

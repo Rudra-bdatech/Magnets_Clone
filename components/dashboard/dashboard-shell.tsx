@@ -33,12 +33,12 @@ const baseNavItems: { href: string; label: string; icon: any; isModal?: boolean;
 
 export default function DashboardShell({
   account,
-  title,
+  title = "Dashboard",
   activeNavHref,
   children,
 }: {
   account?: Account | null;
-  title: string;
+  title?: string;
   activeNavHref?: string;
   children: React.ReactNode;
 }) {
@@ -305,6 +305,21 @@ export default function DashboardShell({
     return list;
   }, [onboardingStatus]);
 
+  const isCurrentLockedPdf = useMemo(() => {
+    if (typeof window === "undefined") return false;
+    if (!pathname.startsWith("/dashboard/leadmagnets/")) return false;
+    try {
+      const id = pathname.split("/")[3];
+      const sp = new URLSearchParams(window.location.search);
+      if (sp.get("type") === "locked-pdf") return true;
+      if (id) {
+        const p = loadPages().find((item) => item.id === id);
+        if (p && (p.template === "locked-pdf" || (p.pdfPages && p.pdfPages.length > 0))) return true;
+      }
+    } catch (_) {}
+    return false;
+  }, [pathname]);
+
   const rawAccount = currentAccount || account;
   const activeEmail = (typeof window !== "undefined" ? localStorage.getItem("currentUserEmail") : null) || rawAccount?.email || "";
   const displayAccount = {
@@ -326,8 +341,6 @@ export default function DashboardShell({
       </div>
     );
   }
-
-
 
   return (
     <ExpandableScreen
@@ -358,9 +371,11 @@ export default function DashboardShell({
                 ? item.href === activeNavHref
                 : item.href === "/dashboard"
                   ? pathname === "/dashboard"
-                  : item.href === "/dashboard/landing-page"
-                    ? (pathname === "/dashboard/landing-page" || pathname === "/dashboard/leadmagnets" || pathname.startsWith("/dashboard/leadmagnets/"))
-                    : (pathname === item.href || (item.href !== "/dashboard" && item.href !== "/dashboard/landing-page" && pathname.startsWith(`${item.href}/`)));
+                  : item.href === "/dashboard/locked-pdf"
+                    ? (pathname === "/dashboard/locked-pdf" || isCurrentLockedPdf)
+                    : item.href === "/dashboard/landing-page"
+                      ? (!isCurrentLockedPdf && (pathname === "/dashboard/landing-page" || pathname === "/dashboard/leadmagnets" || pathname.startsWith("/dashboard/leadmagnets/")))
+                      : (pathname === item.href || (item.href !== "/dashboard" && item.href !== "/dashboard/landing-page" && item.href !== "/dashboard/locked-pdf" && pathname.startsWith(`${item.href}/`)));
               const isHovered = hoveredNavHref === item.href;
 
               if (item.isModal) {
@@ -674,9 +689,11 @@ export default function DashboardShell({
                     ? item.href === activeNavHref
                     : item.href === "/dashboard"
                       ? pathname === "/dashboard"
-                      : item.href === "/dashboard/landing-page"
-                        ? (pathname === "/dashboard/landing-page" || pathname === "/dashboard/leadmagnets" || pathname.startsWith("/dashboard/leadmagnets/"))
-                        : (pathname === item.href || (item.href !== "/dashboard" && item.href !== "/dashboard/landing-page" && pathname.startsWith(`${item.href}/`)));
+                      : item.href === "/dashboard/locked-pdf"
+                        ? (pathname === "/dashboard/locked-pdf" || isCurrentLockedPdf)
+                        : item.href === "/dashboard/landing-page"
+                          ? (!isCurrentLockedPdf && (pathname === "/dashboard/landing-page" || pathname === "/dashboard/leadmagnets" || pathname.startsWith("/dashboard/leadmagnets/")))
+                          : (pathname === item.href || (item.href !== "/dashboard" && item.href !== "/dashboard/landing-page" && item.href !== "/dashboard/locked-pdf" && pathname.startsWith(`${item.href}/`)));
                   if (item.isModal) {
                     return (
                       <button

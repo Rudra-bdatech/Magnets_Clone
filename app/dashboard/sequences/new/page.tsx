@@ -17,7 +17,6 @@ import {
   Search
 } from "lucide-react";
 import { useEffect, useState, useMemo, useRef } from "react";
-import DashboardShell from "@/components/dashboard/dashboard-shell";
 import { type Sequence, type SequenceEmail, type MagnetPage, type Account } from "@/lib/data";
 import { loadPages, loadSequences, saveSequences, loadAccount, syncWithDatabase } from "@/lib/store";
 
@@ -169,8 +168,7 @@ export default function NewSequence() {
   }, [lockedPdfPagesList, searchQuery]);
 
   return (
-    <DashboardShell account={account} title="Create Sequence">
-      <div className="flex flex-col min-h-[calc(100vh-3rem)] bg-gradient-to-b from-[#EFF6FF]/60 via-[#F8FBFF] to-[#F8FBFF] dark:bg-none dark:bg-[#0E0E10]">
+    <div className="flex flex-col min-h-[calc(100vh-3rem)] bg-gradient-to-b from-[#EFF6FF]/60 via-[#F8FBFF] to-[#F8FBFF] dark:bg-none dark:bg-[#0E0E10]">
         <div className="mx-auto max-w-3xl w-full px-4 py-8 sm:px-6 lg:px-8 flex-1">
           
           {/* Back button */}
@@ -543,6 +541,5 @@ export default function NewSequence() {
           </form>
         </div>
       </div>
-    </DashboardShell>
-  );
+    );
 }

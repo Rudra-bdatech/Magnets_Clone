@@ -3,7 +3,6 @@
 export const dynamic = "force-dynamic";
 
 import { useEffect, useState } from "react";
-import DashboardShell from "@/components/dashboard/dashboard-shell";
 import AnalyticsLinearView from "@/components/analytics/analytics-linear-view";
 import AnalyticsHelpModal from "@/components/analytics/analytics-help-modal";
 import { type MagnetPage, type Account, type Lead } from "@/lib/data";
@@ -33,7 +32,7 @@ export default function GeneralAnalyticsPage() {
   }, []);
 
   return (
-    <DashboardShell account={account} title="Analytics">
+    <>
       <AnalyticsLinearView
         account={account}
         pages={pages}
@@ -42,6 +41,6 @@ export default function GeneralAnalyticsPage() {
         isPerMagnet={false}
       />
       <AnalyticsHelpModal isOpen={helpOpen} onClose={() => setHelpOpen(false)} />
-    </DashboardShell>
+    </>
   );
 }

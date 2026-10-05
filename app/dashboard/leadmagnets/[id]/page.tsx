@@ -52,7 +52,6 @@ import {
   MoreVertical,
 } from "lucide-react";
 import { useEffect, useState, useRef, useCallback, useMemo } from "react";
-import DashboardShell from "@/components/dashboard/dashboard-shell";
 import { type MagnetPage, type Account } from "@/lib/data";
 import { loadPages, savePages, deletePage, loadAccount, loadResources, syncWithDatabase } from "@/lib/store";
 import { getMagnetSortTimestamp } from "@/lib/utils";
@@ -1230,19 +1229,17 @@ export default function EditLeadMagnetPage() {
 
   if (!page) {
     return (
-      <DashboardShell account={account} title="Edit lead magnet">
-        <div className="flex flex-col items-center gap-3 px-6 py-24 text-center">
-          <p className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Lead magnet page not found</p>
-          <p className="text-sm text-zinc-500 dark:text-zinc-400">It may have been deleted or the link is wrong.</p>
-          <Link
-            href="/dashboard/landing-page"
-            className="inline-flex h-10 items-center gap-2 rounded-md bg-zinc-900 px-4 text-sm font-semibold text-white transition hover:bg-[#FE6F34] hover:text-black dark:bg-[#FE6F34] dark:text-black"
-          >
-            <ArrowLeft className="h-4 w-4" aria-hidden="true" />
-            Back to Landing Page
-          </Link>
-        </div>
-      </DashboardShell>
+      <div className="flex flex-col items-center gap-3 px-6 py-24 text-center">
+        <p className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Lead magnet page not found</p>
+        <p className="text-sm text-zinc-500 dark:text-zinc-400">It may have been deleted or the link is wrong.</p>
+        <Link
+          href="/dashboard/landing-page"
+          className="inline-flex h-10 items-center gap-2 rounded-md bg-zinc-900 px-4 text-sm font-semibold text-white transition hover:bg-[#FE6F34] hover:text-black dark:bg-[#FE6F34] dark:text-black"
+        >
+          <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+          Back to Landing Page
+        </Link>
+      </div>
     );
   }
 
@@ -1567,13 +1564,9 @@ export default function EditLeadMagnetPage() {
   }, [allPages, page, isLockedPdf]);
 
   return (
-    <DashboardShell
-      account={account}
-      title={isLockedPdf ? "Edit Locked PDF" : "Edit lead magnet"}
-      activeNavHref={isLockedPdf ? "/dashboard/locked-pdf" : "/dashboard/landing-page"}
-    >
+    <>
       <div className="flex flex-col min-h-[calc(100vh-3rem)] bg-gradient-to-b from-[#EFF6FF]/60 via-[#F8FBFF] to-[#F8FBFF] dark:bg-none dark:bg-[#0E0E10] text-zinc-900 dark:text-white transition-colors duration-200">
-        <div className="flex-1 px-4 py-6 sm:px-6 lg:px-8 w-full max-w-7xl mx-auto">
+      <div className="flex-1 px-4 py-6 sm:px-6 lg:px-8 w-full max-w-7xl mx-auto">
 
           {/* Page Top Title Header */}
           <div className="mb-6 flex items-center justify-between">
@@ -2029,6 +2022,6 @@ export default function EditLeadMagnetPage() {
           onClose={() => setShowEmailPreviewModal(false)}
         />
       )}
-    </DashboardShell>
+    </>
   );
 }

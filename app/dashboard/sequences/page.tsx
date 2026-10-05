@@ -35,7 +35,6 @@ import {
   Zap,
   Info,
 } from "lucide-react";
-import DashboardShell from "@/components/dashboard/dashboard-shell";
 import StatusBadge from "@/components/dashboard/status-badge";
 import { type Sequence, type SequenceEmail, type Account, type Lead, type MagnetPage } from "@/lib/data";
 import {
@@ -439,7 +438,7 @@ export default function SequencesPage() {
   }, [sequences, statusFilter, deferredSearch, sortBy]);
 
   return (
-    <DashboardShell account={account} title="Sequences">
+    <>
       {/* Toast Notification Container */}
       {toastMessage && (
         <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2.5 rounded-xl bg-zinc-900 px-4 py-3 text-sm font-semibold text-white shadow-2xl ring-1 ring-white/10 dark:bg-zinc-800 animate-in fade-in slide-in-from-bottom-5">
@@ -462,13 +461,6 @@ export default function SequencesPage() {
             </div>
 
             <div className="flex items-center gap-2 shrink-0 flex-wrap">
-              <Link
-                href="/dashboard/leads"
-                className="flex items-center gap-1.5 rounded-xl border border-zinc-200 bg-white px-3.5 sm:px-4 py-2 sm:py-2.5 text-xs font-semibold text-zinc-700 hover:bg-zinc-50 dark:border-[#2e2e38] dark:bg-[#18181B] dark:text-zinc-300 dark:hover:bg-[#25252A] transition cursor-pointer shadow-xs"
-              >
-                <Users className="h-4 w-4 text-[#0066B2] dark:text-[#38BDF8]" />
-                View all leads
-              </Link>
               <Link
                 href="/dashboard/sequences/new"
                 className="flex items-center gap-1.5 rounded-xl bg-[#0066B2] px-3.5 sm:px-4 py-2 sm:py-2.5 text-xs font-bold text-white hover:bg-[#005291] transition shadow-md cursor-pointer"
@@ -1170,6 +1162,6 @@ export default function SequencesPage() {
           )}
         </div>
       </div>
-    </DashboardShell>
+    </>
   );
 }

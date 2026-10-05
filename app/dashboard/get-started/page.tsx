@@ -20,7 +20,6 @@ import {
   ExternalLink,
   RotateCcw,
 } from "lucide-react";
-import DashboardShell from "@/components/dashboard/dashboard-shell";
 import {
   loadPages,
   loadSequences,
@@ -126,8 +125,7 @@ export default function GetStartedPage() {
   }
 
   return (
-    <DashboardShell account={account} title="Get Started" activeNavHref="/dashboard/get-started">
-      <div className="min-h-[calc(100vh-3.5rem)] bg-[#F8FBFF] dark:bg-[#0B0B0D] py-8 px-4 sm:px-6 lg:px-10">
+    <div className="min-h-[calc(100vh-3.5rem)] bg-[#F8FBFF] dark:bg-[#0B0B0D] py-8 px-4 sm:px-6 lg:px-10">
         <div className="max-w-4xl mx-auto space-y-8">
           {/* Breadcrumbs */}
           <nav className="flex items-center gap-2 text-xs font-medium text-zinc-400 dark:text-zinc-500">
@@ -268,6 +266,5 @@ export default function GetStartedPage() {
           </div>
         </div>
       </div>
-    </DashboardShell>
-  );
+    );
 }

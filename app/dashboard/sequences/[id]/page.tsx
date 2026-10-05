@@ -35,7 +35,6 @@ import {
   Code2,
 } from "lucide-react";
 import { useEffect, useState, useMemo } from "react";
-import DashboardShell from "@/components/dashboard/dashboard-shell";
 import StatusBadge from "@/components/dashboard/status-badge";
 import { type Sequence, type SequenceEmail, type Account, type MagnetPage } from "@/lib/data";
 import {
@@ -352,22 +351,20 @@ export default function SequenceEditor() {
 
   if (!seq) {
     return (
-      <DashboardShell account={account} title="Sequence">
-        <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4 px-6 text-center">
-          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-zinc-100 dark:bg-zinc-800/80 text-zinc-400">
-            <Mail className="h-8 w-8" />
-          </div>
-          <h2 className="text-xl font-bold text-zinc-900 dark:text-white">Sequence Not Found</h2>
-          <p className="text-sm text-zinc-500 max-w-sm">The requested sequence may have been deleted or moved.</p>
-          <Link
-            href="/dashboard/sequences"
-            className="mt-2 inline-flex h-10 items-center gap-2 rounded-xl bg-[#0066B2] px-5 text-xs font-bold text-white transition hover:bg-[#005291] shadow-sm"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Back to Sequences
-          </Link>
+      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4 px-6 text-center">
+        <div className="flex h-16 w-16 items-center justify-center rounded-full bg-zinc-100 dark:bg-zinc-800/80 text-zinc-400">
+          <Mail className="h-8 w-8" />
         </div>
-      </DashboardShell>
+        <h2 className="text-xl font-bold text-zinc-900 dark:text-white">Sequence Not Found</h2>
+        <p className="text-sm text-zinc-500 max-w-sm">The requested sequence may have been deleted or moved.</p>
+        <Link
+          href="/dashboard/sequences"
+          className="mt-2 inline-flex h-10 items-center gap-2 rounded-xl bg-[#0066B2] px-5 text-xs font-bold text-white transition hover:bg-[#005291] shadow-sm"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Back to Sequences
+        </Link>
+      </div>
     );
   }
 
@@ -651,7 +648,7 @@ export default function SequenceEditor() {
   const totalEmailsOpened = opened + emailsWithBody.reduce((acc, e) => acc + (e.opened || 0), 0);
 
   return (
-    <DashboardShell account={account} title={`Sequence - ${seq.name}`}>
+    <>
       {/* Toast Notification */}
       {toastMessage && (
         <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2 rounded-2xl bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 px-4 py-3 text-xs font-bold shadow-2xl animate-in fade-in slide-in-from-bottom-3 duration-200">
@@ -1290,6 +1287,6 @@ export default function SequenceEditor() {
           </div>
         </div>
       </div>
-    </DashboardShell>
+    </>
   );
 }

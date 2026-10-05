@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useRef, useMemo, useCallback } from "react";
-import DashboardShell from "@/components/dashboard/dashboard-shell";
 import { Check } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { syncWithDatabase, saveAccount, loadAccount, loadPages } from "@/lib/store";
@@ -337,7 +336,7 @@ export default function BrandPage() {
   }, [templateId, scrollToTab]);
 
   return (
-    <DashboardShell account={account} title="Brand">
+    <>
       {/* Toast Notification */}
       {toastMessage && (
         <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2 rounded-2xl bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 px-4 py-3 text-xs font-bold shadow-2xl animate-in fade-in slide-in-from-bottom-3 duration-200">
@@ -535,6 +534,6 @@ export default function BrandPage() {
         isOpen={showHelpModal}
         onClose={() => setShowHelpModal(false)}
       />
-    </DashboardShell>
+    </>
   );
 }

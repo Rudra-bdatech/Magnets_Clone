@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect, useRef, useMemo, useCallback, useDeferredValue } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import DashboardShell from "@/components/dashboard/dashboard-shell";
 import {
   Users,
   Download,
@@ -658,8 +657,7 @@ export default function LeadsPage() {
   );
 
   return (
-    <DashboardShell account={account} title="Leads">
-      <div className="flex flex-col min-h-[calc(100vh-3rem)] bg-gradient-to-b from-[#EFF6FF]/50 via-[#F8FBFF] to-[#F8FBFF] dark:bg-none dark:bg-[#0E0E10]">
+    <div className="flex flex-col min-h-[calc(100vh-3rem)] bg-gradient-to-b from-[#EFF6FF]/50 via-[#F8FBFF] to-[#F8FBFF] dark:bg-none dark:bg-[#0E0E10]">
         <div className="flex-1 px-3.5 sm:px-6 py-4 sm:py-6 lg:px-8 max-w-7xl mx-auto w-full">
 
           {/* ========================================================================= */}
@@ -1638,6 +1636,5 @@ export default function LeadsPage() {
         {/* 6. Floating Toast Notification Container */}
         <LeadToastContainer toasts={toasts} onRemoveToast={removeToast} />
       </div>
-    </DashboardShell>
-  );
+    );
 }

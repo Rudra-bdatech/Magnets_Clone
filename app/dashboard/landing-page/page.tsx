@@ -35,7 +35,6 @@ import {
   AlertTriangle
 } from "lucide-react";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import DashboardShell from "@/components/dashboard/dashboard-shell";
 import { type MagnetPage, type Account } from "@/lib/data";
 import { loadPages, savePages, loadAccount, syncWithDatabase, deletePage } from "@/lib/store";
 import { getMagnetSortTimestamp } from "@/lib/utils";
@@ -390,7 +389,7 @@ export default function PagesPage() {
   }, [account?.username]);
 
   return (
-    <DashboardShell account={account} title="Landing Page">
+    <>
       <div className="flex flex-col min-h-[calc(100vh-3.5rem)] bg-zinc-50/50 dark:bg-[#0B0B0D]">
         {/* Top Executive Header */}
         <div className="px-6 pt-6 lg:px-8 border-b border-zinc-200/80 dark:border-zinc-800/60 bg-white/80 dark:bg-[#121215] dark:bg-opacity-85 backdrop-blur-md sticky top-0 z-30 shadow-xs">
@@ -1365,6 +1364,6 @@ export default function PagesPage() {
           </motion.div>
         )}
       </AnimatePresence>
-    </DashboardShell>
+    </>
   );
 }

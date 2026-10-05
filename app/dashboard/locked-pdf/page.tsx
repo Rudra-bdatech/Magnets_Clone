@@ -5,7 +5,6 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import DashboardShell from "@/components/dashboard/dashboard-shell";
 import dynamic from "next/dynamic";
 import {
   FileLock,
@@ -821,7 +820,7 @@ export default function LockedPdfPage() {
     : (process.env.NEXT_PUBLIC_APP_URL || "https://magnets.bdatech.in");
 
   return (
-    <DashboardShell account={account} title="Locked PDF">
+    <>
       {/* Toasts */}
       <div className="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none">
         <AnimatePresence>
@@ -2089,6 +2088,6 @@ export default function LockedPdfPage() {
           </motion.div>
         )}
       </AnimatePresence>
-    </DashboardShell>
+    </>
   );
 }

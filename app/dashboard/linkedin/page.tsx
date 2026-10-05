@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import DashboardShell from "@/components/dashboard/dashboard-shell";
 import {
   Linkedin,
   Copy,
@@ -769,7 +768,7 @@ export default function LinkedInAutomationPage() {
 
   // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   return (
-    <DashboardShell account={account} title="LinkedIn Auto-Reply">
+    <>
       <div className="flex flex-col min-h-[calc(100vh-3rem)] bg-[#F8FBFF] dark:bg-[#0E0E10]">
         <div className="flex-1 px-6 py-6 lg:px-8">
 
@@ -2086,6 +2085,6 @@ export default function LinkedInAutomationPage() {
           </div>
         )}
       </AnimatePresence>
-    </DashboardShell>
+    </>
   );
 }
