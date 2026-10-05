@@ -858,17 +858,15 @@ export default function LockedPdfPage() {
       <div className="flex flex-col min-h-[calc(100vh-3.5rem)] bg-zinc-50/50 dark:bg-[#0B0B0D]">
         {/* Top Executive Header */}
         <div className="px-6 pt-6 lg:px-8 border-b border-zinc-200/80 dark:border-zinc-800/60 bg-white/80 dark:bg-[#121215] dark:bg-opacity-85 backdrop-blur-md sticky top-0 z-30 shadow-xs">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6">
-            <div>
-              <div className="flex items-center gap-2">
-                <h1 className="text-3xl font-bold tracking-tight text-zinc-900 dark:text-white">
-                  Locked PDF
-                </h1>
-              </div>
+          <div className="flex items-center justify-between gap-3 pb-4">
+            <div className="min-w-0">
+              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-900 dark:text-white truncate">
+                Locked PDF
+              </h1>
             </div>
 
             {/* Actions: Choose Assets, Create Locked PDF */}
-            <div className="flex items-center gap-3 shrink-0">
+            <div className="flex items-center gap-2 shrink-0">
               <button
                 type="button"
                 onClick={() => {
@@ -876,10 +874,11 @@ export default function LockedPdfPage() {
                   setHostedResources(fresh);
                   setShowAssetPickerModal(true);
                 }}
-                className="flex items-center gap-1.5 rounded-xl border border-zinc-200 dark:border-[#27272A] bg-white dark:bg-[#1E1E24] px-4 py-2.5 text-xs font-bold text-zinc-800 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-[#27272A] transition shadow-xs cursor-pointer active:scale-95"
+                className="flex items-center gap-1.5 rounded-xl border border-zinc-200 dark:border-[#27272A] bg-white dark:bg-[#1E1E24] px-3 sm:px-4 py-2 sm:py-2.5 text-xs font-bold text-zinc-800 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-[#27272A] transition shadow-xs cursor-pointer active:scale-95"
               >
                 <HardDrive className="h-4 w-4 text-[#0066B2] dark:text-[#38BDF8]" />
-                <span>Choose Assets</span>
+                <span className="hidden sm:inline">Choose Assets</span>
+                <span className="sm:hidden">Assets</span>
               </button>
 
               <button
@@ -889,10 +888,11 @@ export default function LockedPdfPage() {
                   setIsCustomSlugEdited(false);
                   setShowCreateModal(true);
                 }}
-                className="flex items-center gap-1.5 rounded-xl bg-[#0066B2] px-5 py-2.5 text-xs font-bold text-white hover:bg-[#005799] transition shadow-md shadow-[#0066B2]/20 cursor-pointer active:scale-95"
+                className="flex items-center gap-1.5 rounded-xl bg-[#0066B2] px-3.5 sm:px-5 py-2 sm:py-2.5 text-xs font-bold text-white hover:bg-[#005799] transition shadow-md shadow-[#0066B2]/20 cursor-pointer active:scale-95"
               >
                 <Plus className="h-4 w-4 stroke-[2.5px]" />
-                <span>Create Locked PDF</span>
+                <span className="hidden sm:inline">Create Locked PDF</span>
+                <span className="sm:hidden">New</span>
               </button>
             </div>
           </div>

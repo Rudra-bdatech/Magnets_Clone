@@ -894,16 +894,18 @@ export default function DashboardShell({
         )}
 
         <div className="flex min-h-screen min-w-0 flex-1 flex-col bg-[#FAFAFA] dark:bg-[#0E0E10]">
-          <header className="dashboard-chrome sticky top-0 z-30 flex h-12 shrink-0 items-center justify-between border-b border-ink-200 bg-white dark:bg-[#18181B] dark:border-white/10 px-4 sm:px-6 md:hidden transition-colors">
-            <div className="flex items-center gap-3">
+          <header className="dashboard-chrome sticky top-0 z-30 flex h-12 shrink-0 items-center justify-between border-b border-zinc-200/80 bg-white dark:bg-[#18181B] dark:border-white/10 px-4 sm:px-6 md:hidden transition-colors">
+            <div className="flex items-center gap-2.5">
               <button
                 aria-label="Open menu"
-                className="flex h-9 w-9 items-center justify-center rounded-md border border-ink-200 dark:border-white/10 text-ink-700 dark:text-zinc-300 md:hidden hover:bg-zinc-100 dark:hover:bg-zinc-800 transition cursor-pointer"
+                className="flex h-8.5 w-8.5 items-center justify-center rounded-lg border border-zinc-200 dark:border-white/10 text-zinc-700 dark:text-zinc-300 md:hidden hover:bg-zinc-100 dark:hover:bg-zinc-800 transition cursor-pointer"
                 onClick={() => setMenuOpen(true)}
               >
                 <Menu className="h-4 w-4" aria-hidden="true" />
               </button>
-              <h1 className="text-sm font-semibold text-ink-950 dark:text-white sm:text-base">{title}</h1>
+              <Link href="/dashboard" aria-label="Dashboard" className="flex items-center">
+                <BrandLogo height="h-7" />
+              </Link>
             </div>
             <div className="flex items-center gap-2">
               <ThemeToggle />

@@ -364,22 +364,21 @@ export default function PagesPage() {
       <div className="flex flex-col min-h-[calc(100vh-3.5rem)] bg-zinc-50/50 dark:bg-[#0B0B0D]">
         {/* Top Executive Header */}
         <div className="px-6 pt-6 lg:px-8 border-b border-zinc-200/80 dark:border-zinc-800/60 bg-white/80 dark:bg-[#121215] dark:bg-opacity-85 backdrop-blur-md sticky top-0 z-30 shadow-xs">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6">
-            <div>
-              <div className="flex items-center gap-2">
-                <h1 className="text-3xl font-bold tracking-tight text-zinc-900 dark:text-white">
-                  Landing Page
-                </h1>
-              </div>
+          <div className="flex items-center justify-between gap-3 pb-4">
+            <div className="min-w-0">
+              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-900 dark:text-white truncate">
+                Landing Page
+              </h1>
             </div>
 
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 shrink-0">
               <button
                 onClick={() => setShowCreateModal(true)}
-                className="flex items-center gap-1.5 rounded-xl bg-[#0066B2] px-5 py-2.5 text-xs font-bold text-white hover:bg-[#005799] transition shadow-md shadow-[#0066B2]/20 cursor-pointer active:scale-95"
+                className="flex items-center gap-1.5 rounded-xl bg-[#0066B2] px-3.5 sm:px-5 py-2 sm:py-2.5 text-xs font-bold text-white hover:bg-[#005799] transition shadow-md shadow-[#0066B2]/20 cursor-pointer active:scale-95"
               >
                 <Plus className="h-4 w-4 stroke-[2.5px]" />
-                <span>Create Lead Magnet</span>
+                <span className="hidden sm:inline">Create Lead Magnet</span>
+                <span className="sm:hidden">New</span>
               </button>
             </div>
           </div>
