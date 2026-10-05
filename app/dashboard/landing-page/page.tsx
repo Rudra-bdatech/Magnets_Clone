@@ -86,16 +86,35 @@ const MagnetCard = React.memo(
               className="object-cover will-change-transform group-hover:scale-105 transition duration-300"
             />
           ) : (
-            <div className="h-full flex items-center justify-center text-zinc-400 dark:text-zinc-600 bg-gradient-to-br from-zinc-50 to-zinc-100 dark:from-[#121216] dark:to-[#18181D]">
-              <ImageIcon className="h-8 w-8 stroke-[1.5px]" />
+            <div className="h-full w-full flex items-center justify-center relative bg-gradient-to-br from-[#EFF6FF] via-zinc-50 to-slate-100 dark:from-[#0B1726] dark:via-[#121215] dark:to-[#18181C] p-4 select-none">
+              {/* Subtle decorative grid background */}
+              <div className="absolute inset-0 bg-[radial-gradient(#0066B2_1px,transparent_1px)] [background-size:16px_16px] opacity-[0.06] dark:opacity-[0.12]" />
+
+              {/* Mini Sleek Landing Page Mockup Skeleton */}
+              <div className="relative z-0 w-36 rounded-lg border border-zinc-200/80 dark:border-white/10 bg-white/95 dark:bg-[#1C1C22]/95 p-3 shadow-2xs backdrop-blur-xs flex flex-col gap-2 pointer-events-none">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1.5">
+                    <div className="h-2 w-2 rounded-full bg-[#0066B2]/60 dark:bg-[#38BDF8]/60" />
+                    <div className="h-1.5 w-10 rounded-full bg-zinc-200 dark:bg-zinc-700" />
+                  </div>
+                  <div className="h-1 w-4 rounded-full bg-[#0066B2]/40" />
+                </div>
+                <div className="space-y-1 my-0.5">
+                  <div className="h-1.5 w-24 rounded-full bg-zinc-400/80 dark:bg-zinc-500" />
+                  <div className="h-1 w-20 rounded-full bg-zinc-200/80 dark:bg-zinc-700/80" />
+                </div>
+                <div className="h-2.5 w-full rounded bg-[#0066B2]/15 dark:bg-[#0066B2]/30 flex items-center justify-center">
+                  <div className="h-1 w-10 rounded-full bg-[#0066B2]/70 dark:bg-[#38BDF8]/80" />
+                </div>
+              </div>
             </div>
           )}
 
-          <div className="absolute top-3 left-3 flex items-center">
+          <div className="absolute top-3 left-3 flex items-center z-10">
             <span
-              className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider border ${page.status === "live"
-                  ? "bg-emerald-500/90 text-white border-emerald-400/30"
-                  : "bg-zinc-900/80 text-zinc-300 border-zinc-700/50"
+              className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider border backdrop-blur-xs ${page.status === "live"
+                  ? "bg-emerald-500 text-white border-emerald-400/30 shadow-xs"
+                  : "bg-white/95 text-zinc-600 border-zinc-200/90 dark:bg-zinc-900/80 dark:text-zinc-300 dark:border-zinc-700/50 shadow-2xs"
                 }`}
             >
               <span className={`h-1.5 w-1.5 rounded-full ${page.status === "live" ? "bg-white animate-pulse" : "bg-zinc-400"}`} />
@@ -121,9 +140,15 @@ const MagnetCard = React.memo(
             <h3 className="text-sm font-bold text-zinc-900 dark:text-white line-clamp-1 group-hover:text-[#0066B2] dark:group-hover:text-[#38BDF8] transition">
               {page.headline || page.name}
             </h3>
-            <p className="text-xs text-zinc-500 dark:text-zinc-400 line-clamp-2 mt-1">
-              {page.subheadline || "No description set yet."}
-            </p>
+            {page.subheadline ? (
+              <p className="text-xs text-zinc-500 dark:text-zinc-400 line-clamp-2 mt-1">
+                {page.subheadline}
+              </p>
+            ) : (
+              <p className="text-[11px] text-zinc-400 dark:text-zinc-500 mt-1">
+                {page.updatedAt ? `Updated ${page.updatedAt}` : "Standard Landing Page"}
+              </p>
+            )}
           </div>
 
           <div className="pt-1 flex items-center justify-between text-xs">

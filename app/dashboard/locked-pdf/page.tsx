@@ -1139,7 +1139,7 @@ export default function LockedPdfPage() {
                             ? "border-[#0066B2] dark:border-[#38BDF8] bg-white dark:bg-[#18181C] ring-2 ring-[#0066B2]/40 dark:ring-[#38BDF8]/40 shadow-md"
                             : isSelected
                               ? "border-[#0066B2] dark:border-[#38BDF8]/80 bg-gradient-to-b from-[#0066B2]/[0.08] via-[#0066B2]/[0.02] to-transparent ring-1 ring-[#0066B2]/30 dark:ring-[#38BDF8]/30 shadow-[0_0_20px_rgba(0,102,178,0.15)]"
-                              : "border-zinc-200/80 dark:border-[#1F1F24] bg-white dark:bg-[#151518] hover:border-zinc-300 dark:hover:border-[#27272A] shadow-xs hover:shadow-xl hover:-translate-y-0.5"
+                              : "border-zinc-200/80 dark:border-[#1F1F24] bg-white dark:bg-[#151518] hover:border-zinc-300 dark:hover:border-[#27272A] shadow-xs"
                         }`}
                       >
 
