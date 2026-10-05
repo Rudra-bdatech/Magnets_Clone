@@ -21,17 +21,26 @@ import {
   ShieldCheck,
   Check,
   HardDrive,
-  Wand2,
   Lock,
   Download,
   Users,
   BarChart3,
   MousePointer,
+  Filter,
+  Layers,
+  Database,
+  Tag,
 } from "lucide-react";
 
 export default function ShowcaseTabs() {
+  // 6 Non-AI, Pure Platform Feature Scenes:
+  // Phase 0: Opt-in Landing Page & Custom Domain (Visitor types email & clicks "Get Instant Access")
+  // Phase 1: Native Document Hosting & Locked PDF (Direct file hosting, no Drive links)
+  // Phase 2: Drip Email Sequence Workflow (3-step automated flow with Calendly auto-stop)
+  // Phase 3: Leads CRM & Contact Management (Searchable contact database with tags)
+  // Phase 4: Live Telemetry & Conversion Analytics (2,840 visitors, 51.2% opt-in)
+  // Phase 5: Colorful Geometric Brand Slide ("Introducing lead magnets & automated nurture in LeadMagnets")
   const [phase, setPhase] = useState<number>(0);
-  // Pixel coordinates relative to showcase container
   const [cursorPosPx, setCursorPosPx] = useState<{ x: number; y: number }>({ x: 300, y: 240 });
   const [isClicking, setIsClicking] = useState<boolean>(false);
   const [typedEmail, setTypedEmail] = useState<string>("");
@@ -41,15 +50,15 @@ export default function ShowcaseTabs() {
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
   const [hasEnteredViewport, setHasEnteredViewport] = useState<boolean>(false);
 
-  // Element Refs for 100% pixel-perfect dynamic cursor positioning
+  // Dynamic Element Refs for accurate cursor positioning
   const showcaseRef = useRef<HTMLDivElement>(null);
   const lineRef = useRef<HTMLDivElement | null>(null);
   const emailInputRef = useRef<HTMLInputElement>(null);
   const optinBtnRef = useRef<HTMLButtonElement>(null);
   const downloadBtnRef = useRef<HTMLButtonElement>(null);
   const deployBtnRef = useRef<HTMLButtonElement>(null);
-  const analyticsCardRef = useRef<HTMLDivElement>(null);
   const leadRowRef = useRef<HTMLDivElement>(null);
+  const analyticsCardRef = useRef<HTMLDivElement>(null);
 
   // Helper to calculate exact pixel center of target element inside showcaseRef
   const moveCursorTo = useCallback((element: HTMLElement | null, offsetX = 0, offsetY = 0) => {
@@ -124,7 +133,7 @@ export default function ShowcaseTabs() {
     };
   }, []);
 
-  // Entrance observer for smooth reveal animation when entering screen
+  // Entrance observer for smooth reveal animation
   useEffect(() => {
     const el = showcaseRef.current;
     if (!el) return;
@@ -142,26 +151,24 @@ export default function ShowcaseTabs() {
     return () => observer.disconnect();
   }, []);
 
-  // Autonomous Video-Like Playback State Machine with Exact Target Coordinates
+  // Autonomous Video-Like Playback State Machine (No AI references)
   useEffect(() => {
     if (!isPlaying) return;
 
     let timers: NodeJS.Timeout[] = [];
 
     if (phase === 0) {
-      // PHASE 0: AI Opt-In Landing Page
+      // PHASE 0: Opt-In Landing Page
       setTypedEmail("");
       setIsOptinBtnActive(false);
       setIsClicking(false);
 
-      // Move cursor to Email Input
       timers.push(
         setTimeout(() => {
           moveCursorTo(emailInputRef.current, -40, 0);
         }, 100)
       );
 
-      // Simulate typing email
       const emailStr = "alex.founder@startup.co";
       emailStr.split("").forEach((_, idx) => {
         timers.push(
@@ -171,14 +178,12 @@ export default function ShowcaseTabs() {
         );
       });
 
-      // Move cursor to exact center of "Get Instant Access" CTA button
       timers.push(
         setTimeout(() => {
           moveCursorTo(optinBtnRef.current);
         }, 1450)
       );
 
-      // Click CTA button
       timers.push(
         setTimeout(() => {
           setIsClicking(true);
@@ -186,65 +191,57 @@ export default function ShowcaseTabs() {
         }, 2050)
       );
 
-      // Release click
       timers.push(
         setTimeout(() => {
           setIsClicking(false);
         }, 2350)
       );
 
-      // Advance to Phase 1 (Instant Resource Delivery)
       timers.push(
         setTimeout(() => {
           setPhase(1);
         }, 2800)
       );
     } else if (phase === 1) {
-      // PHASE 1: Locked PDF Delivery & Viewer
+      // PHASE 1: Native Document Hosting & Locked PDF
       setIsDownloadBtnActive(false);
       setIsClicking(false);
 
-      // Move cursor to exact center of "Download Resource PDF" button
       timers.push(
         setTimeout(() => {
           moveCursorTo(downloadBtnRef.current);
         }, 400)
       );
 
-      // Click Download button
       timers.push(
         setTimeout(() => {
           setIsClicking(true);
           setIsDownloadBtnActive(true);
-        }, 1500)
+        }, 1400)
       );
 
-      // Release click
       timers.push(
         setTimeout(() => {
           setIsClicking(false);
-        }, 1800)
+        }, 1700)
       );
 
-      // Advance to Phase 2 (Drip Sequence Workflow)
       timers.push(
         setTimeout(() => {
           setPhase(2);
-        }, 2500)
+        }, 2400)
       );
     } else if (phase === 2) {
       // PHASE 2: Drip Email Sequence Workflow
       setIsSaveSeqBtnActive(false);
       setIsClicking(false);
 
-      // Move cursor to exact center of "Deploy Sequence" button
       timers.push(
         setTimeout(() => {
           moveCursorTo(deployBtnRef.current);
         }, 400)
       );
 
-      // Click Deploy button
       timers.push(
         setTimeout(() => {
           setIsClicking(true);
@@ -252,45 +249,49 @@ export default function ShowcaseTabs() {
         }, 1400)
       );
 
-      // Release click
       timers.push(
         setTimeout(() => {
           setIsClicking(false);
         }, 1700)
       );
 
-      // Advance to Phase 3 (Live Analytics Dashboard)
       timers.push(
         setTimeout(() => {
           setPhase(3);
         }, 2400)
       );
     } else if (phase === 3) {
-      // PHASE 3: Live Leads Stream & Telemetry
+      // PHASE 3: Leads CRM & Contact Management
       setIsClicking(false);
 
-      // Move cursor over the Opt-In Rate metric card
+      timers.push(
+        setTimeout(() => {
+          moveCursorTo(leadRowRef.current);
+        }, 500)
+      );
+
+      timers.push(
+        setTimeout(() => {
+          setPhase(4);
+        }, 2400)
+      );
+    } else if (phase === 4) {
+      // PHASE 4: Live Telemetry & Conversion Analytics
+      setIsClicking(false);
+
       timers.push(
         setTimeout(() => {
           moveCursorTo(analyticsCardRef.current);
         }, 400)
       );
 
-      // Move cursor over live captured subscriber row
       timers.push(
         setTimeout(() => {
-          moveCursorTo(leadRowRef.current);
-        }, 1400)
+          setPhase(5);
+        }, 2500)
       );
-
-      // Advance to Phase 4 (Brand Slide)
-      timers.push(
-        setTimeout(() => {
-          setPhase(4);
-        }, 2600)
-      );
-    } else if (phase === 4) {
-      // PHASE 4: Platform Summary Slide (Holds for 3.4s then loops back to Phase 0)
+    } else if (phase === 5) {
+      // PHASE 5: Platform Summary Slide (Holds for 3.4s then loops back to Phase 0)
       setIsClicking(false);
 
       timers.push(
@@ -316,7 +317,7 @@ export default function ShowcaseTabs() {
         className="hidden md:block absolute left-1/2 top-6 -translate-x-1/2 w-[2.5px] bg-gradient-to-b from-[#0066B2] via-[#38BDF8] via-purple-500 via-amber-500 to-emerald-500 rounded-full z-0 shadow-[0_0_14px_rgba(56,189,248,0.85)] max-h-[calc(100%-48px)] pointer-events-none"
       />
 
-      {/* SINGLE UNIFIED APPLICATION FRAME (Pixel-perfect element tracking) */}
+      {/* SINGLE UNIFIED APPLICATION FRAME */}
       <div
         ref={showcaseRef}
         className={`relative mt-12 sm:mt-16 w-full max-w-5xl mx-auto rounded-3xl border border-zinc-200/90 dark:border-white/10 bg-white/95 dark:bg-[#13141B] shadow-[0_22px_55px_-12px_rgba(9,30,66,0.18)] dark:shadow-[0_28px_60px_-12px_rgba(0,0,0,0.75)] p-4 sm:p-6 text-zinc-900 dark:text-zinc-100 overflow-hidden font-sans select-none ring-1 ring-black/5 dark:ring-white/5 transition-all duration-1000 ease-out min-h-[440px] sm:min-h-[460px] flex flex-col justify-between ${
@@ -333,11 +334,11 @@ export default function ShowcaseTabs() {
         />
 
         {/* ========================================================= */}
-        {/* PHASE 0: AI OPT-IN LANDING PAGE GENERATOR & PREVIEW       */}
+        {/* PHASE 0: OPT-IN LANDING PAGE & CUSTOM DOMAIN              */}
         {/* ========================================================= */}
         {phase === 0 && (
           <div className="flex-1 flex flex-col justify-between animate-in fade-in duration-300">
-            {/* Topbar: Domain + SSL Badge */}
+            {/* Topbar */}
             <div className="flex items-center justify-between border-b border-zinc-200/80 dark:border-white/10 pb-3 mb-4 shrink-0">
               <div className="flex items-center gap-2">
                 <span className="h-3 w-3 rounded-full bg-red-400/80 inline-block" />
@@ -352,12 +353,11 @@ export default function ShowcaseTabs() {
               </span>
             </div>
 
-            {/* Split Landing Page Layout */}
+            {/* Split Content */}
             <div className="grid grid-cols-1 md:grid-cols-12 gap-6 flex-1 items-center">
-              {/* Left Column: Headline, Bullets, Opt-in Form */}
               <div className="md:col-span-7 space-y-3.5">
                 <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#0066B2]/10 text-[#0066B2] dark:text-[#38BDF8] text-[11px] font-extrabold uppercase tracking-wider border border-[#0066B2]/20">
-                  <Sparkles className="h-3.5 w-3.5" /> AI Opt-in Page
+                  <FileText className="h-3.5 w-3.5" /> High-Converting Lead Magnet
                 </div>
 
                 <h3 className="text-2xl sm:text-3xl font-black text-zinc-900 dark:text-white tracking-tight leading-snug">
@@ -368,7 +368,6 @@ export default function ShowcaseTabs() {
                   Discover 15 proven growth frameworks used by top founders to scale MRR cleanly.
                 </p>
 
-                {/* Email Form */}
                 <div className="space-y-2.5 pt-1">
                   <div className="relative">
                     <input
@@ -398,7 +397,6 @@ export default function ShowcaseTabs() {
                 </div>
               </div>
 
-              {/* Right Column: PDF Cover Mockup */}
               <div className="md:col-span-5 bg-zinc-50/80 dark:bg-[#1A1B26] rounded-2xl border border-zinc-200 dark:border-white/10 p-5 shadow-sm space-y-4 text-center">
                 <div className="h-32 sm:h-36 rounded-xl bg-gradient-to-br from-[#0066B2]/15 via-purple-500/10 to-emerald-500/10 border border-blue-500/20 flex flex-col items-center justify-center p-3 relative overflow-hidden">
                   <FileText className="h-9 w-9 text-[#0066B2] dark:text-[#38BDF8] mb-1.5" />
@@ -417,12 +415,11 @@ export default function ShowcaseTabs() {
         )}
 
         {/* ========================================================= */}
-        {/* PHASE 1: INSTANT FULFILLMENT & LOCKED RESOURCE DELIVERY   */}
+        {/* PHASE 1: NATIVE DOCUMENT HOSTING & LOCKED PDF             */}
         {/* ========================================================= */}
         {phase === 1 && (
           <div className="flex-1 flex flex-col justify-between animate-in zoom-in-98 duration-300">
             <div>
-              {/* Delivery Header */}
               <div className="flex items-center justify-between border-b border-zinc-200/80 dark:border-zinc-800 pb-3 mb-4">
                 <div className="flex items-center gap-3">
                   <div className="h-9 w-9 rounded-xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center">
@@ -442,7 +439,6 @@ export default function ShowcaseTabs() {
                 </span>
               </div>
 
-              {/* Resource Preview & Download Box */}
               <div className="p-5 rounded-2xl bg-zinc-50/80 dark:bg-[#1A1B26] border border-zinc-200/70 dark:border-zinc-800 space-y-3.5">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2.5">
@@ -451,11 +447,11 @@ export default function ShowcaseTabs() {
                       2026 SaaS Growth Playbook (Complete PDF)
                     </span>
                   </div>
-                  <span className="text-xs font-mono text-zinc-400">3.2 MB · Direct Access</span>
+                  <span className="text-xs font-mono text-zinc-400">3.2 MB · Native Hosted</span>
                 </div>
 
                 <p className="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed">
-                  Your resource is hosted natively on LeadMagnets with zero Google Drive links, reader drop-off telemetry, and automated drip sequence enrollment.
+                  Host documents and PDFs directly on LeadMagnets with zero Google Drive links, secure reader telemetry, and automatic sequence enrollment.
                 </p>
 
                 <div className="pt-2 flex items-center gap-3 flex-wrap">
@@ -483,12 +479,11 @@ export default function ShowcaseTabs() {
         )}
 
         {/* ========================================================= */}
-        {/* PHASE 2: AUTOMATED DRIP SEQUENCE WORKFLOW                 */}
+        {/* PHASE 2: AUTOMATED DRIP EMAIL SEQUENCES                   */}
         {/* ========================================================= */}
         {phase === 2 && (
           <div className="flex-1 flex flex-col justify-between animate-in zoom-in-98 duration-300">
             <div>
-              {/* Header */}
               <div className="flex items-center justify-between border-b border-zinc-200/80 dark:border-zinc-800 pb-3 mb-4">
                 <div className="flex items-center gap-2">
                   <Workflow className="h-4 w-4 text-[#0066B2] dark:text-[#38BDF8]" />
@@ -507,11 +502,10 @@ export default function ShowcaseTabs() {
                 </button>
               </div>
 
-              {/* 3 Step Pipeline Nodes */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
                 <div className="p-3.5 rounded-xl bg-zinc-50/80 dark:bg-[#1A1B26] border border-blue-500/20 space-y-1.5">
                   <span className="text-[10px] font-bold text-[#0066B2] dark:text-[#38BDF8] uppercase">
-                    Step 1 · 0s Latency
+                    Step 1 · Immediate
                   </span>
                   <p className="text-xs sm:text-sm font-bold text-zinc-800 dark:text-zinc-200">PDF Delivery Email</p>
                   <p className="text-xs text-zinc-400">94% Open · Instant download</p>
@@ -519,8 +513,8 @@ export default function ShowcaseTabs() {
 
                 <div className="p-3.5 rounded-xl bg-zinc-50/80 dark:bg-[#1A1B26] border border-purple-500/20 space-y-1.5">
                   <span className="text-[10px] font-bold text-purple-500 uppercase">Step 2 · +2 Days</span>
-                  <p className="text-xs sm:text-sm font-bold text-zinc-800 dark:text-zinc-200">Value Teardown Email</p>
-                  <p className="text-xs text-zinc-400">68% Open · 3 Growth case studies</p>
+                  <p className="text-xs sm:text-sm font-bold text-zinc-800 dark:text-zinc-200">Value Case Study</p>
+                  <p className="text-xs text-zinc-400">68% Open · 3 Growth teardowns</p>
                 </div>
 
                 <div className="p-3.5 rounded-xl bg-zinc-50/80 dark:bg-[#1A1B26] border border-emerald-500/20 space-y-1.5">
@@ -532,33 +526,98 @@ export default function ShowcaseTabs() {
                 </div>
               </div>
 
-              {/* Auto-stop condition callout */}
               <div className="mt-4 p-3 rounded-xl bg-[#DCFCE7]/60 dark:bg-emerald-950/30 border border-emerald-300 dark:border-emerald-800 text-xs text-[#15803D] dark:text-emerald-300 flex items-center gap-2.5">
                 <CheckCircle2 className="h-4 w-4 shrink-0" />
                 <span>
-                  <strong>Smart Auto-Stop Rule:</strong> When subscriber books a call via Calendly link, all remaining emails cancel automatically.
+                  <strong>Smart Auto-Stop:</strong> When a subscriber books a call via Calendly or Stripe, all remaining nurture emails are automatically cancelled.
                 </span>
               </div>
             </div>
 
             <div className="text-xs text-zinc-400 pt-2 border-t border-zinc-100 dark:border-zinc-800">
-              Turn cold subscribers into booked client calls hands-free
+              Turn subscribers into booked client calls hands-free
             </div>
           </div>
         )}
 
         {/* ========================================================= */}
-        {/* PHASE 3: LIVE LEADS & CONVERSION TELEMETRY                */}
+        {/* PHASE 3: LEADS CRM & CONTACT DATABASE                     */}
         {/* ========================================================= */}
         {phase === 3 && (
           <div className="flex-1 flex flex-col justify-between animate-in zoom-in-98 duration-300">
             <div>
               {/* Header */}
+              <div className="flex items-center justify-between border-b border-zinc-200/80 dark:border-zinc-800 pb-3 mb-3.5">
+                <div className="flex items-center gap-2">
+                  <Users className="h-4 w-4 text-[#0066B2] dark:text-[#38BDF8]" />
+                  <span className="text-sm font-bold text-zinc-900 dark:text-white">
+                    Captured Leads Database
+                  </span>
+                  <span className="text-xs text-zinc-400 font-medium">(2,840 Total Leads)</span>
+                </div>
+                <div className="flex items-center gap-2 text-xs">
+                  <span className="px-2.5 py-1 rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 font-semibold">
+                    Export CSV
+                  </span>
+                </div>
+              </div>
+
+              {/* Leads Table */}
+              <div className="space-y-2">
+                <div
+                  ref={leadRowRef}
+                  className="p-3 rounded-xl bg-zinc-50/80 dark:bg-[#1A1B26] border border-blue-500/30 ring-1 ring-blue-500/20 flex items-center justify-between text-xs sm:text-sm"
+                >
+                  <div className="flex items-center gap-3">
+                    <span className="h-2.5 w-2.5 rounded-full bg-emerald-500" />
+                    <div>
+                      <p className="font-bold text-zinc-900 dark:text-white">alex.founder@startup.co</p>
+                      <p className="text-[11px] text-zinc-400">Source: get.yourbrand.com/saas-playbook</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-[#DCFCE7] dark:bg-emerald-950/40 text-[#15803D] dark:text-emerald-300">
+                      Step 1 Delivered
+                    </span>
+                    <span className="text-xs text-zinc-400 font-mono">Just now</span>
+                  </div>
+                </div>
+
+                <div className="p-3 rounded-xl bg-zinc-50/80 dark:bg-[#1A1B26] border border-zinc-200/70 dark:border-zinc-800 flex items-center justify-between text-xs sm:text-sm opacity-85">
+                  <div className="flex items-center gap-3">
+                    <span className="h-2.5 w-2.5 rounded-full bg-blue-500" />
+                    <div>
+                      <p className="font-bold text-zinc-900 dark:text-white">sarah.p@agency.io</p>
+                      <p className="text-[11px] text-zinc-400">Source: get.yourbrand.com/outreach</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-[#EAE6FF] dark:bg-purple-950/40 text-[#6554C0] dark:text-purple-300">
+                      Step 2 (Day 2 Sent)
+                    </span>
+                    <span className="text-xs text-zinc-400 font-mono">2h ago</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="text-xs text-zinc-400 pt-2 border-t border-zinc-100 dark:border-zinc-800">
+              Synced with LeadMagnets automated contact manager
+            </div>
+          </div>
+        )}
+
+        {/* ========================================================= */}
+        {/* PHASE 4: LIVE TELEMETRY & CONVERSION ANALYTICS            */}
+        {/* ========================================================= */}
+        {phase === 4 && (
+          <div className="flex-1 flex flex-col justify-between animate-in zoom-in-98 duration-300">
+            <div>
               <div className="flex items-center justify-between border-b border-zinc-200/80 dark:border-zinc-800 pb-3 mb-4">
                 <div className="flex items-center gap-2">
                   <BarChart3 className="h-4 w-4 text-[#0066B2] dark:text-[#38BDF8]" />
                   <span className="text-sm font-bold text-zinc-900 dark:text-white">
-                    Live Performance &amp; Leads Telemetry
+                    Live Performance &amp; Conversion Telemetry
                   </span>
                 </div>
                 <span className="text-xs font-bold text-emerald-500 bg-emerald-500/10 px-3 py-0.5 rounded-full border border-emerald-500/20 flex items-center gap-1.5">
@@ -566,7 +625,6 @@ export default function ShowcaseTabs() {
                 </span>
               </div>
 
-              {/* Stats Cards */}
               <div className="grid grid-cols-3 gap-3.5 mb-4">
                 <div className="bg-zinc-50/80 dark:bg-[#1A1B26] p-3.5 rounded-2xl border border-zinc-200/70 dark:border-zinc-800">
                   <span className="text-[10px] text-zinc-400 font-bold uppercase tracking-wider">Total Visitors</span>
@@ -579,7 +637,7 @@ export default function ShowcaseTabs() {
                 >
                   <span className="text-[10px] text-zinc-400 font-bold uppercase tracking-wider">Opt-In Rate</span>
                   <p className="text-2xl font-black text-[#0066B2] dark:text-[#38BDF8] mt-1">51.2%</p>
-                  <span className="text-xs font-semibold text-zinc-400">Top 5% SaaS Benchmark</span>
+                  <span className="text-xs font-semibold text-zinc-400">Top 5% Benchmark</span>
                 </div>
                 <div className="bg-zinc-50/80 dark:bg-[#1A1B26] p-3.5 rounded-2xl border border-zinc-200/70 dark:border-zinc-800">
                   <span className="text-[10px] text-zinc-400 font-bold uppercase tracking-wider">Calls Booked</span>
@@ -587,44 +645,26 @@ export default function ShowcaseTabs() {
                   <span className="text-xs font-bold text-emerald-500">$35,000 Pipeline</span>
                 </div>
               </div>
-
-              {/* Real-time Lead Stream */}
-              <div className="space-y-2">
-                <span className="text-xs font-bold text-zinc-400 uppercase tracking-wider">Recent Captured Leads</span>
-                <div
-                  ref={leadRowRef}
-                  className="p-3 rounded-xl bg-zinc-50/80 dark:bg-[#1A1B26] border border-zinc-200/70 dark:border-zinc-800 flex items-center justify-between text-xs sm:text-sm"
-                >
-                  <div className="flex items-center gap-2.5">
-                    <span className="h-2.5 w-2.5 rounded-full bg-emerald-500" />
-                    <span className="font-bold text-zinc-800 dark:text-zinc-200">alex.founder@startup.co</span>
-                  </div>
-                  <span className="text-xs text-zinc-400">Opted in 0s ago · Instant PDF Delivered</span>
-                </div>
-              </div>
             </div>
 
             <div className="text-xs text-zinc-400 pt-2 border-t border-zinc-100 dark:border-zinc-800">
-              Full visitor attribution, exit-intent captures, and conversion analytics
+              Visitor analytics, exit-intent captures, and conversion tracking
             </div>
           </div>
         )}
 
         {/* ========================================================= */}
-        {/* PHASE 4: EXACT GRAPHIC BRAND SLIDE FROM QA ASSIST         */}
+        {/* PHASE 5: EXACT GRAPHIC BRAND SLIDE                        */}
         {/* ========================================================= */}
-        {phase === 4 && (
+        {phase === 5 && (
           <div className="flex-1 -m-4 sm:-m-6 relative overflow-hidden flex items-center justify-center p-4 sm:p-8 animate-in zoom-in-98 duration-400 shadow-2xl rounded-3xl">
             {/* Colorful Geometric Block Backgrounds (Lavender, Blue, Green, Yellow) */}
             <div
               aria-hidden="true"
               className="absolute inset-0 grid grid-cols-2 grid-rows-2 pointer-events-none"
             >
-              {/* Top Left: Soft Lavender / Lilac */}
               <div className="bg-[#B8B0FF] dark:bg-[#8D82F0]" />
-              {/* Top Right & Entire Right Side: Warm Vibrant Gold / Yellow */}
               <div className="row-span-2 bg-[#F6C343] dark:bg-[#E5B334]" />
-              {/* Bottom Left: Vibrant Royal Blue & Green corner */}
               <div className="bg-[#1264FF] relative overflow-hidden">
                 <div className="absolute -bottom-6 -right-6 h-28 w-28 rounded-full bg-[#10B981]" />
               </div>
@@ -633,7 +673,7 @@ export default function ShowcaseTabs() {
             {/* Jet-Black Rounded Semicircular Capsule Element */}
             <div className="relative z-10 w-[94%] sm:w-[90%] max-w-2xl bg-[#0F0F11] text-white rounded-l-2xl sm:rounded-l-3xl rounded-r-[140px] sm:rounded-r-[220px] p-6 sm:p-12 shadow-[0_20px_50px_rgba(0,0,0,0.5)] flex flex-col justify-center min-h-[220px] sm:min-h-[280px]">
               <h2 className="text-2xl sm:text-4xl lg:text-5xl font-normal tracking-tight text-white leading-[1.2] max-w-md">
-                Introducing <strong className="font-extrabold text-white">AI lead magnets &amp; automated nurture</strong> in{" "}
+                Introducing <strong className="font-extrabold text-white">lead magnets &amp; automated nurture</strong> in{" "}
                 <span className="font-extrabold text-white">LeadMagnets</span>
               </h2>
             </div>
@@ -649,7 +689,7 @@ export default function ShowcaseTabs() {
             transform: `translate3d(${cursorPosPx.x}px, ${cursorPosPx.y}px, 0) ${
               isClicking ? "scale(0.82)" : "scale(1)"
             }`,
-            opacity: phase === 4 ? 0 : 1,
+            opacity: phase === 5 ? 0 : 1,
             top: 0,
             left: 0,
           }}
