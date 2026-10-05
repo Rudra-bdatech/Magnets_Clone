@@ -665,14 +665,9 @@ export default function LeadsPage() {
           {/* ========================================================================= */}
           <div className="hidden md:flex flex-col justify-between gap-4 md:flex-row md:items-center mb-6">
             <div>
-              <div className="flex items-center gap-2">
-                <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-900 dark:text-white">
-                  Leads
-                </h2>
-                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-                  <Check className="h-3 w-3" /> Live Email Alerts Active
-                </span>
-              </div>
+              <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-900 dark:text-white">
+                Leads
+              </h2>
             </div>
 
             <div className="flex items-center gap-2 shrink-0 flex-wrap">
