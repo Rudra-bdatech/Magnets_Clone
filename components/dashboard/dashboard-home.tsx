@@ -544,7 +544,7 @@ export default function DashboardHome({
 
   return (
     <div className="flex flex-col min-h-[calc(100vh-3.5rem)] bg-gradient-to-b from-[#EFF6FF]/40 via-[#F8FBFF] to-[#F8FBFF] dark:bg-none dark:bg-[#0B0B0D]">
-      <div className="flex-1 px-4 py-7 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
+      <div className="flex-1 px-3.5 py-6 sm:px-6 sm:py-7 lg:px-8 max-w-7xl mx-auto w-full">
         <motion.div
           variants={container}
           initial="hidden"
@@ -559,7 +559,7 @@ export default function DashboardHome({
             className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
           >
             <div>
-              <h1 className="text-2xl font-extrabold tracking-tight text-zinc-900 dark:text-white sm:text-3xl">
+              <h1 className="text-xl font-extrabold tracking-tight text-zinc-900 dark:text-white sm:text-3xl">
                 {getGreeting(account?.name)}
               </h1>
             </div>
@@ -588,7 +588,7 @@ export default function DashboardHome({
           ══════════════════════════════════════════════ */}
           <motion.div
             variants={fadeUp}
-            className="grid grid-cols-2 gap-4 lg:grid-cols-4"
+            className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4"
           >
             {kpiCards.map((card) => (
               <Link
@@ -596,21 +596,24 @@ export default function DashboardHome({
                 href={card.href}
                 className="group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0066B2] rounded-2xl h-full flex flex-col"
               >
-                <div className="relative h-full rounded-2xl border border-zinc-200/80 bg-white/90 dark:border-[#2e2e38] dark:bg-[#18181B]/90 p-4 shadow-sm backdrop-blur-sm hover:border-[#0066B2]/40 dark:hover:border-[#38BDF8]/25 hover:shadow-md transition-all duration-200 overflow-hidden flex items-center gap-3.5">
-                  {/* Left: Icon Badge */}
-                  <div
-                    className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${card.iconBg} ${card.iconColor}`}
-                  >
-                    <card.icon className="h-5 w-5" />
+                <div className="relative h-full rounded-2xl border border-zinc-200/80 bg-white/90 dark:border-[#2e2e38] dark:bg-[#18181B]/90 p-3.5 sm:p-4 shadow-sm backdrop-blur-sm hover:border-[#0066B2]/40 dark:hover:border-[#38BDF8]/25 hover:shadow-md transition-all duration-200 overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
+                  {/* Top on mobile / Left on desktop: Icon Badge */}
+                  <div className="flex items-center justify-between sm:justify-start w-full sm:w-auto">
+                    <div
+                      className={`flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl ${card.iconBg} ${card.iconColor}`}
+                    >
+                      <card.icon className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
+                    </div>
+                    <ChevronRight className="h-3.5 w-3.5 text-zinc-300 dark:text-zinc-600 sm:hidden shrink-0" />
                   </div>
 
                   {/* Right: Label, Value & Subtext */}
-                  <div className="flex-1 min-w-0">
+                  <div className="flex-1 min-w-0 w-full">
                     <div className="flex items-center justify-between gap-1">
-                      <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-[#9B9085] leading-none truncate">
+                      <p className="text-[10px] sm:text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-[#9B9085] leading-none whitespace-normal sm:truncate">
                         {card.label}
                       </p>
-                      <ChevronRight className="h-3.5 w-3.5 text-zinc-300 dark:text-zinc-600 group-hover:text-[#0066B2] dark:group-hover:text-[#38BDF8] transition-all opacity-0 group-hover:opacity-100 group-hover:translate-x-0.5 shrink-0" />
+                      <ChevronRight className="hidden sm:block h-3.5 w-3.5 text-zinc-300 dark:text-zinc-600 group-hover:text-[#0066B2] dark:group-hover:text-[#38BDF8] transition-all opacity-0 group-hover:opacity-100 group-hover:translate-x-0.5 shrink-0" />
                     </div>
 
                     <p className="text-xl font-extrabold tabular-nums text-zinc-900 dark:text-white mt-1 leading-none tracking-tight">
@@ -637,16 +640,16 @@ export default function DashboardHome({
             className="grid grid-cols-1 md:grid-cols-2 gap-4"
           >
             {/* 🌐 LANDING PAGES ENGINE CARD */}
-            <div className="relative rounded-2xl border border-blue-200/80 bg-gradient-to-br from-blue-50/70 via-white to-sky-50/40 dark:border-blue-900/40 dark:from-blue-950/30 dark:via-[#18181B] dark:to-sky-950/20 p-5 shadow-sm backdrop-blur-sm flex flex-col justify-between overflow-hidden group">
+            <div className="relative rounded-2xl border border-blue-200/80 bg-gradient-to-br from-blue-50/70 via-white to-sky-50/40 dark:border-blue-900/40 dark:from-blue-950/30 dark:via-[#18181B] dark:to-sky-950/20 p-4 sm:p-5 shadow-sm backdrop-blur-sm flex flex-col justify-between overflow-hidden group">
               <div>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#0066B2]/10 dark:bg-[#38BDF8]/15 text-[#0066B2] dark:text-[#38BDF8] border border-[#0066B2]/20 dark:border-[#38BDF8]/30">
-                      <FileText className="h-5 w-5" />
+                    <div className="flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-xl bg-[#0066B2]/10 dark:bg-[#38BDF8]/15 text-[#0066B2] dark:text-[#38BDF8] border border-[#0066B2]/20 dark:border-[#38BDF8]/30">
+                      <FileText className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
                     </div>
                     <div>
                       <div className="flex items-center gap-2">
-                        <h2 className="text-base font-extrabold text-zinc-900 dark:text-white">
+                        <h2 className="text-sm sm:text-base font-extrabold text-zinc-900 dark:text-white">
                           Landing Pages
                         </h2>
                         <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300 border border-blue-200 dark:border-blue-800/40">
@@ -664,28 +667,28 @@ export default function DashboardHome({
                 </div>
 
                 {/* Performance stats grid */}
-                <div className="grid grid-cols-3 gap-2 mt-4">
-                  <div className="p-2.5 rounded-xl bg-white/80 dark:bg-black/20 border border-blue-100/60 dark:border-blue-900/20">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-[#9B9085]">
+                <div className="grid grid-cols-3 gap-1.5 sm:gap-2 mt-3 sm:mt-4">
+                  <div className="p-2 sm:p-2.5 rounded-xl bg-white/80 dark:bg-black/20 border border-blue-100/60 dark:border-blue-900/20">
+                    <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-[#9B9085]">
                       Views
                     </span>
-                    <p className="text-lg font-extrabold text-zinc-900 dark:text-white mt-0.5 tabular-nums">
+                    <p className="text-base sm:text-lg font-extrabold text-zinc-900 dark:text-white mt-0.5 tabular-nums">
                       {landingPageViews.toLocaleString()}
                     </p>
                   </div>
-                  <div className="p-2.5 rounded-xl bg-white/80 dark:bg-black/20 border border-blue-100/60 dark:border-blue-900/20">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-[#9B9085]">
+                  <div className="p-2 sm:p-2.5 rounded-xl bg-white/80 dark:bg-black/20 border border-blue-100/60 dark:border-blue-900/20">
+                    <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-[#9B9085]">
                       Leads
                     </span>
-                    <p className="text-lg font-extrabold text-[#0066B2] dark:text-[#38BDF8] mt-0.5 tabular-nums">
+                    <p className="text-base sm:text-lg font-extrabold text-[#0066B2] dark:text-[#38BDF8] mt-0.5 tabular-nums">
                       {landingPageLeads.toLocaleString()}
                     </p>
                   </div>
-                  <div className="p-2.5 rounded-xl bg-white/80 dark:bg-black/20 border border-blue-100/60 dark:border-blue-900/20">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-[#9B9085]">
+                  <div className="p-2 sm:p-2.5 rounded-xl bg-white/80 dark:bg-black/20 border border-blue-100/60 dark:border-blue-900/20">
+                    <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-[#9B9085]">
                       Conv. Rate
                     </span>
-                    <p className="text-lg font-extrabold text-emerald-600 dark:text-emerald-400 mt-0.5 tabular-nums">
+                    <p className="text-base sm:text-lg font-extrabold text-emerald-600 dark:text-emerald-400 mt-0.5 tabular-nums">
                       {landingPageRate}%
                     </p>
                   </div>
@@ -713,16 +716,16 @@ export default function DashboardHome({
             </div>
 
             {/* 🔒 LOCKED PDF ENGINE CARD */}
-            <div className="relative rounded-2xl border border-amber-200/80 bg-gradient-to-br from-amber-50/70 via-white to-orange-50/40 dark:border-amber-900/40 dark:from-amber-950/30 dark:via-[#18181B] dark:to-orange-950/20 p-5 shadow-sm backdrop-blur-sm flex flex-col justify-between overflow-hidden group">
+            <div className="relative rounded-2xl border border-amber-200/80 bg-gradient-to-br from-amber-50/70 via-white to-orange-50/40 dark:border-amber-900/40 dark:from-amber-950/30 dark:via-[#18181B] dark:to-orange-950/20 p-4 sm:p-5 shadow-sm backdrop-blur-sm flex flex-col justify-between overflow-hidden group">
               <div>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
-                      <Lock className="h-5 w-5" />
+                    <div className="flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
+                      <Lock className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
                     </div>
                     <div>
                       <div className="flex items-center gap-2">
-                        <h2 className="text-base font-extrabold text-zinc-900 dark:text-white">
+                        <h2 className="text-sm sm:text-base font-extrabold text-zinc-900 dark:text-white">
                           Locked PDFs
                         </h2>
                         <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300 border border-amber-200 dark:border-amber-800/40">
@@ -740,28 +743,28 @@ export default function DashboardHome({
                 </div>
 
                 {/* Performance stats grid */}
-                <div className="grid grid-cols-3 gap-2 mt-4">
-                  <div className="p-2.5 rounded-xl bg-white/80 dark:bg-black/20 border border-amber-100/60 dark:border-amber-900/20">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-[#9B9085]">
+                <div className="grid grid-cols-3 gap-1.5 sm:gap-2 mt-3 sm:mt-4">
+                  <div className="p-2 sm:p-2.5 rounded-xl bg-white/80 dark:bg-black/20 border border-amber-100/60 dark:border-amber-900/20">
+                    <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-[#9B9085]">
                       Views
                     </span>
-                    <p className="text-lg font-extrabold text-zinc-900 dark:text-white mt-0.5 tabular-nums">
+                    <p className="text-base sm:text-lg font-extrabold text-zinc-900 dark:text-white mt-0.5 tabular-nums">
                       {lockedPdfViews.toLocaleString()}
                     </p>
                   </div>
-                  <div className="p-2.5 rounded-xl bg-white/80 dark:bg-black/20 border border-amber-100/60 dark:border-amber-900/20">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-[#9B9085]">
+                  <div className="p-2 sm:p-2.5 rounded-xl bg-white/80 dark:bg-black/20 border border-amber-100/60 dark:border-amber-900/20">
+                    <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-[#9B9085]">
                       Unlocks
                     </span>
-                    <p className="text-lg font-extrabold text-amber-600 dark:text-amber-400 mt-0.5 tabular-nums">
+                    <p className="text-base sm:text-lg font-extrabold text-amber-600 dark:text-amber-400 mt-0.5 tabular-nums">
                       {lockedPdfLeadsCount.toLocaleString()}
                     </p>
                   </div>
-                  <div className="p-2.5 rounded-xl bg-white/80 dark:bg-black/20 border border-amber-100/60 dark:border-amber-900/20">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-[#9B9085]">
+                  <div className="p-2 sm:p-2.5 rounded-xl bg-white/80 dark:bg-black/20 border border-amber-100/60 dark:border-amber-900/20">
+                    <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-[#9B9085]">
                       Unlock Rate
                     </span>
-                    <p className="text-lg font-extrabold text-emerald-600 dark:text-emerald-400 mt-0.5 tabular-nums">
+                    <p className="text-base sm:text-lg font-extrabold text-emerald-600 dark:text-emerald-400 mt-0.5 tabular-nums">
                       {lockedPdfRate}%
                     </p>
                   </div>
