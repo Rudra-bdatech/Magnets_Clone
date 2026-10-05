@@ -666,12 +666,28 @@ export default function DashboardShell({
           </div>
         </aside>
 
-        {menuOpen && (
-          <div className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm md:hidden" onClick={() => setMenuOpen(false)}>
-            <div
-              className="flex h-full w-72 flex-col bg-[#F0F7FF] dark:bg-[#18181B] border-r border-[#E0EDFB] dark:border-white/10 p-4 text-zinc-900 dark:text-[#9B9085]"
-              onClick={(e) => e.stopPropagation()}
-            >
+        <AnimatePresence>
+          {menuOpen && (
+            <div className="fixed inset-0 z-50 md:hidden">
+              {/* Backdrop with fade and blur */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.22, ease: "easeInOut" }}
+                className="fixed inset-0 bg-black/45 backdrop-blur-sm"
+                onClick={() => setMenuOpen(false)}
+              />
+
+              {/* Apple-grade Spring Drawer Panel */}
+              <motion.div
+                initial={{ x: "-100%" }}
+                animate={{ x: 0 }}
+                exit={{ x: "-100%" }}
+                transition={{ type: "spring", stiffness: 380, damping: 34, mass: 0.85 }}
+                className="relative z-10 flex h-full w-72 max-w-[85vw] flex-col bg-[#F0F7FF] dark:bg-[#18181B] border-r border-[#E0EDFB] dark:border-white/10 p-4 text-zinc-900 dark:text-[#9B9085] shadow-2xl"
+                onClick={(e) => e.stopPropagation()}
+              >
               <div className="mb-4 flex items-center justify-between pb-3">
                 <Link href="/dashboard" aria-label="Dashboard" onClick={() => setMenuOpen(false)}>
                   <BrandLogo height="h-9" />
@@ -910,9 +926,10 @@ export default function DashboardShell({
                   </div>
                 </button>
               </div>
-            </div>
+            </motion.div>
           </div>
         )}
+      </AnimatePresence>
 
         <div className="flex min-h-screen min-w-0 flex-1 flex-col bg-[#FAFAFA] dark:bg-[#0E0E10]">
           <header className="dashboard-chrome sticky top-0 z-30 flex h-12 shrink-0 items-center justify-between border-b border-zinc-200/70 bg-white/75 dark:bg-[#141417]/75 dark:border-white/10 backdrop-blur-xl supports-[backdrop-filter]:bg-white/60 dark:supports-[backdrop-filter]:bg-[#141417]/60 px-4 sm:px-6 md:hidden transition-colors">
