@@ -149,15 +149,78 @@ export default function FunnelShowcase() {
     setIsPlaying((prev) => !prev);
   };
 
-  // Dynamic animation progress helpers (0 to 100)
-  const isTypingDone = progress > 30;
-  const isButtonClicked = progress > 55;
-  const isDelivered = progress > 45;
-  const isSyncPulse = progress > 40;
+  // Character-by-character typewriter typing simulation for Stage 1 email
+  const TARGET_EMAIL = "alex@company.com";
+  let typedEmail = "";
+  let isTyping = false;
+  let isInputFocused = false;
+  let isButtonClicked = false;
+  let isDelivered = false;
+  let isSyncPulse = false;
 
-  // Dynamic camera zoom effect ONLY on Stage 1 (where mouse pointer is present)
-  const isZooming = activeIdx === 0 && progress >= 28 && progress <= 68;
-  const zoomOrigin = "72% 70%"; // Focuses onto input & Get PDF CTA button
+  if (activeIdx === 0) {
+    isInputFocused = progress >= 10 && progress < 65;
+    if (progress < 12) {
+      typedEmail = "";
+    } else if (progress < 14) {
+      typedEmail = "";
+      isTyping = true;
+    } else if (progress < 50) {
+      const typeRatio = (progress - 14) / (50 - 14);
+      const charsToShow = Math.max(1, Math.floor(typeRatio * TARGET_EMAIL.length));
+      typedEmail = TARGET_EMAIL.slice(0, Math.min(charsToShow, TARGET_EMAIL.length));
+      isTyping = true;
+    } else {
+      typedEmail = TARGET_EMAIL;
+      isTyping = progress < 56;
+    }
+    isButtonClicked = progress >= 62;
+  } else {
+    isDelivered = progress > 45;
+    isSyncPulse = progress > 40;
+  }
+
+  // Dynamic camera zoom follows the mouse onto the "Get PDF" button before click, then zooms out after click
+  const isZooming = activeIdx === 0 && progress >= 48 && progress <= 78;
+  const zoomOrigin = "76% 76%"; // Focuses directly on the Get PDF CTA button & mouse cursor
+
+  // Calculate realistic mouse coordinates and click states for Stage 1
+  let mouseLeft = "22%";
+  let mouseTop = "65%";
+  let mouseScale = 1;
+  let mouseOpacity = 1;
+
+  if (activeIdx === 0) {
+    if (progress < 10) {
+      mouseLeft = "20%";
+      mouseTop = "65%";
+      mouseScale = 1;
+    } else if (progress < 14) {
+      mouseLeft = "28%";
+      mouseTop = "44%";
+      mouseScale = progress >= 12 ? 0.85 : 1;
+    } else if (progress < 48) {
+      mouseLeft = "30%";
+      mouseTop = "54%";
+      mouseScale = 1;
+    } else if (progress < 58) {
+      // Smooth glide to the "Get PDF" button
+      const t = (progress - 48) / 10;
+      mouseLeft = `${30 + t * 52}%`;
+      mouseTop = `${54 - t * 22}%`;
+      mouseScale = 1;
+    } else if (progress < 68) {
+      // Over the button and clicking
+      mouseLeft = "82%";
+      mouseTop = "32%";
+      mouseScale = progress >= 62 ? 0.85 : 1;
+    } else {
+      mouseLeft = "82%";
+      mouseTop = "32%";
+      mouseScale = 1;
+      mouseOpacity = progress > 92 ? 0 : 0.9;
+    }
+  }
 
   return (
     <div className="w-full">
@@ -245,7 +308,7 @@ export default function FunnelShowcase() {
             <div
               className="p-6 min-h-[350px] flex flex-col justify-between transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]"
               style={{
-                transform: isZooming ? "scale(1.05)" : "scale(1)",
+                transform: isZooming ? "scale(1.08)" : "scale(1)",
                 transformOrigin: zoomOrigin,
               }}
             >
@@ -293,28 +356,46 @@ export default function FunnelShowcase() {
                     </div>
 
                     <div className="max-w-xs mx-auto flex items-center gap-1.5 relative">
-                      <div className="flex-1 px-3 py-2 rounded-lg bg-white dark:bg-[#12151E] border border-zinc-200 dark:border-zinc-700 text-xs font-mono text-left">
-                        {progress < 15 ? (
-                          <span className="text-zinc-400">your@email.com</span>
-                        ) : progress < 30 ? (
-                          <span className="text-zinc-800 dark:text-zinc-200">alex@c<span className="animate-pulse">|</span></span>
+                      <div
+                        className={`flex-1 px-3 py-2 rounded-lg bg-white dark:bg-[#12151E] border text-xs font-mono text-left flex items-center min-h-[38px] transition-all duration-200 ${
+                          isInputFocused
+                            ? "border-[#0066B2] dark:border-[#38BDF8] ring-2 ring-[#0066B2]/20 shadow-xs"
+                            : "border-zinc-200 dark:border-zinc-700"
+                        }`}
+                      >
+                        <Mail
+                          className={`h-3.5 w-3.5 mr-2 shrink-0 transition-colors ${
+                            isInputFocused
+                              ? "text-[#0066B2] dark:text-[#38BDF8]"
+                              : "text-zinc-400 dark:text-zinc-500"
+                          }`}
+                        />
+                        {progress < 12 ? (
+                          <span className="text-zinc-400 dark:text-zinc-500 select-none">
+                            your@email.com
+                          </span>
                         ) : (
-                          <span className="text-zinc-800 dark:text-zinc-200">alex@company.com</span>
+                          <span className="text-zinc-900 dark:text-zinc-100 font-medium tracking-tight flex items-center font-mono">
+                            {typedEmail}
+                            {isTyping && (
+                              <span className="inline-block w-[2px] h-3.5 bg-[#0066B2] dark:bg-[#38BDF8] ml-0.5 animate-pulse align-middle" />
+                            )}
+                          </span>
                         )}
                       </div>
                       <button
                         type="button"
-                        className={`px-3.5 py-2 rounded-lg text-white font-bold text-xs transition-all flex items-center gap-1 shrink-0 ${
+                        className={`px-3.5 py-2 rounded-lg text-white font-bold text-xs transition-all duration-200 flex items-center gap-1 shrink-0 ${
                           isButtonClicked
-                            ? "bg-emerald-600 scale-95"
-                            : progress > 30
-                            ? "bg-[#0066B2] ring-2 ring-[#0066B2]/30"
+                            ? "bg-emerald-600 scale-95 shadow-sm"
+                            : progress >= 56 && progress < 62
+                            ? "bg-[#0066B2] ring-2 ring-[#0066B2]/40 scale-[1.02] shadow-sm"
                             : "bg-[#0066B2]"
                         }`}
                       >
                         {isButtonClicked ? (
                           <>
-                            <Check className="h-3 w-3" /> Access Sent
+                            <Check className="h-3 w-3 stroke-[2.5]" /> Access Sent
                           </>
                         ) : (
                           "Get PDF"
@@ -323,12 +404,12 @@ export default function FunnelShowcase() {
 
                       {/* Simulated Interactive Mouse Pointer */}
                       <div
-                        className="absolute pointer-events-none transition-all duration-700 ease-out z-20"
+                        className="absolute pointer-events-none transition-all duration-300 ease-out z-20"
                         style={{
-                          left: progress < 25 ? "35%" : progress < 50 ? "75%" : "82%",
-                          top: progress < 25 ? "40%" : "30%",
-                          opacity: progress < 80 ? 1 : 0,
-                          transform: isButtonClicked ? "scale(0.85)" : "scale(1)",
+                          left: mouseLeft,
+                          top: mouseTop,
+                          opacity: mouseOpacity,
+                          transform: `scale(${mouseScale})`,
                         }}
                       >
                         <MousePointer2 className="h-4 w-4 fill-zinc-900 text-white drop-shadow-md" />
