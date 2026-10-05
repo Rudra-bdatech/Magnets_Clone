@@ -39,6 +39,7 @@ import { MagnetsMark, GeminiLogo } from "@/components/brand";
 // Reveal: keep ssr:true so content is server-rendered (avoids CLS), only JS is deferred.
 const Reveal = dynamic(() => import("@/components/reveal"));
 const ShowcaseTabs = dynamic(() => import("@/components/landing/showcase-tabs"), { ssr: false });
+const FunnelShowcase = dynamic(() => import("@/components/landing/funnel-showcase"), { ssr: false });
 const FaqAccordion = dynamic(() => import("@/components/landing/faq-accordion"), { ssr: false });
 const CtaSection = dynamic(() => import("@/components/landing/cta-section"), { ssr: false });
 
@@ -171,229 +172,36 @@ export default function Home() {
       </section>
 
       {/* ------------------------------------------------------------- */}
-      {/* SECTION 2: TIMELINE NODE TREE (HOW IT WORKS)                   */}
+      {/* SECTION 2: INTERACTIVE PIPELINE SHOWCASE (HOW IT WORKS)        */}
       {/* ------------------------------------------------------------- */}
-      <section className="cv-auto bg-white dark:bg-[#121215] py-20 sm:py-32 border-b border-zinc-200/80 dark:border-zinc-800/80 relative overflow-hidden" id="how-it-works">
-        {/* Subtle Background Glow Spheres */}
-        <div aria-hidden="true" className="absolute top-1/3 left-1/2 -translate-x-1/2 -z-0 h-96 w-[600px] rounded-full bg-gradient-to-tr from-[#0066B2]/10 via-purple-500/10 to-emerald-500/10 blur-3xl pointer-events-none" />
+      <section className="cv-auto bg-white dark:bg-[#121215] py-14 sm:py-20 border-b border-zinc-200/80 dark:border-zinc-800/80 relative overflow-hidden" id="how-it-works">
+        {/* Subtle Dark-mode only background ambience */}
+        <div aria-hidden="true" className="hidden dark:block absolute top-1/3 left-1/2 -translate-x-1/2 -z-0 h-96 w-[600px] rounded-full bg-[#0066B2]/10 blur-3xl pointer-events-none" />
 
         <div className="relative z-10 mx-auto max-w-6xl px-5 sm:px-8 lg:px-10">
-          <Reveal className="text-center max-w-3xl mx-auto mb-20">
-            <div className="inline-flex items-center gap-2 rounded-full border border-[#0066B2]/20 dark:border-white/10 bg-zinc-50/80 dark:bg-[#18181C]/80 backdrop-blur-md px-4 py-1 text-xs font-semibold text-[#0066B2] dark:text-[#38BDF8] shadow-2xs mb-4">
+          <Reveal className="text-center max-w-3xl mx-auto mb-10 sm:mb-14">
+            <div className="inline-flex items-center gap-2 rounded-full border border-[#0066B2]/20 dark:border-white/10 bg-zinc-50/80 dark:bg-[#18181C]/80 backdrop-blur-md px-4 py-1 text-xs font-semibold text-[#0066B2] dark:text-[#38BDF8] shadow-2xs mb-3">
               <Workflow className="h-3.5 w-3.5" />
               <span>Automated Funnel Pipeline</span>
             </div>
-            <h2 className="text-3xl sm:text-5xl font-extrabold text-zinc-900 dark:text-white tracking-tight leading-tight">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-zinc-900 dark:text-white tracking-tight leading-tight">
               From Visitor Attention to <span className="bg-gradient-to-r from-[#0066B2] via-[#38BDF8] to-purple-500 bg-clip-text text-transparent">High-Value Customer</span>
             </h2>
-            <p className="mt-4 text-base text-zinc-600 dark:text-zinc-400">
+            <p className="mt-3 text-sm sm:text-base text-zinc-600 dark:text-zinc-400">
               Stop juggling separate form tools, Google Drive links, and email sequence software. LeadMagnets powers your entire lead engine seamlessly.
             </p>
           </Reveal>
 
-          {/* Centered Timeline Axis Tree */}
-          <div id="timeline-node-tree" className="relative">
-            {/* Background Dim Line Track */}
-            <div aria-hidden="true" className="hidden md:block absolute left-1/2 top-6 bottom-6 -translate-x-1/2 w-[2px] bg-zinc-200 dark:bg-zinc-800/80 rounded-full z-0" />
-
-            {/* Scroll-Driven Dynamic Progress Line — height controlled by ShowcaseTabs client component via DOM ref */}
-            {/* This element is positioned here in the server-rendered HTML; the client component finds it by ID */}
-            <div
-              id="timeline-progress-line"
-              aria-hidden="true"
-              style={{ height: "0%" }}
-              className="hidden md:block absolute left-1/2 top-6 -translate-x-1/2 w-[2.5px] bg-gradient-to-b from-[#0066B2] via-[#38BDF8] via-purple-500 via-amber-500 to-emerald-500 rounded-full z-0 shadow-[0_0_14px_rgba(56,189,248,0.85)] max-h-[calc(100%-48px)]"
-            />
-
-            <div className="space-y-12 md:space-y-16">
-              {/* NODE 1 (Left Side) */}
-              <Reveal delay={0}>
-                <div className="grid md:grid-cols-2 gap-8 items-center relative z-10 group">
-                  <div className="md:text-right space-y-3 md:pr-10">
-                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#0066B2]/10 text-[#0066B2] dark:text-[#38BDF8] text-[11px] font-extrabold border border-[#0066B2]/20">
-                      <span>NODE 01</span> · ⚡ AI Page & CNAME Setup
-                    </div>
-                    <h3 className="text-xl sm:text-2xl font-extrabold text-zinc-900 dark:text-white tracking-tight">
-                      Publish & Custom Domain Subdomain
-                    </h3>
-                    <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed max-w-md md:ml-auto">
-                      Generate opt-in page headlines and benefit bullets in seconds. Publish directly on LeadMagnets or link custom CNAME subdomains (<code className="text-[11px] text-[#0066B2] dark:text-[#38BDF8] bg-zinc-100 dark:bg-zinc-800 px-1.5 py-0.5 rounded font-mono">get.yourdomain.com</code>) with free auto-SSL.
-                    </p>
-                    <div className="flex flex-wrap gap-2 justify-start md:justify-end pt-1">
-                      <span className="text-[10px] font-extrabold px-2.5 py-1 rounded-lg bg-zinc-100 dark:bg-[#1A1A1E] text-zinc-700 dark:text-zinc-300 border border-zinc-200/80 dark:border-zinc-800">AI Copy Generator</span>
-                      <span className="text-[10px] font-extrabold px-2.5 py-1 rounded-lg bg-zinc-100 dark:bg-[#1A1A1E] text-zinc-700 dark:text-zinc-300 border border-zinc-200/80 dark:border-zinc-800">Auto SSL Certificate</span>
-                    </div>
-                  </div>
-
-                  {/* Central Node Badge 01 */}
-                  <div className="hidden md:flex absolute left-1/2 -translate-x-1/2 h-11 w-11 items-center justify-center rounded-full bg-white/80 dark:bg-[#121218]/90 backdrop-blur-xl border border-[#0066B2]/50 dark:border-[#38BDF8]/50 text-[#0066B2] dark:text-[#38BDF8] font-black text-xs shadow-xl shadow-[#0066B2]/20 ring-4 ring-white dark:ring-[#121215] z-20 group-hover:scale-110 transition-transform duration-300">
-                    01
-                  </div>
-
-                  <div className="md:pl-10">
-                    <div className="rounded-2xl border border-zinc-200/80 dark:border-white/10 bg-white/70 dark:bg-[#141418]/60 backdrop-blur-xl p-5 shadow-lg space-y-3 group hover:border-[#0066B2]/50 dark:hover:border-white/20 transition-all duration-300 ring-1 ring-black/5 dark:ring-white/5">
-                      <div className="flex items-center justify-between text-xs border-b border-zinc-100 dark:border-white/10 pb-2.5">
-                        <span className="font-bold text-zinc-800 dark:text-zinc-200 flex items-center gap-2">
-                          <Wand2 className="h-4 w-4 text-[#0066B2] dark:text-[#38BDF8]" /> AI Opt-in Page Preview
-                        </span>
-                        <span className="text-emerald-500 font-bold text-[10px] bg-emerald-500/10 px-2 py-0.5 rounded">SSL Active</span>
-                      </div>
-                      <div className="space-y-2 text-xs">
-                        <p className="font-bold text-zinc-900 dark:text-white">&quot;The 2026 SaaS Growth Playbook&quot;</p>
-                        <div className="p-2.5 rounded-xl bg-zinc-50/80 dark:bg-[#1D1D24]/80 border border-zinc-200/60 dark:border-white/10 text-[11px] text-zinc-500 dark:text-zinc-400 font-mono">
-                          https://get.yourbrand.com/saas-playbook
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </Reveal>
-
-              {/* NODE 2 (Right Side) */}
-              <Reveal delay={0.1}>
-                <div className="grid md:grid-cols-2 gap-8 items-center relative z-10 group">
-                  <div className="order-2 md:order-1 md:pr-10">
-                    <div className="rounded-2xl border border-zinc-200/80 dark:border-white/10 bg-white/70 dark:bg-[#141418]/60 backdrop-blur-xl p-5 shadow-lg space-y-3 group hover:border-purple-500/50 dark:hover:border-white/20 transition-all duration-300 ring-1 ring-black/5 dark:ring-white/5">
-                      <div className="flex items-center justify-between text-xs border-b border-zinc-100 dark:border-white/10 pb-2.5">
-                        <span className="font-bold text-zinc-800 dark:text-zinc-200 flex items-center gap-2">
-                          <HardDrive className="h-4 w-4 text-purple-400" /> Instant Fulfillment Engine
-                        </span>
-                        <span className="text-purple-400 font-bold text-[10px] bg-purple-500/10 px-2 py-0.5 rounded">Fired in 0.2s</span>
-                      </div>
-                      <div className="space-y-2 text-xs">
-                        <div className="flex items-center justify-between p-2 rounded-xl bg-zinc-50/80 dark:bg-[#1D1D24]/80">
-                          <span className="font-semibold text-zinc-700 dark:text-zinc-300">saas-growth-playbook.pdf</span>
-                          <span className="text-[10px] font-bold text-purple-400">Native Storage</span>
-                        </div>
-                        <p className="text-[11px] text-zinc-500 dark:text-zinc-400">Instant delivery email dispatched automatically without third-party links.</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Central Node Badge 02 */}
-                  <div className="hidden md:flex absolute left-1/2 -translate-x-1/2 h-11 w-11 items-center justify-center rounded-full bg-white/80 dark:bg-[#121218]/90 backdrop-blur-xl border border-purple-500/50 text-purple-400 font-black text-xs shadow-xl shadow-purple-500/20 ring-4 ring-white dark:ring-[#121215] z-20 group-hover:scale-110 transition-transform duration-300">
-                    02
-                  </div>
-
-                  <div className="order-1 md:order-2 space-y-3 md:pl-10">
-                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 text-purple-400 text-[11px] font-extrabold border border-purple-500/20">
-                      <span>NODE 02</span> · 🔒 Native Vault & Instant Delivery
-                    </div>
-                    <h3 className="text-xl sm:text-2xl font-extrabold text-zinc-900 dark:text-white tracking-tight">
-                      Instant Delivery & Secure Resource Hosting
-                    </h3>
-                    <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed max-w-md">
-                      Host PDFs, Notion templates, or video courses directly on LeadMagnets with zero external Google Drive links. Instant fulfillment emails dispatch 0 seconds after opt-in.
-                    </p>
-                    <div className="flex flex-wrap gap-2 pt-1">
-                      <span className="text-[10px] font-extrabold px-2.5 py-1 rounded-lg bg-zinc-100 dark:bg-[#1A1A1E] text-zinc-700 dark:text-zinc-300 border border-zinc-200/80 dark:border-zinc-800">Zero File Links Needed</span>
-                      <span className="text-[10px] font-extrabold px-2.5 py-1 rounded-lg bg-zinc-100 dark:bg-[#1A1A1E] text-zinc-700 dark:text-zinc-300 border border-zinc-200/80 dark:border-zinc-800">Auto-Fulfillment Email</span>
-                    </div>
-                  </div>
-                </div>
-              </Reveal>
-
-              {/* NODE 3 (Left Side) */}
-              <Reveal delay={0.2}>
-                <div className="grid md:grid-cols-2 gap-8 items-center relative z-10 group">
-                  <div className="md:text-right space-y-3 md:pr-10">
-                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 text-amber-400 text-[11px] font-extrabold border border-amber-500/20">
-                      <span>NODE 03</span> · 📈 Telemetry & Exit-Intent Overlay
-                    </div>
-                    <h3 className="text-xl sm:text-2xl font-extrabold text-zinc-900 dark:text-white tracking-tight">
-                      GA4 Telemetry & Retargeting Pixels
-                    </h3>
-                    <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed max-w-md md:ml-auto">
-                      Fire native Google Analytics 4 Measurement IDs and Meta Pixel custom conversion events automatically. Capture abandoning visitors with smart exit-intent overlays.
-                    </p>
-                    <div className="flex flex-wrap gap-2 justify-start md:justify-end pt-1">
-                      <span className="text-[10px] font-extrabold px-2.5 py-1 rounded-lg bg-zinc-100 dark:bg-[#1A1A1E] text-zinc-700 dark:text-zinc-300 border border-zinc-200/80 dark:border-zinc-800">GA4 + Meta Pixel</span>
-                      <span className="text-[10px] font-extrabold px-2.5 py-1 rounded-lg bg-zinc-100 dark:bg-[#1A1A1E] text-zinc-700 dark:text-zinc-300 border border-zinc-200/80 dark:border-zinc-800">Exit-Intent Recovery</span>
-                    </div>
-                  </div>
-
-                  {/* Central Node Badge 03 */}
-                  <div className="hidden md:flex absolute left-1/2 -translate-x-1/2 h-11 w-11 items-center justify-center rounded-full bg-white/80 dark:bg-[#121218]/90 backdrop-blur-xl border border-amber-500/50 text-amber-400 font-black text-xs shadow-xl shadow-amber-500/20 ring-4 ring-white dark:ring-[#121215] z-20 group-hover:scale-110 transition-transform duration-300">
-                    03
-                  </div>
-
-                  <div className="md:pl-10">
-                    <div className="rounded-2xl border border-zinc-200/80 dark:border-white/10 bg-white/70 dark:bg-[#141418]/60 backdrop-blur-xl p-5 shadow-lg space-y-3 group hover:border-amber-500/50 dark:hover:border-white/20 transition-all duration-300 ring-1 ring-black/5 dark:ring-white/5">
-                      <div className="flex items-center justify-between text-xs border-b border-zinc-100 dark:border-white/10 pb-2.5">
-                        <span className="font-bold text-zinc-800 dark:text-zinc-200 flex items-center gap-2">
-                          <BarChart3 className="h-4 w-4 text-amber-400" /> Real-time Conversion Telemetry
-                        </span>
-                        <span className="text-amber-400 font-bold text-[10px] bg-amber-500/10 px-2 py-0.5 rounded">51.2% Conv. Rate</span>
-                      </div>
-                      <div className="grid grid-cols-2 gap-2 text-xs">
-                        <div className="p-2 rounded-xl bg-zinc-50/80 dark:bg-[#1D1D24]/80">
-                          <span className="text-[10px] text-zinc-400 font-bold uppercase">GA4 Event</span>
-                          <p className="font-bold text-emerald-500 text-[11px] mt-0.5">lead_generated</p>
-                        </div>
-                        <div className="p-2 rounded-xl bg-zinc-50/80 dark:bg-[#1D1D24]/80">
-                          <span className="text-[10px] text-zinc-400 font-bold uppercase">Meta Pixel</span>
-                          <p className="font-bold text-purple-400 text-[11px] mt-0.5">Lead (Complete)</p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </Reveal>
-
-              {/* NODE 4 (Right Side) */}
-              <Reveal delay={0.3}>
-                <div className="grid md:grid-cols-2 gap-8 items-center relative z-10 group">
-                  <div className="order-2 md:order-1 md:pr-10">
-                    <div className="rounded-2xl border border-zinc-200/80 dark:border-white/10 bg-white/70 dark:bg-[#141418]/60 backdrop-blur-xl p-5 shadow-lg space-y-3 group hover:border-emerald-500/50 dark:hover:border-white/20 transition-all duration-300 ring-1 ring-black/5 dark:ring-white/5">
-                      <div className="flex items-center justify-between text-xs border-b border-zinc-100 dark:border-white/10 pb-2.5">
-                        <span className="font-bold text-zinc-800 dark:text-zinc-200 flex items-center gap-2">
-                          <Workflow className="h-4 w-4 text-emerald-500" /> Multi-Step Nurture Workflow
-                        </span>
-                        <span className="text-emerald-500 font-bold text-[10px] bg-emerald-500/10 px-2 py-0.5 rounded">Auto-Stop Active</span>
-                      </div>
-                      <div className="space-y-2 text-xs">
-                        <div className="flex items-center justify-between text-[11px]">
-                          <span className="text-zinc-500 dark:text-zinc-400">Day 1: Case Studies</span>
-                          <span className="text-emerald-500 font-bold">Sent</span>
-                        </div>
-                        <div className="flex items-center justify-between text-[11px]">
-                          <span className="text-zinc-500 dark:text-zinc-400">Day 4: Strategy Offer</span>
-                          <span className="text-amber-400 font-bold">Scheduled</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Central Node Badge 04 */}
-                  <div className="hidden md:flex absolute left-1/2 -translate-x-1/2 h-11 w-11 items-center justify-center rounded-full bg-white/80 dark:bg-[#121218]/90 backdrop-blur-xl border border-emerald-500/50 text-emerald-400 font-black text-xs shadow-xl shadow-emerald-500/20 ring-4 ring-white dark:ring-[#121215] z-20 group-hover:scale-110 transition-transform duration-300">
-                    04
-                  </div>
-
-                  <div className="order-1 md:order-2 space-y-3 md:pl-10">
-                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-500 text-[11px] font-extrabold border border-emerald-500/20">
-                      <span>NODE 04</span> · 🔄 Drip Email & Ecosystem Sync
-                    </div>
-                    <h3 className="text-xl sm:text-2xl font-extrabold text-zinc-900 dark:text-white tracking-tight">
-                      Automated Follow-ups & Stack Integration
-                    </h3>
-                    <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed max-w-md">
-                      Auto-send timed multi-step follow-ups that stop automatically when leads book calls via Calendly. Direct real-time sync with Beehiiv, Kit, Substack, Slack, and Zapier.
-                    </p>
-                    <div className="flex flex-wrap gap-2 pt-1">
-                      <span className="text-[10px] font-extrabold px-2.5 py-1 rounded-lg bg-zinc-100 dark:bg-[#1A1A1E] text-zinc-700 dark:text-zinc-300 border border-zinc-200/80 dark:border-zinc-800">Smart Stop on Booking</span>
-                      <span className="text-[10px] font-extrabold px-2.5 py-1 rounded-lg bg-zinc-100 dark:bg-[#1A1A1E] text-zinc-700 dark:text-zinc-300 border border-zinc-200/80 dark:border-zinc-800">Beehiiv / Kit / Slack Sync</span>
-                    </div>
-                  </div>
-                </div>
-              </Reveal>
-            </div>
-          </div>
+          {/* Interactive Stepper & Stage Mockup Island */}
+          <Reveal delay={0.1}>
+            <FunnelShowcase />
+          </Reveal>
 
           {/* Full-Width Workspace Ecosystem Integration Card */}
-          <Reveal delay={0.4} className="mt-20" id="integrations">
+          <Reveal delay={0.3} className="mt-14 sm:mt-16" id="integrations">
             <div className="rounded-3xl border border-zinc-200/80 dark:border-white/10 bg-gradient-to-b from-zinc-50/90 via-white/70 to-zinc-50/90 dark:from-[#16161E]/80 dark:via-[#13131A]/80 dark:to-[#101014]/80 backdrop-blur-2xl p-8 sm:p-10 shadow-2xl relative overflow-hidden ring-1 ring-black/5 dark:ring-white/5">
-              {/* Radial Ambient Glow Background */}
-              <div aria-hidden="true" className="absolute -top-24 left-1/2 -translate-x-1/2 -z-10 h-72 w-[600px] rounded-full bg-gradient-to-r from-[#0066B2]/20 via-[#38BDF8]/20 to-purple-500/20 blur-3xl pointer-events-none" />
+              {/* Radial Ambient Glow Background - dark mode only */}
+              <div aria-hidden="true" className="hidden dark:block absolute -top-24 left-1/2 -translate-x-1/2 -z-10 h-72 w-[600px] rounded-full bg-[#0066B2]/15 blur-3xl pointer-events-none" />
 
               <div className="grid lg:grid-cols-12 gap-8 items-center">
                 {/* Left Text & Status Info */}

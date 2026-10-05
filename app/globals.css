@@ -99,6 +99,21 @@ html.lenis body {
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.48), rgba(248, 251, 255, 0)), #f8fbff;
 }
 
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
 @keyframes cardPopIn {
   0% {
     opacity: 0;
