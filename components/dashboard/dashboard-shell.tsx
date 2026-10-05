@@ -135,23 +135,33 @@ export default function DashboardShell({
     }
   };
 
-  const handleLogout = () => {
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+  const handleLogout = async () => {
+    if (isLoggingOut) return;
+    setIsLoggingOut(true);
+
     if (typeof window !== "undefined") {
       try {
         localStorage.clear();
+        sessionStorage.clear();
       } catch (_) { }
     }
 
     try {
-      fetch("/api/auth/logout", { method: "POST" }).catch(() => { });
+      await fetch("/api/auth/logout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        cache: "no-store",
+      });
     } catch (_) { }
 
     try {
-      signOut({ callbackUrl: "/login", redirect: false }).catch(() => { });
+      await signOut({ callbackUrl: "/login", redirect: false });
     } catch (_) { }
 
     if (typeof window !== "undefined") {
-      window.location.href = "/login";
+      window.location.replace("/login");
     }
   };
 
@@ -621,18 +631,23 @@ export default function DashboardShell({
 
                     <motion.button
                       type="button"
+                      disabled={isLoggingOut}
                       whileTap={{ scale: 0.97 }}
                       transition={{ type: "spring", stiffness: 600, damping: 28 }}
                       onClick={() => {
                         setShowProfileMenu(false);
                         handleLogout();
                       }}
-                      className="flex items-center gap-2.5 rounded-[10px] px-2.5 py-2 text-left text-xs font-medium text-rose-600 hover:bg-rose-50/80 transition-colors w-full dark:text-rose-400 dark:hover:bg-rose-950/30 cursor-pointer"
+                      className="flex items-center gap-2.5 rounded-[10px] px-2.5 py-2 text-left text-xs font-medium text-rose-600 hover:bg-rose-50/80 transition-colors w-full dark:text-rose-400 dark:hover:bg-rose-950/30 cursor-pointer disabled:opacity-50"
                     >
                       <span className="flex h-4 w-4 shrink-0 items-center justify-center">
-                        <LogOut className="h-4 w-4 text-rose-500 dark:text-rose-400" strokeWidth={1.85} />
+                        {isLoggingOut ? (
+                          <Loader2 className="h-4 w-4 animate-spin text-rose-500" />
+                        ) : (
+                          <LogOut className="h-4 w-4 text-rose-500 dark:text-rose-400" strokeWidth={1.85} />
+                        )}
                       </span>
-                      <span>Sign out</span>
+                      <span>{isLoggingOut ? "Signing out..." : "Sign out"}</span>
                     </motion.button>
                   </motion.div>
                 )}
@@ -884,17 +899,22 @@ export default function DashboardShell({
 
                       <button
                         type="button"
+                        disabled={isLoggingOut}
                         onClick={() => {
                           setShowDrawerProfileMenu(false);
                           setMenuOpen(false);
                           handleLogout();
                         }}
-                        className="flex items-center gap-2.5 rounded-[10px] px-2.5 py-2 text-left text-xs font-medium text-rose-600 hover:bg-rose-50/80 transition-colors w-full dark:text-rose-400 dark:hover:bg-rose-950/30 cursor-pointer"
+                        className="flex items-center gap-2.5 rounded-[10px] px-2.5 py-2 text-left text-xs font-medium text-rose-600 hover:bg-rose-50/80 transition-colors w-full dark:text-rose-400 dark:hover:bg-rose-950/30 cursor-pointer disabled:opacity-50"
                       >
                         <span className="flex h-4 w-4 shrink-0 items-center justify-center">
-                          <LogOut className="h-4 w-4 text-rose-500 dark:text-rose-400" strokeWidth={1.85} />
+                          {isLoggingOut ? (
+                            <Loader2 className="h-4 w-4 animate-spin text-rose-500" />
+                          ) : (
+                            <LogOut className="h-4 w-4 text-rose-500 dark:text-rose-400" strokeWidth={1.85} />
+                          )}
                         </span>
-                        <span>Sign out</span>
+                        <span>{isLoggingOut ? "Signing out..." : "Sign out"}</span>
                       </button>
                     </motion.div>
                   )}

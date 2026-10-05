@@ -32,6 +32,7 @@ export function clearAuthCookie(res: NextResponse): NextResponse {
     sameSite: "lax",
     path: "/",
     maxAge: 0,
+    expires: new Date(0),
   });
   res.cookies.set({
     name: "next-auth.session-token",
@@ -41,6 +42,7 @@ export function clearAuthCookie(res: NextResponse): NextResponse {
     sameSite: "lax",
     path: "/",
     maxAge: 0,
+    expires: new Date(0),
   });
   res.cookies.set({
     name: "__Secure-next-auth.session-token",
@@ -50,6 +52,7 @@ export function clearAuthCookie(res: NextResponse): NextResponse {
     sameSite: "lax",
     path: "/",
     maxAge: 0,
+    expires: new Date(0),
   });
 
   return res;
