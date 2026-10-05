@@ -524,13 +524,13 @@ export default function DashboardShell({
                           setShowProfileMenu(false);
                           router.push("/dashboard/settings");
                         }}
-                        className="relative flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-left text-xs font-medium text-zinc-600 transition-colors w-full dark:text-zinc-400 dark:hover:text-white cursor-pointer"
+                        className="relative flex items-center gap-2.5 rounded-[10px] px-2.5 py-2 text-left text-xs font-medium text-zinc-600 transition-colors w-full dark:text-zinc-400 dark:hover:text-white cursor-pointer"
                       >
                         {hoveredProfileMenuKey === "account" && (
                           <motion.div
                             layoutId="profileMenuHoverPill"
                             transition={{ type: "spring", stiffness: 500, damping: 32 }}
-                            className="absolute inset-0 rounded-lg bg-[#E2F0FD] dark:bg-zinc-800/80"
+                            className="absolute inset-0 rounded-[10px] bg-[#E2F0FD] dark:bg-zinc-800/80"
                           />
                         )}
                         <span className="relative z-10 flex h-4 w-4 shrink-0 items-center justify-center">
@@ -552,13 +552,13 @@ export default function DashboardShell({
                           setShowProfileMenu(false);
                           setShowHelp(true);
                         }}
-                        className="relative flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-left text-xs font-medium text-zinc-600 transition-colors w-full dark:text-zinc-400 dark:hover:text-white cursor-pointer"
+                        className="relative flex items-center gap-2.5 rounded-[10px] px-2.5 py-2 text-left text-xs font-medium text-zinc-600 transition-colors w-full dark:text-zinc-400 dark:hover:text-white cursor-pointer"
                       >
                         {hoveredProfileMenuKey === "help" && (
                           <motion.div
                             layoutId="profileMenuHoverPill"
                             transition={{ type: "spring", stiffness: 500, damping: 32 }}
-                            className="absolute inset-0 rounded-lg bg-[#E2F0FD] dark:bg-zinc-800/80"
+                            className="absolute inset-0 rounded-[10px] bg-[#E2F0FD] dark:bg-zinc-800/80"
                           />
                         )}
                         <span className="relative z-10 flex h-4 w-4 shrink-0 items-center justify-center">
@@ -576,13 +576,13 @@ export default function DashboardShell({
                           openGmailCompose("bug");
                           setShowProfileMenu(false);
                         }}
-                        className="relative flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-left text-xs font-medium text-zinc-600 transition-colors w-full dark:text-zinc-400 dark:hover:text-white cursor-pointer"
+                        className="relative flex items-center gap-2.5 rounded-[10px] px-2.5 py-2 text-left text-xs font-medium text-zinc-600 transition-colors w-full dark:text-zinc-400 dark:hover:text-white cursor-pointer"
                       >
                         {hoveredProfileMenuKey === "bug" && (
                           <motion.div
                             layoutId="profileMenuHoverPill"
                             transition={{ type: "spring", stiffness: 500, damping: 32 }}
-                            className="absolute inset-0 rounded-lg bg-[#E2F0FD] dark:bg-zinc-800/80"
+                            className="absolute inset-0 rounded-[10px] bg-[#E2F0FD] dark:bg-zinc-800/80"
                           />
                         )}
                         <span className="relative z-10 flex h-4 w-4 shrink-0 items-center justify-center">
@@ -600,13 +600,13 @@ export default function DashboardShell({
                           openGmailCompose("feature");
                           setShowProfileMenu(false);
                         }}
-                        className="relative flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-left text-xs font-medium text-zinc-600 transition-colors w-full dark:text-zinc-400 dark:hover:text-white cursor-pointer"
+                        className="relative flex items-center gap-2.5 rounded-[10px] px-2.5 py-2 text-left text-xs font-medium text-zinc-600 transition-colors w-full dark:text-zinc-400 dark:hover:text-white cursor-pointer"
                       >
                         {hoveredProfileMenuKey === "feature" && (
                           <motion.div
                             layoutId="profileMenuHoverPill"
                             transition={{ type: "spring", stiffness: 500, damping: 32 }}
-                            className="absolute inset-0 rounded-lg bg-[#E2F0FD] dark:bg-zinc-800/80"
+                            className="absolute inset-0 rounded-[10px] bg-[#E2F0FD] dark:bg-zinc-800/80"
                           />
                         )}
                         <span className="relative z-10 flex h-4 w-4 shrink-0 items-center justify-center">
@@ -627,7 +627,7 @@ export default function DashboardShell({
                         setShowProfileMenu(false);
                         handleLogout();
                       }}
-                      className="flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-left text-xs font-medium text-rose-600 hover:bg-rose-50/80 transition-colors w-full dark:text-rose-400 dark:hover:bg-rose-950/30 cursor-pointer"
+                      className="flex items-center gap-2.5 rounded-[10px] px-2.5 py-2 text-left text-xs font-medium text-rose-600 hover:bg-rose-50/80 transition-colors w-full dark:text-rose-400 dark:hover:bg-rose-950/30 cursor-pointer"
                     >
                       <span className="flex h-4 w-4 shrink-0 items-center justify-center">
                         <LogOut className="h-4 w-4 text-rose-500 dark:text-rose-400" strokeWidth={1.85} />
@@ -807,7 +807,7 @@ export default function DashboardShell({
                             setMenuOpen(false);
                             router.push("/dashboard/settings");
                           }}
-                          className="flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-left text-xs font-medium text-zinc-600 hover:bg-[#E2F0FD] hover:text-zinc-900 transition-colors w-full dark:text-zinc-400 dark:hover:bg-zinc-800/80 dark:hover:text-white cursor-pointer"
+                          className="flex items-center gap-2.5 rounded-[10px] px-2.5 py-2 text-left text-xs font-medium text-zinc-600 hover:bg-[#E2F0FD] hover:text-zinc-900 transition-colors w-full dark:text-zinc-400 dark:hover:bg-zinc-800/80 dark:hover:text-white cursor-pointer"
                         >
                           <span className="flex h-4 w-4 shrink-0 items-center justify-center">
                             <User className="h-4 w-4 text-zinc-500 dark:text-zinc-400" strokeWidth={1.85} />
@@ -826,7 +826,7 @@ export default function DashboardShell({
                             setMenuOpen(false);
                             setShowHelp(true);
                           }}
-                          className="flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-left text-xs font-medium text-zinc-600 hover:bg-[#E2F0FD] hover:text-zinc-900 transition-colors w-full dark:text-zinc-400 dark:hover:bg-zinc-800/80 dark:hover:text-white cursor-pointer"
+                          className="flex items-center gap-2.5 rounded-[10px] px-2.5 py-2 text-left text-xs font-medium text-zinc-600 hover:bg-[#E2F0FD] hover:text-zinc-900 transition-colors w-full dark:text-zinc-400 dark:hover:bg-zinc-800/80 dark:hover:text-white cursor-pointer"
                         >
                           <span className="flex h-4 w-4 shrink-0 items-center justify-center">
                             <CircleHelp className="h-4 w-4 text-zinc-500 dark:text-zinc-400" strokeWidth={1.85} />
@@ -840,7 +840,7 @@ export default function DashboardShell({
                             setShowDrawerProfileMenu(false);
                             openGmailCompose("bug");
                           }}
-                          className="flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-left text-xs font-medium text-zinc-600 hover:bg-[#E2F0FD] hover:text-zinc-900 transition-colors w-full dark:text-zinc-400 dark:hover:bg-zinc-800/80 dark:hover:text-white cursor-pointer"
+                          className="flex items-center gap-2.5 rounded-[10px] px-2.5 py-2 text-left text-xs font-medium text-zinc-600 hover:bg-[#E2F0FD] hover:text-zinc-900 transition-colors w-full dark:text-zinc-400 dark:hover:bg-zinc-800/80 dark:hover:text-white cursor-pointer"
                         >
                           <span className="flex h-4 w-4 shrink-0 items-center justify-center">
                             <Bug className="h-4 w-4 text-zinc-500 dark:text-zinc-400" strokeWidth={1.85} />
@@ -854,7 +854,7 @@ export default function DashboardShell({
                             setShowDrawerProfileMenu(false);
                             openGmailCompose("feature");
                           }}
-                          className="flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-left text-xs font-medium text-zinc-600 hover:bg-[#E2F0FD] hover:text-zinc-900 transition-colors w-full dark:text-zinc-400 dark:hover:bg-zinc-800/80 dark:hover:text-white cursor-pointer"
+                          className="flex items-center gap-2.5 rounded-[10px] px-2.5 py-2 text-left text-xs font-medium text-zinc-600 hover:bg-[#E2F0FD] hover:text-zinc-900 transition-colors w-full dark:text-zinc-400 dark:hover:bg-zinc-800/80 dark:hover:text-white cursor-pointer"
                         >
                           <span className="flex h-4 w-4 shrink-0 items-center justify-center">
                             <Sparkles className="h-4 w-4 text-zinc-500 dark:text-zinc-400" strokeWidth={1.85} />
@@ -873,7 +873,7 @@ export default function DashboardShell({
                           setMenuOpen(false);
                           handleLogout();
                         }}
-                        className="flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-left text-xs font-medium text-rose-600 hover:bg-rose-50/80 transition-colors w-full dark:text-rose-400 dark:hover:bg-rose-950/30 cursor-pointer"
+                        className="flex items-center gap-2.5 rounded-[10px] px-2.5 py-2 text-left text-xs font-medium text-rose-600 hover:bg-rose-50/80 transition-colors w-full dark:text-rose-400 dark:hover:bg-rose-950/30 cursor-pointer"
                       >
                         <span className="flex h-4 w-4 shrink-0 items-center justify-center">
                           <LogOut className="h-4 w-4 text-rose-500 dark:text-rose-400" strokeWidth={1.85} />
