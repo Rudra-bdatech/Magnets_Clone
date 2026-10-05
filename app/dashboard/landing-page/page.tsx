@@ -881,21 +881,26 @@ export default function PagesPage() {
 
       {showCreateModal && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 transition-all duration-200"
+          className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm p-0 sm:p-4 transition-all duration-200"
           onClick={() => { setShowCreateModal(false); setNewName(""); }}
         >
           <div
-            className="relative w-full max-w-[460px] rounded-2xl border border-[#0066B2]/30 bg-white p-6 text-zinc-900 shadow-2xl space-y-5 animate-in fade-in zoom-in-95 duration-200 dark:border-[#0066B2]/35 dark:bg-[#18181c] dark:text-white"
+            className="relative w-full sm:max-w-[460px] rounded-t-[28px] sm:rounded-2xl border-t sm:border border-[#0066B2]/30 bg-white p-5 sm:p-6 text-zinc-900 shadow-2xl space-y-4 sm:space-y-5 animate-in slide-in-from-bottom sm:zoom-in-95 duration-200 dark:border-[#0066B2]/35 dark:bg-[#18181c] dark:text-white max-h-[90vh] overflow-y-auto pb-8 sm:pb-6"
             onClick={(e) => e.stopPropagation()}
           >
+            {/* Mobile Bottom Sheet Grab Handle */}
+            <div className="sm:hidden flex justify-center pb-1 -mt-1">
+              <div className="h-1.5 w-10 rounded-full bg-zinc-300 dark:bg-zinc-700/80" />
+            </div>
+
             <div className="flex items-start justify-between">
               <div>
                 <h3 className="text-base font-bold text-zinc-900 dark:text-white">Create Landing Page</h3>
-                <p className="text-xs text-zinc-500 dark:text-[#9B9085] mt-1">Name the page and choose its URL.</p>
+                <p className="text-xs text-zinc-500 dark:text-[#9B9085] mt-0.5 sm:mt-1">Name the page and choose its URL.</p>
               </div>
               <button
                 onClick={() => { setShowCreateModal(false); setNewName(""); }}
-                className="rounded-lg p-1 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-900 dark:text-[#9B9085] dark:hover:bg-[#25252b] dark:hover:text-white transition-colors cursor-pointer"
+                className="rounded-lg p-1.5 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-900 dark:text-[#9B9085] dark:hover:bg-[#25252b] dark:hover:text-white transition-colors cursor-pointer"
               >
                 <X className="h-4 w-4" />
               </button>
