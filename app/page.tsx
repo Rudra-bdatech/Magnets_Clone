@@ -227,16 +227,16 @@ export default function Home() {
                   {/* Marquee Row 1 (Moving Left) */}
                   <div className="animate-marquee-left gap-3">
                     {[
-                      { name: "Beehiiv", icon: "🐝", category: "Newsletter" },
                       { name: "Kit (ConvertKit)", icon: "📧", category: "CRM & Email" },
                       { name: "Substack", icon: "📑", category: "Publication" },
                       { name: "Slack Alerts", icon: "💬", category: "Notifications" },
                       { name: "Pipedrive", icon: "📊", category: "Sales Pipeline" },
-                      { name: "Beehiiv", icon: "🐝", category: "Newsletter" },
+                      { name: "Custom Webhooks", icon: "⚡", category: "Developer API" },
                       { name: "Kit (ConvertKit)", icon: "📧", category: "CRM & Email" },
                       { name: "Substack", icon: "📑", category: "Publication" },
                       { name: "Slack Alerts", icon: "💬", category: "Notifications" },
                       { name: "Pipedrive", icon: "📊", category: "Sales Pipeline" },
+                      { name: "Custom Webhooks", icon: "⚡", category: "Developer API" },
                     ].map((item, idx) => (
                       <div
                         key={`row1-${idx}`}

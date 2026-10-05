@@ -34,7 +34,7 @@ const faqs: BouncyAccordionItem[] = [
     id: "stack-integrations",
     category: "STACK INTEGRATIONS",
     title: "Can I sync leads to my existing CRM or email stack?",
-    description: "Absolutely. Seamlessly sync contacts with Beehiiv, Kit (ConvertKit), Substack, Slack, Pipedrive, Zapier, and custom webhooks in real time.",
+    description: "Absolutely. Seamlessly sync contacts with Kit (ConvertKit), Substack, Slack, Pipedrive, Zapier, and custom webhooks in real time.",
     icon: <BarChart3 className="h-3 w-3" aria-hidden="true" />,
     badgeColor: "bg-amber-500/10 text-amber-400 border-amber-500/20",
   },

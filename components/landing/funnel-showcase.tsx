@@ -16,7 +16,18 @@ import {
   Radio,
   Send,
   Check,
-  MousePointer2
+  MousePointer2,
+  Clock,
+  Zap,
+  FileText,
+  Mail,
+  ShieldCheck,
+  Activity,
+  Terminal,
+  Layers,
+  Sparkles,
+  Calendar,
+  RefreshCw
 } from "lucide-react";
 
 interface FunnelStep {
@@ -85,7 +96,7 @@ const STEPS: FunnelStep[] = [
   {
     id: "ecosystem-sync",
     stepNum: "05",
-    title: "Sync leads to Beehiiv, Kit, Slack, and Zapier",
+    title: "Sync leads to Kit, Slack, Pipedrive, and Zapier",
     headline: "Push new leads across your stack in real time",
     description:
       "Connect your existing tools in 1 click. Instant webhook routing, auto-retry queues, and bi-directional contact syncing.",
@@ -217,54 +228,49 @@ export default function FunnelShowcase() {
 
         {/* RIGHT COLUMN: Interactive Animated SaaS App Window */}
         <div className="lg:col-span-7">
-          <div className="rounded-2xl bg-white dark:bg-[#141822] border border-zinc-200/80 dark:border-white/10 p-6 sm:p-7 shadow-xl space-y-5 relative overflow-hidden">
-            {/* Window Header */}
-            <div className="flex items-center justify-between pb-3.5 border-b border-zinc-100 dark:border-white/5 relative z-10">
+          <div className="rounded-2xl bg-white dark:bg-[#141822] border border-zinc-200/80 dark:border-white/10 shadow-xl overflow-hidden">
+            {/* Window Top Bar (Clean macOS style) */}
+            <div className="flex items-center justify-between px-6 py-3.5 border-b border-zinc-100 dark:border-white/5 bg-zinc-50/60 dark:bg-white/[0.02]">
               <div className="flex items-center gap-1.5">
                 <span className="h-2.5 w-2.5 rounded-full bg-zinc-300 dark:bg-zinc-700 inline-block" />
                 <span className="h-2.5 w-2.5 rounded-full bg-zinc-300 dark:bg-zinc-700 inline-block" />
                 <span className="h-2.5 w-2.5 rounded-full bg-zinc-300 dark:bg-zinc-700 inline-block" />
               </div>
-              <div className="flex items-center gap-2">
-                <span className="h-1.5 w-1.5 rounded-full bg-[#0066B2] dark:bg-[#38BDF8] animate-ping" />
-                <span className="text-[10px] font-extrabold uppercase tracking-widest text-[#0066B2] dark:text-[#38BDF8] font-mono">
-                  {activeStep.windowLabel}
-                </span>
-              </div>
+              <span className="text-[11px] font-extrabold uppercase tracking-widest text-zinc-500 dark:text-zinc-400 font-mono">
+                {activeStep.windowLabel}
+              </span>
             </div>
 
-            {/* Dynamic Mockup Body with Live In-Card Animations & Camera Zoom */}
+            {/* Dynamic Mockup Body - Edge-to-Edge Balanced Layout */}
             <div
-              className="min-h-[290px] flex flex-col justify-center relative z-10 transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]"
+              className="p-6 min-h-[350px] flex flex-col justify-between transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]"
               style={{
-                transform: isZooming ? "scale(1.08)" : "scale(1)",
+                transform: isZooming ? "scale(1.05)" : "scale(1)",
                 transformOrigin: zoomOrigin,
               }}
             >
-              {/* STAGE 01: AI Page Builder & Live Interactive Opt-in Simulation */}
+              {/* STAGE 01: AI Page Builder */}
               {activeIdx === 0 && (
-                <div className="space-y-3 animate-fadeIn relative">
-                  {/* Top Domain & SSL Bar */}
+                <div className="space-y-4 animate-fadeIn">
+                  {/* Top Bar with CNAME & Auto-SSL */}
                   <div className="flex items-center justify-between px-3 py-1.5 rounded-lg bg-zinc-50 dark:bg-[#181D2A] border border-zinc-200/70 dark:border-white/5 text-[11px] font-mono text-zinc-500 dark:text-zinc-400">
                     <div className="flex items-center gap-1.5">
                       <Lock className="h-3 w-3 text-emerald-500" />
-                      <span className="text-zinc-800 dark:text-zinc-200 font-semibold">playbook.acme.co</span>
+                      <span className="text-zinc-900 dark:text-white font-semibold">playbook.acme.co</span>
                       <span className="text-zinc-400">/free-guide</span>
                     </div>
-                    <span className="text-[9px] text-emerald-600 dark:text-emerald-400 font-bold bg-emerald-500/10 px-1.5 py-0.5 rounded">
+                    <span className="text-[9px] text-emerald-600 dark:text-emerald-400 font-bold bg-emerald-500/10 px-1.5 py-0.5 rounded flex items-center gap-1">
+                      <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
                       SSL Active
                     </span>
                   </div>
 
-                  {/* AI Generator Card */}
-                  <div className="p-3 rounded-xl bg-zinc-50 dark:bg-[#181D2A] border border-zinc-200/70 dark:border-white/5 space-y-2">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-1.5">
-                        <Wand2 className="h-3.5 w-3.5 text-[#0066B2] dark:text-[#38BDF8]" />
-                        <span className="text-xs font-bold text-zinc-800 dark:text-zinc-200">
-                          AI Prompt Generator
-                        </span>
-                      </div>
+                  {/* AI Generation Box */}
+                  <div className="p-3 rounded-xl bg-zinc-50 dark:bg-[#181D2A] border border-zinc-200/70 dark:border-white/5 space-y-1.5">
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="font-bold text-zinc-800 dark:text-zinc-200 flex items-center gap-1.5">
+                        <Wand2 className="h-3.5 w-3.5 text-[#0066B2] dark:text-[#38BDF8]" /> AI Magnet Generator
+                      </span>
                       <span className="text-[9px] font-extrabold px-1.5 py-0.5 rounded bg-[#0066B2]/10 text-[#0066B2] dark:text-[#38BDF8]">
                         Ready in 1.4s
                       </span>
@@ -275,8 +281,8 @@ export default function FunnelShowcase() {
                     </div>
                   </div>
 
-                  {/* Live Visitor View with Animated Typing & Click Simulation */}
-                  <div className="p-3.5 rounded-xl bg-zinc-50 dark:bg-[#181D2A] border border-zinc-200/70 dark:border-white/5 text-center space-y-2 relative">
+                  {/* Live Visitor Opt-in Simulation */}
+                  <div className="p-4 rounded-xl bg-zinc-50 dark:bg-[#181D2A] border border-zinc-200/70 dark:border-white/5 space-y-3 relative text-center">
                     <div className="space-y-0.5">
                       <h5 className="text-xs font-extrabold text-zinc-900 dark:text-white">
                         Download Your Free SaaS Playbook
@@ -285,8 +291,9 @@ export default function FunnelShowcase() {
                         Join 2,400+ SaaS founders scaling outbound pipeline
                       </p>
                     </div>
-                    <div className="max-w-xs mx-auto flex items-center gap-1.5 relative pt-1">
-                      <div className="flex-1 px-2.5 py-1.5 rounded-lg bg-white dark:bg-[#12151E] border border-zinc-200 dark:border-zinc-700 text-[11px] text-left font-mono transition-all">
+
+                    <div className="max-w-xs mx-auto flex items-center gap-1.5 relative">
+                      <div className="flex-1 px-3 py-2 rounded-lg bg-white dark:bg-[#12151E] border border-zinc-200 dark:border-zinc-700 text-xs font-mono text-left">
                         {progress < 15 ? (
                           <span className="text-zinc-400">your@email.com</span>
                         ) : progress < 30 ? (
@@ -296,7 +303,8 @@ export default function FunnelShowcase() {
                         )}
                       </div>
                       <button
-                        className={`px-3 py-1.5 rounded-lg text-white font-bold text-[11px] transition-all flex items-center gap-1 shadow-sm shrink-0 ${
+                        type="button"
+                        className={`px-3.5 py-2 rounded-lg text-white font-bold text-xs transition-all flex items-center gap-1 shrink-0 ${
                           isButtonClicked
                             ? "bg-emerald-600 scale-95"
                             : progress > 30
@@ -317,42 +325,37 @@ export default function FunnelShowcase() {
                       <div
                         className="absolute pointer-events-none transition-all duration-700 ease-out z-20"
                         style={{
-                          left: progress < 25 ? "35%" : progress < 50 ? "78%" : "82%",
+                          left: progress < 25 ? "35%" : progress < 50 ? "75%" : "82%",
                           top: progress < 25 ? "40%" : "30%",
                           opacity: progress < 80 ? 1 : 0,
                           transform: isButtonClicked ? "scale(0.85)" : "scale(1)",
                         }}
                       >
-                        <div className="relative">
-                          <MousePointer2 className="h-4 w-4 fill-zinc-900 text-white drop-shadow-md" />
-                          {progress > 30 && progress < 55 && (
-                            <span className="absolute -top-1 -right-1 h-2 w-2 rounded-full bg-[#0066B2] animate-ping" />
-                          )}
-                        </div>
+                        <MousePointer2 className="h-4 w-4 fill-zinc-900 text-white drop-shadow-md" />
                       </div>
                     </div>
                   </div>
                 </div>
               )}
 
-              {/* STAGE 02: Native Vault & Instant Dispatch Animation */}
+              {/* STAGE 02: Secure Asset Vault */}
               {activeIdx === 1 && (
-                <div className="space-y-3 animate-fadeIn">
-                  {/* Vault Asset Card */}
-                  <div className="p-3 rounded-xl bg-zinc-50 dark:bg-[#181D2A] border border-zinc-200/70 dark:border-white/5 space-y-2.5">
+                <div className="space-y-3.5 animate-fadeIn">
+                  {/* File Asset Card */}
+                  <div className="p-3.5 rounded-xl bg-zinc-50 dark:bg-[#181D2A] border border-zinc-200/70 dark:border-white/5 space-y-2.5">
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-1.5">
-                        <HardDrive className="h-3.5 w-3.5 text-[#0066B2] dark:text-[#38BDF8]" />
-                        <span className="text-xs font-bold text-zinc-800 dark:text-zinc-200">
-                          Encrypted File Host
+                      <div className="flex items-center gap-2">
+                        <HardDrive className="h-4 w-4 text-[#0066B2] dark:text-[#38BDF8]" />
+                        <span className="text-xs font-bold text-zinc-900 dark:text-white">
+                          Encrypted Asset Vault
                         </span>
                       </div>
-                      <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+                      <span className="text-[9px] font-bold px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
                         Zero Google Drive Expiry
                       </span>
                     </div>
 
-                    <div className="flex items-center justify-between p-2.5 rounded-lg bg-white dark:bg-[#12151E] border border-zinc-200/60 dark:border-white/5 transition-all hover:border-[#0066B2]/40">
+                    <div className="flex items-center justify-between p-2.5 rounded-lg bg-white dark:bg-[#12151E] border border-zinc-200/60 dark:border-white/5">
                       <div className="flex items-center gap-2.5">
                         <div className="h-8 w-8 rounded-lg bg-[#0066B2]/10 text-[#0066B2] dark:text-[#38BDF8] flex items-center justify-center font-bold text-xs">
                           PDF
@@ -361,7 +364,7 @@ export default function FunnelShowcase() {
                           <p className="text-xs font-bold text-zinc-900 dark:text-white">
                             saas-growth-playbook-2026.pdf
                           </p>
-                          <span className="text-[9px] text-zinc-400">4.8 MB · Tokenized Storage · 256-bit AES</span>
+                          <span className="text-[10px] text-zinc-400">4.8 MB · 256-bit Tokenized File</span>
                         </div>
                       </div>
                       <span className="text-[10px] font-bold text-[#0066B2] dark:text-[#38BDF8] bg-[#0066B2]/10 px-2 py-0.5 rounded">
@@ -370,18 +373,18 @@ export default function FunnelShowcase() {
                     </div>
                   </div>
 
-                  {/* Instant Dispatch Log & Delivery Breakdown */}
-                  <div className="p-3 rounded-xl bg-zinc-50 dark:bg-[#181D2A] border border-zinc-200/70 dark:border-white/5 space-y-2.5">
-                    <div className="flex items-center justify-between text-[11px]">
+                  {/* Instant Dispatch Timeline & Animation */}
+                  <div className="p-3.5 rounded-xl bg-zinc-50 dark:bg-[#181D2A] border border-zinc-200/70 dark:border-white/5 space-y-2.5">
+                    <div className="flex items-center justify-between text-xs">
                       <span className="text-zinc-700 dark:text-zinc-200 font-semibold flex items-center gap-1.5">
-                        <Send className="h-3.5 w-3.5 text-[#0066B2] dark:text-[#38BDF8]" /> Instant Fulfillment Engine
+                        <Send className="h-3.5 w-3.5 text-[#0066B2] dark:text-[#38BDF8]" /> Instant Dispatch Engine
                       </span>
-                      <span className="text-[#0066B2] dark:text-[#38BDF8] font-bold font-mono">
-                        {isDelivered ? "Fired in 0.18s ✓" : "Dispatching..."}
+                      <span className="text-[#0066B2] dark:text-[#38BDF8] font-bold font-mono text-[11px]">
+                        {isDelivered ? "Fired in 0.18s ✓" : "Generating single-use link..."}
                       </span>
                     </div>
 
-                    {/* Animated Delivery Progress Line */}
+                    {/* Animated Delivery Speed Bar */}
                     <div className="w-full h-2 bg-zinc-200 dark:bg-zinc-800 rounded-full overflow-hidden">
                       <div
                         className="h-full bg-[#0066B2] dark:bg-[#38BDF8] rounded-full transition-all duration-500 ease-out"
@@ -389,66 +392,69 @@ export default function FunnelShowcase() {
                       />
                     </div>
 
-                    <div className="flex items-center justify-between text-[10px] text-zinc-500 dark:text-zinc-400 pt-0.5">
-                      <span>Target: alex@company.com</span>
+                    <div className="flex items-center justify-between text-[11px] text-zinc-500 dark:text-zinc-400 pt-0.5">
+                      <span>Recipient: alex@company.com</span>
                       <span className="text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1">
-                        <Check className="h-2.5 w-2.5" /> 99.4% Inbox Placement
+                        <Check className="h-3 w-3" /> 99.4% Inbox Placement
                       </span>
                     </div>
                   </div>
                 </div>
               )}
 
-              {/* STAGE 03: Telemetry Counter & Event Stream */}
+              {/* STAGE 03: Conversion Telemetry & Live Event Stream */}
               {activeIdx === 2 && (
-                <div className="space-y-3 animate-fadeIn">
+                <div className="space-y-3.5 animate-fadeIn">
+                  {/* Dynamic Counting Rate Cards */}
                   <div className="grid grid-cols-2 gap-2.5">
-                    {/* Dynamic Counting Rate */}
-                    <div className="p-3 rounded-xl bg-zinc-50 dark:bg-[#181D2A] border border-zinc-200/70 dark:border-white/5">
-                      <span className="text-[9px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
+                    <div className="p-3.5 rounded-xl bg-zinc-50 dark:bg-[#181D2A] border border-zinc-200/70 dark:border-white/5 space-y-1">
+                      <span className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
                         Opt-in Rate
                       </span>
-                      <div className="mt-0.5 text-xl font-black text-zinc-900 dark:text-white flex items-center gap-1">
-                        {(48.2 + (progress / 100) * 3.0).toFixed(1)}%
-                        <TrendingUp className="h-3.5 w-3.5 text-[#0066B2] dark:text-[#38BDF8] animate-bounce" />
+                      <div className="text-xl font-black text-zinc-900 dark:text-white flex items-center gap-1.5">
+                        {(48.2 + (progress / 100) * 3.4).toFixed(1)}%
+                        <TrendingUp className="h-4 w-4 text-[#0066B2] dark:text-[#38BDF8] animate-bounce" />
                       </div>
-                      <span className="text-[9px] text-[#0066B2] dark:text-[#38BDF8] font-bold">
+                      <span className="text-[10px] text-[#0066B2] dark:text-[#38BDF8] font-bold">
                         +14.8% vs benchmark
                       </span>
                     </div>
 
-                    <div className="p-3 rounded-xl bg-zinc-50 dark:bg-[#181D2A] border border-zinc-200/70 dark:border-white/5">
-                      <span className="text-[9px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
-                        Exit-Intent Saved
+                    <div className="p-3.5 rounded-xl bg-zinc-50 dark:bg-[#181D2A] border border-zinc-200/70 dark:border-white/5 space-y-1">
+                      <span className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
+                        Exit Recovery
                       </span>
-                      <div className="mt-0.5 text-xl font-black text-zinc-900 dark:text-white">
+                      <div className="text-xl font-black text-zinc-900 dark:text-white">
                         +{Math.round(150 + (progress / 100) * 34)} Leads
                       </div>
-                      <span className="text-[9px] text-emerald-600 dark:text-emerald-400 font-bold">
-                        23.4% traffic retained
+                      <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold">
+                        23.4% traffic saved
                       </span>
                     </div>
                   </div>
 
-                  {/* Animated Live Feed Log */}
-                  <div className="p-3 rounded-xl bg-zinc-50 dark:bg-[#181D2A] border border-zinc-200/70 dark:border-white/5 space-y-1.5 font-mono text-[10px]">
-                    <div className="flex items-center justify-between text-zinc-400 text-[9px] uppercase tracking-wider border-b border-zinc-200/60 dark:border-white/5 pb-1 font-sans font-bold">
-                      <span>Live Telemetry Stream</span>
-                      <span className="flex items-center gap-1 text-[#0066B2] dark:text-[#38BDF8]">
-                        <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-ping" /> Real-time
+                  {/* Real-Time Telemetry Terminal Stream */}
+                  <div className="p-3 rounded-xl bg-zinc-50 dark:bg-[#181D2A] border border-zinc-200/70 dark:border-white/5 space-y-2 font-mono text-[11px]">
+                    <div className="flex items-center justify-between text-zinc-400 text-[10px] uppercase tracking-wider border-b border-zinc-200/60 dark:border-white/5 pb-1 font-sans font-bold">
+                      <span className="flex items-center gap-1.5">
+                        <Activity className="h-3 w-3 text-[#0066B2] dark:text-[#38BDF8]" />
+                        Signal Stream
+                      </span>
+                      <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400">
+                        <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-ping" /> Live CAPI
                       </span>
                     </div>
-                    <div className="flex items-center justify-between text-zinc-600 dark:text-zinc-300">
+                    <div className="flex items-center justify-between text-zinc-700 dark:text-zinc-300">
                       <span className="flex items-center gap-1.5">
                         <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                        [GA4 CAPI] &quot;lead_generated&quot;
+                        [GA4 CAPI] event: &quot;lead_generated&quot;
                       </span>
                       <span className="text-emerald-600 dark:text-emerald-400 font-bold">200 OK</span>
                     </div>
-                    <div className="flex items-center justify-between text-zinc-600 dark:text-zinc-300">
+                    <div className="flex items-center justify-between text-zinc-700 dark:text-zinc-300">
                       <span className="flex items-center gap-1.5">
                         <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                        [Meta Conversions API] &quot;Lead (9.4)&quot;
+                        [Meta Conversions] event: &quot;Lead (9.4)&quot;
                       </span>
                       <span className="text-emerald-600 dark:text-emerald-400 font-bold">200 OK</span>
                     </div>
@@ -456,34 +462,34 @@ export default function FunnelShowcase() {
                 </div>
               )}
 
-              {/* STAGE 04: Drip Sequence Animated Pipeline */}
+              {/* STAGE 04: Drip Sequence Workflow */}
               {activeIdx === 3 && (
-                <div className="space-y-2.5 animate-fadeIn relative">
+                <div className="space-y-2.5 animate-fadeIn">
                   {/* Sequence Header Bar */}
-                  <div className="flex items-center justify-between px-3 py-1.5 rounded-lg bg-zinc-50 dark:bg-[#181D2A] border border-zinc-200/70 dark:border-white/5 text-[11px]">
+                  <div className="flex items-center justify-between px-3 py-1.5 rounded-lg bg-zinc-50 dark:bg-[#181D2A] border border-zinc-200/70 dark:border-white/5 text-xs">
                     <div className="flex items-center gap-1.5">
                       <Workflow className="h-3.5 w-3.5 text-[#0066B2] dark:text-[#38BDF8]" />
                       <span className="font-bold text-zinc-900 dark:text-white">SaaS Nurture Sequence</span>
                     </div>
-                    <span className="text-[10px] font-bold text-[#0066B2] dark:text-[#38BDF8] bg-[#0066B2]/10 px-1.5 py-0.5 rounded">
+                    <span className="text-[10px] font-bold text-[#0066B2] dark:text-[#38BDF8] bg-[#0066B2]/10 px-2 py-0.5 rounded">
                       3 Steps Active
                     </span>
                   </div>
 
-                  {/* 3 Step Cards with Details */}
-                  <div className="space-y-2 relative">
+                  {/* 3 Step Sequence Cards with Downward Flow */}
+                  <div className="space-y-1.5">
                     {/* Step 1 */}
-                    <div className="p-2.5 rounded-xl bg-zinc-50 dark:bg-[#181D2A] border border-zinc-200/70 dark:border-white/5 flex items-center justify-between text-xs transition-all hover:border-[#0066B2]/30">
+                    <div className="p-2.5 rounded-xl bg-zinc-50 dark:bg-[#181D2A] border border-zinc-200/70 dark:border-white/5 flex items-center justify-between text-xs">
                       <div className="space-y-0.5">
                         <p className="font-bold text-zinc-900 dark:text-white flex items-center gap-2">
-                          <span className="h-2 w-2 rounded-full bg-emerald-500 ring-2 ring-emerald-500/20" />
+                          <span className="h-2 w-2 rounded-full bg-emerald-500" />
                           Email 1: Welcome & Playbook PDF
                         </p>
                         <p className="text-[10px] text-zinc-500 dark:text-zinc-400 pl-4">
-                          Triggered immediately on opt-in · <span className="text-zinc-700 dark:text-zinc-300 font-semibold">88.4% Open</span>
+                          Triggered on opt-in · <span className="font-semibold text-zinc-700 dark:text-zinc-300">88.4% Open</span>
                         </p>
                       </div>
-                      <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded-md flex items-center gap-1 shrink-0">
+                      <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded flex items-center gap-1">
                         <Check className="h-2.5 w-2.5" /> Delivered
                       </span>
                     </div>
@@ -492,30 +498,30 @@ export default function FunnelShowcase() {
                     <div className="p-2.5 rounded-xl bg-white dark:bg-[#12151E] border border-zinc-200/70 dark:border-white/5 flex items-center justify-between text-xs">
                       <div className="space-y-0.5">
                         <p className="font-bold text-zinc-900 dark:text-white flex items-center gap-2">
-                          <span className="h-2 w-2 rounded-full bg-[#0066B2] dark:bg-[#38BDF8] ring-2 ring-[#0066B2]/20" />
+                          <span className="h-2 w-2 rounded-full bg-[#0066B2] dark:bg-[#38BDF8]" />
                           Email 2: 3 Common Funnel Mistakes
                         </p>
                         <p className="text-[10px] text-zinc-500 dark:text-zinc-400 pl-4">
-                          Delay: 2 days later · <span className="text-zinc-700 dark:text-zinc-300 font-semibold">64.2% Est. Open</span>
+                          Delay: 2 days · <span className="font-semibold text-zinc-700 dark:text-zinc-300">64.2% Est. Open</span>
                         </p>
                       </div>
-                      <span className="text-[10px] font-bold text-zinc-600 dark:text-zinc-400 bg-zinc-100 dark:bg-zinc-800 px-2 py-1 rounded-md shrink-0">
+                      <span className="text-[10px] font-bold text-zinc-600 dark:text-zinc-400 bg-zinc-100 dark:bg-zinc-800 px-2 py-0.5 rounded">
                         Scheduled
                       </span>
                     </div>
 
                     {/* Step 3 */}
-                    <div className="p-2.5 rounded-xl bg-zinc-50 dark:bg-[#181D2A] border border-dashed border-zinc-300 dark:border-zinc-700 flex items-center justify-between text-xs">
+                    <div className="p-2.5 rounded-xl bg-blue-50/60 dark:bg-blue-950/20 border border-[#0066B2]/30 dark:border-[#38BDF8]/20 flex items-center justify-between text-xs">
                       <div className="space-y-0.5">
-                        <p className="font-bold text-zinc-700 dark:text-zinc-300 flex items-center gap-2">
-                          <span className="h-2 w-2 rounded-full bg-amber-500 ring-2 ring-amber-500/20" />
+                        <p className="font-bold text-[#0066B2] dark:text-[#38BDF8] flex items-center gap-2">
+                          <span className="h-2 w-2 rounded-full bg-amber-500 animate-pulse" />
                           Email 3: Strategy Call Invitation
                         </p>
-                        <p className="text-[10px] text-zinc-400 pl-4">
-                          Delay: 4 days later · Stops if booked
+                        <p className="text-[10px] text-zinc-500 dark:text-zinc-400 pl-4">
+                          Delay: 4 days · Stops automatically if booked
                         </p>
                       </div>
-                      <span className="text-[10px] font-bold text-[#0066B2] dark:text-[#38BDF8] bg-[#0066B2]/10 px-2 py-1 rounded-md shrink-0">
+                      <span className="text-[10px] font-bold text-[#0066B2] dark:text-[#38BDF8] bg-[#0066B2]/10 px-2 py-0.5 rounded">
                         Auto-Halt
                       </span>
                     </div>
@@ -528,91 +534,69 @@ export default function FunnelShowcase() {
                       Smart Auto-Stop Guard Active
                     </span>
                     <span className="font-bold text-[#0066B2] dark:text-[#38BDF8]">
-                      Calendly / CRM Synced
+                      Calendly Synced
                     </span>
                   </div>
                 </div>
               )}
 
-              {/* STAGE 05: Ecosystem Sync Live Pulse */}
+              {/* STAGE 05: Ecosystem Sync */}
               {activeIdx === 4 && (
-                <div className="space-y-2.5 animate-fadeIn">
-                  <div className="flex items-center justify-between px-3 py-1.5 rounded-lg bg-zinc-50 dark:bg-[#181D2A] border border-zinc-200/70 dark:border-white/5 text-[11px]">
+                <div className="space-y-3 animate-fadeIn">
+                  <div className="flex items-center justify-between px-3 py-1.5 rounded-lg bg-zinc-50 dark:bg-[#181D2A] border border-zinc-200/70 dark:border-white/5 text-xs">
                     <div className="flex items-center gap-1.5">
                       <Share2 className="h-3.5 w-3.5 text-[#0066B2] dark:text-[#38BDF8]" />
-                      <span className="font-bold text-zinc-900 dark:text-white">Real-Time Stack Sync</span>
+                      <span className="font-bold text-zinc-900 dark:text-white">Real-Time Stack Connectivity</span>
                     </div>
-                    <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded flex items-center gap-1">
+                    <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded flex items-center gap-1">
                       <Check className="h-2.5 w-2.5" /> 4/4 Connected
                     </span>
                   </div>
 
+                  {/* 4 Connected Platform Nodes */}
                   <div className="grid grid-cols-2 gap-2 text-xs">
-                    <div
-                      className={`p-2.5 rounded-xl border transition-all duration-300 flex items-center gap-2.5 ${
-                        progress > 20
-                          ? "bg-zinc-50 dark:bg-[#181D2A] border-[#0066B2]/40 shadow-xs"
-                          : "bg-zinc-50/60 dark:bg-[#181D2A]/60 border-zinc-200/70 dark:border-white/5"
-                      }`}
-                    >
-                      <span className="text-base">🐝</span>
-                      <div>
-                        <p className="font-bold text-zinc-900 dark:text-white text-xs">Beehiiv</p>
-                        <span className="text-[10px] text-[#0066B2] dark:text-[#38BDF8] font-semibold flex items-center gap-1">
-                          {progress > 20 && <Check className="h-2.5 w-2.5" />} Subscribed
-                        </span>
+                    <div className="p-2.5 rounded-xl bg-zinc-50 dark:bg-[#181D2A] border border-[#0066B2]/30 space-y-1">
+                      <div className="flex items-center justify-between">
+                        <span className="font-bold text-zinc-900 dark:text-white">Kit (ConvertKit)</span>
+                        <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
                       </div>
+                      <p className="text-[10px] text-[#0066B2] dark:text-[#38BDF8] font-semibold">
+                        Tag: #saas-playbook
+                      </p>
                     </div>
 
-                    <div
-                      className={`p-2.5 rounded-xl border transition-all duration-300 flex items-center gap-2.5 ${
-                        progress > 40
-                          ? "bg-zinc-50 dark:bg-[#181D2A] border-[#0066B2]/40 shadow-xs"
-                          : "bg-zinc-50/60 dark:bg-[#181D2A]/60 border-zinc-200/70 dark:border-white/5"
-                      }`}
-                    >
-                      <span className="text-base">📧</span>
-                      <div>
-                        <p className="font-bold text-zinc-900 dark:text-white text-xs">Kit</p>
-                        <span className="text-[10px] text-[#0066B2] dark:text-[#38BDF8] font-semibold flex items-center gap-1">
-                          {progress > 40 && <Check className="h-2.5 w-2.5" />} Tagged: lead
-                        </span>
+                    <div className="p-2.5 rounded-xl bg-zinc-50 dark:bg-[#181D2A] border border-[#0066B2]/30 space-y-1">
+                      <div className="flex items-center justify-between">
+                        <span className="font-bold text-zinc-900 dark:text-white">Substack</span>
+                        <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
                       </div>
+                      <p className="text-[10px] text-[#0066B2] dark:text-[#38BDF8] font-semibold">
+                        Publication synced
+                      </p>
                     </div>
 
-                    <div
-                      className={`p-2.5 rounded-xl border transition-all duration-300 flex items-center gap-2.5 ${
-                        progress > 60
-                          ? "bg-zinc-50 dark:bg-[#181D2A] border-[#0066B2]/40 shadow-xs"
-                          : "bg-zinc-50/60 dark:bg-[#181D2A]/60 border-zinc-200/70 dark:border-white/5"
-                      }`}
-                    >
-                      <span className="text-base">💬</span>
-                      <div>
-                        <p className="font-bold text-zinc-900 dark:text-white text-xs">Slack</p>
-                        <span className="text-[10px] text-[#0066B2] dark:text-[#38BDF8] font-semibold flex items-center gap-1">
-                          {progress > 60 && <Check className="h-2.5 w-2.5" />} #new-leads
-                        </span>
+                    <div className="p-2.5 rounded-xl bg-zinc-50 dark:bg-[#181D2A] border border-[#0066B2]/30 space-y-1">
+                      <div className="flex items-center justify-between">
+                        <span className="font-bold text-zinc-900 dark:text-white">Slack Alerts</span>
+                        <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
                       </div>
+                      <p className="text-[10px] text-[#0066B2] dark:text-[#38BDF8] font-semibold">
+                        #new-leads channel
+                      </p>
                     </div>
 
-                    <div
-                      className={`p-2.5 rounded-xl border transition-all duration-300 flex items-center gap-2.5 ${
-                        progress > 80
-                          ? "bg-zinc-50 dark:bg-[#181D2A] border-[#0066B2]/40 shadow-xs"
-                          : "bg-zinc-50/60 dark:bg-[#181D2A]/60 border-zinc-200/70 dark:border-white/5"
-                      }`}
-                    >
-                      <span className="text-base">⚡</span>
-                      <div>
-                        <p className="font-bold text-zinc-900 dark:text-white text-xs">Zapier</p>
-                        <span className="text-[10px] text-[#0066B2] dark:text-[#38BDF8] font-semibold flex items-center gap-1">
-                          {progress > 80 && <Check className="h-2.5 w-2.5" />} Webhook OK
-                        </span>
+                    <div className="p-2.5 rounded-xl bg-zinc-50 dark:bg-[#181D2A] border border-[#0066B2]/30 space-y-1">
+                      <div className="flex items-center justify-between">
+                        <span className="font-bold text-zinc-900 dark:text-white">Zapier / Pipedrive</span>
+                        <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
                       </div>
+                      <p className="text-[10px] text-[#0066B2] dark:text-[#38BDF8] font-semibold">
+                        CRM Pipeline OK
+                      </p>
                     </div>
                   </div>
 
+                  {/* Live Webhook JSON Payload Preview */}
                   <div className="p-2.5 rounded-xl bg-zinc-950 text-zinc-200 font-mono text-[10px] space-y-1 border border-zinc-800">
                     <div className="flex items-center justify-between text-zinc-400 text-[9px]">
                       <span>POST /v1/webhook/lead-captured</span>
@@ -627,18 +611,6 @@ export default function FunnelShowcase() {
                   </div>
                 </div>
               )}
-            </div>
-
-            {/* Bottom Metric Strip */}
-            <div className="pt-3 border-t border-zinc-100 dark:border-white/5 grid grid-cols-2 gap-3 relative z-10">
-              {activeStep.metrics.map((m, i) => (
-                <div key={i} className="flex items-center justify-between">
-                  <span className="text-[11px] text-zinc-500 dark:text-zinc-400">{m.label}</span>
-                  <span className="text-xs font-black text-[#0066B2] dark:text-[#38BDF8]">
-                    {m.value}
-                  </span>
-                </div>
-              ))}
             </div>
           </div>
         </div>

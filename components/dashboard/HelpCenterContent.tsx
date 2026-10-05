@@ -917,7 +917,7 @@ export default function HelpCenterContent({
                   </div>
                 </div>
               </div>
-            ) : selectedTopic === "Substack and Kit" || selectedTopic === "Beehiiv and Substack" || selectedTopic === "Manage leads" ? (
+            ) : selectedTopic === "Substack and Kit" || selectedTopic === "Manage leads" ? (
               <div className="max-w-[43rem] mx-auto space-y-6 py-2">
                 {/* Header: AUDIENCE SYNC */}
                 <div className="space-y-4">
