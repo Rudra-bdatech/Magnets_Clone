@@ -1445,7 +1445,7 @@ export default function LockedPdfPage() {
           </div>
 
           {/* Right Fixed Sticky Inspector Card */}
-          <div className="hidden lg:block lg:w-[35%] sticky top-[175px] z-20 space-y-4 transition-all duration-200">
+          <div className="hidden lg:block lg:w-[35%] sticky top-[165px] z-20 space-y-4 transition-all duration-200">
             {activePage ? (
               <div className="rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-[#141417] p-5 shadow-lg space-y-5">
                 <div className="flex items-start justify-between pb-4 border-b border-zinc-100 dark:border-zinc-800/60">
