@@ -33,6 +33,7 @@ import {
   Zap,
   Pencil,
   Code2,
+  MoreVertical,
 } from "lucide-react";
 import { useEffect, useState, useMemo } from "react";
 import StatusBadge from "@/components/dashboard/status-badge";
@@ -84,6 +85,7 @@ export default function SequenceEditor() {
   const [generatingAiForId, setGeneratingAiForId] = useState<string | null>(null);
   const [generatingAiBodyForId, setGeneratingAiBodyForId] = useState<string | null>(null);
   const [sendingTestForId, setSendingTestForId] = useState<string | null>(null);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // Inline Sequence Title Editing
   const [isEditingTitle, setIsEditingTitle] = useState(false);
@@ -652,21 +654,21 @@ export default function SequenceEditor() {
       {/* Toast Notification */}
       {toastMessage && (
         <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2 rounded-2xl bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 px-4 py-3 text-xs font-bold shadow-2xl animate-in fade-in slide-in-from-bottom-3 duration-200">
-          <Check className="h-4 w-4 text-emerald-400 dark:text-emerald-600" />
+          <Check className="h-4 w-4 text-emerald-400 dark:text-emerald-600 shrink-0" />
           <span>{toastMessage}</span>
         </div>
       )}
 
-      <div className="min-h-[calc(100vh-3.5rem)] bg-gradient-to-b from-[#F8FAFC] via-[#F1F5F9]/50 to-[#F8FAFC] dark:from-[#09090B] dark:via-[#121215] dark:to-[#09090B]">
-        <div className="flex-1 px-3.5 sm:px-6 py-4 sm:py-6 lg:px-8 max-w-7xl mx-auto w-full space-y-6 sm:space-y-8">
+      <div className="min-h-[calc(100vh-3.5rem)] bg-gradient-to-b from-[#F8FAFC] via-[#F1F5F9]/50 to-[#F8FAFC] dark:from-[#09090B] dark:via-[#121215] dark:to-[#09090B] pb-12">
+        <div className="flex-1 px-3 sm:px-6 py-3.5 sm:py-6 lg:px-8 max-w-7xl mx-auto w-full space-y-4 sm:space-y-6 lg:space-y-8">
           
-          {/* Header Bar */}
-          <div className="flex flex-col gap-4 sm:gap-5 lg:flex-row lg:items-center lg:justify-between border-b border-zinc-200/80 dark:border-zinc-800/80 pb-5 sm:pb-6">
-            <div className="flex items-start gap-3 sm:gap-4">
+          {/* Header Bar - Clean Borderless Hierarchy */}
+          <div className="flex flex-col gap-3.5 sm:gap-5 lg:flex-row lg:items-center lg:justify-between pb-1 sm:pb-2">
+            <div className="flex items-start gap-2.5 sm:gap-4">
               <Link
                 href="/dashboard/sequences"
                 aria-label="Back to sequences"
-                className="mt-0.5 sm:mt-1 flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl sm:rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#18181B] text-zinc-600 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition shadow-xs"
+                className="mt-0.5 sm:mt-1 flex h-8 w-8 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl sm:rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#18181B] text-zinc-600 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 active:scale-95 transition shadow-xs"
               >
                 <ArrowLeft className="h-4 w-4" />
               </Link>
@@ -685,11 +687,11 @@ export default function SequenceEditor() {
                           if (e.key === "Escape") setIsEditingTitle(false);
                         }}
                         onBlur={handleSaveTitle}
-                        className="text-lg sm:text-2xl font-bold tracking-tight bg-white dark:bg-zinc-900 border border-[#0066B2] rounded-xl px-2.5 py-0.5 text-zinc-900 dark:text-white outline-none shadow-xs w-full max-w-xs"
+                        className="text-base sm:text-2xl font-bold tracking-tight bg-white dark:bg-zinc-900 border border-[#0066B2] rounded-xl px-2.5 py-1 text-zinc-900 dark:text-white outline-none shadow-xs w-full max-w-[200px] sm:max-w-xs"
                       />
                       <button
                         onClick={handleSaveTitle}
-                        className="rounded-lg bg-[#0066B2] px-2.5 py-1 text-xs font-bold text-white hover:bg-[#005291] shrink-0"
+                        className="rounded-lg bg-[#0066B2] px-2.5 py-1 text-xs font-bold text-white hover:bg-[#005291] active:scale-95 shrink-0"
                       >
                         Save
                       </button>
@@ -697,18 +699,20 @@ export default function SequenceEditor() {
                   ) : (
                     <div
                       onClick={() => setIsEditingTitle(true)}
-                      className="group flex items-center gap-2 cursor-pointer min-w-0"
+                      className="group flex items-center gap-1.5 sm:gap-2 cursor-pointer min-w-0"
                       title="Click to rename sequence"
                     >
-                      <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-zinc-900 dark:text-white group-hover:text-[#0066B2] transition truncate">
+                      <h1 className="text-lg sm:text-2xl font-bold tracking-tight text-zinc-900 dark:text-white group-hover:text-[#0066B2] transition truncate">
                         {seq.name}
                       </h1>
-                      <Pencil className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-zinc-400 opacity-60 sm:opacity-0 group-hover:opacity-100 transition shrink-0" />
+                      <span className="p-1 rounded-md text-zinc-400 opacity-80 sm:opacity-0 group-hover:opacity-100 transition shrink-0 hover:bg-zinc-100 dark:hover:bg-zinc-800">
+                        <Pencil className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                      </span>
                     </div>
                   )}
 
                   <span
-                    className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 sm:px-3 sm:py-1 text-[11px] sm:text-xs font-bold border shadow-xs shrink-0 ${
+                    className={`inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 sm:px-3 sm:py-1 text-[10px] sm:text-xs font-bold border shadow-xs shrink-0 ${
                       seq.status === "live"
                         ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
                         : "border-amber-500/30 bg-amber-500/10 text-amber-600 dark:text-amber-400"
@@ -719,54 +723,55 @@ export default function SequenceEditor() {
                   </span>
                 </div>
 
-                <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400 flex items-center gap-1.5 flex-wrap">
+                <div className="mt-1 text-xs text-zinc-500 dark:text-zinc-400 flex items-center gap-1.5 flex-wrap">
                   {attachedPage ? (
-                    <>
-                      <span>Linked Lead Magnet:</span>
+                    <div className="flex items-center gap-1.5 min-w-0 max-w-full">
+                      <span className="text-[11px] sm:text-xs text-zinc-500 shrink-0">Linked Lead Magnet:</span>
                       <Link
                         href={`/dashboard/leadmagnets/${attachedPage.id}?tab=sequence`}
-                        className="font-semibold text-[#0066B2] dark:text-[#38BDF8] hover:underline inline-flex items-center gap-1 truncate max-w-full"
+                        className="font-semibold text-[#0066B2] dark:text-[#38BDF8] hover:underline inline-flex items-center gap-1 truncate text-[11px] sm:text-xs bg-blue-50/60 dark:bg-blue-950/30 px-1.5 py-0.5 rounded-md border border-blue-200/50 dark:border-blue-900/40"
                       >
-                        🎯 {attachedPage.name}
-                        <ExternalLink className="h-3 w-3 shrink-0" />
+                        <span className="truncate">🎯 {attachedPage.name}</span>
+                        <ExternalLink className="h-2.5 w-2.5 sm:h-3 sm:w-3 shrink-0 opacity-70" />
                       </Link>
-                    </>
+                    </div>
                   ) : (
-                    <span className="text-zinc-400 dark:text-zinc-500 italic">Standalone sequence (Not attached to page)</span>
+                    <span className="text-zinc-400 dark:text-zinc-500 text-[11px] sm:text-xs italic">Standalone sequence</span>
                   )}
-                </p>
+                </div>
               </div>
             </div>
 
-            {/* Actions Button Group - 2-Column Grid on Mobile, Flex on Desktop */}
-            <div className="grid grid-cols-2 sm:flex sm:items-center gap-2 sm:gap-2.5 w-full lg:w-auto">
+            {/* Actions Button Bar */}
+            {/* Desktop Action Row (lg and above) */}
+            <div className="hidden lg:flex items-center gap-2.5 w-auto">
               <button
                 onClick={copyStartLink}
-                className="flex items-center justify-center gap-1.5 sm:gap-2 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#18181B] px-3 py-2.5 sm:px-3.5 text-xs font-bold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition shadow-xs cursor-pointer w-full sm:w-auto"
+                className="flex items-center justify-center gap-2 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#18181B] px-3.5 py-2.5 text-xs font-bold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-zinc-800 active:scale-95 transition shadow-xs cursor-pointer"
               >
-                {copied ? <Check className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-emerald-500 shrink-0" /> : <Copy className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-zinc-400 shrink-0" />}
-                <span className="truncate">{copied ? "Copied Link" : "Copy Stop Link"}</span>
+                {copied ? <Check className="h-4 w-4 text-emerald-500 shrink-0" /> : <Copy className="h-4 w-4 text-zinc-400 shrink-0" />}
+                <span>{copied ? "Copied Link" : "Copy Stop Link"}</span>
               </button>
 
               <button
                 onClick={toggleStatus}
-                className={`flex items-center justify-center gap-1.5 sm:gap-2 rounded-xl px-3 py-2.5 sm:px-4 text-xs font-bold transition shadow-xs cursor-pointer border w-full sm:w-auto ${
+                className={`flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-xs font-bold transition shadow-xs cursor-pointer border active:scale-95 ${
                   seq.status === "live"
                     ? "border-amber-300 dark:border-amber-800/60 bg-amber-50 dark:bg-amber-950/30 text-amber-700 dark:text-amber-300 hover:bg-amber-100"
                     : "border-emerald-300 dark:border-emerald-800/60 bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-100"
                 }`}
               >
-                <Zap className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0" />
-                <span className="truncate">{seq.status === "live" ? "Pause Sequence" : "Activate Sequence"}</span>
+                <Zap className="h-4 w-4 shrink-0" />
+                <span>{seq.status === "live" ? "Pause Sequence" : "Activate Sequence"}</span>
               </button>
 
               <button
                 onClick={save}
                 disabled={saving}
-                className="flex items-center justify-center gap-1.5 sm:gap-2 rounded-xl bg-[#0066B2] px-4 py-2.5 sm:px-5 text-xs font-bold text-white hover:bg-[#005291] active:scale-[0.98] transition shadow-md cursor-pointer disabled:opacity-60 w-full sm:w-auto"
+                className="flex items-center justify-center gap-2 rounded-xl bg-[#0066B2] px-5 py-2.5 text-xs font-bold text-white hover:bg-[#005291] active:scale-[0.98] transition shadow-md cursor-pointer disabled:opacity-60"
               >
-                {saving ? <Loader2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 animate-spin shrink-0" /> : <Check className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0" />}
-                <span className="truncate">{saving ? "Saving..." : "Save Changes"}</span>
+                {saving ? <Loader2 className="h-4 w-4 animate-spin shrink-0" /> : <Check className="h-4 w-4 shrink-0" />}
+                <span>{saving ? "Saving..." : "Save Changes"}</span>
               </button>
 
               <button
@@ -776,85 +781,191 @@ export default function SequenceEditor() {
                     router.push("/dashboard/sequences");
                   }
                 }}
-                className="flex items-center justify-center gap-1.5 rounded-xl border border-rose-200 dark:border-rose-900/60 bg-rose-50 dark:bg-rose-950/30 px-3 py-2.5 sm:px-3.5 text-xs font-bold text-rose-600 dark:text-rose-400 hover:bg-rose-100 dark:hover:bg-rose-950/60 transition shadow-xs cursor-pointer w-full sm:w-auto"
+                className="flex items-center justify-center gap-1.5 rounded-xl border border-rose-200 dark:border-rose-900/60 bg-rose-50 dark:bg-rose-950/30 px-3.5 py-2.5 text-xs font-bold text-rose-600 dark:text-rose-400 hover:bg-rose-100 dark:hover:bg-rose-950/60 active:scale-95 transition shadow-xs cursor-pointer"
                 title="Delete this sequence permanently"
               >
-                <Trash2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0" />
+                <Trash2 className="h-4 w-4 shrink-0" />
                 <span>Delete</span>
               </button>
+            </div>
+
+            {/* Mobile / Tablet Single-Row Action Bar */}
+            <div className="lg:hidden flex items-center gap-2 w-full pt-1 relative">
+              {/* Save Changes: Full Primary CTA */}
+              <button
+                onClick={save}
+                disabled={saving}
+                className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-[#0066B2] active:bg-[#005291] px-4 py-2.5 text-xs font-bold text-white active:scale-[0.98] transition shadow-sm cursor-pointer disabled:opacity-60"
+              >
+                {saving ? <Loader2 className="h-3.5 w-3.5 animate-spin shrink-0" /> : <Check className="h-3.5 w-3.5 shrink-0 text-white" />}
+                <span className="truncate">{saving ? "Saving..." : "Save Changes"}</span>
+              </button>
+
+              {/* Pause / Resume Button */}
+              <button
+                onClick={toggleStatus}
+                className={`flex items-center justify-center gap-1.5 rounded-xl px-3 py-2.5 text-xs font-bold transition shadow-xs cursor-pointer border active:scale-95 shrink-0 ${
+                  seq.status === "live"
+                    ? "border-amber-300 dark:border-amber-800/60 bg-amber-50 dark:bg-amber-950/30 text-amber-700 dark:text-amber-300 active:bg-amber-100"
+                    : "border-emerald-300 dark:border-emerald-800/60 bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-300 active:bg-emerald-100"
+                }`}
+              >
+                <Zap className="h-3.5 w-3.5 shrink-0" />
+                <span className="text-[11px] font-semibold">{seq.status === "live" ? "Pause" : "Activate"}</span>
+              </button>
+
+              {/* More Options (•••) Trigger */}
+              <div className="relative shrink-0">
+                <button
+                  onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                  aria-label="More options"
+                  className="flex h-9 w-9 items-center justify-center rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#18181B] text-zinc-600 dark:text-zinc-300 active:bg-zinc-100 dark:active:bg-zinc-800 active:scale-95 transition shadow-xs cursor-pointer"
+                >
+                  <MoreVertical className="h-4 w-4" />
+                </button>
+
+                {/* Mobile Popover Menu */}
+                {isMobileMenuOpen && (
+                  <>
+                    <div
+                      className="fixed inset-0 z-40"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    />
+                    <div className="absolute right-0 top-11 z-50 w-52 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#18181B] p-1.5 shadow-2xl animate-in fade-in zoom-in-95 duration-150">
+                      <button
+                        onClick={() => {
+                          copyStartLink();
+                          setIsMobileMenuOpen(false);
+                        }}
+                        className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 active:bg-zinc-100 transition"
+                      >
+                        {copied ? <Check className="h-4 w-4 text-emerald-500" /> : <Copy className="h-4 w-4 text-zinc-400" />}
+                        <span>{copied ? "Copied Link!" : "Copy Stop Link"}</span>
+                      </button>
+
+                      <Link
+                        href={`/stop/${seq.id}`}
+                        target="_blank"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 active:bg-zinc-100 transition"
+                      >
+                        <ExternalLink className="h-4 w-4 text-zinc-400" />
+                        <span>Preview Stop Page</span>
+                      </Link>
+
+                      <div className="my-1 border-t border-zinc-100 dark:border-zinc-800/80" />
+
+                      <button
+                        onClick={() => {
+                          setIsMobileMenuOpen(false);
+                          if (window.confirm(`Are you sure you want to delete sequence "${seq.name}"?`)) {
+                            deleteSequence(seq.id);
+                            router.push("/dashboard/sequences");
+                          }
+                        }}
+                        className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-bold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 active:bg-rose-100 transition"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                        <span>Delete Sequence</span>
+                      </button>
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Mobile Quick KPI Summary Bar (Visible only on mobile/tablet) */}
+          <div className="lg:hidden grid grid-cols-3 gap-2 sm:gap-3">
+            <div className="rounded-xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-[#18181B] p-2.5 sm:p-3 text-center shadow-xs">
+              <span className="text-[10px] uppercase font-bold text-zinc-400 tracking-wider block truncate">Enrolled</span>
+              <span className="text-base sm:text-lg font-extrabold text-zinc-900 dark:text-white font-mono">{signedUp.toLocaleString()}</span>
+            </div>
+            <div className="rounded-xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-[#18181B] p-2.5 sm:p-3 text-center shadow-xs">
+              <span className="text-[10px] uppercase font-bold text-zinc-400 tracking-wider block truncate">Delivered</span>
+              <span className="text-base sm:text-lg font-extrabold text-indigo-600 dark:text-indigo-400 font-mono">{delivered.toLocaleString()}</span>
+            </div>
+            <div className="rounded-xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-[#18181B] p-2.5 sm:p-3 text-center shadow-xs">
+              <span className="text-[10px] uppercase font-bold text-zinc-400 tracking-wider block truncate">Open Rate</span>
+              <span className="text-base sm:text-lg font-extrabold text-emerald-600 dark:text-emerald-400 font-mono">{overallOpenRate}%</span>
             </div>
           </div>
 
           {/* Main Grid Content */}
-          <div className="grid gap-6 sm:gap-8 lg:grid-cols-12 items-start">
+          <div className="grid gap-5 sm:gap-8 lg:grid-cols-12 items-start">
             
             {/* Left Column: Email Timeline (8 Cols) */}
             <div className="lg:col-span-8 space-y-4 sm:space-y-6">
               
-              <div className="flex items-center justify-between gap-3">
+              {/* Timeline Header */}
+              <div className="flex items-center justify-between gap-2">
                 <div className="min-w-0 flex-1">
-                  <h3 className="text-sm sm:text-base font-bold text-zinc-900 dark:text-white flex items-center gap-2 truncate">
-                    <Mail className="h-4 w-4 text-[#0066B2] dark:text-[#38BDF8] shrink-0" />
-                    <span>Automated Drip Sequence Steps</span>
-                  </h3>
-                  <p className="text-[11px] sm:text-xs text-zinc-500 dark:text-zinc-400 mt-0.5 truncate">
-                    {emailsWithBody.length} scheduled email{emailsWithBody.length !== 1 ? "s" : ""} in this follow-up funnel.
-                  </p>
+                  <h2 className="text-xs sm:text-sm font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 flex items-center gap-1.5 truncate">
+                    <Mail className="h-3.5 w-3.5 text-[#0066B2] dark:text-[#38BDF8] shrink-0" />
+                    <span>Drip Sequence Steps</span>
+                    <span className="ml-1 inline-flex items-center justify-center rounded-full bg-blue-100 dark:bg-blue-950/60 text-[#0066B2] dark:text-[#38BDF8] text-[10px] font-bold px-1.5 py-0.2">
+                      {emailsWithBody.length + 1}
+                    </span>
+                  </h2>
                 </div>
                 
                 <button
                   onClick={addEmail}
-                  className="inline-flex items-center gap-1.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#18181B] px-2.5 sm:px-3 py-1.5 text-xs font-bold text-[#0066B2] dark:text-[#38BDF8] hover:bg-blue-50 dark:hover:bg-zinc-800 transition shadow-xs cursor-pointer shrink-0"
+                  className="inline-flex items-center gap-1.5 rounded-xl border border-blue-200 dark:border-blue-900/60 bg-blue-50/80 dark:bg-blue-950/40 px-2.5 sm:px-3 py-1.5 text-xs font-bold text-[#0066B2] dark:text-[#38BDF8] hover:bg-blue-100 dark:hover:bg-blue-900/60 active:scale-95 transition shadow-xs cursor-pointer shrink-0"
                 >
                   <Plus className="h-3.5 w-3.5" />
                   <span>Add Step</span>
                 </button>
               </div>
 
-              {/* Email Cards Container */}
-              <div className="relative space-y-4">
-                {/* Connecting Vertical Line */}
-                <div className="absolute left-5 sm:left-6 top-8 bottom-8 w-0.5 bg-gradient-to-b from-[#0066B2]/40 via-zinc-200 dark:via-zinc-800 to-transparent z-0 pointer-events-none" />
-
+              {/* Email Cards Container with Workflow Flow */}
+              <div className="space-y-0">
+                
                 {/* Step 1: Instant Resource Delivery Milestone Card */}
-                <div className="relative z-10 rounded-2xl border border-emerald-200/90 dark:border-emerald-900/60 bg-gradient-to-br from-emerald-50/70 via-white to-white dark:from-emerald-950/20 dark:via-[#18181B] dark:to-[#18181B] p-3.5 sm:p-5 shadow-sm transition hover:shadow-md backdrop-blur-sm">
-                  <div className="flex flex-wrap items-center justify-between gap-2.5 pb-3 border-b border-emerald-100 dark:border-emerald-950/60">
-                    <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+                <div className="rounded-2xl border border-emerald-500/30 dark:border-emerald-500/20 bg-gradient-to-br from-emerald-50/80 via-white to-white dark:from-emerald-950/20 dark:via-[#18181B] dark:to-[#18181B] p-3.5 sm:p-5 shadow-xs transition hover:shadow-md">
+                  
+                  {/* Step 1 Header Row: Balanced & Responsive */}
+                  <div className="flex items-center justify-between gap-2.5">
+                    <div className="flex items-center gap-2 sm:gap-2.5 min-w-0">
                       <span className="flex h-6 w-6 sm:h-7 sm:w-7 shrink-0 items-center justify-center rounded-lg sm:rounded-xl bg-emerald-600 text-xs font-extrabold text-white shadow-xs">
                         1
                       </span>
-                      <div className="flex items-center gap-1.5 rounded-xl border border-emerald-300/80 dark:border-emerald-800/60 bg-emerald-100/80 dark:bg-emerald-950/50 px-2 sm:px-2.5 py-1 text-xs font-bold text-emerald-950 dark:text-emerald-200">
-                        <Zap className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-emerald-700 dark:text-emerald-400 shrink-0" />
-                        <span>Instant Delivery (On Signup)</span>
+                      <div className="flex items-center gap-1.5 min-w-0">
+                        <span className="text-xs sm:text-sm font-bold text-zinc-900 dark:text-white truncate">
+                          Instant Delivery
+                        </span>
+                        <span className="inline-flex items-center rounded-md border border-emerald-300/80 dark:border-emerald-800/60 bg-emerald-100/80 dark:bg-emerald-950/50 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-800 dark:text-emerald-300 shrink-0">
+                          On Signup
+                        </span>
                       </div>
-                      <span className="text-[11px] font-semibold text-zinc-600 dark:text-zinc-400">
-                        Initial resource download email
-                      </span>
                     </div>
 
-                    <div className="flex items-center gap-1.5 sm:gap-2 ml-auto sm:ml-0">
-                      <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] sm:text-[11px] font-bold text-emerald-700 dark:text-emerald-400">
-                        <Check className="h-3 w-3 shrink-0" />
-                        100% Delivered ({delivered.toLocaleString()})
-                      </span>
-                      <span className="inline-flex items-center gap-1 rounded-full bg-indigo-500/10 px-2 py-0.5 text-[10px] sm:text-[11px] font-bold text-indigo-700 dark:text-indigo-400">
-                        <Eye className="h-3 w-3 shrink-0" />
-                        {overallOpenRate}% Open Rate
-                      </span>
+                    {/* Step 1 Performance Stats Pill */}
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      <div className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-200/80 dark:border-zinc-800 bg-white/90 dark:bg-zinc-900/90 px-2 py-1 text-[10px] sm:text-[11px] font-medium text-zinc-600 dark:text-zinc-300 shadow-2xs">
+                        <span className="inline-flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-bold">
+                          <Check className="h-3 w-3 shrink-0" />
+                          <span>{delivered.toLocaleString()} Sent</span>
+                        </span>
+                        <span className="text-zinc-300 dark:text-zinc-700">•</span>
+                        <span className="inline-flex items-center gap-1 text-indigo-600 dark:text-indigo-400 font-bold">
+                          <Eye className="h-3 w-3 shrink-0" />
+                          <span>{overallOpenRate}% Open</span>
+                        </span>
+                      </div>
                     </div>
                   </div>
 
-                  <div className="mt-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white/80 dark:bg-zinc-900/60 rounded-xl p-3 border border-emerald-100 dark:border-emerald-950/40">
+                  {/* Step 1 Inner Delivery Details Box */}
+                  <div className="mt-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white/90 dark:bg-zinc-900/80 rounded-xl p-3 sm:p-3.5 border border-emerald-100 dark:border-emerald-950/50">
                     <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-2">
-                        <p className="text-[10px] font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">
-                          Resource Email Subject
-                        </p>
-                      </div>
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">
+                        Resource Delivery Email
+                      </p>
                       <p className="text-xs sm:text-sm font-bold text-zinc-900 dark:text-white truncate mt-0.5">
                         {attachedPage?.emailSubject || `Here is your requested resource: ${attachedPage?.name || "Download"}`}
                       </p>
-                      <p className="text-[11px] text-zinc-500 dark:text-zinc-400 mt-0.5 truncate">
+                      <p className="text-[11px] text-zinc-500 dark:text-zinc-400 mt-0.5 line-clamp-1">
                         Dispatched immediately to deliver the file link upon form submission.
                       </p>
                     </div>
@@ -862,15 +973,16 @@ export default function SequenceEditor() {
                     {attachedPage && (
                       <Link
                         href={`/dashboard/leadmagnets/edit/${attachedPage.id}?tab=delivery`}
-                        className="inline-flex items-center gap-1 text-[11px] font-bold text-[#0066B2] dark:text-[#38BDF8] hover:underline shrink-0"
+                        className="inline-flex items-center gap-1 text-[11px] font-bold text-[#0066B2] dark:text-[#38BDF8] hover:underline shrink-0 self-start sm:self-auto pt-0.5 sm:pt-0"
                       >
                         <span>Edit Delivery Template</span>
-                        <ArrowUpRight className="h-3 w-3" />
+                        <ArrowUpRight className="h-3.5 w-3.5" />
                       </Link>
                     )}
                   </div>
                 </div>
 
+                {/* Drip Follow-up Step Cards with Flow Connectors */}
                 {emailsWithBody.map((email, i) => {
                   const isExpanded = expandedEmailId === email.id;
                   const currentTab = activeTab[email.id] || "edit";
@@ -878,257 +990,293 @@ export default function SequenceEditor() {
                   const isCustomDelay = !standardDelays.some((d) => d.minutes === email.delayMinutes);
 
                   return (
-                    <div
-                      key={email.id}
-                      className="relative z-10 rounded-2xl border border-zinc-200/90 dark:border-zinc-800/90 bg-white dark:bg-[#18181B] p-3.5 sm:p-5 shadow-sm transition hover:shadow-md backdrop-blur-sm"
-                    >
-                      {/* Card Top Control Row - Flexible for Mobile */}
-                      <div className="flex flex-wrap items-center justify-between gap-2.5 pb-3 border-b border-zinc-100 dark:border-zinc-800/60">
-                        <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
-                          <span className="flex h-6 w-6 sm:h-7 sm:w-7 shrink-0 items-center justify-center rounded-lg sm:rounded-xl bg-[#0066B2] text-xs font-extrabold text-white shadow-xs">
-                            {i + 2}
-                          </span>
-                          <span className="text-xs font-extrabold text-[#0066B2] dark:text-[#38BDF8] bg-blue-50 dark:bg-blue-950/40 px-2 py-0.5 rounded-lg border border-blue-200 dark:border-blue-900/60 shrink-0">
-                            Follow-up #{i + 1}
-                          </span>
+                    <div key={email.id}>
+                      {/* Flow Connector Line Between Steps */}
+                      <div className="flex flex-col items-center justify-center my-2 py-0.5">
+                        <div className="h-3.5 w-0.5 bg-gradient-to-b from-zinc-300 dark:from-zinc-700 to-blue-400/60" />
+                        <div className="inline-flex items-center gap-1.5 rounded-full border border-blue-200/80 dark:border-blue-900/60 bg-blue-50/90 dark:bg-blue-950/60 px-2.5 py-0.5 text-[10px] font-bold text-[#0066B2] dark:text-[#38BDF8] shadow-2xs">
+                          <Clock className="h-2.5 w-2.5 shrink-0" />
+                          <span>Waits {email.delayLabel || "1 day later"}</span>
+                        </div>
+                        <div className="h-3.5 w-0.5 bg-gradient-to-b from-blue-400/60 to-zinc-300 dark:to-zinc-700" />
+                      </div>
 
-                          {/* Delay Selector */}
-                          <div className="flex items-center gap-1.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 px-2 sm:px-2.5 py-1 text-xs font-semibold text-zinc-700 dark:text-zinc-300">
-                            <Clock className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-zinc-400 shrink-0" />
-                            <select
-                              value={email.delayMinutes}
-                              onChange={(e) => {
-                                const val = Number(e.target.value);
-                                const d = standardDelays.find((x) => x.minutes === val);
-                                patchEmail(email.id, {
-                                  delayMinutes: val,
-                                  delayLabel: d ? d.label : `${Math.round(val / 1440)} days later`,
-                                });
-                              }}
-                              aria-label="Email delay"
-                              className="bg-transparent font-bold text-xs text-zinc-900 dark:text-white outline-none cursor-pointer"
-                            >
-                              {isCustomDelay && (
-                                <option value={email.delayMinutes} className="bg-white dark:bg-zinc-900">
-                                  {email.delayLabel || `${Math.round(email.delayMinutes / 1440)} days later`}
-                                </option>
-                              )}
-                              {standardDelays.map((d) => (
-                                <option key={d.minutes} value={d.minutes} className="bg-white dark:bg-zinc-900">
-                                  {d.label}
-                                </option>
-                              ))}
-                            </select>
+                      <div className="rounded-2xl border border-zinc-200/90 dark:border-zinc-800/90 bg-white dark:bg-[#18181B] p-3.5 sm:p-5 shadow-xs transition hover:shadow-md">
+                        {/* Step Header: Balanced & Touch-Friendly */}
+                        <div className="flex items-center justify-between gap-2">
+                          
+                          {/* Left: Step Number, Follow-up label & Delay picker */}
+                          <div className="flex items-center gap-1.5 sm:gap-2.5 flex-wrap min-w-0">
+                            <span className="flex h-6 w-6 sm:h-7 sm:w-7 shrink-0 items-center justify-center rounded-lg sm:rounded-xl bg-[#0066B2] text-xs font-extrabold text-white shadow-xs">
+                              {i + 2}
+                            </span>
+                            
+                            <span className="text-xs font-bold text-[#0066B2] dark:text-[#38BDF8] bg-blue-50 dark:bg-blue-950/40 px-2 py-0.5 rounded-lg border border-blue-200/70 dark:border-blue-900/60 shrink-0">
+                              Follow-up #{i + 1}
+                            </span>
+
+                            {/* Delay Selector Pill */}
+                            <div className="flex items-center gap-1 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 px-2 py-1 text-[11px] sm:text-xs font-semibold text-zinc-700 dark:text-zinc-300 shrink-0">
+                              <Clock className="h-3 w-3 text-zinc-400 shrink-0" />
+                              <select
+                                value={email.delayMinutes}
+                                onChange={(e) => {
+                                  const val = Number(e.target.value);
+                                  const d = standardDelays.find((x) => x.minutes === val);
+                                  patchEmail(email.id, {
+                                    delayMinutes: val,
+                                    delayLabel: d ? d.label : `${Math.round(val / 1440)} days later`,
+                                  });
+                                }}
+                                aria-label="Email delay"
+                                className="bg-transparent font-bold text-[11px] sm:text-xs text-zinc-900 dark:text-white outline-none cursor-pointer pr-1"
+                              >
+                                {isCustomDelay && (
+                                  <option value={email.delayMinutes} className="bg-white dark:bg-zinc-900">
+                                    {email.delayLabel || `${Math.round(email.delayMinutes / 1440)} days later`}
+                                  </option>
+                                )}
+                                {standardDelays.map((d) => (
+                                  <option key={d.minutes} value={d.minutes} className="bg-white dark:bg-zinc-900">
+                                    {d.label}
+                                  </option>
+                                ))}
+                              </select>
+                            </div>
                           </div>
 
-                          {/* Reordering Controls */}
-                          <div className="flex items-center gap-0.5 border-l border-zinc-200 dark:border-zinc-800 pl-1.5 sm:pl-2">
+                          {/* Right: Step Actions (Reorder, Expand, Delete) */}
+                          <div className="flex items-center gap-1 shrink-0">
+                            {/* Reorder Buttons */}
+                            <div className="flex items-center bg-zinc-100 dark:bg-zinc-850 rounded-lg p-0.5">
+                              <button
+                                disabled={i === 0}
+                                onClick={() => moveEmailUp(i)}
+                                title="Move step up"
+                                className="p-1 rounded text-zinc-500 hover:text-zinc-900 dark:hover:text-white hover:bg-white dark:hover:bg-zinc-800 disabled:opacity-20 cursor-pointer disabled:cursor-not-allowed transition"
+                              >
+                                <ArrowUp className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+                              </button>
+                              <button
+                                disabled={i === emailsWithBody.length - 1}
+                                onClick={() => moveEmailDown(i)}
+                                title="Move step down"
+                                className="p-1 rounded text-zinc-500 hover:text-zinc-900 dark:hover:text-white hover:bg-white dark:hover:bg-zinc-800 disabled:opacity-20 cursor-pointer disabled:cursor-not-allowed transition"
+                              >
+                                <ArrowDown className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+                              </button>
+                            </div>
+
+                            {/* Expand/Collapse Chevron Button */}
                             <button
-                              disabled={i === 0}
-                              onClick={() => moveEmailUp(i)}
-                              title="Move step up"
-                              className="p-1 rounded text-zinc-400 hover:text-zinc-700 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 disabled:opacity-20 cursor-pointer disabled:cursor-not-allowed"
+                              onClick={() => setExpandedEmailId(isExpanded ? null : email.id)}
+                              className="flex h-7 w-7 items-center justify-center rounded-lg text-zinc-500 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 transition cursor-pointer"
+                              title="Toggle email editor"
                             >
-                              <ArrowUp className="h-3.5 w-3.5" />
+                              {isExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
                             </button>
+
+                            {/* Delete Step Button */}
                             <button
-                              disabled={i === emailsWithBody.length - 1}
-                              onClick={() => moveEmailDown(i)}
-                              title="Move step down"
-                              className="p-1 rounded text-zinc-400 hover:text-zinc-700 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 disabled:opacity-20 cursor-pointer disabled:cursor-not-allowed"
+                              aria-label="Delete email step"
+                              onClick={() => removeEmail(email.id, i)}
+                              className="flex h-7 w-7 items-center justify-center rounded-lg text-zinc-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition cursor-pointer"
                             >
-                              <ArrowDown className="h-3.5 w-3.5" />
+                              <Trash2 className="h-3.5 w-3.5" />
                             </button>
                           </div>
                         </div>
 
-                        {/* Stats & Actions */}
-                        <div className="flex items-center gap-1.5 sm:gap-2 ml-auto sm:ml-0">
-                          <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] sm:text-[11px] font-bold text-emerald-600 dark:text-emerald-400">
+                        {/* Step Performance Sub-Bar */}
+                        <div className="flex items-center justify-between gap-2 pt-2.5 text-[11px] text-zinc-500 dark:text-zinc-400">
+                          <span className="inline-flex items-center gap-1 rounded-md bg-emerald-500/10 px-1.5 py-0.5 text-[10px] sm:text-[11px] font-bold text-emerald-600 dark:text-emerald-400">
                             <Eye className="h-3 w-3 shrink-0" />
-                            {openPercentage}% Open Rate
+                            <span>{openPercentage}% Open Rate</span>
+                          </span>
+                          <span className="text-[10px] sm:text-[11px] text-zinc-400 font-medium">
+                            {email.sent.toLocaleString()} Sent · {email.opened.toLocaleString()} Opened
+                          </span>
+                        </div>
+
+                        {/* Subject Line Input Row */}
+                        <div className="mt-3 space-y-1.5">
+                          <div className="flex items-center justify-between gap-2">
+                            <label className="block text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+                              Subject Line *
+                            </label>
+                            <button
+                              onClick={() => generateAiSubject(email.id)}
+                              disabled={generatingAiForId === email.id}
+                              className="inline-flex items-center gap-1 text-[10px] sm:text-[11px] font-bold text-[#0066B2] dark:text-[#38BDF8] hover:underline cursor-pointer disabled:opacity-50"
+                            >
+                              {generatingAiForId === email.id ? (
+                                <Loader2 className="h-3 w-3 animate-spin" />
+                              ) : (
+                                <Sparkles className="h-3 w-3 text-amber-500 shrink-0" />
+                              )}
+                              <span>AI Subject Suggest</span>
+                            </button>
+                          </div>
+
+                          <div className="relative">
+                            <input
+                              type="text"
+                              value={email.subject}
+                              onChange={(e) => patchEmail(email.id, { subject: e.target.value })}
+                              placeholder="Enter compelling email subject..."
+                              className="w-full rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/90 p-2.5 sm:p-3 text-xs sm:text-sm font-semibold text-zinc-900 dark:text-white placeholder-zinc-400 focus:border-[#0066B2] focus:outline-none shadow-xs"
+                            />
+                          </div>
+                        </div>
+
+                        {/* Expandable Email Body & Preview Section */}
+                        {isExpanded && (
+                          <div className="mt-3 sm:mt-4 pt-3.5 space-y-3 animate-in fade-in duration-200">
+                            <div className="flex items-center justify-between flex-wrap gap-2">
+                              {/* Segmented Control Tabs */}
+                              <div className="flex items-center p-0.5 rounded-lg bg-zinc-100 dark:bg-zinc-800/90">
+                                <button
+                                  onClick={() => setActiveTab((prev) => ({ ...prev, [email.id]: "edit" }))}
+                                  className={`px-2.5 sm:px-3 py-1 rounded-md text-[11px] sm:text-xs font-bold transition ${
+                                    currentTab === "edit"
+                                      ? "bg-white dark:bg-zinc-900 text-zinc-900 dark:text-white shadow-xs"
+                                      : "text-zinc-500 hover:text-zinc-900 dark:hover:text-white"
+                                  }`}
+                                >
+                                  Edit Body
+                                </button>
+                                <button
+                                  onClick={() => setActiveTab((prev) => ({ ...prev, [email.id]: "preview" }))}
+                                  className={`px-2.5 sm:px-3 py-1 rounded-md text-[11px] sm:text-xs font-bold transition ${
+                                    currentTab === "preview"
+                                      ? "bg-white dark:bg-zinc-900 text-zinc-900 dark:text-white shadow-xs"
+                                      : "text-zinc-500 hover:text-zinc-900 dark:hover:text-white"
+                                  }`}
+                                >
+                                  Live Preview
+                                </button>
+                              </div>
+
+                              <div className="flex items-center gap-1.5 sm:gap-2">
+                                {/* AI Generate Body */}
+                                <button
+                                  onClick={() => generateAiBody(email.id)}
+                                  disabled={generatingAiBodyForId === email.id}
+                                  className="inline-flex items-center gap-1 rounded-lg border border-purple-200 dark:border-purple-900/60 bg-purple-50 dark:bg-purple-950/40 px-2 py-1 text-[10px] sm:text-[11px] font-bold text-purple-700 dark:text-purple-300 hover:bg-purple-100 transition cursor-pointer disabled:opacity-50"
+                                  title="Generate email body with AI"
+                                >
+                                  {generatingAiBodyForId === email.id ? (
+                                    <Loader2 className="h-3 w-3 animate-spin shrink-0" />
+                                  ) : (
+                                    <Sparkles className="h-3 w-3 text-purple-500 shrink-0" />
+                                  )}
+                                  <span>AI Body</span>
+                                </button>
+
+                                {/* Send Test Email */}
+                                <button
+                                  onClick={() => sendTestEmail(email.id)}
+                                  disabled={sendingTestForId === email.id}
+                                  className="inline-flex items-center gap-1 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-2 sm:px-2.5 py-1 text-[10px] sm:text-[11px] font-bold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 active:scale-95 transition cursor-pointer disabled:opacity-50"
+                                  title="Send test email to your account email"
+                                >
+                                  {sendingTestForId === email.id ? (
+                                    <Loader2 className="h-3 w-3 animate-spin shrink-0" />
+                                  ) : (
+                                    <Send className="h-3 w-3 text-zinc-400 shrink-0" />
+                                  )}
+                                  <span>Send Test</span>
+                                </button>
+                              </div>
+                            </div>
+
+                            {/* Quick Variable Insertion Tags */}
+                            <div className="flex items-center gap-1 sm:gap-1.5 flex-wrap pt-0.5">
+                              <span className="text-[10px] sm:text-[11px] font-medium text-zinc-400">Insert tag:</span>
+                              {["{first_name}", "{resource_link}", "{name}"].map((tag) => (
+                                <button
+                                  key={tag}
+                                  type="button"
+                                  onClick={() => insertVariable(email.id, tag)}
+                                  className="inline-flex items-center rounded-md bg-zinc-100 dark:bg-zinc-800 px-1.5 sm:px-2 py-0.5 text-[9px] sm:text-[10px] font-mono text-zinc-600 dark:text-zinc-300 hover:bg-[#0066B2]/10 hover:text-[#0066B2] dark:hover:text-[#38BDF8] active:scale-95 transition cursor-pointer"
+                                >
+                                  + {tag}
+                                </button>
+                              ))}
+                            </div>
+
+                            {currentTab === "edit" ? (
+                              <textarea
+                                rows={6}
+                                value={htmlToPlainText(email.body || "")}
+                                onChange={(e) => patchEmail(email.id, { body: e.target.value })}
+                                placeholder="Write your email content here..."
+                                className="w-full rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 p-2.5 sm:p-3 text-xs sm:text-sm font-medium text-zinc-800 dark:text-zinc-200 placeholder-zinc-400 focus:border-[#0066B2] focus:outline-none font-sans leading-relaxed"
+                              />
+                            ) : (
+                              <div className="rounded-xl border border-zinc-200/80 dark:border-zinc-800 bg-zinc-50/80 dark:bg-zinc-950/80 p-3 sm:p-4 text-xs space-y-3">
+                                <div className="text-[10px] sm:text-[11px] font-semibold text-zinc-400 pb-2 flex justify-between items-center gap-2">
+                                  <div className="truncate">
+                                    From: {account?.name || "Your Brand"} &lt;{account?.email || "hello@yourbrand.com"}&gt;
+                                    <br />
+                                    Subject: <span className="text-zinc-800 dark:text-zinc-200">{email.subject}</span>
+                                  </div>
+                                  <span className="text-[9px] sm:text-[10px] bg-emerald-500/10 text-emerald-500 px-2 py-0.5 rounded-full font-bold shrink-0">
+                                    Preview Mode
+                                  </span>
+                                </div>
+                                <div className="whitespace-pre-wrap text-zinc-800 dark:text-zinc-200 font-sans leading-relaxed pt-1 text-xs">
+                                  {(email.body || "")
+                                    .replace(/\{first_name\}/g, "Alex")
+                                    .replace(/\{name\}/g, "Alex")
+                                    .replace(/\{resource_link\}/g, attachedPage ? `https://magnets.app/${account?.username || "demo"}/${attachedPage.slug}` : "https://download-resource.com")}
+                                </div>
+                                <div className="pt-2 text-[10px] text-zinc-400 flex items-center justify-between gap-2">
+                                  <span className="truncate">No longer want these emails? <span className="text-rose-500 underline cursor-pointer">Unsubscribe</span></span>
+                                  <span className="shrink-0">Stop link attached</span>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        )}
+
+                        {/* Card Footer Info */}
+                        <div className="mt-3 flex items-center justify-between gap-2 text-[11px] text-zinc-500 dark:text-zinc-400 pt-1">
+                          <span className="text-[10px] sm:text-[11px] font-medium text-zinc-400">
+                            {isExpanded ? "Editor active" : "Drip follow-up step"}
                           </span>
 
                           <button
                             onClick={() => setExpandedEmailId(isExpanded ? null : email.id)}
-                            className="flex h-6 w-6 sm:h-7 sm:w-7 items-center justify-center rounded-lg text-zinc-400 hover:text-zinc-700 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 transition"
-                            title="Toggle email content editor"
+                            className="text-[#0066B2] dark:text-[#38BDF8] hover:underline font-bold text-[11px] cursor-pointer"
                           >
-                            {isExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-                          </button>
-
-                          <button
-                            aria-label="Delete email step"
-                            onClick={() => removeEmail(email.id, i)}
-                            className="flex h-6 w-6 sm:h-7 sm:w-7 items-center justify-center rounded-lg text-zinc-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition cursor-pointer"
-                          >
-                            <Trash2 className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                            {isExpanded ? "Collapse Editor" : "Edit Body →"}
                           </button>
                         </div>
-                      </div>
-
-                      {/* Subject Line Input Row */}
-                      <div className="mt-3 sm:mt-4 space-y-1.5 sm:space-y-2">
-                        <div className="flex items-center justify-between">
-                          <label className="block text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
-                            Subject Line *
-                          </label>
-                          <button
-                            onClick={() => generateAiSubject(email.id)}
-                            disabled={generatingAiForId === email.id}
-                            className="inline-flex items-center gap-1 text-[10px] sm:text-[11px] font-bold text-[#0066B2] dark:text-[#38BDF8] hover:underline cursor-pointer disabled:opacity-50"
-                          >
-                            {generatingAiForId === email.id ? (
-                              <Loader2 className="h-3 w-3 animate-spin" />
-                            ) : (
-                              <Sparkles className="h-3 w-3 text-amber-500" />
-                            )}
-                            <span>AI Subject Suggest</span>
-                          </button>
-                        </div>
-
-                        <div className="relative">
-                          <input
-                            type="text"
-                            value={email.subject}
-                            onChange={(e) => patchEmail(email.id, { subject: e.target.value })}
-                            placeholder="Enter compelling email subject..."
-                            className="w-full rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/90 p-2.5 sm:p-3 text-xs font-semibold text-zinc-900 dark:text-white placeholder-zinc-400 focus:border-[#0066B2] focus:outline-none shadow-xs"
-                          />
-                        </div>
-                      </div>
-
-                      {/* Expandable Email Body & Preview Section */}
-                      {isExpanded && (
-                        <div className="mt-3.5 sm:mt-4 pt-3.5 sm:pt-4 border-t border-zinc-100 dark:border-zinc-800 space-y-3 animate-in fade-in duration-200">
-                          <div className="flex items-center justify-between flex-wrap gap-2">
-                            <div className="flex items-center gap-1.5 sm:gap-2">
-                              <button
-                                onClick={() => setActiveTab((prev) => ({ ...prev, [email.id]: "edit" }))}
-                                className={`px-2.5 sm:px-3 py-1 rounded-lg text-xs font-bold transition ${
-                                  currentTab === "edit"
-                                    ? "bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 shadow-xs"
-                                    : "text-zinc-500 hover:text-zinc-900 dark:hover:text-white"
-                                }`}
-                              >
-                                Edit Body
-                              </button>
-                              <button
-                                onClick={() => setActiveTab((prev) => ({ ...prev, [email.id]: "preview" }))}
-                                className={`px-2.5 sm:px-3 py-1 rounded-lg text-xs font-bold transition ${
-                                  currentTab === "preview"
-                                    ? "bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 shadow-xs"
-                                    : "text-zinc-500 hover:text-zinc-900 dark:hover:text-white"
-                                }`}
-                              >
-                                Live Preview
-                              </button>
-                            </div>
-
-                            <div className="flex items-center gap-1.5 sm:gap-2">
-                              <button
-                                onClick={() => sendTestEmail(email.id)}
-                                disabled={sendingTestForId === email.id}
-                                className="inline-flex items-center gap-1 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-2 sm:px-2.5 py-1 text-[10px] sm:text-[11px] font-bold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 transition cursor-pointer disabled:opacity-50"
-                                title="Send test email to your account email"
-                              >
-                                {sendingTestForId === email.id ? (
-                                  <Loader2 className="h-3 w-3 animate-spin" />
-                                ) : (
-                                  <Send className="h-3 w-3 text-zinc-400" />
-                                )}
-                                <span>Send Test</span>
-                              </button>
-                            </div>
-                          </div>
-
-                          {/* Quick Variable Insertion Pills */}
-                          <div className="flex items-center gap-1 sm:gap-1.5 flex-wrap pt-1">
-                            <span className="text-[10px] sm:text-[11px] font-medium text-zinc-400">Insert tag:</span>
-                            {["{first_name}", "{resource_link}", "{name}"].map((tag) => (
-                              <button
-                                key={tag}
-                                type="button"
-                                onClick={() => insertVariable(email.id, tag)}
-                                className="inline-flex items-center rounded-md bg-zinc-100 dark:bg-zinc-800 px-1.5 sm:px-2 py-0.5 text-[9px] sm:text-[10px] font-mono text-zinc-600 dark:text-zinc-300 hover:bg-[#0066B2]/10 hover:text-[#0066B2] dark:hover:text-[#38BDF8] transition cursor-pointer"
-                              >
-                                + {tag}
-                              </button>
-                            ))}
-                          </div>
-
-                          {currentTab === "edit" ? (
-                            <textarea
-                              rows={6}
-                              value={htmlToPlainText(email.body || "")}
-                              onChange={(e) => patchEmail(email.id, { body: e.target.value })}
-                              placeholder="Write your email content here..."
-                              className="w-full rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 p-2.5 sm:p-3 text-xs font-medium text-zinc-800 dark:text-zinc-200 placeholder-zinc-400 focus:border-[#0066B2] focus:outline-none font-sans leading-relaxed"
-                            />
-                          ) : (
-                            <div className="rounded-xl border border-zinc-200/80 dark:border-zinc-800 bg-zinc-50/80 dark:bg-zinc-950/80 p-3 sm:p-4 text-xs space-y-3">
-                              <div className="text-[10px] sm:text-[11px] font-semibold text-zinc-400 border-b border-zinc-200 dark:border-zinc-800 pb-2 flex justify-between items-center gap-2">
-                                <div className="truncate">
-                                  From: {account?.name || "Your Brand"} &lt;{account?.email || "hello@yourbrand.com"}&gt;
-                                  <br />
-                                  Subject: <span className="text-zinc-800 dark:text-zinc-200">{email.subject}</span>
-                                </div>
-                                <span className="text-[9px] sm:text-[10px] bg-emerald-500/10 text-emerald-500 px-2 py-0.5 rounded-full font-bold shrink-0">
-                                  Preview Mode
-                                </span>
-                              </div>
-                              <div className="whitespace-pre-wrap text-zinc-800 dark:text-zinc-200 font-sans leading-relaxed pt-1 text-xs">
-                                {(email.body || "")
-                                  .replace(/\{first_name\}/g, "Alex")
-                                  .replace(/\{name\}/g, "Alex")
-                                  .replace(/\{resource_link\}/g, attachedPage ? `https://magnets.app/${account?.username || "demo"}/${attachedPage.slug}` : "https://download-resource.com")}
-                              </div>
-                              <div className="pt-2 sm:pt-3 border-t border-zinc-200/80 dark:border-zinc-800/80 text-[10px] text-zinc-400 flex items-center justify-between gap-2">
-                                <span className="truncate">No longer want these emails? <span className="text-rose-500 underline cursor-pointer">Unsubscribe</span></span>
-                                <span className="shrink-0">Stop link attached</span>
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      )}
-
-                      {/* Card Footer Info */}
-                      <div className="mt-3 sm:mt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-[11px] text-zinc-500 dark:text-zinc-400 pt-2 border-t border-zinc-100 dark:border-zinc-800/40">
-                        <span className="flex items-center gap-1.5 font-medium">
-                          <Send className="h-3 w-3 text-zinc-400 shrink-0" />
-                          <span>{email.sent.toLocaleString()} Delivered</span>
-                          <span className="text-zinc-300 dark:text-zinc-700">•</span>
-                          <span>{email.opened.toLocaleString()} Opened</span>
-                        </span>
-
-                        <button
-                          onClick={() => setExpandedEmailId(isExpanded ? null : email.id)}
-                          className="text-[#0066B2] dark:text-[#38BDF8] hover:underline font-bold text-[11px] cursor-pointer self-start sm:self-auto"
-                        >
-                          {isExpanded ? "Collapse Editor" : "Edit Content & Body →"}
-                        </button>
                       </div>
                     </div>
                   );
                 })}
 
                 {/* Add Email Step Action Button */}
-                <button
-                  onClick={addEmail}
-                  className="flex w-full items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-zinc-300 dark:border-zinc-800 bg-white/40 dark:bg-[#18181B]/40 py-3.5 sm:py-4 text-xs font-bold text-zinc-600 dark:text-zinc-400 hover:border-[#0066B2] hover:text-[#0066B2] dark:hover:border-[#38BDF8] dark:hover:text-[#38BDF8] hover:bg-blue-50/50 dark:hover:bg-blue-950/20 transition cursor-pointer shadow-xs"
-                >
-                  <Plus className="h-4 w-4" />
-                  <span>Add Another Email Step to Funnel</span>
-                </button>
+                <div className="pt-3">
+                  <button
+                    onClick={addEmail}
+                    className="flex w-full items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-zinc-300 dark:border-zinc-800 bg-white/40 dark:bg-[#18181B]/40 py-3.5 sm:py-4 text-xs font-bold text-zinc-600 dark:text-zinc-400 hover:border-[#0066B2] hover:text-[#0066B2] dark:hover:border-[#38BDF8] dark:hover:text-[#38BDF8] hover:bg-blue-50/50 dark:hover:bg-blue-950/20 active:scale-[0.99] transition cursor-pointer shadow-xs"
+                  >
+                    <Plus className="h-4 w-4" />
+                    <span>Add Another Email Step to Funnel</span>
+                  </button>
+                </div>
               </div>
             </div>
 
-            {/* Right Column: Performance & Settings (4 Cols) */}
+            {/* Right Column: Performance & Settings (4 Cols on Desktop, Stacked on Mobile) */}
             <div className="lg:col-span-4 space-y-4 sm:space-y-6">
               
               {/* Performance Metrics Card */}
-              <div className="rounded-2xl border border-zinc-200/90 dark:border-zinc-800/90 bg-white dark:bg-[#18181B] p-4 sm:p-5 shadow-sm space-y-4">
-                <div className="flex items-center justify-between border-b border-zinc-100 dark:border-zinc-800 pb-3">
+              <div className="rounded-2xl border border-zinc-200/90 dark:border-zinc-800/90 bg-white dark:bg-[#18181B] p-4 sm:p-5 shadow-xs space-y-4">
+                <div className="flex items-center justify-between">
                   <h3 className="text-xs font-extrabold uppercase tracking-wider text-zinc-900 dark:text-white flex items-center gap-2">
                     <Rocket className="h-4 w-4 text-[#0066B2] dark:text-[#38BDF8]" />
                     <span>Funnel Performance</span>
@@ -1140,7 +1288,7 @@ export default function SequenceEditor() {
 
                 <div className="space-y-4">
                   {/* Contacts Section */}
-                  <div className="space-y-2.5">
+                  <div className="space-y-2">
                     <div className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 flex items-center gap-1.5">
                       <Users className="h-3 w-3" />
                       <span>Enrolled Contacts</span>
@@ -1167,7 +1315,7 @@ export default function SequenceEditor() {
                   </div>
 
                   {/* Total Email Volume Section */}
-                  <div className="pt-3 border-t border-zinc-100 dark:border-zinc-800/80 space-y-2.5">
+                  <div className="pt-2 space-y-2">
                     <div className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 flex items-center gap-1.5">
                       <Mail className="h-3 w-3" />
                       <span>Total Email Sends</span>
@@ -1193,7 +1341,7 @@ export default function SequenceEditor() {
                 </div>
 
                 {/* Open Rate Visual Bar */}
-                <div className="pt-2">
+                <div className="pt-1">
                   <div className="flex justify-between text-[11px] font-semibold text-zinc-500 dark:text-zinc-400 mb-1">
                     <span>Email Engagement Rate</span>
                     <span>{overallOpenRate}%</span>
@@ -1207,7 +1355,7 @@ export default function SequenceEditor() {
                 </div>
 
                 {/* View Leads Link */}
-                <div className="pt-2 border-t border-zinc-100 dark:border-zinc-800/80">
+                <div className="pt-1">
                   <Link
                     href={`/dashboard/leads?search=${encodeURIComponent(attachedPage?.name || seq.name)}`}
                     className="flex items-center justify-between w-full text-xs font-bold text-[#0066B2] dark:text-[#38BDF8] hover:underline"
@@ -1219,7 +1367,7 @@ export default function SequenceEditor() {
               </div>
 
               {/* Stop on Booking Automation Card */}
-              <div className="rounded-2xl border border-zinc-200/90 dark:border-zinc-800/90 bg-white dark:bg-[#18181B] p-4 sm:p-5 shadow-sm space-y-3">
+              <div className="rounded-2xl border border-zinc-200/90 dark:border-zinc-800/90 bg-white dark:bg-[#18181B] p-4 sm:p-5 shadow-xs space-y-3">
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <h3 className="text-xs font-extrabold uppercase tracking-wider text-zinc-900 dark:text-white flex items-center gap-1.5">
@@ -1251,7 +1399,7 @@ export default function SequenceEditor() {
                   </button>
                 </div>
 
-                <div className="pt-2 border-t border-zinc-100 dark:border-zinc-800/60">
+                <div className="pt-1">
                   <Link
                     href="/dashboard/integration"
                     className="text-[11px] font-semibold text-zinc-500 hover:text-[#0066B2] dark:hover:text-[#38BDF8] flex items-center gap-1"
@@ -1263,9 +1411,9 @@ export default function SequenceEditor() {
               </div>
 
               {/* Unsubscribe & Stop Link Explanation */}
-              <div className="rounded-2xl border border-blue-500/20 dark:border-blue-500/30 bg-blue-50/50 dark:bg-blue-950/20 p-3.5 sm:p-4 space-y-2">
+              <div className="rounded-2xl border border-blue-500/20 dark:border-blue-500/30 bg-blue-50/50 dark:bg-blue-950/20 p-3 sm:p-4 space-y-2">
                 <div className="flex items-center gap-2 text-xs font-bold text-[#0066B2] dark:text-[#38BDF8]">
-                  <HelpCircle className="h-4 w-4" />
+                  <HelpCircle className="h-4 w-4 shrink-0" />
                   <span>How Stop Links Work</span>
                 </div>
                 <p className="text-[11px] text-zinc-600 dark:text-zinc-300 leading-relaxed">
