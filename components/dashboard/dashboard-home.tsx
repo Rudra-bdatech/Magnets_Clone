@@ -693,9 +693,9 @@ export default function DashboardHome({
               </div>
 
               {/* Bottom Action */}
-              <div className="mt-4 pt-3 flex items-center justify-between">
-                <span className="text-[11px] font-semibold text-zinc-500 dark:text-[#9B9085]">
-                  {landingPageCount} total landing page magnet{landingPageCount !== 1 ? "s" : ""}
+              <div className="mt-4 pt-3 flex items-center justify-between gap-2">
+                <span className="text-[11px] font-semibold text-zinc-500 dark:text-[#9B9085] truncate">
+                  {landingPageCount} total magnet{landingPageCount !== 1 ? "s" : ""}
                 </span>
                 <button
                   type="button"
@@ -704,7 +704,7 @@ export default function DashboardHome({
                     setCreateModalType("classic");
                     setShowCreateModal(true);
                   }}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#0066B2] text-white text-xs font-bold shadow-sm hover:bg-[#005291] active:scale-95 transition-all cursor-pointer"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#0066B2] text-white text-xs font-bold shadow-sm hover:bg-[#005291] active:scale-95 transition-all cursor-pointer whitespace-nowrap shrink-0"
                 >
                   <Plus className="h-3.5 w-3.5" />
                   New Landing Page
@@ -769,9 +769,9 @@ export default function DashboardHome({
               </div>
 
               {/* Bottom Action */}
-              <div className="mt-4 pt-3 flex items-center justify-between">
-                <span className="text-[11px] font-semibold text-zinc-500 dark:text-[#9B9085]">
-                  {lockedPdfCount} total locked PDF magnet{lockedPdfCount !== 1 ? "s" : ""}
+              <div className="mt-4 pt-3 flex items-center justify-between gap-2">
+                <span className="text-[11px] font-semibold text-zinc-500 dark:text-[#9B9085] truncate">
+                  {lockedPdfCount} total magnet{lockedPdfCount !== 1 ? "s" : ""}
                 </span>
                 <button
                   type="button"
@@ -780,7 +780,7 @@ export default function DashboardHome({
                     setCreateModalType("locked-pdf");
                     setShowCreateModal(true);
                   }}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-600 text-white text-xs font-bold shadow-sm hover:bg-amber-700 active:scale-95 transition-all cursor-pointer"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-600 text-white text-xs font-bold shadow-sm hover:bg-amber-700 active:scale-95 transition-all cursor-pointer whitespace-nowrap shrink-0"
                 >
                   <Plus className="h-3.5 w-3.5" />
                   New Locked PDF
