@@ -1125,7 +1125,7 @@ export default function LockedPdfPage() {
 
 
                         {/* PDF Canvas Preview Box */}
-                        <div className="relative pt-4 px-3 pb-2 bg-gradient-to-b from-zinc-100 to-zinc-200/60 dark:from-[#18181D] dark:to-[#0F0F12] border-b border-zinc-200/70 dark:border-[#1F1F24] overflow-hidden flex flex-col items-center justify-center min-h-[135px]">
+                        <div className="relative pt-4 px-3 pb-3 bg-gradient-to-b from-zinc-100 via-zinc-100/80 to-zinc-200/50 dark:from-[#18181D] dark:via-[#141418] dark:to-[#0D0D10] border-b border-zinc-200/70 dark:border-[#1F1F24] overflow-hidden flex flex-col items-center justify-center min-h-[145px] sm:min-h-[135px]">
                           {/* Selection Checkbox */}
                           <button
                             type="button"
@@ -1141,45 +1141,46 @@ export default function LockedPdfPage() {
                           >
                             <Check className={`h-3.5 w-3.5 stroke-[3px] ${isChecked ? "opacity-100 text-white" : "opacity-0"}`} />
                           </button>
+
                           {/* Stacked Paper Pages Background (depth effect) */}
-                          <div className="absolute inset-x-8 top-2.5 h-[105px] bg-zinc-200/80 dark:bg-zinc-800/60 rounded-t-lg transform scale-95 border border-zinc-300/50 dark:border-zinc-700/50 shadow-xs" />
-                          <div className="absolute inset-x-6 top-3 h-[108px] bg-zinc-100 dark:bg-zinc-800/90 rounded-t-lg transform scale-[0.98] border border-zinc-300/60 dark:border-zinc-700/60 shadow-xs" />
+                          <div className="absolute inset-x-9 top-3 h-[110px] bg-zinc-200/70 dark:bg-zinc-800/50 rounded-t-lg transform scale-95 border border-zinc-300/40 dark:border-zinc-700/40 shadow-xs" />
+                          <div className="absolute inset-x-7 top-3.5 h-[112px] bg-zinc-100/90 dark:bg-zinc-800/80 rounded-t-lg transform scale-[0.98] border border-zinc-300/60 dark:border-zinc-700/60 shadow-xs" />
 
                           {/* Main PDF Paper Document Sheet */}
-                          <div className="relative w-full max-w-[120px] aspect-[1/1.22] bg-white dark:bg-[#1A1A20] rounded-t-lg rounded-b-sm border border-zinc-300/80 dark:border-zinc-700/80 shadow-[0_6px_16px_rgba(0,0,0,0.12)] dark:shadow-[0_8px_20px_rgba(0,0,0,0.5)] group-hover:scale-[1.02] transition-transform duration-300 overflow-hidden flex flex-col">
+                          <div className="relative w-full max-w-[125px] sm:max-w-[120px] aspect-[1/1.26] sm:aspect-[1/1.22] bg-white dark:bg-[#1A1A20] rounded-t-lg rounded-b-sm border border-zinc-300/80 dark:border-zinc-700/80 shadow-[0_8px_20px_rgba(0,0,0,0.14)] dark:shadow-[0_10px_24px_rgba(0,0,0,0.6)] group-hover:scale-[1.03] transition-transform duration-300 overflow-hidden flex flex-col">
                             {pdf.pdfPages && pdf.pdfPages.length > 0 ? (
                               <div className="relative flex-1 w-full h-full bg-white dark:bg-[#1A1A20]">
                                 <Image
                                   src={pdf.pdfPages[0]}
                                   alt={pdf.name}
                                   fill
-                                  sizes="120px"
+                                  sizes="(max-width: 768px) 130px, 120px"
                                   unoptimized
                                   className="object-cover object-top"
                                 />
                               </div>
                             ) : (
-                              <div className="p-2 flex-1 flex flex-col justify-between bg-zinc-50/90 dark:bg-[#141418]/90">
+                              <div className="p-2.5 flex-1 flex flex-col justify-between bg-zinc-50/90 dark:bg-[#141418]/90">
                                 <div className="flex items-center justify-between">
                                   <div className="flex items-center gap-1">
-                                    <div className="w-3 h-3 rounded bg-[#0066B2]/10 text-[#0066B2] dark:text-[#38BDF8] flex items-center justify-center">
+                                    <div className="w-3.5 h-3.5 rounded bg-[#0066B2]/10 text-[#0066B2] dark:text-[#38BDF8] flex items-center justify-center">
                                       <FileText className="h-2 w-2" />
                                     </div>
-                                    <span className="text-[7px] font-black uppercase tracking-wider text-[#0066B2] dark:text-[#38BDF8] font-mono">
+                                    <span className="text-[7.5px] font-black uppercase tracking-wider text-[#0066B2] dark:text-[#38BDF8] font-mono">
                                       PDF
                                     </span>
                                   </div>
-                                  <Lock className="h-2 w-2 text-[#0066B2] dark:text-[#38BDF8]" />
+                                  <Lock className="h-2.5 w-2.5 text-[#0066B2] dark:text-[#38BDF8]" />
                                 </div>
 
-                                <div className="space-y-1 my-auto">
-                                  <div className="h-1 w-3/4 bg-zinc-300 dark:bg-zinc-700 rounded-full" />
-                                  <div className="h-0.5 w-full bg-zinc-200 dark:bg-zinc-800 rounded-full" />
-                                  <div className="h-0.5 w-5/6 bg-zinc-200 dark:bg-zinc-800 rounded-full" />
-                                  <div className="h-0.5 w-2/3 bg-zinc-200 dark:bg-zinc-800 rounded-full" />
+                                <div className="space-y-1.5 my-auto">
+                                  <div className="h-1.5 w-3/4 bg-zinc-300 dark:bg-zinc-700 rounded-full" />
+                                  <div className="h-1 w-full bg-zinc-200 dark:bg-zinc-800 rounded-full" />
+                                  <div className="h-1 w-5/6 bg-zinc-200 dark:bg-zinc-800 rounded-full" />
+                                  <div className="h-1 w-2/3 bg-zinc-200 dark:bg-zinc-800 rounded-full" />
                                 </div>
 
-                                <div className="text-[7.5px] font-mono font-bold text-zinc-400 dark:text-zinc-500 text-center pt-0.5 border-t border-zinc-200/50 dark:border-zinc-800/50">
+                                <div className="text-[8px] font-mono font-bold text-zinc-400 dark:text-zinc-500 text-center pt-1 border-t border-zinc-200/50 dark:border-zinc-800/50">
                                   {pdf.pdfPageCount || 1} {pdf.pdfPageCount === 1 ? "Page" : "Pages"}
                                 </div>
                               </div>
@@ -1187,48 +1188,53 @@ export default function LockedPdfPage() {
                           </div>
 
                           {/* Page Count Tag */}
-                          <div className="absolute bottom-1.5 right-2 z-10">
-                            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[8.5px] font-mono font-medium bg-zinc-900/80 text-zinc-300 border border-zinc-700/60 backdrop-blur-md shadow-xs">
-                              <FileText className="h-2.5 w-2.5 text-zinc-400" />
+                          <div className="absolute bottom-2 right-2.5 z-10">
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-mono font-semibold bg-zinc-900/80 text-zinc-200 border border-zinc-700/60 backdrop-blur-md shadow-xs">
+                              <FileText className="h-2.5 w-2.5 text-[#0066B2] dark:text-[#38BDF8]" />
                               {pdf.pdfPageCount || (pdf.pdfPages ? pdf.pdfPages.length : 1)}P
                             </span>
                           </div>
                         </div>
 
                         {/* PDF Info & Actions Footer */}
-                        <div className="p-3 flex-1 flex flex-col justify-between space-y-2">
-                          <div>
-                            <div className="flex items-center gap-1.5">
-                              <div className="flex h-4.5 w-4.5 shrink-0 items-center justify-center rounded-md bg-[#0066B2]/10 text-[#0066B2] dark:text-[#38BDF8] border border-[#0066B2]/20">
+                        <div className="p-3.5 sm:p-3 flex-1 flex flex-col justify-between gap-3 sm:space-y-2">
+                          <div className="space-y-2 sm:space-y-1.5">
+                            {/* Header: Title + Lock Badge */}
+                            <div className="flex items-center gap-2 min-w-0">
+                              <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-lg bg-[#0066B2]/10 text-[#0066B2] dark:text-[#38BDF8] border border-[#0066B2]/20">
                                 <Lock className="h-2.5 w-2.5" />
                               </div>
-                              <h3 className="text-xs font-bold text-zinc-900 dark:text-zinc-100 truncate group-hover:text-[#0066B2] dark:group-hover:text-[#38BDF8] transition-colors">
+                              <h3 className="text-[13px] sm:text-xs font-bold text-zinc-900 dark:text-zinc-100 truncate group-hover:text-[#0066B2] dark:group-hover:text-[#38BDF8] transition-colors">
                                 {pdf.name}
                               </h3>
                             </div>
 
-                            {/* Interactive Copyable URL Pill */}
+                            {/* Interactive Copyable URL Strip */}
                             <div
                               onClick={(e) => {
                                 e.stopPropagation();
                                 navigator.clipboard.writeText(shareUrl);
                                 addToast(`Copied viewer URL!`);
                               }}
-                              className="group/code flex items-center justify-between gap-1.5 mt-1.5 px-2.5 py-1 rounded-lg bg-zinc-100 dark:bg-[#101013] border border-zinc-200/80 dark:border-[#27272A] hover:border-[#0066B2]/40 dark:hover:border-[#38BDF8]/40 transition-all cursor-pointer"
+                              className="group/code flex items-center justify-between gap-2 h-[34px] px-2.5 rounded-xl bg-zinc-100/90 dark:bg-[#101013] border border-zinc-200/80 dark:border-[#27272A] hover:border-[#0066B2]/50 dark:hover:border-[#38BDF8]/50 hover:bg-white dark:hover:bg-[#15151A] transition-all cursor-pointer shadow-2xs"
                               title="Click to copy Viewer URL"
                             >
                               <div className="flex items-center gap-1.5 min-w-0">
-                                <span className="text-[8.5px] font-bold text-[#0066B2] dark:text-[#38BDF8] uppercase font-mono tracking-wider">URL</span>
-                                <span className="text-[10px] font-mono text-zinc-600 dark:text-zinc-400 truncate">
+                                <Globe className="h-3.5 w-3.5 text-[#0066B2] dark:text-[#38BDF8] shrink-0" />
+                                <span className="text-[10.5px] sm:text-[10px] font-mono text-zinc-600 dark:text-zinc-400 truncate">
                                   /pdf-viewer/{pdf.id}
                                 </span>
                               </div>
-                              <Copy className="h-3 w-3 text-zinc-400 group-hover/code:text-[#0066B2] dark:group-hover/code:text-[#38BDF8] shrink-0 transition-colors" />
+                              <div className="flex items-center gap-1 shrink-0 px-1.5 py-0.5 rounded-md bg-white dark:bg-zinc-800 text-[9.5px] font-bold text-zinc-500 dark:text-zinc-300 border border-zinc-200/60 dark:border-zinc-700/60 group-hover/code:text-[#0066B2] dark:group-hover/code:text-[#38BDF8] group-hover/code:border-[#0066B2]/30 transition-colors">
+                                <Copy className="h-2.5 w-2.5" />
+                                <span>Copy</span>
+                              </div>
                             </div>
                           </div>
 
-                          {/* Bottom Action Row */}
-                          <div className="pt-0.5 flex items-center justify-between gap-1.5">
+                          {/* Mobile Action Bar (< lg) - Sleek 30px Height */}
+                          <div className="flex lg:hidden items-center justify-between gap-1.5 pt-0.5">
+                            {/* Details Inspector Button */}
                             <button
                               type="button"
                               onClick={(e) => {
@@ -1236,13 +1242,55 @@ export default function LockedPdfPage() {
                                 setSelectedPageId(pdf.id);
                                 setMobileInspectorOpen(true);
                               }}
-                              className="lg:hidden inline-flex items-center gap-1 rounded-lg border border-zinc-200 dark:border-zinc-700/80 bg-zinc-50 hover:bg-zinc-100 dark:bg-zinc-800/80 dark:hover:bg-zinc-700 px-2.5 py-1 text-[11px] font-semibold text-zinc-700 dark:text-zinc-200 transition cursor-pointer active:scale-95"
-                              title="Details"
+                              className="flex-1 inline-flex items-center justify-center gap-1.5 h-[30px] rounded-[10px] border border-zinc-200 dark:border-zinc-700/80 bg-zinc-50 hover:bg-zinc-100 dark:bg-zinc-800/80 dark:hover:bg-zinc-700 px-2 text-[10.5px] font-semibold text-zinc-700 dark:text-zinc-200 transition cursor-pointer active:scale-95 shadow-2xs"
+                              title="View Details"
                             >
                               <SlidersHorizontal className="h-3 w-3 text-[#0066B2] dark:text-[#38BDF8]" />
                               <span>Details</span>
                             </button>
 
+                            {/* Edit Button */}
+                            <Link
+                              href={`/dashboard/leadmagnets/${pdf.id}?type=locked-pdf`}
+                              prefetch={true}
+                              onClick={(e) => e.stopPropagation()}
+                              className="flex-1 inline-flex items-center justify-center gap-1.5 h-[30px] rounded-[10px] bg-[#0066B2] hover:bg-[#005799] text-white font-bold text-[10.5px] shadow-xs hover:shadow-[#0066B2]/20 active:scale-95 transition-all cursor-pointer"
+                              title="Edit Locked PDF"
+                            >
+                              <Pencil className="h-3 w-3" />
+                              <span>Edit</span>
+                            </Link>
+
+                            {/* Open External Viewer Link */}
+                            <a
+                              href={shareUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              onClick={(e) => e.stopPropagation()}
+                              className="flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-[10px] border border-zinc-200/80 dark:border-zinc-700/80 bg-zinc-50 dark:bg-zinc-800/80 text-zinc-600 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white transition-all cursor-pointer active:scale-95 shadow-2xs"
+                              title="Open Viewer in New Tab"
+                            >
+                              <ExternalLink className="h-3.5 w-3.5" />
+                            </a>
+
+                            {/* Delete Button */}
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setPageToDeleteId(pdf.id);
+                                setSelectedPageId(pdf.id);
+                                setShowDeleteModal(true);
+                              }}
+                              className="flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-[10px] border border-rose-200/60 dark:border-rose-900/40 bg-rose-50/50 dark:bg-rose-950/20 text-rose-500 hover:bg-rose-100 dark:hover:bg-rose-950/50 transition-all cursor-pointer active:scale-95 shadow-2xs"
+                              title="Delete Locked PDF"
+                            >
+                              <Trash2 className="h-3.5 w-3.5" />
+                            </button>
+                          </div>
+
+                          {/* Desktop Action Row (lg:flex) */}
+                          <div className="hidden lg:flex pt-0.5 items-center justify-between gap-1.5">
                             <button
                               type="button"
                               onClick={(e) => {
