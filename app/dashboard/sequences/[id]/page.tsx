@@ -982,7 +982,7 @@ export default function SequenceEditor() {
                   </div>
                 </div>
 
-                {/* Drip Follow-up Step Cards with Flow Connectors */}
+                {/* Drip Follow-up Step Cards with Left-Aligned Flow Connectors */}
                 {emailsWithBody.map((email, i) => {
                   const isExpanded = expandedEmailId === email.id;
                   const currentTab = activeTab[email.id] || "edit";
@@ -991,14 +991,17 @@ export default function SequenceEditor() {
 
                   return (
                     <div key={email.id}>
-                      {/* Flow Connector Line Between Steps */}
-                      <div className="flex flex-col items-center justify-center my-2 py-0.5">
-                        <div className="h-3.5 w-0.5 bg-gradient-to-b from-zinc-300 dark:from-zinc-700 to-blue-400/60" />
-                        <div className="inline-flex items-center gap-1.5 rounded-full border border-blue-200/80 dark:border-blue-900/60 bg-blue-50/90 dark:bg-blue-950/60 px-2.5 py-0.5 text-[10px] font-bold text-[#0066B2] dark:text-[#38BDF8] shadow-2xs">
-                          <Clock className="h-2.5 w-2.5 shrink-0" />
-                          <span>Waits {email.delayLabel || "1 day later"}</span>
+                      {/* Flow Connector - Left Aligned to Step Numbers */}
+                      <div className="flex items-center gap-2 pl-6 sm:pl-8 my-2">
+                        <div className="flex flex-col items-center">
+                          <div className="h-2.5 w-0.5 bg-zinc-300 dark:bg-zinc-700" />
+                          <div className="h-1.5 w-1.5 rounded-full bg-[#0066B2] dark:bg-[#38BDF8]" />
+                          <div className="h-2.5 w-0.5 bg-zinc-300 dark:bg-zinc-700" />
                         </div>
-                        <div className="h-3.5 w-0.5 bg-gradient-to-b from-blue-400/60 to-zinc-300 dark:to-zinc-700" />
+                        <span className="inline-flex items-center gap-1.5 rounded-md border border-blue-200/70 dark:border-blue-900/50 bg-blue-50/70 dark:bg-blue-950/40 px-2 py-0.5 text-[10px] font-bold text-[#0066B2] dark:text-[#38BDF8]">
+                          <Clock className="h-2.5 w-2.5 shrink-0" />
+                          <span>{email.delayLabel || "1 day later"}</span>
+                        </span>
                       </div>
 
                       <div className="rounded-2xl border border-zinc-200/90 dark:border-zinc-800/90 bg-white dark:bg-[#18181B] p-3.5 sm:p-5 shadow-xs transition hover:shadow-md">
