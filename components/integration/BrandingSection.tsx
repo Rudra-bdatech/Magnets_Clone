@@ -222,7 +222,7 @@ export const BrandingSection = memo(function BrandingSection({
                   <span className="text-[10px] font-mono text-zinc-400">32×32 px</span>
                 </div>
 
-                <div className="flex flex-col sm:flex-row gap-2 items-stretch sm:items-center">
+                <div className="flex flex-col sm:flex-row gap-2.5 items-stretch sm:items-center">
                   <input
                     type="url"
                     placeholder="https://your-site.com/favicon.ico"
@@ -244,7 +244,7 @@ export const BrandingSection = memo(function BrandingSection({
                       }
                       handleSave();
                     }}
-                    className={`flex-1 min-w-0 rounded-xl border bg-white dark:bg-[#0E0E10] px-3.5 py-2.5 text-xs text-zinc-900 dark:text-white outline-none placeholder:text-zinc-400 dark:placeholder:text-[#52525b] transition font-mono ${
+                    className={`w-full flex-1 min-w-0 rounded-xl border bg-white dark:bg-[#0E0E10] px-3.5 py-2.5 text-xs text-zinc-900 dark:text-white outline-none placeholder:text-zinc-400 dark:placeholder:text-[#52525b] transition font-mono ${
                       faviconUrlError ? "border-rose-500 focus:border-rose-500" : "border-[#E2E8F0] dark:border-[#2e2e38] focus:border-[#0066B2]"
                     }`}
                   />
@@ -264,7 +264,7 @@ export const BrandingSection = memo(function BrandingSection({
                         Clear ✕
                       </button>
                     )}
-                    <label className="cursor-pointer inline-flex items-center justify-center gap-1.5 rounded-xl border border-zinc-300 dark:border-white/15 bg-white dark:bg-[#202026] px-3.5 py-2 text-xs font-bold text-zinc-800 dark:text-white hover:bg-zinc-100 dark:hover:bg-[#282830] transition shrink-0 flex-1 sm:flex-initial">
+                    <label className="cursor-pointer inline-flex items-center justify-center gap-1.5 rounded-xl border border-zinc-300 dark:border-white/15 bg-white dark:bg-[#202026] px-3.5 py-2 text-xs font-bold text-zinc-800 dark:text-white hover:bg-zinc-100 dark:hover:bg-[#282830] transition shrink-0 flex-1 sm:flex-initial shadow-2xs">
                       {uploadingFavicon ? <Loader2 className="h-3.5 w-3.5 animate-spin text-[#0066B2]" /> : <Sparkles className="h-3.5 w-3.5 text-[#0066B2]" />}
                       <span>{uploadingFavicon ? "Uploading..." : "Upload File"}</span>
                       <input
@@ -330,7 +330,7 @@ export const BrandingSection = memo(function BrandingSection({
                   <span className="text-[10px] font-mono text-zinc-400">1200×630 px</span>
                 </div>
 
-                <div className="flex flex-col sm:flex-row gap-2 items-stretch sm:items-center">
+                <div className="flex flex-col sm:flex-row gap-2.5 items-stretch sm:items-center">
                   <input
                     type="url"
                     placeholder="https://your-site.com/og-banner.png"
@@ -352,7 +352,7 @@ export const BrandingSection = memo(function BrandingSection({
                       }
                       handleSave();
                     }}
-                    className={`flex-1 min-w-0 rounded-xl border bg-white dark:bg-[#0E0E10] px-3.5 py-2.5 text-xs text-zinc-900 dark:text-white outline-none placeholder:text-zinc-400 dark:placeholder:text-[#52525b] transition font-mono ${
+                    className={`w-full flex-1 min-w-0 rounded-xl border bg-white dark:bg-[#0E0E10] px-3.5 py-2.5 text-xs text-zinc-900 dark:text-white outline-none placeholder:text-zinc-400 dark:placeholder:text-[#52525b] transition font-mono ${
                       ogUrlError ? "border-rose-500 focus:border-rose-500" : "border-[#E2E8F0] dark:border-[#2e2e38] focus:border-[#0066B2]"
                     }`}
                   />
@@ -372,7 +372,7 @@ export const BrandingSection = memo(function BrandingSection({
                         Clear ✕
                       </button>
                     )}
-                    <label className="cursor-pointer inline-flex items-center justify-center gap-1.5 rounded-xl border border-zinc-300 dark:border-white/15 bg-white dark:bg-[#202026] px-3.5 py-2 text-xs font-bold text-zinc-800 dark:text-white hover:bg-zinc-100 dark:hover:bg-[#282830] transition shrink-0 flex-1 sm:flex-initial">
+                    <label className="cursor-pointer inline-flex items-center justify-center gap-1.5 rounded-xl border border-zinc-300 dark:border-white/15 bg-white dark:bg-[#202026] px-3.5 py-2 text-xs font-bold text-zinc-800 dark:text-white hover:bg-zinc-100 dark:hover:bg-[#282830] transition shrink-0 flex-1 sm:flex-initial shadow-2xs">
                       {uploadingOgImage ? <Loader2 className="h-3.5 w-3.5 animate-spin text-[#0066B2]" /> : <Sparkles className="h-3.5 w-3.5 text-[#0066B2]" />}
                       <span>{uploadingOgImage ? "Uploading..." : "Upload File"}</span>
                       <input
@@ -387,30 +387,30 @@ export const BrandingSection = memo(function BrandingSection({
                           const formData = new FormData();
                           formData.append("file", file);
                           try {
-                          const res = await fetch("/api/upload", { method: "POST", body: formData });
-                          const data = await res.json();
-                          if (!res.ok) {
-                            throw new Error(data.error || "Upload request failed");
+                            const res = await fetch("/api/upload", { method: "POST", body: formData });
+                            const data = await res.json();
+                            if (!res.ok) {
+                              throw new Error(data.error || "Upload request failed");
+                            }
+                            const uploadedUrl = data.data?.fileUrl || data.data?.url || data.url || data.fileUrl;
+                            if (uploadedUrl) {
+                              setOgImageUrl(uploadedUrl);
+                              await handleSave({ ogImageUrl: uploadedUrl });
+                              addToast("🎉 Social share thumbnail uploaded successfully!", "success");
+                            } else {
+                              throw new Error("No URL returned from upload server");
+                            }
+                          } catch (err: any) {
+                            console.error("OG image upload error:", err);
+                            addToast(err.message || "Failed to upload social thumbnail image.", "error");
+                          } finally {
+                            setUploadingOgImage(false);
                           }
-                          const uploadedUrl = data.data?.fileUrl || data.data?.url || data.url || data.fileUrl;
-                          if (uploadedUrl) {
-                            setOgImageUrl(uploadedUrl);
-                            await handleSave({ ogImageUrl: uploadedUrl });
-                            addToast("🎉 Social share thumbnail uploaded successfully!", "success");
-                          } else {
-                            throw new Error("No URL returned from upload server");
-                          }
-                        } catch (err: any) {
-                          console.error("OG image upload error:", err);
-                          addToast(err.message || "Failed to upload social thumbnail image.", "error");
-                        } finally {
-                          setUploadingOgImage(false);
-                        }
-                      }}
-                    />
-                  </label>
+                        }}
+                      />
+                    </label>
+                  </div>
                 </div>
-              </div>
 
               {/* Real Social Media Share Card Mockup */}
                 <div className="rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#1C1C20] overflow-hidden shadow-xs">
