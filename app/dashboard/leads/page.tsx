@@ -1543,39 +1543,40 @@ export default function LeadsPage() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 30 }}
               transition={{ type: "spring", damping: 25, stiffness: 350 }}
-              className="fixed bottom-4 left-3 right-3 z-40 flex md:hidden items-center justify-between rounded-2xl border border-zinc-200/90 dark:border-white/10 bg-white/95 dark:bg-[#18181F]/95 px-4 py-3 shadow-2xl backdrop-blur-xl"
+              className="fixed bottom-4 left-3 right-3 z-40 flex md:hidden items-center justify-between rounded-2xl border border-zinc-200/90 dark:border-white/10 bg-white/95 dark:bg-[#18181F]/95 px-3 py-2.5 sm:px-4 sm:py-3 shadow-2xl backdrop-blur-xl gap-2"
             >
-              <div className="flex items-center gap-2.5">
-                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#0066B2] text-xs font-bold text-white shadow-xs">
+              <div className="flex items-center gap-1.5 sm:gap-2.5 min-w-0">
+                <span className="flex h-5 w-5 sm:h-6 sm:w-6 shrink-0 items-center justify-center rounded-full bg-[#0066B2] text-[11px] sm:text-xs font-bold text-white shadow-xs">
                   {selectedLeadIds.length}
                 </span>
-                <span className="text-xs font-bold text-zinc-900 dark:text-white">Selected</span>
+                <span className="text-xs font-bold text-zinc-900 dark:text-white whitespace-nowrap">Selected</span>
+                <div className="h-3 w-px bg-zinc-200 dark:bg-zinc-700 shrink-0" />
                 <button
                   type="button"
                   onClick={toggleSelectAll}
-                  className="text-xs font-semibold text-[#0066B2] dark:text-[#38BDF8] hover:opacity-80 transition cursor-pointer ml-1"
+                  className="text-xs font-semibold text-[#0066B2] dark:text-[#38BDF8] hover:opacity-80 transition cursor-pointer whitespace-nowrap shrink-0"
                 >
                   {selectedLeadIds.length === paginatedLeads.length ? "Deselect" : "Select All"}
                 </button>
               </div>
 
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
                 <button
                   type="button"
                   onClick={() => {
                     setSelectedLeadIds([]);
                     setIsMobileSelectionMode(false);
                   }}
-                  className="px-3 py-1.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-[#222228] text-xs font-semibold text-zinc-700 dark:text-zinc-200 transition cursor-pointer"
+                  className="px-2.5 py-1.5 sm:px-3 sm:py-1.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-[#222228] text-xs font-semibold text-zinc-700 dark:text-zinc-200 transition cursor-pointer whitespace-nowrap"
                 >
                   Clear
                 </button>
                 <button
                   type="button"
                   onClick={() => setShowBulkDeleteModal(true)}
-                  className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-red-600 hover:bg-red-700 text-xs font-bold text-white transition shadow-sm cursor-pointer"
+                  className="flex items-center gap-1 sm:gap-1.5 px-3 py-1.5 sm:px-3.5 sm:py-1.5 rounded-xl bg-red-600 hover:bg-red-700 text-xs font-bold text-white transition shadow-sm cursor-pointer whitespace-nowrap"
                 >
-                  <Trash2 className="h-3.5 w-3.5" />
+                  <Trash2 className="h-3.5 w-3.5 shrink-0" />
                   <span>Delete ({selectedLeadIds.length})</span>
                 </button>
               </div>
