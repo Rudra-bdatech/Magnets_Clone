@@ -915,7 +915,7 @@ export default function DashboardShell({
         )}
 
         <div className="flex min-h-screen min-w-0 flex-1 flex-col bg-[#FAFAFA] dark:bg-[#0E0E10]">
-          <header className="dashboard-chrome sticky top-0 z-30 flex h-12 shrink-0 items-center justify-between border-b border-zinc-200/80 bg-white dark:bg-[#18181B] dark:border-white/10 px-4 sm:px-6 md:hidden transition-colors">
+          <header className="dashboard-chrome sticky top-0 z-30 flex h-12 shrink-0 items-center justify-between border-b border-zinc-200/70 bg-white/75 dark:bg-[#141417]/75 dark:border-white/10 backdrop-blur-xl supports-[backdrop-filter]:bg-white/60 dark:supports-[backdrop-filter]:bg-[#141417]/60 px-4 sm:px-6 md:hidden transition-colors">
             <div className="flex items-center gap-2.5">
               <button
                 aria-label="Open menu"

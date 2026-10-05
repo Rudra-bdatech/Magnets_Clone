@@ -858,7 +858,7 @@ export default function LockedPdfPage() {
 
       <div className="flex flex-col min-h-[calc(100vh-3.5rem)] bg-zinc-50/50 dark:bg-[#0B0B0D]">
         {/* Top Executive Header */}
-        <div className="px-6 pt-6 lg:px-8 border-b border-zinc-200/80 dark:border-zinc-800/60 bg-white/80 dark:bg-[#121215] dark:bg-opacity-85 backdrop-blur-md sticky top-0 z-30 shadow-xs">
+        <div className="px-4 sm:px-6 pt-4 sm:pt-6 lg:px-8 border-b border-zinc-200/70 dark:border-zinc-800/50 bg-white dark:bg-[#0E0E10] shadow-xs transition-colors">
           <div className="flex items-center justify-between gap-3 pb-4">
             <div className="min-w-0">
               <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-900 dark:text-white truncate">
