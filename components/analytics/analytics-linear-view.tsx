@@ -100,7 +100,7 @@ export default function AnalyticsLinearView({
           ? "all time"
           : "last 30 days";
 
-  const isLockedPdf = page?.template === "locked-pdf" || (page as any)?.pdfFreePages !== undefined;
+  const isLockedPdf = page?.template === "locked-pdf";
   const backHref = isLockedPdf ? "/dashboard/locked-pdf" : "/dashboard/landing-page";
   const editHref = isLockedPdf ? `/dashboard/leadmagnets/${targetMagnetId}?type=locked-pdf` : `/dashboard/leadmagnets/${targetMagnetId}`;
 
@@ -349,7 +349,7 @@ export default function AnalyticsLinearView({
               className="relative z-20 flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-white dark:bg-[#121215] border border-zinc-200/80 dark:border-white/[0.08] hover:bg-zinc-50 dark:hover:border-white/[0.2] dark:hover:bg-zinc-800/60 text-xs font-semibold text-zinc-700 dark:text-zinc-200 transition-all shadow-xs cursor-pointer select-none"
             >
               <ArrowLeft className="h-3.5 w-3.5 text-zinc-400" />
-              <span>{isLockedPdf ? "Locked PDFs" : "All pages"}</span>
+              <span>{isLockedPdf ? "Locked PDFs" : "Landing Page"}</span>
             </Link>
 
             {isPerMagnet && targetMagnetId && (
@@ -399,7 +399,7 @@ export default function AnalyticsLinearView({
                 className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-white dark:bg-[#121215] border border-zinc-200/80 dark:border-white/[0.08] text-xs font-semibold text-zinc-700 dark:text-zinc-200 shadow-xs"
               >
                 <ArrowLeft className="h-3 w-3 text-zinc-400" />
-                <span>{isLockedPdf ? "PDFs" : "Pages"}</span>
+                <span>{isLockedPdf ? "Locked PDFs" : "Landing Page"}</span>
               </Link>
               {isPerMagnet && targetMagnetId && (
                 <Link

@@ -775,7 +775,7 @@ export default function LockedPdfPage() {
     checkedIds.forEach((id) => deletePage(id));
 
     if (selectedPageId && checkedIds.includes(selectedPageId)) {
-      const remainingLocked = remaining.filter((p) => p.template === "locked-pdf" || p.pdfFreePages !== undefined);
+      const remainingLocked = remaining.filter((p) => p.template === "locked-pdf");
       setSelectedPageId(remainingLocked[0]?.id || remaining[0]?.id || null);
     }
     addToast(`Deleted ${checkedIds.length} locked PDF${checkedIds.length > 1 ? "s" : ""}.`);
@@ -796,7 +796,7 @@ export default function LockedPdfPage() {
       setCheckedIds((prev) => prev.filter((id) => id !== activePage.id));
 
       const remainingLocked = remaining.filter(
-        (p) => p.template === "locked-pdf" || p.pdfFreePages !== undefined
+        (p) => p.template === "locked-pdf"
       );
       if (remainingLocked.length > 0) {
         setSelectedPageId(remainingLocked[0].id);
