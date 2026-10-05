@@ -34,6 +34,7 @@ import {
   Filter,
   Zap,
   Info,
+  AlertTriangle,
 } from "lucide-react";
 import StatusBadge from "@/components/dashboard/status-badge";
 import { type Sequence, type SequenceEmail, type Account, type Lead, type MagnetPage } from "@/lib/data";
@@ -80,10 +81,32 @@ export default function SequencesPage() {
   const [activeMenuId, setActiveMenuId] = useState<string | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
+  // Mobile New Sequence Drawer state
+  const [showNewSequenceModal, setShowNewSequenceModal] = useState(false);
+  const [newSeqName, setNewSeqName] = useState("");
+  const [newSeqSubject, setNewSeqSubject] = useState("");
+  const [selectedPageId, setSelectedPageId] = useState("");
+  const [isCreatingSeq, setIsCreatingSeq] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [magnetSearchQuery, setMagnetSearchQuery] = useState("");
+  const [seqToDelete, setSeqToDelete] = useState<Sequence | null>(null);
+
   const showToast = (msg: string) => {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(null), 3000);
   };
+
+  // Lock body scroll when mobile modals are open
+  useEffect(() => {
+    if (showNewSequenceModal || seqToDelete) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [showNewSequenceModal, seqToDelete]);
 
   // Close menus on outside click
   useEffect(() => {
@@ -342,12 +365,123 @@ export default function SequencesPage() {
   const handleDelete = (seq: Sequence, e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    if (window.confirm(`Are you sure you want to delete "${seq.name}"? This action cannot be undone.`)) {
-      deleteSequence(seq.id);
-      setSequences((prev) => prev.filter((item) => item.id !== seq.id));
-      showToast(`Deleted "${seq.name}"`);
-    }
     setActiveMenuId(null);
+    setSeqToDelete(seq);
+  };
+
+  const confirmDeleteSequence = () => {
+    if (!seqToDelete) return;
+    deleteSequence(seqToDelete.id);
+    setSequences((prev) => prev.filter((item) => item.id !== seqToDelete.id));
+    showToast(`Deleted "${seqToDelete.name}"`);
+    setSeqToDelete(null);
+  };
+
+  const validPages = useMemo(() => {
+    return pages.filter((p) => {
+      if (p.template === "locked-pdf") {
+        return (p.pdfPages && p.pdfPages.length > 0) || (p.pdfTitle && p.pdfTitle !== "Untitled Locked PDF") || p.status === "live";
+      }
+      return true;
+    });
+  }, [pages]);
+
+  const landingPagesList = useMemo(() => validPages.filter((p) => p.template !== "locked-pdf"), [validPages]);
+  const lockedPdfPagesList = useMemo(() => validPages.filter((p) => p.template === "locked-pdf"), [validPages]);
+
+  const selectedPage = useMemo(() => {
+    return validPages.find((p) => p.id === selectedPageId) || null;
+  }, [validPages, selectedPageId]);
+
+  const filteredLandingPages = useMemo(() => {
+    if (!magnetSearchQuery.trim()) return landingPagesList;
+    const q = magnetSearchQuery.toLowerCase();
+    return landingPagesList.filter((p) =>
+      (p.name && p.name.toLowerCase().includes(q)) ||
+      (p.slug && p.slug.toLowerCase().includes(q))
+    );
+  }, [landingPagesList, magnetSearchQuery]);
+
+  const filteredLockedPdfPages = useMemo(() => {
+    if (!magnetSearchQuery.trim()) return lockedPdfPagesList;
+    const q = magnetSearchQuery.toLowerCase();
+    return lockedPdfPagesList.filter((p) =>
+      (p.name && p.name.toLowerCase().includes(q)) ||
+      (p.pdfTitle && p.pdfTitle.toLowerCase().includes(q)) ||
+      (p.slug && p.slug.toLowerCase().includes(q))
+    );
+  }, [lockedPdfPagesList, magnetSearchQuery]);
+
+  const handleCreateSequence = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newSeqName.trim() || isCreatingSeq) return;
+
+    setIsCreatingSeq(true);
+
+    const initialEmail: SequenceEmail = {
+      id: `e_${Date.now()}`,
+      subject: newSeqSubject.trim() || "Your requested resource is inside!",
+      delayLabel: "Instantly",
+      delayMinutes: 0,
+      status: "live",
+      sent: 0,
+      opened: 0,
+    };
+
+    const followUpEmail: SequenceEmail = {
+      id: `e_${Date.now() + 1}`,
+      subject: "Quick follow-up: Did you get a chance to check out the resource?",
+      delayLabel: "1 day later",
+      delayMinutes: 1440,
+      status: "live",
+      sent: 0,
+      opened: 0,
+    };
+
+    const seqId = `s_${Date.now()}`;
+    const newSeq: Sequence = {
+      id: seqId,
+      name: newSeqName.trim(),
+      pageId: selectedPageId || undefined,
+      status: "live",
+      stopOnBooking: false,
+      stats: { signedUp: 0, delivered: 0, opened: 0, replied: 0, stopped: 0, completed: 0 },
+      emails: [initialEmail, followUpEmail],
+    };
+
+    const next = [newSeq, ...loadSequences()];
+    saveSequences(next);
+    setSequences(next);
+
+    if (selectedPageId) {
+      const currentPages = loadPages();
+      const updatedPages = currentPages.map((p) => {
+        if (p.id === selectedPageId) {
+          return {
+            ...p,
+            sequenceEnabled: true,
+            sequenceEmails: [
+              { id: initialEmail.id, subject: initialEmail.subject, delayDays: 0, body: "Here is your download link." },
+              { id: followUpEmail.id, subject: followUpEmail.subject, delayDays: 1, body: "Checking in to see if you have any questions!" },
+            ],
+          };
+        }
+        return p;
+      });
+      savePages(updatedPages);
+      setPages(updatedPages);
+    }
+
+    setShowNewSequenceModal(false);
+    setNewSeqName("");
+    setNewSeqSubject("");
+    setSelectedPageId("");
+    setIsCreatingSeq(false);
+    showToast(`Created sequence "${newSeq.name}"`);
+
+    setTimeout(() => {
+      router.push(`/dashboard/sequences/${seqId}`);
+    }, 250);
   };
 
   // Top Aggregated Executive KPI Stats
@@ -461,13 +595,23 @@ export default function SequencesPage() {
             </div>
 
             <div className="flex items-center gap-2 shrink-0 flex-wrap">
+              {/* Desktop Link */}
               <Link
                 href="/dashboard/sequences/new"
-                className="flex items-center gap-1.5 rounded-xl bg-[#0066B2] px-3.5 sm:px-4 py-2 sm:py-2.5 text-xs font-bold text-white hover:bg-[#005291] transition shadow-md cursor-pointer"
+                className="hidden sm:flex items-center gap-1.5 rounded-xl bg-[#0066B2] px-3.5 sm:px-4 py-2 sm:py-2.5 text-xs font-bold text-white hover:bg-[#005291] transition shadow-md cursor-pointer"
               >
                 <Plus className="h-4 w-4 stroke-[2.5px]" aria-hidden="true" />
                 New sequence
               </Link>
+              {/* Mobile Drawer Trigger */}
+              <button
+                type="button"
+                onClick={() => setShowNewSequenceModal(true)}
+                className="sm:hidden flex items-center gap-1.5 rounded-xl bg-[#0066B2] px-3.5 py-2 text-xs font-bold text-white hover:bg-[#005291] transition shadow-md cursor-pointer active:scale-95"
+              >
+                <Plus className="h-4 w-4 stroke-[2.5px]" aria-hidden="true" />
+                New sequence
+              </button>
             </div>
           </div>
 
@@ -1070,13 +1214,23 @@ export default function SequencesPage() {
                     Automate your email delivery, send scheduled follow-ups, and convert new subscribers into clients automatically.
                   </p>
                   <div className="mt-5 flex justify-center">
+                    {/* Desktop Link */}
                     <Link
                       href="/dashboard/sequences/new"
-                      className="inline-flex items-center gap-2 rounded-xl bg-[#0066B2] px-5 py-2.5 text-xs font-bold text-white shadow-xs hover:bg-[#005799] transition dark:bg-[#0066B2] dark:hover:bg-[#005799]"
+                      className="hidden sm:inline-flex items-center gap-2 rounded-xl bg-[#0066B2] px-5 py-2.5 text-xs font-bold text-white shadow-xs hover:bg-[#005799] transition dark:bg-[#0066B2] dark:hover:bg-[#005799]"
                     >
                       <Plus className="h-4 w-4 stroke-[2.5px]" />
                       Create your first sequence
                     </Link>
+                    {/* Mobile Drawer Trigger */}
+                    <button
+                      type="button"
+                      onClick={() => setShowNewSequenceModal(true)}
+                      className="sm:hidden inline-flex items-center gap-2 rounded-xl bg-[#0066B2] px-5 py-2.5 text-xs font-bold text-white shadow-xs hover:bg-[#005799] transition dark:bg-[#0066B2] dark:hover:bg-[#005799] cursor-pointer active:scale-95"
+                    >
+                      <Plus className="h-4 w-4 stroke-[2.5px]" />
+                      Create your first sequence
+                    </button>
                   </div>
                 </div>
 
@@ -1162,6 +1316,410 @@ export default function SequencesPage() {
           )}
         </div>
       </div>
+
+      {/* Mobile Bottom Sheet Modal: Create New Sequence */}
+      <AnimatePresence>
+        {showNewSequenceModal && (
+          <motion.div
+            key="new-sequence-bottom-sheet-container"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 z-50 flex flex-col justify-end sm:hidden"
+          >
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="fixed inset-0 bg-black/60 backdrop-blur-[2px]"
+              onClick={() => {
+                setShowNewSequenceModal(false);
+                setNewSeqName("");
+                setNewSeqSubject("");
+                setSelectedPageId("");
+                setIsDropdownOpen(false);
+              }}
+            />
+
+            {/* Bottom Sheet Drawer */}
+            <motion.div
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "100%" }}
+              transition={{ type: "spring", damping: 30, stiffness: 320 }}
+              className="relative z-10 w-full max-h-[88vh] overflow-y-auto rounded-t-[28px] border-t border-zinc-200 dark:border-white/10 bg-white/95 dark:bg-[#141417]/95 backdrop-blur-xl p-5 text-zinc-900 dark:text-white shadow-2xl space-y-4 pb-8"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Grab Handle */}
+              <div className="w-10 h-1.5 rounded-full bg-zinc-300 dark:bg-zinc-700/80 mx-auto -mt-1 mb-1 cursor-grab active:scale-95 transition-transform" />
+
+              <div className="flex items-start justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#0066B2]/10 text-[#0066B2] dark:bg-[#0066B2]/20 dark:text-[#38BDF8] border border-[#0066B2]/20">
+                    <Rocket className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <h3 className="text-base font-bold text-zinc-900 dark:text-white tracking-tight">Create Sequence</h3>
+                    <p className="text-[11px] text-zinc-500 dark:text-zinc-400">Automate your delivery & follow-ups</p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowNewSequenceModal(false);
+                    setNewSeqName("");
+                    setNewSeqSubject("");
+                    setSelectedPageId("");
+                    setIsDropdownOpen(false);
+                  }}
+                  className="rounded-lg p-1.5 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-900 dark:hover:bg-[#25252b] dark:hover:text-white transition-colors cursor-pointer"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+
+              <form onSubmit={handleCreateSequence} className="space-y-4">
+                {/* Sequence Name */}
+                <div>
+                  <label className="block text-xs font-bold text-zinc-900 dark:text-white uppercase tracking-wider mb-1.5">
+                    Sequence Name *
+                  </label>
+                  <input
+                    autoFocus
+                    type="text"
+                    value={newSeqName}
+                    onChange={(e) => setNewSeqName(e.target.value)}
+                    placeholder="e.g. VIP Welcome Sequence"
+                    maxLength={80}
+                    required
+                    className="w-full rounded-xl border border-zinc-200 bg-white p-3 text-xs text-zinc-900 placeholder-zinc-400 focus:border-[#0066B2] focus:outline-none dark:border-[#2e2e38] dark:bg-[#202026] dark:text-white dark:placeholder-zinc-500 shadow-xs font-medium"
+                  />
+                </div>
+
+                {/* Attach to Lead Magnet Dropdown */}
+                <div className="relative">
+                  <label className="block text-xs font-bold text-zinc-900 dark:text-white uppercase tracking-wider mb-1.5 flex items-center justify-between">
+                    <span>Attach to Lead Magnet</span>
+                    <span className="text-[10px] text-[#0066B2] dark:text-[#38BDF8] font-semibold lowercase">automates signups</span>
+                  </label>
+
+                  <button
+                    type="button"
+                    onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                    className={`w-full flex items-center justify-between gap-2.5 rounded-xl border p-2.5 text-left transition shadow-xs cursor-pointer ${
+                      isDropdownOpen
+                        ? "border-[#0066B2] ring-2 ring-[#0066B2]/20 bg-white dark:bg-[#202026]"
+                        : "border-zinc-200 bg-white hover:border-zinc-300 dark:border-[#2e2e38] dark:bg-[#202026]"
+                    }`}
+                  >
+                    {selectedPage ? (
+                      <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                        <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-zinc-100 dark:bg-[#2a2a32] text-xs border border-zinc-200/50 dark:border-white/5">
+                          {selectedPage.template === "locked-pdf" ? "🔒" : "🎯"}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <span className="text-xs font-bold text-zinc-900 dark:text-white truncate block">
+                            {selectedPage.name || selectedPage.pdfTitle || "Untitled Page"}
+                          </span>
+                          <span className="text-[10px] text-zinc-500 dark:text-zinc-400 font-mono truncate block">
+                            /{selectedPage.slug || selectedPage.id}
+                          </span>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                        <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-zinc-100 dark:bg-[#2a2a32] text-xs font-bold text-zinc-500">
+                          ⚡
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <span className="text-xs font-semibold text-zinc-800 dark:text-zinc-200 block">
+                            Standalone Sequence
+                          </span>
+                          <span className="text-[10px] text-zinc-400 dark:text-zinc-500 block">
+                            No lead magnet attached
+                          </span>
+                        </div>
+                      </div>
+                    )}
+                    <ChevronDown
+                      className={`h-4 w-4 text-zinc-400 shrink-0 transition-transform duration-200 ${
+                        isDropdownOpen ? "rotate-180 text-[#0066B2] dark:text-[#38BDF8]" : ""
+                      }`}
+                    />
+                  </button>
+
+                  {/* Dropdown Options */}
+                  {isDropdownOpen && (
+                    <div className="absolute left-0 right-0 z-50 mt-1.5 rounded-2xl border border-zinc-200 bg-white/95 p-2 shadow-2xl backdrop-blur-xl dark:border-[#2e2e38] dark:bg-[#18181B]/95 flex flex-col max-h-56">
+                      {validPages.length > 3 && (
+                        <div className="relative px-1 pt-1 pb-2 border-b border-zinc-100 dark:border-[#2e2e38] shrink-0">
+                          <Search className="absolute left-3 top-3 h-3 w-3 text-zinc-400" />
+                          <input
+                            type="text"
+                            value={magnetSearchQuery}
+                            onChange={(e) => setMagnetSearchQuery(e.target.value)}
+                            placeholder="Search magnets..."
+                            className="w-full rounded-lg border border-zinc-200 bg-zinc-50/70 pl-7 pr-3 py-1 text-xs text-zinc-900 placeholder-zinc-400 focus:border-[#0066B2] focus:outline-none dark:border-[#2e2e38] dark:bg-[#202026] dark:text-white dark:placeholder-zinc-500"
+                            onClick={(e) => e.stopPropagation()}
+                          />
+                        </div>
+                      )}
+
+                      <div className="overflow-y-auto overscroll-contain flex-1 p-1 space-y-2 max-h-44" style={{ scrollbarWidth: "thin" }}>
+                        {filteredLandingPages.length > 0 && (
+                          <div>
+                            <div className="px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
+                              Landing Pages
+                            </div>
+                            <div className="mt-1 space-y-1">
+                              {filteredLandingPages.map((p) => {
+                                const isSelected = selectedPageId === p.id;
+                                return (
+                                  <button
+                                    key={p.id}
+                                    type="button"
+                                    onClick={() => {
+                                      setSelectedPageId(p.id);
+                                      setIsDropdownOpen(false);
+                                      setMagnetSearchQuery("");
+                                    }}
+                                    className={`w-full flex items-center justify-between gap-2 p-2 rounded-xl text-left transition cursor-pointer ${
+                                      isSelected
+                                        ? "bg-[#0066B2]/10 dark:bg-[#0066B2]/20 border border-[#0066B2]/30"
+                                        : "hover:bg-zinc-100 dark:hover:bg-[#222228] border border-transparent"
+                                    }`}
+                                  >
+                                    <div className="flex items-center gap-2 min-w-0 flex-1">
+                                      <span className="text-xs">🎯</span>
+                                      <span className="text-xs font-semibold text-zinc-900 dark:text-white truncate">
+                                        {p.name || "Untitled Page"}
+                                      </span>
+                                    </div>
+                                    {isSelected && <Check className="h-3.5 w-3.5 text-[#0066B2] dark:text-[#38BDF8] shrink-0" />}
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        )}
+
+                        {filteredLockedPdfPages.length > 0 && (
+                          <div>
+                            <div className="px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
+                              Locked PDFs
+                            </div>
+                            <div className="mt-1 space-y-1">
+                              {filteredLockedPdfPages.map((p) => {
+                                const isSelected = selectedPageId === p.id;
+                                return (
+                                  <button
+                                    key={p.id}
+                                    type="button"
+                                    onClick={() => {
+                                      setSelectedPageId(p.id);
+                                      setIsDropdownOpen(false);
+                                      setMagnetSearchQuery("");
+                                    }}
+                                    className={`w-full flex items-center justify-between gap-2 p-2 rounded-xl text-left transition cursor-pointer ${
+                                      isSelected
+                                        ? "bg-[#0066B2]/10 dark:bg-[#0066B2]/20 border border-[#0066B2]/30"
+                                        : "hover:bg-zinc-100 dark:hover:bg-[#222228] border border-transparent"
+                                    }`}
+                                  >
+                                    <div className="flex items-center gap-2 min-w-0 flex-1">
+                                      <span className="text-xs">🔒</span>
+                                      <span className="text-xs font-semibold text-zinc-900 dark:text-white truncate">
+                                        {p.name || p.pdfTitle || "Locked PDF"}
+                                      </span>
+                                    </div>
+                                    {isSelected && <Check className="h-3.5 w-3.5 text-[#0066B2] dark:text-[#38BDF8] shrink-0" />}
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        )}
+
+                        <div className="pt-1 border-t border-zinc-100 dark:border-[#2e2e38]">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setSelectedPageId("");
+                              setIsDropdownOpen(false);
+                              setMagnetSearchQuery("");
+                            }}
+                            className={`w-full flex items-center justify-between gap-2 p-2 rounded-xl text-left transition cursor-pointer ${
+                              !selectedPageId
+                                ? "bg-[#0066B2]/10 dark:bg-[#0066B2]/20 border border-[#0066B2]/30"
+                                : "hover:bg-zinc-100 dark:hover:bg-[#222228] border border-transparent"
+                            }`}
+                          >
+                            <div className="flex items-center gap-2">
+                              <span className="text-xs">⚡</span>
+                              <span className="text-xs font-semibold text-zinc-800 dark:text-zinc-200">
+                                Standalone Sequence
+                              </span>
+                            </div>
+                            {!selectedPageId && <Check className="h-3.5 w-3.5 text-[#0066B2] dark:text-[#38BDF8] shrink-0" />}
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Initial Delivery Email Subject */}
+                <div>
+                  <label className="block text-xs font-bold text-zinc-900 dark:text-white uppercase tracking-wider mb-1.5">
+                    Initial Delivery Subject *
+                  </label>
+                  <input
+                    type="text"
+                    value={newSeqSubject}
+                    onChange={(e) => setNewSeqSubject(e.target.value)}
+                    placeholder="e.g. Here is your free guide download →"
+                    maxLength={120}
+                    required
+                    className="w-full rounded-xl border border-zinc-200 bg-white p-3 text-xs text-zinc-900 placeholder-zinc-400 focus:border-[#0066B2] focus:outline-none dark:border-[#2e2e38] dark:bg-[#202026] dark:text-white dark:placeholder-zinc-500 shadow-xs font-medium"
+                  />
+                </div>
+
+                {/* Sequence Steps Preview */}
+                <div className="rounded-xl border border-[#0066B2]/20 bg-[#EFF6FF]/60 dark:border-[#0066B2]/30 dark:bg-[#0066B2]/10 p-3 space-y-2">
+                  <div className="flex items-center gap-1.5 text-[11px] font-bold text-[#0066B2] dark:text-[#38BDF8]">
+                    <Sparkles className="h-3.5 w-3.5" />
+                    <span>Automated Email Steps</span>
+                  </div>
+                  <div className="space-y-1.5 text-xs">
+                    <div className="flex items-center gap-2 bg-white dark:bg-[#18181B] p-2 rounded-lg border border-zinc-200/80 dark:border-white/5">
+                      <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#0066B2] text-[9px] font-bold text-white shrink-0">1</span>
+                      <span className="flex-1 text-[11px] font-semibold text-zinc-800 dark:text-zinc-200 truncate">
+                        {newSeqSubject || "Resource Delivery Email"}
+                      </span>
+                      <span className="px-1.5 py-0.5 rounded-full text-[9px] font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 shrink-0">Instantly</span>
+                    </div>
+                    <div className="flex items-center gap-2 bg-white dark:bg-[#18181B] p-2 rounded-lg border border-zinc-200/80 dark:border-white/5">
+                      <span className="flex h-5 w-5 items-center justify-center rounded-full bg-zinc-600 text-[9px] font-bold text-white shrink-0">2</span>
+                      <span className="flex-1 text-[11px] font-semibold text-zinc-800 dark:text-zinc-200 truncate">
+                        Follow-up: Did you get a chance to check it out?
+                      </span>
+                      <span className="px-1.5 py-0.5 rounded-full text-[9px] font-semibold bg-amber-500/10 text-amber-600 dark:text-amber-400 shrink-0">1d later</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Bottom Actions */}
+                <div className="pt-2 flex items-center justify-end gap-2.5">
+                  <button
+                    type="button"
+                    disabled={isCreatingSeq}
+                    onClick={() => {
+                      setShowNewSequenceModal(false);
+                      setNewSeqName("");
+                      setNewSeqSubject("");
+                      setSelectedPageId("");
+                      setIsDropdownOpen(false);
+                    }}
+                    className="flex-1 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-[#25252A] px-4 py-2.5 text-xs font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-all cursor-pointer text-center"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={isCreatingSeq || !newSeqName.trim()}
+                    className="flex-1 flex items-center justify-center gap-1.5 rounded-xl bg-[#0066B2] px-4 py-2.5 text-xs font-bold text-white hover:bg-[#005291] active:scale-[0.98] transition shadow-md cursor-pointer disabled:opacity-50"
+                  >
+                    <span>{isCreatingSeq ? "Creating..." : "Create Sequence"}</span>
+                    <ArrowRight className="h-3.5 w-3.5" />
+                  </button>
+                </div>
+              </form>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Delete Sequence Modal (Bottom Sheet on Mobile, Centered on Desktop) */}
+      <AnimatePresence>
+        {seqToDelete && (
+          <motion.div
+            key="seq-delete-modal-container"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 z-50 flex flex-col justify-end sm:items-center sm:justify-center"
+          >
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="fixed inset-0 bg-black/60 backdrop-blur-[2px]"
+              onClick={() => setSeqToDelete(null)}
+            />
+
+            {/* Bottom Sheet Drawer / Modal */}
+            <motion.div
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "100%" }}
+              transition={{ type: "spring", damping: 30, stiffness: 320 }}
+              className="relative z-10 w-full sm:max-w-[440px] max-h-[85vh] overflow-y-auto rounded-t-[28px] sm:rounded-3xl border-t sm:border border-zinc-200 dark:border-white/10 bg-white/95 dark:bg-[#141417]/95 backdrop-blur-xl p-5 sm:p-6 text-zinc-900 dark:text-white shadow-2xl space-y-4"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Grab Handle */}
+              <div className="w-10 h-1.5 rounded-full bg-zinc-300 dark:bg-zinc-700/80 mx-auto -mt-1 mb-2.5 cursor-grab active:scale-95 transition-transform sm:hidden" />
+
+              <div className="flex items-start justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-500">
+                    <Trash2 className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <h3 className="text-base sm:text-lg font-bold text-zinc-900 dark:text-white tracking-tight">Delete sequence?</h3>
+                    <p className="text-[11px] text-zinc-500 dark:text-zinc-400 mt-0.5 truncate max-w-[220px] sm:max-w-xs">"{seqToDelete.name}"</p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setSeqToDelete(null)}
+                  className="rounded-lg p-1.5 text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white transition-colors cursor-pointer"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+
+              <div className="space-y-1.5 pt-1 text-xs leading-relaxed text-zinc-600 dark:text-zinc-400">
+                <p>
+                  Are you sure you want to delete this sequence? This action cannot be undone.
+                </p>
+              </div>
+
+              <div className="pt-3 sm:pt-4 flex items-center justify-end gap-3">
+                <button
+                  type="button"
+                  onClick={() => setSeqToDelete(null)}
+                  className="flex-1 sm:flex-none rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-[#25252A] px-4 py-2.5 text-xs font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white transition-all cursor-pointer text-center"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={confirmDeleteSequence}
+                  className="flex-1 sm:flex-none rounded-xl border border-rose-500/30 bg-rose-500/15 dark:bg-rose-500/15 px-4 py-2.5 text-xs font-bold text-rose-600 dark:text-rose-400 hover:bg-rose-600 hover:text-white dark:hover:bg-rose-600 dark:hover:text-white transition-all cursor-pointer shadow-sm text-center"
+                >
+                  Delete sequence
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 }
