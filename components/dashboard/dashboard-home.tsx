@@ -798,21 +798,21 @@ export default function DashboardHome({
           >
             {/* ── Recent Leads ── */}
             <div className="rounded-2xl border border-zinc-200/80 bg-white/90 dark:border-[#2e2e38] dark:bg-[#18181B]/90 shadow-sm backdrop-blur-sm overflow-hidden">
-              <div className="flex items-center justify-between px-5 py-4 border-b border-zinc-100 dark:border-[#1e1e26]">
+              <div className="flex items-center justify-between px-4 py-2.5 border-b border-zinc-100/80 dark:border-white/[0.06]">
                 <div className="flex items-center gap-2.5">
                   <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#EFF6FF] dark:bg-[#0066B2]/20">
-                    <Users className="h-3.5 w-3.5 text-[#0066B2] dark:text-[#38BDF8]" />
+                    <Users className="h-4 w-4 text-[#0066B2] dark:text-[#38BDF8]" />
                   </div>
-                  <h2 className="text-sm font-bold text-zinc-900 dark:text-white">
+                  <h2 className="text-base font-bold text-zinc-900 dark:text-white">
                     Recent Leads
                   </h2>
                 </div>
                 <Link
                   href="/dashboard/leads"
-                  className="inline-flex items-center gap-1 text-xs font-semibold text-[#0066B2] dark:text-[#38BDF8] hover:underline underline-offset-2"
+                  className="inline-flex items-center gap-1 text-xs sm:text-sm font-semibold text-[#0066B2] dark:text-[#38BDF8] hover:opacity-80 transition-opacity"
                 >
                   View all
-                  <ArrowUpRight className="h-3 w-3" />
+                  <ArrowUpRight className="h-3.5 w-3.5" />
                 </Link>
               </div>
 
@@ -821,7 +821,7 @@ export default function DashboardHome({
                   {recentLeads.map((lead) => (
                     <div
                       key={lead.id}
-                      className="flex items-center gap-3 px-5 py-3.5 hover:bg-zinc-50/80 dark:hover:bg-white/[0.025] transition-colors"
+                      className="flex items-center gap-3 px-4 py-2.5 hover:bg-zinc-50/80 dark:hover:bg-white/[0.025] transition-colors"
                     >
                       <Avatar name={lead.name} email={lead.email} />
                       <div className="flex-1 min-w-0">
@@ -839,8 +839,8 @@ export default function DashboardHome({
                   ))}
                 </div>
               ) : (
-                <div className="flex flex-col items-center py-10 text-center">
-                  <Users className="h-8 w-8 text-zinc-200 dark:text-zinc-800 mb-2" />
+                <div className="flex flex-col items-center py-8 text-center">
+                  <Users className="h-7 w-7 text-zinc-200 dark:text-zinc-800 mb-2" />
                   <p className="text-xs text-zinc-400 dark:text-[#9B9085] max-w-[220px] leading-relaxed">
                     No leads yet. Share your magnet link to start growing your list.
                   </p>
@@ -852,21 +852,21 @@ export default function DashboardHome({
             <div className="flex flex-col gap-4 h-full">
               {/* Top 50%: Active Sequences */}
               <div className="rounded-2xl border border-zinc-200/80 bg-white/90 dark:border-[#2e2e38] dark:bg-[#18181B]/90 shadow-sm backdrop-blur-sm overflow-hidden flex-1 flex flex-col justify-between">
-                <div className="flex items-center justify-between px-5 py-3.5 border-b border-zinc-100 dark:border-[#1e1e26]">
+                <div className="flex items-center justify-between px-4 py-2.5 border-b border-zinc-100/80 dark:border-white/[0.06]">
                   <div className="flex items-center gap-2.5">
                     <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-50 dark:bg-emerald-500/20">
-                      <Mail className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
+                      <Mail className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
                     </div>
-                    <h2 className="text-sm font-bold text-zinc-900 dark:text-white">
+                    <h2 className="text-base font-bold text-zinc-900 dark:text-white">
                       Active Sequences
                     </h2>
                   </div>
                   <Link
                     href="/dashboard/sequences"
-                    className="inline-flex items-center gap-1 text-xs font-semibold text-[#0066B2] dark:text-[#38BDF8] hover:underline underline-offset-2"
+                    className="inline-flex items-center gap-1 text-xs sm:text-sm font-semibold text-[#0066B2] dark:text-[#38BDF8] hover:opacity-80 transition-opacity"
                   >
                     View all
-                    <ArrowUpRight className="h-3 w-3" />
+                    <ArrowUpRight className="h-3.5 w-3.5" />
                   </Link>
                 </div>
 
@@ -881,7 +881,7 @@ export default function DashboardHome({
                         <Link
                           key={seq.id}
                           href={`/dashboard/sequences/${seq.id}`}
-                          className="group flex items-center gap-3 px-5 py-3 hover:bg-zinc-50/80 dark:hover:bg-white/[0.025] transition-colors"
+                          className="group flex items-center gap-3 px-4 py-2.5 hover:bg-zinc-50/80 dark:hover:bg-white/[0.025] transition-colors"
                         >
                           <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[#EFF6FF] dark:bg-[#0066B2]/20">
                             <Rocket className="h-3.5 w-3.5 text-[#0066B2] dark:text-[#38BDF8]" />
@@ -915,14 +915,14 @@ export default function DashboardHome({
                     })}
                   </div>
                 ) : (
-                  <div className="flex flex-col items-center py-6 text-center">
-                    <Mail className="h-7 w-7 text-zinc-300 dark:text-zinc-700 mb-1.5" />
+                  <div className="flex flex-col items-center py-5 text-center">
+                    <Mail className="h-6 w-6 text-zinc-300 dark:text-zinc-700 mb-1" />
                     <p className="text-xs text-zinc-500 dark:text-[#9B9085]">
                       No active sequences yet.
                     </p>
                     <Link
                       href="/dashboard/sequences/new"
-                      className="mt-2 text-xs font-bold text-[#0066B2] dark:text-[#38BDF8] hover:underline underline-offset-2"
+                      className="mt-1.5 text-xs font-bold text-[#0066B2] dark:text-[#38BDF8] hover:opacity-80 transition-opacity"
                     >
                       Create a sequence →
                     </Link>
@@ -932,33 +932,33 @@ export default function DashboardHome({
 
               {/* Bottom 50%: Integrations & System Health */}
               <div className="rounded-2xl border border-zinc-200/80 bg-white/90 dark:border-[#2e2e38] dark:bg-[#18181B]/90 shadow-sm backdrop-blur-sm p-4 flex flex-col justify-between">
-                <div className="flex items-center justify-between pb-2.5 border-b border-zinc-100 dark:border-[#1e1e26]">
-                  <div className="flex items-center gap-2">
-                    <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-rose-50 dark:bg-rose-500/20">
-                      <Zap className="h-3 w-3 text-rose-600 dark:text-rose-400" />
+                <div className="flex items-center justify-between pb-2.5 border-b border-zinc-100/80 dark:border-white/[0.06]">
+                  <div className="flex items-center gap-2.5">
+                    <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-rose-50 dark:bg-rose-500/20">
+                      <Zap className="h-4 w-4 text-rose-600 dark:text-rose-400" />
                     </div>
-                    <h2 className="text-xs font-bold text-zinc-900 dark:text-white">
-                      Integrations & System Health
+                    <h2 className="text-base font-bold text-zinc-900 dark:text-white">
+                      Integrations
                     </h2>
                   </div>
                   <Link
                     href="/dashboard/integration"
-                    className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#0066B2] dark:text-[#38BDF8] hover:underline underline-offset-2"
+                    className="inline-flex items-center gap-1 text-xs sm:text-sm font-semibold text-[#0066B2] dark:text-[#38BDF8] hover:opacity-80 transition-opacity"
                   >
                     Manage
-                    <ArrowUpRight className="h-3 w-3" />
+                    <ArrowUpRight className="h-3.5 w-3.5" />
                   </Link>
                 </div>
 
                 <div className="grid grid-cols-3 gap-2 mt-3">
                   {/* ConvertKit */}
                   <div className="p-2.5 rounded-xl bg-zinc-50/80 dark:bg-white/[0.02] border border-zinc-100 dark:border-white/[0.05]">
-                    <span className="text-[8px] font-bold uppercase tracking-wider text-zinc-400 dark:text-[#9B9085]">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-[#9B9085]">
                       ConvertKit / Kit
                     </span>
                     <div className="flex items-center gap-1.5 mt-1">
-                      <span className={`h-1.5 w-1.5 rounded-full ${account?.kitConnected ? "bg-emerald-500" : "bg-zinc-400"}`} />
-                      <span className="text-[11px] font-semibold text-zinc-800 dark:text-zinc-200 truncate">
+                      <span className={`h-2 w-2 rounded-full ${account?.kitConnected ? "bg-emerald-500" : "bg-zinc-400"}`} />
+                      <span className="text-xs sm:text-sm font-semibold text-zinc-800 dark:text-zinc-200 truncate">
                         {account?.kitConnected ? "Connected" : "Inactive"}
                       </span>
                     </div>
@@ -966,12 +966,12 @@ export default function DashboardHome({
 
                   {/* Webhooks */}
                   <div className="p-2.5 rounded-xl bg-zinc-50/80 dark:bg-white/[0.02] border border-zinc-100 dark:border-white/[0.05]">
-                    <span className="text-[8px] font-bold uppercase tracking-wider text-zinc-400 dark:text-[#9B9085]">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-[#9B9085]">
                       Webhooks
                     </span>
                     <div className="flex items-center gap-1.5 mt-1">
-                      <span className={`h-1.5 w-1.5 rounded-full ${(account?.zapierWebhookUrl || account?.slackWebhookUrl) ? "bg-emerald-500" : "bg-zinc-400"}`} />
-                      <span className="text-[11px] font-semibold text-zinc-800 dark:text-zinc-200 truncate">
+                      <span className={`h-2 w-2 rounded-full ${(account?.zapierWebhookUrl || account?.slackWebhookUrl) ? "bg-emerald-500" : "bg-zinc-400"}`} />
+                      <span className="text-xs sm:text-sm font-semibold text-zinc-800 dark:text-zinc-200 truncate">
                         {(account?.zapierWebhookUrl || account?.slackWebhookUrl) ? "Active" : "Inactive"}
                       </span>
                     </div>
@@ -979,12 +979,12 @@ export default function DashboardHome({
 
                   {/* GA4 / Pixel */}
                   <div className="p-2.5 rounded-xl bg-zinc-50/80 dark:bg-white/[0.02] border border-zinc-100 dark:border-white/[0.05]">
-                    <span className="text-[8px] font-bold uppercase tracking-wider text-zinc-400 dark:text-[#9B9085]">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-[#9B9085]">
                       GA4 / Pixel
                     </span>
                     <div className="flex items-center gap-1.5 mt-1">
-                      <span className={`h-1.5 w-1.5 rounded-full ${(account?.ga4MeasurementId || account?.metaPixelId) ? "bg-emerald-500" : "bg-zinc-400"}`} />
-                      <span className="text-[11px] font-semibold text-zinc-800 dark:text-zinc-200 truncate">
+                      <span className={`h-2 w-2 rounded-full ${(account?.ga4MeasurementId || account?.metaPixelId) ? "bg-emerald-500" : "bg-zinc-400"}`} />
+                      <span className="text-xs sm:text-sm font-semibold text-zinc-800 dark:text-zinc-200 truncate">
                         {(account?.ga4MeasurementId || account?.metaPixelId) ? "Active" : "Not set"}
                       </span>
                     </div>
