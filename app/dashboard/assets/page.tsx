@@ -1174,99 +1174,115 @@ export default function ResourcesPage() {
               </div>
 
               {/* Mobile Subtitle Strip & Sort / Selection Mode Toggle */}
-              <div className="pt-0.5 text-xs flex items-center justify-between">
-                {isMobileSelectionMode ? (
-                  <div className="flex items-center justify-between w-full">
-                    <label className="flex items-center gap-2 cursor-pointer select-none">
-                      <input
-                        type="checkbox"
-                        checked={filteredResources.length > 0 && selectedResourceIds.length === filteredResources.length}
-                        onChange={toggleSelectAll}
-                        className="h-4 w-4 rounded border-zinc-300 dark:border-zinc-700 bg-white dark:bg-[#202026] text-[#0066B2] focus:ring-[#0066B2] cursor-pointer"
-                      />
-                      <span className="font-bold text-zinc-900 dark:text-white">
-                        Select All ({filteredResources.length})
-                      </span>
-                    </label>
-
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setIsMobileSelectionMode(false);
-                        setSelectedResourceIds([]);
-                      }}
-                      className="px-2.5 py-1 rounded-lg text-xs font-bold text-[#0066B2] hover:bg-[#0066B2]/10 dark:text-[#38BDF8] dark:hover:bg-[#38BDF8]/10 transition cursor-pointer"
+              <div className="pt-0.5 text-xs overflow-hidden min-h-[30px] flex items-center">
+                <AnimatePresence mode="wait" initial={false}>
+                  {isMobileSelectionMode ? (
+                    <motion.div
+                      key="mobile-select-bar"
+                      initial={{ opacity: 0, y: -4 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -4 }}
+                      transition={{ duration: 0.18, ease: "easeOut" }}
+                      className="flex items-center justify-between w-full"
                     >
-                      Done
-                    </button>
-                  </div>
-                ) : (
-                  <div className="flex items-center justify-between w-full">
-                    <div className="flex items-center gap-2">
-                      <span className="font-semibold text-zinc-600 dark:text-zinc-400 text-xs">
-                        All Files ({filteredResources.length})
-                      </span>
+                      <label className="flex items-center gap-2 cursor-pointer select-none">
+                        <input
+                          type="checkbox"
+                          checked={filteredResources.length > 0 && selectedResourceIds.length === filteredResources.length}
+                          onChange={toggleSelectAll}
+                          className="h-4 w-4 rounded border-zinc-300 dark:border-zinc-700 bg-white dark:bg-[#202026] text-[#0066B2] focus:ring-[#0066B2] cursor-pointer"
+                        />
+                        <span className="font-bold text-zinc-900 dark:text-white">
+                          Select All ({filteredResources.length})
+                        </span>
+                      </label>
 
-                      {/* Mobile Compact Sort Trigger */}
-                      <div className="relative" ref={mobileSortRef}>
-                        <button
-                          type="button"
-                          onClick={() => setIsMobileSortOpen((v) => !v)}
-                          className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-semibold text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200 transition cursor-pointer"
-                        >
-                          <span>
-                            {sortBy === "newest" ? "Newest" : sortBy === "oldest" ? "Oldest" : sortBy === "size" ? "Size" : "Name"}
-                          </span>
-                          <ChevronDown className="h-3 w-3 text-zinc-400" />
-                        </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setIsMobileSelectionMode(false);
+                          setSelectedResourceIds([]);
+                        }}
+                        className="px-2.5 py-1 rounded-lg text-xs font-bold text-[#0066B2] hover:bg-[#0066B2]/10 dark:text-[#38BDF8] dark:hover:bg-[#38BDF8]/10 transition cursor-pointer"
+                      >
+                        Done
+                      </button>
+                    </motion.div>
+                  ) : (
+                    <motion.div
+                      key="mobile-normal-bar"
+                      initial={{ opacity: 0, y: 4 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: 4 }}
+                      transition={{ duration: 0.18, ease: "easeOut" }}
+                      className="flex items-center justify-between w-full"
+                    >
+                      <div className="flex items-center gap-2">
+                        <span className="font-semibold text-zinc-600 dark:text-zinc-400 text-xs">
+                          All Files ({filteredResources.length})
+                        </span>
 
-                        <AnimatePresence>
-                          {isMobileSortOpen && (
-                            <motion.div
-                              initial={{ opacity: 0, scale: 0.95, y: -4 }}
-                              animate={{ opacity: 1, scale: 1, y: 0 }}
-                              exit={{ opacity: 0, scale: 0.95, y: -4 }}
-                              transition={{ duration: 0.15 }}
-                              className="absolute left-0 top-full z-40 mt-1 w-40 rounded-xl border border-zinc-200/90 bg-white/95 p-1 shadow-xl backdrop-blur-xl dark:border-white/10 dark:bg-[#18181F]/95 dark:text-white"
-                            >
-                              {[
-                                { id: "newest", label: "Newest" },
-                                { id: "oldest", label: "Oldest" },
-                                { id: "size", label: "File Size" },
-                                { id: "name", label: "Name (A-Z)" },
-                              ].map((opt) => (
-                                <button
-                                  key={opt.id}
-                                  type="button"
-                                  onClick={() => {
-                                    setSortBy(opt.id as any);
-                                    setIsMobileSortOpen(false);
-                                  }}
-                                  className={`flex w-full items-center justify-between rounded-lg px-2.5 py-1.5 text-xs font-medium cursor-pointer ${
-                                    sortBy === opt.id
-                                      ? "bg-[#0066B2]/10 text-[#0066B2] font-bold dark:bg-[#38BDF8]/20 dark:text-[#38BDF8]"
-                                      : "text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-white/5"
-                                  }`}
-                                >
-                                  <span>{opt.label}</span>
-                                  {sortBy === opt.id && <Check className="h-3 w-3 text-current" />}
-                                </button>
-                              ))}
-                            </motion.div>
-                          )}
-                        </AnimatePresence>
+                        {/* Mobile Compact Sort Trigger */}
+                        <div className="relative" ref={mobileSortRef}>
+                          <button
+                            type="button"
+                            onClick={() => setIsMobileSortOpen((v) => !v)}
+                            className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-semibold text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200 transition cursor-pointer"
+                          >
+                            <span>
+                              {sortBy === "newest" ? "Newest" : sortBy === "oldest" ? "Oldest" : sortBy === "size" ? "Size" : "Name"}
+                            </span>
+                            <ChevronDown className="h-3 w-3 text-zinc-400" />
+                          </button>
+
+                          <AnimatePresence>
+                            {isMobileSortOpen && (
+                              <motion.div
+                                initial={{ opacity: 0, scale: 0.95, y: -4 }}
+                                animate={{ opacity: 1, scale: 1, y: 0 }}
+                                exit={{ opacity: 0, scale: 0.95, y: -4 }}
+                                transition={{ duration: 0.15 }}
+                                className="absolute left-0 top-full z-40 mt-1 w-40 rounded-xl border border-zinc-200/90 bg-white/95 p-1 shadow-xl backdrop-blur-xl dark:border-white/10 dark:bg-[#18181F]/95 dark:text-white"
+                              >
+                                {[
+                                  { id: "newest", label: "Newest" },
+                                  { id: "oldest", label: "Oldest" },
+                                  { id: "size", label: "File Size" },
+                                  { id: "name", label: "Name (A-Z)" },
+                                ].map((opt) => (
+                                  <button
+                                    key={opt.id}
+                                    type="button"
+                                    onClick={() => {
+                                      setSortBy(opt.id as any);
+                                      setIsMobileSortOpen(false);
+                                    }}
+                                    className={`flex w-full items-center justify-between rounded-lg px-2.5 py-1.5 text-xs font-medium cursor-pointer ${
+                                      sortBy === opt.id
+                                        ? "bg-[#0066B2]/10 text-[#0066B2] font-bold dark:bg-[#38BDF8]/20 dark:text-[#38BDF8]"
+                                        : "text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-white/5"
+                                    }`}
+                                  >
+                                    <span>{opt.label}</span>
+                                    {sortBy === opt.id && <Check className="h-3 w-3 text-current" />}
+                                  </button>
+                                ))}
+                              </motion.div>
+                            )}
+                          </AnimatePresence>
+                        </div>
                       </div>
-                    </div>
 
-                    <button
-                      type="button"
-                      onClick={() => setIsMobileSelectionMode(true)}
-                      className="inline-flex items-center gap-1 px-3 py-1 rounded-lg border border-zinc-200/90 bg-white dark:border-[#2e2e38] dark:bg-[#202026] text-xs font-bold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-[#282830] transition cursor-pointer shadow-2xs"
-                    >
-                      <span>Select</span>
-                    </button>
-                  </div>
-                )}
+                      <button
+                        type="button"
+                        onClick={() => setIsMobileSelectionMode(true)}
+                        className="inline-flex items-center gap-1 px-3 py-1 rounded-lg border border-zinc-200/90 bg-white dark:border-[#2e2e38] dark:bg-[#202026] text-xs font-bold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-[#282830] transition cursor-pointer shadow-2xs"
+                      >
+                        <span>Select</span>
+                      </button>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
             </div>
           )}
