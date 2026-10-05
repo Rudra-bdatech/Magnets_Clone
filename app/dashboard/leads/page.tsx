@@ -1216,47 +1216,63 @@ export default function LeadsPage() {
               </div>
 
               {/* Mobile Selection Mode Bar / Subtitle Strip */}
-              <div className="pt-1 text-xs">
-                {isMobileSelectionMode ? (
-                  <div className="flex items-center justify-between">
-                    <label className="flex items-center gap-2 cursor-pointer select-none">
-                      <input
-                        type="checkbox"
-                        checked={paginatedLeads.length > 0 && paginatedLeads.every((l) => selectedLeadIds.includes(l.id))}
-                        onChange={toggleSelectAll}
-                        className="h-4 w-4 rounded border-zinc-300 dark:border-zinc-700 bg-white dark:bg-[#202026] text-[#0066B2] focus:ring-[#0066B2] cursor-pointer"
-                      />
-                      <span className="font-bold text-zinc-900 dark:text-white">
-                        Select All ({paginatedLeads.length})
+              <div className="pt-1 text-xs overflow-hidden min-h-[30px] flex items-center">
+                <AnimatePresence mode="wait" initial={false}>
+                  {isMobileSelectionMode ? (
+                    <motion.div
+                      key="mobile-leads-select-bar"
+                      initial={{ opacity: 0, y: -4 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -4 }}
+                      transition={{ duration: 0.18, ease: "easeOut" }}
+                      className="flex items-center justify-between w-full"
+                    >
+                      <label className="flex items-center gap-2 cursor-pointer select-none">
+                        <input
+                          type="checkbox"
+                          checked={paginatedLeads.length > 0 && paginatedLeads.every((l) => selectedLeadIds.includes(l.id))}
+                          onChange={toggleSelectAll}
+                          className="h-4 w-4 rounded border-zinc-300 dark:border-zinc-700 bg-white dark:bg-[#202026] text-[#0066B2] focus:ring-[#0066B2] cursor-pointer"
+                        />
+                        <span className="font-bold text-zinc-900 dark:text-white">
+                          Select All ({paginatedLeads.length})
+                        </span>
+                      </label>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setIsMobileSelectionMode(false);
+                          setSelectedLeadIds([]);
+                        }}
+                        className="px-2.5 py-1 rounded-lg text-xs font-bold text-[#0066B2] hover:bg-[#0066B2]/10 dark:text-[#38BDF8] dark:hover:bg-[#38BDF8]/10 transition cursor-pointer"
+                      >
+                        Done
+                      </button>
+                    </motion.div>
+                  ) : (
+                    <motion.div
+                      key="mobile-leads-normal-bar"
+                      initial={{ opacity: 0, y: 4 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: 4 }}
+                      transition={{ duration: 0.18, ease: "easeOut" }}
+                      className="flex items-center justify-between w-full"
+                    >
+                      <span className="font-semibold text-zinc-600 dark:text-zinc-400">
+                        All Subscribers ({filtered.length})
                       </span>
-                    </label>
 
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setIsMobileSelectionMode(false);
-                        setSelectedLeadIds([]);
-                      }}
-                      className="px-2.5 py-1 rounded-lg text-xs font-bold text-[#0066B2] hover:bg-[#0066B2]/10 dark:text-[#38BDF8] dark:hover:bg-[#38BDF8]/10 transition cursor-pointer"
-                    >
-                      Done
-                    </button>
-                  </div>
-                ) : (
-                  <div className="flex items-center justify-between">
-                    <span className="font-semibold text-zinc-600 dark:text-zinc-400">
-                      All Subscribers ({filtered.length})
-                    </span>
-
-                    <button
-                      type="button"
-                      onClick={() => setIsMobileSelectionMode(true)}
-                      className="inline-flex items-center gap-1 px-3 py-1 rounded-lg border border-zinc-200/90 bg-white dark:border-[#2e2e38] dark:bg-[#202026] text-xs font-bold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-[#282830] transition cursor-pointer shadow-2xs"
-                    >
-                      <span>Select</span>
-                    </button>
-                  </div>
-                )}
+                      <button
+                        type="button"
+                        onClick={() => setIsMobileSelectionMode(true)}
+                        className="inline-flex items-center gap-1 px-3 py-1 rounded-lg border border-zinc-200/90 bg-white dark:border-[#2e2e38] dark:bg-[#202026] text-xs font-bold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-[#282830] transition cursor-pointer shadow-2xs"
+                      >
+                        <span>Select</span>
+                      </button>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
             </div>
 

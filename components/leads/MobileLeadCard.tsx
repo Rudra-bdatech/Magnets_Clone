@@ -87,29 +87,40 @@ export const MobileLeadCard = memo(function MobileLeadCard({
     >
       {/* Top Header Row: Animated Checkbox, Avatar, Name/Email & Gate Badge */}
       <div className="flex items-start justify-between gap-2.5">
-        <div className="flex items-start gap-2.5 min-w-0 flex-1">
+        <div className="flex items-start min-w-0 flex-1">
           {/* Animated Checkbox in Selection Mode */}
           <AnimatePresence initial={false}>
             {isSelectionMode && (
               <motion.div
-                initial={{ opacity: 0, width: 0, marginRight: 0, scale: 0.8 }}
-                animate={{ opacity: 1, width: "auto", marginRight: 0, scale: 1 }}
-                exit={{ opacity: 0, width: 0, marginRight: 0, scale: 0.8 }}
-                transition={{ duration: 0.2, ease: "easeOut" }}
+                initial={{ opacity: 0, width: 0, marginRight: 0, scale: 0.6 }}
+                animate={{ opacity: 1, width: 22, marginRight: 10, scale: 1 }}
+                exit={{ opacity: 0, width: 0, marginRight: 0, scale: 0.6 }}
+                transition={{ type: "spring", stiffness: 420, damping: 28 }}
                 onClick={(e) => {
                   e.stopPropagation();
                   onToggleSelect(lead.id);
                 }}
-                className="flex items-center justify-center p-1 -m-1 cursor-pointer shrink-0 mt-0.5 overflow-hidden"
+                className="flex h-9 items-center justify-center shrink-0 overflow-hidden cursor-pointer"
               >
                 <div
-                  className={`flex h-5 w-5 items-center justify-center rounded-md border transition-all ${
+                  className={`flex h-5 w-5 items-center justify-center rounded-md border transition-all duration-150 ${
                     isSelected
-                      ? "border-[#0066B2] bg-[#0066B2] text-white dark:border-[#38BDF8] dark:bg-[#38BDF8] dark:text-zinc-900"
-                      : "border-zinc-300 dark:border-zinc-600 bg-white dark:bg-[#202026]"
+                      ? "border-[#0066B2] bg-[#0066B2] text-white dark:border-[#38BDF8] dark:bg-[#38BDF8] dark:text-zinc-900 shadow-2xs"
+                      : "border-zinc-300 dark:border-zinc-600 bg-white dark:bg-[#202026] hover:border-[#0066B2]"
                   }`}
                 >
-                  {isSelected && <Check className="h-3.5 w-3.5 stroke-[3]" />}
+                  <AnimatePresence>
+                    {isSelected && (
+                      <motion.div
+                        initial={{ scale: 0.2, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        exit={{ scale: 0.2, opacity: 0 }}
+                        transition={{ type: "spring", stiffness: 500, damping: 25 }}
+                      >
+                        <Check className="h-3.5 w-3.5 stroke-[3]" />
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
               </motion.div>
             )}
@@ -119,7 +130,7 @@ export const MobileLeadCard = memo(function MobileLeadCard({
           <div
             onClick={handleAvatarClick}
             title={isSelectionMode ? "Toggle selection" : "Tap to select"}
-            className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-xs font-bold uppercase border transition-all cursor-pointer ${
+            className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-xs font-bold uppercase border active:scale-95 transition-all cursor-pointer ${
               isSelected
                 ? "bg-[#0066B2] text-white border-[#0066B2] dark:bg-[#38BDF8] dark:text-zinc-900"
                 : isLinkedIn
@@ -135,7 +146,7 @@ export const MobileLeadCard = memo(function MobileLeadCard({
           </div>
 
           {/* Lead Details */}
-          <div className="min-w-0 flex-1">
+          <div className="min-w-0 flex-1 ml-2.5">
             <div className="flex items-center gap-1.5">
               <p className="text-xs font-bold text-zinc-900 dark:text-white truncate">
                 {displayName || lead.email}
