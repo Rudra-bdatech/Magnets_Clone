@@ -19,6 +19,7 @@ import {
   Image as ImageIcon,
   Copy,
   Check,
+  CheckSquare,
   LayoutGrid,
   List,
   TrendingUp,
@@ -44,6 +45,7 @@ interface MagnetCardProps {
   index: number;
   isSelected: boolean;
   isChecked: boolean;
+  isSelectMode?: boolean;
   anyChecked?: boolean;
   onSelect: (id: string) => void;
   onToggleCheck: (id: string, e?: React.MouseEvent) => void;
@@ -58,6 +60,7 @@ const MagnetCard = React.memo(
     index,
     isSelected,
     isChecked,
+    isSelectMode = false,
     anyChecked = false,
     onSelect,
     onToggleCheck,
@@ -65,6 +68,7 @@ const MagnetCard = React.memo(
     copiedId,
     onCopyLink,
   }: MagnetCardProps) {
+    const showCheckbox = isChecked || isSelectMode || anyChecked;
     return (
       <div
         onClick={() => onSelect(page.id)}
@@ -129,13 +133,13 @@ const MagnetCard = React.memo(
             onClick={(e) => onToggleCheck(page.id, e)}
             className={`absolute top-3 right-3 flex h-6 w-6 items-center justify-center rounded-lg border transition-all z-10 cursor-pointer ${isChecked
                 ? "bg-[#0066B2] border-[#0066B2] text-white shadow-md scale-105 opacity-100"
-                : anyChecked
-                  ? "bg-white/90 dark:bg-black/70 border-zinc-300 dark:border-zinc-700 text-transparent hover:border-[#0066B2] dark:hover:border-[#38BDF8] opacity-100"
-                  : "bg-white/90 dark:bg-black/70 border-zinc-300 dark:border-zinc-700 text-transparent hover:border-[#0066B2] dark:hover:border-[#38BDF8] opacity-0 group-hover:opacity-100"
+                : showCheckbox
+                  ? "bg-white/90 dark:bg-black/70 border-zinc-300 dark:border-zinc-700 text-transparent hover:border-[#0066B2] dark:hover:border-[#38BDF8] opacity-100 shadow-xs active:scale-95"
+                  : "bg-white/90 dark:bg-black/70 border-zinc-300 dark:border-zinc-700 text-transparent hover:border-[#0066B2] dark:hover:border-[#38BDF8] opacity-0 md:group-hover:opacity-100 shadow-xs"
               }`}
             title={isChecked ? "Deselect magnet" : "Select magnet"}
           >
-            <Check className={`h-3.5 w-3.5 stroke-[3px] ${isChecked ? "opacity-100" : "opacity-0"}`} />
+            <Check className={`h-3.5 w-3.5 stroke-[3px] ${isChecked ? "opacity-100 text-white" : "opacity-0"}`} />
           </button>
         </div>
 
@@ -186,6 +190,8 @@ const MagnetCard = React.memo(
   (prev, next) =>
     prev.isSelected === next.isSelected &&
     prev.isChecked === next.isChecked &&
+    prev.isSelectMode === next.isSelectMode &&
+    prev.anyChecked === next.anyChecked &&
     prev.page === next.page &&
     prev.copiedId === next.copiedId
 );
@@ -203,6 +209,7 @@ export default function PagesPage() {
   const [mobileInspectorOpen, setMobileInspectorOpen] = useState(false);
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [checkedIds, setCheckedIds] = useState<string[]>([]);
+  const [isSelectMode, setIsSelectMode] = useState(false);
   const [pageToDeleteId, setPageToDeleteId] = useState<string | null>(null);
   const [showBulkDeleteModal, setShowBulkDeleteModal] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -375,6 +382,7 @@ export default function PagesPage() {
       setSelectedPageId(remaining[0]?.id || null);
     }
     setCheckedIds([]);
+    setIsSelectMode(false);
     setShowBulkDeleteModal(false);
     router.refresh();
   }, [checkedIds, pages, selectedPageId, router]);
@@ -537,6 +545,27 @@ export default function PagesPage() {
                     )}
                     <List className="relative z-10 h-4 w-4" />
                   </button>
+
+                  <div className="h-3.5 w-px bg-zinc-200 dark:bg-zinc-700 mx-0.5" />
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsSelectMode((prev) => {
+                        const next = !prev;
+                        if (!next) setCheckedIds([]);
+                        return next;
+                      });
+                    }}
+                    className={`relative p-1.5 rounded-lg transition-colors duration-150 cursor-pointer ${
+                      isSelectMode || checkedIds.length > 0
+                        ? "bg-white dark:bg-[#2A2A30] text-[#0066B2] dark:text-[#38BDF8] shadow-xs"
+                        : "text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200"
+                    }`}
+                    title={isSelectMode || checkedIds.length > 0 ? "Exit Select Mode" : "Select Lead Magnets"}
+                  >
+                    <CheckSquare className="relative z-10 h-4 w-4" />
+                  </button>
                 </div>
               </div>
             </div>
@@ -582,6 +611,7 @@ export default function PagesPage() {
                         index={index}
                         isSelected={selectedPageId === page.id}
                         isChecked={checkedIds.includes(page.id)}
+                        isSelectMode={isSelectMode}
                         anyChecked={checkedIds.length > 0}
                         onSelect={handleSelectPage}
                         onToggleCheck={handleToggleCheck}
@@ -605,12 +635,18 @@ export default function PagesPage() {
                     <thead className="bg-zinc-50/80 dark:bg-[#1A1A1E] text-zinc-400 dark:text-zinc-500 uppercase font-semibold text-[10px] tracking-wider border-b border-zinc-200/80 dark:border-zinc-800">
                       <tr>
                         <th className="px-3 py-3 w-10 text-center">
-                          <input
-                            type="checkbox"
-                            checked={filtered.length > 0 && filtered.every((p) => checkedIds.includes(p.id))}
-                            onChange={handleToggleSelectAll}
-                            className="rounded border-zinc-300 dark:border-zinc-700 text-[#0066B2] focus:ring-[#0066B2] cursor-pointer"
-                          />
+                          <button
+                            type="button"
+                            onClick={handleToggleSelectAll}
+                            className={`inline-flex h-5 w-5 items-center justify-center rounded-md border transition-all cursor-pointer ${
+                              filtered.length > 0 && filtered.every((p) => checkedIds.includes(p.id))
+                                ? "bg-[#0066B2] border-[#0066B2] text-white shadow-xs"
+                                : "bg-white/90 dark:bg-zinc-800/80 border-zinc-300 dark:border-zinc-700 hover:border-[#0066B2] dark:hover:border-[#38BDF8]"
+                            }`}
+                            title={filtered.length > 0 && filtered.every((p) => checkedIds.includes(p.id)) ? "Deselect all" : "Select all"}
+                          >
+                            <Check className={`h-3 w-3 stroke-[3px] ${filtered.length > 0 && filtered.every((p) => checkedIds.includes(p.id)) ? "opacity-100 text-white" : "opacity-0"}`} />
+                          </button>
                         </th>
                         <th className="px-4 py-3">Lead Magnet</th>
                         <th className="px-4 py-3">Status</th>
@@ -635,12 +671,18 @@ export default function PagesPage() {
                               }`}
                           >
                             <td className="px-3 py-3 text-center" onClick={(e) => e.stopPropagation()}>
-                              <input
-                                type="checkbox"
-                                checked={isChecked}
-                                onChange={(e) => handleToggleCheck(page.id, e as any)}
-                                className="rounded border-zinc-300 dark:border-zinc-700 text-[#0066B2] focus:ring-[#0066B2] cursor-pointer"
-                              />
+                              <button
+                                type="button"
+                                onClick={(e) => handleToggleCheck(page.id, e)}
+                                className={`inline-flex h-5 w-5 items-center justify-center rounded-md border transition-all cursor-pointer ${
+                                  isChecked
+                                    ? "bg-[#0066B2] border-[#0066B2] text-white shadow-xs scale-105"
+                                    : "bg-white/90 dark:bg-zinc-800/80 border-zinc-300 dark:border-zinc-700 hover:border-[#0066B2] dark:hover:border-[#38BDF8]"
+                                }`}
+                                title={isChecked ? "Deselect magnet" : "Select magnet"}
+                              >
+                                <Check className={`h-3 w-3 stroke-[3px] ${isChecked ? "opacity-100 text-white" : "opacity-0"}`} />
+                              </button>
                             </td>
                             <td className="px-4 py-3 font-semibold text-zinc-900 dark:text-white">
                               <div className="flex items-center gap-3">
@@ -1311,7 +1353,10 @@ export default function PagesPage() {
               {filtered.length > 0 && filtered.every((p) => checkedIds.includes(p.id)) ? "Deselect All" : "Select All"}
             </button>
             <button
-              onClick={() => setCheckedIds([])}
+              onClick={() => {
+                setCheckedIds([]);
+                setIsSelectMode(false);
+              }}
               className="text-xs font-semibold text-zinc-400 hover:text-zinc-200 transition cursor-pointer whitespace-nowrap"
             >
               Clear
