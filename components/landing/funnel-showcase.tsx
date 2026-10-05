@@ -144,25 +144,9 @@ export default function FunnelShowcase() {
   const isDelivered = progress > 45;
   const isSyncPulse = progress > 40;
 
-  // Dynamic camera zoom effect following mouse focus before click (progress 28% -> 68%)
-  const isZooming = progress >= 28 && progress <= 68;
-
-  const getZoomOrigin = () => {
-    switch (activeIdx) {
-      case 0:
-        return "72% 70%"; // Focuses onto input & Get PDF CTA button
-      case 1:
-        return "50% 75%"; // Focuses onto instant delivery dispatch line
-      case 2:
-        return "25% 35%"; // Focuses onto live opt-in counter
-      case 3:
-        return "50% 60%"; // Focuses onto sequence pipeline
-      case 4:
-        return "50% 50%"; // Focuses onto ecosystem sync webhook
-      default:
-        return "center center";
-    }
-  };
+  // Dynamic camera zoom effect ONLY on Stage 1 (where mouse pointer is present)
+  const isZooming = activeIdx === 0 && progress >= 28 && progress <= 68;
+  const zoomOrigin = "72% 70%"; // Focuses onto input & Get PDF CTA button
 
   return (
     <div className="w-full">
@@ -254,7 +238,7 @@ export default function FunnelShowcase() {
               className="min-h-[275px] flex flex-col justify-center relative z-10 transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]"
               style={{
                 transform: isZooming ? "scale(1.08)" : "scale(1)",
-                transformOrigin: getZoomOrigin(),
+                transformOrigin: zoomOrigin,
               }}
             >
               {/* STAGE 01: AI Page Builder & Live Interactive Opt-in Simulation */}

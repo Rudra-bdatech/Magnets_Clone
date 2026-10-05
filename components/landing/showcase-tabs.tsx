@@ -366,12 +366,12 @@ export default function ShowcaseTabs() {
           className="absolute -top-12 left-1/2 -translate-x-1/2 -z-10 h-64 w-[85%] rounded-full bg-gradient-to-r from-[#0066B2]/20 via-[#38BDF8]/20 to-purple-500/15 blur-3xl opacity-75 pointer-events-none"
         />
 
-        {/* Dynamic Zoom & Pan Camera Container Following Mouse Focus */}
+        {/* Dynamic Zoom & Pan Camera Container Following Exact Mouse Pixel Coordinates */}
         <div
-          className="flex-1 flex flex-col justify-between transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] relative z-10"
+          className="flex-1 flex flex-col justify-between transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] relative z-10"
           style={{
-            transform: isZooming ? "scale(1.07)" : "scale(1)",
-            transformOrigin: zoomOrigin,
+            transform: isZooming ? "scale(1.16)" : "scale(1)",
+            transformOrigin: `${cursorPosPx.x}px ${cursorPosPx.y}px`,
           }}
         >
           {/* ========================================================= */}
