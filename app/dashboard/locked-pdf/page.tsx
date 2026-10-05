@@ -305,10 +305,6 @@ export default function LockedPdfPage() {
 
     if (localPages.length > 0) {
       setPages(localPages);
-      const lockedPages = localPages.filter((p) => p.template === "locked-pdf");
-      if (lockedPages.length > 0) {
-        setSelectedPageId((prev) => prev || lockedPages[0].id);
-      }
     }
     setLoading(false);
 
@@ -317,10 +313,6 @@ export default function LockedPdfPage() {
         if (data.account) setAccount(data.account);
         if (data.pages && data.pages.length > 0) {
           setPages(data.pages);
-          const lockedPages = data.pages.filter((p) => p.template === "locked-pdf");
-          if (lockedPages.length > 0) {
-            setSelectedPageId((prev) => prev || lockedPages[0].id);
-          }
         }
       }
     });
@@ -368,11 +360,8 @@ export default function LockedPdfPage() {
 
   // Active selected locked PDF page object
   const activePage = useMemo(() => {
-    if (selectedPageId) {
-      const found = lockedPdfPages.find((p) => p.id === selectedPageId);
-      if (found) return found;
-    }
-    return lockedPdfPages[0] || null;
+    if (!selectedPageId) return null;
+    return lockedPdfPages.find((p) => p.id === selectedPageId) || null;
   }, [selectedPageId, lockedPdfPages]);
 
   // Document-specific statistics for active Locked PDF

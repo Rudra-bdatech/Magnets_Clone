@@ -274,19 +274,15 @@ export default function PagesPage() {
   }, [search, statusFilter, itemsPerPage]);
 
   const activePage = useMemo(() => {
-    if (!selectedPageId) return filtered[0] || landingPages[0] || null;
-    return landingPages.find((p) => p.id === selectedPageId) || filtered[0] || landingPages[0] || null;
-  }, [selectedPageId, landingPages, filtered]);
+    if (!selectedPageId) return null;
+    return landingPages.find((p) => p.id === selectedPageId) || null;
+  }, [selectedPageId, landingPages]);
 
   useEffect(() => {
     const localPages = loadPages();
     const localAccount = loadAccount();
     if (localPages.length > 0) {
       setPages(localPages);
-      const initialLanding = localPages.filter((p) => p.template !== "locked-pdf");
-      if (initialLanding[0]) {
-        setSelectedPageId((prev) => prev || initialLanding[0].id);
-      }
     }
     if (localAccount) setAccount(localAccount);
     setLoading(false);
@@ -296,10 +292,6 @@ export default function PagesPage() {
         if (data) {
           if (data.pages) {
             setPages(data.pages);
-            const landingList = data.pages.filter((p) => p.template !== "locked-pdf");
-            if (landingList.length > 0) {
-              setSelectedPageId((prev) => prev || landingList[0].id);
-            }
           }
           if (data.account) setAccount(data.account);
         }
@@ -315,12 +307,6 @@ export default function PagesPage() {
       window.removeEventListener("focus", handleFocus);
     };
   }, []);
-
-  useEffect(() => {
-    if (!selectedPageId && filtered.length > 0) {
-      setSelectedPageId(filtered[0].id);
-    }
-  }, [filtered, selectedPageId]);
 
   useEffect(() => {
     if (showCreateModal || showBulkDeleteModal || pageToDeleteId || mobileInspectorOpen) {
