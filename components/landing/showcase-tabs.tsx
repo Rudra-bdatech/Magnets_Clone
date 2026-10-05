@@ -49,6 +49,8 @@ export default function ShowcaseTabs() {
   const [isSaveSeqBtnActive, setIsSaveSeqBtnActive] = useState<boolean>(false);
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
   const [hasEnteredViewport, setHasEnteredViewport] = useState<boolean>(false);
+  const [isZooming, setIsZooming] = useState<boolean>(false);
+  const [zoomOrigin, setZoomOrigin] = useState<string>("center center");
 
   // Dynamic Element Refs for accurate cursor positioning
   const showcaseRef = useRef<HTMLDivElement>(null);
@@ -162,6 +164,7 @@ export default function ShowcaseTabs() {
       setTypedEmail("");
       setIsOptinBtnActive(false);
       setIsClicking(false);
+      setIsZooming(false);
 
       timers.push(
         setTimeout(() => {
@@ -180,8 +183,10 @@ export default function ShowcaseTabs() {
 
       timers.push(
         setTimeout(() => {
+          setZoomOrigin("35% 65%");
+          setIsZooming(true);
           moveCursorTo(optinBtnRef.current);
-        }, 1450)
+        }, 1400)
       );
 
       timers.push(
@@ -194,6 +199,7 @@ export default function ShowcaseTabs() {
       timers.push(
         setTimeout(() => {
           setIsClicking(false);
+          setIsZooming(false);
         }, 2350)
       );
 
@@ -206,11 +212,14 @@ export default function ShowcaseTabs() {
       // PHASE 1: Native Document Hosting & Locked PDF
       setIsDownloadBtnActive(false);
       setIsClicking(false);
+      setIsZooming(false);
 
       timers.push(
         setTimeout(() => {
+          setZoomOrigin("85% 60%");
+          setIsZooming(true);
           moveCursorTo(downloadBtnRef.current);
-        }, 400)
+        }, 350)
       );
 
       timers.push(
@@ -223,6 +232,7 @@ export default function ShowcaseTabs() {
       timers.push(
         setTimeout(() => {
           setIsClicking(false);
+          setIsZooming(false);
         }, 1700)
       );
 
@@ -232,14 +242,17 @@ export default function ShowcaseTabs() {
         }, 2400)
       );
     } else if (phase === 2) {
-      // PHASE 2: Drip Email Sequence Workflow
+      // PHASE 2: Drip Email Sequence Workflow ("Deploy Sequence" button)
       setIsSaveSeqBtnActive(false);
       setIsClicking(false);
+      setIsZooming(false);
 
       timers.push(
         setTimeout(() => {
+          setZoomOrigin("88% 20%"); // Focuses onto top-right Deploy Sequence button
+          setIsZooming(true);
           moveCursorTo(deployBtnRef.current);
-        }, 400)
+        }, 350)
       );
 
       timers.push(
@@ -252,6 +265,7 @@ export default function ShowcaseTabs() {
       timers.push(
         setTimeout(() => {
           setIsClicking(false);
+          setIsZooming(false);
         }, 1700)
       );
 
@@ -263,11 +277,20 @@ export default function ShowcaseTabs() {
     } else if (phase === 3) {
       // PHASE 3: Leads CRM & Contact Management
       setIsClicking(false);
+      setIsZooming(false);
 
       timers.push(
         setTimeout(() => {
+          setZoomOrigin("50% 50%");
+          setIsZooming(true);
           moveCursorTo(leadRowRef.current);
-        }, 500)
+        }, 450)
+      );
+
+      timers.push(
+        setTimeout(() => {
+          setIsZooming(false);
+        }, 1800)
       );
 
       timers.push(
@@ -278,11 +301,20 @@ export default function ShowcaseTabs() {
     } else if (phase === 4) {
       // PHASE 4: Live Telemetry & Conversion Analytics
       setIsClicking(false);
+      setIsZooming(false);
 
       timers.push(
         setTimeout(() => {
+          setZoomOrigin("30% 45%");
+          setIsZooming(true);
           moveCursorTo(analyticsCardRef.current);
-        }, 400)
+        }, 350)
+      );
+
+      timers.push(
+        setTimeout(() => {
+          setIsZooming(false);
+        }, 1800)
       );
 
       timers.push(
@@ -291,8 +323,9 @@ export default function ShowcaseTabs() {
         }, 2500)
       );
     } else if (phase === 5) {
-      // PHASE 5: Platform Summary Slide (Holds for 3.4s then loops back to Phase 0)
+      // PHASE 5: Platform Summary Slide
       setIsClicking(false);
+      setIsZooming(false);
 
       timers.push(
         setTimeout(() => {
@@ -333,9 +366,17 @@ export default function ShowcaseTabs() {
           className="absolute -top-12 left-1/2 -translate-x-1/2 -z-10 h-64 w-[85%] rounded-full bg-gradient-to-r from-[#0066B2]/20 via-[#38BDF8]/20 to-purple-500/15 blur-3xl opacity-75 pointer-events-none"
         />
 
-        {/* ========================================================= */}
-        {/* PHASE 0: OPT-IN LANDING PAGE & CUSTOM DOMAIN              */}
-        {/* ========================================================= */}
+        {/* Dynamic Zoom & Pan Camera Container Following Mouse Focus */}
+        <div
+          className="flex-1 flex flex-col justify-between transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] relative z-10"
+          style={{
+            transform: isZooming ? "scale(1.07)" : "scale(1)",
+            transformOrigin: zoomOrigin,
+          }}
+        >
+          {/* ========================================================= */}
+          {/* PHASE 0: OPT-IN LANDING PAGE & CUSTOM DOMAIN              */}
+          {/* ========================================================= */}
         {phase === 0 && (
           <div className="flex-1 flex flex-col justify-between animate-in fade-in duration-300">
             {/* Topbar */}
@@ -679,6 +720,8 @@ export default function ShowcaseTabs() {
             </div>
           </div>
         )}
+
+        </div>
 
         {/* ========================================================= */}
         {/* VIRTUAL AUTONOMOUS MOUSE POINTER (Pixel-Perfect Dynamic)  */}

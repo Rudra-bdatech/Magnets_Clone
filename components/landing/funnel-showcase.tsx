@@ -144,12 +144,32 @@ export default function FunnelShowcase() {
   const isDelivered = progress > 45;
   const isSyncPulse = progress > 40;
 
+  // Dynamic camera zoom effect following mouse focus before click (progress 28% -> 68%)
+  const isZooming = progress >= 28 && progress <= 68;
+
+  const getZoomOrigin = () => {
+    switch (activeIdx) {
+      case 0:
+        return "72% 70%"; // Focuses onto input & Get PDF CTA button
+      case 1:
+        return "50% 75%"; // Focuses onto instant delivery dispatch line
+      case 2:
+        return "25% 35%"; // Focuses onto live opt-in counter
+      case 3:
+        return "50% 60%"; // Focuses onto sequence pipeline
+      case 4:
+        return "50% 50%"; // Focuses onto ecosystem sync webhook
+      default:
+        return "center center";
+    }
+  };
+
   return (
     <div className="w-full">
       {/* 2-Column QAAssist Pure Minimalist Layout */}
       <div className="grid lg:grid-cols-12 gap-8 lg:gap-12 items-center">
         {/* LEFT COLUMN: Clean Text List with Floating Active State */}
-        <div className="lg:col-span-5 flex flex-col space-y-4">
+        <div className="lg:col-span-5 flex flex-col space-y-5">
           {STEPS.map((step, idx) => {
             const isActive = idx === activeIdx;
 
@@ -157,7 +177,7 @@ export default function FunnelShowcase() {
               return (
                 <div
                   key={step.id}
-                  className="flex items-start gap-3.5 py-1 animate-fadeIn"
+                  className="flex items-start gap-3.5 py-1.5 animate-fadeIn"
                 >
                   {/* Floating Circular Play/Pause Toggle */}
                   <div className="pt-0.5 shrink-0">
@@ -203,7 +223,7 @@ export default function FunnelShowcase() {
                 key={step.id}
                 type="button"
                 onClick={() => handleSelectStep(idx)}
-                className="text-left py-1 text-sm sm:text-base font-bold text-zinc-600 dark:text-zinc-400 hover:text-zinc-950 dark:hover:text-white transition-colors cursor-pointer pl-11"
+                className="text-left py-1.5 text-sm sm:text-base font-bold text-zinc-600 dark:text-zinc-400 hover:text-zinc-950 dark:hover:text-white transition-colors cursor-pointer pl-11"
               >
                 {step.title}
               </button>
@@ -213,9 +233,9 @@ export default function FunnelShowcase() {
 
         {/* RIGHT COLUMN: Interactive Animated SaaS App Window */}
         <div className="lg:col-span-7">
-          <div className="rounded-2xl bg-white dark:bg-[#141822] border border-zinc-200/80 dark:border-white/10 p-5 sm:p-6 shadow-xl space-y-4 relative overflow-hidden">
+          <div className="rounded-2xl bg-white dark:bg-[#141822] border border-zinc-200/80 dark:border-white/10 p-6 sm:p-7 shadow-xl space-y-5 relative overflow-hidden">
             {/* Window Header */}
-            <div className="flex items-center justify-between pb-3 border-b border-zinc-100 dark:border-white/5 relative z-10">
+            <div className="flex items-center justify-between pb-3.5 border-b border-zinc-100 dark:border-white/5 relative z-10">
               <div className="flex items-center gap-1.5">
                 <span className="h-2.5 w-2.5 rounded-full bg-zinc-300 dark:bg-zinc-700 inline-block" />
                 <span className="h-2.5 w-2.5 rounded-full bg-zinc-300 dark:bg-zinc-700 inline-block" />
@@ -229,8 +249,14 @@ export default function FunnelShowcase() {
               </div>
             </div>
 
-            {/* Dynamic Mockup Body with Live In-Card Animations */}
-            <div className="min-h-[230px] flex flex-col justify-center relative z-10">
+            {/* Dynamic Mockup Body with Live In-Card Animations & Camera Zoom */}
+            <div
+              className="min-h-[275px] flex flex-col justify-center relative z-10 transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]"
+              style={{
+                transform: isZooming ? "scale(1.08)" : "scale(1)",
+                transformOrigin: getZoomOrigin(),
+              }}
+            >
               {/* STAGE 01: AI Page Builder & Live Interactive Opt-in Simulation */}
               {activeIdx === 0 && (
                 <div className="space-y-3 animate-fadeIn relative">
