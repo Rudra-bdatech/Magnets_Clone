@@ -930,9 +930,9 @@ export default function DashboardHome({
                 )}
               </div>
 
-              {/* Bottom 50%: Integrations & System Health */}
-              <div className="rounded-2xl border border-zinc-200/80 bg-white/90 dark:border-[#2e2e38] dark:bg-[#18181B]/90 shadow-sm backdrop-blur-sm p-4 flex flex-col justify-between">
-                <div className="flex items-center justify-between pb-2.5 border-b border-zinc-100/80 dark:border-white/[0.06]">
+              {/* Bottom 50%: Integrations Status */}
+              <div className="rounded-2xl border border-zinc-200/80 bg-white/90 dark:border-[#2e2e38] dark:bg-[#18181B]/90 shadow-sm backdrop-blur-sm overflow-hidden flex flex-col justify-between">
+                <div className="flex items-center justify-between px-4 py-2.5 border-b border-zinc-100/80 dark:border-white/[0.06]">
                   <div className="flex items-center gap-2.5">
                     <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-rose-50 dark:bg-rose-500/20">
                       <Zap className="h-4 w-4 text-rose-600 dark:text-rose-400" />
@@ -950,7 +950,7 @@ export default function DashboardHome({
                   </Link>
                 </div>
 
-                <div className="grid grid-cols-3 gap-2 mt-3">
+                <div className="grid grid-cols-3 gap-2 p-4">
                   {/* ConvertKit */}
                   <div className="p-2.5 rounded-xl bg-zinc-50/80 dark:bg-white/[0.02] border border-zinc-100 dark:border-white/[0.05]">
                     <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-[#9B9085]">
