@@ -48,6 +48,7 @@ interface MagnetCardProps {
   isSelectMode?: boolean;
   anyChecked?: boolean;
   onSelect: (id: string) => void;
+  onOpenMobileDetails: (id: string, e?: React.MouseEvent) => void;
   onToggleCheck: (id: string, e?: React.MouseEvent) => void;
   account: Account | null;
   copiedId: string | null;
@@ -63,6 +64,7 @@ const MagnetCard = React.memo(
     isSelectMode = false,
     anyChecked = false,
     onSelect,
+    onOpenMobileDetails,
     onToggleCheck,
     account,
     copiedId,
@@ -165,8 +167,8 @@ const MagnetCard = React.memo(
             <div className="flex items-center gap-1.5" onClick={(e) => e.stopPropagation()}>
               <button
                 type="button"
-                onClick={() => onSelect(page.id)}
-                className="lg:hidden inline-flex items-center gap-1 rounded-lg border border-zinc-200 dark:border-zinc-700/80 bg-zinc-50 hover:bg-zinc-100 dark:bg-zinc-800/80 dark:hover:bg-zinc-700 px-2.5 py-1 text-[11px] font-semibold text-zinc-700 dark:text-zinc-200 transition cursor-pointer"
+                onClick={(e) => onOpenMobileDetails(page.id, e)}
+                className="lg:hidden inline-flex items-center gap-1 rounded-lg border border-zinc-200 dark:border-zinc-700/80 bg-zinc-50 hover:bg-zinc-100 dark:bg-zinc-800/80 dark:hover:bg-zinc-700 px-2.5 py-1 text-[11px] font-semibold text-zinc-700 dark:text-zinc-200 transition cursor-pointer active:scale-95"
                 title="Open Details Sheet"
               >
                 <SlidersHorizontal className="h-3 w-3 text-[#0066B2] dark:text-[#38BDF8]" />
@@ -348,6 +350,11 @@ export default function PagesPage() {
   }, [filtered, checkedIds]);
 
   const handleSelectPage = useCallback((id: string) => {
+    setSelectedPageId(id);
+  }, []);
+
+  const handleOpenMobileDetails = useCallback((id: string, e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
     setSelectedPageId(id);
     setMobileInspectorOpen(true);
   }, []);
@@ -614,6 +621,7 @@ export default function PagesPage() {
                         isSelectMode={isSelectMode}
                         anyChecked={checkedIds.length > 0}
                         onSelect={handleSelectPage}
+                        onOpenMobileDetails={handleOpenMobileDetails}
                         onToggleCheck={handleToggleCheck}
                         account={account}
                         copiedId={copiedId}
