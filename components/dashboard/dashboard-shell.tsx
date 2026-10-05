@@ -288,8 +288,7 @@ export default function DashboardShell({
   }, [refreshOnboarding]);
 
   const computedNav = useMemo(() => {
-    const isGetStartedPage = pathname === "/dashboard/get-started";
-    const showGetStarted = isGetStartedPage || (onboardingStatus !== null && !onboardingStatus.isAllCompleted);
+    const showGetStarted = onboardingStatus !== null && !onboardingStatus.isAllCompleted;
 
     if (!showGetStarted) {
       return baseNavItems;
@@ -304,7 +303,7 @@ export default function DashboardShell({
 
     const list = [getStartedItem, ...baseNavItems];
     return list;
-  }, [onboardingStatus, pathname]);
+  }, [onboardingStatus]);
 
   const rawAccount = currentAccount || account;
   const activeEmail = (typeof window !== "undefined" ? localStorage.getItem("currentUserEmail") : null) || rawAccount?.email || "";

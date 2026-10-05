@@ -115,6 +115,16 @@ export default function GetStartedPage() {
     integrations,
   });
 
+  useEffect(() => {
+    if (!loading && status.isAllCompleted) {
+      router.replace("/dashboard");
+    }
+  }, [loading, status.isAllCompleted, router]);
+
+  if (!loading && status.isAllCompleted) {
+    return null;
+  }
+
   return (
     <DashboardShell account={account} title="Get Started" activeNavHref="/dashboard/get-started">
       <div className="min-h-[calc(100vh-3.5rem)] bg-[#F8FBFF] dark:bg-[#0B0B0D] py-8 px-4 sm:px-6 lg:px-10">
