@@ -401,6 +401,9 @@ export async function syncUserData(): Promise<{
             if (data.account.email.toLowerCase() === normEmail) {
               safeSetItem("currentUserAccount", JSON.stringify(data.account));
               safeSetItem("currentUserEmail", data.account.email);
+              try {
+                window.dispatchEvent(new Event("accountUpdated"));
+              } catch (_) {}
             }
           }
 

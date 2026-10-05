@@ -330,6 +330,10 @@ export default function DashboardShell({
     avatar: rawAccount?.avatar || null,
   };
 
+  useEffect(() => {
+    setAvatarError(false);
+  }, [displayAccount.avatar]);
+
   if (mounted && isAuthenticated === false) {
     return null;
   }
@@ -643,7 +647,6 @@ export default function DashboardShell({
                     src={displayAccount.avatar}
                     alt={displayAccount.name}
                     referrerPolicy="no-referrer"
-                    crossOrigin="anonymous"
                     onError={() => setAvatarError(true)}
                     className="h-8 w-8 shrink-0 rounded-full object-cover border border-[#0066B2]/40"
                   />
@@ -890,6 +893,7 @@ export default function DashboardShell({
                     <img
                       src={displayAccount.avatar}
                       alt={displayAccount.name}
+                      referrerPolicy="no-referrer"
                       onError={() => setAvatarError(true)}
                       className="h-8 w-8 shrink-0 rounded-full object-cover border border-[#0066B2]/40"
                     />

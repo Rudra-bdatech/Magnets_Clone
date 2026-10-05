@@ -631,7 +631,6 @@ export default function AccountSettingsPage() {
                               src={avatar}
                               alt="Profile Avatar"
                               referrerPolicy="no-referrer"
-                              crossOrigin="anonymous"
                               onError={() => setAvatarLoadError(true)}
                               decoding="async"
                               fetchPriority="high"
