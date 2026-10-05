@@ -127,9 +127,18 @@ const MagnetCard = React.memo(
           </div>
 
           <div className="pt-1 flex items-center justify-between text-xs">
-            <span className="text-[11px] font-mono text-zinc-400 truncate max-w-[140px]">/{page.slug}</span>
+            <span className="text-[11px] font-mono text-zinc-400 truncate max-w-[130px]">/{page.slug}</span>
 
             <div className="flex items-center gap-1.5" onClick={(e) => e.stopPropagation()}>
+              <button
+                type="button"
+                onClick={() => onSelect(page.id)}
+                className="lg:hidden flex items-center gap-1 rounded-lg bg-zinc-100 dark:bg-zinc-800 px-2 py-1 text-[11px] font-bold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition cursor-pointer"
+                title="Open Details Sheet"
+              >
+                <SlidersHorizontal className="h-3 w-3 text-[#0066B2] dark:text-[#38BDF8]" /> Details
+              </button>
+
               <Link
                 href={`/dashboard/leadmagnets/${page.id}`}
                 prefetch={true}
@@ -160,6 +169,7 @@ export default function PagesPage() {
   const [statusFilter, setStatusFilter] = useState<"all" | "live" | "draft">("all");
 
   const [selectedPageId, setSelectedPageId] = useState<string | null>(null);
+  const [mobileInspectorOpen, setMobileInspectorOpen] = useState(false);
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [checkedIds, setCheckedIds] = useState<string[]>([]);
   const [pageToDeleteId, setPageToDeleteId] = useState<string | null>(null);
@@ -273,7 +283,7 @@ export default function PagesPage() {
   }, [filtered, selectedPageId]);
 
   useEffect(() => {
-    if (showCreateModal || showBulkDeleteModal || pageToDeleteId) {
+    if (showCreateModal || showBulkDeleteModal || pageToDeleteId || mobileInspectorOpen) {
       document.body.style.overflow = "hidden";
     } else {
       document.body.style.overflow = "";
@@ -281,7 +291,7 @@ export default function PagesPage() {
     return () => {
       document.body.style.overflow = "";
     };
-  }, [showCreateModal, showBulkDeleteModal, pageToDeleteId]);
+  }, [showCreateModal, showBulkDeleteModal, pageToDeleteId, mobileInspectorOpen]);
 
   const handleToggleCheck = useCallback((id: string, e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
@@ -301,6 +311,7 @@ export default function PagesPage() {
 
   const handleSelectPage = useCallback((id: string) => {
     setSelectedPageId(id);
+    setMobileInspectorOpen(true);
   }, []);
 
   const removePage = useCallback((id: string, e?: React.MouseEvent) => {
@@ -707,8 +718,8 @@ export default function PagesPage() {
             </AnimatePresence>
 
             {filtered.length > 0 && (
-              <div className="flex flex-wrap items-center justify-between gap-3 bg-white dark:bg-[#141417] p-3 rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 text-xs shadow-xs">
-                <p className="text-zinc-500 dark:text-zinc-400 text-[11px] font-medium">
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-3 sm:bg-white sm:dark:bg-[#141417] px-2 sm:px-4 py-2 sm:py-3 rounded-2xl sm:border sm:border-zinc-200/80 sm:dark:border-zinc-800/80 text-xs sm:shadow-xs">
+                <p className="text-zinc-500 dark:text-zinc-400 text-[11px] font-medium text-center sm:text-left">
                   Showing{" "}
                   <span className="font-bold text-zinc-900 dark:text-white">
                     {itemsPerPage === "all" ? filtered.length : Math.min(filtered.length, (currentPage - 1) * (itemsPerPage as number) + 1)}
@@ -721,51 +732,53 @@ export default function PagesPage() {
                   of <span className="font-bold text-zinc-900 dark:text-white">{filtered.length}</span> lead magnets
                 </p>
 
-                <div className="flex items-center gap-2">
-                  <div className="flex items-center gap-1 bg-zinc-100 dark:bg-zinc-800/60 p-0.5 rounded-xl text-[11px]">
-                    <span className="text-[10px] text-zinc-500 px-1.5 font-medium">Show:</span>
-                    {([10, 25, 50, "all"] as const).map((size) => (
-                      <button
-                        key={size}
-                        onClick={() => setItemsPerPage(size)}
-                        className={`px-2 py-0.5 rounded-lg font-semibold transition ${
-                          itemsPerPage === size
-                            ? "bg-white dark:bg-[#1C1C20] text-[#0066B2] dark:text-[#38BDF8] shadow-xs"
-                            : "text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200"
-                        }`}
-                      >
-                        {size === "all" ? "All" : size}
-                      </button>
-                    ))}
-                  </div>
-
-                  {itemsPerPage !== "all" && totalPagesCount > 1 && (
-                    <div className="flex items-center gap-1.5 ml-2">
-                      <button
-                        disabled={currentPage === 1}
-                        onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
-                        className="px-2.5 py-1 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-[#1C1C20] text-zinc-700 dark:text-zinc-300 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-zinc-100 dark:hover:bg-zinc-800 font-semibold transition text-[11px]"
-                      >
-                        Previous
-                      </button>
-                      <span className="text-[11px] font-bold text-zinc-700 dark:text-zinc-300 px-1">
-                        {currentPage} / {totalPagesCount}
-                      </span>
-                      <button
-                        disabled={currentPage === totalPagesCount}
-                        onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPagesCount))}
-                        className="px-2.5 py-1 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-[#1C1C20] text-zinc-700 dark:text-zinc-300 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-zinc-100 dark:hover:bg-zinc-800 font-semibold transition text-[11px]"
-                      >
-                        Next
-                      </button>
+                {filtered.length > 10 && (
+                  <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1 bg-zinc-100 dark:bg-zinc-800/60 p-0.5 rounded-xl text-[11px]">
+                      <span className="text-[10px] text-zinc-500 px-1.5 font-medium">Show:</span>
+                      {([10, 25, 50, "all"] as const).map((size) => (
+                        <button
+                          key={size}
+                          onClick={() => setItemsPerPage(size)}
+                          className={`px-2 py-0.5 rounded-lg font-semibold transition ${
+                            itemsPerPage === size
+                              ? "bg-white dark:bg-[#1C1C20] text-[#0066B2] dark:text-[#38BDF8] shadow-xs"
+                              : "text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200"
+                          }`}
+                        >
+                          {size === "all" ? "All" : size}
+                        </button>
+                      ))}
                     </div>
-                  )}
-                </div>
+
+                    {itemsPerPage !== "all" && totalPagesCount > 1 && (
+                      <div className="flex items-center gap-1.5 ml-2">
+                        <button
+                          disabled={currentPage === 1}
+                          onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
+                          className="px-2.5 py-1 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-[#1C1C20] text-zinc-700 dark:text-zinc-300 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-zinc-100 dark:hover:bg-zinc-800 font-semibold transition text-[11px]"
+                        >
+                          Previous
+                        </button>
+                        <span className="text-[11px] font-bold text-zinc-700 dark:text-zinc-300 px-1">
+                          {currentPage} / {totalPagesCount}
+                        </span>
+                        <button
+                          disabled={currentPage === totalPagesCount}
+                          onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPagesCount))}
+                          className="px-2.5 py-1 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-[#1C1C20] text-zinc-700 dark:text-zinc-300 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-zinc-100 dark:hover:bg-zinc-800 font-semibold transition text-[11px]"
+                        >
+                          Next
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             )}
           </div>
 
-          <div className="w-full lg:w-[35%] sticky top-[195px] z-20 space-y-4 transition-all duration-200">
+          <div className="hidden lg:block lg:w-[35%] sticky top-[195px] z-20 space-y-4 transition-all duration-200">
             {activePage ? (
               <div className="rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-[#141417] p-5 shadow-lg space-y-5">
                 <div className="flex items-start justify-between pb-4 border-b border-zinc-100 dark:border-zinc-800/60">
@@ -1107,6 +1120,149 @@ export default function PagesPage() {
           </div>
         </div>
       )}
+
+      {/* Mobile Slide-Up Inspector Bottom Sheet Drawer */}
+      <AnimatePresence>
+        {mobileInspectorOpen && activePage && (
+          <div className="fixed inset-0 z-50 lg:hidden flex flex-col justify-end">
+            {/* Backdrop with Subtle Soft Blur */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              onClick={() => setMobileInspectorOpen(false)}
+              className="fixed inset-0 bg-black/40 backdrop-blur-[2px]"
+            />
+
+            {/* Bottom Sheet Drawer */}
+            <motion.div
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "100%" }}
+              transition={{ type: "spring", damping: 30, stiffness: 320 }}
+              className="relative z-10 w-full max-h-[85vh] overflow-y-auto rounded-t-[28px] border-t border-zinc-200 dark:border-white/10 bg-white/95 dark:bg-[#141417]/95 backdrop-blur-xl p-5 shadow-2xl space-y-5"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Grab Handle */}
+              <div className="w-10 h-1.5 rounded-full bg-zinc-300 dark:bg-zinc-700/80 mx-auto -mt-1 mb-2.5 cursor-grab active:scale-95 transition-transform" />
+
+              <div className="flex items-start justify-between pb-1">
+                <div className="pr-3">
+                  <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#0066B2] dark:text-[#38BDF8]">
+                    SELECTED INSPECTOR
+                  </span>
+                  <h3 className="text-base font-black text-zinc-900 dark:text-white mt-0.5 line-clamp-1">
+                    {activePage.name}
+                  </h3>
+                </div>
+                <div className="flex items-center gap-2 shrink-0">
+                  <span
+                    className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide ${
+                      activePage.status === "live"
+                        ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/50"
+                        : "bg-zinc-100 dark:bg-zinc-800 text-zinc-500"
+                    }`}
+                  >
+                    {activePage.status === "live" ? "Published" : "Draft"}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setMobileInspectorOpen(false)}
+                    className="p-1.5 rounded-xl text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition cursor-pointer"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
+              </div>
+
+              {/* Public Share URL */}
+              <div className="rounded-xl bg-zinc-50 dark:bg-[#1A1A1E] p-3 border border-zinc-200/60 dark:border-zinc-800/60 space-y-2">
+                <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Public Share URL</p>
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-xs font-mono text-zinc-800 dark:text-zinc-200 truncate">
+                    /{account?.username || "demo"}/{activePage.slug}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => handleCopyLink(activePage)}
+                    className="flex items-center gap-1 rounded-lg bg-white dark:bg-[#25252A] px-2.5 py-1.5 text-xs font-bold text-zinc-700 dark:text-zinc-200 border border-zinc-200 dark:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition shrink-0 cursor-pointer"
+                  >
+                    {copiedId === activePage.id ? <Check className="h-3 w-3 text-emerald-500" /> : <Copy className="h-3 w-3" />}
+                    <span>{copiedId === activePage.id ? "Copied" : "Copy"}</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Conversion Metrics */}
+              <div className="space-y-2">
+                <p className="text-xs font-bold text-zinc-900 dark:text-white flex items-center gap-1.5">
+                  <TrendingUp className="h-3.5 w-3.5 text-[#0066B2] dark:text-[#38BDF8]" /> Magnet Conversion Metrics
+                </p>
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="rounded-xl border border-zinc-100 dark:border-zinc-800 p-3 bg-zinc-50/50 dark:bg-[#1A1A1E]/50">
+                    <p className="text-[10px] text-zinc-400 font-semibold uppercase">Total Views</p>
+                    <p className="text-lg font-bold text-zinc-900 dark:text-white mt-1">{activePage.views || 0}</p>
+                  </div>
+                  <div className="rounded-xl border border-zinc-100 dark:border-zinc-800 p-3 bg-zinc-50/50 dark:bg-[#1A1A1E]/50">
+                    <p className="text-[10px] text-zinc-400 font-semibold uppercase">Leads Captured</p>
+                    <p className="text-lg font-bold text-[#0066B2] dark:text-[#38BDF8] mt-1">{activePage.signups || 0}</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="space-y-2 pt-1">
+                <Link
+                  href={`/dashboard/leadmagnets/${activePage.id}`}
+                  prefetch={true}
+                  className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#0066B2] px-4 py-3 text-xs font-bold text-white hover:bg-[#005799] transition shadow-sm cursor-pointer"
+                >
+                  <Pencil className="h-4 w-4" /> Open Full Editor
+                </Link>
+
+                <div className="grid grid-cols-2 gap-2">
+                  <Link
+                    href={`/dashboard/leadmagnets/${activePage.id}/analytics`}
+                    className="flex items-center justify-center gap-1.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#1C1C20] px-3 py-2.5 text-xs font-bold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition"
+                  >
+                    <BarChart2 className="h-3.5 w-3.5 text-[#0066B2] dark:text-[#38BDF8]" /> Analytics
+                  </Link>
+
+                  <a
+                    href={`/${account?.username || "demo"}/${activePage.slug}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-center gap-1.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#1C1C20] px-3 py-2.5 text-xs font-bold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition"
+                  >
+                    <ExternalLink className="h-3.5 w-3.5 text-zinc-400" /> Preview
+                  </a>
+                </div>
+              </div>
+
+              <div className="pt-1 flex items-center justify-between">
+                <button
+                  type="button"
+                  onClick={() => setMobileInspectorOpen(false)}
+                  className="text-xs font-semibold text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 cursor-pointer"
+                >
+                  Close
+                </button>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    setMobileInspectorOpen(false);
+                    removePage(activePage.id, e);
+                  }}
+                  className="flex items-center gap-1 text-[11px] font-bold text-red-500 hover:text-red-600 dark:hover:text-red-400 transition cursor-pointer"
+                >
+                  <Trash2 className="h-3.5 w-3.5" /> Delete Magnet
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </DashboardShell>
   );
 }

@@ -36,6 +36,7 @@ import {
   Pencil,
   BarChart2,
   ArrowLeft,
+  SlidersHorizontal,
 } from "lucide-react";
 import {
   loadPages,
@@ -99,6 +100,7 @@ export default function LockedPdfPage() {
   const [account, setAccount] = useState<Account | null>(null);
   const [pages, setPages] = useState<MagnetPage[]>([]);
   const [selectedPageId, setSelectedPageId] = useState<string | null>(null);
+  const [mobileInspectorOpen, setMobileInspectorOpen] = useState(false);
   const [loading, setLoading] = useState(true);
 
   // Active Tab navigation state ("locked" | "email" | "sequence" | "after")
@@ -1128,7 +1130,10 @@ export default function LockedPdfPage() {
                     return (
                       <div
                         key={pdf.id}
-                        onClick={() => setSelectedPageId(pdf.id)}
+                        onClick={() => {
+                          setSelectedPageId(pdf.id);
+                          setMobileInspectorOpen(true);
+                        }}
                         className={`group relative rounded-2xl border transition-all duration-300 cursor-pointer overflow-hidden flex flex-col justify-between ${
                           isChecked
                             ? "border-[#0066B2] dark:border-[#38BDF8] bg-white dark:bg-[#18181C] ring-2 ring-[#0066B2]/40 dark:ring-[#38BDF8]/40 shadow-md"
@@ -1246,6 +1251,19 @@ export default function LockedPdfPage() {
                               type="button"
                               onClick={(e) => {
                                 e.stopPropagation();
+                                setSelectedPageId(pdf.id);
+                                setMobileInspectorOpen(true);
+                              }}
+                              className="lg:hidden p-1.5 rounded-lg text-zinc-600 dark:text-zinc-300 hover:text-[#0066B2] dark:hover:text-[#38BDF8] bg-zinc-100 dark:bg-zinc-800 transition-all cursor-pointer"
+                              title="Details"
+                            >
+                              <SlidersHorizontal className="h-3.5 w-3.5" />
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
                                 navigator.clipboard.writeText(shareUrl);
                                 addToast(`Copied share link for "${pdf.name}"!`);
                               }}
@@ -1337,7 +1355,10 @@ export default function LockedPdfPage() {
                         return (
                           <tr
                             key={pdf.id}
-                            onClick={() => setSelectedPageId(pdf.id)}
+                            onClick={() => {
+                              setSelectedPageId(pdf.id);
+                              setMobileInspectorOpen(true);
+                            }}
                             className={`cursor-pointer transition ${
                               isChecked
                                 ? "bg-[#EFF6FF] dark:bg-[#0066B2]/20"
@@ -1424,7 +1445,7 @@ export default function LockedPdfPage() {
           </div>
 
           {/* Right Fixed Sticky Inspector Card */}
-          <div className="w-full lg:w-[35%] sticky top-[175px] z-20 space-y-4 transition-all duration-200">
+          <div className="hidden lg:block lg:w-[35%] sticky top-[175px] z-20 space-y-4 transition-all duration-200">
             {activePage ? (
               <div className="rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-[#141417] p-5 shadow-lg space-y-5">
                 <div className="flex items-start justify-between pb-4 border-b border-zinc-100 dark:border-zinc-800/60">
@@ -1898,6 +1919,156 @@ export default function LockedPdfPage() {
           </div>
         </div>
       )}
+
+      {/* Mobile Slide-Up Inspector Bottom Sheet Drawer */}
+      <AnimatePresence>
+        {mobileInspectorOpen && activePage && (
+          <div className="fixed inset-0 z-50 lg:hidden flex flex-col justify-end">
+            {/* Backdrop with Subtle Soft Blur */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              onClick={() => setMobileInspectorOpen(false)}
+              className="fixed inset-0 bg-black/40 backdrop-blur-[2px]"
+            />
+
+            {/* Bottom Sheet Drawer */}
+            <motion.div
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "100%" }}
+              transition={{ type: "spring", damping: 30, stiffness: 320 }}
+              className="relative z-10 w-full max-h-[85vh] overflow-y-auto rounded-t-[28px] border-t border-zinc-200 dark:border-white/10 bg-white/95 dark:bg-[#141417]/95 backdrop-blur-xl p-5 shadow-2xl space-y-5"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Grab Handle */}
+              <div className="w-10 h-1.5 rounded-full bg-zinc-300 dark:bg-zinc-700/80 mx-auto -mt-1 mb-2.5 cursor-grab active:scale-95 transition-transform" />
+
+              <div className="flex items-start justify-between pb-1">
+                <div className="pr-3">
+                  <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#0066B2] dark:text-[#38BDF8]">
+                    SELECTED INSPECTOR
+                  </span>
+                  <h3 className="text-base font-black text-zinc-900 dark:text-white mt-0.5 line-clamp-1">
+                    {activePage.name}
+                  </h3>
+                </div>
+                <div className="flex items-center gap-2 shrink-0">
+                  <span
+                    className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide ${
+                      activePage.status === "live"
+                        ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/50"
+                        : "bg-zinc-100 dark:bg-zinc-800 text-zinc-500"
+                    }`}
+                  >
+                    {activePage.status === "live" ? "Published" : "Draft"}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setMobileInspectorOpen(false)}
+                    className="p-1.5 rounded-xl text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition cursor-pointer"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
+              </div>
+
+              {/* Public Share URL */}
+              <div className="rounded-xl bg-zinc-50 dark:bg-[#1A1A1E] p-3 border border-zinc-200/60 dark:border-zinc-800/60 space-y-2">
+                <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Public Share URL</p>
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-xs font-mono text-zinc-800 dark:text-zinc-200 truncate">
+                    /pdf-viewer/{activePage.id}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const fullUrl = `${window.location.origin}/pdf-viewer/${activePage.id}`;
+                      navigator.clipboard.writeText(fullUrl);
+                      setCopiedId(activePage.id);
+                      addToast("Copied viewer link!");
+                      setTimeout(() => setCopiedId(null), 2000);
+                    }}
+                    className="flex items-center gap-1 rounded-lg bg-white dark:bg-[#25252A] px-2.5 py-1.5 text-xs font-bold text-zinc-700 dark:text-zinc-200 border border-zinc-200 dark:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition shrink-0 cursor-pointer"
+                  >
+                    {copiedId === activePage.id ? <Check className="h-3 w-3 text-emerald-500" /> : <Copy className="h-3 w-3" />}
+                    <span>{copiedId === activePage.id ? "Copied" : "Copy"}</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Conversion Metrics */}
+              <div className="space-y-2">
+                <p className="text-xs font-bold text-zinc-900 dark:text-white flex items-center gap-1.5">
+                  <TrendingUp className="h-3.5 w-3.5 text-[#0066B2] dark:text-[#38BDF8]" /> Magnet Conversion Metrics
+                </p>
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="rounded-xl border border-zinc-100 dark:border-zinc-800 p-3 bg-zinc-50/50 dark:bg-[#1A1A1E]/50">
+                    <p className="text-[10px] text-zinc-400 font-semibold uppercase">Total Views</p>
+                    <p className="text-lg font-bold text-zinc-900 dark:text-white mt-1">{activePage.views || 0}</p>
+                  </div>
+                  <div className="rounded-xl border border-zinc-100 dark:border-zinc-800 p-3 bg-zinc-50/50 dark:bg-[#1A1A1E]/50">
+                    <p className="text-[10px] text-zinc-400 font-semibold uppercase">Leads Captured</p>
+                    <p className="text-lg font-bold text-[#0066B2] dark:text-[#38BDF8] mt-1">{activePage.signups || 0}</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="space-y-2 pt-1">
+                <Link
+                  href={`/dashboard/leadmagnets/${activePage.id}?type=locked-pdf`}
+                  prefetch={true}
+                  className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#0066B2] px-4 py-3 text-xs font-bold text-white hover:bg-[#005799] transition shadow-sm cursor-pointer"
+                >
+                  <Pencil className="h-4 w-4" /> Open Full Editor
+                </Link>
+
+                <div className="grid grid-cols-2 gap-2">
+                  <Link
+                    href={`/dashboard/leadmagnets/${activePage.id}/analytics`}
+                    className="flex items-center justify-center gap-1.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#1C1C20] px-3 py-2.5 text-xs font-bold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition"
+                  >
+                    <BarChart2 className="h-3.5 w-3.5 text-[#0066B2] dark:text-[#38BDF8]" /> Analytics
+                  </Link>
+
+                  <a
+                    href={`/pdf-viewer/${activePage.id}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-center gap-1.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#1C1C20] px-3 py-2.5 text-xs font-bold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition"
+                  >
+                    <ExternalLink className="h-3.5 w-3.5 text-zinc-400" /> Preview
+                  </a>
+                </div>
+              </div>
+
+              <div className="pt-1 flex items-center justify-between">
+                <button
+                  type="button"
+                  onClick={() => setMobileInspectorOpen(false)}
+                  className="text-xs font-semibold text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 cursor-pointer"
+                >
+                  Close
+                </button>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    setMobileInspectorOpen(false);
+                    setSelectedPageId(activePage.id);
+                    setShowDeleteModal(true);
+                  }}
+                  className="flex items-center gap-1 text-[11px] font-bold text-red-500 hover:text-red-600 dark:hover:text-red-400 transition cursor-pointer"
+                >
+                  <Trash2 className="h-3.5 w-3.5" /> Delete Magnet
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </DashboardShell>
   );
 }
