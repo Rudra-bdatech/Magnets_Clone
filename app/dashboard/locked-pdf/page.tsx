@@ -33,6 +33,7 @@ import {
   Search,
   LayoutGrid,
   List,
+  CheckSquare,
   Pencil,
   BarChart2,
   ArrowLeft,
@@ -113,6 +114,7 @@ export default function LockedPdfPage() {
   const [isDeleting, setIsDeleting] = useState(false);
   const [showBulkDeleteModal, setShowBulkDeleteModal] = useState(false);
   const [checkedIds, setCheckedIds] = useState<string[]>([]);
+  const [isSelectMode, setIsSelectMode] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [createMagnetName, setCreateMagnetName] = useState("");
   const [customSlug, setCustomSlug] = useState("");
@@ -790,6 +792,7 @@ export default function LockedPdfPage() {
     }
     addToast(`Deleted ${checkedIds.length} locked PDF${checkedIds.length > 1 ? "s" : ""}.`);
     setCheckedIds([]);
+    setIsSelectMode(false);
     setShowBulkDeleteModal(false);
     router.refresh();
   }, [checkedIds, pages, selectedPageId, router]);
@@ -1036,6 +1039,27 @@ export default function LockedPdfPage() {
                     )}
                     <List className="relative z-10 h-4 w-4" />
                   </button>
+
+                  <div className="h-3.5 w-px bg-zinc-200 dark:bg-zinc-700 mx-0.5" />
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsSelectMode((prev) => {
+                        const next = !prev;
+                        if (!next) setCheckedIds([]);
+                        return next;
+                      });
+                    }}
+                    className={`relative p-1.5 rounded-lg transition-colors duration-150 cursor-pointer ${
+                      isSelectMode || checkedIds.length > 0
+                        ? "bg-white dark:bg-[#2A2A30] text-[#0066B2] dark:text-[#38BDF8] shadow-xs"
+                        : "text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200"
+                    }`}
+                    title={isSelectMode || checkedIds.length > 0 ? "Exit Select Mode" : "Select Locked PDFs"}
+                  >
+                    <CheckSquare className="relative z-10 h-4 w-4" />
+                  </button>
                 </div>
               </div>
             </div>
@@ -1091,7 +1115,6 @@ export default function LockedPdfPage() {
                         key={pdf.id}
                         onClick={() => {
                           setSelectedPageId(pdf.id);
-                          setMobileInspectorOpen(true);
                         }}
                         className={`group relative rounded-2xl border transition-all duration-300 cursor-pointer overflow-hidden flex flex-col justify-between ${
                           isChecked
@@ -1112,13 +1135,13 @@ export default function LockedPdfPage() {
                             className={`absolute top-2.5 right-2.5 z-10 flex h-6 w-6 items-center justify-center rounded-lg border transition-all cursor-pointer ${
                               isChecked
                                 ? "bg-[#0066B2] border-[#0066B2] text-white shadow-md scale-105 opacity-100"
-                                : checkedIds.length > 0
-                                  ? "bg-white/90 dark:bg-[#18181D]/90 border-zinc-300 dark:border-zinc-700 text-transparent hover:border-[#0066B2] dark:hover:border-[#38BDF8] opacity-100"
-                                  : "bg-white/90 dark:bg-[#18181D]/90 border-zinc-300 dark:border-zinc-700 text-transparent hover:border-[#0066B2] dark:hover:border-[#38BDF8] opacity-0 group-hover:opacity-100"
+                                : isSelectMode || checkedIds.length > 0
+                                  ? "bg-white/90 dark:bg-[#18181D]/90 border-zinc-300 dark:border-zinc-700 text-transparent hover:border-[#0066B2] dark:hover:border-[#38BDF8] opacity-100 shadow-xs active:scale-95"
+                                  : "bg-white/90 dark:bg-[#18181D]/90 border-zinc-300 dark:border-zinc-700 text-transparent hover:border-[#0066B2] dark:hover:border-[#38BDF8] opacity-0 md:group-hover:opacity-100 shadow-xs"
                             }`}
                             title={isChecked ? "Deselect PDF" : "Select PDF"}
                           >
-                            <Check className={`h-3.5 w-3.5 stroke-[3px] ${isChecked ? "opacity-100" : "opacity-0"}`} />
+                            <Check className={`h-3.5 w-3.5 stroke-[3px] ${isChecked ? "opacity-100 text-white" : "opacity-0"}`} />
                           </button>
                           {/* Stacked Paper Pages Background (depth effect) */}
                           <div className="absolute inset-x-8 top-2.5 h-[105px] bg-zinc-200/80 dark:bg-zinc-800/60 rounded-t-lg transform scale-95 border border-zinc-300/50 dark:border-zinc-700/50 shadow-xs" />
@@ -1215,10 +1238,11 @@ export default function LockedPdfPage() {
                                 setSelectedPageId(pdf.id);
                                 setMobileInspectorOpen(true);
                               }}
-                              className="lg:hidden p-1.5 rounded-lg text-zinc-600 dark:text-zinc-300 hover:text-[#0066B2] dark:hover:text-[#38BDF8] bg-zinc-100 dark:bg-zinc-800 transition-all cursor-pointer"
+                              className="lg:hidden inline-flex items-center gap-1 rounded-lg border border-zinc-200 dark:border-zinc-700/80 bg-zinc-50 hover:bg-zinc-100 dark:bg-zinc-800/80 dark:hover:bg-zinc-700 px-2.5 py-1 text-[11px] font-semibold text-zinc-700 dark:text-zinc-200 transition cursor-pointer active:scale-95"
                               title="Details"
                             >
-                              <SlidersHorizontal className="h-3.5 w-3.5" />
+                              <SlidersHorizontal className="h-3 w-3 text-[#0066B2] dark:text-[#38BDF8]" />
+                              <span>Details</span>
                             </button>
 
                             <button
@@ -1290,13 +1314,14 @@ export default function LockedPdfPage() {
                           <button
                             type="button"
                             onClick={handleToggleSelectAll}
-                            className={`flex h-4 w-4 items-center justify-center rounded border transition cursor-pointer ${
+                            className={`inline-flex h-5 w-5 items-center justify-center rounded-md border transition-all cursor-pointer ${
                               filtered.length > 0 && filtered.every((p) => checkedIds.includes(p.id))
-                                ? "bg-[#0066B2] border-[#0066B2] text-white"
-                                : "bg-white dark:bg-zinc-800 border-zinc-300 dark:border-zinc-600 text-transparent"
+                                ? "bg-[#0066B2] border-[#0066B2] text-white shadow-xs"
+                                : "bg-white/90 dark:bg-zinc-800/80 border-zinc-300 dark:border-zinc-700 hover:border-[#0066B2] dark:hover:border-[#38BDF8]"
                             }`}
+                            title={filtered.length > 0 && filtered.every((p) => checkedIds.includes(p.id)) ? "Deselect all" : "Select all"}
                           >
-                            <Check className={`h-3 w-3 stroke-[3px] ${filtered.length > 0 && filtered.every((p) => checkedIds.includes(p.id)) ? "opacity-100" : "opacity-0"}`} />
+                            <Check className={`h-3 w-3 stroke-[3px] ${filtered.length > 0 && filtered.every((p) => checkedIds.includes(p.id)) ? "opacity-100 text-white" : "opacity-0"}`} />
                           </button>
                         </th>
                         <th className="px-4 py-3">Document</th>
@@ -1318,7 +1343,6 @@ export default function LockedPdfPage() {
                             key={pdf.id}
                             onClick={() => {
                               setSelectedPageId(pdf.id);
-                              setMobileInspectorOpen(true);
                             }}
                             className={`cursor-pointer transition ${
                               isChecked
@@ -1332,13 +1356,14 @@ export default function LockedPdfPage() {
                               <button
                                 type="button"
                                 onClick={(e) => handleToggleCheck(pdf.id, e)}
-                                className={`flex h-4 w-4 items-center justify-center rounded border transition cursor-pointer ${
+                                className={`inline-flex h-5 w-5 items-center justify-center rounded-md border transition-all cursor-pointer ${
                                   isChecked
-                                    ? "bg-[#0066B2] border-[#0066B2] text-white"
-                                    : "bg-white dark:bg-zinc-800 border-zinc-300 dark:border-zinc-600 text-transparent hover:border-[#0066B2]"
+                                    ? "bg-[#0066B2] border-[#0066B2] text-white shadow-xs scale-105"
+                                    : "bg-white/90 dark:bg-zinc-800/80 border-zinc-300 dark:border-zinc-700 hover:border-[#0066B2] dark:hover:border-[#38BDF8]"
                                 }`}
+                                title={isChecked ? "Deselect PDF" : "Select PDF"}
                               >
-                                <Check className={`h-3 w-3 stroke-[3px] ${isChecked ? "opacity-100" : "opacity-0"}`} />
+                                <Check className={`h-3 w-3 stroke-[3px] ${isChecked ? "opacity-100 text-white" : "opacity-0"}`} />
                               </button>
                             </td>
                             <td className="px-4 py-3 font-semibold text-zinc-900 dark:text-white">
@@ -2057,7 +2082,10 @@ export default function LockedPdfPage() {
               {filtered.length > 0 && filtered.every((p) => checkedIds.includes(p.id)) ? "Deselect All" : "Select All"}
             </button>
             <button
-              onClick={() => setCheckedIds([])}
+              onClick={() => {
+                setCheckedIds([]);
+                setIsSelectMode(false);
+              }}
               className="text-xs font-semibold text-zinc-400 hover:text-zinc-200 transition cursor-pointer whitespace-nowrap"
             >
               Clear
