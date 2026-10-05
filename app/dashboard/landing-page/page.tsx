@@ -879,253 +879,283 @@ export default function PagesPage() {
         </div>
       </div>
 
-      {showCreateModal && (
-        <div
-          className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm p-0 sm:p-4 transition-all duration-200"
-          onClick={() => { setShowCreateModal(false); setNewName(""); }}
-        >
-          <div
-            className="relative w-full sm:max-w-[460px] rounded-t-[28px] sm:rounded-2xl border-t sm:border border-[#0066B2]/30 bg-white p-5 sm:p-6 text-zinc-900 shadow-2xl space-y-4 sm:space-y-5 animate-in slide-in-from-bottom sm:zoom-in-95 duration-200 dark:border-[#0066B2]/35 dark:bg-[#18181c] dark:text-white max-h-[90vh] overflow-y-auto pb-8 sm:pb-6"
-            onClick={(e) => e.stopPropagation()}
+      <AnimatePresence>
+        {showCreateModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm p-0 sm:p-4"
+            onClick={() => { setShowCreateModal(false); setNewName(""); }}
           >
-            {/* Mobile Bottom Sheet Grab Handle */}
-            <div className="sm:hidden flex justify-center pb-1 -mt-1">
-              <div className="h-1.5 w-10 rounded-full bg-zinc-300 dark:bg-zinc-700/80" />
-            </div>
-
-            <div className="flex items-start justify-between">
-              <div>
-                <h3 className="text-base font-bold text-zinc-900 dark:text-white">Create Landing Page</h3>
-                <p className="text-xs text-zinc-500 dark:text-[#9B9085] mt-0.5 sm:mt-1">Name the page and choose its URL.</p>
-              </div>
-              <button
-                onClick={() => { setShowCreateModal(false); setNewName(""); }}
-                className="rounded-lg p-1.5 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-900 dark:text-[#9B9085] dark:hover:bg-[#25252b] dark:hover:text-white transition-colors cursor-pointer"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            </div>
-
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                if (isCreating) return;
-                setIsCreating(true);
-
-                const cleanSlug = newSlug;
-                const newId = `page-${Date.now()}`;
-                const newMagnetPage: MagnetPage = {
-                  id: newId,
-                  userEmail: account?.email,
-                  name: newName.trim() || "Untitled Page",
-                  slug: cleanSlug,
-                  status: "draft",
-                  headline: newName.trim() || "Untitled Page",
-                  subheadline: "",
-                  cta: "Get instant access",
-                  deliverable: "Instant Access",
-                  accent: account?.brandColor || "#0066B2",
-                  views: 0,
-                  signups: 0,
-                  conversionRate: 0,
-                  updatedAt: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
-                  publishedAt: null,
-                  template: (account?.templateId as any) || "template1"
-                };
-
-                const nextPages = [newMagnetPage, ...pages];
-                setPages(nextPages);
-                savePages(nextPages);
-                router.push(`/dashboard/leadmagnets/${newId}`);
-              }}
-              className="space-y-4"
+            <motion.div
+              initial={{ opacity: 0, y: 80, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 80, scale: 0.98 }}
+              transition={{ type: "spring", damping: 28, stiffness: 340 }}
+              className="relative w-full sm:max-w-[460px] rounded-t-[28px] sm:rounded-2xl border-t sm:border border-[#0066B2]/30 bg-white p-5 sm:p-6 text-zinc-900 shadow-2xl space-y-4 sm:space-y-5 dark:border-[#0066B2]/35 dark:bg-[#18181c] dark:text-white max-h-[90vh] overflow-y-auto pb-8 sm:pb-6"
+              onClick={(e) => e.stopPropagation()}
             >
-              <div className="space-y-1.5">
-                <label className="block text-xs font-semibold text-zinc-700 dark:text-[#d4c8bc]">Page name</label>
-                <input
-                  type="text"
-                  autoFocus
-                  value={newName}
-                  onChange={(e) => setNewName(e.target.value)}
-                  placeholder="AI Pipeline Playbook"
-                  className="w-full rounded-xl border border-[#0066B2]/30 bg-white px-3.5 py-2.5 text-xs text-zinc-900 placeholder:text-zinc-400 outline-none focus:border-[#0066B2] focus:ring-1 focus:ring-[#0066B2] dark:border-[#0066B2]/60 dark:bg-[#121214] dark:text-white dark:placeholder:text-[#52525b] dark:focus:border-[#0066B2] dark:focus:ring-[#0066B2] transition-all"
-                  required
-                />
+              {/* Mobile Bottom Sheet Grab Handle */}
+              <div className="sm:hidden flex justify-center pb-1 -mt-1">
+                <div className="h-1.5 w-10 rounded-full bg-zinc-300 dark:bg-zinc-700/80" />
               </div>
 
-              <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-zinc-700 dark:text-[#d4c8bc]">URL slug</label>
-                <div className="flex items-center rounded-xl border border-[#0066B2]/30 bg-zinc-50 px-3.5 py-2.5 text-xs text-zinc-600 dark:border-[#0066B2]/35 dark:bg-[#121214] dark:text-[#9B9085]">
-                  <span className="text-zinc-400 dark:text-[#666675] shrink-0 mr-1.5">/</span>
-                  <span className="font-mono text-zinc-800 dark:text-[#d4c8bc] truncate">{newSlug}</span>
+              <div className="flex items-start justify-between">
+                <div>
+                  <h3 className="text-base font-bold text-zinc-900 dark:text-white">Create Landing Page</h3>
+                  <p className="text-xs text-zinc-500 dark:text-[#9B9085] mt-0.5 sm:mt-1">Name the page and choose its URL.</p>
                 </div>
-                <p className="text-[11px] text-zinc-500 dark:text-[#666675]">The path of the page. Lowercase, digits, and hyphens only.</p>
+                <button
+                  onClick={() => { setShowCreateModal(false); setNewName(""); }}
+                  className="rounded-lg p-1.5 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-900 dark:text-[#9B9085] dark:hover:bg-[#25252b] dark:hover:text-white transition-colors cursor-pointer"
+                >
+                  <X className="h-4 w-4" />
+                </button>
               </div>
 
-              <div className="pt-3 flex flex-wrap items-center justify-end gap-2.5">
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  if (isCreating) return;
+                  setIsCreating(true);
+
+                  const cleanSlug = newSlug;
+                  const newId = `page-${Date.now()}`;
+                  const newMagnetPage: MagnetPage = {
+                    id: newId,
+                    userEmail: account?.email,
+                    name: newName.trim() || "Untitled Page",
+                    slug: cleanSlug,
+                    status: "draft",
+                    headline: newName.trim() || "Untitled Page",
+                    subheadline: "",
+                    cta: "Get instant access",
+                    deliverable: "Instant Access",
+                    accent: account?.brandColor || "#0066B2",
+                    views: 0,
+                    signups: 0,
+                    conversionRate: 0,
+                    updatedAt: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
+                    publishedAt: null,
+                    template: (account?.templateId as any) || "template1"
+                  };
+
+                  const nextPages = [newMagnetPage, ...pages];
+                  setPages(nextPages);
+                  savePages(nextPages);
+                  router.push(`/dashboard/leadmagnets/${newId}`);
+                }}
+                className="space-y-4"
+              >
+                <div className="space-y-1.5">
+                  <label className="block text-xs font-semibold text-zinc-700 dark:text-[#d4c8bc]">Page name</label>
+                  <input
+                    type="text"
+                    autoFocus
+                    value={newName}
+                    onChange={(e) => setNewName(e.target.value)}
+                    placeholder="AI Pipeline Playbook"
+                    className="w-full rounded-xl border border-[#0066B2]/30 bg-white px-3.5 py-2.5 text-xs text-zinc-900 placeholder:text-zinc-400 outline-none focus:border-[#0066B2] focus:ring-1 focus:ring-[#0066B2] dark:border-[#0066B2]/60 dark:bg-[#121214] dark:text-white dark:placeholder:text-[#52525b] dark:focus:border-[#0066B2] dark:focus:ring-[#0066B2] transition-all"
+                    required
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-zinc-700 dark:text-[#d4c8bc]">URL slug</label>
+                  <div className="flex items-center rounded-xl border border-[#0066B2]/30 bg-zinc-50 px-3.5 py-2.5 text-xs text-zinc-600 dark:border-[#0066B2]/35 dark:bg-[#121214] dark:text-[#9B9085]">
+                    <span className="text-zinc-400 dark:text-[#666675] shrink-0 mr-1.5">/</span>
+                    <span className="font-mono text-zinc-800 dark:text-[#d4c8bc] truncate">{newSlug}</span>
+                  </div>
+                  <p className="text-[11px] text-zinc-500 dark:text-[#666675]">The path of the page. Lowercase, digits, and hyphens only.</p>
+                </div>
+
+                <div className="pt-3 flex flex-wrap items-center justify-end gap-2.5">
+                  <button
+                    type="button"
+                    disabled={isCreating}
+                    onClick={() => setShowCreateModal(false)}
+                    className="rounded-xl border border-[#0066B2]/30 bg-white px-4 py-2 text-xs font-semibold text-zinc-700 hover:bg-zinc-100 dark:border-[#0066B2]/35 dark:bg-[#222228] dark:text-white dark:hover:bg-[#2c2c34] transition-all cursor-pointer disabled:opacity-50"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    disabled={isCreating}
+                    onClick={() => {
+                      if (isCreating) return;
+                      setIsCreating(true);
+                      const cleanSlug = newSlug;
+                      const newId = `page-${Date.now()}`;
+                      const name = newName.trim() || "Untitled Landing Page";
+                      const newMagnetPage: MagnetPage = {
+                        id: newId,
+                        userEmail: account?.email,
+                        name,
+                        slug: cleanSlug,
+                        status: "draft",
+                        headline: name,
+                        subheadline: "",
+                        cta: "Get instant access",
+                        deliverable: "Instant Access",
+                        accent: account?.brandColor || "#0066B2",
+                        views: 0,
+                        signups: 0,
+                        conversionRate: 0,
+                        updatedAt: new Date().toISOString(),
+                        createdAt: new Date().toISOString(),
+                        publishedAt: null,
+                        template: (account?.templateId as any) || "template1"
+                      };
+
+                      const nextPages = [newMagnetPage, ...pages];
+                      setPages(nextPages);
+                      savePages(nextPages);
+                      setShowCreateModal(false);
+                      setNewName("");
+                      setIsCreating(false);
+                      router.push(`/dashboard/leadmagnets/${newId}`);
+                    }}
+                    className="flex items-center gap-1.5 rounded-xl bg-emerald-600 px-4 py-2 text-xs font-bold text-white hover:bg-emerald-700 transition-all cursor-pointer shadow-sm disabled:opacity-50"
+                  >
+                    <FileText className="h-3.5 w-3.5" />
+                    <span>Create Landing Page</span>
+                  </button>
+                </div>
+              </form>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {pageToDeleteId && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4"
+            onClick={() => setPageToDeleteId(null)}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 10 }}
+              transition={{ type: "spring", damping: 25, stiffness: 350 }}
+              className="relative w-full max-w-[440px] rounded-3xl border border-zinc-800 bg-[#18181B] p-6 text-white shadow-2xl space-y-4"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-start justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-500">
+                    <AlertTriangle className="h-5 w-5" />
+                  </div>
+                  <h3 className="text-lg font-bold text-white tracking-tight">Delete this magnet?</h3>
+                </div>
+                <button
+                  onClick={() => setPageToDeleteId(null)}
+                  className="rounded-lg p-1 text-zinc-400 hover:bg-zinc-800 hover:text-white transition-colors cursor-pointer"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+
+              <div className="space-y-2 pt-1 text-xs leading-relaxed text-zinc-400">
+                <p>
+                  This removes the page and stops it serving. Any signups already collected stay on your list.
+                </p>
+                <p className="text-zinc-500 font-medium">
+                  This action cannot be undone.
+                </p>
+              </div>
+
+              <div className="pt-4 flex items-center justify-end gap-3">
                 <button
                   type="button"
-                  disabled={isCreating}
-                  onClick={() => setShowCreateModal(false)}
-                  className="rounded-xl border border-[#0066B2]/30 bg-white px-4 py-2 text-xs font-semibold text-zinc-700 hover:bg-zinc-100 dark:border-[#0066B2]/35 dark:bg-[#222228] dark:text-white dark:hover:bg-[#2c2c34] transition-all cursor-pointer disabled:opacity-50"
+                  onClick={() => setPageToDeleteId(null)}
+                  className="rounded-xl border border-zinc-800 bg-[#25252A] px-4 py-2.5 text-xs font-semibold text-zinc-300 hover:bg-zinc-800 hover:text-white transition-all cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="button"
-                  disabled={isCreating}
-                  onClick={() => {
-                    if (isCreating) return;
-                    setIsCreating(true);
-                    const cleanSlug = newSlug;
-                    const newId = `page-${Date.now()}`;
-                    const name = newName.trim() || "Untitled Landing Page";
-                    const newMagnetPage: MagnetPage = {
-                      id: newId,
-                      userEmail: account?.email,
-                      name,
-                      slug: cleanSlug,
-                      status: "draft",
-                      headline: name,
-                      subheadline: "",
-                      cta: "Get instant access",
-                      deliverable: "Instant Access",
-                      accent: account?.brandColor || "#0066B2",
-                      views: 0,
-                      signups: 0,
-                      conversionRate: 0,
-                      updatedAt: new Date().toISOString(),
-                      createdAt: new Date().toISOString(),
-                      publishedAt: null,
-                      template: (account?.templateId as any) || "template1"
-                    };
-
-                    const nextPages = [newMagnetPage, ...pages];
-                    setPages(nextPages);
-                    savePages(nextPages);
-                    setShowCreateModal(false);
-                    setNewName("");
-                    setIsCreating(false);
-                    router.push(`/dashboard/leadmagnets/${newId}`);
-                  }}
-                  className="flex items-center gap-1.5 rounded-xl bg-emerald-600 px-4 py-2 text-xs font-bold text-white hover:bg-emerald-700 transition-all cursor-pointer shadow-sm disabled:opacity-50"
+                  onClick={confirmPageDeletion}
+                  className="rounded-xl border border-rose-500/30 bg-rose-500/15 px-4 py-2.5 text-xs font-bold text-rose-400 hover:bg-rose-500 hover:text-white transition-all cursor-pointer shadow-sm"
                 >
-                  <FileText className="h-3.5 w-3.5" />
-                  <span>Create Landing Page</span>
+                  Delete magnet
                 </button>
               </div>
-            </form>
-          </div>
-        </div>
-      )}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-      {pageToDeleteId && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 transition-all duration-200 animate-in fade-in duration-150"
-          onClick={() => setPageToDeleteId(null)}
-        >
-          <div
-            className="relative w-full max-w-[440px] rounded-3xl border border-zinc-800 bg-[#18181B] p-6 text-white shadow-2xl space-y-4 animate-in zoom-in-95 duration-150"
-            onClick={(e) => e.stopPropagation()}
+      <AnimatePresence>
+        {showBulkDeleteModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4"
+            onClick={() => setShowBulkDeleteModal(false)}
           >
-            <div className="flex items-start justify-between">
-              <div className="flex items-center gap-3">
-                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-500">
-                  <AlertTriangle className="h-5 w-5" />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 10 }}
+              transition={{ type: "spring", damping: 25, stiffness: 350 }}
+              className="relative w-full max-w-[440px] rounded-3xl border border-zinc-800 bg-[#18181B] p-6 text-white shadow-2xl space-y-4"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-start justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-500">
+                    <AlertTriangle className="h-5 w-5" />
+                  </div>
+                  <h3 className="text-lg font-bold text-white tracking-tight">
+                    Delete {checkedIds.length} lead magnet{checkedIds.length > 1 ? "s" : ""}?
+                  </h3>
                 </div>
-                <h3 className="text-lg font-bold text-white tracking-tight">Delete this magnet?</h3>
+                <button
+                  onClick={() => setShowBulkDeleteModal(false)}
+                  className="rounded-lg p-1 text-zinc-400 hover:bg-zinc-800 hover:text-white transition-colors cursor-pointer"
+                >
+                  <X className="h-4 w-4" />
+                </button>
               </div>
-              <button
-                onClick={() => setPageToDeleteId(null)}
-                className="rounded-lg p-1 text-zinc-400 hover:bg-zinc-800 hover:text-white transition-colors cursor-pointer"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            </div>
 
-            <div className="space-y-2 pt-1 text-xs leading-relaxed text-zinc-400">
-              <p>
-                This removes the page and stops it serving. Any signups already collected stay on your list.
-              </p>
-              <p className="text-zinc-500 font-medium">
-                This action cannot be undone.
-              </p>
-            </div>
-
-            <div className="pt-4 flex items-center justify-end gap-3">
-              <button
-                type="button"
-                onClick={() => setPageToDeleteId(null)}
-                className="rounded-xl border border-zinc-800 bg-[#25252A] px-4 py-2.5 text-xs font-semibold text-zinc-300 hover:bg-zinc-800 hover:text-white transition-all cursor-pointer"
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                onClick={confirmPageDeletion}
-                className="rounded-xl border border-rose-500/30 bg-rose-500/15 px-4 py-2.5 text-xs font-bold text-rose-400 hover:bg-rose-500 hover:text-white transition-all cursor-pointer shadow-sm"
-              >
-                Delete magnet
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {showBulkDeleteModal && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 transition-all duration-200 animate-in fade-in duration-150"
-          onClick={() => setShowBulkDeleteModal(false)}
-        >
-          <div
-            className="relative w-full max-w-[440px] rounded-3xl border border-zinc-800 bg-[#18181B] p-6 text-white shadow-2xl space-y-4 animate-in zoom-in-95 duration-150"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="flex items-start justify-between">
-              <div className="flex items-center gap-3">
-                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-500">
-                  <AlertTriangle className="h-5 w-5" />
-                </div>
-                <h3 className="text-lg font-bold text-white tracking-tight">
-                  Delete {checkedIds.length} lead magnet{checkedIds.length > 1 ? "s" : ""}?
-                </h3>
+              <div className="space-y-2 pt-1 text-xs leading-relaxed text-zinc-400">
+                <p>
+                  This will permanently delete the <span className="font-bold text-white">{checkedIds.length}</span> selected lead magnet{checkedIds.length > 1 ? "s" : ""} and stop serving them on their URLs. Any signups already collected will stay on your list.
+                </p>
+                <p className="text-zinc-500 font-medium">
+                  This action cannot be undone.
+                </p>
               </div>
-              <button
-                onClick={() => setShowBulkDeleteModal(false)}
-                className="rounded-lg p-1 text-zinc-400 hover:bg-zinc-800 hover:text-white transition-colors cursor-pointer"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            </div>
 
-            <div className="space-y-2 pt-1 text-xs leading-relaxed text-zinc-400">
-              <p>
-                This will permanently delete the <span className="font-bold text-white">{checkedIds.length}</span> selected lead magnet{checkedIds.length > 1 ? "s" : ""} and stop serving them on their URLs. Any signups already collected will stay on your list.
-              </p>
-              <p className="text-zinc-500 font-medium">
-                This action cannot be undone.
-              </p>
-            </div>
-
-            <div className="pt-4 flex items-center justify-end gap-3">
-              <button
-                type="button"
-                onClick={() => setShowBulkDeleteModal(false)}
-                className="rounded-xl border border-zinc-800 bg-[#25252A] px-4 py-2.5 text-xs font-semibold text-zinc-300 hover:bg-zinc-800 hover:text-white transition-all cursor-pointer"
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                onClick={confirmBulkDeletion}
-                className="rounded-xl border border-rose-500/30 bg-rose-600 px-4 py-2.5 text-xs font-bold text-white hover:bg-rose-700 transition-all cursor-pointer shadow-sm"
-              >
-                Delete {checkedIds.length} magnet{checkedIds.length > 1 ? "s" : ""}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+              <div className="pt-4 flex items-center justify-end gap-3">
+                <button
+                  type="button"
+                  onClick={() => setShowBulkDeleteModal(false)}
+                  className="rounded-xl border border-zinc-800 bg-[#25252A] px-4 py-2.5 text-xs font-semibold text-zinc-300 hover:bg-zinc-800 hover:text-white transition-all cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={confirmBulkDeletion}
+                  className="rounded-xl border border-rose-500/30 bg-rose-600 px-4 py-2.5 text-xs font-bold text-white hover:bg-rose-700 transition-all cursor-pointer shadow-sm"
+                >
+                  Delete {checkedIds.length} magnet{checkedIds.length > 1 ? "s" : ""}
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Mobile Slide-Up Inspector Bottom Sheet Drawer */}
       <AnimatePresence>
