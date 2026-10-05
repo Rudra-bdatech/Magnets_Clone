@@ -1056,7 +1056,14 @@ export default function PagesPage() {
 
       <AnimatePresence>
         {pageToDeleteId && (
-          <div className="fixed inset-0 z-50 flex flex-col justify-end sm:items-center sm:justify-center">
+          <motion.div
+            key="page-delete-modal-container"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 z-50 flex flex-col justify-end sm:items-center sm:justify-center"
+          >
             {/* Backdrop with Subtle Soft Blur */}
             <motion.div
               initial={{ opacity: 0 }}
@@ -1120,13 +1127,20 @@ export default function PagesPage() {
                 </button>
               </div>
             </motion.div>
-          </div>
+          </motion.div>
         )}
       </AnimatePresence>
 
       <AnimatePresence>
         {showBulkDeleteModal && (
-          <div className="fixed inset-0 z-50 flex flex-col justify-end sm:items-center sm:justify-center">
+          <motion.div
+            key="page-bulk-delete-modal-container"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 z-50 flex flex-col justify-end sm:items-center sm:justify-center"
+          >
             {/* Backdrop with Subtle Soft Blur */}
             <motion.div
               initial={{ opacity: 0 }}
@@ -1192,7 +1206,7 @@ export default function PagesPage() {
                 </button>
               </div>
             </motion.div>
-          </div>
+          </motion.div>
         )}
       </AnimatePresence>
 
