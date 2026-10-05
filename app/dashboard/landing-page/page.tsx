@@ -44,6 +44,7 @@ interface MagnetCardProps {
   index: number;
   isSelected: boolean;
   isChecked: boolean;
+  anyChecked?: boolean;
   onSelect: (id: string) => void;
   onToggleCheck: (id: string, e?: React.MouseEvent) => void;
   account: Account | null;
@@ -57,6 +58,7 @@ const MagnetCard = React.memo(
     index,
     isSelected,
     isChecked,
+    anyChecked = false,
     onSelect,
     onToggleCheck,
     account,
@@ -126,8 +128,10 @@ const MagnetCard = React.memo(
             type="button"
             onClick={(e) => onToggleCheck(page.id, e)}
             className={`absolute top-3 right-3 flex h-6 w-6 items-center justify-center rounded-lg border transition-all z-10 cursor-pointer ${isChecked
-                ? "bg-[#0066B2] border-[#0066B2] text-white shadow-md scale-105"
-                : "bg-white/90 dark:bg-black/70 border-zinc-300 dark:border-zinc-700 text-transparent hover:border-[#0066B2] dark:hover:border-[#38BDF8]"
+                ? "bg-[#0066B2] border-[#0066B2] text-white shadow-md scale-105 opacity-100"
+                : anyChecked
+                  ? "bg-white/90 dark:bg-black/70 border-zinc-300 dark:border-zinc-700 text-transparent hover:border-[#0066B2] dark:hover:border-[#38BDF8] opacity-100"
+                  : "bg-white/90 dark:bg-black/70 border-zinc-300 dark:border-zinc-700 text-transparent hover:border-[#0066B2] dark:hover:border-[#38BDF8] opacity-0 group-hover:opacity-100"
               }`}
             title={isChecked ? "Deselect magnet" : "Select magnet"}
           >
@@ -537,46 +541,6 @@ export default function PagesPage() {
               </div>
             </div>
 
-            {checkedIds.length > 0 && (
-              <motion.div
-                initial={{ opacity: 0, y: -6 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -6 }}
-                className="flex items-center justify-between rounded-xl border border-[#0066B2]/30 bg-[#0066B2]/10 dark:bg-[#0066B2]/15 px-4 py-2.5 text-xs shadow-xs"
-              >
-                <div className="flex items-center gap-3">
-                  <span className="font-bold text-[#0066B2] dark:text-[#38BDF8]">
-                    {checkedIds.length} lead magnet{checkedIds.length > 1 ? "s" : ""} selected
-                  </span>
-                  <button
-                    onClick={handleToggleSelectAll}
-                    className="text-[11px] font-semibold text-zinc-600 dark:text-zinc-300 hover:underline cursor-pointer"
-                  >
-                    {filtered.length > 0 && filtered.every((p) => checkedIds.includes(p.id))
-                      ? "Deselect All"
-                      : "Select All"}
-                  </button>
-                </div>
-
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => setCheckedIds([])}
-                    className="px-3 py-1 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-[#1A1A1E] font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition cursor-pointer"
-                  >
-                    Clear Selection
-                  </button>
-
-                  <button
-                    onClick={() => setShowBulkDeleteModal(true)}
-                    className="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-rose-600 hover:bg-rose-700 text-white font-bold transition shadow-xs cursor-pointer"
-                  >
-                    <Trash2 className="h-3.5 w-3.5" />
-                    <span>Delete Selected ({checkedIds.length})</span>
-                  </button>
-                </div>
-              </motion.div>
-            )}
-
             <AnimatePresence mode="popLayout">
               {filtered.length === 0 ? (
                 <motion.div
@@ -618,6 +582,7 @@ export default function PagesPage() {
                         index={index}
                         isSelected={selectedPageId === page.id}
                         isChecked={checkedIds.includes(page.id)}
+                        anyChecked={checkedIds.length > 0}
                         onSelect={handleSelectPage}
                         onToggleCheck={handleToggleCheck}
                         account={account}
@@ -1322,6 +1287,43 @@ export default function PagesPage() {
               </div>
             </motion.div>
           </div>
+        )}
+      </AnimatePresence>
+
+      {/* Floating Bottom Multi-Select Bar */}
+      <AnimatePresence>
+        {checkedIds.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 40, x: "-50%" }}
+            animate={{ opacity: 1, y: 0, x: "-50%" }}
+            exit={{ opacity: 0, y: 40, x: "-50%" }}
+            transition={{ type: "spring", stiffness: 450, damping: 30 }}
+            className="fixed bottom-6 left-1/2 z-50 flex items-center gap-3 rounded-2xl bg-zinc-900/95 dark:bg-[#1A1A1E]/95 border border-zinc-700/80 text-white px-4 sm:px-5 py-2.5 shadow-2xl backdrop-blur-md"
+          >
+            <span className="text-xs font-bold whitespace-nowrap">
+              <span className="text-[#38BDF8] font-black">{checkedIds.length}</span> selected
+            </span>
+            <div className="h-4 w-px bg-zinc-700" />
+            <button
+              onClick={handleToggleSelectAll}
+              className="text-xs font-semibold text-zinc-300 hover:text-white transition cursor-pointer whitespace-nowrap"
+            >
+              {filtered.length > 0 && filtered.every((p) => checkedIds.includes(p.id)) ? "Deselect All" : "Select All"}
+            </button>
+            <button
+              onClick={() => setCheckedIds([])}
+              className="text-xs font-semibold text-zinc-400 hover:text-zinc-200 transition cursor-pointer whitespace-nowrap"
+            >
+              Clear
+            </button>
+            <button
+              onClick={() => setShowBulkDeleteModal(true)}
+              className="flex items-center gap-1.5 rounded-xl bg-rose-600 hover:bg-rose-700 px-3.5 py-1.5 text-xs font-bold text-white transition shadow-xs cursor-pointer whitespace-nowrap active:scale-95"
+            >
+              <Trash2 className="h-3.5 w-3.5" />
+              <span>Delete ({checkedIds.length})</span>
+            </button>
+          </motion.div>
         )}
       </AnimatePresence>
     </DashboardShell>
