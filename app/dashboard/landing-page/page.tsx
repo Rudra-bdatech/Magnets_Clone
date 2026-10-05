@@ -68,10 +68,10 @@ const MagnetCard = React.memo(
         onClick={() => onSelect(page.id)}
         style={{ animationDelay: `${Math.min(index * 15, 100)}ms` }}
         className={`magnet-card-enter group relative rounded-2xl border transition-all duration-200 cursor-pointer overflow-hidden flex flex-col ${isChecked
-            ? "border-[#0066B2] dark:border-[#38BDF8] bg-white dark:bg-[#18181C] ring-2 ring-[#0066B2]/40 dark:ring-[#38BDF8]/40 shadow-md"
+            ? "border-[#0066B2] dark:border-[#38BDF8] bg-white dark:bg-[#18181C] ring-2 ring-[#0066B2]/30 dark:ring-[#38BDF8]/30 shadow-md"
             : isSelected
-              ? "border-[#0066B2]/80 dark:border-[#38BDF8]/80 bg-white dark:bg-[#18181C] ring-2 ring-[#0066B2]/20 dark:ring-[#38BDF8]/20 shadow-md"
-              : "border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-[#141417] hover:border-zinc-300 dark:hover:border-zinc-700 shadow-xs"
+              ? "border-[#0066B2] dark:border-[#38BDF8] bg-white dark:bg-[#18181C] shadow-md dark:shadow-none"
+              : "border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#141417] hover:border-zinc-300 dark:hover:border-zinc-700 shadow-xs hover:shadow-md"
           }`}
       >
         <div className="relative h-32 w-full bg-zinc-100 dark:bg-[#0F0F12] border-b border-zinc-100 dark:border-zinc-800/60 overflow-hidden">
@@ -133,18 +133,20 @@ const MagnetCard = React.memo(
               <button
                 type="button"
                 onClick={() => onSelect(page.id)}
-                className="lg:hidden flex items-center gap-1 rounded-lg bg-zinc-100 dark:bg-zinc-800 px-2 py-1 text-[11px] font-bold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition cursor-pointer"
+                className="lg:hidden inline-flex items-center gap-1 rounded-lg border border-zinc-200 dark:border-zinc-700/80 bg-zinc-50 hover:bg-zinc-100 dark:bg-zinc-800/80 dark:hover:bg-zinc-700 px-2.5 py-1 text-[11px] font-semibold text-zinc-700 dark:text-zinc-200 transition cursor-pointer"
                 title="Open Details Sheet"
               >
-                <SlidersHorizontal className="h-3 w-3 text-[#0066B2] dark:text-[#38BDF8]" /> Details
+                <SlidersHorizontal className="h-3 w-3 text-[#0066B2] dark:text-[#38BDF8]" />
+                <span>Details</span>
               </button>
 
               <Link
                 href={`/dashboard/leadmagnets/${page.id}`}
                 prefetch={true}
-                className="flex items-center gap-1 rounded-lg bg-[#0066B2]/10 dark:bg-[#0066B2]/20 px-2.5 py-1 text-[11px] font-bold text-[#0066B2] dark:text-[#38BDF8] hover:bg-[#0066B2] hover:text-white dark:hover:bg-[#0066B2] dark:hover:text-white transition"
+                className="inline-flex items-center gap-1 rounded-lg bg-[#0066B2]/10 hover:bg-[#0066B2] text-[#0066B2] hover:text-white dark:bg-[#0066B2]/20 dark:text-[#38BDF8] dark:hover:bg-[#0066B2] dark:hover:text-white px-2.5 py-1 text-[11px] font-semibold transition"
               >
-                <Pencil className="h-3 w-3" /> Edit
+                <Pencil className="h-3 w-3" />
+                <span>Edit</span>
               </Link>
             </div>
           </div>
@@ -385,42 +387,42 @@ export default function PagesPage() {
           {/* Quick Metrics Bar */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 py-3 text-xs">
             <div className="flex items-center gap-3">
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#EFF6FF] dark:bg-[#0066B2]/15 text-[#0066B2] dark:text-[#38BDF8]">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#EFF6FF] border border-[#0066B2]/15 dark:border-[#38BDF8]/20 dark:bg-[#0066B2]/15 text-[#0066B2] dark:text-[#38BDF8] shrink-0 shadow-2xs">
                 <Globe className="h-4 w-4" />
               </div>
-              <div>
-                <p className="text-[11px] font-medium text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">Active Pages</p>
-                <p className="text-base font-bold text-zinc-900 dark:text-white">{liveCount} <span className="text-xs font-normal text-zinc-400">/ {total}</span></p>
+              <div className="min-w-0">
+                <p className="text-[10.5px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider truncate">Active Pages</p>
+                <p className="text-base font-bold text-zinc-900 dark:text-white leading-tight mt-0.5">{liveCount} <span className="text-xs font-normal text-zinc-400">/ {total}</span></p>
               </div>
             </div>
 
             <div className="flex items-center gap-3">
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-50 border border-emerald-500/20 dark:border-emerald-500/20 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 shrink-0 shadow-2xs">
                 <Eye className="h-4 w-4" />
               </div>
-              <div>
-                <p className="text-[11px] font-medium text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">Total Traffic</p>
-                <p className="text-base font-bold text-zinc-900 dark:text-white">{totalViews.toLocaleString()}</p>
+              <div className="min-w-0">
+                <p className="text-[10.5px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider truncate">Total Traffic</p>
+                <p className="text-base font-bold text-zinc-900 dark:text-white leading-tight mt-0.5">{totalViews.toLocaleString()}</p>
               </div>
             </div>
 
             <div className="flex items-center gap-3">
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-purple-50 dark:bg-purple-950/40 text-purple-600 dark:text-purple-400">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-purple-50 border border-purple-500/20 dark:border-purple-500/20 dark:bg-purple-950/40 text-purple-600 dark:text-purple-400 shrink-0 shadow-2xs">
                 <MousePointerClick className="h-4 w-4" />
               </div>
-              <div>
-                <p className="text-[11px] font-medium text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">Leads Collected</p>
-                <p className="text-base font-bold text-zinc-900 dark:text-white">{totalSignups.toLocaleString()}</p>
+              <div className="min-w-0">
+                <p className="text-[10.5px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider truncate">Leads Collected</p>
+                <p className="text-base font-bold text-zinc-900 dark:text-white leading-tight mt-0.5">{totalSignups.toLocaleString()}</p>
               </div>
             </div>
 
             <div className="flex items-center gap-3">
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-amber-50 border border-amber-500/20 dark:border-amber-500/20 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 shrink-0 shadow-2xs">
                 <TrendingUp className="h-4 w-4" />
               </div>
-              <div>
-                <p className="text-[11px] font-medium text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">Avg. Conv. Rate</p>
-                <p className="text-base font-bold text-zinc-900 dark:text-white">{avgConversion}%</p>
+              <div className="min-w-0">
+                <p className="text-[10.5px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider truncate">Avg. Conv. Rate</p>
+                <p className="text-base font-bold text-zinc-900 dark:text-white leading-tight mt-0.5">{avgConversion}%</p>
               </div>
             </div>
           </div>
