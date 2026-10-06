@@ -2,7 +2,7 @@
 
 import React, { memo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { AlertCircle, Trash2, Loader2 } from "lucide-react";
+import { AlertTriangle, X, Loader2 } from "lucide-react";
 import type { Lead } from "@/lib/data";
 
 interface DeleteLeadModalProps {
@@ -21,44 +21,71 @@ export const DeleteLeadModal = memo(function DeleteLeadModal({
   return (
     <AnimatePresence>
       {leadToDelete && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.2 }}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
-          onWheel={(e) => e.stopPropagation()}
-          onTouchMove={(e) => e.stopPropagation()}
-          onClick={onClose}
-        >
+        <div className="fixed inset-0 z-50 flex flex-col justify-end sm:items-center sm:justify-center">
+          {/* Backdrop */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.92, y: 10 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.94, y: 8 }}
-            transition={{ type: "spring", damping: 25, stiffness: 350 }}
-            className="w-full max-w-md rounded-2xl bg-white p-6 dark:bg-[#18181B] shadow-2xl border border-zinc-200 dark:border-[#2e2e38]"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 bg-black/60 backdrop-blur-[2px]"
+            onClick={onClose}
+          />
+
+          {/* Modal / Bottom Sheet */}
+          <motion.div
+            initial={{ y: "100%" }}
+            animate={{ y: 0 }}
+            exit={{ y: "100%" }}
+            transition={{ type: "spring", damping: 30, stiffness: 320 }}
+            className="relative z-10 w-full sm:max-w-[440px] max-h-[85vh] overflow-y-auto rounded-t-[28px] sm:rounded-3xl border-t sm:border border-zinc-200 dark:border-white/10 bg-white/95 dark:bg-[#141417]/95 backdrop-blur-xl p-5 sm:p-6 text-zinc-900 dark:text-white shadow-2xl space-y-4"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-red-500/10 text-red-600 dark:text-red-400">
-              <AlertCircle className="h-6 w-6" />
-            </div>
-            <h3 className="mt-4 text-lg font-bold text-zinc-900 dark:text-white">
-              Delete Subscriber?
-            </h3>
-            <p className="mt-2 text-xs leading-relaxed text-zinc-500 dark:text-[#9B9085]">
-              Are you sure you want to delete{" "}
-              <strong className="text-zinc-900 dark:text-white">
-                {leadToDelete.email}
-              </strong>
-              ? They will be removed from your lead list.
-            </p>
+            {/* Mobile Grab Handle */}
+            <div className="w-10 h-1.5 rounded-full bg-zinc-300 dark:bg-zinc-700/80 mx-auto -mt-1 mb-2.5 cursor-grab active:scale-95 transition-transform sm:hidden" />
 
-            <div className="mt-6 flex items-center justify-end gap-3">
+            {/* Modal Header */}
+            <div className="flex items-start justify-between">
+              <div className="flex items-center gap-3">
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-500">
+                  <AlertTriangle className="h-5 w-5" />
+                </div>
+                <div>
+                  <h3 className="text-base sm:text-lg font-bold text-zinc-900 dark:text-white tracking-tight">
+                    Delete Subscriber?
+                  </h3>
+                  <p className="text-[11px] text-zinc-500 dark:text-zinc-400 mt-0.5">
+                    This action cannot be undone
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={onClose}
+                className="rounded-lg p-1.5 text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white transition cursor-pointer"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+
+            {/* Modal Content */}
+            <div className="space-y-1.5 pt-1 text-xs leading-relaxed text-zinc-600 dark:text-zinc-400">
+              <p>
+                Are you sure you want to delete{" "}
+                <strong className="text-zinc-900 dark:text-white">
+                  {leadToDelete.email}
+                </strong>
+                ? They will be removed from your lead list.
+              </p>
+            </div>
+
+            {/* Modal Action Buttons */}
+            <div className="pt-3 sm:pt-4 flex items-center justify-end gap-3">
               <button
                 type="button"
                 disabled={isDeleting}
                 onClick={onClose}
-                className="rounded-xl border border-zinc-200 bg-white px-4 py-2 text-xs font-semibold text-zinc-700 hover:bg-zinc-50 dark:border-[#2e2e38] dark:bg-[#202026] dark:text-zinc-300 transition cursor-pointer"
+                className="flex-1 sm:flex-none rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-[#25252A] px-4 py-2.5 text-xs font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white transition-all cursor-pointer text-center"
               >
                 Cancel
               </button>
@@ -66,18 +93,14 @@ export const DeleteLeadModal = memo(function DeleteLeadModal({
                 type="button"
                 disabled={isDeleting}
                 onClick={onConfirmDelete}
-                className="flex items-center gap-1.5 rounded-xl bg-red-600 px-4 py-2 text-xs font-bold text-white hover:bg-red-700 disabled:opacity-50 transition cursor-pointer shadow-sm"
+                className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 rounded-xl border border-rose-500/30 bg-rose-500/15 dark:bg-rose-500/15 px-4 py-2.5 text-xs font-bold text-rose-600 dark:text-rose-400 hover:bg-rose-600 hover:text-white dark:hover:bg-rose-600 dark:hover:text-white transition-all cursor-pointer shadow-sm text-center disabled:opacity-50"
               >
-                {isDeleting ? (
-                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                ) : (
-                  <Trash2 className="h-3.5 w-3.5" />
-                )}
+                {isDeleting && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
                 <span>Delete Subscriber</span>
               </button>
             </div>
           </motion.div>
-        </motion.div>
+        </div>
       )}
     </AnimatePresence>
   );
