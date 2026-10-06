@@ -390,9 +390,9 @@ export default function PagesPage() {
 
   return (
     <>
-      <div className="flex flex-col min-h-[calc(100vh-3.5rem)] bg-zinc-50/50 dark:bg-[#0B0B0D] w-full max-w-full overflow-x-hidden">
+      <div className="flex flex-col min-h-[calc(100vh-3.5rem)] bg-zinc-50/50 dark:bg-[#0B0B0D] w-full max-w-full">
         {/* Top Executive Header */}
-        <div className="px-3.5 sm:px-6 pt-4 sm:pt-6 lg:px-8 border-b border-zinc-200/80 dark:border-zinc-800/60 bg-white/80 dark:bg-[#121215] dark:bg-opacity-85 backdrop-blur-md sticky top-0 z-30 shadow-xs w-full max-w-full overflow-x-hidden">
+        <div className="px-3.5 sm:px-6 pt-4 sm:pt-6 lg:px-8 border-b border-zinc-200/80 dark:border-zinc-800/60 bg-white/80 dark:bg-[#121215] dark:bg-opacity-85 backdrop-blur-md sticky top-0 z-30 shadow-xs w-full max-w-full">
           <div className="flex items-center justify-between gap-3 pb-4">
             <div className="min-w-0 flex-1">
               <h1 className="text-xl sm:text-2xl lg:text-3xl font-extrabold tracking-tight text-zinc-900 dark:text-white truncate">
@@ -457,7 +457,7 @@ export default function PagesPage() {
         </div>
 
         {/* Main Split-Pane Workspace */}
-        <div className="flex-1 px-3.5 sm:px-6 py-4 sm:py-6 lg:px-8 flex flex-col lg:flex-row gap-4 sm:gap-6 items-start w-full max-w-full min-w-0 overflow-x-hidden">
+        <div className="flex-1 px-3.5 sm:px-6 py-4 sm:py-6 lg:px-8 flex flex-col lg:flex-row gap-4 sm:gap-6 items-start w-full max-w-full min-w-0">
           <div className="w-full lg:w-[65%] flex flex-col space-y-4 min-w-0 max-w-full">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3 w-full max-w-full min-w-0">
               <div className="flex items-center gap-2 flex-1 rounded-xl bg-zinc-50 dark:bg-[#1C1C20] px-3.5 py-2 border border-zinc-200/60 dark:border-zinc-800 focus-within:border-[#0066B2] dark:focus-within:border-[#0066B2] min-w-0">

@@ -951,7 +951,7 @@ export default function DashboardShell({
         )}
       </AnimatePresence>
 
-        <div className="flex min-h-screen min-w-0 flex-1 flex-col bg-[#FAFAFA] dark:bg-[#0E0E10] w-full max-w-full overflow-x-hidden">
+        <div className="flex min-h-screen min-w-0 flex-1 flex-col bg-[#FAFAFA] dark:bg-[#0E0E10] w-full max-w-full">
           <header className="dashboard-chrome sticky top-0 z-30 flex h-12 shrink-0 items-center justify-between border-b border-zinc-200/70 bg-white/75 dark:bg-[#141417]/75 dark:border-white/10 backdrop-blur-xl supports-[backdrop-filter]:bg-white/60 dark:supports-[backdrop-filter]:bg-[#141417]/60 px-4 sm:px-6 md:hidden transition-colors w-full max-w-full">
             <div className="flex items-center gap-2.5">
               <button
@@ -969,7 +969,7 @@ export default function DashboardShell({
               <ThemeToggle />
             </div>
           </header>
-          <main className="min-w-0 flex-1 bg-[#FAFAF8] dark:bg-[#0E0E10] w-full max-w-full overflow-x-hidden">
+          <main className="min-w-0 flex-1 bg-[#FAFAF8] dark:bg-[#0E0E10] w-full max-w-full">
             <AnimatePresence mode="wait">
               <motion.div
                 key={pathname}
@@ -977,7 +977,7 @@ export default function DashboardShell({
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: -6, scale: 0.99 }}
                 transition={{ duration: 0.10, ease: [0.16, 1, 0.3, 1] }}
-                className="w-full h-full max-w-full overflow-x-hidden"
+                className="w-full h-full max-w-full"
               >
                 {children}
               </motion.div>
