@@ -21,7 +21,7 @@ export const LeadToastContainer = memo(function LeadToastContainer({
   if (toasts.length === 0) return null;
 
   return (
-    <div className="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none max-w-sm w-full">
+    <div className="fixed bottom-4 inset-x-3 sm:inset-x-auto sm:bottom-5 sm:right-5 z-50 flex flex-col gap-2 pointer-events-none sm:max-w-sm w-auto sm:w-full">
       {toasts.map((toast) => (
         <div
           key={toast.id}

@@ -37,7 +37,7 @@ export function IntegrationToastContainer({
   onRemoveToast: (id: string) => void;
 }) {
   return (
-    <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-2.5 pointer-events-none max-w-sm w-full">
+    <div className="fixed bottom-4 inset-x-3 sm:inset-x-auto sm:bottom-6 sm:right-6 z-50 flex flex-col gap-2.5 pointer-events-none sm:max-w-sm w-auto sm:w-full">
       <AnimatePresence>
         {toasts.map((toast) => (
           <motion.div

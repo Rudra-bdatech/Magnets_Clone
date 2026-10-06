@@ -1716,7 +1716,7 @@ export default function ResourcesPage() {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 20, scale: 0.95 }}
               transition={{ type: "spring", stiffness: 350, damping: 25 }}
-              className="fixed bottom-24 right-5 z-50 w-full max-w-sm rounded-2xl border border-zinc-200/80 bg-white/95 p-4 shadow-2xl backdrop-blur-xl dark:border-zinc-800 dark:bg-[#18181B]/95 text-zinc-900 dark:text-white ring-1 ring-black/5 dark:ring-white/10"
+              className="fixed bottom-20 inset-x-3 sm:inset-x-auto sm:bottom-24 sm:right-5 z-50 w-auto sm:w-full sm:max-w-sm rounded-2xl border border-zinc-200/80 bg-white/95 p-4 shadow-2xl backdrop-blur-xl dark:border-zinc-800 dark:bg-[#18181B]/95 text-zinc-900 dark:text-white ring-1 ring-black/5 dark:ring-white/10"
             >
               <div className="flex items-center justify-between gap-3">
                 <div className="flex items-center gap-2.5">
@@ -1769,8 +1769,8 @@ export default function ResourcesPage() {
           )}
         </AnimatePresence>
 
-        {/* Floating Toast Notification Container — Glassmorphic Right Stack */}
-        <div className="fixed bottom-5 right-5 z-50 pointer-events-none max-w-sm w-full flex flex-col-reverse gap-2 items-end">
+        {/* Floating Toast Notification Container — Mobile Responsive & Glassmorphic */}
+        <div className="fixed bottom-4 inset-x-3 sm:inset-x-auto sm:bottom-5 sm:right-5 sm:max-w-sm z-50 pointer-events-none flex flex-col-reverse gap-2 items-center sm:items-end">
           {toasts.map((toast, idx) => {
             const reverseIdx = toasts.length - 1 - idx;
             const translateY = -reverseIdx * 6;
@@ -1781,24 +1781,24 @@ export default function ResourcesPage() {
                 key={toast.id}
                 style={{
                   transform: `translate3d(0, ${translateY}px, 0) scale(${scale})`,
-                  transformOrigin: "bottom right",
+                  transformOrigin: "bottom center",
                   zIndex: 100 - reverseIdx,
                 }}
-                className={`w-full pointer-events-auto flex items-center gap-3 rounded-2xl p-4 text-xs font-bold shadow-2xl backdrop-blur-2xl border transition-all duration-300 ease-out animate-in fade-in slide-in-from-bottom-4 ring-1 ring-white/10 ${toast.type === "success"
-                  ? "bg-emerald-950/50 border-emerald-500/40 text-emerald-100 shadow-black/80"
+                className={`w-full pointer-events-auto flex items-center gap-2.5 sm:gap-3 rounded-2xl p-3.5 sm:p-4 text-xs font-bold shadow-xl backdrop-blur-xl border transition-all duration-300 ease-out animate-in fade-in slide-in-from-bottom-4 ring-1 ring-white/10 ${toast.type === "success"
+                  ? "bg-emerald-950/30 dark:bg-emerald-950/40 border-emerald-500/35 text-emerald-100"
                   : toast.type === "error"
-                    ? "bg-red-950/50 border-red-500/40 text-red-100 shadow-black/80"
-                    : "bg-black/60 border-white/20 text-white shadow-black/80"
+                    ? "bg-rose-950/30 dark:bg-rose-950/40 border-rose-500/35 text-rose-100"
+                    : "bg-zinc-900/35 dark:bg-black/40 border-white/15 text-white"
                   }`}
               >
                 {toast.type === "success" && <Check className="h-4 w-4 shrink-0 text-emerald-400" />}
-                {toast.type === "error" && <AlertCircle className="h-4 w-4 shrink-0 text-red-400" />}
+                {toast.type === "error" && <AlertCircle className="h-4 w-4 shrink-0 text-rose-400" />}
                 {toast.type === "info" && <Sparkles className="h-4 w-4 shrink-0 text-amber-400" />}
                 <span className="flex-1 leading-snug">{toast.message}</span>
                 <button
                   type="button"
                   onClick={() => removeToast(toast.id)}
-                  className="text-zinc-400 hover:text-white transition cursor-pointer p-0.5 rounded-md hover:bg-white/10"
+                  className="text-zinc-400 hover:text-white transition cursor-pointer p-0.5 rounded-md hover:bg-white/10 shrink-0"
                 >
                   <X className="h-3.5 w-3.5" />
                 </button>
