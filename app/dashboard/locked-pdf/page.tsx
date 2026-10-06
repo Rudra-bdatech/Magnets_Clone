@@ -867,7 +867,7 @@ export default function LockedPdfPage() {
         <div className="px-4 sm:px-6 pt-4 sm:pt-6 lg:px-8 border-b border-zinc-200/80 dark:border-zinc-800/60 bg-white/80 dark:bg-[#121215] dark:bg-opacity-85 backdrop-blur-md sticky top-0 z-30 shadow-xs">
           <div className="flex items-center justify-between gap-3 pb-4">
             <div className="min-w-0">
-              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-900 dark:text-white truncate">
+              <h1 className="text-xl sm:text-2xl lg:text-3xl font-extrabold tracking-tight text-zinc-900 dark:text-white truncate">
                 Locked PDF
               </h1>
             </div>
@@ -947,7 +947,7 @@ export default function LockedPdfPage() {
         </div>
 
         {/* Main Split-Pane Workspace (65% List, 35% Sticky Inspector) */}
-        <div className="flex-1 px-6 py-6 lg:px-8 flex flex-col lg:flex-row gap-6 items-start">
+        <div className="flex-1 px-3.5 sm:px-6 py-4 sm:py-6 lg:px-8 flex flex-col lg:flex-row gap-4 sm:gap-6 items-start">
           <div className="w-full lg:w-[65%] flex flex-col space-y-4">
             {/* Search & Filter Bar */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
