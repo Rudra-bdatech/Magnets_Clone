@@ -2478,13 +2478,13 @@ export default function LockedPdfPage() {
 
       {/* Floating Bottom Multi-Select Bar */}
       <AnimatePresence>
-        {checkedIds.length > 0 && (
+        {checkedIds.length > 0 && !showBulkDeleteModal && !showDeleteModal && !mobileInspectorOpen && !showCreateModal && (
           <motion.div
             initial={{ opacity: 0, y: 40, x: "-50%" }}
             animate={{ opacity: 1, y: 0, x: "-50%" }}
             exit={{ opacity: 0, y: 40, x: "-50%" }}
             transition={{ type: "spring", stiffness: 450, damping: 30 }}
-            className="fixed bottom-6 left-1/2 z-50 flex items-center gap-3 rounded-2xl bg-white/75 dark:bg-zinc-900/80 border border-zinc-200/80 dark:border-zinc-700/60 text-zinc-900 dark:text-white px-4 sm:px-5 py-2.5 shadow-[0_16px_40px_rgba(0,0,0,0.12)] dark:shadow-[0_16px_40px_rgba(0,0,0,0.5)] backdrop-blur-xl ring-1 ring-black/5 dark:ring-white/10"
+            className="fixed bottom-6 left-1/2 z-40 flex items-center gap-3 rounded-2xl bg-white/75 dark:bg-zinc-900/80 border border-zinc-200/80 dark:border-zinc-700/60 text-zinc-900 dark:text-white px-4 sm:px-5 py-2.5 shadow-[0_16px_40px_rgba(0,0,0,0.12)] dark:shadow-[0_16px_40px_rgba(0,0,0,0.5)] backdrop-blur-xl ring-1 ring-black/5 dark:ring-white/10"
           >
             <span className="text-xs font-bold whitespace-nowrap text-zinc-900 dark:text-white">
               <span className="text-[#0066B2] dark:text-[#38BDF8] font-black">{checkedIds.length}</span> selected
