@@ -144,30 +144,30 @@ const MagnetCard = React.memo(
           </button>
         </div>
 
-        <div className="p-4 flex-1 flex flex-col justify-between space-y-3">
+        <div className="p-3.5 sm:p-4 flex-1 flex flex-col justify-between space-y-2.5 sm:space-y-3">
           <div>
-            <h3 className="text-sm font-bold text-zinc-900 dark:text-white line-clamp-1 group-hover:text-[#0066B2] dark:group-hover:text-[#38BDF8] transition">
+            <h3 className="text-xs sm:text-sm font-bold text-zinc-900 dark:text-white line-clamp-1 group-hover:text-[#0066B2] dark:group-hover:text-[#38BDF8] transition">
               {page.headline || page.name}
             </h3>
             {page.subheadline ? (
-              <p className="text-xs text-zinc-500 dark:text-zinc-400 line-clamp-2 mt-1">
+              <p className="text-[11px] sm:text-xs text-zinc-500 dark:text-zinc-400 line-clamp-2 mt-1">
                 {page.subheadline}
               </p>
             ) : (
-              <p className="text-[11px] text-zinc-400 dark:text-zinc-500 mt-1">
+              <p className="text-[10px] sm:text-[11px] text-zinc-400 dark:text-zinc-500 mt-1">
                 {page.updatedAt ? `Updated ${page.updatedAt}` : "Standard Landing Page"}
               </p>
             )}
           </div>
 
           <div className="pt-1 flex items-center justify-between text-xs">
-            <span className="text-[11px] font-mono text-zinc-400 truncate max-w-[130px]">/{page.slug}</span>
+            <span className="text-[10px] sm:text-[11px] font-mono text-zinc-400 truncate max-w-[110px] sm:max-w-[140px]">/{page.slug}</span>
 
             <div className="flex items-center gap-1.5" onClick={(e) => e.stopPropagation()}>
               <button
                 type="button"
                 onClick={(e) => onOpenMobileDetails(page.id, e)}
-                className="lg:hidden inline-flex items-center gap-1 rounded-lg border border-zinc-200 dark:border-zinc-700/80 bg-zinc-50 hover:bg-zinc-100 dark:bg-zinc-800/80 dark:hover:bg-zinc-700 px-2.5 py-1 text-[11px] font-semibold text-zinc-700 dark:text-zinc-200 transition cursor-pointer active:scale-95"
+                className="lg:hidden inline-flex items-center gap-1 rounded-lg border border-zinc-200 dark:border-zinc-700/80 bg-zinc-50 hover:bg-zinc-100 dark:bg-zinc-800/80 dark:hover:bg-zinc-700 px-2 sm:px-2.5 py-1 text-[10.5px] sm:text-[11px] font-semibold text-zinc-700 dark:text-zinc-200 transition cursor-pointer active:scale-95"
                 title="Open Details Sheet"
               >
                 <SlidersHorizontal className="h-3 w-3 text-[#0066B2] dark:text-[#38BDF8]" />
@@ -177,7 +177,7 @@ const MagnetCard = React.memo(
               <Link
                 href={`/dashboard/leadmagnets/${page.id}`}
                 prefetch={true}
-                className="inline-flex items-center gap-1 rounded-lg bg-[#0066B2]/10 hover:bg-[#0066B2] text-[#0066B2] hover:text-white dark:bg-[#0066B2]/20 dark:text-[#38BDF8] dark:hover:bg-[#0066B2] dark:hover:text-white px-2.5 py-1 text-[11px] font-semibold transition"
+                className="inline-flex items-center gap-1 rounded-lg bg-[#0066B2]/10 hover:bg-[#0066B2] text-[#0066B2] hover:text-white dark:bg-[#0066B2]/20 dark:text-[#38BDF8] dark:hover:bg-[#0066B2] dark:hover:text-white px-2 sm:px-2.5 py-1 text-[10.5px] sm:text-[11px] font-semibold transition"
               >
                 <Pencil className="h-3 w-3" />
                 <span>Edit</span>
@@ -392,10 +392,10 @@ export default function PagesPage() {
     <>
       <div className="flex flex-col min-h-[calc(100vh-3.5rem)] bg-zinc-50/50 dark:bg-[#0B0B0D]">
         {/* Top Executive Header */}
-        <div className="px-6 pt-6 lg:px-8 border-b border-zinc-200/80 dark:border-zinc-800/60 bg-white/80 dark:bg-[#121215] dark:bg-opacity-85 backdrop-blur-md sticky top-0 z-30 shadow-xs">
+        <div className="px-3.5 sm:px-6 pt-4 sm:pt-6 lg:px-8 border-b border-zinc-200/80 dark:border-zinc-800/60 bg-white/80 dark:bg-[#121215] dark:bg-opacity-85 backdrop-blur-md sticky top-0 z-30 shadow-xs">
           <div className="flex items-center justify-between gap-3 pb-4">
             <div className="min-w-0">
-              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-900 dark:text-white truncate">
+              <h1 className="text-xl sm:text-2xl lg:text-3xl font-extrabold tracking-tight text-zinc-900 dark:text-white truncate">
                 Landing Page
               </h1>
             </div>
@@ -413,51 +413,51 @@ export default function PagesPage() {
           </div>
 
           {/* Quick Metrics Bar */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 py-3 text-xs">
-            <div className="flex items-center gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 py-3 text-xs">
+            <div className="flex items-center gap-2.5 sm:gap-3">
               <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#EFF6FF] border border-[#0066B2]/15 dark:border-[#38BDF8]/20 dark:bg-[#0066B2]/15 text-[#0066B2] dark:text-[#38BDF8] shrink-0 shadow-2xs">
                 <Globe className="h-4 w-4" />
               </div>
               <div className="min-w-0">
-                <p className="text-[10.5px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider truncate">Active Pages</p>
-                <p className="text-base font-bold text-zinc-900 dark:text-white leading-tight mt-0.5">{liveCount} <span className="text-xs font-normal text-zinc-400">/ {total}</span></p>
+                <p className="text-[10px] sm:text-[10.5px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider truncate">Active Pages</p>
+                <p className="text-sm sm:text-base font-bold text-zinc-900 dark:text-white leading-tight mt-0.5">{liveCount} <span className="text-xs font-normal text-zinc-400">/ {total}</span></p>
               </div>
             </div>
 
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2.5 sm:gap-3">
               <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-50 border border-emerald-500/20 dark:border-emerald-500/20 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 shrink-0 shadow-2xs">
                 <Eye className="h-4 w-4" />
               </div>
               <div className="min-w-0">
-                <p className="text-[10.5px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider truncate">Total Traffic</p>
-                <p className="text-base font-bold text-zinc-900 dark:text-white leading-tight mt-0.5">{totalViews.toLocaleString()}</p>
+                <p className="text-[10px] sm:text-[10.5px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider truncate">Total Traffic</p>
+                <p className="text-sm sm:text-base font-bold text-zinc-900 dark:text-white leading-tight mt-0.5">{totalViews.toLocaleString()}</p>
               </div>
             </div>
 
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2.5 sm:gap-3">
               <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-purple-50 border border-purple-500/20 dark:border-purple-500/20 dark:bg-purple-950/40 text-purple-600 dark:text-purple-400 shrink-0 shadow-2xs">
                 <MousePointerClick className="h-4 w-4" />
               </div>
               <div className="min-w-0">
-                <p className="text-[10.5px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider truncate">Leads Collected</p>
-                <p className="text-base font-bold text-zinc-900 dark:text-white leading-tight mt-0.5">{totalSignups.toLocaleString()}</p>
+                <p className="text-[10px] sm:text-[10.5px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider truncate">Leads Collected</p>
+                <p className="text-sm sm:text-base font-bold text-zinc-900 dark:text-white leading-tight mt-0.5">{totalSignups.toLocaleString()}</p>
               </div>
             </div>
 
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2.5 sm:gap-3">
               <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-amber-50 border border-amber-500/20 dark:border-amber-500/20 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 shrink-0 shadow-2xs">
                 <TrendingUp className="h-4 w-4" />
               </div>
               <div className="min-w-0">
-                <p className="text-[10.5px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider truncate">Avg. Conv. Rate</p>
-                <p className="text-base font-bold text-zinc-900 dark:text-white leading-tight mt-0.5">{avgConversion}%</p>
+                <p className="text-[10px] sm:text-[10.5px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider truncate">Avg. Conv. Rate</p>
+                <p className="text-sm sm:text-base font-bold text-zinc-900 dark:text-white leading-tight mt-0.5">{avgConversion}%</p>
               </div>
             </div>
           </div>
         </div>
 
         {/* Main Split-Pane Workspace */}
-        <div className="flex-1 px-6 py-6 lg:px-8 flex flex-col lg:flex-row gap-6 items-start">
+        <div className="flex-1 px-3.5 sm:px-6 py-4 sm:py-6 lg:px-8 flex flex-col lg:flex-row gap-4 sm:gap-6 items-start">
           <div className="w-full lg:w-[65%] flex flex-col space-y-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div className="flex items-center gap-2 flex-1 rounded-xl bg-zinc-50 dark:bg-[#1C1C20] px-3.5 py-2 border border-zinc-200/60 dark:border-zinc-800 focus-within:border-[#0066B2] dark:focus-within:border-[#0066B2]">
