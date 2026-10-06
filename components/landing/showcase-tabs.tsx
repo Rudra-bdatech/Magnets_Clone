@@ -84,20 +84,45 @@ export default function ShowcaseTabs() {
     let targetProgress = 0;
     let isRunning = false;
     let animationFrameId: number;
+    // Smoothed parallax value for the showcase card (lerped each RAF tick)
+    let currentTranslateY = 0;
+    let targetTranslateY = 0;
 
     const progressEl = lineRef.current;
 
     const updateLoop = () => {
+      // Timeline progress bar lerp
       const diff = targetProgress - currentProgress;
       if (Math.abs(diff) > 0.02) {
         currentProgress += diff * 0.18;
         if (progressEl) progressEl.style.height = `${currentProgress.toFixed(2)}%`;
-        animationFrameId = requestAnimationFrame(updateLoop);
       } else {
         currentProgress = targetProgress;
         if (progressEl) progressEl.style.height = `${currentProgress.toFixed(2)}%`;
-        isRunning = false;
       }
+
+      // Showcase card parallax lerp — runs continuously so mobile
+      // momentum/inertia scroll is smooth (iOS scroll events don't fire mid-inertia)
+      const showcaseEl = showcaseRef.current;
+      if (showcaseEl) {
+        const rect = showcaseEl.getBoundingClientRect();
+        const windowHeight = window.innerHeight;
+        const progress = (windowHeight - rect.top) / (windowHeight + rect.height);
+        const clampedProgress = Math.min(Math.max(progress, 0), 1);
+        targetTranslateY = (clampedProgress - 0.5) * -35;
+
+        // Lerp toward target each frame for buttery smoothness on all devices
+        currentTranslateY += (targetTranslateY - currentTranslateY) * 0.1;
+        showcaseEl.style.transform = `translate3d(0, ${currentTranslateY.toFixed(2)}px, 0)`;
+      }
+
+      // Timeline progress bar sync
+      if (Math.abs(targetProgress - currentProgress) > 0.02) {
+        isRunning = true;
+      }
+
+      // Keep the RAF loop alive continuously for mobile parallax
+      animationFrameId = requestAnimationFrame(updateLoop);
     };
 
     const handleScroll = () => {
@@ -110,22 +135,13 @@ export default function ShowcaseTabs() {
         targetProgress = Math.min(Math.max(scrollPos / totalHeight, 0), 1) * 100;
       }
 
-      const showcaseEl = showcaseRef.current;
-      if (showcaseEl) {
-        const rect = showcaseEl.getBoundingClientRect();
-        const windowHeight = window.innerHeight;
-        const progress = (windowHeight - rect.top) / (windowHeight + rect.height);
-        const clampedProgress = Math.min(Math.max(progress, 0), 1);
-        const translateY = (clampedProgress - 0.5) * -35;
-        showcaseEl.style.transform = `translate3d(0, ${translateY.toFixed(2)}px, 0)`;
-      }
-
       if (!isRunning) {
         isRunning = true;
-        animationFrameId = requestAnimationFrame(updateLoop);
       }
     };
 
+    // Start the continuous RAF loop immediately (works on desktop + mobile)
+    animationFrameId = requestAnimationFrame(updateLoop);
     window.addEventListener("scroll", handleScroll, { passive: true });
     handleScroll();
 
