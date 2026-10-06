@@ -37,6 +37,7 @@ import {
   AlertTriangle,
 } from "lucide-react";
 import StatusBadge from "@/components/dashboard/status-badge";
+import { MobileSequenceCard } from "@/components/sequences/MobileSequenceCard";
 import { type Sequence, type SequenceEmail, type Account, type Lead, type MagnetPage } from "@/lib/data";
 import {
   loadSequences,
@@ -75,6 +76,7 @@ export default function SequencesPage() {
   const [hoveredTab, setHoveredTab] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState<SortOption>("recent");
   const [isSortOpen, setIsSortOpen] = useState(false);
+  const [isStatusFilterOpen, setIsStatusFilterOpen] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
 
   // Dropdown menu tracking
@@ -114,12 +116,13 @@ export default function SequencesPage() {
     const handleClickOutside = () => {
       setActiveMenuId(null);
       setIsSortOpen(false);
+      setIsStatusFilterOpen(false);
     };
-    if (activeMenuId || isSortOpen) {
+    if (activeMenuId || isSortOpen || isStatusFilterOpen) {
       window.addEventListener("click", handleClickOutside);
       return () => window.removeEventListener("click", handleClickOutside);
     }
-  }, [activeMenuId, isSortOpen]);
+  }, [activeMenuId, isSortOpen, isStatusFilterOpen]);
 
   useEffect(() => {
     const localAccount = loadAccount();
@@ -718,8 +721,8 @@ export default function SequencesPage() {
               {/* Right Controls: Status Tabs Pod, Custom Sort Dropdown, View Toggle Pod */}
               <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 justify-between sm:justify-end w-full sm:w-auto min-w-0">
                 
-                {/* Status Tabs Pod */}
-                <div className="flex items-center p-1 bg-zinc-100 dark:bg-[#1C1C20] rounded-xl text-xs font-semibold min-w-0">
+                {/* Desktop Status Tabs Pod (Preserved untouched) */}
+                <div className="hidden sm:flex items-center p-1 bg-zinc-100 dark:bg-[#1C1C20] rounded-xl text-xs font-semibold min-w-0">
                   {[
                     { id: "all", label: `All (${sequences.length})` },
                     { id: "live", label: `Active (${metrics.liveCount})` },
@@ -744,6 +747,78 @@ export default function SequencesPage() {
                       <span className="relative z-10">{tab.label}</span>
                     </button>
                   ))}
+                </div>
+
+                {/* Mobile Filter Dropdown Button */}
+                <div className="sm:hidden relative shrink-0">
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setIsSortOpen(false);
+                      setIsStatusFilterOpen((v) => !v);
+                    }}
+                    className="flex h-8 items-center gap-1.5 rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#18181B] px-2.5 text-[11px] font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-[#222226] transition shadow-2xs cursor-pointer select-none"
+                  >
+                    <Filter className="h-3 w-3 text-zinc-400 shrink-0" />
+                    <span className="truncate">
+                      {statusFilter === "all"
+                        ? `Filter (${sequences.length})`
+                        : statusFilter === "live"
+                        ? `Active (${metrics.liveCount})`
+                        : `Paused (${metrics.pausedCount})`}
+                    </span>
+                    <ChevronDown
+                      className={`h-3.5 w-3.5 text-zinc-400 shrink-0 transition-transform duration-200 ${
+                        isStatusFilterOpen ? "rotate-180" : ""
+                      }`}
+                    />
+                  </button>
+
+                  <AnimatePresence>
+                    {isStatusFilterOpen && (
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0.96, y: -6 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.96, y: -4 }}
+                        transition={{ type: "spring", damping: 28, stiffness: 400 }}
+                        onClick={(e) => e.stopPropagation()}
+                        className="absolute left-0 top-full z-40 mt-1.5 w-48 rounded-xl border border-zinc-200/90 dark:border-white/10 bg-white/95 dark:bg-[#1C1C20]/95 p-1.5 shadow-xl backdrop-blur-xl dark:text-white"
+                      >
+                        <div className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
+                          Filter Status
+                        </div>
+                        {[
+                          { id: "all", label: "All Sequences", count: sequences.length },
+                          { id: "live", label: "Active", count: metrics.liveCount },
+                          { id: "draft", label: "Paused", count: metrics.pausedCount },
+                        ].map((item) => {
+                          const isSelected = statusFilter === item.id;
+                          return (
+                            <button
+                              key={item.id}
+                              type="button"
+                              onClick={() => {
+                                setStatusFilter(item.id as FilterStatus);
+                                setIsStatusFilterOpen(false);
+                              }}
+                              className={`flex w-full items-center justify-between rounded-lg px-2.5 py-1.5 text-xs transition cursor-pointer text-left ${
+                                isSelected
+                                  ? "bg-[#0066B2]/10 text-[#0066B2] font-bold dark:bg-[#38BDF8]/20 dark:text-[#38BDF8]"
+                                  : "text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-white/5 font-medium"
+                              }`}
+                            >
+                              <span>{item.label}</span>
+                              <div className="flex items-center gap-1.5">
+                                <span className="text-[10px] text-zinc-400">({item.count})</span>
+                                {isSelected && <Check className="h-3.5 w-3.5" />}
+                              </div>
+                            </button>
+                          );
+                        })}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
 
                 {/* Custom Animated Sort Dropdown */}
@@ -804,8 +879,8 @@ export default function SequencesPage() {
                   </AnimatePresence>
                 </div>
 
-                {/* View Mode Toggle Pod */}
-                <div className="flex items-center p-1 bg-zinc-100 dark:bg-[#1C1C20] rounded-xl">
+                {/* View Mode Toggle Pod (Card vs List View) */}
+                <div className="flex items-center p-1 bg-zinc-100 dark:bg-[#1C1C20] rounded-xl shrink-0">
                   <button
                     onClick={() => setViewMode("grid")}
                     title="Card Grid View"
@@ -824,7 +899,7 @@ export default function SequencesPage() {
                   </button>
                   <button
                     onClick={() => setViewMode("table")}
-                    title="Table List View"
+                    title="Compact List View"
                     className={`relative p-1.5 rounded-lg transition-colors duration-150 cursor-pointer ${
                       viewMode === "table" ? "text-[#0066B2] dark:text-[#38BDF8]" : "text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200"
                     }`}
@@ -843,11 +918,31 @@ export default function SequencesPage() {
             </div>
           )}
 
-          {/* Active Sequences List / Grid */}
+          {/* Active Sequences List / Cards */}
           {filteredSequences.length > 0 ? (
-            viewMode === "grid" ? (
-              /* GRID VIEW */
-              <div className="grid gap-3.5 lg:grid-cols-2 min-w-0 max-w-full">
+            <>
+              {/* MOBILE STREAM (block md:hidden) - Supports both Card and Compact List views */}
+              <div className={`block md:hidden ${viewMode === "grid" ? "space-y-3" : "space-y-2"}`}>
+                {filteredSequences.map((seq) => {
+                  const attachedPage = seq.pageId ? pages.find((p) => p.id === seq.pageId) : null;
+                  return (
+                    <MobileSequenceCard
+                      key={seq.id}
+                      seq={seq}
+                      variant={viewMode === "grid" ? "card" : "list"}
+                      attachedPage={attachedPage}
+                      onOpenMobileActions={(s) => setMobileActionSeq(s)}
+                      onToggleStatus={handleToggleStatus}
+                    />
+                  );
+                })}
+              </div>
+
+              {/* DESKTOP STREAM (hidden md:block) - Preserves Grid & Table Layouts */}
+              <div className="hidden md:block">
+                {viewMode === "grid" ? (
+                  /* GRID VIEW */
+                  <div className="grid gap-3.5 lg:grid-cols-2 min-w-0 max-w-full">
                 {filteredSequences.map((seq) => {
                   const { signedUp, delivered, opened, replied } = seq.stats;
                   const completed = seq.stats.completed || (delivered > 0 ? delivered : 0);
@@ -1223,9 +1318,11 @@ export default function SequencesPage() {
                   </table>
                 </div>
               </div>
-            )
-          ) : (
-            /* Empty State for Search or 0 Sequences */
+            )}
+          </div>
+        </>
+      ) : (
+        /* Empty State for Search or 0 Sequences */
             sequences.length > 0 ? (
               <div className="rounded-2xl border border-dashed border-zinc-300 dark:border-white/10 bg-white/50 dark:bg-[#18181B]/50 p-5 sm:p-8 text-center">
                 <Search className="mx-auto h-6 w-6 sm:h-7 sm:w-7 text-zinc-400" />
