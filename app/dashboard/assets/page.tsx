@@ -76,10 +76,8 @@ export default function ResourcesPage() {
   const [sortBy, setSortBy] = useState<"newest" | "oldest" | "size" | "name">("newest");
   const [isSortOpen, setIsSortOpen] = useState(false);
   const sortRef = useRef<HTMLDivElement>(null);
-  const [isMobileCategoryOpen, setIsMobileCategoryOpen] = useState(false);
-  const mobileCategoryRef = useRef<HTMLDivElement>(null);
-  const [isMobileSortOpen, setIsMobileSortOpen] = useState(false);
-  const mobileSortRef = useRef<HTMLDivElement>(null);
+  const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
+  const mobileFilterRef = useRef<HTMLDivElement>(null);
   const [isMobileSelectionMode, setIsMobileSelectionMode] = useState(false);
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [selectedResourceIds, setSelectedResourceIds] = useState<string[]>([]);
@@ -100,11 +98,8 @@ export default function ResourcesPage() {
       if (sortRef.current && !sortRef.current.contains(e.target as Node)) {
         setIsSortOpen(false);
       }
-      if (mobileCategoryRef.current && !mobileCategoryRef.current.contains(e.target as Node)) {
-        setIsMobileCategoryOpen(false);
-      }
-      if (mobileSortRef.current && !mobileSortRef.current.contains(e.target as Node)) {
-        setIsMobileSortOpen(false);
+      if (mobileFilterRef.current && !mobileFilterRef.current.contains(e.target as Node)) {
+        setIsMobileFilterOpen(false);
       }
     }
     document.addEventListener("mousedown", handler);
@@ -887,367 +882,291 @@ export default function ResourcesPage() {
           {resources.length > 0 && (
             <div className="rounded-2xl border border-zinc-200/80 bg-white/90 dark:border-[#2e2e38] dark:bg-[#18181B]/90 shadow-sm backdrop-blur-sm relative overflow-hidden">
               {/* ===================================================================== */}
-              {/* 3. DESKTOP Search & Filter Toolbar (hidden md:flex)                   */}
+              {/* Universal Responsive Search, Filter & Sort Toolbar                     */}
               {/* ===================================================================== */}
-              <div className="hidden md:flex p-3.5 sm:p-4 border-b border-zinc-200/80 dark:border-[#2e2e38] flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                {/* Category Tabs with Framer Motion Spring Pill */}
-                <div
-                  onMouseLeave={() => setHoveredCategory(null)}
-                className="relative flex flex-wrap sm:flex-nowrap items-center gap-1.5 scrollbar-none"
-              >
-                {(
-                  [
-                    { id: "all", label: "All Files" },
-                    { id: "docs", label: "Documents" },
-                    { id: "images", label: "Images" },
-                    { id: "media", label: "Audio & Video" },
-                    { id: "archives", label: "Archives" },
-                  ] as const
-                ).map((tab) => {
-                  const isActive = activeCategory === tab.id;
-                  const isHovered = hoveredCategory === tab.id;
-
-                  return (
-                    <button
-                      key={tab.id}
-                      onClick={() => setActiveCategory(tab.id)}
-                      onMouseEnter={() => setHoveredCategory(tab.id)}
-                      className={`relative rounded-xl px-3.5 py-1.5 text-xs font-semibold transition-colors shrink-0 cursor-pointer ${
-                        isActive
-                          ? "text-white"
-                          : "text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white"
-                      }`}
-                    >
-                      {/* Active Tab Solid Sliding Pill */}
-                      {isActive && (
-                        <motion.div
-                          layoutId="activeAssetCategoryTab"
-                          transition={{ type: "spring", stiffness: 500, damping: 32 }}
-                          className="absolute inset-0 rounded-xl bg-[#0066B2] shadow-sm"
-                        />
-                      )}
-
-                      {/* Hover Morphing Pill */}
-                      {!isActive && isHovered && (
-                        <motion.div
-                          layoutId="hoverAssetCategoryTab"
-                          transition={{ type: "spring", stiffness: 500, damping: 32 }}
-                          className="absolute inset-0 rounded-xl bg-zinc-200/60 dark:bg-white/10"
-                        />
-                      )}
-
-                      <span className="relative z-10">{tab.label}</span>
-                    </button>
-                  );
-                })}
-              </div>
-
-              {/* Search & Sort */}
-              <div className="flex items-center gap-2">
-                {/* Search Input */}
-                <div className="relative flex-1 sm:w-64">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-400" />
-                  <input
-                    type="text"
-                    placeholder="Search resources..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full h-9 rounded-xl border border-zinc-200 bg-white pl-9 pr-8 text-xs text-zinc-900 placeholder-zinc-400 focus:border-[#0066B2] focus:outline-none dark:border-[#2e2e38] dark:bg-[#18181B] dark:text-white dark:placeholder-zinc-500"
-                  />
-                  {searchQuery && (
-                    <button onClick={() => setSearchQuery("")} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 dark:hover:text-white">
-                      <X className="h-3.5 w-3.5" />
-                    </button>
-                  )}
-                </div>
-
-                {/* Custom Glassy Sort Dropdown — 100% Matching Leads Smooth Spring Physics & UI */}
-                <div className="relative" ref={sortRef}>
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setIsSortOpen((prev) => !prev);
-                    }}
-                    className="flex h-9 items-center justify-between gap-2 rounded-xl border border-zinc-200/80 bg-white/70 px-3.5 text-xs font-semibold text-zinc-700 shadow-xs backdrop-blur-md transition-all hover:bg-white/90 focus:outline-none dark:border-white/10 dark:bg-[#18181B]/80 dark:text-zinc-200 dark:hover:bg-[#222226] cursor-pointer select-none"
+              <div className="p-3 sm:p-4 border-b border-zinc-200/80 dark:border-[#2e2e38] flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                {/* Desktop Category Tabs with Framer Motion Spring Pill */}
+                <div className="hidden md:block w-auto overflow-x-auto scrollbar-none">
+                  <div
+                    onMouseLeave={() => setHoveredCategory(null)}
+                    className="relative flex items-center gap-1 sm:gap-1.5 min-w-max"
                   >
-                    <span>
-                      Sort: {sortBy === "newest" ? "Newest" : sortBy === "oldest" ? "Oldest" : sortBy === "size" ? "File Size" : "Name (A-Z)"}
-                    </span>
-                    <ChevronDown className={`h-3.5 w-3.5 text-zinc-400 transition-transform duration-300 ${isSortOpen ? "rotate-180" : ""}`} />
-                  </button>
+                    {[
+                      { id: "all", label: "All Files", count: categoryCounts.all },
+                      { id: "docs", label: "Documents", count: categoryCounts.docs },
+                      { id: "images", label: "Images", count: categoryCounts.images },
+                      { id: "media", label: "Audio & Video", count: categoryCounts.media },
+                      { id: "archives", label: "Archives", count: categoryCounts.archives },
+                    ].map((tab) => {
+                      const isActive = activeCategory === tab.id;
+                      const isHovered = hoveredCategory === tab.id;
 
-                  <AnimatePresence>
-                    {isSortOpen && (
-                      <motion.div
-                        initial={{ opacity: 0, scale: 0.96, y: -6 }}
-                        animate={{ opacity: 1, scale: 1, y: 0 }}
-                        exit={{ opacity: 0, scale: 0.96, y: -4 }}
-                        transition={{ type: "spring", damping: 28, stiffness: 400 }}
-                        style={{ transformOrigin: "top right" }}
-                        className="absolute right-0 top-full z-40 mt-1.5 w-52 max-w-[calc(100vw-3rem)] rounded-xl border border-zinc-200/80 bg-white/95 p-1.5 shadow-2xl backdrop-blur-xl dark:border-white/10 dark:bg-[#18181F]/95 dark:text-white dark:shadow-[0_8px_24px_rgba(0,0,0,0.6)]"
-                      >
-                        <div className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
-                          Sort By
-                        </div>
-                        {[
-                          { id: "newest", label: "Newest First" },
-                          { id: "oldest", label: "Oldest First" },
-                          { id: "size", label: "File Size" },
-                          { id: "name", label: "Name (A-Z)" },
-                        ].map((opt) => (
-                          <button
-                            key={opt.id}
-                            type="button"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setSortBy(opt.id as any);
-                              setIsSortOpen(false);
-                            }}
-                            className={`flex w-full items-center justify-between rounded-lg px-2.5 py-2 text-xs font-medium transition-all cursor-pointer ${
-                              sortBy === opt.id
-                                ? "bg-[#0066B2]/10 text-[#0066B2] font-bold dark:bg-[#38BDF8]/20 dark:text-[#38BDF8]"
-                                : "text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-white/5"
+                      return (
+                        <button
+                          key={tab.id}
+                          onClick={() => setActiveCategory(tab.id as any)}
+                          onMouseEnter={() => setHoveredCategory(tab.id)}
+                          className={`relative inline-flex items-center gap-1.5 whitespace-nowrap rounded-xl px-2.5 sm:px-3.5 py-1.5 text-[11px] sm:text-xs font-semibold transition-colors shrink-0 cursor-pointer ${
+                            isActive
+                              ? "text-white font-bold"
+                              : "text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white"
+                          }`}
+                        >
+                          {/* Active Tab Solid Sliding Pill */}
+                          {isActive && (
+                            <motion.div
+                              layoutId="activeAssetCategoryTab"
+                              transition={{ type: "spring", stiffness: 500, damping: 32 }}
+                              className="absolute inset-0 rounded-xl bg-[#0066B2] shadow-sm"
+                            />
+                          )}
+
+                          {/* Hover Morphing Pill */}
+                          {!isActive && isHovered && (
+                            <motion.div
+                              layoutId="hoverAssetCategoryTab"
+                              transition={{ type: "spring", stiffness: 500, damping: 32 }}
+                              className="absolute inset-0 rounded-xl bg-zinc-200/60 dark:bg-white/10"
+                            />
+                          )}
+
+                          <span className="relative z-10">{tab.label}</span>
+                          <span
+                            className={`relative z-10 rounded-full px-1.5 py-0.2 text-[9.5px] sm:text-[10px] font-extrabold transition-colors ${
+                              isActive
+                                ? "bg-white/20 text-white"
+                                : "bg-zinc-200/70 text-zinc-700 dark:bg-white/10 dark:text-zinc-300"
                             }`}
                           >
-                            <span>{opt.label}</span>
-                            {sortBy === opt.id && <Check className="h-3.5 w-3.5 text-current shrink-0" />}
-                          </button>
-                        ))}
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
+                            {tab.count}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
-            </div>
 
-            {/* ===================================================================== */}
-            {/* 3. MOBILE Toolbar (block md:hidden) - 50/50 Search & Filter Dropdown  */}
-            {/* ===================================================================== */}
-            <div className="block md:hidden p-3.5 border-b border-zinc-200/80 dark:border-[#2e2e38] space-y-2.5">
-              {/* 50/50 Row: Search Input & Category Filter Dropdown */}
-              <div className="grid grid-cols-2 gap-2">
-                {/* 50% Search Input */}
-                <div className="relative">
-                  <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-zinc-400" />
-                  <input
-                    type="text"
-                    placeholder="Search files..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full rounded-xl border border-zinc-200/90 bg-zinc-50/70 py-2 pl-7 pr-6 text-xs text-zinc-900 placeholder-zinc-400 focus:border-[#0066B2] focus:bg-white focus:outline-none dark:border-[#2e2e38] dark:bg-[#1C1C22] dark:text-white dark:placeholder-zinc-500 transition-all shadow-2xs"
-                  />
-                  {searchQuery && (
+                {/* Right Controls: Search, Desktop Sort Dropdown, Mobile Unified Filter Dropdown, Mobile Select Button */}
+                <div className="flex items-center gap-2 w-full md:w-auto">
+                  {/* Search Input */}
+                  <div className="relative flex-1 sm:w-60">
+                    <Search className="absolute left-2.5 sm:left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-400" />
+                    <input
+                      type="text"
+                      placeholder="Search files..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="w-full h-9 rounded-xl border border-zinc-200/90 bg-white pl-8 sm:pl-9 pr-7 text-xs text-zinc-900 placeholder-zinc-400 focus:border-[#0066B2] focus:outline-none dark:border-[#2e2e38] dark:bg-[#18181B] dark:text-white dark:placeholder-zinc-500 shadow-2xs"
+                    />
+                    {searchQuery && (
+                      <button
+                        type="button"
+                        onClick={() => setSearchQuery("")}
+                        className="absolute right-2 top-1/2 -translate-y-1/2 p-0.5 rounded-full text-zinc-400 hover:text-zinc-600 dark:hover:text-white cursor-pointer"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Desktop Sort Dropdown */}
+                  <div className="hidden md:block relative shrink-0" ref={sortRef}>
                     <button
                       type="button"
-                      onClick={() => setSearchQuery("")}
-                      className="absolute right-2 top-2 p-0.5 rounded-full text-zinc-400 hover:text-zinc-600 dark:hover:text-white cursor-pointer"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setIsSortOpen((prev) => !prev);
+                      }}
+                      className="flex h-9 items-center justify-between gap-1.5 sm:gap-2 rounded-xl border border-zinc-200/80 bg-white/70 px-2.5 sm:px-3.5 text-xs font-semibold text-zinc-700 shadow-2xs backdrop-blur-md transition-all hover:bg-white/90 focus:outline-none dark:border-white/10 dark:bg-[#18181B]/80 dark:text-zinc-200 dark:hover:bg-[#222226] cursor-pointer select-none"
                     >
-                      <X className="h-3 w-3" />
-                    </button>
-                  )}
-                </div>
-
-                {/* 50% Category Filter Dropdown */}
-                <div className="relative" ref={mobileCategoryRef}>
-                  <button
-                    type="button"
-                    onClick={() => setIsMobileCategoryOpen((v) => !v)}
-                    className="flex w-full items-center justify-between gap-1 rounded-xl border border-zinc-200/90 bg-white py-2 px-2.5 text-xs font-semibold text-zinc-700 hover:bg-zinc-50 dark:border-[#2e2e38] dark:bg-[#1C1C22] dark:text-zinc-200 active:scale-98 transition cursor-pointer shadow-2xs select-none"
-                  >
-                    <div className="flex items-center gap-1.5 truncate">
-                      {activeCategory === "docs" ? (
-                        <FileText className="h-3.5 w-3.5 text-[#0066B2] dark:text-[#38BDF8] shrink-0" />
-                      ) : activeCategory === "images" ? (
-                        <ImageIcon className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
-                      ) : activeCategory === "media" ? (
-                        <Film className="h-3.5 w-3.5 text-purple-500 shrink-0" />
-                      ) : activeCategory === "archives" ? (
-                        <Archive className="h-3.5 w-3.5 text-amber-500 shrink-0" />
-                      ) : (
-                        <Layers className="h-3.5 w-3.5 text-zinc-400 shrink-0" />
-                      )}
-                      <span className="truncate text-[11px]">
-                        {activeCategory === "all"
-                          ? "All Files"
-                          : activeCategory === "docs"
-                          ? "Docs"
-                          : activeCategory === "images"
-                          ? "Images"
-                          : activeCategory === "media"
-                          ? "Media"
-                          : "Archives"}
+                      <span className="truncate max-w-[85px] sm:max-w-none">
+                        Sort: {sortBy === "newest" ? "Newest" : sortBy === "oldest" ? "Oldest" : sortBy === "size" ? "File Size" : "Name (A-Z)"}
                       </span>
-                    </div>
-                    <ChevronDown
-                      className={`h-3.5 w-3.5 text-zinc-400 transition-transform duration-200 shrink-0 ${
-                        isMobileCategoryOpen ? "rotate-180" : ""
-                      }`}
-                    />
-                  </button>
+                      <ChevronDown className={`h-3.5 w-3.5 text-zinc-400 transition-transform duration-300 shrink-0 ${isSortOpen ? "rotate-180" : ""}`} />
+                    </button>
 
-                  <AnimatePresence>
-                    {isMobileCategoryOpen && (
-                      <motion.div
-                        initial={{ opacity: 0, scale: 0.95, y: -4 }}
-                        animate={{ opacity: 1, scale: 1, y: 0 }}
-                        exit={{ opacity: 0, scale: 0.95, y: -4 }}
-                        transition={{ duration: 0.15 }}
-                        className="absolute right-0 top-full z-40 mt-1.5 w-56 rounded-xl border border-zinc-200/90 bg-white/95 p-1.5 shadow-2xl backdrop-blur-xl dark:border-white/10 dark:bg-[#18181F]/95 dark:text-white"
-                      >
-                        {[
-                          { id: "all", label: "All Files", icon: <Layers className="h-3.5 w-3.5 text-zinc-400 shrink-0" />, count: categoryCounts.all },
-                          { id: "docs", label: "Documents", icon: <FileText className="h-3.5 w-3.5 text-[#0066B2] dark:text-[#38BDF8] shrink-0" />, count: categoryCounts.docs },
-                          { id: "images", label: "Images", icon: <ImageIcon className="h-3.5 w-3.5 text-emerald-500 shrink-0" />, count: categoryCounts.images },
-                          { id: "media", label: "Audio & Video", icon: <Film className="h-3.5 w-3.5 text-purple-500 shrink-0" />, count: categoryCounts.media },
-                          { id: "archives", label: "Archives", icon: <Archive className="h-3.5 w-3.5 text-amber-500 shrink-0" />, count: categoryCounts.archives },
-                        ].map((cat) => {
-                          const isCatActive = activeCategory === cat.id;
-                          return (
+                    <AnimatePresence>
+                      {isSortOpen && (
+                        <motion.div
+                          initial={{ opacity: 0, scale: 0.96, y: -6 }}
+                          animate={{ opacity: 1, scale: 1, y: 0 }}
+                          exit={{ opacity: 0, scale: 0.96, y: -4 }}
+                          transition={{ type: "spring", damping: 28, stiffness: 400 }}
+                          style={{ transformOrigin: "top right" }}
+                          className="absolute right-0 top-full z-40 mt-1.5 w-52 max-w-[calc(100vw-2rem)] rounded-xl border border-zinc-200/80 bg-white/95 p-1.5 shadow-2xl backdrop-blur-xl dark:border-white/10 dark:bg-[#18181F]/95 dark:text-white dark:shadow-[0_8px_24px_rgba(0,0,0,0.6)]"
+                        >
+                          <div className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
+                            Sort By
+                          </div>
+                          {[
+                            { id: "newest", label: "Newest First" },
+                            { id: "oldest", label: "Oldest First" },
+                            { id: "size", label: "File Size" },
+                            { id: "name", label: "Name (A-Z)" },
+                          ].map((opt) => (
                             <button
-                              key={cat.id}
+                              key={opt.id}
                               type="button"
-                              onClick={() => {
-                                setActiveCategory(cat.id as any);
-                                setIsMobileCategoryOpen(false);
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setSortBy(opt.id as any);
+                                setIsSortOpen(false);
                               }}
                               className={`flex w-full items-center justify-between rounded-lg px-2.5 py-2 text-xs font-medium transition-all cursor-pointer ${
-                                isCatActive
+                                sortBy === opt.id
                                   ? "bg-[#0066B2]/10 text-[#0066B2] font-bold dark:bg-[#38BDF8]/20 dark:text-[#38BDF8]"
                                   : "text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-white/5"
                               }`}
                             >
-                              <span className="flex items-center gap-2 truncate">
-                                {cat.icon}
-                                {cat.label}
-                              </span>
-                              <div className="flex items-center gap-1.5 shrink-0">
-                                <span className="px-1.5 py-0.2 rounded bg-zinc-200/60 text-[9px] font-semibold text-zinc-600 dark:bg-white/10 dark:text-zinc-300">
+                              <span>{opt.label}</span>
+                              {sortBy === opt.id && <Check className="h-3.5 w-3.5 text-current shrink-0" />}
+                            </button>
+                          ))}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+
+                  {/* Mobile All-In-One Filter & Sort Dropdown */}
+                  <div className="md:hidden relative shrink-0" ref={mobileFilterRef}>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setIsMobileFilterOpen((prev) => !prev);
+                      }}
+                      className="flex h-9 items-center justify-between gap-1.5 rounded-xl border border-zinc-200/80 bg-white/80 px-2.5 text-xs font-semibold text-zinc-700 shadow-2xs backdrop-blur-md transition-all hover:bg-white focus:outline-none dark:border-white/10 dark:bg-[#18181B]/80 dark:text-zinc-200 dark:hover:bg-[#222226] cursor-pointer select-none"
+                    >
+                      <span className="truncate max-w-[90px] text-[11px] font-bold">
+                        {activeCategory === "all"
+                          ? "All Files"
+                          : activeCategory === "docs"
+                          ? "Documents"
+                          : activeCategory === "images"
+                          ? "Images"
+                          : activeCategory === "media"
+                          ? "Audio/Video"
+                          : "Archives"}
+                      </span>
+                      <ChevronDown className={`h-3.5 w-3.5 text-zinc-400 transition-transform duration-300 shrink-0 ${isMobileFilterOpen ? "rotate-180" : ""}`} />
+                    </button>
+
+                    <AnimatePresence>
+                      {isMobileFilterOpen && (
+                        <motion.div
+                          initial={{ opacity: 0, scale: 0.96, y: -6 }}
+                          animate={{ opacity: 1, scale: 1, y: 0 }}
+                          exit={{ opacity: 0, scale: 0.96, y: -4 }}
+                          transition={{ type: "spring", damping: 28, stiffness: 400 }}
+                          style={{ transformOrigin: "top right" }}
+                          className="absolute right-0 top-full z-50 mt-1.5 w-56 max-w-[calc(100vw-2rem)] max-h-[75vh] overflow-y-auto scrollbar-none rounded-xl border border-zinc-200/80 bg-white/95 p-1.5 shadow-2xl backdrop-blur-xl dark:border-white/10 dark:bg-[#18181F]/95 dark:text-white dark:shadow-[0_8px_24px_rgba(0,0,0,0.6)]"
+                        >
+                          {/* Categories Section */}
+                          <div className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
+                            Category / Type
+                          </div>
+                          {[
+                            { id: "all", label: "All Files", count: categoryCounts.all },
+                            { id: "docs", label: "Documents", count: categoryCounts.docs },
+                            { id: "images", label: "Images", count: categoryCounts.images },
+                            { id: "media", label: "Audio & Video", count: categoryCounts.media },
+                            { id: "archives", label: "Archives", count: categoryCounts.archives },
+                          ].map((cat) => (
+                            <button
+                              key={cat.id}
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setActiveCategory(cat.id as any);
+                                setIsMobileFilterOpen(false);
+                              }}
+                              className={`flex w-full items-center justify-between rounded-lg px-2.5 py-1.5 text-xs font-medium transition-all cursor-pointer ${
+                                activeCategory === cat.id
+                                  ? "bg-[#0066B2]/10 text-[#0066B2] font-bold dark:bg-[#38BDF8]/20 dark:text-[#38BDF8]"
+                                  : "text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-white/5"
+                              }`}
+                            >
+                              <div className="flex items-center gap-2">
+                                <span>{cat.label}</span>
+                                <span className="rounded-full bg-zinc-100 dark:bg-white/10 px-1.5 py-0.2 text-[9.5px] font-semibold text-zinc-500 dark:text-zinc-400">
                                   {cat.count}
                                 </span>
-                                {isCatActive && <Check className="h-3.5 w-3.5 text-current shrink-0" />}
                               </div>
+                              {activeCategory === cat.id && <Check className="h-3.5 w-3.5 text-current shrink-0" />}
                             </button>
-                          );
-                        })}
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
+                          ))}
+
+                          <div className="my-1.5 border-t border-zinc-100 dark:border-white/10" />
+
+                          {/* Sort Section */}
+                          <div className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
+                            Sort By
+                          </div>
+                          {[
+                            { id: "newest", label: "Newest First" },
+                            { id: "oldest", label: "Oldest First" },
+                            { id: "size", label: "File Size" },
+                            { id: "name", label: "Name (A-Z)" },
+                          ].map((opt) => (
+                            <button
+                              key={opt.id}
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setSortBy(opt.id as any);
+                                setIsMobileFilterOpen(false);
+                              }}
+                              className={`flex w-full items-center justify-between rounded-lg px-2.5 py-1.5 text-xs font-medium transition-all cursor-pointer ${
+                                sortBy === opt.id
+                                  ? "bg-[#0066B2]/10 text-[#0066B2] font-bold dark:bg-[#38BDF8]/20 dark:text-[#38BDF8]"
+                                  : "text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-white/5"
+                              }`}
+                            >
+                              <span>{opt.label}</span>
+                              {sortBy === opt.id && <Check className="h-3.5 w-3.5 text-current shrink-0" />}
+                            </button>
+                          ))}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+
+                  {/* Mobile Selection Mode Button */}
+                  <div className="md:hidden shrink-0">
+                    <button
+                      type="button"
+                      onClick={() => setIsMobileSelectionMode((v) => !v)}
+                      className={`h-9 px-3 rounded-xl border text-xs font-bold transition cursor-pointer shadow-2xs ${
+                        isMobileSelectionMode
+                          ? "bg-[#0066B2] text-white border-[#0066B2]"
+                          : "border-zinc-200/90 bg-white text-zinc-700 hover:bg-zinc-50 dark:border-[#2e2e38] dark:bg-[#202026] dark:text-zinc-200"
+                      }`}
+                    >
+                      <span>{isMobileSelectionMode ? "Done" : "Select"}</span>
+                    </button>
+                  </div>
                 </div>
               </div>
 
-              {/* Mobile Subtitle Strip & Sort / Selection Mode Toggle */}
-              <div className="pt-0.5 text-xs overflow-hidden min-h-[30px] flex items-center">
-                <AnimatePresence mode="wait" initial={false}>
-                  {isMobileSelectionMode ? (
-                    <motion.div
-                      key="mobile-select-bar"
-                      initial={{ opacity: 0, y: -4 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -4 }}
-                      transition={{ duration: 0.18, ease: "easeOut" }}
-                      className="flex items-center justify-between w-full"
-                    >
-                      <label className="flex items-center gap-2 cursor-pointer select-none">
-                        <input
-                          type="checkbox"
-                          checked={filteredResources.length > 0 && selectedResourceIds.length === filteredResources.length}
-                          onChange={toggleSelectAll}
-                          className="h-4 w-4 rounded border-zinc-300 dark:border-zinc-700 bg-white dark:bg-[#202026] text-[#0066B2] focus:ring-[#0066B2] cursor-pointer"
-                        />
-                        <span className="font-bold text-zinc-900 dark:text-white">
-                          Select All ({filteredResources.length})
-                        </span>
-                      </label>
-
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setIsMobileSelectionMode(false);
-                          setSelectedResourceIds([]);
-                        }}
-                        className="px-2.5 py-1 rounded-lg text-xs font-bold text-[#0066B2] hover:bg-[#0066B2]/10 dark:text-[#38BDF8] dark:hover:bg-[#38BDF8]/10 transition cursor-pointer"
-                      >
-                        Done
-                      </button>
-                    </motion.div>
-                  ) : (
-                    <motion.div
-                      key="mobile-normal-bar"
-                      initial={{ opacity: 0, y: 4 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: 4 }}
-                      transition={{ duration: 0.18, ease: "easeOut" }}
-                      className="flex items-center justify-between w-full"
-                    >
-                      <div className="flex items-center gap-2">
-                        <span className="font-semibold text-zinc-600 dark:text-zinc-400 text-xs">
-                          All Files ({filteredResources.length})
-                        </span>
-
-                        {/* Mobile Compact Sort Trigger */}
-                        <div className="relative" ref={mobileSortRef}>
-                          <button
-                            type="button"
-                            onClick={() => setIsMobileSortOpen((v) => !v)}
-                            className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-semibold text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200 transition cursor-pointer"
-                          >
-                            <span>
-                              {sortBy === "newest" ? "Newest" : sortBy === "oldest" ? "Oldest" : sortBy === "size" ? "Size" : "Name"}
-                            </span>
-                            <ChevronDown className="h-3 w-3 text-zinc-400" />
-                          </button>
-
-                          <AnimatePresence>
-                            {isMobileSortOpen && (
-                              <motion.div
-                                initial={{ opacity: 0, scale: 0.95, y: -4 }}
-                                animate={{ opacity: 1, scale: 1, y: 0 }}
-                                exit={{ opacity: 0, scale: 0.95, y: -4 }}
-                                transition={{ duration: 0.15 }}
-                                className="absolute left-0 top-full z-40 mt-1 w-40 rounded-xl border border-zinc-200/90 bg-white/95 p-1 shadow-xl backdrop-blur-xl dark:border-white/10 dark:bg-[#18181F]/95 dark:text-white"
-                              >
-                                {[
-                                  { id: "newest", label: "Newest" },
-                                  { id: "oldest", label: "Oldest" },
-                                  { id: "size", label: "File Size" },
-                                  { id: "name", label: "Name (A-Z)" },
-                                ].map((opt) => (
-                                  <button
-                                    key={opt.id}
-                                    type="button"
-                                    onClick={() => {
-                                      setSortBy(opt.id as any);
-                                      setIsMobileSortOpen(false);
-                                    }}
-                                    className={`flex w-full items-center justify-between rounded-lg px-2.5 py-1.5 text-xs font-medium cursor-pointer ${
-                                      sortBy === opt.id
-                                        ? "bg-[#0066B2]/10 text-[#0066B2] font-bold dark:bg-[#38BDF8]/20 dark:text-[#38BDF8]"
-                                        : "text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-white/5"
-                                    }`}
-                                  >
-                                    <span>{opt.label}</span>
-                                    {sortBy === opt.id && <Check className="h-3 w-3 text-current" />}
-                                  </button>
-                                ))}
-                              </motion.div>
-                            )}
-                          </AnimatePresence>
-                        </div>
-                      </div>
-
-                      <button
-                        type="button"
-                        onClick={() => setIsMobileSelectionMode(true)}
-                        className="inline-flex items-center gap-1 px-3 py-1 rounded-lg border border-zinc-200/90 bg-white dark:border-[#2e2e38] dark:bg-[#202026] text-xs font-bold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-[#282830] transition cursor-pointer shadow-2xs"
-                      >
-                        <span>Select</span>
-                      </button>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-            </div>
+              {/* Mobile Select All Strip when in selection mode */}
+              {isMobileSelectionMode && (
+                <div className="md:hidden px-3.5 py-2.5 bg-zinc-50/90 dark:bg-white/[0.03] border-b border-zinc-200/80 dark:border-[#2e2e38] flex items-center justify-between">
+                  <label className="flex items-center gap-2 cursor-pointer select-none">
+                    <input
+                      type="checkbox"
+                      checked={filteredResources.length > 0 && selectedResourceIds.length === filteredResources.length}
+                      onChange={toggleSelectAll}
+                      className="h-4 w-4 rounded border-zinc-300 dark:border-zinc-700 bg-white dark:bg-[#202026] text-[#0066B2] focus:ring-[#0066B2] cursor-pointer"
+                    />
+                    <span className="font-bold text-xs text-zinc-900 dark:text-white">
+                      Select All ({filteredResources.length})
+                    </span>
+                  </label>
+                  <span className="text-xs text-zinc-500 font-medium">
+                    {selectedResourceIds.length} selected
+                  </span>
+                </div>
+              )}
 
             {/* ========================================================================= */}
             {/* Table / List Body                                                         */}
