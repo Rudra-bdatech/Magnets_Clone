@@ -864,7 +864,7 @@ export default function ResourcesPage() {
 
           {/* Option 1: SMART EMPTY STATE DROPZONE (Only rendered when user has NO files) */}
           {resources.length === 0 && (
-            <div className="relative mt-6 rounded-2xl border-2 border-dashed border-[#0066B2]/40 bg-white/90 p-12 text-center backdrop-blur-sm hover:border-[#0066B2] dark:border-[#0066B2]/40 dark:bg-[#18181B]/90 shadow-sm transition-all">
+            <div className="relative rounded-2xl border-2 border-dashed border-[#0066B2]/40 bg-white/90 p-12 text-center backdrop-blur-sm hover:border-[#0066B2] dark:border-[#0066B2]/40 dark:bg-[#18181B]/90 shadow-sm transition-all">
               <input
                 type="file"
                 multiple
@@ -888,16 +888,18 @@ export default function ResourcesPage() {
             </div>
           )}
 
-
-
           {/* ========================================================================= */}
-          {/* 3. DESKTOP Search & Filter Toolbar (hidden md:flex) - 100% Preserved      */}
+          {/* Main Table Card Container (Standardized 16px gap to match Dashboard)     */}
           {/* ========================================================================= */}
           {resources.length > 0 && (
-            <div className="hidden md:flex mt-6 flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              {/* Category Tabs with Framer Motion Spring Pill */}
-              <div
-                onMouseLeave={() => setHoveredCategory(null)}
+            <div className="rounded-2xl border border-zinc-200/80 bg-white/90 dark:border-[#2e2e38] dark:bg-[#18181B]/90 shadow-sm backdrop-blur-sm relative overflow-hidden">
+              {/* ===================================================================== */}
+              {/* 3. DESKTOP Search & Filter Toolbar (hidden md:flex)                   */}
+              {/* ===================================================================== */}
+              <div className="hidden md:flex p-3.5 sm:p-4 border-b border-zinc-200/80 dark:border-[#2e2e38] flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                {/* Category Tabs with Framer Motion Spring Pill */}
+                <div
+                  onMouseLeave={() => setHoveredCategory(null)}
                 className="relative flex flex-wrap sm:flex-nowrap items-center gap-1.5 scrollbar-none"
               >
                 {(
@@ -1022,12 +1024,11 @@ export default function ResourcesPage() {
                 </div>
               </div>
             </div>
-          )}
-          {/* ========================================================================= */}
-          {/* 3. MOBILE Toolbar (block md:hidden) - 50/50 Search & Filter Dropdown      */}
-          {/* ========================================================================= */}
-          {resources.length > 0 && (
-            <div className="block md:hidden space-y-2.5 mb-3 mt-4">
+
+            {/* ===================================================================== */}
+            {/* 3. MOBILE Toolbar (block md:hidden) - 50/50 Search & Filter Dropdown  */}
+            {/* ===================================================================== */}
+            <div className="block md:hidden p-3.5 border-b border-zinc-200/80 dark:border-[#2e2e38] space-y-2.5">
               {/* 50/50 Row: Search Input & Category Filter Dropdown */}
               <div className="grid grid-cols-2 gap-2">
                 {/* 50% Search Input */}
@@ -1251,28 +1252,29 @@ export default function ResourcesPage() {
                 </AnimatePresence>
               </div>
             </div>
-          )}
-          {resources.length > 0 && (
-            <div className="mt-2 sm:mt-4">
+
+            {/* ========================================================================= */}
+            {/* Table / List Body                                                         */}
+            {/* ========================================================================= */}
+            <div>
               {filteredResources.length === 0 ? (
-                <div className="rounded-2xl border border-dashed border-zinc-200 bg-white/80 py-12 text-center dark:border-[#2e2e38] dark:bg-[#18181B]/80 shadow-sm backdrop-blur-sm">
-                  <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-xl bg-[#EFF6FF] text-[#0066B2] dark:bg-[#0066B2]/20 dark:text-[#38BDF8]">
-                    <FileText className="h-5 w-5" />
+                  <div className="py-12 text-center">
+                    <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-xl bg-[#EFF6FF] text-[#0066B2] dark:bg-[#0066B2]/20 dark:text-[#38BDF8]">
+                      <FileText className="h-5 w-5" />
+                    </div>
+                    <p className="mt-3 text-sm font-semibold text-zinc-900 dark:text-white">
+                      No matching resources found
+                    </p>
+                    <p className="mt-1 text-xs text-zinc-500 dark:text-[#9B9085]">
+                      Try clearing your search term or changing category filters.
+                    </p>
                   </div>
-                  <p className="mt-3 text-sm font-semibold text-zinc-900 dark:text-white">
-                    No matching resources found
-                  </p>
-                  <p className="mt-1 text-xs text-zinc-500 dark:text-[#9B9085]">
-                    Try clearing your search term or changing category filters.
-                  </p>
-                </div>
-              ) : (
-                <>
-                  {/* ========================================================================= */}
-                  {/* 4. DESKTOP Table View (hidden md:block) - Preserved 100% Unchanged        */}
-                  {/* ========================================================================= */}
-                  <div className="hidden md:block overflow-hidden rounded-2xl border border-zinc-200/80 bg-white/90 dark:border-[#2e2e38] dark:bg-[#18181B]/90 shadow-sm backdrop-blur-sm">
-                    <div className="overflow-x-auto">
+                ) : (
+                  <>
+                    {/* ========================================================================= */}
+                    {/* 4. DESKTOP Table View (hidden md:block) - Preserved 100% Unchanged        */}
+                    {/* ========================================================================= */}
+                    <div className="hidden md:block overflow-x-auto">
                       <table className="min-w-full divide-y divide-zinc-200/80 dark:divide-[#2e2e38]">
                         <thead className="bg-[#F8FBFF] dark:bg-[#151518]">
                           <tr>
@@ -1494,50 +1496,50 @@ export default function ResourcesPage() {
                         </tbody>
                       </table>
                     </div>
-                  </div>
 
-                  {/* ========================================================================= */}
-                  {/* 4. MOBILE Card-Based Asset List (block md:hidden) - Senior UX Engineered   */}
-                  {/* ========================================================================= */}
-                  <div className="block md:hidden space-y-2.5">
-                    {filteredResources.map((resource) => {
-                      const badge = getFileBadge(resource.name);
-                      const isCopied = copiedId === resource.id;
-                      const isSelected = selectedResourceIds.includes(resource.id);
-                      const linkedPages = getResourceLinkedPages(resource.id);
+                    {/* ========================================================================= */}
+                    {/* 4. MOBILE Card-Based Asset List (block md:hidden) - Senior UX Engineered   */}
+                    {/* ========================================================================= */}
+                    <div className="block md:hidden p-3 space-y-2.5">
+                      {filteredResources.map((resource) => {
+                        const badge = getFileBadge(resource.name);
+                        const isCopied = copiedId === resource.id;
+                        const isSelected = selectedResourceIds.includes(resource.id);
+                        const linkedPages = getResourceLinkedPages(resource.id);
 
-                      return (
-                        <MobileAssetCard
-                          key={resource.id}
-                          resource={resource}
-                          badge={badge}
-                          linkedPages={linkedPages}
-                          isSelected={isSelected}
-                          isSelectionMode={isMobileSelectionMode}
-                          isCopied={isCopied}
-                          formattedSize={formatBytes(resource.size)}
-                          isEditing={editingResourceId === resource.id}
-                          editingName={editingName}
-                          isSavingName={isSavingName}
-                          onToggleSelect={toggleSelectResource}
-                          onEnterSelectionMode={(id) => {
-                            setIsMobileSelectionMode(true);
-                            setSelectedResourceIds((prev) =>
-                              prev.includes(id) ? prev : [...prev, id]
-                            );
-                          }}
-                          onCopyLink={copyToClipboard}
-                          onStartRenaming={startRenaming}
-                          onEditingNameChange={setEditingName}
-                          onSaveRename={handleSaveRename}
-                          onCancelRename={() => setEditingResourceId(null)}
-                          onDelete={setResourceToDelete}
-                        />
-                      );
-                    })}
-                  </div>
-                </>
-              )}
+                        return (
+                          <MobileAssetCard
+                            key={resource.id}
+                            resource={resource}
+                            badge={badge}
+                            linkedPages={linkedPages}
+                            isSelected={isSelected}
+                            isSelectionMode={isMobileSelectionMode}
+                            isCopied={isCopied}
+                            formattedSize={formatBytes(resource.size)}
+                            isEditing={editingResourceId === resource.id}
+                            editingName={editingName}
+                            isSavingName={isSavingName}
+                            onToggleSelect={toggleSelectResource}
+                            onEnterSelectionMode={(id) => {
+                              setIsMobileSelectionMode(true);
+                              setSelectedResourceIds((prev) =>
+                                prev.includes(id) ? prev : [...prev, id]
+                              );
+                            }}
+                            onCopyLink={copyToClipboard}
+                            onStartRenaming={startRenaming}
+                            onEditingNameChange={setEditingName}
+                            onSaveRename={handleSaveRename}
+                            onCancelRename={() => setEditingResourceId(null)}
+                            onDelete={setResourceToDelete}
+                          />
+                        );
+                      })}
+                    </div>
+                  </>
+                )}
+              </div>
             </div>
           )}
         </div>
