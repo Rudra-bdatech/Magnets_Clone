@@ -866,22 +866,8 @@ export default function LockedPdfPage() {
               </h1>
             </div>
 
-            {/* Actions: Choose Assets, Create Locked PDF */}
+            {/* Actions: Create Locked PDF */}
             <div className="flex items-center gap-2 shrink-0">
-              <button
-                type="button"
-                onClick={() => {
-                  const fresh = loadResources().filter((r: any) => !r.isPageAsset && r.type !== "page_asset");
-                  setHostedResources(fresh);
-                  setShowAssetPickerModal(true);
-                }}
-                className="flex items-center gap-1.5 rounded-xl border border-zinc-200 dark:border-[#27272A] bg-white dark:bg-[#1E1E24] px-3 sm:px-4 py-2 sm:py-2.5 text-xs font-bold text-zinc-800 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-[#27272A] transition shadow-xs cursor-pointer active:scale-95"
-              >
-                <HardDrive className="h-4 w-4 text-[#0066B2] dark:text-[#38BDF8]" />
-                <span className="hidden sm:inline">Choose Assets</span>
-                <span className="sm:hidden">Assets</span>
-              </button>
-
               <button
                 onClick={() => {
                   setCreateMagnetName("");

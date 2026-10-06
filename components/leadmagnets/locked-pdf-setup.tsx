@@ -18,8 +18,10 @@
  * and works on Vercel's free tier with zero additional configuration.
  */
 
-import { useRef, useState, useEffect } from "react";
-import { Upload, Lock, Eye, Loader2, CheckCircle2, Trash2, HardDrive, FileText, Copy, ExternalLink } from "lucide-react";
+import { useRef, useState, useEffect, useMemo } from "react";
+import Link from "next/link";
+import { Upload, Lock, Eye, Loader2, CheckCircle2, Trash2, HardDrive, FileText, Copy, ExternalLink, X, Plus } from "lucide-react";
+import { loadResources } from "@/lib/store";
 
 interface Props {
   magnetId: string;
@@ -192,7 +194,37 @@ export default function LockedPdfSetup({
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [showInternalAssetModal, setShowInternalAssetModal] = useState(false);
+  const [internalAssetSearch, setInternalAssetSearch] = useState("");
+  const [availableAssets, setAvailableAssets] = useState<any[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleOpenAssetPicker = () => {
+    if (onOpenAssetPicker) {
+      onOpenAssetPicker();
+      return;
+    }
+    const fresh = loadResources().filter((r: any) => !r.isPageAsset && r.type !== "page_asset");
+    setAvailableAssets(fresh);
+    setShowInternalAssetModal(true);
+  };
+
+  const filteredAssets = useMemo(() => {
+    const list = availableAssets.length > 0 ? availableAssets : (hostedResources || []);
+    const q = internalAssetSearch.trim().toLowerCase();
+    return list.filter((r: any) => {
+      if (r.isPageAsset === true || r.type === "page_asset" || (r.name && r.name.startsWith("page_asset_"))) {
+        return false;
+      }
+      const isPdf =
+        r.name?.toLowerCase().endsWith(".pdf") ||
+        r.fileUrl?.toLowerCase().includes(".pdf") ||
+        r.url?.toLowerCase().includes(".pdf") ||
+        r.fileExt?.toLowerCase() === ".pdf";
+      if (!isPdf) return false;
+      return !q || (r.name && r.name.toLowerCase().includes(q));
+    });
+  }, [availableAssets, hostedResources, internalAssetSearch]);
 
   const effectiveAppUrl =
     typeof window !== "undefined"
@@ -473,23 +505,12 @@ export default function LockedPdfSetup({
           onChange={handleFile}
           disabled={processing}
         />
-        <button
-          type="button"
-          onClick={() => fileInputRef.current?.click()}
-          disabled={processing}
-          className={[
-            "w-full rounded-xl border-2 border-dashed px-6 py-10 text-center transition",
-            "hover:border-zinc-400 dark:hover:border-zinc-600",
-            pages.length > 0
-              ? "border-emerald-400 dark:border-emerald-600 bg-emerald-50/50 dark:bg-emerald-950/20"
-              : "border-zinc-300 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-900/50",
-            processing ? "opacity-60 cursor-not-allowed" : "cursor-pointer",
-          ].join(" ")}
-        >
-          {processing ? (
+
+        {processing ? (
+          <div className="w-full rounded-xl border-2 border-dashed border-[#0066B2]/40 bg-blue-50/20 dark:bg-[#0066B2]/10 px-6 py-12 text-center">
             <div className="flex flex-col items-center gap-3">
-              <Loader2 className="h-8 w-8 text-zinc-400 animate-spin" />
-              <p className="text-sm font-medium text-zinc-600 dark:text-zinc-300">
+              <Loader2 className="h-8 w-8 text-[#0066B2] dark:text-[#38BDF8] animate-spin" />
+              <p className="text-sm font-semibold text-zinc-800 dark:text-zinc-200">
                 {progress
                   ? `Processing page ${progress.done} of ${progress.total}…`
                   : "Loading PDF renderer…"}
@@ -503,41 +524,85 @@ export default function LockedPdfSetup({
                 </div>
               )}
             </div>
-          ) : pages.length > 0 ? (
-            <div className="flex flex-col items-center gap-2">
-              <CheckCircle2 className="h-8 w-8 text-emerald-500" />
-              <p className="text-sm font-semibold text-zinc-800 dark:text-zinc-200">
-                {pages.length} page{pages.length !== 1 ? "s" : ""} uploaded
-              </p>
-              <p className="text-xs text-zinc-500 dark:text-zinc-400">
-                Click to replace with a new PDF
-              </p>
-            </div>
-          ) : (
-            <div className="flex flex-col items-center gap-2">
-              <Upload className="h-8 w-8 text-zinc-400" />
-              <p className="text-sm font-semibold text-zinc-700 dark:text-zinc-300">
-                Click to upload PDF from device
-              </p>
-              <p className="text-xs text-zinc-400 dark:text-zinc-500">
-                Max 30 MB · Each page is converted to an image automatically
-              </p>
-              {onOpenAssetPicker && (
+          </div>
+        ) : pages.length > 0 ? (
+          <div className="w-full rounded-xl border-2 border-dashed border-emerald-400 dark:border-emerald-600 bg-emerald-50/50 dark:bg-emerald-950/20 p-5 transition">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
+                  <CheckCircle2 className="h-5 w-5" />
+                </div>
+                <div>
+                  <p className="text-sm font-bold text-zinc-900 dark:text-white">
+                    {pages.length} page{pages.length !== 1 ? "s" : ""} uploaded
+                  </p>
+                  <p className="text-xs text-zinc-500 dark:text-zinc-400 truncate max-w-xs sm:max-w-md">
+                    {pdfTitle || "PDF document is ready for lead generation"}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 shrink-0">
                 <button
                   type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onOpenAssetPicker();
-                  }}
-                  className="mt-2 inline-flex items-center gap-1.5 rounded-lg border border-[#0066B2]/40 bg-[#EFF6FF] dark:bg-[#0066B2]/20 px-3 py-1.5 text-xs font-bold text-[#0066B2] dark:text-[#38BDF8] hover:bg-[#0066B2]/10 transition"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-xs font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition cursor-pointer shadow-xs"
                 >
-                  <HardDrive className="h-3.5 w-3.5" />
-                  <span>Or choose from Assets Page</span>
+                  <Upload className="h-3.5 w-3.5" />
+                  <span>Replace from Device</span>
                 </button>
-              )}
+                <button
+                  type="button"
+                  onClick={handleOpenAssetPicker}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-xs font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition cursor-pointer shadow-xs"
+                >
+                  <HardDrive className="h-3.5 w-3.5 text-[#0066B2] dark:text-[#38BDF8]" />
+                  <span>Choose from Assets</span>
+                </button>
+              </div>
             </div>
-          )}
-        </button>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {/* Left Half: Upload from Device */}
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              className="group relative rounded-xl border-2 border-dashed border-zinc-300 dark:border-zinc-700/80 bg-zinc-50/70 dark:bg-zinc-900/40 p-8 text-center transition-all duration-200 hover:border-[#0066B2] dark:hover:border-[#38BDF8] hover:bg-blue-50/40 dark:hover:bg-[#0066B2]/10 cursor-pointer flex flex-col items-center justify-center gap-2.5"
+            >
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white dark:bg-zinc-800 shadow-xs border border-zinc-200/80 dark:border-zinc-700/80 group-hover:scale-105 group-hover:border-[#0066B2]/40 transition-transform">
+                <Upload className="h-5 w-5 text-zinc-600 dark:text-zinc-300 group-hover:text-[#0066B2] dark:group-hover:text-[#38BDF8] transition-colors" />
+              </div>
+              <div>
+                <p className="text-sm font-bold text-zinc-800 dark:text-zinc-200 group-hover:text-[#0066B2] dark:group-hover:text-[#38BDF8] transition-colors">
+                  Click to upload PDF from device
+                </p>
+                <p className="text-xs text-zinc-400 dark:text-zinc-500 mt-1 max-w-[220px]">
+                  Max 30 MB · Each page is converted to an image automatically
+                </p>
+              </div>
+            </button>
+
+            {/* Right Half: Choose from Assets */}
+            <button
+              type="button"
+              onClick={handleOpenAssetPicker}
+              className="group relative rounded-xl border-2 border-dashed border-zinc-300 dark:border-zinc-700/80 bg-zinc-50/70 dark:bg-zinc-900/40 p-8 text-center transition-all duration-200 hover:border-[#0066B2] dark:hover:border-[#38BDF8] hover:bg-blue-50/40 dark:hover:bg-[#0066B2]/10 cursor-pointer flex flex-col items-center justify-center gap-2.5"
+            >
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white dark:bg-zinc-800 shadow-xs border border-zinc-200/80 dark:border-zinc-700/80 group-hover:scale-105 group-hover:border-[#0066B2]/40 transition-transform">
+                <HardDrive className="h-5 w-5 text-[#0066B2] dark:text-[#38BDF8] group-hover:scale-110 transition-transform" />
+              </div>
+              <div>
+                <p className="text-sm font-bold text-zinc-800 dark:text-zinc-200 group-hover:text-[#0066B2] dark:group-hover:text-[#38BDF8] transition-colors">
+                  Choose from Assets
+                </p>
+                <p className="text-xs text-zinc-400 dark:text-zinc-500 mt-1 max-w-[220px]">
+                  Select any PDF previously uploaded to your Assets page
+                </p>
+              </div>
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Error */}
@@ -744,6 +809,122 @@ export default function LockedPdfSetup({
           </button>
         )}
       </div>
+
+      {/* Internal Asset Picker Modal */}
+      {showInternalAssetModal && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200"
+          onClick={() => setShowInternalAssetModal(false)}
+        >
+          <div
+            className="w-full max-w-2xl rounded-2xl bg-white dark:bg-[#18181B] p-6 shadow-2xl border border-zinc-200 dark:border-[#27272A] space-y-5 animate-in zoom-in-95 duration-150"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between border-b pb-3.5 border-zinc-100 dark:border-[#27272A]">
+              <div className="flex items-center gap-2.5">
+                <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#0066B2]/10 text-[#0066B2] dark:bg-[#0066B2]/20 dark:text-[#38BDF8]">
+                  <HardDrive className="h-5 w-5" />
+                </span>
+                <div>
+                  <h3 className="text-base font-bold text-zinc-900 dark:text-white">
+                    Choose from Hosted Assets
+                  </h3>
+                  <p className="text-xs text-zinc-400">
+                    Select any PDF uploaded on your Assets page to load into this Locked PDF.
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowInternalAssetModal(false)}
+                className="rounded-lg p-1.5 text-zinc-400 hover:bg-zinc-100 dark:hover:bg-[#27272A] transition cursor-pointer"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+
+            {/* Search Input */}
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="Search hosted PDF assets by name..."
+                value={internalAssetSearch}
+                onChange={(e) => setInternalAssetSearch(e.target.value)}
+                className="w-full rounded-xl border border-zinc-200 dark:border-[#27272A] bg-zinc-50 dark:bg-[#121216] px-3.5 py-2.5 text-xs text-zinc-900 dark:text-white outline-none focus:border-[#0066B2]"
+              />
+            </div>
+
+            {/* Asset List */}
+            <div className="max-h-80 overflow-y-auto space-y-2 pr-1">
+              {filteredAssets.length === 0 ? (
+                <div className="py-8 text-center space-y-3">
+                  <p className="text-xs text-zinc-400 italic">
+                    {internalAssetSearch.trim()
+                      ? `No PDF assets match "${internalAssetSearch}"`
+                      : "No PDF assets found in your Assets page."}
+                  </p>
+                  <Link
+                    href="/dashboard/assets"
+                    target="_blank"
+                    className="inline-flex items-center gap-1.5 rounded-xl bg-[#0066B2] px-4 py-2 text-xs font-bold text-white hover:bg-[#005291] transition"
+                  >
+                    <Plus className="h-3.5 w-3.5" />
+                    <span>Upload to Assets Page</span>
+                  </Link>
+                </div>
+              ) : (
+                filteredAssets.map((asset: any) => {
+                  return (
+                    <div
+                      key={asset.id}
+                      className="flex items-center justify-between gap-3 p-3 rounded-xl border border-zinc-200 dark:border-[#27272A] bg-zinc-50/50 dark:bg-[#121216] hover:bg-zinc-100 dark:hover:bg-[#1C1C22] transition"
+                    >
+                      <div className="flex items-center gap-3 min-w-0 flex-1">
+                        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border bg-red-500/10 text-red-500 border-red-500/20">
+                          <FileText className="h-4 w-4" />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <p className="text-xs font-bold text-zinc-900 dark:text-white truncate">{asset.name}</p>
+                          <p className="text-[10px] text-zinc-400 font-mono truncate">{asset.fileUrl || asset.url}</p>
+                        </div>
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setShowInternalAssetModal(false);
+                          processPdfFromUrl(asset.fileUrl || asset.url, asset.name);
+                        }}
+                        className="flex items-center gap-1.5 rounded-lg bg-[#0066B2] px-3 py-1.5 text-xs font-bold text-white hover:bg-[#005291] transition shrink-0 cursor-pointer"
+                      >
+                        <CheckCircle2 className="h-3.5 w-3.5" />
+                        <span>Use this PDF</span>
+                      </button>
+                    </div>
+                  );
+                })
+              )}
+            </div>
+
+            <div className="flex items-center justify-between border-t pt-3 border-zinc-100 dark:border-[#27272A]">
+              <Link
+                href="/dashboard/assets"
+                target="_blank"
+                className="text-xs text-[#0066B2] dark:text-[#38BDF8] font-bold hover:underline"
+              >
+                Go to Assets Page →
+              </Link>
+              <button
+                type="button"
+                onClick={() => setShowInternalAssetModal(false)}
+                className="rounded-xl border border-zinc-200 dark:border-zinc-700 px-4 py-2 text-xs font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition cursor-pointer"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
