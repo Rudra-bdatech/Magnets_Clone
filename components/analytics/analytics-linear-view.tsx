@@ -411,7 +411,7 @@ export default function AnalyticsLinearView({
         {/* 1. MOBILE HEADER BAR */}
         <motion.header
           variants={itemVariants}
-          className="flex md:hidden flex-col gap-2.5 pb-1"
+          className="flex md:hidden flex-col gap-2.5"
         >
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-2">
