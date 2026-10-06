@@ -131,6 +131,21 @@ export async function GET() {
     // Ensure custom session_token cookie is issued/synchronized for NextAuth / Google users
     setAuthCookie(response, email, name);
 
+    if (nextAuthSession?.user?.email) {
+      response.cookies.set("leadmagnets_last_auth_method", "google", {
+        path: "/",
+        maxAge: 30 * 24 * 60 * 60,
+        sameSite: "lax",
+        httpOnly: false,
+      });
+      response.cookies.set("leadmagnets_last_auth_email", email, {
+        path: "/",
+        maxAge: 30 * 24 * 60 * 60,
+        sameSite: "lax",
+        httpOnly: false,
+      });
+    }
+
     return response;
   } catch (error: any) {
     return NextResponse.json({ authenticated: false, error: error.message }, { status: 500 });

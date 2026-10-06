@@ -143,8 +143,19 @@ export default function DashboardShell({
 
     if (typeof window !== "undefined") {
       try {
+        const lastMethod = localStorage.getItem("leadmagnets_last_auth_method");
+        const lastEmail = localStorage.getItem("leadmagnets_last_auth_email") || localStorage.getItem("currentUserEmail");
+        const themeMode = localStorage.getItem("leadmagnets-theme-mode");
+        const theme = localStorage.getItem("leadmagnets-theme");
+
         localStorage.clear();
         sessionStorage.clear();
+
+        // Restore non-sensitive device preferences so "Last used" and theme stay active
+        if (lastMethod) localStorage.setItem("leadmagnets_last_auth_method", lastMethod);
+        if (lastEmail) localStorage.setItem("leadmagnets_last_auth_email", lastEmail);
+        if (themeMode) localStorage.setItem("leadmagnets-theme-mode", themeMode);
+        if (theme) localStorage.setItem("leadmagnets-theme", theme);
       } catch (_) { }
     }
 
@@ -223,6 +234,7 @@ export default function DashboardShell({
           .then((data) => {
             if (data.authenticated && data.email) {
               localStorage.setItem("currentUserEmail", data.email);
+              localStorage.setItem("leadmagnets_last_auth_email", data.email);
               setSessionExpiry(7);
               if (data.user) {
                 localStorage.setItem("currentUserAccount", JSON.stringify(data.user));

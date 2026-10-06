@@ -8,17 +8,25 @@ interface GoogleAuthButtonProps {
   callbackUrl: string;
   text?: string;
   disabled?: boolean;
+  isLastUsed?: boolean;
 }
 
 export default function GoogleAuthButton({
   callbackUrl,
   text = "Continue with Google",
   disabled = false,
+  isLastUsed = false,
 }: GoogleAuthButtonProps) {
   const [loading, setLoading] = useState(false);
 
   const handleGoogleSignIn = async () => {
     try {
+      if (typeof window !== "undefined") {
+        try {
+          localStorage.setItem("leadmagnets_last_auth_method", "google");
+          document.cookie = "leadmagnets_last_auth_method=google; path=/; max-age=2592000; SameSite=Lax";
+        } catch (_) {}
+      }
       setLoading(true);
       await signIn("google", { callbackUrl });
     } catch (err) {
@@ -32,7 +40,11 @@ export default function GoogleAuthButton({
       type="button"
       onClick={handleGoogleSignIn}
       disabled={disabled || loading}
-      className="relative w-full h-10 px-4 flex items-center justify-center gap-2.5 rounded-xl border border-zinc-200/90 dark:border-zinc-800 bg-white dark:bg-zinc-900/90 hover:bg-zinc-50 dark:hover:bg-zinc-800/90 hover:border-zinc-300 dark:hover:border-zinc-700/80 text-xs font-semibold text-zinc-800 dark:text-zinc-200 hover:text-zinc-900 dark:hover:text-white transition-all duration-150 shadow-sm hover:shadow active:scale-[0.98] active:bg-zinc-100 dark:active:bg-zinc-800/80 cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed select-none group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50"
+      className={`relative w-full h-10 px-4 flex items-center justify-center gap-2.5 rounded-xl border bg-white dark:bg-zinc-900/90 hover:bg-zinc-50 dark:hover:bg-zinc-800/90 text-xs font-semibold text-zinc-800 dark:text-zinc-200 hover:text-zinc-900 dark:hover:text-white transition-all duration-150 shadow-sm hover:shadow active:scale-[0.98] active:bg-zinc-100 dark:active:bg-zinc-800/80 cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed select-none group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 ${
+        isLastUsed
+          ? "border-blue-500/60 dark:border-blue-500/50 ring-2 ring-blue-500/20 shadow-md shadow-blue-500/10 hover:border-blue-500/80"
+          : "border-zinc-200/90 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700/80"
+      }`}
     >
       {loading ? (
         <Loader2 className="w-4 h-4 animate-spin text-blue-600 dark:text-blue-400 shrink-0" />
@@ -62,6 +74,12 @@ export default function GoogleAuthButton({
         </svg>
       )}
       <span>{text}</span>
+      {isLastUsed && (
+        <span className="absolute right-2.5 inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-500/15 text-blue-600 dark:text-blue-400 border border-blue-500/30 tracking-tight shadow-sm">
+          <span className="h-1.5 w-1.5 rounded-full bg-blue-500 animate-pulse" />
+          Last used
+        </span>
+      )}
     </button>
   );
 }

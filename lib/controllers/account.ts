@@ -250,6 +250,21 @@ export async function handleLogin(data: any) {
   // Sensitive fields (password, tokens, LinkedIn session cookies) are completely sanitized.
   const res = NextResponse.json({ success: true, account: sanitizeAccount(account) });
   setAuthCookie(res, account.email, account.name);
+
+  // Set persistent client-accessible cookies for Last Used login indicator
+  res.cookies.set("leadmagnets_last_auth_method", "email", {
+    path: "/",
+    maxAge: 30 * 24 * 60 * 60,
+    sameSite: "lax",
+    httpOnly: false,
+  });
+  res.cookies.set("leadmagnets_last_auth_email", account.email, {
+    path: "/",
+    maxAge: 30 * 24 * 60 * 60,
+    sameSite: "lax",
+    httpOnly: false,
+  });
+
   return res;
 }
 

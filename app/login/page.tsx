@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useState } from "react";
+import { Suspense, useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import AuthShell from "@/components/auth-shell";
@@ -11,6 +11,12 @@ import { Loader2, Sparkles, ArrowRight } from "lucide-react";
 import { safeSetItem, setSessionExpiry } from "@/lib/store";
 
 import GoogleAuthButton from "@/components/ui/google-auth-button";
+
+function getClientCookie(name: string): string | null {
+  if (typeof document === "undefined") return null;
+  const match = document.cookie.match(new RegExp("(?:^|; )" + name.replace(/([.$?*|{}()\[\]\\\/+^])/g, "\\$1") + "=([^;]*)"));
+  return match ? decodeURIComponent(match[1]) : null;
+}
 
 function LoginForm() {
   const router = useRouter();
@@ -32,10 +38,33 @@ function LoginForm() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [lastUsedMethod, setLastUsedMethod] = useState<"google" | "email" | null>(null);
   const [status, setStatus] = useState<"idle" | "authenticating" | "opening_dashboard">("idle");
   const [error, setError] = useState(getInitialError);
 
   const loading = status !== "idle";
+
+  useEffect(() => {
+    try {
+      const cookieMethod = getClientCookie("leadmagnets_last_auth_method") as "google" | "email" | null;
+      const cookieEmail = getClientCookie("leadmagnets_last_auth_email");
+      const localMethod = localStorage.getItem("leadmagnets_last_auth_method") as "google" | "email" | null;
+      const localEmail = localStorage.getItem("leadmagnets_last_auth_email") || localStorage.getItem("currentUserEmail");
+
+      const resolvedMethod = localMethod || cookieMethod;
+      const resolvedEmail = localEmail || cookieEmail;
+
+      if (resolvedMethod === "google" || resolvedMethod === "email") {
+        setLastUsedMethod(resolvedMethod);
+      } else if (resolvedEmail) {
+        setLastUsedMethod("email");
+      }
+
+      if (resolvedEmail) {
+        setEmail(resolvedEmail);
+      }
+    } catch (_) {}
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,10 +72,11 @@ function LoginForm() {
     setError("");
 
     try {
+      const cleanEmail = email.trim().toLowerCase();
       const res = await fetch("/api/data", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "login", data: { email: email.trim(), password } }),
+        body: JSON.stringify({ action: "login", data: { email: cleanEmail, password } }),
       });
 
       let data;
@@ -57,10 +87,12 @@ function LoginForm() {
       }
 
       if (res.ok && data?.success) {
-        // Session cookie is now set directly by the /api/data login response.
-        // No separate /api/auth/login call is needed.
         if (typeof window !== "undefined") {
-          safeSetItem("currentUserEmail", email.trim().toLowerCase());
+          safeSetItem("currentUserEmail", cleanEmail);
+          safeSetItem("leadmagnets_last_auth_method", "email");
+          safeSetItem("leadmagnets_last_auth_email", cleanEmail);
+          document.cookie = `leadmagnets_last_auth_method=email; path=/; max-age=2592000; SameSite=Lax`;
+          document.cookie = `leadmagnets_last_auth_email=${encodeURIComponent(cleanEmail)}; path=/; max-age=2592000; SameSite=Lax`;
           setSessionExpiry(7);
           if (data.account) {
             safeSetItem("currentUserAccount", JSON.stringify(data.account));
@@ -101,7 +133,11 @@ function LoginForm() {
         </div>
       )}
       {/* Continue with Google Button */}
-      <GoogleAuthButton callbackUrl={redirectTarget} disabled={loading} />
+      <GoogleAuthButton
+        callbackUrl={redirectTarget}
+        disabled={loading}
+        isLastUsed={lastUsedMethod === "google"}
+      />
 
       <div className="relative my-3 flex items-center justify-center">
         <div className="absolute inset-0 flex items-center">
@@ -113,16 +149,25 @@ function LoginForm() {
       </div>
 
       <label className="block">
-        <FieldLabel>Email</FieldLabel>
+        <div className="mb-1.5 flex items-center justify-between">
+          <span className="text-xs font-medium text-zinc-700 dark:text-zinc-300">Email</span>
+          {lastUsedMethod === "email" && (
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/25 tracking-tight animate-in fade-in duration-200">
+              <span className="h-1.5 w-1.5 rounded-full bg-blue-500 animate-pulse" />
+              Last used
+            </span>
+          )}
+        </div>
         <Input
           autoComplete="email"
-          autoFocus
+          autoFocus={!email}
           type="email"
           placeholder="you@example.com"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
           disabled={loading}
+          className={lastUsedMethod === "email" ? "border-blue-500/40 dark:border-blue-500/30 ring-1 ring-blue-500/15" : ""}
         />
       </label>
       <label className="block">
@@ -134,6 +179,7 @@ function LoginForm() {
         </span>
         <Input
           autoComplete="current-password"
+          autoFocus={Boolean(email)}
           type="password"
           placeholder="At least 8 characters"
           minLength={8}

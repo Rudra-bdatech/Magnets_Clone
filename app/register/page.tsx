@@ -69,13 +69,18 @@ export default function RegisterPage() {
       };
 
       // Save to MongoDB
-      const { saveAccount } = await import("@/lib/store");
+      const { saveAccount, safeSetItem } = await import("@/lib/store");
       const saveRes = await saveAccount(newAccount);
       if (!saveRes.success) {
         setError(saveRes.error || "Failed to create account. Please try again.");
         setLoading(false);
         setLoadingStatus("idle");
         return;
+      }
+
+      if (typeof window !== "undefined") {
+        safeSetItem("leadmagnets_last_auth_method", "email");
+        safeSetItem("leadmagnets_last_auth_email", email.trim().toLowerCase());
       }
 
       // Transition button text to Opening dashboard...
