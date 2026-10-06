@@ -94,7 +94,7 @@ export const BulkDeleteModal = memo(function BulkDeleteModal({
                 type="button"
                 disabled={isBulkDeleting}
                 onClick={onConfirmBulkDelete}
-                className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 rounded-xl border border-rose-500/30 bg-rose-500/15 dark:bg-rose-500/15 px-4 py-2.5 text-xs font-bold text-rose-600 dark:text-rose-400 hover:bg-rose-600 hover:text-white dark:hover:bg-rose-600 dark:hover:text-white transition-all cursor-pointer shadow-sm text-center disabled:opacity-50"
+                className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 rounded-xl border border-rose-500/30 bg-rose-600 px-4 py-2.5 text-xs font-bold text-white hover:bg-rose-700 active:scale-95 transition-all cursor-pointer shadow-sm text-center disabled:opacity-50"
               >
                 {isBulkDeleting && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
                 <span>Delete {selectedCount} Leads</span>

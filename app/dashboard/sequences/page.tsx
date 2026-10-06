@@ -2049,7 +2049,7 @@ export default function SequencesPage() {
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-3">
                   <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-500">
-                    <Trash2 className="h-5 w-5" />
+                    <AlertTriangle className="h-5 w-5" />
                   </div>
                   <div>
                     <h3 className="text-base sm:text-lg font-bold text-zinc-900 dark:text-white tracking-tight">Delete sequence?</h3>
@@ -2082,7 +2082,7 @@ export default function SequencesPage() {
                 <button
                   type="button"
                   onClick={confirmDeleteSequence}
-                  className="flex-1 sm:flex-none rounded-xl border border-rose-500/30 bg-rose-500/15 dark:bg-rose-500/15 px-4 py-2.5 text-xs font-bold text-rose-600 dark:text-rose-400 hover:bg-rose-600 hover:text-white dark:hover:bg-rose-600 dark:hover:text-white transition-all cursor-pointer shadow-sm text-center"
+                  className="flex-1 sm:flex-none rounded-xl border border-rose-500/30 bg-rose-600 px-4 py-2.5 text-xs font-bold text-white hover:bg-rose-700 transition-all cursor-pointer shadow-sm text-center active:scale-95"
                 >
                   Delete sequence
                 </button>
@@ -2336,15 +2336,13 @@ export default function SequencesPage() {
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-3">
                   <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-500">
-                    <Trash2 className="h-5 w-5" />
+                    <AlertTriangle className="h-5 w-5" />
                   </div>
                   <div>
                     <h3 className="text-base sm:text-lg font-bold text-zinc-900 dark:text-white tracking-tight">
                       Delete {checkedIds.length} sequence{checkedIds.length > 1 ? "s" : ""}?
                     </h3>
-                    <p className="text-[11px] text-zinc-500 dark:text-zinc-400 mt-0.5">
-                      This will permanently remove {checkedIds.length} selected sequences and their email steps.
-                    </p>
+                    <p className="text-[11px] text-zinc-500 dark:text-zinc-400 mt-0.5">This action cannot be undone</p>
                   </div>
                 </div>
                 <button
@@ -2355,6 +2353,15 @@ export default function SequencesPage() {
                 >
                   <X className="h-4 w-4" />
                 </button>
+              </div>
+
+              <div className="space-y-1.5 pt-1 text-xs leading-relaxed text-zinc-600 dark:text-zinc-400">
+                <p>
+                  This will permanently delete the <span className="font-bold text-zinc-900 dark:text-white">{checkedIds.length}</span> selected sequence{checkedIds.length > 1 ? "s" : ""} and their email steps.
+                </p>
+                <p className="text-zinc-500 font-medium">
+                  This action cannot be undone.
+                </p>
               </div>
 
               <div className="pt-3 sm:pt-4 flex items-center justify-end gap-3">
@@ -2370,9 +2377,9 @@ export default function SequencesPage() {
                   type="button"
                   disabled={isBulkDeleting}
                   onClick={confirmBulkDeletion}
-                  className="flex-1 sm:flex-none rounded-xl border border-rose-500/30 bg-rose-500/15 dark:bg-rose-500/15 px-4 py-2.5 text-xs font-bold text-rose-600 dark:text-rose-400 hover:bg-rose-600 hover:text-white dark:hover:bg-rose-600 dark:hover:text-white transition-all cursor-pointer shadow-sm text-center disabled:opacity-50"
+                  className="flex-1 sm:flex-none rounded-xl border border-rose-500/30 bg-rose-600 px-4 py-2.5 text-xs font-bold text-white hover:bg-rose-700 transition-all cursor-pointer shadow-sm text-center disabled:opacity-50 active:scale-95"
                 >
-                  {isBulkDeleting ? "Deleting..." : `Delete ${checkedIds.length} items`}
+                  {isBulkDeleting ? "Deleting..." : `Delete ${checkedIds.length} sequence${checkedIds.length > 1 ? "s" : ""}`}
                 </button>
               </div>
             </motion.div>
