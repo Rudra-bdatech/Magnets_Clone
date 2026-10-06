@@ -82,18 +82,28 @@ export const ImportCsvModal = memo(function ImportCsvModal({
                 from your CSV file. Preview below:
               </p>
 
-              <div className="max-h-48 overflow-y-auto rounded-xl border border-zinc-200 dark:border-[#2e2e38] bg-zinc-50 dark:bg-[#121214] p-3 divide-y divide-zinc-200/60 dark:divide-white/5">
+              <div className="max-h-52 overflow-y-auto rounded-xl border border-zinc-200 dark:border-[#2e2e38] bg-zinc-50 dark:bg-[#121214] p-3 divide-y divide-zinc-200/60 dark:divide-white/5">
                 {importedLeadsPreview.slice(0, 5).map((previewLead, idx) => (
                   <div
                     key={idx}
-                    className="py-1.5 flex justify-between items-center text-xs"
+                    className="py-2 flex justify-between items-center text-xs gap-3"
                   >
-                    <span className="font-semibold text-zinc-900 dark:text-white truncate max-w-[200px]">
-                      {previewLead.email}
-                    </span>
-                    <span className="text-zinc-500 dark:text-[#9B9085]">
-                      {previewLead.name}
-                    </span>
+                    <div className="flex flex-col min-w-0 pr-2">
+                      <span className="font-semibold text-zinc-900 dark:text-white truncate max-w-[180px] sm:max-w-[240px]">
+                        {previewLead.email}
+                      </span>
+                      <span className="text-[11px] text-zinc-500 dark:text-[#9B9085] truncate">
+                        {previewLead.page || "Imported Magnet"}
+                      </span>
+                    </div>
+                    <div className="flex flex-col items-end text-right shrink-0">
+                      <span className="font-medium text-zinc-800 dark:text-zinc-200">
+                        {previewLead.name}
+                      </span>
+                      <span className="text-[11px] font-medium text-emerald-600 dark:text-emerald-400">
+                        {previewLead.signedUpAt || "Today"}
+                      </span>
+                    </div>
                   </div>
                 ))}
                 {importedLeadsPreview.length > 5 && (

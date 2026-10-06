@@ -399,7 +399,48 @@ export default function LeadsPage() {
     [newLeadEmail, newLeadMagnet, magnetPages, newLeadName, leads, account?.email, addToast]
   );
 
-  // 3. Import CSV File & Parse Contacts
+// Helper to parse CSV lines with support for quoted values and commas inside quotes
+function parseCsvLine(line: string): string[] {
+  const result: string[] = [];
+  let current = "";
+  let inQuotes = false;
+  for (let i = 0; i < line.length; i++) {
+    const char = line[i];
+    if (char === '"' || char === "'") {
+      if (inQuotes && line[i + 1] === char) {
+        current += char;
+        i++; // skip escaped quote
+      } else {
+        inQuotes = !inQuotes;
+      }
+    } else if (char === "," && !inQuotes) {
+      result.push(current.trim());
+      current = "";
+    } else {
+      current += char;
+    }
+  }
+  result.push(current.trim());
+  return result.map((c) => {
+    let clean = c.trim();
+    if ((clean.startsWith('"') && clean.endsWith('"')) || (clean.startsWith("'") && clean.endsWith("'"))) {
+      clean = clean.slice(1, -1).trim();
+    }
+    // Remove Excel safe formula wrappers like ="value"
+    if (clean.startsWith('="') && clean.endsWith('"')) {
+      clean = clean.slice(2, -1).trim();
+    } else if (clean.startsWith("='") && clean.endsWith("'")) {
+      clean = clean.slice(2, -1).trim();
+    }
+    // Remove formula sanitization prefix quote if present
+    if (clean.startsWith("'") && clean.length > 1 && /^[=+\-@]/.test(clean.slice(1))) {
+      clean = clean.slice(1);
+    }
+    return clean;
+  });
+}
+
+  // 3. Import CSV File & Parse Contacts with Header Detection & Date Mapping
   const handleCSVFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -420,29 +461,170 @@ export default function LeadsPage() {
       const parsed: Partial<Lead>[] = [];
       const defaultMagnet = magnetPages.length > 0 ? magnetPages[0].name : "Imported Magnet";
 
-      const startIndex = lines[0].toLowerCase().includes("email") ? 1 : 0;
+      const firstRowCols = parseCsvLine(lines[0]);
+      const hasEmailInFirstRow = firstRowCols.some((col) => col.includes("@"));
+      const isHeaderRow =
+        !hasEmailInFirstRow &&
+        firstRowCols.some((col) => {
+          const lower = col.toLowerCase();
+          return (
+            lower.includes("email") ||
+            lower.includes("name") ||
+            lower.includes("date") ||
+            lower.includes("magnet") ||
+            lower.includes("page") ||
+            lower.includes("created") ||
+            lower.includes("time") ||
+            lower.includes("signup") ||
+            lower.includes("status")
+          );
+        });
+
+      let emailIndex = -1;
+      let nameIndex = -1;
+      let pageIndex = -1;
+      let dateIndex = -1;
+
+      if (isHeaderRow) {
+        firstRowCols.forEach((col, idx) => {
+          const lower = col.toLowerCase().replace(/[\s_-]+/g, " ").trim();
+          if (emailIndex === -1 && (lower.includes("email") || lower.includes("e-mail") || lower.includes("mail"))) {
+            emailIndex = idx;
+          } else if (
+            dateIndex === -1 &&
+            (lower.includes("signup date") ||
+              lower.includes("signed up") ||
+              lower.includes("signedup") ||
+              lower.includes("signup") ||
+              lower.includes("created") ||
+              lower.includes("timestamp") ||
+              lower.includes("joined") ||
+              lower.includes("optin") ||
+              lower.includes("opt-in") ||
+              lower.includes("registration") ||
+              lower.includes("date") ||
+              lower.includes("time"))
+          ) {
+            dateIndex = idx;
+          } else if (
+            pageIndex === -1 &&
+            (lower.includes("lead magnet") ||
+              lower.includes("magnet") ||
+              lower.includes("page") ||
+              lower.includes("campaign") ||
+              lower.includes("source") ||
+              lower.includes("form"))
+          ) {
+            pageIndex = idx;
+          } else if (
+            nameIndex === -1 &&
+            (lower === "name" ||
+              lower.includes("full name") ||
+              lower.includes("first name") ||
+              lower.includes("contact name") ||
+              lower.includes("lead name") ||
+              lower.includes("user name") ||
+              lower.includes("subscriber"))
+          ) {
+            nameIndex = idx;
+          }
+        });
+      }
+
+      const startIndex = isHeaderRow ? 1 : 0;
 
       for (let i = startIndex; i < lines.length; i++) {
-        const cols = lines[i].split(",").map((c) => c.trim().replace(/^["']|["']$/g, ""));
-        if (cols.length > 0 && cols[0].includes("@")) {
-          parsed.push({
-            id: generateSafeId(),
-            email: cols[0].toLowerCase(),
-            name: cols[1] || cols[0].split("@")[0],
-            page: cols[2] || defaultMagnet,
-            signedUpAt: new Date().toLocaleString("en-US", { month: "short", day: "numeric", year: "numeric" }),
-            sequence: "Imported Contact",
-          });
-        } else if (cols.length > 1 && cols[1].includes("@")) {
-          parsed.push({
-            id: generateSafeId(),
-            email: cols[1].toLowerCase(),
-            name: cols[0] || cols[1].split("@")[0],
-            page: cols[2] || defaultMagnet,
-            signedUpAt: new Date().toLocaleString("en-US", { month: "short", day: "numeric", year: "numeric" }),
-            sequence: "Imported Contact",
-          });
+        const cols = parseCsvLine(lines[i]);
+        if (cols.length === 0 || cols.every((c) => !c)) continue;
+
+        // Find Email
+        let email = "";
+        if (emailIndex !== -1 && cols[emailIndex] && cols[emailIndex].includes("@")) {
+          email = cols[emailIndex].trim();
+        } else {
+          const foundIdx = cols.findIndex((c) => c.includes("@"));
+          if (foundIdx !== -1) {
+            email = cols[foundIdx].trim();
+          }
         }
+
+        if (!email || !email.includes("@")) continue;
+
+        // Find Name
+        let name = "";
+        if (nameIndex !== -1 && cols[nameIndex] !== undefined && cols[nameIndex] !== "") {
+          name = cols[nameIndex].trim();
+        }
+
+        // Find Page / Magnet
+        let page = "";
+        if (pageIndex !== -1 && cols[pageIndex] !== undefined && cols[pageIndex] !== "") {
+          page = cols[pageIndex].trim();
+        }
+
+        // Find Date
+        let rawDate = "";
+        if (dateIndex !== -1 && cols[dateIndex] !== undefined && cols[dateIndex] !== "") {
+          rawDate = cols[dateIndex].trim();
+        } else {
+          // Look for any column that parses as a valid date and is not email or name
+          for (let cIdx = 0; cIdx < cols.length; cIdx++) {
+            if (cIdx === emailIndex || cols[cIdx].includes("@")) continue;
+            if (cIdx === nameIndex && name) continue;
+            const val = cols[cIdx].trim();
+            if (!val || val === "1" || (/^\d+$/.test(val) && Number(val) < 1000)) continue;
+            const testDate = parseFlexibleDate(val);
+            if (testDate && !isNaN(testDate.getTime())) {
+              rawDate = val;
+              break;
+            }
+          }
+        }
+
+        // If Name still empty, search unused non-date non-email string column
+        if (!name) {
+          for (let cIdx = 0; cIdx < cols.length; cIdx++) {
+            if (cIdx === emailIndex || cols[cIdx].includes("@")) continue;
+            if (cIdx === dateIndex) continue;
+            if (cIdx === pageIndex && page) continue;
+            const val = cols[cIdx].trim();
+            if (val && !parseFlexibleDate(val)) {
+              name = val;
+              break;
+            }
+          }
+          if (!name) {
+            name = email.split("@")[0];
+          }
+        }
+
+        if (!page) {
+          page = defaultMagnet;
+        }
+
+        // Parse and format the actual signup date from CSV
+        let finalSignedUpAt = "";
+        if (rawDate) {
+          const parsedDate = parseFlexibleDate(rawDate);
+          if (parsedDate && !isNaN(parsedDate.getTime())) {
+            finalSignedUpAt = formatDateOnly(parsedDate);
+          }
+        }
+        if (!finalSignedUpAt) {
+          finalSignedUpAt = formatDateOnly(new Date());
+        }
+
+        parsed.push({
+          id: generateSafeId(),
+          email: email.toLowerCase(),
+          name: name,
+          page: page,
+          signedUpAt: finalSignedUpAt,
+          status: "new",
+          sequence: "Imported Contact",
+          tags: ["csv-import"],
+          source: "leadmagnets",
+        });
       }
 
       if (parsed.length === 0) {
