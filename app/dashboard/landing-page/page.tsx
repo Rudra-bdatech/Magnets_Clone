@@ -1245,7 +1245,7 @@ export default function PagesPage() {
                     {activePage.name}
                   </h3>
                 </div>
-                <div className="flex items-center gap-2 shrink-0">
+                <div className="flex items-center shrink-0">
                   <span
                     className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide ${
                       activePage.status === "live"
@@ -1255,13 +1255,6 @@ export default function PagesPage() {
                   >
                     {activePage.status === "live" ? "Published" : "Draft"}
                   </span>
-                  <button
-                    type="button"
-                    onClick={() => setMobileInspectorOpen(false)}
-                    className="p-1.5 rounded-xl text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition cursor-pointer"
-                  >
-                    <X className="h-4 w-4" />
-                  </button>
                 </div>
               </div>
 

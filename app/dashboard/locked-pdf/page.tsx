@@ -864,7 +864,7 @@ export default function LockedPdfPage() {
 
       <div className="flex flex-col min-h-[calc(100vh-3.5rem)] bg-zinc-50/50 dark:bg-[#0B0B0D]">
         {/* Top Executive Header */}
-        <div className="px-4 sm:px-6 pt-4 sm:pt-6 lg:px-8 border-b border-zinc-200/80 dark:border-zinc-800/60 bg-white/80 dark:bg-[#121215] dark:bg-opacity-85 backdrop-blur-md sticky top-0 z-30 shadow-xs">
+        <div className="px-3.5 sm:px-6 pt-4 sm:pt-6 lg:px-8 border-b border-zinc-200/80 dark:border-zinc-800/60 bg-white/80 dark:bg-[#121215] dark:bg-opacity-85 backdrop-blur-md sticky top-0 z-30 shadow-xs">
           <div className="flex items-center justify-between gap-3 pb-4">
             <div className="min-w-0">
               <h1 className="text-xl sm:text-2xl lg:text-3xl font-extrabold tracking-tight text-zinc-900 dark:text-white truncate">
@@ -891,54 +891,54 @@ export default function LockedPdfPage() {
           </div>
 
           {/* Quick Metrics Bar */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 py-3 text-xs">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 py-3 text-xs">
             {/* Active Pages */}
-            <div className="flex items-center gap-3">
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#EFF6FF] dark:bg-[#0066B2]/15 text-[#0066B2] dark:text-[#38BDF8]">
+            <div className="flex items-center gap-2.5 sm:gap-3">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#EFF6FF] border border-[#0066B2]/15 dark:border-[#38BDF8]/20 dark:bg-[#0066B2]/15 text-[#0066B2] dark:text-[#38BDF8] shrink-0 shadow-2xs">
                 <Globe className="h-4 w-4" />
               </div>
-              <div>
-                <p className="text-[11px] font-medium text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">Active Pages</p>
-                <p className="text-base font-bold text-zinc-900 dark:text-white">
+              <div className="min-w-0">
+                <p className="text-[10px] sm:text-[10.5px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider truncate">Active Pages</p>
+                <p className="text-sm sm:text-base font-bold text-zinc-900 dark:text-white leading-tight mt-0.5">
                   {liveCount} <span className="text-xs font-normal text-zinc-400">/ {total}</span>
                 </p>
               </div>
             </div>
 
             {/* Total Traffic */}
-            <div className="flex items-center gap-3">
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400">
+            <div className="flex items-center gap-2.5 sm:gap-3">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-50 border border-emerald-500/20 dark:border-emerald-500/20 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 shrink-0 shadow-2xs">
                 <Eye className="h-4 w-4" />
               </div>
-              <div>
-                <p className="text-[11px] font-medium text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">Total Traffic</p>
-                <p className="text-base font-bold text-zinc-900 dark:text-white">
+              <div className="min-w-0">
+                <p className="text-[10px] sm:text-[10.5px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider truncate">Total Traffic</p>
+                <p className="text-sm sm:text-base font-bold text-zinc-900 dark:text-white leading-tight mt-0.5">
                   {totalViews.toLocaleString()}
                 </p>
               </div>
             </div>
 
             {/* Leads Collected */}
-            <div className="flex items-center gap-3">
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-purple-50 dark:bg-purple-950/40 text-purple-600 dark:text-purple-400">
+            <div className="flex items-center gap-2.5 sm:gap-3">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-purple-50 border border-purple-500/20 dark:border-purple-500/20 dark:bg-purple-950/40 text-purple-600 dark:text-purple-400 shrink-0 shadow-2xs">
                 <MousePointer className="h-4 w-4" />
               </div>
-              <div>
-                <p className="text-[11px] font-medium text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">Leads Collected</p>
-                <p className="text-base font-bold text-zinc-900 dark:text-white">
+              <div className="min-w-0">
+                <p className="text-[10px] sm:text-[10.5px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider truncate">Leads Collected</p>
+                <p className="text-sm sm:text-base font-bold text-zinc-900 dark:text-white leading-tight mt-0.5">
                   {totalSignups.toLocaleString()}
                 </p>
               </div>
             </div>
 
             {/* Avg Conv. Rate */}
-            <div className="flex items-center gap-3">
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400">
+            <div className="flex items-center gap-2.5 sm:gap-3">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-amber-50 border border-amber-500/20 dark:border-amber-500/20 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 shrink-0 shadow-2xs">
                 <TrendingUp className="h-4 w-4" />
               </div>
-              <div>
-                <p className="text-[11px] font-medium text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">Avg. Conv. Rate</p>
-                <p className="text-base font-bold text-zinc-900 dark:text-white">
+              <div className="min-w-0">
+                <p className="text-[10px] sm:text-[10.5px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider truncate">Avg. Conv. Rate</p>
+                <p className="text-sm sm:text-base font-bold text-zinc-900 dark:text-white leading-tight mt-0.5">
                   {avgConversion}%
                 </p>
               </div>
@@ -2074,7 +2074,7 @@ export default function LockedPdfPage() {
                     {activePage.name}
                   </h3>
                 </div>
-                <div className="flex items-center gap-2 shrink-0">
+                <div className="flex items-center shrink-0">
                   <span
                     className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide ${
                       activePage.status === "live"
@@ -2084,13 +2084,6 @@ export default function LockedPdfPage() {
                   >
                     {activePage.status === "live" ? "Published" : "Draft"}
                   </span>
-                  <button
-                    type="button"
-                    onClick={() => setMobileInspectorOpen(false)}
-                    className="p-1.5 rounded-xl text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition cursor-pointer"
-                  >
-                    <X className="h-4 w-4" />
-                  </button>
                 </div>
               </div>
 
