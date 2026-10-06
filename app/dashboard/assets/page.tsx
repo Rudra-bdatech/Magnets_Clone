@@ -1149,24 +1149,36 @@ export default function ResourcesPage() {
               </div>
 
               {/* Mobile Select All Strip when in selection mode */}
-              {isMobileSelectionMode && (
-                <div className="md:hidden px-3.5 py-2.5 bg-zinc-50/90 dark:bg-white/[0.03] border-b border-zinc-200/80 dark:border-[#2e2e38] flex items-center justify-between">
-                  <label className="flex items-center gap-2 cursor-pointer select-none">
-                    <input
-                      type="checkbox"
-                      checked={filteredResources.length > 0 && selectedResourceIds.length === filteredResources.length}
-                      onChange={toggleSelectAll}
-                      className="h-4 w-4 rounded border-zinc-300 dark:border-zinc-700 bg-white dark:bg-[#202026] text-[#0066B2] focus:ring-[#0066B2] cursor-pointer"
-                    />
-                    <span className="font-bold text-xs text-zinc-900 dark:text-white">
-                      Select All ({filteredResources.length})
-                    </span>
-                  </label>
-                  <span className="text-xs text-zinc-500 font-medium">
-                    {selectedResourceIds.length} selected
-                  </span>
-                </div>
-              )}
+              <AnimatePresence>
+                {isMobileSelectionMode && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ type: "spring", stiffness: 450, damping: 35 }}
+                    className="md:hidden overflow-hidden border-b border-zinc-200/80 bg-zinc-50/90 dark:border-[#2e2e38] dark:bg-white/[0.03]"
+                  >
+                    <div className="px-3.5 py-2.5 flex items-center justify-between">
+                      <div
+                        onClick={toggleSelectAll}
+                        className="flex items-center gap-2.5 cursor-pointer select-none"
+                      >
+                        <AppleCheckbox
+                          checked={filteredResources.length > 0 && selectedResourceIds.length === filteredResources.length}
+                          onChange={toggleSelectAll}
+                          title="Select All"
+                        />
+                        <span className="font-bold text-xs text-zinc-900 dark:text-white">
+                          Select All ({filteredResources.length})
+                        </span>
+                      </div>
+                      <span className="text-xs text-zinc-500 font-medium">
+                        {selectedResourceIds.length} selected
+                      </span>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
 
             {/* ========================================================================= */}
             {/* Table / List Body                                                         */}
