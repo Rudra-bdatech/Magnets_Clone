@@ -863,11 +863,11 @@ export default function LockedPdfPage() {
       </div>
 
       <div className="flex flex-col min-h-[calc(100vh-3.5rem)] bg-zinc-50/50 dark:bg-[#0B0B0D] w-full max-w-full">
-        {/* Top Executive Header */}
-        <div className="px-3.5 sm:px-6 pt-4 sm:pt-6 lg:px-8 border-b border-zinc-200/80 dark:border-zinc-800/60 bg-white/80 dark:bg-[#121215] dark:bg-opacity-85 backdrop-blur-md sticky top-0 z-30 shadow-xs w-full max-w-full">
-          <div className="flex items-center justify-between gap-3 pb-4">
+        {/* Top Executive Header & Stat Cards */}
+        <div className="px-3.5 sm:px-6 pt-4 sm:pt-6 lg:px-8 space-y-4 w-full max-w-full">
+          <div className="flex items-center justify-between gap-3">
             <div className="min-w-0 flex-1">
-              <h1 className="text-xl sm:text-2xl lg:text-3xl font-extrabold tracking-tight text-zinc-900 dark:text-white truncate">
+              <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-zinc-900 dark:text-white truncate">
                 Locked PDF
               </h1>
             </div>
@@ -881,7 +881,7 @@ export default function LockedPdfPage() {
                   setIsCustomSlugEdited(false);
                   setShowCreateModal(true);
                 }}
-                className="flex items-center gap-1.5 rounded-xl bg-[#0066B2] px-3.5 sm:px-5 py-2 sm:py-2.5 text-xs font-bold text-white hover:bg-[#005799] transition shadow-md shadow-[#0066B2]/20 cursor-pointer active:scale-95"
+                className="flex items-center gap-1.5 rounded-xl bg-[#0066B2] px-4 py-2.5 text-xs font-bold text-white hover:bg-[#005799] transition shadow-md shadow-[#0066B2]/20 cursor-pointer active:scale-95"
               >
                 <Plus className="h-4 w-4 stroke-[2.5px]" />
                 <span className="hidden sm:inline">Create Locked PDF</span>
@@ -890,58 +890,90 @@ export default function LockedPdfPage() {
             </div>
           </div>
 
-          {/* Quick Metrics Bar */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-4 py-3 text-xs w-full max-w-full">
+          {/* Quick Metrics 4 Stat Cards */}
+          <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
             {/* Active Pages */}
-            <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#EFF6FF] border border-[#0066B2]/15 dark:border-[#38BDF8]/20 dark:bg-[#0066B2]/15 text-[#0066B2] dark:text-[#38BDF8] shrink-0 shadow-2xs">
-                <Globe className="h-4 w-4" />
+            <div className="group relative h-full rounded-2xl border border-zinc-200/80 bg-white/90 dark:border-[#2e2e38] dark:bg-[#18181B]/90 p-3.5 sm:p-4 shadow-sm backdrop-blur-sm hover:border-[#0066B2]/40 dark:hover:border-[#38BDF8]/25 hover:shadow-md transition-all duration-200 overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
+              <div className="flex items-center justify-between sm:justify-start w-full sm:w-auto">
+                <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl border border-[#0066B2]/30 bg-[#EFF6FF] text-[#0066B2] dark:border-[#0066B2]/30 dark:bg-[#0066B2]/20 dark:text-[#38BDF8]">
+                  <Globe className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
+                </div>
               </div>
-              <div className="min-w-0 flex-1">
-                <p className="text-[10px] sm:text-[10.5px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider truncate">Active Pages</p>
-                <p className="text-sm sm:text-base font-bold text-zinc-900 dark:text-white leading-tight mt-0.5 truncate">
+              <div className="flex-1 min-w-0 w-full">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-[#9B9085] leading-none truncate">
+                  Active Pages
+                </p>
+                <p className="text-xl font-extrabold tabular-nums text-zinc-900 dark:text-white mt-1 leading-none tracking-tight">
                   {liveCount} <span className="text-xs font-normal text-zinc-400">/ {total}</span>
                 </p>
+                <p className="mt-1 text-[10px] text-zinc-400 dark:text-[#9B9085] truncate">
+                  of {total} documents
+                </p>
               </div>
+              <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0066B2]/[0.04] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             </div>
 
             {/* Total Traffic */}
-            <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-50 border border-emerald-500/20 dark:border-emerald-500/20 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 shrink-0 shadow-2xs">
-                <Eye className="h-4 w-4" />
+            <div className="group relative h-full rounded-2xl border border-zinc-200/80 bg-white/90 dark:border-[#2e2e38] dark:bg-[#18181B]/90 p-3.5 sm:p-4 shadow-sm backdrop-blur-sm hover:border-[#0066B2]/40 dark:hover:border-[#38BDF8]/25 hover:shadow-md transition-all duration-200 overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
+              <div className="flex items-center justify-between sm:justify-start w-full sm:w-auto">
+                <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl border border-emerald-500/30 bg-emerald-50 text-emerald-600 dark:border-emerald-500/30 dark:bg-emerald-500/20 dark:text-emerald-400">
+                  <Eye className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
+                </div>
               </div>
-              <div className="min-w-0 flex-1">
-                <p className="text-[10px] sm:text-[10.5px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider truncate">Total Traffic</p>
-                <p className="text-sm sm:text-base font-bold text-zinc-900 dark:text-white leading-tight mt-0.5 truncate">
+              <div className="flex-1 min-w-0 w-full">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-[#9B9085] leading-none truncate">
+                  Total Traffic
+                </p>
+                <p className="text-xl font-extrabold tabular-nums text-zinc-900 dark:text-white mt-1 leading-none tracking-tight">
                   {totalViews.toLocaleString()}
                 </p>
+                <p className="mt-1 text-[10px] text-zinc-400 dark:text-[#9B9085] truncate">
+                  all PDF views
+                </p>
               </div>
+              <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0066B2]/[0.04] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             </div>
 
             {/* Leads Collected */}
-            <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-purple-50 border border-purple-500/20 dark:border-purple-500/20 dark:bg-purple-950/40 text-purple-600 dark:text-purple-400 shrink-0 shadow-2xs">
-                <MousePointer className="h-4 w-4" />
+            <div className="group relative h-full rounded-2xl border border-zinc-200/80 bg-white/90 dark:border-[#2e2e38] dark:bg-[#18181B]/90 p-3.5 sm:p-4 shadow-sm backdrop-blur-sm hover:border-[#0066B2]/40 dark:hover:border-[#38BDF8]/25 hover:shadow-md transition-all duration-200 overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
+              <div className="flex items-center justify-between sm:justify-start w-full sm:w-auto">
+                <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl border border-purple-500/30 bg-purple-50 text-purple-600 dark:border-purple-500/30 dark:bg-purple-500/20 dark:text-purple-400">
+                  <MousePointer className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
+                </div>
               </div>
-              <div className="min-w-0 flex-1">
-                <p className="text-[10px] sm:text-[10.5px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider truncate">Leads Collected</p>
-                <p className="text-sm sm:text-base font-bold text-zinc-900 dark:text-white leading-tight mt-0.5 truncate">
+              <div className="flex-1 min-w-0 w-full">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-[#9B9085] leading-none truncate">
+                  Leads Collected
+                </p>
+                <p className="text-xl font-extrabold tabular-nums text-zinc-900 dark:text-white mt-1 leading-none tracking-tight">
                   {totalSignups.toLocaleString()}
                 </p>
+                <p className="mt-1 text-[10px] text-zinc-400 dark:text-[#9B9085] truncate">
+                  PDF unlocks
+                </p>
               </div>
+              <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0066B2]/[0.04] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             </div>
 
             {/* Avg Conv. Rate */}
-            <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-amber-50 border border-amber-500/20 dark:border-amber-500/20 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 shrink-0 shadow-2xs">
-                <TrendingUp className="h-4 w-4" />
+            <div className="group relative h-full rounded-2xl border border-zinc-200/80 bg-white/90 dark:border-[#2e2e38] dark:bg-[#18181B]/90 p-3.5 sm:p-4 shadow-sm backdrop-blur-sm hover:border-[#0066B2]/40 dark:hover:border-[#38BDF8]/25 hover:shadow-md transition-all duration-200 overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
+              <div className="flex items-center justify-between sm:justify-start w-full sm:w-auto">
+                <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl border border-amber-500/30 bg-amber-50 text-amber-600 dark:border-amber-500/30 dark:bg-amber-500/20 dark:text-amber-400">
+                  <TrendingUp className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
+                </div>
               </div>
-              <div className="min-w-0 flex-1">
-                <p className="text-[10px] sm:text-[10.5px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider truncate">Avg. Conv. Rate</p>
-                <p className="text-sm sm:text-base font-bold text-zinc-900 dark:text-white leading-tight mt-0.5 truncate">
+              <div className="flex-1 min-w-0 w-full">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-[#9B9085] leading-none truncate">
+                  Avg. Conv. Rate
+                </p>
+                <p className="text-xl font-extrabold tabular-nums text-zinc-900 dark:text-white mt-1 leading-none tracking-tight">
                   {avgConversion}%
                 </p>
+                <p className="mt-1 text-[10px] text-zinc-400 dark:text-[#9B9085] truncate">
+                  visitor to unlock
+                </p>
               </div>
+              <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0066B2]/[0.04] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             </div>
           </div>
         </div>
@@ -1470,7 +1502,7 @@ export default function LockedPdfPage() {
           </div>
 
           {/* Right Fixed Sticky Inspector Card */}
-          <div className="hidden lg:block lg:w-[35%] sticky top-[165px] z-20 space-y-4 transition-all duration-200">
+          <div className="hidden lg:block lg:w-[35%] sticky top-6 z-20 space-y-4 transition-all duration-200">
             {activePage ? (
               <div className="rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-[#141417] p-5 shadow-lg space-y-5">
                 <div className="flex items-start justify-between">
