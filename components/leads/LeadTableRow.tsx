@@ -50,10 +50,10 @@ export const LeadTableRow = memo(function LeadTableRow({
           <AnimatePresence initial={false}>
             {(isSelectionActive || isSelected) && (
               <motion.div
-                initial={{ opacity: 0, width: 0, marginRight: 0, scale: 0.6 }}
-                animate={{ opacity: 1, width: 22, marginRight: 10, scale: 1 }}
-                exit={{ opacity: 0, width: 0, marginRight: 0, scale: 0.6 }}
-                transition={{ type: "spring", stiffness: 420, damping: 28 }}
+                initial={{ opacity: 0, width: 0, marginRight: 0 }}
+                animate={{ opacity: 1, width: 22, marginRight: 10 }}
+                exit={{ opacity: 0, width: 0, marginRight: 0 }}
+                transition={{ type: "spring", stiffness: 450, damping: 35 }}
                 onClick={(e) => {
                   e.stopPropagation();
                   onToggleSelect(lead.id);

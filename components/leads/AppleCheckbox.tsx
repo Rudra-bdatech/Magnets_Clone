@@ -33,23 +33,23 @@ export function AppleCheckbox({
         e.stopPropagation();
         onChange();
       }}
-      className={`relative inline-flex items-center justify-center transition-all duration-200 cursor-pointer select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0066B2] focus-visible:ring-offset-1 active:scale-90 ${sizeClasses} ${
+      className={`relative inline-flex items-center justify-center transition-colors duration-150 cursor-pointer select-none focus:outline-none ${sizeClasses} ${
         checked || indeterminate
-          ? "bg-gradient-to-b from-[#0077ED] to-[#0066B2] text-white shadow-[0_2px_8px_rgba(0,102,178,0.4)] dark:from-[#38BDF8] dark:to-[#0284C7] dark:text-zinc-950 dark:shadow-[0_2px_10px_rgba(56,189,248,0.35)] scale-100 border border-[#0066B2]/40 dark:border-[#38BDF8]/50"
-          : "border border-zinc-300/90 dark:border-[#3E3E4A] bg-white/90 dark:bg-[#1E1E24]/90 hover:border-[#0066B2] dark:hover:border-[#38BDF8] hover:bg-zinc-50 dark:hover:bg-[#25252D] hover:shadow-xs shadow-2xs"
+          ? "bg-[#0066B2] text-white dark:bg-[#38BDF8] dark:text-zinc-950 border border-[#0066B2] dark:border-[#38BDF8] shadow-xs"
+          : "border border-zinc-300/90 dark:border-[#3E3E4A] bg-white/90 dark:bg-[#1E1E24]/90 hover:border-[#0066B2] dark:hover:border-[#38BDF8] hover:bg-zinc-50 dark:hover:bg-[#25252D] shadow-2xs"
       } ${className}`}
     >
       <AnimatePresence mode="wait">
         {checked && !indeterminate && (
           <motion.svg
             key="apple-check-icon"
-            initial={{ scale: 0.3, opacity: 0 }}
+            initial={{ scale: 0.6, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.3, opacity: 0 }}
+            exit={{ scale: 0.6, opacity: 0 }}
             transition={{
               type: "spring",
-              stiffness: 700,
-              damping: 22,
+              stiffness: 500,
+              damping: 32,
             }}
             viewBox="0 0 14 14"
             fill="none"
@@ -62,7 +62,7 @@ export function AppleCheckbox({
             <motion.path
               initial={{ pathLength: 0 }}
               animate={{ pathLength: 1 }}
-              transition={{ duration: 0.18, ease: "easeOut" }}
+              transition={{ duration: 0.14, ease: "easeOut" }}
               d="M2.75 7.25L5.5 10L11.25 4.25"
             />
           </motion.svg>

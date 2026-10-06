@@ -15,6 +15,7 @@ import {
   HardDrive,
 } from "lucide-react";
 import type { MagnetPage } from "@/lib/data";
+import { AppleCheckbox } from "@/components/leads/AppleCheckbox";
 
 interface Resource {
   id: string;
@@ -101,36 +102,21 @@ export const MobileAssetCard = memo(function MobileAssetCard({
           <AnimatePresence initial={false}>
             {isSelectionMode && (
               <motion.div
-                initial={{ opacity: 0, width: 0, marginRight: 0, scale: 0.6 }}
-                animate={{ opacity: 1, width: 22, marginRight: 10, scale: 1 }}
-                exit={{ opacity: 0, width: 0, marginRight: 0, scale: 0.6 }}
-                transition={{ type: "spring", stiffness: 420, damping: 28 }}
+                initial={{ opacity: 0, width: 0, marginRight: 0 }}
+                animate={{ opacity: 1, width: 22, marginRight: 10 }}
+                exit={{ opacity: 0, width: 0, marginRight: 0 }}
+                transition={{ type: "spring", stiffness: 450, damping: 35 }}
                 onClick={(e) => {
                   e.stopPropagation();
                   onToggleSelect(resource.id);
                 }}
                 className="flex h-10 items-center justify-center shrink-0 overflow-hidden cursor-pointer"
               >
-                <div
-                  className={`flex h-5 w-5 items-center justify-center rounded-md border transition-all duration-150 ${
-                    isSelected
-                      ? "border-[#0066B2] bg-[#0066B2] text-white dark:border-[#38BDF8] dark:bg-[#38BDF8] dark:text-zinc-900 shadow-2xs"
-                      : "border-zinc-300 dark:border-zinc-600 bg-white dark:bg-[#202026] hover:border-[#0066B2]"
-                  }`}
-                >
-                  <AnimatePresence>
-                    {isSelected && (
-                      <motion.div
-                        initial={{ scale: 0.2, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        exit={{ scale: 0.2, opacity: 0 }}
-                        transition={{ type: "spring", stiffness: 500, damping: 25 }}
-                      >
-                        <Check className="h-3.5 w-3.5 stroke-[3]" />
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
+                <AppleCheckbox
+                  checked={isSelected}
+                  onChange={() => onToggleSelect(resource.id)}
+                  title={isSelected ? "Deselect asset" : "Select asset"}
+                />
               </motion.div>
             )}
           </AnimatePresence>
