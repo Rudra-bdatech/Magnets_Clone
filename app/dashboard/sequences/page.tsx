@@ -1005,31 +1005,69 @@ export default function SequencesPage() {
 
                         {/* Visual Step Timeline Node Preview */}
                         <div className="mt-3 flex items-center gap-1.5 overflow-x-auto rounded-xl border border-zinc-100 dark:border-white/5 bg-zinc-50/80 dark:bg-white/[0.02] p-1.5 sm:p-2 scrollbar-none">
-                          {/* Step 1: Instant Resource Delivery Node */}
-                          <div className="flex items-center gap-1 shrink-0">
-                            <div className="flex items-center gap-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-300/80 dark:border-emerald-800/60 px-2 py-1 text-[10px] sm:text-[10.5px] shadow-2xs">
-                              <Zap className="h-3 w-3 text-emerald-700 dark:text-emerald-400 shrink-0" />
-                              <span className="truncate font-extrabold text-emerald-950 dark:text-emerald-200">
-                                1. Instant Delivery
-                              </span>
-                            </div>
-                          </div>
-
-                          {seq.emails && seq.emails.slice(0, 2).map((email, idx) => (
-                            <div key={email.id || idx} className="flex items-center gap-1 shrink-0">
-                              <ArrowRight className="h-3 w-3 text-zinc-300 dark:text-zinc-600" />
-                              <div className="flex items-center gap-1.5 rounded-lg bg-white dark:bg-[#18181B] border border-zinc-200/80 dark:border-white/10 px-2 py-1 text-[10px] sm:text-[10.5px] shadow-2xs max-w-[120px] sm:max-w-[140px]">
-                                <Clock className="h-3 w-3 text-[#0066B2] dark:text-[#38BDF8] shrink-0" />
-                                <span className="truncate font-medium text-zinc-700 dark:text-zinc-300">
-                                  {idx + 2}. {email.delayLabel || `Follow-up #${idx + 1}`}
-                                </span>
+                          {seq.pageId ? (
+                            <>
+                              {/* Attached Sequence: Step 1 Instant Lead Magnet Delivery Node */}
+                              <div className="flex items-center gap-1 shrink-0">
+                                <div className="flex items-center gap-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-300/80 dark:border-emerald-800/60 px-2 py-1 text-[10px] sm:text-[10.5px] shadow-2xs">
+                                  <Zap className="h-3 w-3 text-emerald-700 dark:text-emerald-400 shrink-0" />
+                                  <span className="truncate font-extrabold text-emerald-950 dark:text-emerald-200">
+                                    1. Instant Delivery
+                                  </span>
+                                </div>
                               </div>
-                            </div>
-                          ))}
-                          {seq.emails && seq.emails.length > 2 && (
-                            <span className="rounded-lg bg-zinc-200/70 dark:bg-white/10 px-1.5 py-0.5 text-[10px] font-bold text-zinc-600 dark:text-zinc-300 shrink-0">
-                              +{seq.emails.length - 2} more
-                            </span>
+
+                              {seq.emails && seq.emails.slice(0, 2).map((email, idx) => (
+                                <div key={email.id || idx} className="flex items-center gap-1 shrink-0">
+                                  <ArrowRight className="h-3 w-3 text-zinc-300 dark:text-zinc-600" />
+                                  <div className="flex items-center gap-1.5 rounded-lg bg-white dark:bg-[#18181B] border border-zinc-200/80 dark:border-white/10 px-2 py-1 text-[10px] sm:text-[10.5px] shadow-2xs max-w-[120px] sm:max-w-[140px]">
+                                    <Clock className="h-3 w-3 text-[#0066B2] dark:text-[#38BDF8] shrink-0" />
+                                    <span className="truncate font-medium text-zinc-700 dark:text-zinc-300">
+                                      {idx + 2}. {email.delayLabel || `Follow-up #${idx + 1}`}
+                                    </span>
+                                  </div>
+                                </div>
+                              ))}
+                              {seq.emails && seq.emails.length > 2 && (
+                                <span className="rounded-lg bg-zinc-200/70 dark:bg-white/10 px-1.5 py-0.5 text-[10px] font-bold text-zinc-600 dark:text-zinc-300 shrink-0">
+                                  +{seq.emails.length - 2} more
+                                </span>
+                              )}
+                            </>
+                          ) : (
+                            <>
+                              {/* Standalone Sequence: Direct sequence steps */}
+                              {seq.emails && seq.emails.length > 0 ? (
+                                <>
+                                  {seq.emails.slice(0, 3).map((email, idx) => (
+                                    <div key={email.id || idx} className="flex items-center gap-1 shrink-0">
+                                      {idx > 0 && <ArrowRight className="h-3 w-3 text-zinc-300 dark:text-zinc-600" />}
+                                      <div className={`flex items-center gap-1.5 rounded-lg px-2 py-1 text-[10px] sm:text-[10.5px] shadow-2xs max-w-[130px] sm:max-w-[150px] ${
+                                        idx === 0
+                                          ? "bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-300/80 dark:border-emerald-800/60"
+                                          : "bg-white dark:bg-[#18181B] border border-zinc-200/80 dark:border-white/10"
+                                      }`}>
+                                        {idx === 0 ? (
+                                          <Zap className="h-3 w-3 text-emerald-700 dark:text-emerald-400 shrink-0" />
+                                        ) : (
+                                          <Clock className="h-3 w-3 text-[#0066B2] dark:text-[#38BDF8] shrink-0" />
+                                        )}
+                                        <span className={`truncate font-medium ${idx === 0 ? "font-extrabold text-emerald-950 dark:text-emerald-200" : "text-zinc-700 dark:text-zinc-300"}`}>
+                                          {idx + 1}. {email.delayLabel || (idx === 0 ? "Instantly" : `Follow-up #${idx}`)}
+                                        </span>
+                                      </div>
+                                    </div>
+                                  ))}
+                                  {seq.emails.length > 3 && (
+                                    <span className="rounded-lg bg-zinc-200/70 dark:bg-white/10 px-1.5 py-0.5 text-[10px] font-bold text-zinc-600 dark:text-zinc-300 shrink-0">
+                                      +{seq.emails.length - 3} more
+                                    </span>
+                                  )}
+                                </>
+                              ) : (
+                                <span className="text-[10px] text-zinc-400 font-medium italic">No email steps added yet</span>
+                              )}
+                            </>
                           )}
                         </div>
                       </div>

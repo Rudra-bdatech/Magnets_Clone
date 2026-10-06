@@ -503,16 +503,21 @@ export default function SequenceEditor() {
     if (!seq) return;
     const n = emailsWithBody.length;
     const newId = `e_${Date.now()}`;
-    const delayObj = standardDelays[Math.min(n, standardDelays.length - 1)];
+    const isFirstInStandalone = !attachedPage && n === 0;
+    const delayObj = isFirstInStandalone ? standardDelays[0] : standardDelays[Math.min(n, standardDelays.length - 1)];
     const email: ExtendedSequenceEmail = {
       id: newId,
-      subject: `Follow-up #${n + 1}: Checking in`,
-      delayLabel: delayObj.label,
-      delayMinutes: delayObj.minutes,
+      subject: isFirstInStandalone
+        ? "Welcome! Here's what to expect"
+        : `Follow-up #${attachedPage ? n + 1 : n}: Checking in`,
+      delayLabel: isFirstInStandalone ? "Instantly" : delayObj.label,
+      delayMinutes: isFirstInStandalone ? 0 : delayObj.minutes,
       status: "live",
       sent: 0,
       opened: 0,
-      body: "Hi {first_name},\n\nJust following up to see if you had any questions!\n\nBest,",
+      body: isFirstInStandalone
+        ? "Hi {first_name},\n\nWelcome! We're thrilled to have you here.\n\nOver the coming days, I'll be sharing key insights and actionable resources with you to help you reach your goals.\n\nIf you ever have any questions, simply reply to this email.\n\nBest regards,"
+        : "Hi {first_name},\n\nJust following up to see if you had any questions!\n\nBest,",
     };
     const nextEmails = [...emailsWithBody, email];
     setEmailsWithBody(nextEmails);
@@ -524,30 +529,57 @@ export default function SequenceEditor() {
   function generateAiSubject(id: string) {
     setGeneratingAiForId(id);
     const emailIndex = emailsWithBody.findIndex((e) => e.id === id);
-    const pageTitle = attachedPage?.name || "the resource";
+    const isStandalone = !attachedPage;
+    const seqName = seq?.name || "our community";
+    const pageTitle = attachedPage?.name || seqName;
 
     setTimeout(() => {
-      const suggestionsByStep =
-        emailIndex === 0
-          ? [
-              `Your ${pageTitle} is ready for download! 🎁`,
-              `Access your ${pageTitle} inside (+ bonus resource)`,
-              `Here is the ${pageTitle} you requested`,
-              `Welcome! Get the most out of ${pageTitle}`,
-            ]
-          : emailIndex === 1
-          ? [
-              `Quick follow-up: Did you get a chance to check out ${pageTitle}?`,
-              `1 quick question about your download...`,
-              `3 tips to implement ${pageTitle} in under 10 minutes`,
-              `The biggest mistake people make with ${pageTitle}`,
-            ]
-          : [
-              `Case study: How to get 3x results with ${pageTitle}`,
-              `Next steps: Scaling your growth faster 🚀`,
-              `Did this work for you? (Feedback appreciated)`,
-              `Following up: Ready for the next stage?`,
-            ];
+      let suggestionsByStep: string[] = [];
+      if (isStandalone) {
+        suggestionsByStep =
+          emailIndex === 0
+            ? [
+                `Welcome to ${seqName}! 🚀 (Important details inside)`,
+                `Glad you're here! Here's what to expect`,
+                `Quick intro + your special welcome gift inside 🎁`,
+                `Welcome aboard! Let's get you set up`,
+              ]
+            : emailIndex === 1
+            ? [
+                `Quick follow-up: How's everything going?`,
+                `1 quick question for you...`,
+                `3 essential tips to help you get started faster`,
+                `The #1 mistake to avoid early on`,
+              ]
+            : [
+                `Case study: How to get maximum results with ${seqName}`,
+                `Next steps: Leveling up your progress 🚀`,
+                `Quick check-in: How can we help?`,
+                `Are you ready for the next level?`,
+              ];
+      } else {
+        suggestionsByStep =
+          emailIndex === 0
+            ? [
+                `Your ${pageTitle} is ready for download! 🎁`,
+                `Access your ${pageTitle} inside (+ bonus resource)`,
+                `Here is the ${pageTitle} you requested`,
+                `Welcome! Get the most out of ${pageTitle}`,
+              ]
+            : emailIndex === 1
+            ? [
+                `Quick follow-up: Did you get a chance to check out ${pageTitle}?`,
+                `1 quick question about your download...`,
+                `3 tips to implement ${pageTitle} in under 10 minutes`,
+                `The biggest mistake people make with ${pageTitle}`,
+              ]
+            : [
+                `Case study: How to get 3x results with ${pageTitle}`,
+                `Next steps: Scaling your growth faster 🚀`,
+                `Did this work for you? (Feedback appreciated)`,
+                `Following up: Ready for the next stage?`,
+              ];
+      }
 
       const selected = suggestionsByStep[Math.floor(Math.random() * suggestionsByStep.length)];
       patchEmail(id, { subject: selected });
@@ -559,17 +591,29 @@ export default function SequenceEditor() {
   function generateAiBody(id: string) {
     setGeneratingAiBodyForId(id);
     const emailIndex = emailsWithBody.findIndex((e) => e.id === id);
-    const pageTitle = attachedPage?.name || "this resource";
+    const isStandalone = !attachedPage;
+    const seqName = seq?.name || "our platform";
+    const pageTitle = attachedPage?.name || seqName;
     const brandName = account?.brandName || account?.name || "Our Team";
 
     setTimeout(() => {
       let aiBody = "";
-      if (emailIndex === 0) {
-        aiBody = `Hi {first_name},\n\nThank you for requesting ${pageTitle}!\n\nYou can access your deliverable anytime via the direct link below:\n{resource_link}\n\nI recommend reviewing section 1 first, as it covers the foundational strategies you can implement right away.\n\nIf you have any questions or feedback, simply hit reply to this email.\n\nWarm regards,\n${brandName}`;
-      } else if (emailIndex === 1) {
-        aiBody = `Hi {first_name},\n\nI wanted to quickly follow up and see if you had a chance to look through ${pageTitle} yet.\n\nMost readers find that taking action within the first 24 hours leads to the highest results.\n\nHave you tried applying the core takeaways yet? Let me know where you're at—happy to share extra tips!\n\nBest,\n${brandName}`;
+      if (isStandalone) {
+        if (emailIndex === 0) {
+          aiBody = `Hi {first_name},\n\nWelcome to ${seqName}! We're thrilled to have you here.\n\nOver the next few days, I'll be sharing our most effective strategies, guides, and lessons directly with you.\n\nTo make sure you get the most out of this, feel free to reply to this email with what your #1 current goal is right now!\n\nWarm regards,\n${brandName}`;
+        } else if (emailIndex === 1) {
+          aiBody = `Hi {first_name},\n\nI wanted to quickly check in and see how everything is going so far.\n\nMost members find that taking action on Day 1 creates the fastest momentum.\n\nDid you have a chance to review our initial notes? If you're stuck on anything, simply hit reply—I read every message.\n\nBest,\n${brandName}`;
+        } else {
+          aiBody = `Hi {first_name},\n\nChecking in one last time regarding ${seqName}.\n\nIf you'd like to dive deeper or want personalized help taking your progress to the next stage, feel free to reach out anytime.\n\nLooking forward to hearing about your wins!\n\nCheers,\n${brandName}`;
+        }
       } else {
-        aiBody = `Hi {first_name},\n\nChecking in one last time regarding ${pageTitle}.\n\nIf you'd like to dive deeper or walk through how to apply this directly to your current workflow, feel free to let me know.\n\nLooking forward to hearing about your progress!\n\nCheers,\n${brandName}`;
+        if (emailIndex === 0) {
+          aiBody = `Hi {first_name},\n\nThank you for requesting ${pageTitle}!\n\nYou can access your deliverable anytime via the direct link below:\n{resource_link}\n\nI recommend reviewing section 1 first, as it covers the foundational strategies you can implement right away.\n\nIf you have any questions or feedback, simply hit reply to this email.\n\nWarm regards,\n${brandName}`;
+        } else if (emailIndex === 1) {
+          aiBody = `Hi {first_name},\n\nI wanted to quickly follow up and see if you had a chance to look through ${pageTitle} yet.\n\nMost readers find that taking action within the first 24 hours leads to the highest results.\n\nHave you tried applying the core takeaways yet? Let me know where you're at—happy to share extra tips!\n\nBest,\n${brandName}`;
+        } else {
+          aiBody = `Hi {first_name},\n\nChecking in one last time regarding ${pageTitle}.\n\nIf you'd like to dive deeper or walk through how to apply this directly to your current workflow, feel free to let me know.\n\nLooking forward to hearing about your progress!\n\nCheers,\n${brandName}`;
+        }
       }
 
       patchEmail(id, { body: aiBody });
@@ -904,7 +948,7 @@ export default function SequenceEditor() {
                     <Mail className="h-3.5 w-3.5 text-[#0066B2] dark:text-[#38BDF8] shrink-0" />
                     <span>Drip Sequence Steps</span>
                     <span className="ml-1 inline-flex items-center justify-center rounded-full bg-blue-100 dark:bg-blue-950/60 text-[#0066B2] dark:text-[#38BDF8] text-[10px] font-bold px-1.5 py-0.2">
-                      {emailsWithBody.length + 1}
+                      {attachedPage ? emailsWithBody.length + 1 : emailsWithBody.length}
                     </span>
                   </h2>
                 </div>
@@ -921,56 +965,56 @@ export default function SequenceEditor() {
               {/* Email Cards Container with Workflow Flow */}
               <div className="space-y-0">
                 
-                {/* Step 1: Instant Resource Delivery Milestone Card */}
-                <div className="rounded-2xl border border-emerald-500/30 dark:border-emerald-500/20 bg-gradient-to-br from-emerald-50/80 via-white to-white dark:from-emerald-950/20 dark:via-[#18181B] dark:to-[#18181B] p-3.5 sm:p-5 shadow-xs transition hover:shadow-md">
-                  
-                  {/* Step 1 Header Row: Balanced & Responsive */}
-                  <div className="flex items-center justify-between gap-2.5">
-                    <div className="flex items-center gap-2 sm:gap-2.5 min-w-0">
-                      <span className="flex h-6 w-6 sm:h-7 sm:w-7 shrink-0 items-center justify-center rounded-lg sm:rounded-xl bg-emerald-600 text-xs font-extrabold text-white shadow-xs">
-                        1
-                      </span>
-                      <div className="flex items-center gap-1.5 min-w-0">
-                        <span className="text-xs sm:text-sm font-bold text-zinc-900 dark:text-white truncate">
-                          Instant Delivery
+                {/* Step 1: Instant Resource Delivery Milestone Card (Only for Lead Magnet Attached Sequences) */}
+                {attachedPage && (
+                  <div className="rounded-2xl border border-emerald-500/30 dark:border-emerald-500/20 bg-gradient-to-br from-emerald-50/80 via-white to-white dark:from-emerald-950/20 dark:via-[#18181B] dark:to-[#18181B] p-3.5 sm:p-5 shadow-xs transition hover:shadow-md">
+                    
+                    {/* Step 1 Header Row */}
+                    <div className="flex items-center justify-between gap-2.5">
+                      <div className="flex items-center gap-2 sm:gap-2.5 min-w-0">
+                        <span className="flex h-6 w-6 sm:h-7 sm:w-7 shrink-0 items-center justify-center rounded-lg sm:rounded-xl bg-emerald-600 text-xs font-extrabold text-white shadow-xs">
+                          1
                         </span>
-                        <span className="inline-flex items-center rounded-md border border-emerald-300/80 dark:border-emerald-800/60 bg-emerald-100/80 dark:bg-emerald-950/50 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-800 dark:text-emerald-300 shrink-0">
-                          On Signup
-                        </span>
+                        <div className="flex items-center gap-1.5 min-w-0">
+                          <span className="text-xs sm:text-sm font-bold text-zinc-900 dark:text-white truncate">
+                            Instant Delivery
+                          </span>
+                          <span className="inline-flex items-center rounded-md border border-emerald-300/80 dark:border-emerald-800/60 bg-emerald-100/80 dark:bg-emerald-950/50 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-800 dark:text-emerald-300 shrink-0">
+                            On Signup
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Step 1 Performance Stats Pill */}
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        <div className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-200/80 dark:border-zinc-800 bg-white/90 dark:bg-zinc-900/90 px-2 py-1 text-[10px] sm:text-[11px] font-medium text-zinc-600 dark:text-zinc-300 shadow-2xs">
+                          <span className="inline-flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-bold">
+                            <Check className="h-3 w-3 shrink-0" />
+                            <span>{delivered.toLocaleString()} Sent</span>
+                          </span>
+                          <span className="text-zinc-300 dark:text-zinc-700">•</span>
+                          <span className="inline-flex items-center gap-1 text-indigo-600 dark:text-indigo-400 font-bold">
+                            <Eye className="h-3 w-3 shrink-0" />
+                            <span>{overallOpenRate}% Open</span>
+                          </span>
+                        </div>
                       </div>
                     </div>
 
-                    {/* Step 1 Performance Stats Pill */}
-                    <div className="flex items-center gap-1.5 shrink-0">
-                      <div className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-200/80 dark:border-zinc-800 bg-white/90 dark:bg-zinc-900/90 px-2 py-1 text-[10px] sm:text-[11px] font-medium text-zinc-600 dark:text-zinc-300 shadow-2xs">
-                        <span className="inline-flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-bold">
-                          <Check className="h-3 w-3 shrink-0" />
-                          <span>{delivered.toLocaleString()} Sent</span>
-                        </span>
-                        <span className="text-zinc-300 dark:text-zinc-700">•</span>
-                        <span className="inline-flex items-center gap-1 text-indigo-600 dark:text-indigo-400 font-bold">
-                          <Eye className="h-3 w-3 shrink-0" />
-                          <span>{overallOpenRate}% Open</span>
-                        </span>
+                    {/* Step 1 Inner Delivery Details Box */}
+                    <div className="mt-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white/90 dark:bg-zinc-900/80 rounded-xl p-3 sm:p-3.5 border border-emerald-100 dark:border-emerald-950/50">
+                      <div className="min-w-0 flex-1">
+                        <p className="text-[10px] font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">
+                          Resource Delivery Email
+                        </p>
+                        <p className="text-xs sm:text-sm font-bold text-zinc-900 dark:text-white truncate mt-0.5">
+                          {attachedPage.emailSubject || `Here is your requested resource: ${attachedPage.name || "Download"}`}
+                        </p>
+                        <p className="text-[11px] text-zinc-500 dark:text-zinc-400 mt-0.5 line-clamp-1">
+                          Dispatched immediately to deliver the file link upon form submission.
+                        </p>
                       </div>
-                    </div>
-                  </div>
 
-                  {/* Step 1 Inner Delivery Details Box */}
-                  <div className="mt-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white/90 dark:bg-zinc-900/80 rounded-xl p-3 sm:p-3.5 border border-emerald-100 dark:border-emerald-950/50">
-                    <div className="min-w-0 flex-1">
-                      <p className="text-[10px] font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">
-                        Resource Delivery Email
-                      </p>
-                      <p className="text-xs sm:text-sm font-bold text-zinc-900 dark:text-white truncate mt-0.5">
-                        {attachedPage?.emailSubject || `Here is your requested resource: ${attachedPage?.name || "Download"}`}
-                      </p>
-                      <p className="text-[11px] text-zinc-500 dark:text-zinc-400 mt-0.5 line-clamp-1">
-                        Dispatched immediately to deliver the file link upon form submission.
-                      </p>
-                    </div>
-
-                    {attachedPage && (
                       <Link
                         href={`/dashboard/leadmagnets/edit/${attachedPage.id}?tab=delivery`}
                         className="inline-flex items-center gap-1 text-[11px] font-bold text-[#0066B2] dark:text-[#38BDF8] hover:underline shrink-0 self-start sm:self-auto pt-0.5 sm:pt-0"
@@ -978,44 +1022,84 @@ export default function SequenceEditor() {
                         <span>Edit Delivery Template</span>
                         <ArrowUpRight className="h-3.5 w-3.5" />
                       </Link>
-                    )}
+                    </div>
                   </div>
-                </div>
+                )}
 
-                {/* Drip Follow-up Step Cards with Left-Aligned Flow Connectors */}
+                {/* Empty State for Standalone Sequences with 0 steps */}
+                {!attachedPage && emailsWithBody.length === 0 && (
+                  <div className="rounded-2xl border border-dashed border-zinc-300 dark:border-zinc-800 bg-white/50 dark:bg-[#18181B]/50 p-8 text-center space-y-3">
+                    <div className="flex h-12 w-12 mx-auto items-center justify-center rounded-2xl bg-blue-50 dark:bg-blue-950/40 text-[#0066B2] dark:text-[#38BDF8]">
+                      <Mail className="h-6 w-6" />
+                    </div>
+                    <div>
+                      <h3 className="text-sm font-bold text-zinc-900 dark:text-white">No Email Steps in Sequence</h3>
+                      <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1 max-w-sm mx-auto">
+                        Add your first welcome or trigger email to start building this standalone drip campaign.
+                      </p>
+                    </div>
+                    <button
+                      onClick={addEmail}
+                      className="inline-flex items-center gap-1.5 rounded-xl bg-[#0066B2] px-4 py-2 text-xs font-bold text-white hover:bg-[#005291] transition shadow-xs cursor-pointer"
+                    >
+                      <Plus className="h-4 w-4" />
+                      <span>Add Initial Welcome Email</span>
+                    </button>
+                  </div>
+                )}
+
+                {/* Drip Follow-up / Step Cards with Left-Aligned Flow Connectors */}
                 {emailsWithBody.map((email, i) => {
                   const isExpanded = expandedEmailId === email.id;
                   const currentTab = activeTab[email.id] || "edit";
                   const openPercentage = email.sent > 0 ? Math.round((email.opened / email.sent) * 100) : 0;
                   const isCustomDelay = !standardDelays.some((d) => d.minutes === email.delayMinutes);
+                  const stepNumber = attachedPage ? i + 2 : i + 1;
+                  const isInitialStandaloneStep = !attachedPage && i === 0;
+                  const stepLabel = attachedPage 
+                    ? `Follow-up #${i + 1}` 
+                    : (i === 0 ? "Initial Email" : `Follow-up #${i}`);
+                  const showFlowConnector = attachedPage || i > 0;
 
                   return (
                     <div key={email.id}>
                       {/* Flow Connector - Left Aligned to Step Numbers */}
-                      <div className="flex items-center gap-2 pl-6 sm:pl-8 my-2">
-                        <div className="flex flex-col items-center">
-                          <div className="h-2.5 w-0.5 bg-zinc-300 dark:bg-zinc-700" />
-                          <div className="h-1.5 w-1.5 rounded-full bg-[#0066B2] dark:bg-[#38BDF8]" />
-                          <div className="h-2.5 w-0.5 bg-zinc-300 dark:bg-zinc-700" />
+                      {showFlowConnector && (
+                        <div className="flex items-center gap-2 pl-6 sm:pl-8 my-2">
+                          <div className="flex flex-col items-center">
+                            <div className="h-2.5 w-0.5 bg-zinc-300 dark:bg-zinc-700" />
+                            <div className="h-1.5 w-1.5 rounded-full bg-[#0066B2] dark:bg-[#38BDF8]" />
+                            <div className="h-2.5 w-0.5 bg-zinc-300 dark:bg-zinc-700" />
+                          </div>
+                          <span className="inline-flex items-center gap-1.5 rounded-md border border-blue-200/70 dark:border-blue-900/50 bg-blue-50/70 dark:bg-blue-950/40 px-2 py-0.5 text-[10px] font-bold text-[#0066B2] dark:text-[#38BDF8]">
+                            <Clock className="h-2.5 w-2.5 shrink-0" />
+                            <span>{email.delayLabel || "1 day later"}</span>
+                          </span>
                         </div>
-                        <span className="inline-flex items-center gap-1.5 rounded-md border border-blue-200/70 dark:border-blue-900/50 bg-blue-50/70 dark:bg-blue-950/40 px-2 py-0.5 text-[10px] font-bold text-[#0066B2] dark:text-[#38BDF8]">
-                          <Clock className="h-2.5 w-2.5 shrink-0" />
-                          <span>{email.delayLabel || "1 day later"}</span>
-                        </span>
-                      </div>
+                      )}
 
-                      <div className="rounded-2xl border border-zinc-200/90 dark:border-zinc-800/90 bg-white dark:bg-[#18181B] p-3.5 sm:p-5 shadow-xs transition hover:shadow-md">
-                        {/* Step Header: Balanced & Touch-Friendly */}
+                      <div className={`rounded-2xl border bg-white dark:bg-[#18181B] p-3.5 sm:p-5 shadow-xs transition hover:shadow-md ${
+                        isInitialStandaloneStep 
+                          ? "border-emerald-500/30 dark:border-emerald-500/20 bg-gradient-to-br from-emerald-50/30 via-white to-white dark:from-emerald-950/10 dark:via-[#18181B] dark:to-[#18181B]" 
+                          : "border-zinc-200/90 dark:border-zinc-800/90"
+                      }`}>
+                        {/* Step Header */}
                         <div className="flex items-center justify-between gap-2">
                           
-                          {/* Left: Step Number, Follow-up label & Delay picker */}
+                          {/* Left: Step Number, Step label & Delay picker */}
                           <div className="flex items-center gap-1.5 sm:gap-2.5 flex-wrap min-w-0">
-                            <span className="flex h-6 w-6 sm:h-7 sm:w-7 shrink-0 items-center justify-center rounded-lg sm:rounded-xl bg-[#0066B2] text-xs font-extrabold text-white shadow-xs">
-                              {i + 2}
+                            <span className={`flex h-6 w-6 sm:h-7 sm:w-7 shrink-0 items-center justify-center rounded-lg sm:rounded-xl text-xs font-extrabold text-white shadow-xs ${
+                              isInitialStandaloneStep ? "bg-emerald-600" : "bg-[#0066B2]"
+                            }`}>
+                              {stepNumber}
                             </span>
                             
-                            <span className="text-xs font-bold text-[#0066B2] dark:text-[#38BDF8] bg-blue-50 dark:bg-blue-950/40 px-2 py-0.5 rounded-lg border border-blue-200/70 dark:border-blue-900/60 shrink-0">
-                              Follow-up #{i + 1}
+                            <span className={`text-xs font-bold px-2 py-0.5 rounded-lg border shrink-0 ${
+                              isInitialStandaloneStep 
+                                ? "text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/40 border-emerald-200/70 dark:border-emerald-900/60" 
+                                : "text-[#0066B2] dark:text-[#38BDF8] bg-blue-50 dark:bg-blue-950/40 border-blue-200/70 dark:border-blue-900/60"
+                            }`}>
+                              {stepLabel}
                             </span>
 
                             {/* Delay Selector Pill */}
@@ -1196,7 +1280,7 @@ export default function SequenceEditor() {
                             {/* Quick Variable Insertion Tags */}
                             <div className="flex items-center gap-1 sm:gap-1.5 flex-wrap pt-0.5">
                               <span className="text-[10px] sm:text-[11px] font-medium text-zinc-400">Insert tag:</span>
-                              {["{first_name}", "{resource_link}", "{name}"].map((tag) => (
+                              {["{first_name}", "{name}", ...(attachedPage ? ["{resource_link}"] : [])].map((tag) => (
                                 <button
                                   key={tag}
                                   type="button"
@@ -1246,7 +1330,7 @@ export default function SequenceEditor() {
                         {/* Card Footer Info */}
                         <div className="mt-3 flex items-center justify-between gap-2 text-[11px] text-zinc-500 dark:text-zinc-400 pt-1">
                           <span className="text-[10px] sm:text-[11px] font-medium text-zinc-400">
-                            {isExpanded ? "Editor active" : "Drip follow-up step"}
+                            {isExpanded ? "Editor active" : (isInitialStandaloneStep ? "Initial trigger email" : "Drip follow-up step")}
                           </span>
 
                           <button
@@ -1268,7 +1352,7 @@ export default function SequenceEditor() {
                     className="flex w-full items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-zinc-300 dark:border-zinc-800 bg-white/40 dark:bg-[#18181B]/40 py-3.5 sm:py-4 text-xs font-bold text-zinc-600 dark:text-zinc-400 hover:border-[#0066B2] hover:text-[#0066B2] dark:hover:border-[#38BDF8] dark:hover:text-[#38BDF8] hover:bg-blue-50/50 dark:hover:bg-blue-950/20 active:scale-[0.99] transition cursor-pointer shadow-xs"
                   >
                     <Plus className="h-4 w-4" />
-                    <span>Add Another Email Step to Funnel</span>
+                    <span>Add Another Email Step to {attachedPage ? "Funnel" : "Sequence"}</span>
                   </button>
                 </div>
               </div>
@@ -1282,7 +1366,7 @@ export default function SequenceEditor() {
                 <div className="flex items-center justify-between">
                   <h3 className="text-xs font-extrabold uppercase tracking-wider text-zinc-900 dark:text-white flex items-center gap-2">
                     <Rocket className="h-4 w-4 text-[#0066B2] dark:text-[#38BDF8]" />
-                    <span>Funnel Performance</span>
+                    <span>{attachedPage ? "Funnel Performance" : "Sequence Performance"}</span>
                   </h3>
                   <span className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full">
                     {overallOpenRate}% Open Rate

@@ -74,9 +74,10 @@ export default function NewSequence() {
 
     setIsSubmitting(true);
 
+    const isStandalone = !selectedPageId;
     const initialEmail: SequenceEmail = {
       id: `e_${Date.now()}`,
-      subject: subject.trim() || "Your requested resource is inside!",
+      subject: subject.trim() || (isStandalone ? "Welcome! Here's what to expect" : "Your requested resource is inside!"),
       delayLabel: "Instantly",
       delayMinutes: 0,
       status: "live",
@@ -86,7 +87,9 @@ export default function NewSequence() {
 
     const followUpEmail: SequenceEmail = {
       id: `e_${Date.now() + 1}`,
-      subject: "Quick follow-up: Did you get a chance to check out the resource?",
+      subject: isStandalone 
+        ? "Quick follow-up: Checking in" 
+        : "Quick follow-up: Did you get a chance to check out the resource?",
       delayLabel: "1 day later",
       delayMinutes: 1440,
       status: "live",

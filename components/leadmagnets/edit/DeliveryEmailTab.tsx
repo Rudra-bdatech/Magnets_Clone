@@ -27,7 +27,6 @@ import {
   Table as TableIcon,
   Link2,
   Minus,
-  Sparkles,
   Lock,
   FileText,
 } from "lucide-react";
@@ -46,12 +45,12 @@ export interface DeliveryEmailTabProps {
   hostedResources: any[];
   emailBody: string;
   setEmailBody: React.Dispatch<React.SetStateAction<string>>;
-  enableAiPersonalizedDeliverable: boolean;
-  setEnableAiPersonalizedDeliverable: (enable: boolean) => void;
-  customPromptQuestion: string;
-  setCustomPromptQuestion: (q: string) => void;
-  customPromptPlaceholder: string;
-  setCustomPromptPlaceholder: (p: string) => void;
+  enableAiPersonalizedDeliverable?: boolean;
+  setEnableAiPersonalizedDeliverable?: (enable: boolean) => void;
+  customPromptQuestion?: string;
+  setCustomPromptQuestion?: (q: string) => void;
+  customPromptPlaceholder?: string;
+  setCustomPromptPlaceholder?: (p: string) => void;
   isLockedPdf?: boolean;
   lockedPdfResources?: Array<{ id: string; name: string; url: string }>;
 }
@@ -69,12 +68,12 @@ export default function DeliveryEmailTab({
   hostedResources,
   emailBody,
   setEmailBody,
-  enableAiPersonalizedDeliverable,
-  setEnableAiPersonalizedDeliverable,
-  customPromptQuestion,
-  setCustomPromptQuestion,
-  customPromptPlaceholder,
-  setCustomPromptPlaceholder,
+  enableAiPersonalizedDeliverable = false,
+  setEnableAiPersonalizedDeliverable = () => {},
+  customPromptQuestion = "",
+  setCustomPromptQuestion = () => {},
+  customPromptPlaceholder = "",
+  setCustomPromptPlaceholder = () => {},
   isLockedPdf = false,
   lockedPdfResources = [],
 }: DeliveryEmailTabProps) {
@@ -609,56 +608,6 @@ export default function DeliveryEmailTab({
                 )}
               </div>
             </div>
-          </div>
-
-          {/* Feature 2: Smart Auto-Personalized Deliverable Config Card */}
-          <div className={`rounded-2xl border p-6 shadow-sm space-y-4 transition-colors duration-200 ${(account?.themeMode || "light") === "dark" ? "border-[#27272A] bg-[#16161A] text-white" : "border-[#0066B2]/30 bg-gradient-to-br from-[#EFF6FF] to-white text-zinc-900"}`}>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#0066B2] text-white shadow-xs">
-                  <Sparkles className="h-4 w-4" />
-                </span>
-                <div>
-                  <h4 className={`text-sm font-bold ${(account?.themeMode || "light") === "dark" ? "text-white" : "text-zinc-900"}`}>AI Personalization Engine (Feature 2)</h4>
-                  <p className="text-xs text-zinc-400">Ask leads a question during signup & generate custom AI action plans automatically.</p>
-                </div>
-              </div>
-              <button
-                type="button"
-                onClick={() => setEnableAiPersonalizedDeliverable(!enableAiPersonalizedDeliverable)}
-                className={`flex items-center gap-2 rounded-full px-3.5 py-1 text-xs font-bold transition cursor-pointer border ${enableAiPersonalizedDeliverable
-                  ? "bg-[#0066B2] text-white border-[#0066B2]"
-                  : "bg-zinc-100 text-zinc-600 border-zinc-200"
-                  }`}
-              >
-                <span>{enableAiPersonalizedDeliverable ? "Active" : "Disabled"}</span>
-              </button>
-            </div>
-
-            {enableAiPersonalizedDeliverable && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2 border-t border-[#0066B2]/20 animate-in fade-in duration-200">
-                <div>
-                  <label className={`text-xs font-semibold block mb-1 ${(account?.themeMode || "light") === "dark" ? "text-zinc-300" : "text-zinc-700"}`}>Signup Form Question</label>
-                  <input
-                    type="text"
-                    value={customPromptQuestion}
-                    onChange={(e) => setCustomPromptQuestion(e.target.value)}
-                    placeholder="e.g. What is your main goal or bottleneck?"
-                    className={`w-full rounded-lg border px-3 py-2 text-xs outline-none focus:border-[#0066B2] transition ${(account?.themeMode || "light") === "dark" ? "border-[#27272A] bg-[#1E1E24] text-white placeholder:text-zinc-500" : "border-zinc-200 bg-white text-zinc-900 placeholder:text-zinc-400"}`}
-                  />
-                </div>
-                <div>
-                  <label className={`text-xs font-semibold block mb-1 ${(account?.themeMode || "light") === "dark" ? "text-zinc-300" : "text-zinc-700"}`}>Input Placeholder</label>
-                  <input
-                    type="text"
-                    value={customPromptPlaceholder}
-                    onChange={(e) => setCustomPromptPlaceholder(e.target.value)}
-                    placeholder="e.g. Scaling outreach, Lead generation"
-                    className={`w-full rounded-lg border px-3 py-2 text-xs outline-none focus:border-[#0066B2] transition ${(account?.themeMode || "light") === "dark" ? "border-[#27272A] bg-[#1E1E24] text-white placeholder:text-zinc-500" : "border-zinc-200 bg-white text-zinc-900 placeholder:text-zinc-400"}`}
-                  />
-                </div>
-              </div>
-            )}
           </div>
 
         </div>
