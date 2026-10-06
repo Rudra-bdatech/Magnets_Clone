@@ -951,6 +951,7 @@ export default function ResourcesPage() {
 
               {/* Search & Sort */}
               <div className="flex items-center gap-2">
+                {/* Search Input */}
                 <div className="relative flex-1 sm:w-64">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-400" />
                   <input

@@ -1023,6 +1023,30 @@ function parseCsvLine(line: string): string[] {
                 </div>
 
                 <div className="flex flex-wrap items-center gap-2">
+                  {/* Search Bar */}
+                  <div className="relative flex-1 min-w-[200px] sm:w-64">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-400" />
+                    <input
+                      type="text"
+                      placeholder="Search email, name, or magnet..."
+                      value={search}
+                      onChange={(e) => {
+                        setSearch(e.target.value);
+                        setCurrentPage(1);
+                      }}
+                      className="w-full h-9 rounded-xl border border-zinc-200 bg-white pl-9 pr-8 text-xs text-zinc-900 placeholder-zinc-400 focus:border-[#0066B2] focus:outline-none dark:border-[#2e2e38] dark:bg-[#202026] dark:text-white dark:placeholder-zinc-500"
+                    />
+                    {search && (
+                      <button
+                        type="button"
+                        onClick={() => setSearch("")}
+                        className="absolute right-2.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 dark:hover:text-white cursor-pointer"
+                      >
+                        <X className="h-3.5 w-3.5" />
+                      </button>
+                    )}
+                  </div>
+
                   {/* Filter by Magnet — Glassy & Smooth Animated Dropdown */}
                   <div className="relative" ref={filterRef}>
                     <button
@@ -1053,8 +1077,8 @@ function parseCsvLine(line: string): string[] {
                           animate={{ opacity: 1, scale: 1, y: 0 }}
                           exit={{ opacity: 0, scale: 0.96, y: -4 }}
                           transition={{ type: "spring", damping: 28, stiffness: 400 }}
-                          style={{ transformOrigin: "top left" }}
-                          className="absolute left-0 top-full z-40 mt-1.5 w-64 max-w-[calc(100vw-3rem)] rounded-xl border border-zinc-200/80 bg-white/95 p-1.5 shadow-2xl backdrop-blur-xl dark:border-white/10 dark:bg-[#18181F]/95 dark:text-white dark:shadow-[0_8px_24px_rgba(0,0,0,0.6)]"
+                          style={{ transformOrigin: "top right" }}
+                          className="absolute right-0 top-full z-40 mt-1.5 w-64 max-w-[calc(100vw-3rem)] rounded-xl border border-zinc-200/80 bg-white/95 p-1.5 shadow-2xl backdrop-blur-xl dark:border-white/10 dark:bg-[#18181F]/95 dark:text-white dark:shadow-[0_8px_24px_rgba(0,0,0,0.6)]"
                         >
                           <div className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
                             Quick Filters
@@ -1170,30 +1194,6 @@ function parseCsvLine(line: string): string[] {
                         </motion.div>
                       )}
                     </AnimatePresence>
-                  </div>
-
-                  {/* Search Bar */}
-                  <div className="relative flex-1 min-w-[200px]">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-400" />
-                    <input
-                      type="text"
-                      placeholder="Search email, name, or magnet..."
-                      value={search}
-                      onChange={(e) => {
-                        setSearch(e.target.value);
-                        setCurrentPage(1);
-                      }}
-                      className="w-full h-9 rounded-xl border border-zinc-200 bg-white pl-9 pr-8 text-xs text-zinc-900 placeholder-zinc-400 focus:border-[#0066B2] focus:outline-none dark:border-[#2e2e38] dark:bg-[#202026] dark:text-white dark:placeholder-zinc-500"
-                    />
-                    {search && (
-                      <button
-                        type="button"
-                        onClick={() => setSearch("")}
-                        className="absolute right-2.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 dark:hover:text-white cursor-pointer"
-                      >
-                        <X className="h-3.5 w-3.5" />
-                      </button>
-                    )}
                   </div>
                 </div>
               </div>
