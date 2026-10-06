@@ -75,6 +75,7 @@ export default function ResourcesPage() {
   const [hoveredCategory, setHoveredCategory] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState<"newest" | "oldest" | "size" | "name">("newest");
   const [isSortOpen, setIsSortOpen] = useState(false);
+  const sortRef = useRef<HTMLDivElement>(null);
   const [isMobileCategoryOpen, setIsMobileCategoryOpen] = useState(false);
   const mobileCategoryRef = useRef<HTMLDivElement>(null);
   const [isMobileSortOpen, setIsMobileSortOpen] = useState(false);
@@ -93,9 +94,12 @@ export default function ResourcesPage() {
   const [editingName, setEditingName] = useState("");
   const [isSavingName, setIsSavingName] = useState(false);
 
-  // Close mobile popovers on outside click
+  // Close popovers on outside click
   useEffect(() => {
     function handler(e: MouseEvent | TouchEvent) {
+      if (sortRef.current && !sortRef.current.contains(e.target as Node)) {
+        setIsSortOpen(false);
+      }
       if (mobileCategoryRef.current && !mobileCategoryRef.current.contains(e.target as Node)) {
         setIsMobileCategoryOpen(false);
       }
@@ -968,15 +972,15 @@ export default function ResourcesPage() {
                   )}
                 </div>
 
-                {/* Custom Glassy Sort Dropdown */}
-                <div className="relative">
+                {/* Custom Glassy Sort Dropdown — 100% Matching Leads Smooth Spring Physics & UI */}
+                <div className="relative" ref={sortRef}>
                   <button
                     type="button"
                     onClick={(e) => {
                       e.stopPropagation();
                       setIsSortOpen((prev) => !prev);
                     }}
-                    className="flex h-9 items-center justify-between gap-2 rounded-xl border border-zinc-200/80 bg-white/70 px-3.5 text-xs font-semibold text-zinc-700 shadow-xs backdrop-blur-md transition-all hover:bg-white/90 focus:outline-none dark:border-white/10 dark:bg-[#18181B]/80 dark:text-zinc-200 dark:hover:bg-[#222226] cursor-pointer"
+                    className="flex h-9 items-center justify-between gap-2 rounded-xl border border-zinc-200/80 bg-white/70 px-3.5 text-xs font-semibold text-zinc-700 shadow-xs backdrop-blur-md transition-all hover:bg-white/90 focus:outline-none dark:border-white/10 dark:bg-[#18181B]/80 dark:text-zinc-200 dark:hover:bg-[#222226] cursor-pointer select-none"
                   >
                     <span>
                       Sort: {sortBy === "newest" ? "Newest" : sortBy === "oldest" ? "Oldest" : sortBy === "size" ? "File Size" : "Name (A-Z)"}
@@ -986,40 +990,42 @@ export default function ResourcesPage() {
 
                   <AnimatePresence>
                     {isSortOpen && (
-                      <>
-                        <div className="fixed inset-0 z-40" onClick={() => setIsSortOpen(false)} />
-                        <motion.div
-                          initial={{ opacity: 0, scale: 0.96, y: -6 }}
-                          animate={{ opacity: 1, scale: 1, y: 0 }}
-                          exit={{ opacity: 0, scale: 0.96, y: -4 }}
-                          transition={{ type: "spring", damping: 28, stiffness: 400 }}
-                          className="absolute right-0 mt-1.5 z-50 w-44 rounded-xl border border-zinc-200/60 bg-white/85 p-1 shadow-md backdrop-blur-xl dark:border-white/10 dark:bg-[#18181F]/95 dark:text-white dark:shadow-[0_4px_16px_rgba(0,0,0,0.35)]"
-                        >
-                          {[
-                            { id: "newest", label: "Sort: Newest" },
-                            { id: "oldest", label: "Sort: Oldest" },
-                            { id: "size", label: "Sort: File Size" },
-                            { id: "name", label: "Sort: Name (A-Z)" },
-                          ].map((opt) => (
-                            <button
-                              key={opt.id}
-                              type="button"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setSortBy(opt.id as any);
-                                setIsSortOpen(false);
-                              }}
-                              className={`flex w-full items-center justify-between rounded-lg px-2.5 py-1.5 text-xs font-medium transition-all duration-150 cursor-pointer ${sortBy === opt.id
-                                ? "bg-zinc-100 text-zinc-900 font-bold dark:bg-white/10 dark:text-[#38BDF8] dark:border dark:border-white/10"
-                                : "text-zinc-600 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-white/5"
-                                }`}
-                            >
-                              <span>{opt.label}</span>
-                              {sortBy === opt.id && <Check className="h-3.5 w-3.5 text-current shrink-0" />}
-                            </button>
-                          ))}
-                        </motion.div>
-                      </>
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0.96, y: -6 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.96, y: -4 }}
+                        transition={{ type: "spring", damping: 28, stiffness: 400 }}
+                        style={{ transformOrigin: "top right" }}
+                        className="absolute right-0 top-full z-40 mt-1.5 w-52 max-w-[calc(100vw-3rem)] rounded-xl border border-zinc-200/80 bg-white/95 p-1.5 shadow-2xl backdrop-blur-xl dark:border-white/10 dark:bg-[#18181F]/95 dark:text-white dark:shadow-[0_8px_24px_rgba(0,0,0,0.6)]"
+                      >
+                        <div className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
+                          Sort By
+                        </div>
+                        {[
+                          { id: "newest", label: "Newest First" },
+                          { id: "oldest", label: "Oldest First" },
+                          { id: "size", label: "File Size" },
+                          { id: "name", label: "Name (A-Z)" },
+                        ].map((opt) => (
+                          <button
+                            key={opt.id}
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSortBy(opt.id as any);
+                              setIsSortOpen(false);
+                            }}
+                            className={`flex w-full items-center justify-between rounded-lg px-2.5 py-2 text-xs font-medium transition-all cursor-pointer ${
+                              sortBy === opt.id
+                                ? "bg-[#0066B2]/10 text-[#0066B2] font-bold dark:bg-[#38BDF8]/20 dark:text-[#38BDF8]"
+                                : "text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-white/5"
+                            }`}
+                          >
+                            <span>{opt.label}</span>
+                            {sortBy === opt.id && <Check className="h-3.5 w-3.5 text-current shrink-0" />}
+                          </button>
+                        ))}
+                      </motion.div>
                     )}
                   </AnimatePresence>
                 </div>
