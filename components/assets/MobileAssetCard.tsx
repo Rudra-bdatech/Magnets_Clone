@@ -29,6 +29,7 @@ interface MobileAssetCardProps {
   badge: {
     icon: React.ReactNode;
     bg: string;
+    tagBg?: string;
     ext: string;
   };
   linkedPages: MagnetPage[];
@@ -220,7 +221,7 @@ export const MobileAssetCard = memo(function MobileAssetCard({
         </div>
 
         {/* Extension Badge */}
-        <span className="shrink-0 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-zinc-100 text-zinc-600 dark:bg-white/10 dark:text-zinc-300">
+        <span className={`shrink-0 px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider border ${badge.tagBg || "bg-zinc-100 text-zinc-600 dark:bg-white/10 dark:text-zinc-300 border-zinc-200 dark:border-white/10"}`}>
           {badge.ext}
         </span>
       </div>

@@ -513,36 +513,44 @@ export default function ResourcesPage() {
     const ext = filename.split(".").pop()?.toLowerCase() || "file";
     const category = getFileCategory(filename);
 
+    const brandBg = "bg-[#0066B2]/[0.08] dark:bg-[#38BDF8]/10 border-[#0066B2]/20 dark:border-[#38BDF8]/20 shadow-2xs backdrop-blur-md";
+    const brandTag = "bg-[#0066B2]/10 text-[#0066B2] dark:bg-[#38BDF8]/20 dark:text-[#38BDF8] border-[#0066B2]/20 dark:border-[#38BDF8]/30";
+
     switch (category) {
       case "images":
         return {
-          icon: <ImageIcon className="h-4 w-4 text-emerald-500" />,
-          bg: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20",
+          icon: <ImageIcon className="h-4 w-4 text-emerald-500 dark:text-emerald-400" />,
+          bg: "bg-emerald-500/[0.08] dark:bg-emerald-500/10 border-emerald-500/20 dark:border-emerald-500/20 shadow-2xs backdrop-blur-md",
+          tagBg: "bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-300 border-emerald-500/20",
           ext: ext.toUpperCase(),
         };
       case "media":
         return {
-          icon: <Film className="h-4 w-4 text-purple-500" />,
-          bg: "bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/20",
+          icon: <Film className="h-4 w-4 text-purple-500 dark:text-purple-400" />,
+          bg: "bg-purple-500/[0.08] dark:bg-purple-500/10 border-purple-500/20 dark:border-purple-500/20 shadow-2xs backdrop-blur-md",
+          tagBg: "bg-purple-500/10 text-purple-600 dark:bg-purple-500/20 dark:text-purple-300 border-purple-500/20",
           ext: ext.toUpperCase(),
         };
       case "archives":
         return {
-          icon: <Archive className="h-4 w-4 text-amber-500" />,
-          bg: "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20",
+          icon: <Archive className="h-4 w-4 text-amber-500 dark:text-amber-400" />,
+          bg: "bg-amber-500/[0.08] dark:bg-amber-500/10 border-amber-500/20 dark:border-amber-500/20 shadow-2xs backdrop-blur-md",
+          tagBg: "bg-amber-500/10 text-amber-600 dark:bg-amber-500/20 dark:text-amber-300 border-amber-500/20",
           ext: ext.toUpperCase(),
         };
       default:
         if (ext === "pdf") {
           return {
-            icon: <FileText className="h-4 w-4 text-red-500" />,
-            bg: "bg-red-500/10 text-red-600 dark:text-red-400 border-red-500/20",
+            icon: <FileText className="h-4 w-4 text-[#0066B2] dark:text-[#38BDF8]" />,
+            bg: brandBg,
+            tagBg: brandTag,
             ext: "PDF",
           };
         }
         return {
           icon: <FileCode className="h-4 w-4 text-[#0066B2] dark:text-[#38BDF8]" />,
-          bg: "bg-[#0066B2]/10 text-[#0066B2] dark:text-[#38BDF8] border-[#0066B2]/20",
+          bg: brandBg,
+          tagBg: brandTag,
           ext: ext.toUpperCase(),
         };
     }
@@ -1444,9 +1452,9 @@ export default function ResourcesPage() {
                                             >
                                               <Pencil className="h-3 w-3" />
                                             </button>
-                                            <span className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider shrink-0">
-                                              {badge.ext}
-                                            </span>
+                                            <span className={`inline-flex items-center px-1.5 py-0.5 rounded-md text-[9px] font-extrabold tracking-wider border uppercase shrink-0 ${badge.tagBg || "bg-zinc-100 text-zinc-600 dark:bg-white/10 dark:text-zinc-300 border-zinc-200 dark:border-white/10"}`}>
+                                                {badge.ext}
+                                              </span>
                                           </div>
                                           <div className="flex items-center gap-1.5 mt-0.5">
                                             {linkedPages.length > 0 ? (
