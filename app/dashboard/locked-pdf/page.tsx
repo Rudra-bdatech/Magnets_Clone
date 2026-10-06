@@ -2408,15 +2408,15 @@ export default function LockedPdfPage() {
             animate={{ opacity: 1, y: 0, x: "-50%" }}
             exit={{ opacity: 0, y: 40, x: "-50%" }}
             transition={{ type: "spring", stiffness: 450, damping: 30 }}
-            className="fixed bottom-6 left-1/2 z-50 flex items-center gap-3 rounded-2xl bg-zinc-900/30 dark:bg-black/30 border border-white/20 dark:border-white/15 text-white px-4 sm:px-5 py-2.5 shadow-[0_16px_40px_rgba(0,0,0,0.3)] backdrop-blur-2xl"
+            className="fixed bottom-6 left-1/2 z-50 flex items-center gap-3 rounded-2xl bg-white/75 dark:bg-zinc-900/80 border border-zinc-200/80 dark:border-zinc-700/60 text-zinc-900 dark:text-white px-4 sm:px-5 py-2.5 shadow-[0_16px_40px_rgba(0,0,0,0.12)] dark:shadow-[0_16px_40px_rgba(0,0,0,0.5)] backdrop-blur-xl ring-1 ring-black/5 dark:ring-white/10"
           >
-            <span className="text-xs font-bold whitespace-nowrap">
-              <span className="text-[#38BDF8] font-black">{checkedIds.length}</span> selected
+            <span className="text-xs font-bold whitespace-nowrap text-zinc-900 dark:text-white">
+              <span className="text-[#0066B2] dark:text-[#38BDF8] font-black">{checkedIds.length}</span> selected
             </span>
-            <div className="h-4 w-px bg-white/20" />
+            <div className="h-4 w-px bg-zinc-200 dark:bg-zinc-700" />
             <button
               onClick={handleToggleSelectAll}
-              className="text-xs font-semibold text-zinc-300 hover:text-white transition cursor-pointer whitespace-nowrap"
+              className="text-xs font-semibold text-zinc-600 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-white transition cursor-pointer whitespace-nowrap"
             >
               {filtered.length > 0 && filtered.every((p) => checkedIds.includes(p.id)) ? "Deselect All" : "Select All"}
             </button>
@@ -2425,7 +2425,7 @@ export default function LockedPdfPage() {
                 setCheckedIds([]);
                 setIsSelectMode(false);
               }}
-              className="text-xs font-semibold text-zinc-400 hover:text-zinc-200 transition cursor-pointer whitespace-nowrap"
+              className="text-xs font-semibold text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200 transition cursor-pointer whitespace-nowrap"
             >
               Clear
             </button>
