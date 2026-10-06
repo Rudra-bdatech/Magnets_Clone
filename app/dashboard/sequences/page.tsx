@@ -879,8 +879,11 @@ export default function SequencesPage() {
                   const completed = seq.stats.completed || (delivered > 0 ? delivered : 0);
                   const openRate = delivered > 0 ? Math.round((opened / delivered) * 100) : 0;
                   const linkHref = `/dashboard/sequences/${seq.id}`;
-                  const attachedName = seq.name.replace(" Follow-up", "").replace(" (Copy)", "");
+                  const attachedPage = seq.pageId ? pages.find((p) => p.id === seq.pageId) : null;
+                  const isStandalone = !seq.pageId || !attachedPage;
+                  const attachedName = attachedPage?.name || seq.name.replace(" Follow-up", "").replace(" (Copy)", "");
                   const isMenuOpen = activeMenuId === seq.id;
+                  const totalStepsCount = isStandalone ? seq.emails.length : seq.emails.length + 1;
 
                   return (
                     <div
@@ -895,21 +898,32 @@ export default function SequencesPage() {
                               <Rocket className="h-4 w-4 sm:h-4.5 sm:w-4.5" aria-hidden="true" />
                             </div>
                             <div className="min-w-0 flex-1">
-                              <div className="flex items-center gap-2">
+                              <div className="flex items-center gap-2 flex-wrap">
                                 <p className="truncate text-sm sm:text-base font-bold text-zinc-900 dark:text-white group-hover:text-[#0066B2] dark:group-hover:text-[#38BDF8] transition">
                                   {seq.name}
                                 </p>
-                              </div>
-                              <p className="mt-0.5 truncate text-[11px] sm:text-xs text-zinc-500 dark:text-zinc-400">
-                                Attached to{" "}
-                                {seq.pageId ? (
-                                  <span className="font-semibold text-zinc-700 dark:text-zinc-200 hover:text-[#0066B2] dark:hover:text-[#38BDF8]">
-                                    "{attachedName}"
+                                {isStandalone ? (
+                                  <span className="inline-flex items-center gap-1 rounded-md border border-blue-200/80 dark:border-blue-900/60 bg-blue-50/80 dark:bg-blue-950/40 px-1.5 py-0.5 text-[9.5px] font-bold text-[#0066B2] dark:text-[#38BDF8] shrink-0">
+                                    ⚡ Standalone
                                   </span>
                                 ) : (
-                                  <span className="font-semibold text-zinc-700 dark:text-zinc-200">"{attachedName}"</span>
+                                  <span className="inline-flex items-center gap-1 rounded-md border border-emerald-200/80 dark:border-emerald-900/60 bg-emerald-50/80 dark:bg-emerald-950/40 px-1.5 py-0.5 text-[9.5px] font-bold text-emerald-700 dark:text-emerald-400 shrink-0">
+                                    🎯 Lead Magnet
+                                  </span>
+                                )}
+                              </div>
+                              <p className="mt-0.5 truncate text-[11px] sm:text-xs text-zinc-500 dark:text-zinc-400">
+                                {isStandalone ? (
+                                  <span>Standalone automation flow</span>
+                                ) : (
+                                  <>
+                                    Attached to{" "}
+                                    <span className="font-semibold text-zinc-700 dark:text-zinc-200 hover:text-[#0066B2] dark:hover:text-[#38BDF8]">
+                                      "{attachedName}"
+                                    </span>
+                                  </>
                                 )}{" "}
-                                · {seq.emails.length} {seq.emails.length === 1 ? "step" : "steps"}
+                                · {totalStepsCount} {totalStepsCount === 1 ? "step" : "steps"}
                               </p>
                             </div>
                           </Link>
@@ -1142,7 +1156,10 @@ export default function SequencesPage() {
                         const completed = seq.stats.completed || (delivered > 0 ? delivered : 0);
                         const openRate = delivered > 0 ? Math.round((opened / delivered) * 100) : 0;
                         const linkHref = `/dashboard/sequences/${seq.id}`;
-                        const attachedName = seq.name.replace(" Follow-up", "").replace(" (Copy)", "");
+                        const attachedPage = seq.pageId ? pages.find((p) => p.id === seq.pageId) : null;
+                        const isStandalone = !seq.pageId || !attachedPage;
+                        const attachedName = attachedPage?.name || seq.name.replace(" Follow-up", "").replace(" (Copy)", "");
+                        const totalStepsCount = isStandalone ? seq.emails.length : seq.emails.length + 1;
 
                         return (
                           <tr
@@ -1155,11 +1172,22 @@ export default function SequencesPage() {
                                   <Rocket className="h-3.5 w-3.5" />
                                 </div>
                                 <div className="min-w-0">
-                                  <p className="font-bold text-zinc-900 dark:text-white group-hover:text-[#0066B2] dark:group-hover:text-[#38BDF8] transition truncate">
-                                    {seq.name}
-                                  </p>
+                                  <div className="flex items-center gap-1.5 flex-wrap">
+                                    <p className="font-bold text-zinc-900 dark:text-white group-hover:text-[#0066B2] dark:group-hover:text-[#38BDF8] transition truncate">
+                                      {seq.name}
+                                    </p>
+                                    {isStandalone ? (
+                                      <span className="rounded bg-blue-50 dark:bg-blue-950/50 text-[#0066B2] dark:text-[#38BDF8] border border-blue-200/60 dark:border-blue-900/40 text-[9px] font-bold px-1 py-0.2">
+                                        Standalone
+                                      </span>
+                                    ) : (
+                                      <span className="rounded bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400 border border-emerald-200/60 dark:border-emerald-900/40 text-[9px] font-bold px-1 py-0.2">
+                                        Lead Magnet
+                                      </span>
+                                    )}
+                                  </div>
                                   <p className="text-[11px] text-zinc-500 dark:text-zinc-400 truncate">
-                                    "{attachedName}"
+                                    {isStandalone ? "Standalone automation flow" : `Attached to "${attachedName}"`}
                                   </p>
                                 </div>
                               </Link>
@@ -1168,7 +1196,7 @@ export default function SequencesPage() {
                               <StatusBadge status={seq.status} />
                             </td>
                             <td className="py-3 px-3 whitespace-nowrap font-medium text-zinc-700 dark:text-zinc-300">
-                              {seq.emails.length} steps
+                              {totalStepsCount} steps
                             </td>
                             <td className="py-3 px-3 text-right font-bold text-zinc-900 dark:text-white">
                               {signedUp.toLocaleString()}
