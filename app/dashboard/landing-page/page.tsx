@@ -74,7 +74,6 @@ const MagnetCard = React.memo(
     return (
       <motion.div
         layout
-        layoutId={`magnet-card-${page.id}`}
         transition={{
           layout: { type: "spring", stiffness: 280, damping: 30, mass: 0.8 },
         }}
@@ -725,14 +724,14 @@ export default function PagesPage() {
               </div>
             </div>
 
-            <AnimatePresence mode="popLayout">
+            <AnimatePresence mode="wait">
               {filtered.length === 0 ? (
                 <motion.div
                   key="empty-state"
                   initial={{ opacity: 0, y: 8, scale: 0.99 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.98 }}
-                  transition={{ duration: 0.15 }}
+                  transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
                   className="rounded-2xl border border-dashed border-zinc-300 dark:border-zinc-800 bg-white dark:bg-[#141417] p-12 text-center flex flex-col items-center justify-center"
                 >
                   <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#EFF6FF] dark:bg-[#0066B2]/20 text-[#0066B2] dark:text-[#38BDF8] mb-3">
@@ -752,6 +751,10 @@ export default function PagesPage() {
               ) : viewMode === "grid" ? (
                 <motion.div
                   key="grid-view"
+                  initial={{ opacity: 0, y: 6, scale: 0.995 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -6, scale: 0.995 }}
+                  transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
                   className="flex flex-col space-y-4"
                 >
                   <motion.div
@@ -784,11 +787,11 @@ export default function PagesPage() {
                 </motion.div>
               ) : (
                 <motion.div
-                  key={`table-${statusFilter}-${search}`}
-                  initial={{ opacity: 0, y: 6 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -6 }}
-                  transition={{ duration: 0.15 }}
+                  key="table-view"
+                  initial={{ opacity: 0, y: 6, scale: 0.995 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -6, scale: 0.995 }}
+                  transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
                   className="rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-[#141417] overflow-hidden shadow-xs"
                 >
                   <table className="w-full text-left text-xs text-zinc-600 dark:text-zinc-400">
