@@ -582,12 +582,12 @@ export default function SequencesPage() {
       )}
 
       <div className="flex flex-col min-h-[calc(100vh-3rem)] bg-gradient-to-b from-[#EFF6FF]/60 via-[#F8FBFF] to-[#F8FBFF] dark:bg-none dark:bg-[#0E0E10] w-full max-w-full overflow-x-hidden">
-        <div className="flex-1 px-3.5 sm:px-6 py-4 sm:py-6 lg:px-8 max-w-7xl mx-auto w-full max-w-full space-y-4 sm:space-y-5 overflow-x-hidden">
+        <div className="flex-1 px-3 sm:px-6 py-3.5 sm:py-6 lg:px-8 max-w-7xl mx-auto w-full max-w-full space-y-3.5 sm:space-y-5 overflow-x-hidden">
           
           {/* Header Section */}
-          <div className="flex items-center justify-between gap-3 mb-2 sm:mb-4">
+          <div className="flex items-center justify-between gap-2.5 mb-1 sm:mb-4">
             <div className="min-w-0">
-              <h2 className="text-xl sm:text-2xl lg:text-3xl font-extrabold tracking-tight text-zinc-900 dark:text-white truncate">
+              <h2 className="text-lg sm:text-2xl lg:text-3xl font-extrabold tracking-tight text-zinc-900 dark:text-white truncate">
                 Follow-up Sequences
               </h2>
             </div>
@@ -605,7 +605,7 @@ export default function SequencesPage() {
               <button
                 type="button"
                 onClick={() => setShowNewSequenceModal(true)}
-                className="sm:hidden flex items-center gap-1.5 rounded-xl bg-[#0066B2] px-3 py-1.5 text-xs font-bold text-white hover:bg-[#005291] transition shadow-md cursor-pointer active:scale-95"
+                className="sm:hidden flex items-center gap-1 rounded-lg bg-[#0066B2] px-2.5 py-1.5 text-xs font-bold text-white hover:bg-[#005291] transition shadow-md cursor-pointer active:scale-95"
               >
                 <Plus className="h-3.5 w-3.5 stroke-[2.5px]" aria-hidden="true" />
                 <span>New</span>
@@ -615,57 +615,57 @@ export default function SequencesPage() {
 
           {/* Top Executive KPI Performance Cards (2-cols on mobile, 4-cols on desktop) */}
           {sequences.length > 0 && (
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4 mb-2">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4 mb-1 sm:mb-2">
               {/* Card 1: Active Sequences */}
-              <div className="flex items-center rounded-2xl border border-zinc-200/80 bg-white/80 dark:border-[#2e2e38] dark:bg-[#18181B]/80 p-2.5 sm:px-5 sm:py-4 shadow-xs backdrop-blur-sm text-left">
-                <div className="flex h-8 w-8 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-lg sm:rounded-xl border border-emerald-500/30 bg-emerald-50 text-emerald-600 dark:border-emerald-500/30 dark:bg-emerald-500/20 dark:text-emerald-400 mr-2 sm:mr-3.5">
-                  <Rocket className="h-4 w-4 sm:h-5 sm:w-5" />
+              <div className="flex items-center rounded-xl sm:rounded-2xl border border-zinc-200/80 bg-white/80 dark:border-[#2e2e38] dark:bg-[#18181B]/80 p-2 sm:px-5 sm:py-4 shadow-xs backdrop-blur-sm text-left">
+                <div className="flex h-7 w-7 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-lg sm:rounded-xl border border-emerald-500/30 bg-emerald-50 text-emerald-600 dark:border-emerald-500/30 dark:bg-emerald-500/20 dark:text-emerald-400 mr-2 sm:mr-3.5">
+                  <Rocket className="h-3.5 w-3.5 sm:h-5 sm:w-5" />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-zinc-500 dark:text-[#9B9085] truncate">
+                  <p className="text-[9.5px] sm:text-[11px] font-bold uppercase tracking-wider text-zinc-500 dark:text-[#9B9085] truncate">
                     Active Flows
                   </p>
                   <div className="flex items-baseline gap-1 sm:gap-1.5 mt-0.5">
-                    <p className="text-base sm:text-2xl font-bold text-zinc-900 dark:text-white leading-none">
+                    <p className="text-sm sm:text-2xl font-bold text-zinc-900 dark:text-white leading-none">
                       {metrics.liveCount}
                     </p>
-                    <span className="text-[10px] sm:text-xs font-semibold text-zinc-400">/ {metrics.totalSequences}</span>
+                    <span className="text-[9.5px] sm:text-xs font-semibold text-zinc-400">/ {metrics.totalSequences}</span>
                   </div>
                 </div>
               </div>
 
               {/* Card 2: Total Delivered */}
-              <div className="flex items-center rounded-2xl border border-zinc-200/80 bg-white/80 dark:border-[#2e2e38] dark:bg-[#18181B]/80 p-2.5 sm:px-5 sm:py-4 shadow-xs backdrop-blur-sm text-left">
-                <div className="flex h-8 w-8 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-lg sm:rounded-xl border border-[#0066B2]/30 bg-[#EFF6FF] text-[#0066B2] dark:border-[#0066B2]/30 dark:bg-[#0066B2]/20 dark:text-[#38BDF8] mr-2 sm:mr-3.5">
-                  <Send className="h-4 w-4 sm:h-5 sm:w-5" />
+              <div className="flex items-center rounded-xl sm:rounded-2xl border border-zinc-200/80 bg-white/80 dark:border-[#2e2e38] dark:bg-[#18181B]/80 p-2 sm:px-5 sm:py-4 shadow-xs backdrop-blur-sm text-left">
+                <div className="flex h-7 w-7 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-lg sm:rounded-xl border border-[#0066B2]/30 bg-[#EFF6FF] text-[#0066B2] dark:border-[#0066B2]/30 dark:bg-[#0066B2]/20 dark:text-[#38BDF8] mr-2 sm:mr-3.5">
+                  <Send className="h-3.5 w-3.5 sm:h-5 sm:w-5" />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-zinc-500 dark:text-[#9B9085] truncate">
+                  <p className="text-[9.5px] sm:text-[11px] font-bold uppercase tracking-wider text-zinc-500 dark:text-[#9B9085] truncate">
                     Delivered
                   </p>
                   <div className="flex items-baseline gap-1 sm:gap-1.5 mt-0.5">
-                    <p className="text-base sm:text-2xl font-bold text-zinc-900 dark:text-white leading-none">
+                    <p className="text-sm sm:text-2xl font-bold text-zinc-900 dark:text-white leading-none">
                       {metrics.totalDelivered.toLocaleString()}
                     </p>
-                    <span className="text-[10px] sm:text-xs font-semibold text-zinc-400">sent</span>
+                    <span className="text-[9.5px] sm:text-xs font-semibold text-zinc-400">sent</span>
                   </div>
                 </div>
               </div>
 
               {/* Card 3: Avg Open Rate */}
-              <div className="flex items-center rounded-2xl border border-zinc-200/80 bg-white/80 dark:border-[#2e2e38] dark:bg-[#18181B]/80 p-2.5 sm:px-5 sm:py-4 shadow-xs backdrop-blur-sm text-left">
-                <div className="flex h-8 w-8 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-lg sm:rounded-xl border border-indigo-500/30 bg-indigo-50 text-indigo-600 dark:border-indigo-500/30 dark:bg-indigo-500/20 dark:text-indigo-400 mr-2 sm:mr-3.5">
-                  <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5" />
+              <div className="flex items-center rounded-xl sm:rounded-2xl border border-zinc-200/80 bg-white/80 dark:border-[#2e2e38] dark:bg-[#18181B]/80 p-2 sm:px-5 sm:py-4 shadow-xs backdrop-blur-sm text-left">
+                <div className="flex h-7 w-7 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-lg sm:rounded-xl border border-indigo-500/30 bg-indigo-50 text-indigo-600 dark:border-indigo-500/30 dark:bg-indigo-500/20 dark:text-indigo-400 mr-2 sm:mr-3.5">
+                  <TrendingUp className="h-3.5 w-3.5 sm:h-5 sm:w-5" />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-zinc-500 dark:text-[#9B9085] truncate">
+                  <p className="text-[9.5px] sm:text-[11px] font-bold uppercase tracking-wider text-zinc-500 dark:text-[#9B9085] truncate">
                     Avg Open Rate
                   </p>
                   <div className="flex items-baseline gap-1 sm:gap-1.5 mt-0.5">
-                    <p className="text-base sm:text-2xl font-bold text-zinc-900 dark:text-white leading-none">
+                    <p className="text-sm sm:text-2xl font-bold text-zinc-900 dark:text-white leading-none">
                       {metrics.openRate}%
                     </p>
-                    <span className="text-[10px] sm:text-xs font-semibold text-indigo-600 dark:text-indigo-400">
+                    <span className="text-[9.5px] sm:text-xs font-semibold text-indigo-600 dark:text-indigo-400">
                       {metrics.totalOpened}
                     </span>
                   </div>
@@ -673,19 +673,19 @@ export default function SequencesPage() {
               </div>
 
               {/* Card 4: Sequence Completed */}
-              <div className="flex items-center rounded-2xl border border-zinc-200/80 bg-white/80 dark:border-[#2e2e38] dark:bg-[#18181B]/80 p-2.5 sm:px-5 sm:py-4 shadow-xs backdrop-blur-sm text-left">
-                <div className="flex h-8 w-8 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-lg sm:rounded-xl border border-emerald-500/30 bg-emerald-50 text-emerald-600 dark:border-emerald-500/30 dark:bg-emerald-500/20 dark:text-emerald-400 mr-2 sm:mr-3.5">
-                  <CheckCircle2 className="h-4 w-4 sm:h-5 sm:w-5" />
+              <div className="flex items-center rounded-xl sm:rounded-2xl border border-zinc-200/80 bg-white/80 dark:border-[#2e2e38] dark:bg-[#18181B]/80 p-2 sm:px-5 sm:py-4 shadow-xs backdrop-blur-sm text-left">
+                <div className="flex h-7 w-7 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-lg sm:rounded-xl border border-emerald-500/30 bg-emerald-50 text-emerald-600 dark:border-emerald-500/30 dark:bg-emerald-500/20 dark:text-emerald-400 mr-2 sm:mr-3.5">
+                  <CheckCircle2 className="h-3.5 w-3.5 sm:h-5 sm:w-5" />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-zinc-500 dark:text-[#9B9085] truncate">
+                  <p className="text-[9.5px] sm:text-[11px] font-bold uppercase tracking-wider text-zinc-500 dark:text-[#9B9085] truncate">
                     Completed
                   </p>
                   <div className="flex items-baseline gap-1 sm:gap-1.5 mt-0.5">
-                    <p className="text-base sm:text-2xl font-bold text-zinc-900 dark:text-white leading-none">
+                    <p className="text-sm sm:text-2xl font-bold text-zinc-900 dark:text-white leading-none">
                       {metrics.totalCompleted.toLocaleString()}
                     </p>
-                    <span className="text-[10px] sm:text-xs font-semibold text-zinc-400">leads</span>
+                    <span className="text-[9.5px] sm:text-xs font-semibold text-zinc-400">leads</span>
                   </div>
                 </div>
               </div>
@@ -696,84 +696,86 @@ export default function SequencesPage() {
           {sequences.length > 0 && (
             <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between">
               
-              {/* Status Tabs with Horizontal Scroll for Mobile */}
-              <div
-                onMouseLeave={() => setHoveredTab(null)}
-                className="relative flex items-center gap-1 overflow-x-auto pb-1 sm:pb-0 scrollbar-none max-w-full"
-              >
-                {[
-                  { id: "all", label: "All", count: sequences.length },
-                  { id: "live", label: "Active", count: metrics.liveCount },
-                  { id: "draft", label: "Paused", count: metrics.pausedCount },
-                  {
-                    id: "has_leads",
-                    label: "With Leads",
-                    count: sequences.filter((s) => (s.stats.signedUp || 0) > 0).length,
-                  },
-                ].map((tab) => {
-                  const active = statusFilter === tab.id;
-                  const isHovered = hoveredTab === tab.id;
+              {/* Status Tabs with Seamless Edge-to-Edge Scroll for Ultra-Compact Mobile */}
+              <div className="w-full sm:w-auto -mx-3 px-3 sm:mx-0 sm:px-0 overflow-x-auto scrollbar-none pb-0.5 sm:pb-0">
+                <div
+                  onMouseLeave={() => setHoveredTab(null)}
+                  className="relative flex items-center gap-1 sm:gap-1.5 min-w-max"
+                >
+                  {[
+                    { id: "all", label: "All", count: sequences.length },
+                    { id: "live", label: "Active", count: metrics.liveCount },
+                    { id: "draft", label: "Paused", count: metrics.pausedCount },
+                    {
+                      id: "has_leads",
+                      label: "With Leads",
+                      count: sequences.filter((s) => (s.stats.signedUp || 0) > 0).length,
+                    },
+                  ].map((tab) => {
+                    const active = statusFilter === tab.id;
+                    const isHovered = hoveredTab === tab.id;
 
-                  return (
-                    <button
-                      key={tab.id}
-                      onClick={() => setStatusFilter(tab.id as FilterStatus)}
-                      onMouseEnter={() => setHoveredTab(tab.id)}
-                      className={`relative inline-flex items-center gap-1.5 whitespace-nowrap rounded-xl px-3 py-1.5 text-xs font-bold transition-colors cursor-pointer shrink-0 ${
-                        active
-                          ? "text-white"
-                          : "text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white"
-                      }`}
-                    >
-                      {/* Active Tab Solid Sliding Pill */}
-                      {active && (
-                        <motion.div
-                          layoutId="sequencesActiveStatusTab"
-                          transition={{ type: "spring", stiffness: 500, damping: 32 }}
-                          className="absolute inset-0 rounded-xl bg-[#0066B2] shadow-2xs"
-                        />
-                      )}
-
-                      {/* Hover Morphing Pill */}
-                      {!active && isHovered && (
-                        <motion.div
-                          layoutId="sequencesHoverStatusTab"
-                          transition={{ type: "spring", stiffness: 500, damping: 32 }}
-                          className="absolute inset-0 rounded-xl bg-zinc-200/60 dark:bg-white/10"
-                        />
-                      )}
-
-                      <span className="relative z-10">{tab.label}</span>
-                      <span
-                        className={`relative z-10 rounded-full px-1.5 py-0.2 text-[10px] font-extrabold transition-colors ${
+                    return (
+                      <button
+                        key={tab.id}
+                        onClick={() => setStatusFilter(tab.id as FilterStatus)}
+                        onMouseEnter={() => setHoveredTab(tab.id)}
+                        className={`relative inline-flex items-center gap-1 sm:gap-1.5 whitespace-nowrap rounded-xl px-2.5 sm:px-3 py-1.5 text-[11px] sm:text-xs font-bold transition-colors cursor-pointer shrink-0 ${
                           active
-                            ? "bg-white/20 text-white"
-                            : "bg-zinc-200/70 text-zinc-700 dark:bg-white/10 dark:text-zinc-300"
+                            ? "text-white"
+                            : "text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white"
                         }`}
                       >
-                        {tab.count}
-                      </span>
-                    </button>
-                  );
-                })}
+                        {/* Active Tab Solid Sliding Pill */}
+                        {active && (
+                          <motion.div
+                            layoutId="sequencesActiveStatusTab"
+                            transition={{ type: "spring", stiffness: 500, damping: 32 }}
+                            className="absolute inset-0 rounded-xl bg-[#0066B2] shadow-2xs"
+                          />
+                        )}
+
+                        {/* Hover Morphing Pill */}
+                        {!active && isHovered && (
+                          <motion.div
+                            layoutId="sequencesHoverStatusTab"
+                            transition={{ type: "spring", stiffness: 500, damping: 32 }}
+                            className="absolute inset-0 rounded-xl bg-zinc-200/60 dark:bg-white/10"
+                          />
+                        )}
+
+                        <span className="relative z-10">{tab.label}</span>
+                        <span
+                          className={`relative z-10 rounded-full px-1.5 py-0.2 text-[9.5px] sm:text-[10px] font-extrabold transition-colors ${
+                            active
+                              ? "bg-white/20 text-white"
+                              : "bg-zinc-200/70 text-zinc-700 dark:bg-white/10 dark:text-zinc-300"
+                          }`}
+                        >
+                          {tab.count}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
 
               {/* Right controls: Search, Custom Dropdown, View Toggle */}
-              <div className="flex items-center gap-2 w-full sm:w-auto">
+              <div className="flex items-center gap-1.5 sm:gap-2 w-full sm:w-auto">
                 {/* Search Bar */}
                 <div className="relative flex-1 sm:w-60">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-400" />
+                  <Search className="absolute left-2.5 sm:left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-400" />
                   <input
                     type="text"
                     placeholder="Search sequences..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#18181B] py-1.5 pl-8 pr-7 text-xs text-zinc-900 dark:text-white placeholder-zinc-400 focus:border-[#0066B2] dark:focus:border-[#38BDF8] focus:outline-none transition shadow-2xs"
+                    className="w-full rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#18181B] py-1.5 pl-7 sm:pl-8 pr-6 sm:pr-7 text-[11px] sm:text-xs text-zinc-900 dark:text-white placeholder-zinc-400 focus:border-[#0066B2] dark:focus:border-[#38BDF8] focus:outline-none transition shadow-2xs"
                   />
                   {searchQuery && (
                     <button
                       onClick={() => setSearchQuery("")}
-                      className="absolute right-2.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 cursor-pointer"
+                      className="absolute right-2 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 cursor-pointer"
                     >
                       <X className="h-3.5 w-3.5" />
                     </button>
@@ -788,12 +790,12 @@ export default function SequencesPage() {
                       e.stopPropagation();
                       setIsSortOpen((v) => !v);
                     }}
-                    className="flex h-8 items-center gap-1.5 sm:gap-2 rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#18181B] px-2.5 sm:px-3 text-xs font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-[#222226] transition shadow-2xs cursor-pointer select-none"
+                    className="flex h-8 items-center gap-1 sm:gap-2 rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#18181B] px-2 sm:px-3 text-[11px] sm:text-xs font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-[#222226] transition shadow-2xs cursor-pointer select-none"
                   >
-                    <SlidersHorizontal className="h-3 w-3 text-zinc-400" />
-                    <span>{sortOptions.find((o) => o.id === sortBy)?.label || "Sort"}</span>
+                    <SlidersHorizontal className="h-3 w-3 text-zinc-400 shrink-0" />
+                    <span className="truncate max-w-[76px] sm:max-w-none">{sortOptions.find((o) => o.id === sortBy)?.label || "Sort"}</span>
                     <ChevronDown
-                      className={`h-3.5 w-3.5 text-zinc-400 transition-transform duration-200 ${
+                      className={`h-3.5 w-3.5 text-zinc-400 shrink-0 transition-transform duration-200 ${
                         isSortOpen ? "rotate-180" : ""
                       }`}
                     />
@@ -886,31 +888,31 @@ export default function SequencesPage() {
                   return (
                     <div
                       key={seq.id}
-                      className="group relative flex flex-col justify-between rounded-2xl border border-zinc-200/90 dark:border-white/10 bg-white dark:bg-[#18181B] p-3.5 sm:p-5 transition-all duration-200 hover:border-[#0066B2] dark:hover:border-[#38BDF8] shadow-2xs hover:shadow-sm min-w-0 w-full max-w-full overflow-hidden"
+                      className="group relative flex flex-col justify-between rounded-2xl border border-zinc-200/90 dark:border-white/10 bg-white dark:bg-[#18181B] p-3 sm:p-5 transition-all duration-200 hover:border-[#0066B2] dark:hover:border-[#38BDF8] shadow-2xs hover:shadow-sm min-w-0 w-full max-w-full overflow-hidden"
                     >
                       {/* Top Row: Icon, Title, Actions */}
                       <div className="min-w-0 w-full max-w-full">
                         <div className="flex items-start justify-between gap-2 sm:gap-3 min-w-0 max-w-full">
-                          <Link href={linkHref} className="flex items-start gap-2.5 sm:gap-3 flex-1 min-w-0">
-                            <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-lg sm:rounded-xl bg-[#EFF6FF] text-[#0066B2] dark:bg-[#0066B2]/20 dark:text-[#38BDF8] group-hover:scale-105 transition">
+                          <Link href={linkHref} className="flex items-start gap-2 sm:gap-3 flex-1 min-w-0">
+                            <div className="flex h-8 w-8 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-lg sm:rounded-xl bg-[#EFF6FF] text-[#0066B2] dark:bg-[#0066B2]/20 dark:text-[#38BDF8] group-hover:scale-105 transition">
                               <Rocket className="h-4 w-4 sm:h-4.5 sm:w-4.5" aria-hidden="true" />
                             </div>
                             <div className="min-w-0 flex-1">
-                              <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap min-w-0">
+                              <div className="flex items-center gap-1 sm:gap-2 flex-wrap min-w-0">
                                 <p className="truncate text-xs sm:text-base font-bold text-zinc-900 dark:text-white group-hover:text-[#0066B2] dark:group-hover:text-[#38BDF8] transition">
                                   {seq.name}
                                 </p>
                                 {isStandalone ? (
-                                  <span className="inline-flex items-center gap-1 rounded-md border border-blue-200/80 dark:border-blue-900/60 bg-blue-50/80 dark:bg-blue-950/40 px-1.5 py-0.5 text-[9.5px] font-bold text-[#0066B2] dark:text-[#38BDF8] shrink-0">
+                                  <span className="inline-flex items-center gap-1 rounded-md border border-blue-200/80 dark:border-blue-900/60 bg-blue-50/80 dark:bg-blue-950/40 px-1.5 py-0.5 text-[9px] sm:text-[9.5px] font-bold text-[#0066B2] dark:text-[#38BDF8] shrink-0">
                                     ⚡ Standalone
                                   </span>
                                 ) : (
-                                  <span className="inline-flex items-center gap-1 rounded-md border border-emerald-200/80 dark:border-emerald-900/60 bg-emerald-50/80 dark:bg-emerald-950/40 px-1.5 py-0.5 text-[9.5px] font-bold text-emerald-700 dark:text-emerald-400 shrink-0">
+                                  <span className="inline-flex items-center gap-1 rounded-md border border-emerald-200/80 dark:border-emerald-900/60 bg-emerald-50/80 dark:bg-emerald-950/40 px-1.5 py-0.5 text-[9px] sm:text-[9.5px] font-bold text-emerald-700 dark:text-emerald-400 shrink-0">
                                     🎯 Lead Magnet
                                   </span>
                                 )}
                               </div>
-                              <p className="mt-0.5 truncate text-[11px] sm:text-xs text-zinc-500 dark:text-zinc-400">
+                              <p className="mt-0.5 truncate text-[10.5px] sm:text-xs text-zinc-500 dark:text-zinc-400">
                                 {isStandalone ? (
                                   <span>Standalone automation flow</span>
                                 ) : (
@@ -927,7 +929,7 @@ export default function SequencesPage() {
                           </Link>
 
                           {/* Top Right Controls & Menu */}
-                          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+                          <div className="flex items-center gap-1 sm:gap-2 shrink-0">
                             <StatusBadge status={seq.status} />
 
                             {/* 3-Dot Dropdown Actions Menu */}
@@ -1016,7 +1018,7 @@ export default function SequencesPage() {
                         </div>
 
                         {/* Visual Step Timeline Node Preview */}
-                        <div className="mt-3 flex items-center gap-1.5 overflow-x-auto rounded-xl border border-zinc-100 dark:border-white/5 bg-zinc-50/80 dark:bg-white/[0.02] p-1.5 sm:p-2 scrollbar-none">
+                        <div className="mt-2.5 sm:mt-3 flex items-center gap-1.5 overflow-x-auto rounded-xl border border-zinc-100 dark:border-white/5 bg-zinc-50/80 dark:bg-white/[0.02] p-1.5 sm:p-2 scrollbar-none">
                           {seq.pageId ? (
                             <>
                               {/* Attached Sequence: Step 1 Instant Lead Magnet Delivery Node */}
@@ -1085,46 +1087,46 @@ export default function SequencesPage() {
                       </div>
 
                       {/* Bottom Performance Metrics Grid (Scales down seamlessly on small mobile) */}
-                      <div className="mt-3 grid grid-cols-5 divide-x divide-zinc-100 dark:divide-white/5 rounded-xl border border-zinc-100 dark:border-white/5 bg-[#F9F9FB] dark:bg-[#141417] text-center min-w-0 w-full max-w-full">
+                      <div className="mt-2.5 sm:mt-3 grid grid-cols-5 divide-x divide-zinc-100 dark:divide-white/5 rounded-xl border border-zinc-100 dark:border-white/5 bg-[#F9F9FB] dark:bg-[#141417] text-center min-w-0 w-full max-w-full">
                         <Link
                           href={`/dashboard/leads?search=${encodeURIComponent(attachedName)}`}
-                          className="px-0.5 sm:px-1 py-2 sm:py-2.5 hover:bg-zinc-100/60 dark:hover:bg-white/5 transition rounded-l-xl"
+                          className="px-0.5 sm:px-1 py-1.5 sm:py-2.5 hover:bg-zinc-100/60 dark:hover:bg-white/5 transition rounded-l-xl"
                           title="View signed up leads"
                         >
-                          <p className="text-xs sm:text-sm md:text-base font-bold text-zinc-900 dark:text-white leading-tight truncate">
+                          <p className="text-[11px] sm:text-sm md:text-base font-bold text-zinc-900 dark:text-white leading-tight truncate">
                             {signedUp.toLocaleString()}
                           </p>
-                          <p className="text-[9px] sm:text-[10px] font-medium text-zinc-500 dark:text-zinc-400 truncate">Signups</p>
+                          <p className="text-[8.5px] sm:text-[10px] font-medium text-zinc-500 dark:text-zinc-400 truncate mt-0.5">Signups</p>
                         </Link>
 
-                        <div className="px-0.5 sm:px-1 py-2 sm:py-2.5">
-                          <p className="text-xs sm:text-sm md:text-base font-bold text-zinc-900 dark:text-white leading-tight truncate">
+                        <div className="px-0.5 sm:px-1 py-1.5 sm:py-2.5">
+                          <p className="text-[11px] sm:text-sm md:text-base font-bold text-zinc-900 dark:text-white leading-tight truncate">
                             {delivered.toLocaleString()}
                           </p>
-                          <p className="text-[9px] sm:text-[10px] font-medium text-zinc-500 dark:text-zinc-400 truncate">Delivered</p>
+                          <p className="text-[8.5px] sm:text-[10px] font-medium text-zinc-500 dark:text-zinc-400 truncate mt-0.5">Delivered</p>
                         </div>
 
-                        <div className="px-0.5 sm:px-1 py-2 sm:py-2.5">
-                          <p className="text-xs sm:text-sm md:text-base font-bold text-zinc-900 dark:text-white leading-tight truncate">
+                        <div className="px-0.5 sm:px-1 py-1.5 sm:py-2.5">
+                          <p className="text-[11px] sm:text-sm md:text-base font-bold text-zinc-900 dark:text-white leading-tight truncate">
                             {opened.toLocaleString()}
                           </p>
-                          <p className="text-[9px] sm:text-[10px] font-medium text-indigo-600 dark:text-indigo-400 truncate">
+                          <p className="text-[8.5px] sm:text-[10px] font-medium text-indigo-600 dark:text-indigo-400 truncate mt-0.5">
                             {openRate > 0 ? `${openRate}%` : "Opened"}
                           </p>
                         </div>
 
-                        <div className="px-0.5 sm:px-1 py-2 sm:py-2.5">
-                          <p className="text-xs sm:text-sm md:text-base font-bold text-zinc-900 dark:text-white leading-tight truncate">
+                        <div className="px-0.5 sm:px-1 py-1.5 sm:py-2.5">
+                          <p className="text-[11px] sm:text-sm md:text-base font-bold text-zinc-900 dark:text-white leading-tight truncate">
                             {completed.toLocaleString()}
                           </p>
-                          <p className="text-[9px] sm:text-[10px] font-medium text-emerald-600 dark:text-emerald-400 truncate">Done</p>
+                          <p className="text-[8.5px] sm:text-[10px] font-medium text-emerald-600 dark:text-emerald-400 truncate mt-0.5">Done</p>
                         </div>
 
-                        <div className="px-0.5 sm:px-1 py-2 sm:py-2.5">
-                          <p className="text-xs sm:text-sm md:text-base font-bold text-zinc-900 dark:text-white leading-tight truncate">
+                        <div className="px-0.5 sm:px-1 py-1.5 sm:py-2.5">
+                          <p className="text-[11px] sm:text-sm md:text-base font-bold text-zinc-900 dark:text-white leading-tight truncate">
                             {replied.toLocaleString()}
                           </p>
-                          <p className="text-[9px] sm:text-[10px] font-medium text-zinc-500 dark:text-zinc-400 truncate">Replied</p>
+                          <p className="text-[8.5px] sm:text-[10px] font-medium text-zinc-500 dark:text-zinc-400 truncate mt-0.5">Replied</p>
                         </div>
                       </div>
                     </div>
@@ -1246,9 +1248,9 @@ export default function SequencesPage() {
           ) : (
             /* Empty State for Search or 0 Sequences */
             sequences.length > 0 ? (
-              <div className="rounded-2xl border border-dashed border-zinc-300 dark:border-white/10 bg-white/50 dark:bg-[#18181B]/50 p-8 text-center">
-                <Search className="mx-auto h-7 w-7 text-zinc-400" />
-                <h3 className="mt-2.5 text-sm font-bold text-zinc-900 dark:text-white">
+              <div className="rounded-2xl border border-dashed border-zinc-300 dark:border-white/10 bg-white/50 dark:bg-[#18181B]/50 p-5 sm:p-8 text-center">
+                <Search className="mx-auto h-6 w-6 sm:h-7 sm:w-7 text-zinc-400" />
+                <h3 className="mt-2 text-sm font-bold text-zinc-900 dark:text-white">
                   No matching sequences found
                 </h3>
                 <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400 max-w-sm mx-auto">
@@ -1259,7 +1261,7 @@ export default function SequencesPage() {
                     setSearchQuery("");
                     setStatusFilter("all");
                   }}
-                  className="mt-3.5 inline-flex items-center gap-1.5 rounded-xl bg-zinc-100 dark:bg-zinc-800 px-3 py-1.5 text-xs font-bold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition cursor-pointer"
+                  className="mt-3 inline-flex items-center gap-1.5 rounded-xl bg-zinc-100 dark:bg-zinc-800 px-3 py-1.5 text-xs font-bold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition cursor-pointer"
                 >
                   Reset all filters
                 </button>
@@ -1267,17 +1269,17 @@ export default function SequencesPage() {
             ) : (
               /* Global Empty State */
               <>
-                <div className="mt-2 rounded-2xl border border-zinc-200/80 dark:border-white/10 bg-white dark:bg-[#18181B] p-8 sm:p-10 text-center shadow-2xs">
-                  <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-[#0066B2]/10 dark:bg-[#0066B2]/20 text-[#0066B2] dark:text-[#38BDF8] mb-4 border border-[#0066B2]/20">
-                    <MailOpen className="h-7 w-7" />
+                <div className="mt-2 rounded-2xl border border-zinc-200/80 dark:border-white/10 bg-white dark:bg-[#18181B] p-5 sm:p-10 text-center shadow-2xs">
+                  <div className="mx-auto flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center rounded-2xl bg-[#0066B2]/10 dark:bg-[#0066B2]/20 text-[#0066B2] dark:text-[#38BDF8] mb-3 sm:mb-4 border border-[#0066B2]/20">
+                    <MailOpen className="h-6 w-6 sm:h-7 sm:w-7" />
                   </div>
-                  <h3 className="text-lg font-extrabold text-zinc-900 dark:text-white">
+                  <h3 className="text-base sm:text-lg font-extrabold text-zinc-900 dark:text-white">
                     No follow-up sequences yet
                   </h3>
                   <p className="mt-1.5 text-xs text-zinc-500 dark:text-zinc-400 max-w-md mx-auto leading-relaxed">
                     Automate your email delivery, send scheduled follow-ups, and convert new subscribers into clients automatically.
                   </p>
-                  <div className="mt-5 flex justify-center">
+                  <div className="mt-4 sm:mt-5 flex justify-center">
                     {/* Desktop Link */}
                     <Link
                       href="/dashboard/sequences/new"
@@ -1290,7 +1292,7 @@ export default function SequencesPage() {
                     <button
                       type="button"
                       onClick={() => setShowNewSequenceModal(true)}
-                      className="sm:hidden inline-flex items-center gap-2 rounded-xl bg-[#0066B2] px-5 py-2.5 text-xs font-bold text-white shadow-xs hover:bg-[#005799] transition dark:bg-[#0066B2] dark:hover:bg-[#005799] cursor-pointer active:scale-95"
+                      className="sm:hidden inline-flex items-center gap-1.5 rounded-xl bg-[#0066B2] px-4 py-2 text-xs font-bold text-white shadow-xs hover:bg-[#005799] transition dark:bg-[#0066B2] dark:hover:bg-[#005799] cursor-pointer active:scale-95"
                     >
                       <Plus className="h-4 w-4 stroke-[2.5px]" />
                       Create your first sequence
@@ -1299,7 +1301,7 @@ export default function SequencesPage() {
                 </div>
 
                 {/* Feature Highlights Grid (Clean cards with pure hover 'i' Info tooltips) */}
-                <div className="mt-4 grid gap-3.5 sm:grid-cols-3">
+                <div className="mt-3 sm:mt-4 grid gap-2.5 sm:gap-3.5 sm:grid-cols-3">
                   {/* Card 1: Instant Trigger */}
                   <div className="relative flex items-center justify-between rounded-2xl border border-zinc-200/80 dark:border-white/10 bg-white dark:bg-[#18181B] p-4 shadow-2xs">
                     <div className="flex items-center gap-3 min-w-0">
