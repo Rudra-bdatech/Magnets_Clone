@@ -36,6 +36,7 @@ import type { Account, Lead, MagnetPage, Sequence } from "@/lib/data";
 import dynamic from "next/dynamic";
 import { LeadTableRow } from "@/components/leads/LeadTableRow";
 import { MobileLeadCard } from "@/components/leads/MobileLeadCard";
+import { AppleCheckbox } from "@/components/leads/AppleCheckbox";
 import { LeadToastContainer, type Toast } from "@/components/leads/LeadToastContainer";
 
 const AddLeadModal = dynamic(() => import("@/components/leads/AddLeadModal").then((mod) => mod.AddLeadModal), { ssr: false });
@@ -1043,17 +1044,38 @@ function parseCsvLine(line: string): string[] {
                 </div>
 
                 <div className="flex flex-wrap items-center gap-2">
-                  {/* Bulk Delete Selected Button */}
-                  {selectedLeadIds.length > 0 && (
-                    <button
-                      type="button"
-                      onClick={() => setShowBulkDeleteModal(true)}
-                      className="flex items-center gap-1.5 rounded-xl bg-red-600 hover:bg-red-700 px-3.5 py-2 text-xs font-bold text-white shadow-sm transition-all cursor-pointer animate-in fade-in zoom-in-95 duration-150"
-                    >
-                      <Trash2 className="h-3.5 w-3.5" />
-                      <span>Delete Selected ({selectedLeadIds.length})</span>
-                    </button>
-                  )}
+                  {/* Bulk Selection Actions - Apple Style */}
+                  <AnimatePresence>
+                    {selectedLeadIds.length > 0 && (
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0.95, x: -8 }}
+                        animate={{ opacity: 1, scale: 1, x: 0 }}
+                        exit={{ opacity: 0, scale: 0.95, x: -8 }}
+                        transition={{ type: "spring", stiffness: 500, damping: 28 }}
+                        className="flex items-center gap-2"
+                      >
+                        <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#0066B2]/10 text-[#0066B2] dark:bg-[#38BDF8]/15 dark:text-[#38BDF8] text-xs font-bold border border-[#0066B2]/20 dark:border-[#38BDF8]/30">
+                          <span>{selectedLeadIds.length} selected</span>
+                          <button
+                            type="button"
+                            onClick={() => setSelectedLeadIds([])}
+                            className="ml-1 text-zinc-400 hover:text-zinc-700 dark:hover:text-white transition cursor-pointer"
+                            title="Deselect all"
+                          >
+                            <X className="h-3 w-3" />
+                          </button>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => setShowBulkDeleteModal(true)}
+                          className="flex items-center gap-1.5 rounded-xl bg-red-600 hover:bg-red-700 px-3.5 py-1.5 text-xs font-bold text-white shadow-sm transition-all cursor-pointer active:scale-95"
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                          <span>Delete Selected</span>
+                        </button>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
 
                   {/* Filter by Magnet — Glassy & Smooth Animated Dropdown */}
                   <div className="relative" ref={filterRef}>
@@ -1465,16 +1487,23 @@ function parseCsvLine(line: string): string[] {
               <table className="w-full text-left divide-y divide-zinc-200/80 dark:divide-[#2e2e38]">
                 <thead className="bg-[#F8FBFF] dark:bg-[#151518]">
                   <tr>
-                    <th className="px-3 py-3.5 text-center w-10">
-                      <input
-                        type="checkbox"
-                        checked={paginatedLeads.length > 0 && selectedLeadIds.length === paginatedLeads.length}
-                        onChange={toggleSelectAll}
-                        className="h-4 w-4 rounded border-zinc-300 dark:border-zinc-700 bg-white dark:bg-[#202026] text-[#0066B2] focus:ring-[#0066B2] cursor-pointer"
-                        title="Select All On Page"
-                      />
+                    <th className="px-3 lg:px-4 py-3.5 text-left text-[11px] font-semibold uppercase tracking-wider text-zinc-500 dark:text-[#9B9085]">
+                      <div className="flex items-center">
+                        <div className="flex items-center mr-2.5">
+                          <AppleCheckbox
+                            checked={paginatedLeads.length > 0 && selectedLeadIds.length === paginatedLeads.length}
+                            indeterminate={selectedLeadIds.length > 0 && selectedLeadIds.length < paginatedLeads.length}
+                            onChange={toggleSelectAll}
+                            title={
+                              selectedLeadIds.length === paginatedLeads.length && paginatedLeads.length > 0
+                                ? "Deselect all on page"
+                                : "Select all on page"
+                            }
+                          />
+                        </div>
+                        <span>Subscriber</span>
+                      </div>
                     </th>
-                    <th className="px-3 lg:px-4 py-3.5 text-left text-[11px] font-semibold uppercase tracking-wider text-zinc-500 dark:text-[#9B9085]">Subscriber</th>
                     <th className="px-3 lg:px-4 py-3.5 text-left text-[11px] font-semibold uppercase tracking-wider text-zinc-500 dark:text-[#9B9085]">Source / Gate</th>
                     <th className="px-3 lg:px-4 py-3.5 text-left text-[11px] font-semibold uppercase tracking-wider text-zinc-500 dark:text-[#9B9085]">Lead Magnet</th>
                     <th className="px-3 lg:px-4 py-3.5 text-left text-[11px] font-semibold uppercase tracking-wider text-zinc-500 dark:text-[#9B9085]">Signup Date</th>
@@ -1499,6 +1528,7 @@ function parseCsvLine(line: string): string[] {
                         key={lead.id}
                         lead={lead}
                         isSelected={isSelected}
+                        isSelectionActive={selectedLeadIds.length > 0}
                         isLockedPdf={isLockedPdf}
                         isManual={isManual}
                         isLinkedIn={isLinkedIn}

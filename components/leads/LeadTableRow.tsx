@@ -1,12 +1,15 @@
 "use client";
 
 import React, { memo } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Copy, Eye, Trash2, Lock, Upload, Sparkles, Linkedin } from "lucide-react";
 import type { Lead } from "@/lib/data";
+import { AppleCheckbox } from "./AppleCheckbox";
 
 interface LeadTableRowProps {
   lead: Lead;
   isSelected: boolean;
+  isSelectionActive?: boolean;
   isLockedPdf: boolean;
   isManual: boolean;
   isLinkedIn?: boolean;
@@ -21,6 +24,7 @@ interface LeadTableRowProps {
 export const LeadTableRow = memo(function LeadTableRow({
   lead,
   isSelected,
+  isSelectionActive = false,
   isLockedPdf,
   isManual,
   isLinkedIn,
@@ -33,29 +37,48 @@ export const LeadTableRow = memo(function LeadTableRow({
 }: LeadTableRowProps) {
   return (
     <tr
-      className={`transition-colors ${
+      className={`group transition-all duration-200 ${
         isSelected
-          ? "bg-[#EFF6FF] dark:bg-[#0066B2]/15"
-          : "hover:bg-[#EFF6FF]/40 dark:hover:bg-[#1C1C22]/60"
+          ? "bg-gradient-to-r from-[#0066B2]/[0.08] via-[#0066B2]/[0.04] to-transparent dark:from-[#38BDF8]/15 dark:via-[#38BDF8]/[0.06] dark:to-transparent"
+          : "hover:bg-zinc-50/80 dark:hover:bg-[#1F1F24]/70"
       }`}
     >
-      {/* Checkbox Column */}
-      <td className="px-3 py-3.5 text-center whitespace-nowrap w-10">
-        <input
-          type="checkbox"
-          checked={isSelected}
-          onChange={() => onToggleSelect(lead.id)}
-          className="h-4 w-4 rounded border-zinc-300 dark:border-zinc-700 bg-white dark:bg-[#202026] text-[#0066B2] focus:ring-[#0066B2] cursor-pointer"
-        />
-      </td>
-
-      {/* Subscriber Column */}
+      {/* Subscriber Column with Framer Motion Spring Shift */}
       <td className="px-3 lg:px-4 py-3.5 whitespace-nowrap">
-        <div className="flex items-center gap-2.5">
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-[#0066B2]/10 text-[#0066B2] dark:bg-[#38BDF8]/20 dark:text-[#38BDF8] text-xs font-bold uppercase border border-[#0066B2]/20 dark:border-[#38BDF8]/30">
+        <div className="flex items-center min-w-0">
+          {/* Animated Spring Checkbox - 100% Matching Mobile Physics */}
+          <AnimatePresence initial={false}>
+            {(isSelectionActive || isSelected) && (
+              <motion.div
+                initial={{ opacity: 0, width: 0, marginRight: 0, scale: 0.6 }}
+                animate={{ opacity: 1, width: 22, marginRight: 10, scale: 1 }}
+                exit={{ opacity: 0, width: 0, marginRight: 0, scale: 0.6 }}
+                transition={{ type: "spring", stiffness: 420, damping: 28 }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onToggleSelect(lead.id);
+                }}
+                className="flex items-center justify-center shrink-0 overflow-hidden cursor-pointer"
+              >
+                <AppleCheckbox
+                  checked={isSelected}
+                  onChange={() => onToggleSelect(lead.id)}
+                  title={isSelected ? "Deselect subscriber" : "Select subscriber"}
+                />
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Avatar with tap-to-select indicator */}
+          <div
+            onClick={() => onToggleSelect(lead.id)}
+            title={isSelected ? "Deselect" : "Select"}
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-[#0066B2]/10 text-[#0066B2] dark:bg-[#38BDF8]/20 dark:text-[#38BDF8] text-xs font-bold uppercase border border-[#0066B2]/20 dark:border-[#38BDF8]/30 cursor-pointer active:scale-95 transition-transform"
+          >
             {(lead.name || lead.email || "U").slice(0, 2)}
           </div>
-          <div className="min-w-0 max-w-[190px] xl:max-w-[240px]">
+
+          <div className="min-w-0 max-w-[190px] xl:max-w-[240px] ml-2.5">
             <p className="text-xs sm:text-sm font-semibold text-zinc-900 dark:text-white flex items-center gap-1.5 truncate">
               <span className="truncate" title={lead.email}>{lead.email}</span>
               <button
@@ -143,3 +166,4 @@ export const LeadTableRow = memo(function LeadTableRow({
     </tr>
   );
 });
+
