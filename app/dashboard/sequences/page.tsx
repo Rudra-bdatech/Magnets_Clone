@@ -35,8 +35,10 @@ import {
   Zap,
   Info,
   AlertTriangle,
+  CheckSquare,
 } from "lucide-react";
 import StatusBadge from "@/components/dashboard/status-badge";
+import { AppleCheckbox } from "@/components/leads/AppleCheckbox";
 import { MobileSequenceCard } from "@/components/sequences/MobileSequenceCard";
 import { type Sequence, type SequenceEmail, type Account, type Lead, type MagnetPage } from "@/lib/data";
 import {
@@ -79,6 +81,12 @@ export default function SequencesPage() {
   const [isStatusFilterOpen, setIsStatusFilterOpen] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
 
+  // Selection & Bulk Actions State
+  const [isSelectMode, setIsSelectMode] = useState(false);
+  const [checkedIds, setCheckedIds] = useState<string[]>([]);
+  const [showBulkDeleteModal, setShowBulkDeleteModal] = useState(false);
+  const [isBulkDeleting, setIsBulkDeleting] = useState(false);
+
   // Dropdown menu tracking
   const [activeMenuId, setActiveMenuId] = useState<string | null>(null);
   const [mobileActionSeq, setMobileActionSeq] = useState<Sequence | null>(null);
@@ -99,9 +107,88 @@ export default function SequencesPage() {
     setTimeout(() => setToastMessage(null), 3000);
   };
 
+  const handleToggleCheck = (seqId: string, e?: React.MouseEvent) => {
+    if (e) {
+      e.stopPropagation();
+    }
+    setCheckedIds((prev) =>
+      prev.includes(seqId) ? prev.filter((id) => id !== seqId) : [...prev, seqId]
+    );
+  };
+
+  const handleToggleSelectAll = () => {
+    if (checkedIds.length === filteredSequences.length && filteredSequences.length > 0) {
+      setCheckedIds([]);
+    } else {
+      setCheckedIds(filteredSequences.map((s) => s.id));
+    }
+  };
+
+  const handleBulkToggleStatus = async (targetStatus: "live" | "draft") => {
+    if (checkedIds.length === 0) return;
+    const count = checkedIds.length;
+
+    const updated = sequences.map((s) =>
+      checkedIds.includes(s.id) ? { ...s, status: targetStatus } : s
+    );
+    setSequences(updated);
+    saveSequences(updated);
+
+    const currentPages = loadPages();
+    const updatedPages = currentPages.map((p) => {
+      const isAttached = checkedIds.some((id) => id === `seq_${p.id}` || id === p.id);
+      if (isAttached) {
+        return { ...p, sequenceEnabled: targetStatus === "live" };
+      }
+      return p;
+    });
+    setPages(updatedPages);
+    savePages(updatedPages);
+
+    showToast(`${count} sequence${count > 1 ? "s" : ""} ${targetStatus === "live" ? "resumed" : "paused"}`);
+    setCheckedIds([]);
+    setIsSelectMode(false);
+  };
+
+  const confirmBulkDeletion = async () => {
+    if (checkedIds.length === 0) return;
+    setIsBulkDeleting(true);
+    const count = checkedIds.length;
+
+    try {
+      let currentSequences = [...sequences];
+      let currentPages = loadPages();
+
+      for (const id of checkedIds) {
+        currentSequences = currentSequences.filter((s) => s.id !== id);
+        currentPages = currentPages.map((p) => {
+          if (p.id === id || `seq_${p.id}` === id) {
+            return { ...p, sequenceEmails: [], sequenceEnabled: false };
+          }
+          return p;
+        });
+      }
+
+      setSequences(currentSequences);
+      saveSequences(currentSequences);
+      setPages(currentPages);
+      savePages(currentPages);
+
+      showToast(`Deleted ${count} sequence${count > 1 ? "s" : ""}`);
+      setCheckedIds([]);
+      setIsSelectMode(false);
+      setShowBulkDeleteModal(false);
+    } catch (err) {
+      console.error(err);
+      showToast("Failed to delete sequences");
+    } finally {
+      setIsBulkDeleting(false);
+    }
+  };
+
   // Lock body scroll when mobile modals are open
   useEffect(() => {
-    if (showNewSequenceModal || seqToDelete || mobileActionSeq) {
+    if (showNewSequenceModal || seqToDelete || mobileActionSeq || showBulkDeleteModal) {
       document.body.style.overflow = "hidden";
     } else {
       document.body.style.overflow = "";
@@ -109,7 +196,7 @@ export default function SequencesPage() {
     return () => {
       document.body.style.overflow = "";
     };
-  }, [showNewSequenceModal, seqToDelete, mobileActionSeq]);
+  }, [showNewSequenceModal, seqToDelete, mobileActionSeq, showBulkDeleteModal]);
 
   // Close menus on outside click
   useEffect(() => {
@@ -879,7 +966,7 @@ export default function SequencesPage() {
                   </AnimatePresence>
                 </div>
 
-                {/* View Mode Toggle Pod (Card vs List View) */}
+                {/* View Mode & Selection Toggle Pod */}
                 <div className="flex items-center p-1 bg-zinc-100 dark:bg-[#1C1C20] rounded-xl shrink-0">
                   <button
                     onClick={() => setViewMode("grid")}
@@ -913,6 +1000,27 @@ export default function SequencesPage() {
                     )}
                     <List className="relative z-10 h-4 w-4" />
                   </button>
+
+                  <div className="h-3.5 w-px bg-zinc-200 dark:bg-zinc-700 mx-0.5" />
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsSelectMode((prev) => {
+                        const next = !prev;
+                        if (!next) setCheckedIds([]);
+                        return next;
+                      });
+                    }}
+                    className={`relative p-1.5 rounded-lg transition-colors duration-150 cursor-pointer ${
+                      isSelectMode || checkedIds.length > 0
+                        ? "bg-white dark:bg-[#2A2A30] text-[#0066B2] dark:text-[#38BDF8] shadow-xs"
+                        : "text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200"
+                    }`}
+                    title={isSelectMode || checkedIds.length > 0 ? "Exit Select Mode" : "Select Sequences"}
+                  >
+                    <CheckSquare className="relative z-10 h-4 w-4" />
+                  </button>
                 </div>
               </div>
             </div>
@@ -930,6 +1038,9 @@ export default function SequencesPage() {
                       key={seq.id}
                       seq={seq}
                       variant={viewMode === "grid" ? "card" : "list"}
+                      isChecked={checkedIds.includes(seq.id)}
+                      isSelectMode={isSelectMode || checkedIds.length > 0}
+                      onToggleCheck={handleToggleCheck}
                       attachedPage={attachedPage}
                       onOpenMobileActions={(s) => setMobileActionSeq(s)}
                       onToggleStatus={handleToggleStatus}
@@ -952,35 +1063,71 @@ export default function SequencesPage() {
                   const isStandalone = !seq.pageId || !attachedPage;
                   const attachedName = attachedPage?.name || seq.name.replace(" Follow-up", "").replace(" (Copy)", "");
                   const isMenuOpen = activeMenuId === seq.id;
+                  const isChecked = checkedIds.includes(seq.id);
                   const totalStepsCount = isStandalone ? seq.emails.length : seq.emails.length + 1;
 
                   return (
                     <div
                       key={seq.id}
-                      className={`group relative flex flex-col justify-between rounded-2xl border border-zinc-200/90 dark:border-white/10 bg-white dark:bg-[#18181B] p-3 sm:p-5 transition-all duration-200 hover:border-[#0066B2] dark:hover:border-[#38BDF8] shadow-2xs hover:shadow-sm min-w-0 w-full max-w-full ${isMenuOpen ? "z-30" : "z-0"}`}
+                      onClick={(e) => {
+                        if (isSelectMode || checkedIds.length > 0) {
+                          handleToggleCheck(seq.id, e);
+                        }
+                      }}
+                      className={`group relative flex flex-col justify-between rounded-2xl border p-3 sm:p-5 transition-all duration-200 hover:border-[#0066B2] dark:hover:border-[#38BDF8] shadow-2xs hover:shadow-sm min-w-0 w-full max-w-full cursor-pointer ${
+                        isMenuOpen ? "z-30" : "z-0"
+                      } ${
+                        isChecked
+                          ? "border-[#0066B2] dark:border-[#38BDF8] bg-blue-50/40 dark:bg-[#0066B2]/15 ring-2 ring-[#0066B2]/30 shadow-md"
+                          : "border-zinc-200/90 dark:border-white/10 bg-white dark:bg-[#18181B]"
+                      }`}
                     >
                       {/* Top Row: Icon, Title, Actions */}
                       <div className="min-w-0 w-full max-w-full">
                         <div className="flex items-start justify-between gap-2 sm:gap-3 min-w-0 max-w-full">
-                          <Link href={linkHref} className="flex items-start gap-2 sm:gap-3 flex-1 min-w-0">
-                            <div className="flex h-8 w-8 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-lg sm:rounded-xl bg-[#EFF6FF] text-[#0066B2] dark:bg-[#0066B2]/20 dark:text-[#38BDF8] group-hover:scale-105 transition">
-                              <Rocket className="h-4 w-4 sm:h-4.5 sm:w-4.5" aria-hidden="true" />
-                            </div>
-                            <div className="min-w-0 flex-1">
-                              <div className="flex items-center gap-1 sm:gap-2 flex-wrap min-w-0">
-                                <p className="truncate text-xs sm:text-base font-bold text-zinc-900 dark:text-white group-hover:text-[#0066B2] dark:group-hover:text-[#38BDF8] transition">
-                                  {seq.name}
-                                </p>
-                                {isStandalone ? (
-                                  <span className="inline-flex items-center gap-1 rounded-md border border-blue-200/80 dark:border-blue-900/60 bg-blue-50/80 dark:bg-blue-950/40 px-1.5 py-0.5 text-[9px] sm:text-[9.5px] font-bold text-[#0066B2] dark:text-[#38BDF8] shrink-0">
-                                    ⚡ Standalone
-                                  </span>
-                                ) : (
-                                  <span className="inline-flex items-center gap-1 rounded-md border border-emerald-200/80 dark:border-emerald-900/60 bg-emerald-50/80 dark:bg-emerald-950/40 px-1.5 py-0.5 text-[9px] sm:text-[9.5px] font-bold text-emerald-700 dark:text-emerald-400 shrink-0">
-                                    🎯 Lead Magnet
-                                  </span>
-                                )}
+                          <div className="flex items-start gap-2 sm:gap-3 flex-1 min-w-0">
+                            {/* Animated Checkbox on desktop grid card */}
+                            <AnimatePresence initial={false}>
+                              {(isSelectMode || isChecked) && (
+                                <motion.div
+                                  initial={{ opacity: 0, width: 0, marginRight: 0 }}
+                                  animate={{ opacity: 1, width: 24, marginRight: 8 }}
+                                  exit={{ opacity: 0, width: 0, marginRight: 0 }}
+                                  transition={{ type: "spring", stiffness: 450, damping: 35 }}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleToggleCheck(seq.id, e);
+                                  }}
+                                  className="flex h-10 items-center justify-center shrink-0 overflow-hidden cursor-pointer"
+                                >
+                                  <AppleCheckbox
+                                    checked={isChecked}
+                                    onChange={() => handleToggleCheck(seq.id)}
+                                    title={isChecked ? "Deselect sequence" : "Select sequence"}
+                                  />
+                                </motion.div>
+                              )}
+                            </AnimatePresence>
+
+                            <Link href={linkHref} onClick={(e) => { if (isSelectMode || checkedIds.length > 0) { e.preventDefault(); } }} className="flex items-start gap-2 sm:gap-3 flex-1 min-w-0">
+                              <div className="flex h-8 w-8 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-lg sm:rounded-xl bg-[#EFF6FF] text-[#0066B2] dark:bg-[#0066B2]/20 dark:text-[#38BDF8] group-hover:scale-105 transition">
+                                <Rocket className="h-4 w-4 sm:h-4.5 sm:w-4.5" aria-hidden="true" />
                               </div>
+                              <div className="min-w-0 flex-1">
+                                <div className="flex items-center gap-1 sm:gap-2 flex-wrap min-w-0">
+                                  <p className="truncate text-xs sm:text-base font-bold text-zinc-900 dark:text-white group-hover:text-[#0066B2] dark:group-hover:text-[#38BDF8] transition">
+                                    {seq.name}
+                                  </p>
+                                  {isStandalone ? (
+                                    <span className="inline-flex items-center gap-1 rounded-md border border-blue-200/80 dark:border-blue-900/60 bg-blue-50/80 dark:bg-blue-950/40 px-1.5 py-0.5 text-[9px] sm:text-[9.5px] font-bold text-[#0066B2] dark:text-[#38BDF8] shrink-0">
+                                      ⚡ Standalone
+                                    </span>
+                                  ) : (
+                                    <span className="inline-flex items-center gap-1 rounded-md border border-emerald-200/80 dark:border-emerald-900/60 bg-emerald-50/80 dark:bg-emerald-950/40 px-1.5 py-0.5 text-[9px] sm:text-[9.5px] font-bold text-emerald-700 dark:text-emerald-400 shrink-0">
+                                      🎯 Lead Magnet
+                                    </span>
+                                  )}
+                                </div>
                               <p className="mt-0.5 truncate text-[10.5px] sm:text-xs text-zinc-500 dark:text-zinc-400">
                                 {isStandalone ? (
                                   <span>Standalone automation flow</span>
@@ -996,6 +1143,7 @@ export default function SequencesPage() {
                               </p>
                             </div>
                           </Link>
+                        </div>
 
                           {/* Top Right Controls & Menu */}
                           <div className="flex items-center gap-1 sm:gap-2 shrink-0">
@@ -1214,7 +1362,33 @@ export default function SequencesPage() {
                   <table className="w-full text-left border-collapse">
                     <thead>
                       <tr className="border-b border-zinc-200/80 dark:border-white/10 bg-zinc-50/70 dark:bg-white/[0.02] text-[11px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
-                        <th className="py-3 pl-5 pr-3">Sequence & Magnet</th>
+                        <th className="py-3 pl-5 pr-3">
+                          <div className="flex items-center">
+                            <AnimatePresence initial={false}>
+                              {(checkedIds.length > 0 || isSelectMode) && (
+                                <motion.div
+                                  initial={{ opacity: 0, width: 0, marginRight: 0 }}
+                                  animate={{ opacity: 1, width: 22, marginRight: 10 }}
+                                  exit={{ opacity: 0, width: 0, marginRight: 0 }}
+                                  transition={{ type: "spring", stiffness: 450, damping: 35 }}
+                                  className="flex items-center justify-center shrink-0 overflow-hidden"
+                                >
+                                  <AppleCheckbox
+                                    checked={filteredSequences.length > 0 && checkedIds.length === filteredSequences.length}
+                                    indeterminate={checkedIds.length > 0 && checkedIds.length < filteredSequences.length}
+                                    onChange={handleToggleSelectAll}
+                                    title={
+                                      checkedIds.length === filteredSequences.length && filteredSequences.length > 0
+                                        ? "Deselect all"
+                                        : "Select all"
+                                    }
+                                  />
+                                </motion.div>
+                              )}
+                            </AnimatePresence>
+                            <span>Sequence & Magnet</span>
+                          </div>
+                        </th>
                         <th className="py-3 px-3">Status</th>
                         <th className="py-3 px-3">Steps</th>
                         <th className="py-3 px-3 text-right">Signed Up</th>
@@ -1234,37 +1408,82 @@ export default function SequencesPage() {
                         const isStandalone = !seq.pageId || !attachedPage;
                         const attachedName = attachedPage?.name || seq.name.replace(" Follow-up", "").replace(" (Copy)", "");
                         const totalStepsCount = isStandalone ? seq.emails.length : seq.emails.length + 1;
+                        const isChecked = checkedIds.includes(seq.id);
 
                         return (
                           <tr
                             key={seq.id}
-                            className="group hover:bg-zinc-50/70 dark:hover:bg-white/[0.02] transition"
+                            onClick={(e) => {
+                              if (isSelectMode || checkedIds.length > 0) {
+                                handleToggleCheck(seq.id, e);
+                              }
+                            }}
+                            className={`group transition-all duration-200 ${
+                              isSelectMode || checkedIds.length > 0 ? "cursor-pointer" : ""
+                            } ${
+                              isChecked
+                                ? "bg-gradient-to-r from-[#0066B2]/[0.08] via-[#0066B2]/[0.04] to-transparent dark:from-[#38BDF8]/15 dark:via-[#38BDF8]/[0.06] dark:to-transparent"
+                                : "hover:bg-zinc-50/70 dark:hover:bg-white/[0.02]"
+                            }`}
                           >
                             <td className="py-3 pl-5 pr-3">
-                              <Link href={linkHref} className="flex items-center gap-2.5">
-                                <div className="flex h-7.5 w-7.5 shrink-0 items-center justify-center rounded-lg bg-[#EFF6FF] text-[#0066B2] dark:bg-[#0066B2]/20 dark:text-[#38BDF8]">
-                                  <Rocket className="h-3.5 w-3.5" />
-                                </div>
-                                <div className="min-w-0">
-                                  <div className="flex items-center gap-1.5 flex-wrap">
-                                    <p className="font-bold text-zinc-900 dark:text-white group-hover:text-[#0066B2] dark:group-hover:text-[#38BDF8] transition truncate">
-                                      {seq.name}
-                                    </p>
-                                    {isStandalone ? (
-                                      <span className="rounded bg-blue-50 dark:bg-blue-950/50 text-[#0066B2] dark:text-[#38BDF8] border border-blue-200/60 dark:border-blue-900/40 text-[9px] font-bold px-1 py-0.2">
-                                        Standalone
-                                      </span>
-                                    ) : (
-                                      <span className="rounded bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400 border border-emerald-200/60 dark:border-emerald-900/40 text-[9px] font-bold px-1 py-0.2">
-                                        Lead Magnet
-                                      </span>
-                                    )}
+                              <div className="flex items-center min-w-0">
+                                <AnimatePresence initial={false}>
+                                  {(checkedIds.length > 0 || isChecked || isSelectMode) && (
+                                    <motion.div
+                                      initial={{ opacity: 0, width: 0, marginRight: 0 }}
+                                      animate={{ opacity: 1, width: 22, marginRight: 12 }}
+                                      exit={{ opacity: 0, width: 0, marginRight: 0 }}
+                                      transition={{ type: "spring", stiffness: 450, damping: 35 }}
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleToggleCheck(seq.id, e);
+                                      }}
+                                      className="flex items-center justify-center shrink-0 overflow-hidden cursor-pointer"
+                                    >
+                                      <AppleCheckbox
+                                        checked={isChecked}
+                                        onChange={() => handleToggleCheck(seq.id)}
+                                        title={isChecked ? "Deselect sequence" : "Select sequence"}
+                                      />
+                                    </motion.div>
+                                  )}
+                                </AnimatePresence>
+
+                                <Link
+                                  href={linkHref}
+                                  onClick={(e) => {
+                                    if (isSelectMode || checkedIds.length > 0) {
+                                      e.preventDefault();
+                                      handleToggleCheck(seq.id);
+                                    }
+                                  }}
+                                  className="flex items-center gap-2.5 min-w-0 flex-1"
+                                >
+                                  <div className="flex h-7.5 w-7.5 shrink-0 items-center justify-center rounded-lg bg-[#EFF6FF] text-[#0066B2] dark:bg-[#0066B2]/20 dark:text-[#38BDF8]">
+                                    <Rocket className="h-3.5 w-3.5" />
                                   </div>
-                                  <p className="text-[11px] text-zinc-500 dark:text-zinc-400 truncate">
-                                    {isStandalone ? "Standalone automation flow" : `Attached to "${attachedName}"`}
-                                  </p>
-                                </div>
-                              </Link>
+                                  <div className="min-w-0">
+                                    <div className="flex items-center gap-1.5 flex-wrap">
+                                      <p className="font-bold text-zinc-900 dark:text-white group-hover:text-[#0066B2] dark:group-hover:text-[#38BDF8] transition truncate">
+                                        {seq.name}
+                                      </p>
+                                      {isStandalone ? (
+                                        <span className="rounded bg-blue-50 dark:bg-blue-950/50 text-[#0066B2] dark:text-[#38BDF8] border border-blue-200/60 dark:border-blue-900/40 text-[9px] font-bold px-1 py-0.2">
+                                          Standalone
+                                        </span>
+                                      ) : (
+                                        <span className="rounded bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400 border border-emerald-200/60 dark:border-emerald-900/40 text-[9px] font-bold px-1 py-0.2">
+                                          Lead Magnet
+                                        </span>
+                                      )}
+                                    </div>
+                                    <p className="text-[11px] text-zinc-500 dark:text-zinc-400 truncate">
+                                      {isStandalone ? "Standalone automation flow" : `Attached to "${attachedName}"`}
+                                    </p>
+                                  </div>
+                                </Link>
+                              </div>
                             </td>
                             <td className="py-3 px-3 whitespace-nowrap">
                               <StatusBadge status={seq.status} />
@@ -2001,6 +2220,149 @@ export default function SequencesPage() {
                   className="w-full rounded-xl border border-zinc-200/80 dark:border-white/10 bg-zinc-100/90 dark:bg-[#1E1E24] py-2.5 text-xs font-bold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-200 dark:hover:bg-zinc-800 active:scale-[0.99] transition cursor-pointer text-center shadow-xs"
                 >
                   Cancel
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Floating Bottom Multi-Select Bar */}
+      <AnimatePresence>
+        {checkedIds.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 40, x: "-50%" }}
+            animate={{ opacity: 1, y: 0, x: "-50%" }}
+            exit={{ opacity: 0, y: 40, x: "-50%" }}
+            transition={{ type: "spring", stiffness: 450, damping: 30 }}
+            className="fixed bottom-6 left-1/2 z-50 flex items-center gap-2 sm:gap-3 rounded-2xl bg-white/80 dark:bg-zinc-900/85 border border-zinc-200/80 dark:border-zinc-700/60 text-zinc-900 dark:text-white px-3 sm:px-5 py-2.5 shadow-[0_16px_40px_rgba(0,0,0,0.12)] dark:shadow-[0_16px_40px_rgba(0,0,0,0.5)] backdrop-blur-xl ring-1 ring-black/5 dark:ring-white/10 max-w-[95vw] overflow-x-auto"
+          >
+            <span className="text-xs font-bold whitespace-nowrap text-zinc-900 dark:text-white">
+              <span className="text-[#0066B2] dark:text-[#38BDF8] font-black">{checkedIds.length}</span> selected
+            </span>
+
+            <div className="h-4 w-px bg-zinc-200 dark:bg-zinc-700 shrink-0" />
+
+            <button
+              onClick={handleToggleSelectAll}
+              className="text-xs font-semibold text-zinc-600 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-white transition cursor-pointer whitespace-nowrap"
+            >
+              {filteredSequences.length > 0 && filteredSequences.every((s) => checkedIds.includes(s.id))
+                ? "Deselect All"
+                : "Select All"}
+            </button>
+
+            <button
+              onClick={() => handleBulkToggleStatus("live")}
+              className="hidden sm:inline-flex items-center gap-1 text-xs font-semibold text-emerald-600 hover:text-emerald-700 dark:text-emerald-400 dark:hover:text-emerald-300 transition cursor-pointer whitespace-nowrap"
+              title="Resume selected sequences"
+            >
+              <Play className="h-3 w-3" />
+              <span>Resume</span>
+            </button>
+
+            <button
+              onClick={() => handleBulkToggleStatus("draft")}
+              className="hidden sm:inline-flex items-center gap-1 text-xs font-semibold text-amber-600 hover:text-amber-700 dark:text-amber-400 dark:hover:text-amber-300 transition cursor-pointer whitespace-nowrap"
+              title="Pause selected sequences"
+            >
+              <Pause className="h-3 w-3" />
+              <span>Pause</span>
+            </button>
+
+            <button
+              onClick={() => {
+                setCheckedIds([]);
+                setIsSelectMode(false);
+              }}
+              className="text-xs font-semibold text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200 transition cursor-pointer whitespace-nowrap"
+            >
+              Clear
+            </button>
+
+            <button
+              onClick={() => setShowBulkDeleteModal(true)}
+              className="flex items-center gap-1.5 rounded-xl bg-rose-600 hover:bg-rose-700 px-3 sm:px-3.5 py-1.5 text-xs font-bold text-white transition shadow-xs cursor-pointer whitespace-nowrap active:scale-95"
+            >
+              <Trash2 className="h-3.5 w-3.5" />
+              <span>Delete ({checkedIds.length})</span>
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Bulk Delete Modal */}
+      <AnimatePresence>
+        {showBulkDeleteModal && (
+          <motion.div
+            key="bulk-delete-modal-container"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4"
+          >
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="fixed inset-0 bg-black/60 backdrop-blur-[2px]"
+              onClick={() => !isBulkDeleting && setShowBulkDeleteModal(false)}
+            />
+
+            {/* Modal Box */}
+            <motion.div
+              initial={{ y: "100%", opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: "100%", opacity: 0 }}
+              transition={{ type: "spring", damping: 30, stiffness: 320 }}
+              className="relative z-10 w-full sm:max-w-[440px] max-h-[85vh] overflow-y-auto rounded-t-[28px] sm:rounded-3xl border-t sm:border border-zinc-200 dark:border-white/10 bg-white/95 dark:bg-[#141417]/95 backdrop-blur-xl p-5 sm:p-6 text-zinc-900 dark:text-white shadow-2xl space-y-4"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="w-10 h-1.5 rounded-full bg-zinc-300 dark:bg-zinc-700/80 mx-auto -mt-1 mb-2.5 cursor-grab active:scale-95 transition-transform sm:hidden" />
+
+              <div className="flex items-start justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-500">
+                    <Trash2 className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <h3 className="text-base sm:text-lg font-bold text-zinc-900 dark:text-white tracking-tight">
+                      Delete {checkedIds.length} sequence{checkedIds.length > 1 ? "s" : ""}?
+                    </h3>
+                    <p className="text-[11px] text-zinc-500 dark:text-zinc-400 mt-0.5">
+                      This will permanently remove {checkedIds.length} selected sequences and their email steps.
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  disabled={isBulkDeleting}
+                  onClick={() => setShowBulkDeleteModal(false)}
+                  className="rounded-lg p-1.5 text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white transition-colors cursor-pointer"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+
+              <div className="pt-3 sm:pt-4 flex items-center justify-end gap-3">
+                <button
+                  type="button"
+                  disabled={isBulkDeleting}
+                  onClick={() => setShowBulkDeleteModal(false)}
+                  className="flex-1 sm:flex-none rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-[#25252A] px-4 py-2.5 text-xs font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white transition-all cursor-pointer text-center"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  disabled={isBulkDeleting}
+                  onClick={confirmBulkDeletion}
+                  className="flex-1 sm:flex-none rounded-xl border border-rose-500/30 bg-rose-500/15 dark:bg-rose-500/15 px-4 py-2.5 text-xs font-bold text-rose-600 dark:text-rose-400 hover:bg-rose-600 hover:text-white dark:hover:bg-rose-600 dark:hover:text-white transition-all cursor-pointer shadow-sm text-center disabled:opacity-50"
+                >
+                  {isBulkDeleting ? "Deleting..." : `Delete ${checkedIds.length} items`}
                 </button>
               </div>
             </motion.div>

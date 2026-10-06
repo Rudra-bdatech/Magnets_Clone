@@ -3,6 +3,7 @@
 import React, { memo } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Rocket,
   MoreVertical,
@@ -13,12 +14,16 @@ import {
   Users,
 } from "lucide-react";
 import StatusBadge from "@/components/dashboard/status-badge";
+import { AppleCheckbox } from "@/components/leads/AppleCheckbox";
 import type { Sequence, MagnetPage } from "@/lib/data";
 
 interface MobileSequenceCardProps {
   seq: Sequence;
   attachedPage?: MagnetPage | null;
   variant?: "card" | "list";
+  isChecked?: boolean;
+  isSelectMode?: boolean;
+  onToggleCheck?: (id: string, e?: React.MouseEvent) => void;
   onOpenMobileActions: (seq: Sequence) => void;
   onToggleStatus: (seq: Sequence, e: React.MouseEvent) => void;
 }
@@ -27,6 +32,9 @@ export const MobileSequenceCard = memo(function MobileSequenceCard({
   seq,
   attachedPage,
   variant = "card",
+  isChecked = false,
+  isSelectMode = false,
+  onToggleCheck,
   onOpenMobileActions,
   onToggleStatus,
 }: MobileSequenceCardProps) {
@@ -41,12 +49,23 @@ export const MobileSequenceCard = memo(function MobileSequenceCard({
   const totalStepsCount = isStandalone ? seq.emails.length : seq.emails.length + 1;
 
   const handleCardClick = () => {
-    router.push(linkHref);
+    if (isSelectMode && onToggleCheck) {
+      onToggleCheck(seq.id);
+    } else {
+      router.push(linkHref);
+    }
   };
 
   const handleMoreClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     onOpenMobileActions(seq);
+  };
+
+  const handleCheckboxClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (onToggleCheck) {
+      onToggleCheck(seq.id, e);
+    }
   };
 
   /* ========================================================================= */
@@ -56,10 +75,34 @@ export const MobileSequenceCard = memo(function MobileSequenceCard({
     return (
       <div
         onClick={handleCardClick}
-        className="group relative rounded-xl border border-zinc-200/80 bg-white dark:border-[#282832] dark:bg-[#18181C] p-3 shadow-2xs hover:border-zinc-300 dark:hover:border-zinc-700 transition-all duration-200 active:scale-[0.99] select-none cursor-pointer flex items-center justify-between gap-2.5"
+        className={`group relative rounded-xl border p-3 transition-all duration-200 active:scale-[0.99] select-none cursor-pointer flex items-center justify-between gap-2.5 ${
+          isChecked
+            ? "border-[#0066B2] dark:border-[#38BDF8] bg-blue-50/60 dark:bg-[#0066B2]/15 ring-1 ring-[#0066B2]/30 shadow-xs"
+            : "border-zinc-200/80 bg-white dark:border-[#282832] dark:bg-[#18181C] hover:border-zinc-300 dark:hover:border-zinc-700 shadow-2xs"
+        }`}
       >
-        {/* Left: Icon & Sequence Info */}
+        {/* Left: Checkbox (if in select mode), Icon & Sequence Info */}
         <div className="flex items-center min-w-0 flex-1 gap-2.5">
+          {/* Animated Checkbox */}
+          <AnimatePresence initial={false}>
+            {(isSelectMode || isChecked) && (
+              <motion.div
+                initial={{ opacity: 0, width: 0, marginRight: 0 }}
+                animate={{ opacity: 1, width: 22, marginRight: 2 }}
+                exit={{ opacity: 0, width: 0, marginRight: 0 }}
+                transition={{ type: "spring", stiffness: 450, damping: 35 }}
+                onClick={handleCheckboxClick}
+                className="flex items-center justify-center shrink-0 overflow-hidden cursor-pointer"
+              >
+                <AppleCheckbox
+                  checked={isChecked}
+                  onChange={() => onToggleCheck && onToggleCheck(seq.id)}
+                  title={isChecked ? "Deselect sequence" : "Select sequence"}
+                />
+              </motion.div>
+            )}
+          </AnimatePresence>
+
           <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#EFF6FF] text-[#0066B2] dark:bg-[#0066B2]/20 dark:text-[#38BDF8] border border-blue-100 dark:border-blue-900/30">
             <Rocket className="h-4 w-4" />
           </div>
@@ -119,11 +162,35 @@ export const MobileSequenceCard = memo(function MobileSequenceCard({
   return (
     <div
       onClick={handleCardClick}
-      className="group relative rounded-2xl border border-zinc-200/80 bg-white dark:border-[#282832] dark:bg-[#18181C] p-3.5 shadow-2xs hover:border-zinc-300 dark:hover:border-zinc-700 transition-all duration-200 active:scale-[0.99] select-none cursor-pointer flex flex-col justify-between"
+      className={`group relative rounded-2xl border p-3.5 transition-all duration-200 active:scale-[0.99] select-none cursor-pointer flex flex-col justify-between ${
+        isChecked
+          ? "border-[#0066B2] dark:border-[#38BDF8] bg-blue-50/50 dark:bg-[#0066B2]/15 ring-2 ring-[#0066B2]/30 shadow-sm"
+          : "border-zinc-200/80 bg-white dark:border-[#282832] dark:bg-[#18181C] hover:border-zinc-300 dark:hover:border-zinc-700 shadow-2xs"
+      }`}
     >
-      {/* Top Header Row: Icon, Title, Status & 3-Dot Actions */}
+      {/* Top Header Row: Animated Checkbox, Icon, Title, Status & 3-Dot Actions */}
       <div className="flex items-start justify-between gap-2.5">
         <div className="flex items-start min-w-0 flex-1">
+          {/* Animated Checkbox */}
+          <AnimatePresence initial={false}>
+            {(isSelectMode || isChecked) && (
+              <motion.div
+                initial={{ opacity: 0, width: 0, marginRight: 0 }}
+                animate={{ opacity: 1, width: 22, marginRight: 10 }}
+                exit={{ opacity: 0, width: 0, marginRight: 0 }}
+                transition={{ type: "spring", stiffness: 450, damping: 35 }}
+                onClick={handleCheckboxClick}
+                className="flex h-9 items-center justify-center shrink-0 overflow-hidden cursor-pointer"
+              >
+                <AppleCheckbox
+                  checked={isChecked}
+                  onChange={() => onToggleCheck && onToggleCheck(seq.id)}
+                  title={isChecked ? "Deselect sequence" : "Select sequence"}
+                />
+              </motion.div>
+            )}
+          </AnimatePresence>
+
           {/* Rocket Icon */}
           <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#EFF6FF] text-[#0066B2] dark:bg-[#0066B2]/20 dark:text-[#38BDF8] border border-blue-100 dark:border-blue-900/30">
             <Rocket className="h-4 w-4" />
