@@ -224,6 +224,7 @@ export default function PagesPage() {
   const [statusFilter, setStatusFilter] = useState<"all" | "live" | "draft">("all");
   const [sortBy, setSortBy] = useState<SortOption>("recent");
   const [isSortOpen, setIsSortOpen] = useState(false);
+  const [isStatusFilterOpen, setIsStatusFilterOpen] = useState(false);
 
   const [selectedPageId, setSelectedPageId] = useState<string | null>(null);
   const [mobileInspectorOpen, setMobileInspectorOpen] = useState(false);
@@ -236,16 +237,17 @@ export default function PagesPage() {
   const [newName, setNewName] = useState("");
   const [isCreating, setIsCreating] = useState(false);
 
-  // Close sort menu on outside click
+  // Close menus on outside click
   useEffect(() => {
     const handleClickOutside = () => {
       setIsSortOpen(false);
+      setIsStatusFilterOpen(false);
     };
-    if (isSortOpen) {
+    if (isSortOpen || isStatusFilterOpen) {
       window.addEventListener("click", handleClickOutside);
       return () => window.removeEventListener("click", handleClickOutside);
     }
-  }, [isSortOpen]);
+  }, [isSortOpen, isStatusFilterOpen]);
 
   const newSlug = useMemo(() => {
     return newName
@@ -582,7 +584,8 @@ export default function PagesPage() {
               </div>
 
               <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 justify-between sm:justify-end w-full sm:w-auto min-w-0">
-                <div className="flex items-center p-1 bg-zinc-100 dark:bg-[#1C1C20] rounded-xl text-xs font-semibold">
+                {/* Desktop Status Tabs Pod (Preserved untouched) */}
+                <div className="hidden sm:flex items-center p-1 bg-zinc-100 dark:bg-[#1C1C20] rounded-xl text-xs font-semibold min-w-0">
                   {[
                     { id: "all", label: `All (${total})` },
                     { id: "live", label: `Live (${liveCount})` },
@@ -608,6 +611,78 @@ export default function PagesPage() {
                       <span className="relative z-10">{tab.label}</span>
                     </button>
                   ))}
+                </div>
+
+                {/* Mobile Filter Dropdown Button */}
+                <div className="sm:hidden relative shrink-0">
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setIsSortOpen(false);
+                      setIsStatusFilterOpen((v) => !v);
+                    }}
+                    className="flex h-8 items-center gap-1.5 rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#18181B] px-2.5 text-[11px] font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-[#222226] transition shadow-2xs cursor-pointer select-none"
+                  >
+                    <Filter className="h-3 w-3 text-zinc-400 shrink-0" />
+                    <span className="truncate">
+                      {statusFilter === "all"
+                        ? `Filter (${total})`
+                        : statusFilter === "live"
+                        ? `Live (${liveCount})`
+                        : `Draft (${draftCount})`}
+                    </span>
+                    <ChevronDown
+                      className={`h-3.5 w-3.5 text-zinc-400 shrink-0 transition-transform duration-200 ${
+                        isStatusFilterOpen ? "rotate-180" : ""
+                      }`}
+                    />
+                  </button>
+
+                  <AnimatePresence>
+                    {isStatusFilterOpen && (
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0.96, y: -6 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.96, y: -4 }}
+                        transition={{ type: "spring", damping: 28, stiffness: 400 }}
+                        onClick={(e) => e.stopPropagation()}
+                        className="absolute left-0 top-full z-40 mt-1.5 w-48 rounded-xl border border-zinc-200/90 dark:border-white/10 bg-white/95 dark:bg-[#1C1C20]/95 p-1.5 shadow-xl backdrop-blur-xl dark:text-white"
+                      >
+                        <div className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
+                          Filter Status
+                        </div>
+                        {[
+                          { id: "all", label: "All Pages", count: total },
+                          { id: "live", label: "Live", count: liveCount },
+                          { id: "draft", label: "Draft", count: draftCount },
+                        ].map((item) => {
+                          const isSelected = statusFilter === item.id;
+                          return (
+                            <button
+                              key={item.id}
+                              type="button"
+                              onClick={() => {
+                                setStatusFilter(item.id as any);
+                                setIsStatusFilterOpen(false);
+                              }}
+                              className={`flex w-full items-center justify-between rounded-lg px-2.5 py-1.5 text-xs transition cursor-pointer text-left ${
+                                isSelected
+                                  ? "bg-[#0066B2]/10 text-[#0066B2] font-bold dark:bg-[#38BDF8]/20 dark:text-[#38BDF8]"
+                                  : "text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-white/5 font-medium"
+                              }`}
+                            >
+                              <span>{item.label}</span>
+                              <div className="flex items-center gap-1.5">
+                                <span className="text-[10px] text-zinc-400">({item.count})</span>
+                                {isSelected && <Check className="h-3.5 w-3.5" />}
+                              </div>
+                            </button>
+                          );
+                        })}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
 
                 {/* Custom Animated Sort Dropdown */}
