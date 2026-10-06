@@ -840,196 +840,175 @@ function parseCsvLine(line: string): string[] {
   );
 
   return (
-    <div className="flex flex-col min-h-[calc(100vh-3rem)] bg-gradient-to-b from-[#EFF6FF]/50 via-[#F8FBFF] to-[#F8FBFF] dark:bg-none dark:bg-[#0E0E10]">
-        <div className="flex-1 px-3.5 sm:px-6 py-4 sm:py-6 lg:px-8 max-w-7xl mx-auto w-full">
+    <div className="flex flex-col min-h-[calc(100vh-3.5rem)] bg-gradient-to-b from-[#EFF6FF]/40 via-[#F8FBFF] to-[#F8FBFF] dark:bg-none dark:bg-[#0B0B0D]">
+      <div className="flex-1 px-3.5 py-6 sm:px-6 sm:py-7 lg:px-8 max-w-7xl mx-auto w-full flex flex-col gap-4">
 
-          {/* ========================================================================= */}
-          {/* 1. DESKTOP Page Heading (hidden md:flex) - Preserved 100% Unchanged       */}
-          {/* ========================================================================= */}
-          <div className="hidden md:flex flex-col justify-between gap-4 md:flex-row md:items-center mb-6">
-            <div>
-              <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-900 dark:text-white">
+        {/* ========================================================================= */}
+        {/* 1. DESKTOP Page Heading (hidden md:flex)                                 */}
+        {/* ========================================================================= */}
+        <div className="hidden md:flex flex-col justify-between gap-4 md:flex-row md:items-center">
+          <div>
+            <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-zinc-900 dark:text-white">
+              Leads
+            </h2>
+          </div>
+
+          <div className="flex items-center gap-2 shrink-0 flex-wrap">
+            <button
+              type="button"
+              onClick={() => setShowAddModal(true)}
+              className="flex items-center gap-1.5 rounded-xl bg-[#0066B2] px-4 py-2.5 text-xs font-bold text-white hover:bg-[#005291] transition shadow-md cursor-pointer"
+            >
+              <UserPlus className="h-4 w-4" /> + Add Subscriber
+            </button>
+
+            <label className="flex items-center gap-1.5 rounded-xl border border-zinc-200 bg-white px-4 py-2.5 text-xs font-semibold text-zinc-700 hover:bg-zinc-50 dark:border-[#2e2e38] dark:bg-[#18181B] dark:text-zinc-300 dark:hover:bg-[#25252A] transition cursor-pointer shadow-xs">
+              <Download className="h-4 w-4 text-[#0066B2]" /> Import CSV
+              <input type="file" accept=".csv" onChange={handleCSVFileSelect} className="hidden" />
+            </label>
+
+            <button
+              type="button"
+              onClick={handleExportCSV}
+              className="flex items-center gap-1.5 rounded-xl border border-zinc-200 bg-white px-4 py-2.5 text-xs font-semibold text-zinc-700 hover:bg-zinc-50 dark:border-[#2e2e38] dark:bg-[#18181B] dark:text-zinc-300 dark:hover:bg-[#25252A] transition cursor-pointer shadow-xs"
+            >
+              <Upload className="h-4 w-4 text-[#0066B2]" /> Export CSV
+            </button>
+          </div>
+        </div>
+
+        {/* ========================================================================= */}
+        {/* 1. MOBILE Page Heading (flex md:hidden)                                   */}
+        {/* ========================================================================= */}
+        <div className="flex md:hidden flex-col gap-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <h2 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-white">
                 Leads
               </h2>
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                Live
+              </span>
             </div>
 
-            <div className="flex items-center gap-2 shrink-0 flex-wrap">
-              <button
-                type="button"
-                onClick={() => setShowAddModal(true)}
-                className="flex items-center gap-1.5 rounded-xl bg-[#0066B2] px-4 py-2.5 text-xs font-bold text-white hover:bg-[#005291] transition shadow-md cursor-pointer"
-              >
-                <UserPlus className="h-4 w-4" /> + Add Subscriber
-              </button>
-
-              <label className="flex items-center gap-1.5 rounded-xl border border-zinc-200 bg-white px-4 py-2.5 text-xs font-semibold text-zinc-700 hover:bg-zinc-50 dark:border-[#2e2e38] dark:bg-[#18181B] dark:text-zinc-300 dark:hover:bg-[#25252A] transition cursor-pointer shadow-xs">
-                <Download className="h-4 w-4 text-[#0066B2]" /> Import CSV
-                <input type="file" accept=".csv" onChange={handleCSVFileSelect} className="hidden" />
-              </label>
-
-              <button
-                type="button"
-                onClick={handleExportCSV}
-                className="flex items-center gap-1.5 rounded-xl border border-zinc-200 bg-white px-4 py-2.5 text-xs font-semibold text-zinc-700 hover:bg-zinc-50 dark:border-[#2e2e38] dark:bg-[#18181B] dark:text-zinc-300 dark:hover:bg-[#25252A] transition cursor-pointer shadow-xs"
-              >
-                <Upload className="h-4 w-4 text-[#0066B2]" /> Export CSV
-              </button>
-            </div>
+            <button
+              type="button"
+              onClick={() => setShowAddModal(true)}
+              className="flex items-center gap-1.5 rounded-xl bg-[#0066B2] px-3.5 py-2 text-xs font-bold text-white hover:bg-[#005291] active:scale-95 transition shadow-sm cursor-pointer"
+            >
+              <UserPlus className="h-3.5 w-3.5" />
+              <span>+ Add</span>
+            </button>
           </div>
 
-          {/* ========================================================================= */}
-          {/* 1. MOBILE Page Heading (flex md:hidden) - Senior Designer Crafted         */}
-          {/* ========================================================================= */}
-          <div className="flex md:hidden flex-col gap-3 mb-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <h2 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-white">
-                  Leads
-                </h2>
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                  Live
-                </span>
+          {/* Mobile Actions Quick Bar */}
+          <div className="grid grid-cols-2 gap-2">
+            <label className="flex items-center justify-center gap-1.5 rounded-xl border border-zinc-200/90 bg-white py-2 px-3 text-xs font-semibold text-zinc-700 hover:bg-zinc-50 dark:border-[#2e2e38] dark:bg-[#18181B] dark:text-zinc-300 active:scale-98 transition cursor-pointer shadow-2xs">
+              <Download className="h-3.5 w-3.5 text-[#0066B2] shrink-0" />
+              <span className="truncate">Import CSV</span>
+              <input type="file" accept=".csv" onChange={handleCSVFileSelect} className="hidden" />
+            </label>
+
+            <button
+              type="button"
+              onClick={handleExportCSV}
+              className="flex items-center justify-center gap-1.5 rounded-xl border border-zinc-200/90 bg-white py-2 px-3 text-xs font-semibold text-zinc-700 hover:bg-zinc-50 dark:border-[#2e2e38] dark:bg-[#18181B] dark:text-zinc-300 active:scale-98 transition cursor-pointer shadow-2xs"
+            >
+              <Upload className="h-3.5 w-3.5 text-[#0066B2] shrink-0" />
+              <span className="truncate">Export CSV</span>
+            </button>
+          </div>
+        </div>
+
+        {/* ========================================================================= */}
+        {/* 2. Stat Cards (Unified Responsive Compact Horizontal Row)                */}
+        {/* ========================================================================= */}
+        <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
+          {/* Total Subscribers */}
+          <div className="group relative h-full rounded-2xl border border-zinc-200/80 bg-white/90 dark:border-[#2e2e38] dark:bg-[#18181B]/90 p-3.5 sm:p-4 shadow-sm backdrop-blur-sm hover:border-[#0066B2]/40 dark:hover:border-[#38BDF8]/25 hover:shadow-md transition-all duration-200 overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
+            <div className="flex items-center justify-between sm:justify-start w-full sm:w-auto">
+              <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl border border-indigo-500/30 bg-indigo-50 text-indigo-600 dark:border-indigo-500/30 dark:bg-indigo-500/20 dark:text-indigo-400">
+                <Layers className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
               </div>
-
-              <button
-                type="button"
-                onClick={() => setShowAddModal(true)}
-                className="flex items-center gap-1.5 rounded-xl bg-[#0066B2] px-3.5 py-2 text-xs font-bold text-white hover:bg-[#005291] active:scale-95 transition shadow-sm cursor-pointer"
-              >
-                <UserPlus className="h-3.5 w-3.5" />
-                <span>+ Add</span>
-              </button>
             </div>
-
-            {/* Mobile Actions Quick Bar */}
-            <div className="grid grid-cols-2 gap-2">
-              <label className="flex items-center justify-center gap-1.5 rounded-xl border border-zinc-200/90 bg-white py-2 px-3 text-xs font-semibold text-zinc-700 hover:bg-zinc-50 dark:border-[#2e2e38] dark:bg-[#18181B] dark:text-zinc-300 active:scale-98 transition cursor-pointer shadow-2xs">
-                <Download className="h-3.5 w-3.5 text-[#0066B2] shrink-0" />
-                <span className="truncate">Import CSV</span>
-                <input type="file" accept=".csv" onChange={handleCSVFileSelect} className="hidden" />
-              </label>
-
-              <button
-                type="button"
-                onClick={handleExportCSV}
-                className="flex items-center justify-center gap-1.5 rounded-xl border border-zinc-200/90 bg-white py-2 px-3 text-xs font-semibold text-zinc-700 hover:bg-zinc-50 dark:border-[#2e2e38] dark:bg-[#18181B] dark:text-zinc-300 active:scale-98 transition cursor-pointer shadow-2xs"
-              >
-                <Upload className="h-3.5 w-3.5 text-[#0066B2] shrink-0" />
-                <span className="truncate">Export CSV</span>
-              </button>
+            <div className="flex-1 min-w-0 w-full">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-[#9B9085] leading-none truncate">
+                Total Subscribers
+              </p>
+              <p className="text-xl font-extrabold tabular-nums text-zinc-900 dark:text-white mt-1 leading-none tracking-tight">
+                {totalLeads}
+              </p>
+              <p className="mt-1 text-[10px] text-zinc-400 dark:text-[#9B9085] truncate">
+                all captures
+              </p>
             </div>
+            <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0066B2]/[0.04] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           </div>
 
-          {/* ========================================================================= */}
-          {/* 2. DESKTOP Stat Cards (hidden md:grid) - Preserved 100% Unchanged         */}
-          {/* ========================================================================= */}
-          <div className="hidden md:grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 mb-6">
-            {/* Total Subscribers */}
-            <div className="flex items-center rounded-2xl border border-zinc-200/80 bg-white/80 dark:border-[#2e2e38] dark:bg-[#18181B]/80 px-5 py-4 sm:py-5 shadow-sm backdrop-blur-sm transition-all hover:border-zinc-300 dark:hover:border-[#3e3e4a]">
-              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-indigo-500/30 bg-indigo-50 text-indigo-600 dark:border-indigo-500/30 dark:bg-indigo-500/20 dark:text-indigo-400 mr-3.5">
-                <Layers className="h-5 w-5" />
-              </div>
-              <div className="min-w-0">
-                <p className="text-[11px] font-bold uppercase tracking-wider text-zinc-500 dark:text-[#9B9085] truncate">Total Subscribers</p>
-                <div className="flex items-baseline gap-2 mt-0.5">
-                  <p className="text-2xl font-bold text-zinc-900 dark:text-white leading-none">{totalLeads}</p>
-                  <span className="text-[11px] font-medium text-zinc-400 dark:text-zinc-500 hidden xl:inline">all captures</span>
-                </div>
+          {/* Unique Subscribers */}
+          <div className="group relative h-full rounded-2xl border border-zinc-200/80 bg-white/90 dark:border-[#2e2e38] dark:bg-[#18181B]/90 p-3.5 sm:p-4 shadow-sm backdrop-blur-sm hover:border-[#0066B2]/40 dark:hover:border-[#38BDF8]/25 hover:shadow-md transition-all duration-200 overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
+            <div className="flex items-center justify-between sm:justify-start w-full sm:w-auto">
+              <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl border border-[#0066B2]/30 bg-[#EFF6FF] text-[#0066B2] dark:border-[#0066B2]/30 dark:bg-[#0066B2]/20 dark:text-[#38BDF8]">
+                <Users className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
               </div>
             </div>
-
-            {/* Unique Subscribers */}
-            <div className="flex items-center rounded-2xl border border-zinc-200/80 bg-white/80 dark:border-[#2e2e38] dark:bg-[#18181B]/80 px-5 py-4 sm:py-5 shadow-sm backdrop-blur-sm transition-all hover:border-zinc-300 dark:hover:border-[#3e3e4a]">
-              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-[#0066B2]/30 bg-[#EFF6FF] text-[#0066B2] dark:border-[#0066B2]/30 dark:bg-[#0066B2]/20 dark:text-[#38BDF8] mr-3.5">
-                <Users className="h-5 w-5" />
-              </div>
-              <div className="min-w-0">
-                <p className="text-[11px] font-bold uppercase tracking-wider text-zinc-500 dark:text-[#9B9085] truncate">Unique Subscribers</p>
-                <div className="flex items-baseline gap-2 mt-0.5">
-                  <p className="text-2xl font-bold text-zinc-900 dark:text-white leading-none">{uniqueSignups}</p>
-                  <span className="text-[11px] font-medium text-zinc-400 dark:text-zinc-500 hidden xl:inline">distinct emails</span>
-                </div>
-              </div>
+            <div className="flex-1 min-w-0 w-full">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-[#9B9085] leading-none truncate">
+                Unique Subscribers
+              </p>
+              <p className="text-xl font-extrabold tabular-nums text-zinc-900 dark:text-white mt-1 leading-none tracking-tight">
+                {uniqueSignups}
+              </p>
+              <p className="mt-1 text-[10px] text-zinc-400 dark:text-[#9B9085] truncate">
+                distinct emails
+              </p>
             </div>
-
-            {/* Monthly Growth */}
-            <div className="flex items-center rounded-2xl border border-zinc-200/80 bg-white/80 dark:border-[#2e2e38] dark:bg-[#18181B]/80 px-5 py-4 sm:py-5 shadow-sm backdrop-blur-sm transition-all hover:border-zinc-300 dark:hover:border-[#3e3e4a]">
-              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-emerald-500/30 bg-emerald-50 text-emerald-600 dark:border-emerald-500/30 dark:bg-emerald-500/20 dark:text-emerald-400 mr-3.5">
-                <TrendingUp className="h-5 w-5" />
-              </div>
-              <div className="min-w-0">
-                <p className="text-[11px] font-bold uppercase tracking-wider text-zinc-500 dark:text-[#9B9085] truncate">New This Month</p>
-                <div className="flex items-baseline gap-2 mt-0.5">
-                  <p className="text-2xl font-bold text-zinc-900 dark:text-white leading-none">+{recentMonthCount}</p>
-                  <span className="text-[11px] font-medium text-zinc-400 dark:text-zinc-500 hidden xl:inline">past 30 days</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Active in Sequence */}
-            <div className="flex items-center rounded-2xl border border-zinc-200/80 bg-white/80 dark:border-[#2e2e38] dark:bg-[#18181B]/80 px-5 py-4 sm:py-5 shadow-sm backdrop-blur-sm transition-all hover:border-zinc-300 dark:hover:border-[#3e3e4a]">
-              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-purple-500/30 bg-purple-50 text-purple-600 dark:border-purple-500/30 dark:bg-purple-500/20 dark:text-purple-400 mr-3.5">
-                <Zap className="h-5 w-5" />
-              </div>
-              <div className="min-w-0">
-                <p className="text-[11px] font-bold uppercase tracking-wider text-zinc-500 dark:text-[#9B9085] truncate">Active In Sequence</p>
-                <div className="flex items-baseline gap-2 mt-0.5">
-                  <p className="text-2xl font-bold text-zinc-900 dark:text-white leading-none">{activeInSequenceCount}</p>
-                  <span className="text-[11px] font-medium text-zinc-400 dark:text-zinc-500 hidden xl:inline">in automation</span>
-                </div>
-              </div>
-            </div>
+            <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0066B2]/[0.04] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           </div>
 
-          {/* ========================================================================= */}
-          {/* 2. MOBILE Stat Cards (grid md:hidden) - Ergonomic, High-Density Scannable  */}
-          {/* ========================================================================= */}
-          <div className="grid md:hidden grid-cols-2 gap-2 mb-4">
-            {/* Total Subscribers */}
-            <div className="flex items-center rounded-xl border border-zinc-200/80 bg-white/90 dark:border-[#282832] dark:bg-[#18181C]/90 p-2.5 shadow-2xs backdrop-blur-sm">
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-indigo-500/30 bg-indigo-50 text-indigo-600 dark:border-indigo-500/30 dark:bg-indigo-500/20 dark:text-indigo-400 mr-2.5">
-                <Layers className="h-4 w-4" />
-              </div>
-              <div className="min-w-0">
-                <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 dark:text-[#9B9085] truncate">Total</p>
-                <p className="text-base font-bold text-zinc-900 dark:text-white leading-tight mt-0.5">{totalLeads}</p>
+          {/* New This Month */}
+          <div className="group relative h-full rounded-2xl border border-zinc-200/80 bg-white/90 dark:border-[#2e2e38] dark:bg-[#18181B]/90 p-3.5 sm:p-4 shadow-sm backdrop-blur-sm hover:border-[#0066B2]/40 dark:hover:border-[#38BDF8]/25 hover:shadow-md transition-all duration-200 overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
+            <div className="flex items-center justify-between sm:justify-start w-full sm:w-auto">
+              <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl border border-emerald-500/30 bg-emerald-50 text-emerald-600 dark:border-emerald-500/30 dark:bg-emerald-500/20 dark:text-emerald-400">
+                <TrendingUp className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
               </div>
             </div>
-
-            {/* Unique Subscribers */}
-            <div className="flex items-center rounded-xl border border-zinc-200/80 bg-white/90 dark:border-[#282832] dark:bg-[#18181C]/90 p-2.5 shadow-2xs backdrop-blur-sm">
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-[#0066B2]/30 bg-[#EFF6FF] text-[#0066B2] dark:border-[#0066B2]/30 dark:bg-[#0066B2]/20 dark:text-[#38BDF8] mr-2.5">
-                <Users className="h-4 w-4" />
-              </div>
-              <div className="min-w-0">
-                <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 dark:text-[#9B9085] truncate">Unique</p>
-                <p className="text-base font-bold text-zinc-900 dark:text-white leading-tight mt-0.5">{uniqueSignups}</p>
-              </div>
+            <div className="flex-1 min-w-0 w-full">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-[#9B9085] leading-none truncate">
+                New This Month
+              </p>
+              <p className="text-xl font-extrabold tabular-nums text-zinc-900 dark:text-white mt-1 leading-none tracking-tight">
+                +{recentMonthCount}
+              </p>
+              <p className="mt-1 text-[10px] text-zinc-400 dark:text-[#9B9085] truncate">
+                past 30 days
+              </p>
             </div>
-
-            {/* Monthly Growth */}
-            <div className="flex items-center rounded-xl border border-zinc-200/80 bg-white/90 dark:border-[#282832] dark:bg-[#18181C]/90 p-2.5 shadow-2xs backdrop-blur-sm">
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-emerald-500/30 bg-emerald-50 text-emerald-600 dark:border-emerald-500/30 dark:bg-emerald-500/20 dark:text-emerald-400 mr-2.5">
-                <TrendingUp className="h-4 w-4" />
-              </div>
-              <div className="min-w-0">
-                <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 dark:text-[#9B9085] truncate">30d Growth</p>
-                <p className="text-base font-bold text-zinc-900 dark:text-white leading-tight mt-0.5">+{recentMonthCount}</p>
-              </div>
-            </div>
-
-            {/* Active in Sequence */}
-            <div className="flex items-center rounded-xl border border-zinc-200/80 bg-white/90 dark:border-[#282832] dark:bg-[#18181C]/90 p-2.5 shadow-2xs backdrop-blur-sm">
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-purple-500/30 bg-purple-50 text-purple-600 dark:border-purple-500/30 dark:bg-purple-500/20 dark:text-purple-400 mr-2.5">
-                <Zap className="h-4 w-4" />
-              </div>
-              <div className="min-w-0">
-                <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 dark:text-[#9B9085] truncate">In Sequence</p>
-                <p className="text-base font-bold text-zinc-900 dark:text-white leading-tight mt-0.5">{activeInSequenceCount}</p>
-              </div>
-            </div>
+            <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0066B2]/[0.04] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           </div>
+
+          {/* Active In Sequence */}
+          <div className="group relative h-full rounded-2xl border border-zinc-200/80 bg-white/90 dark:border-[#2e2e38] dark:bg-[#18181B]/90 p-3.5 sm:p-4 shadow-sm backdrop-blur-sm hover:border-[#0066B2]/40 dark:hover:border-[#38BDF8]/25 hover:shadow-md transition-all duration-200 overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
+            <div className="flex items-center justify-between sm:justify-start w-full sm:w-auto">
+              <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl border border-purple-500/30 bg-purple-50 text-purple-600 dark:border-purple-500/30 dark:bg-purple-500/20 dark:text-purple-400">
+                <Zap className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
+              </div>
+            </div>
+            <div className="flex-1 min-w-0 w-full">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-[#9B9085] leading-none truncate">
+                Active In Sequence
+              </p>
+              <p className="text-xl font-extrabold tabular-nums text-zinc-900 dark:text-white mt-1 leading-none tracking-tight">
+                {activeInSequenceCount}
+              </p>
+              <p className="mt-1 text-[10px] text-zinc-400 dark:text-[#9B9085] truncate">
+                in automation
+              </p>
+            </div>
+            <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0066B2]/[0.04] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          </div>
+        </div>
 
           {/* Table Container */}
           <div className="rounded-2xl border border-zinc-200/80 bg-white/90 dark:border-[#2e2e38] dark:bg-[#18181B]/90 shadow-sm backdrop-blur-sm relative">
