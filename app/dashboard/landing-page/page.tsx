@@ -39,6 +39,7 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { type MagnetPage, type Account } from "@/lib/data";
 import { loadPages, savePages, loadAccount, syncWithDatabase, deletePage } from "@/lib/store";
 import { getMagnetSortTimestamp } from "@/lib/utils";
+import { AppleCheckbox } from "@/components/leads/AppleCheckbox";
 
 interface MagnetCardProps {
   page: MagnetPage;
@@ -792,33 +793,45 @@ export default function PagesPage() {
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: -6, scale: 0.995 }}
                   transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-                  className="rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-[#141417] overflow-hidden shadow-xs"
+                  className="rounded-2xl border border-zinc-200/80 dark:border-[#2e2e38] bg-white dark:bg-[#18181B] overflow-hidden shadow-xs"
                 >
-                  <table className="w-full text-left text-xs text-zinc-600 dark:text-zinc-400">
-                    <thead className="bg-zinc-50/80 dark:bg-[#1A1A1E] text-zinc-400 dark:text-zinc-500 uppercase font-semibold text-[10px] tracking-wider border-b border-zinc-200/80 dark:border-zinc-800">
+                  <table className="w-full text-left text-xs">
+                    <thead className="bg-[#F8FBFF] dark:bg-[#151518] text-zinc-500 dark:text-[#9B9085] uppercase text-[11px] font-semibold tracking-wider border-b border-zinc-200/80 dark:border-[#2e2e38]">
                       <tr>
-                        <th className="px-3 py-3 w-10 text-center">
-                          <button
-                            type="button"
-                            onClick={handleToggleSelectAll}
-                            className={`inline-flex h-5 w-5 items-center justify-center rounded-md border transition-all cursor-pointer ${
-                              filtered.length > 0 && filtered.every((p) => checkedIds.includes(p.id))
-                                ? "bg-[#0066B2] border-[#0066B2] text-white shadow-xs"
-                                : "bg-white/90 dark:bg-zinc-800/80 border-zinc-300 dark:border-zinc-700 hover:border-[#0066B2] dark:hover:border-[#38BDF8]"
-                            }`}
-                            title={filtered.length > 0 && filtered.every((p) => checkedIds.includes(p.id)) ? "Deselect all" : "Select all"}
-                          >
-                            <Check className={`h-3 w-3 stroke-[3px] ${filtered.length > 0 && filtered.every((p) => checkedIds.includes(p.id)) ? "opacity-100 text-white" : "opacity-0"}`} />
-                          </button>
+                        <th className="px-6 py-3.5 text-left">
+                          <div className="flex items-center">
+                            <AnimatePresence initial={false}>
+                              {(checkedIds.length > 0 || isSelectMode) && (
+                                <motion.div
+                                  initial={{ opacity: 0, width: 0, marginRight: 0 }}
+                                  animate={{ opacity: 1, width: 22, marginRight: 10 }}
+                                  exit={{ opacity: 0, width: 0, marginRight: 0 }}
+                                  transition={{ type: "spring", stiffness: 450, damping: 35 }}
+                                  className="flex items-center justify-center shrink-0 overflow-hidden"
+                                >
+                                  <AppleCheckbox
+                                    checked={filtered.length > 0 && checkedIds.length === filtered.length}
+                                    indeterminate={checkedIds.length > 0 && checkedIds.length < filtered.length}
+                                    onChange={handleToggleSelectAll}
+                                    title={
+                                      checkedIds.length === filtered.length && filtered.length > 0
+                                        ? "Deselect all"
+                                        : "Select all"
+                                    }
+                                  />
+                                </motion.div>
+                              )}
+                            </AnimatePresence>
+                            <span>Lead Magnet</span>
+                          </div>
                         </th>
-                        <th className="px-4 py-3">Lead Magnet</th>
-                        <th className="px-4 py-3">Status</th>
-                        <th className="px-4 py-3 text-right">Views</th>
-                        <th className="px-4 py-3 text-right">Leads</th>
-                        <th className="px-4 py-3 text-right">Actions</th>
+                        <th className="px-6 py-3.5">Status</th>
+                        <th className="px-6 py-3.5 text-right">Views</th>
+                        <th className="px-6 py-3.5 text-right">Leads</th>
+                        <th className="px-6 py-3.5 text-right">Actions</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800/60">
+                    <tbody className="divide-y divide-zinc-100 bg-white dark:divide-[#222228] dark:bg-[#18181B]">
                       {paginatedItems.map((page) => {
                         const isSelected = activePage?.id === page.id;
                         const isChecked = checkedIds.includes(page.id);
@@ -826,50 +839,61 @@ export default function PagesPage() {
                           <tr
                             key={page.id}
                             onClick={() => setSelectedPageId(page.id)}
-                            className={`cursor-pointer transition ${isChecked
-                                ? "bg-[#0066B2]/10 dark:bg-[#0066B2]/20"
+                            className={`group transition-all duration-200 ${
+                              isChecked
+                                ? "bg-gradient-to-r from-[#0066B2]/[0.08] via-[#0066B2]/[0.04] to-transparent dark:from-[#38BDF8]/15 dark:via-[#38BDF8]/[0.06] dark:to-transparent"
                                 : isSelected
-                                  ? "bg-[#EFF6FF]/60 dark:bg-[#0066B2]/10"
-                                  : "hover:bg-zinc-50 dark:hover:bg-[#1A1A1E]/50"
-                              }`}
+                                  ? "bg-gradient-to-r from-[#0066B2]/[0.06] via-[#0066B2]/[0.02] to-transparent dark:from-[#38BDF8]/10 dark:via-[#38BDF8]/[0.04] dark:to-transparent"
+                                  : "hover:bg-zinc-50/80 dark:hover:bg-[#1F1F24]/70"
+                            }`}
                           >
-                            <td className="px-3 py-3 text-center" onClick={(e) => e.stopPropagation()}>
-                              <button
-                                type="button"
-                                onClick={(e) => handleToggleCheck(page.id, e)}
-                                className={`inline-flex h-5 w-5 items-center justify-center rounded-md border transition-all cursor-pointer ${
-                                  isChecked
-                                    ? "bg-[#0066B2] border-[#0066B2] text-white shadow-xs scale-105"
-                                    : "bg-white/90 dark:bg-zinc-800/80 border-zinc-300 dark:border-zinc-700 hover:border-[#0066B2] dark:hover:border-[#38BDF8]"
-                                }`}
-                                title={isChecked ? "Deselect magnet" : "Select magnet"}
-                              >
-                                <Check className={`h-3 w-3 stroke-[3px] ${isChecked ? "opacity-100 text-white" : "opacity-0"}`} />
-                              </button>
-                            </td>
-                            <td className="px-4 py-3 font-semibold text-zinc-900 dark:text-white">
-                              <div className="flex items-center gap-3">
-                                <div className="relative h-9 w-9 rounded-lg bg-zinc-100 dark:bg-zinc-800 shrink-0 overflow-hidden flex items-center justify-center">
-                                  {page.imageUrl ? (
-                                    <Image
-                                      src={page.imageUrl}
-                                      alt=""
-                                      fill
-                                      sizes="36px"
-                                      unoptimized={page.imageUrl.startsWith("data:") || page.imageUrl.startsWith("blob:")}
-                                      className="object-cover"
-                                    />
-                                  ) : (
-                                    <ImageIcon className="h-4 w-4 text-zinc-400" />
+                            <td className="px-6 py-4 font-semibold text-zinc-900 dark:text-white">
+                              <div className="flex items-center min-w-0">
+                                <AnimatePresence initial={false}>
+                                  {(checkedIds.length > 0 || isChecked || isSelectMode) && (
+                                    <motion.div
+                                      initial={{ opacity: 0, width: 0, marginRight: 0 }}
+                                      animate={{ opacity: 1, width: 22, marginRight: 12 }}
+                                      exit={{ opacity: 0, width: 0, marginRight: 0 }}
+                                      transition={{ type: "spring", stiffness: 450, damping: 35 }}
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleToggleCheck(page.id, e);
+                                      }}
+                                      className="flex items-center justify-center shrink-0 overflow-hidden cursor-pointer"
+                                    >
+                                      <AppleCheckbox
+                                        checked={isChecked}
+                                        onChange={() => handleToggleCheck(page.id)}
+                                        title={isChecked ? "Deselect magnet" : "Select magnet"}
+                                      />
+                                    </motion.div>
                                   )}
-                                </div>
-                                <div>
-                                  <p className="font-bold text-zinc-900 dark:text-white line-clamp-1">{page.name}</p>
-                                  <p className="text-[11px] font-mono text-zinc-400">/{page.slug}</p>
+                                </AnimatePresence>
+
+                                <div className="flex items-center gap-3 min-w-0 flex-1">
+                                  <div className="relative h-9 w-9 rounded-lg bg-zinc-100 dark:bg-zinc-800 shrink-0 overflow-hidden flex items-center justify-center">
+                                    {page.imageUrl ? (
+                                      <Image
+                                        src={page.imageUrl}
+                                        alt=""
+                                        fill
+                                        sizes="36px"
+                                        unoptimized={page.imageUrl.startsWith("data:") || page.imageUrl.startsWith("blob:")}
+                                        className="object-cover"
+                                      />
+                                    ) : (
+                                      <ImageIcon className="h-4 w-4 text-zinc-400" />
+                                    )}
+                                  </div>
+                                  <div className="min-w-0 flex-1">
+                                    <p className="font-bold text-zinc-900 dark:text-white line-clamp-1 truncate">{page.name}</p>
+                                    <p className="text-[11px] font-mono text-zinc-400 truncate">/{page.slug}</p>
+                                  </div>
                                 </div>
                               </div>
                             </td>
-                            <td className="px-4 py-3">
+                            <td className="px-6 py-4">
                               <span
                                 className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase ${page.status === "live"
                                   ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400"
@@ -879,17 +903,17 @@ export default function PagesPage() {
                                 {page.status === "live" ? "Published" : "Draft"}
                               </span>
                             </td>
-                            <td className="px-4 py-3 text-right font-medium text-zinc-900 dark:text-white">
+                            <td className="px-6 py-4 text-right font-mono text-zinc-700 dark:text-zinc-300">
                               {page.views || 0}
                             </td>
-                            <td className="px-4 py-3 text-right font-bold text-zinc-900 dark:text-white">
+                            <td className="px-6 py-4 text-right font-mono font-bold text-zinc-900 dark:text-white">
                               {page.signups || 0}
                             </td>
-                            <td className="px-4 py-3 text-right" onClick={(e) => e.stopPropagation()}>
+                            <td className="px-6 py-4 text-right" onClick={(e) => e.stopPropagation()}>
                               <div className="flex items-center justify-end gap-1">
                                 <button
                                   onClick={(e) => handleCopyLink(page, e)}
-                                  className="p-1.5 rounded-lg text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                                  className="p-1.5 rounded-lg text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition cursor-pointer"
                                   title="Copy link"
                                 >
                                   {copiedId === page.id ? <Check className="h-3.5 w-3.5 text-emerald-500" /> : <Copy className="h-3.5 w-3.5" />}
@@ -897,7 +921,7 @@ export default function PagesPage() {
                                 <Link
                                   href={`/dashboard/leadmagnets/${page.id}`}
                                   prefetch={true}
-                                  className="p-1.5 rounded-lg text-zinc-400 hover:text-[#0066B2] dark:hover:text-[#38BDF8] hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                                  className="p-1.5 rounded-lg text-zinc-400 hover:text-[#0066B2] dark:hover:text-[#38BDF8] hover:bg-zinc-100 dark:hover:bg-zinc-800 transition cursor-pointer"
                                   title="Edit"
                                 >
                                   <Pencil className="h-3.5 w-3.5" />
@@ -1550,7 +1574,7 @@ export default function PagesPage() {
             animate={{ opacity: 1, y: 0, x: "-50%" }}
             exit={{ opacity: 0, y: 40, x: "-50%" }}
             transition={{ type: "spring", stiffness: 450, damping: 30 }}
-            className="fixed bottom-6 left-1/2 z-50 flex items-center gap-3 rounded-2xl bg-zinc-900/70 dark:bg-[#121216]/70 border border-white/15 dark:border-white/10 text-white px-4 sm:px-5 py-2.5 shadow-[0_16px_40px_rgba(0,0,0,0.4)] backdrop-blur-xl"
+            className="fixed bottom-6 left-1/2 z-50 flex items-center gap-3 rounded-2xl bg-zinc-900/30 dark:bg-black/30 border border-white/20 dark:border-white/15 text-white px-4 sm:px-5 py-2.5 shadow-[0_16px_40px_rgba(0,0,0,0.3)] backdrop-blur-2xl"
           >
             <span className="text-xs font-bold whitespace-nowrap">
               <span className="text-[#38BDF8] font-black">{checkedIds.length}</span> selected

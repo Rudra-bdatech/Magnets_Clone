@@ -1481,7 +1481,7 @@ export default function ResourcesPage() {
               animate={{ opacity: 1, y: 0, x: "-50%" }}
               exit={{ opacity: 0, y: 40, x: "-50%" }}
               transition={{ type: "spring", stiffness: 450, damping: 30 }}
-              className="fixed bottom-6 left-1/2 z-50 flex items-center gap-3 rounded-2xl bg-zinc-900/70 dark:bg-[#121216]/70 border border-white/15 dark:border-white/10 text-white px-4 sm:px-5 py-2.5 shadow-[0_16px_40px_rgba(0,0,0,0.4)] backdrop-blur-xl"
+              className="fixed bottom-6 left-1/2 z-50 flex items-center gap-3 rounded-2xl bg-zinc-900/30 dark:bg-black/30 border border-white/20 dark:border-white/15 text-white px-4 sm:px-5 py-2.5 shadow-[0_16px_40px_rgba(0,0,0,0.3)] backdrop-blur-2xl"
             >
               <span className="text-xs font-bold whitespace-nowrap">
                 <span className="text-[#38BDF8] font-black">{selectedResourceIds.length}</span> selected
