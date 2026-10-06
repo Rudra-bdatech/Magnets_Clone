@@ -353,7 +353,7 @@ export default function ShowcaseTabs() {
       {/* SINGLE UNIFIED APPLICATION FRAME */}
       <div
         ref={showcaseRef}
-        className={`relative mt-12 sm:mt-16 w-full max-w-5xl mx-auto rounded-3xl border border-zinc-200/90 dark:border-white/10 bg-white/95 dark:bg-[#13141B] shadow-[0_22px_55px_-12px_rgba(9,30,66,0.18)] dark:shadow-[0_28px_60px_-12px_rgba(0,0,0,0.75)] p-4 sm:p-6 text-zinc-900 dark:text-zinc-100 overflow-hidden font-sans select-none ring-1 ring-black/5 dark:ring-white/5 transition-all duration-1000 ease-out min-h-[440px] sm:min-h-[460px] flex flex-col justify-between ${
+        className={`relative mt-12 sm:mt-16 w-full max-w-5xl mx-auto rounded-3xl border border-zinc-200/90 dark:border-white/10 bg-white/95 dark:bg-[#13141B] shadow-[0_22px_55px_-12px_rgba(9,30,66,0.18)] dark:shadow-[0_28px_60px_-12px_rgba(0,0,0,0.75)] p-4 sm:p-6 text-zinc-900 dark:text-zinc-100 overflow-hidden font-sans select-none ring-1 ring-black/5 dark:ring-white/5 transition-all duration-1000 ease-out h-[440px] sm:h-[460px] flex flex-col ${
           hasEnteredViewport
             ? "opacity-100 translate-y-0 scale-100"
             : "opacity-0 translate-y-8 scale-[0.96]"
