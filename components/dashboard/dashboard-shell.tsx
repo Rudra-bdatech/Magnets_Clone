@@ -367,7 +367,7 @@ export default function DashboardShell({
       triggerRadius="8px"
       contentRadius="20px"
     >
-      <div className="dashboard-canvas flex min-h-screen relative w-full max-w-full overflow-x-hidden">
+      <div className="dashboard-canvas flex min-h-screen relative w-full max-w-full">
 
         <aside className="shadow-sm hidden h-screen w-[14.5rem] shrink-0 flex-col border-r border-[#E0EDFB] bg-[#F0F7FF] text-zinc-900 sticky top-0 md:flex z-50 dark:border-white/10 dark:bg-[#18181B] dark:text-[#9B9085]">
           <div className="flex shrink-0 items-center px-3.5 pt-3 pb-1">
