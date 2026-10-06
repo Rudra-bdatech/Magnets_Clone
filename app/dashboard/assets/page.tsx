@@ -666,7 +666,7 @@ export default function ResourcesPage() {
       onDrop={handleDrop}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
-        className="relative flex flex-col min-h-[calc(100vh-3rem)] bg-gradient-to-b from-[#EFF6FF]/50 via-[#F8FBFF] to-[#F8FBFF] dark:bg-none dark:bg-[#0E0E10]"
+        className="relative flex flex-col min-h-[calc(100vh-3.5rem)] bg-gradient-to-b from-[#EFF6FF]/40 via-[#F8FBFF] to-[#F8FBFF] dark:bg-none dark:bg-[#0B0B0D]"
       >
 
         {/* Global Drag Overlay when dragging files anywhere onto the page */}
@@ -680,15 +680,15 @@ export default function ResourcesPage() {
           </div>
         )}
 
-        <div className="flex-1 px-3.5 sm:px-6 py-4 sm:py-6 lg:px-8 max-w-7xl mx-auto w-full">
+        <div className="flex-1 px-3.5 py-6 sm:px-6 sm:py-7 lg:px-8 max-w-7xl mx-auto w-full flex flex-col gap-4">
 
           {/* ========================================================================= */}
-          {/* 1. DESKTOP Page Heading (hidden md:flex) - Preserved 100% Unchanged       */}
+          {/* 1. DESKTOP Page Heading (hidden md:flex)                                 */}
           {/* ========================================================================= */}
           <div className="hidden md:flex flex-col justify-between gap-4 md:flex-row md:items-center">
             <div>
               <div className="flex items-center gap-2">
-                <h2 className="text-3xl font-bold tracking-tight text-zinc-900 dark:text-white">
+                <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-zinc-900 dark:text-white">
                   Assets
                 </h2>
                 <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
@@ -730,9 +730,9 @@ export default function ResourcesPage() {
           </div>
 
           {/* ========================================================================= */}
-          {/* 1. MOBILE Page Heading (flex md:hidden) - Senior Designer Crafted         */}
+          {/* 1. MOBILE Page Heading (flex md:hidden)                                   */}
           {/* ========================================================================= */}
-          <div className="flex md:hidden flex-col gap-3 mb-4">
+          <div className="flex md:hidden flex-col gap-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <h2 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-white">
@@ -774,124 +774,91 @@ export default function ResourcesPage() {
           </div>
 
           {/* ========================================================================= */}
-          {/* 2. DESKTOP Overview Metrics Bar (hidden md:grid) - 100% Preserved         */}
+          {/* 2. Stat Cards (Unified Responsive Compact Horizontal Row)                */}
           {/* ========================================================================= */}
-          <div className="hidden md:grid mt-6 grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {/* 1. Total Resources */}
-            <div className="rounded-2xl border border-zinc-200/80 bg-white/80 p-4 backdrop-blur-sm dark:border-[#2e2e38] dark:bg-[#18181B]/80 shadow-sm flex items-center gap-3.5 transition-all hover:border-zinc-300 dark:hover:border-[#3e3e4a]">
-              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-indigo-500/30 bg-indigo-50 text-indigo-600 dark:border-indigo-500/30 dark:bg-indigo-500/20 dark:text-indigo-400">
-                <Layers className="h-5 w-5" />
-              </div>
-              <div className="min-w-0">
-                <p className="text-[11px] font-bold uppercase tracking-wider text-zinc-500 dark:text-[#9B9085] truncate">Total Resources</p>
-                <div className="flex items-baseline gap-2 mt-0.5">
-                  <p className="text-2xl font-bold text-zinc-900 dark:text-white leading-none">{resources.length}</p>
-                  <span className="text-[11px] font-medium text-zinc-400 dark:text-zinc-500 hidden xl:inline">
-                    {resources.length === 1 ? "file hosted" : "files hosted"}
-                  </span>
+          <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
+            {/* Total Resources */}
+            <div className="group relative h-full rounded-2xl border border-zinc-200/80 bg-white/90 dark:border-[#2e2e38] dark:bg-[#18181B]/90 p-3.5 sm:p-4 shadow-sm backdrop-blur-sm hover:border-[#0066B2]/40 dark:hover:border-[#38BDF8]/25 hover:shadow-md transition-all duration-200 overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
+              <div className="flex items-center justify-between sm:justify-start w-full sm:w-auto">
+                <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl border border-indigo-500/30 bg-indigo-50 text-indigo-600 dark:border-indigo-500/30 dark:bg-indigo-500/20 dark:text-indigo-400">
+                  <Layers className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
                 </div>
               </div>
-            </div>
-
-            {/* 2. Storage Used */}
-            <div className="rounded-2xl border border-zinc-200/80 bg-white/80 p-4 backdrop-blur-sm dark:border-[#2e2e38] dark:bg-[#18181B]/80 shadow-sm flex flex-col justify-center transition-all hover:border-zinc-300 dark:hover:border-[#3e3e4a]">
-              <div className="flex items-center justify-between">
-                <p className="text-[11px] font-bold uppercase tracking-wider text-zinc-500 dark:text-[#9B9085] truncate flex items-center gap-1.5">
-                  <HardDrive className="h-3.5 w-3.5 text-[#0066B2]" /> Storage Used
+              <div className="flex-1 min-w-0 w-full">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-[#9B9085] leading-none truncate">
+                  Total Resources
                 </p>
-                <span className="text-xs font-bold text-zinc-700 dark:text-zinc-300">
-                  {formatBytes(totalSizeBytes)} <span className="font-normal text-zinc-400 dark:text-zinc-500">/ 500 MB</span>
-                </span>
+                <p className="text-xl font-extrabold tabular-nums text-zinc-900 dark:text-white mt-1 leading-none tracking-tight">
+                  {resources.length}
+                </p>
+                <p className="mt-1 text-[10px] text-zinc-400 dark:text-[#9B9085] truncate">
+                  {resources.length === 1 ? "1 file hosted" : `${resources.length} files hosted`}
+                </p>
               </div>
-              <div className="mt-2.5 h-2 w-full overflow-hidden rounded-full bg-zinc-100 dark:bg-[#25252A]">
-                <div
-                  className="h-full rounded-full bg-gradient-to-r from-[#0066B2] via-[#38BDF8] to-emerald-400 transition-all duration-500"
-                  style={{ width: `${Math.max(storagePercentage, 2)}%` }}
-                />
-              </div>
-              <div className="mt-1.5 flex items-center justify-between text-[10px] text-zinc-400 dark:text-zinc-500">
-                <span>{storagePercentage}% used</span>
-                <span>{Math.max(0, 500 - Math.round(totalSizeBytes / (1024 * 1024)))} MB free</span>
-              </div>
+              <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0066B2]/[0.04] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             </div>
 
-            {/* 3. Active in Magnets */}
-            <div className="rounded-2xl border border-zinc-200/80 bg-white/80 p-4 backdrop-blur-sm dark:border-[#2e2e38] dark:bg-[#18181B]/80 shadow-sm flex items-center gap-3.5 transition-all hover:border-zinc-300 dark:hover:border-[#3e3e4a]">
-              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-sky-500/30 bg-sky-50 text-sky-600 dark:border-sky-500/30 dark:bg-sky-500/20 dark:text-sky-400">
-                <Link2 className="h-5 w-5" />
-              </div>
-              <div className="min-w-0">
-                <p className="text-[11px] font-bold uppercase tracking-wider text-zinc-500 dark:text-[#9B9085] truncate">Active In Magnets</p>
-                <div className="flex items-baseline gap-2 mt-0.5">
-                  <p className="text-2xl font-bold text-zinc-900 dark:text-white leading-none">{linkedStats.linkedCount}</p>
-                  <span className="text-[11px] font-medium text-zinc-400 dark:text-zinc-500 hidden xl:inline">
-                    {linkedStats.unlinkedCount > 0 ? `${linkedStats.unlinkedCount} unlinked` : "all connected"}
-                  </span>
+            {/* Storage Used */}
+            <div className="group relative h-full rounded-2xl border border-zinc-200/80 bg-white/90 dark:border-[#2e2e38] dark:bg-[#18181B]/90 p-3.5 sm:p-4 shadow-sm backdrop-blur-sm hover:border-[#0066B2]/40 dark:hover:border-[#38BDF8]/25 hover:shadow-md transition-all duration-200 overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
+              <div className="flex items-center justify-between sm:justify-start w-full sm:w-auto">
+                <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl border border-[#0066B2]/30 bg-[#EFF6FF] text-[#0066B2] dark:border-[#0066B2]/30 dark:bg-[#0066B2]/20 dark:text-[#38BDF8]">
+                  <HardDrive className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
                 </div>
               </div>
+              <div className="flex-1 min-w-0 w-full">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-[#9B9085] leading-none truncate">
+                  Storage Used
+                </p>
+                <p className="text-xl font-extrabold tabular-nums text-zinc-900 dark:text-white mt-1 leading-none tracking-tight truncate">
+                  {formatBytes(totalSizeBytes)}
+                </p>
+                <p className="mt-1 text-[10px] text-zinc-400 dark:text-[#9B9085] truncate">
+                  {storagePercentage}% of 500 MB
+                </p>
+              </div>
+              <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0066B2]/[0.04] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             </div>
 
-            {/* 4. Total Deliveries */}
-            <div className="rounded-2xl border border-zinc-200/80 bg-white/80 p-4 backdrop-blur-sm dark:border-[#2e2e38] dark:bg-[#18181B]/80 shadow-sm flex items-center gap-3.5 transition-all hover:border-zinc-300 dark:hover:border-[#3e3e4a]">
-              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-emerald-500/30 bg-emerald-50 text-emerald-600 dark:border-emerald-500/30 dark:bg-emerald-500/20 dark:text-emerald-400">
-                <Send className="h-5 w-5" />
-              </div>
-              <div className="min-w-0">
-                <p className="text-[11px] font-bold uppercase tracking-wider text-zinc-500 dark:text-[#9B9085] truncate">Total Deliveries</p>
-                <div className="flex items-baseline gap-2 mt-0.5">
-                  <p className="text-2xl font-bold text-zinc-900 dark:text-white leading-none">{totalDeliveries}</p>
-                  <span className="text-[11px] font-medium text-zinc-400 dark:text-zinc-500 hidden xl:inline">sent to leads</span>
+            {/* Active in Magnets */}
+            <div className="group relative h-full rounded-2xl border border-zinc-200/80 bg-white/90 dark:border-[#2e2e38] dark:bg-[#18181B]/90 p-3.5 sm:p-4 shadow-sm backdrop-blur-sm hover:border-[#0066B2]/40 dark:hover:border-[#38BDF8]/25 hover:shadow-md transition-all duration-200 overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
+              <div className="flex items-center justify-between sm:justify-start w-full sm:w-auto">
+                <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl border border-sky-500/30 bg-sky-50 text-sky-600 dark:border-sky-500/30 dark:bg-sky-500/20 dark:text-sky-400">
+                  <Link2 className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
                 </div>
               </div>
-            </div>
-          </div>
-
-          {/* ========================================================================= */}
-          {/* 2. MOBILE Overview Metrics Bar (grid md:hidden) - Ergonomic 2x2 Grid      */}
-          {/* ========================================================================= */}
-          <div className="grid md:hidden grid-cols-2 gap-2 mb-4">
-            {/* 1. Total Resources */}
-            <div className="flex items-center rounded-xl border border-zinc-200/80 bg-white/90 dark:border-[#282832] dark:bg-[#18181C]/90 p-2.5 shadow-2xs backdrop-blur-sm">
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-indigo-500/30 bg-indigo-50 text-indigo-600 dark:border-indigo-500/30 dark:bg-indigo-500/20 dark:text-indigo-400 mr-2.5">
-                <Layers className="h-4 w-4" />
+              <div className="flex-1 min-w-0 w-full">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-[#9B9085] leading-none truncate">
+                  Active in Magnets
+                </p>
+                <p className="text-xl font-extrabold tabular-nums text-zinc-900 dark:text-white mt-1 leading-none tracking-tight">
+                  {linkedStats.linkedCount}
+                </p>
+                <p className="mt-1 text-[10px] text-zinc-400 dark:text-[#9B9085] truncate">
+                  {linkedStats.unlinkedCount > 0 ? `${linkedStats.unlinkedCount} unlinked` : "all connected"}
+                </p>
               </div>
-              <div className="min-w-0">
-                <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 dark:text-[#9B9085] truncate">Total Files</p>
-                <p className="text-base font-bold text-zinc-900 dark:text-white leading-tight mt-0.5">{resources.length}</p>
-              </div>
+              <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0066B2]/[0.04] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             </div>
 
-            {/* 2. Storage Used */}
-            <div className="flex items-center rounded-xl border border-zinc-200/80 bg-white/90 dark:border-[#282832] dark:bg-[#18181C]/90 p-2.5 shadow-2xs backdrop-blur-sm">
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-[#0066B2]/30 bg-[#EFF6FF] text-[#0066B2] dark:border-[#0066B2]/30 dark:bg-[#0066B2]/20 dark:text-[#38BDF8] mr-2.5">
-                <HardDrive className="h-4 w-4" />
+            {/* Total Deliveries */}
+            <div className="group relative h-full rounded-2xl border border-zinc-200/80 bg-white/90 dark:border-[#2e2e38] dark:bg-[#18181B]/90 p-3.5 sm:p-4 shadow-sm backdrop-blur-sm hover:border-[#0066B2]/40 dark:hover:border-[#38BDF8]/25 hover:shadow-md transition-all duration-200 overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
+              <div className="flex items-center justify-between sm:justify-start w-full sm:w-auto">
+                <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl border border-emerald-500/30 bg-emerald-50 text-emerald-600 dark:border-emerald-500/30 dark:bg-emerald-500/20 dark:text-emerald-400">
+                  <Send className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
+                </div>
               </div>
-              <div className="min-w-0">
-                <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 dark:text-[#9B9085] truncate">Storage</p>
-                <p className="text-base font-bold text-zinc-900 dark:text-white leading-tight mt-0.5 truncate">{formatBytes(totalSizeBytes)}</p>
+              <div className="flex-1 min-w-0 w-full">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-[#9B9085] leading-none truncate">
+                  Total Deliveries
+                </p>
+                <p className="text-xl font-extrabold tabular-nums text-zinc-900 dark:text-white mt-1 leading-none tracking-tight">
+                  {totalDeliveries}
+                </p>
+                <p className="mt-1 text-[10px] text-zinc-400 dark:text-[#9B9085] truncate">
+                  sent to leads
+                </p>
               </div>
-            </div>
-
-            {/* 3. In Magnets */}
-            <div className="flex items-center rounded-xl border border-zinc-200/80 bg-white/90 dark:border-[#282832] dark:bg-[#18181C]/90 p-2.5 shadow-2xs backdrop-blur-sm">
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-sky-500/30 bg-sky-50 text-sky-600 dark:border-sky-500/30 dark:bg-sky-500/20 dark:text-sky-400 mr-2.5">
-                <Link2 className="h-4 w-4" />
-              </div>
-              <div className="min-w-0">
-                <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 dark:text-[#9B9085] truncate">In Magnets</p>
-                <p className="text-base font-bold text-zinc-900 dark:text-white leading-tight mt-0.5">{linkedStats.linkedCount}</p>
-              </div>
-            </div>
-
-            {/* 4. Total Deliveries */}
-            <div className="flex items-center rounded-xl border border-zinc-200/80 bg-white/90 dark:border-[#282832] dark:bg-[#18181C]/90 p-2.5 shadow-2xs backdrop-blur-sm">
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-emerald-500/30 bg-emerald-50 text-emerald-600 dark:border-emerald-500/30 dark:bg-emerald-500/20 dark:text-emerald-400 mr-2.5">
-                <Send className="h-4 w-4" />
-              </div>
-              <div className="min-w-0">
-                <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 dark:text-[#9B9085] truncate">Deliveries</p>
-                <p className="text-base font-bold text-zinc-900 dark:text-white leading-tight mt-0.5">{totalDeliveries}</p>
-              </div>
+              <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0066B2]/[0.04] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             </div>
           </div>
 
