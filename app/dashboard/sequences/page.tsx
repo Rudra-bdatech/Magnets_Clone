@@ -49,7 +49,7 @@ import {
   syncWithDatabase,
 } from "@/lib/store";
 
-type FilterStatus = "all" | "live" | "draft" | "has_leads";
+type FilterStatus = "all" | "live" | "draft";
 type SortOption = "recent" | "name" | "subscribers" | "delivered" | "open_rate";
 type ViewMode = "grid" | "table";
 
@@ -534,8 +534,6 @@ export default function SequencesPage() {
       list = list.filter((s) => s.status === "live");
     } else if (statusFilter === "draft") {
       list = list.filter((s) => s.status === "draft");
-    } else if (statusFilter === "has_leads") {
-      list = list.filter((s) => (s.stats.signedUp || 0) > 0);
     }
 
     // Search Query Filter
@@ -695,92 +693,57 @@ export default function SequencesPage() {
 
           {/* Search, Filter & View Controls Bar */}
           {sequences.length > 0 && (
-            <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3 w-full max-w-full min-w-0">
               
-              {/* Status Tabs with Seamless Edge-to-Edge Scroll for Ultra-Compact Mobile */}
-              <div className="w-full sm:w-auto -mx-3 px-3 sm:mx-0 sm:px-0 overflow-x-auto scrollbar-none pb-0.5 sm:pb-0">
-                <div
-                  onMouseLeave={() => setHoveredTab(null)}
-                  className="relative flex items-center gap-1 sm:gap-1.5 min-w-max"
-                >
-                  {[
-                    { id: "all", label: "All", count: sequences.length },
-                    { id: "live", label: "Active", count: metrics.liveCount },
-                    { id: "draft", label: "Paused", count: metrics.pausedCount },
-                    {
-                      id: "has_leads",
-                      label: "With Leads",
-                      count: sequences.filter((s) => (s.stats.signedUp || 0) > 0).length,
-                    },
-                  ].map((tab) => {
-                    const active = statusFilter === tab.id;
-                    const isHovered = hoveredTab === tab.id;
-
-                    return (
-                      <button
-                        key={tab.id}
-                        onClick={() => setStatusFilter(tab.id as FilterStatus)}
-                        onMouseEnter={() => setHoveredTab(tab.id)}
-                        className={`relative inline-flex items-center gap-1 sm:gap-1.5 whitespace-nowrap rounded-xl px-2.5 sm:px-3 py-1.5 text-[11px] sm:text-xs font-bold transition-colors cursor-pointer shrink-0 ${
-                          active
-                            ? "text-white"
-                            : "text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white"
-                        }`}
-                      >
-                        {/* Active Tab Solid Sliding Pill */}
-                        {active && (
-                          <motion.div
-                            layoutId="sequencesActiveStatusTab"
-                            transition={{ type: "spring", stiffness: 500, damping: 32 }}
-                            className="absolute inset-0 rounded-xl bg-[#0066B2] shadow-2xs"
-                          />
-                        )}
-
-                        {/* Hover Morphing Pill */}
-                        {!active && isHovered && (
-                          <motion.div
-                            layoutId="sequencesHoverStatusTab"
-                            transition={{ type: "spring", stiffness: 500, damping: 32 }}
-                            className="absolute inset-0 rounded-xl bg-zinc-200/60 dark:bg-white/10"
-                          />
-                        )}
-
-                        <span className="relative z-10">{tab.label}</span>
-                        <span
-                          className={`relative z-10 rounded-full px-1.5 py-0.2 text-[9.5px] sm:text-[10px] font-extrabold transition-colors ${
-                            active
-                              ? "bg-white/20 text-white"
-                              : "bg-zinc-200/70 text-zinc-700 dark:bg-white/10 dark:text-zinc-300"
-                          }`}
-                        >
-                          {tab.count}
-                        </span>
-                      </button>
-                    );
-                  })}
-                </div>
+              {/* Search Bar on Left */}
+              <div className="flex items-center gap-2 flex-1 rounded-xl bg-zinc-50 dark:bg-[#1C1C20] px-3.5 py-2 border border-zinc-200/60 dark:border-zinc-800 focus-within:border-[#0066B2] dark:focus-within:border-[#0066B2] min-w-0">
+                <Search className="h-4 w-4 text-zinc-400 shrink-0" />
+                <input
+                  type="text"
+                  placeholder="Filter sequences by name or subject..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="bg-transparent text-xs text-zinc-900 dark:text-white outline-none placeholder:text-zinc-400 w-full min-w-0"
+                />
+                {searchQuery && (
+                  <button
+                    onClick={() => setSearchQuery("")}
+                    className="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 shrink-0 cursor-pointer"
+                  >
+                    <X className="h-3.5 w-3.5" />
+                  </button>
+                )}
               </div>
 
-              {/* Right controls: Search, Custom Dropdown, View Toggle */}
-              <div className="flex items-center gap-1.5 sm:gap-2 w-full sm:w-auto">
-                {/* Search Bar */}
-                <div className="relative flex-1 sm:w-60">
-                  <Search className="absolute left-2.5 sm:left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-400" />
-                  <input
-                    type="text"
-                    placeholder="Search sequences..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#18181B] py-1.5 pl-7 sm:pl-8 pr-6 sm:pr-7 text-[11px] sm:text-xs text-zinc-900 dark:text-white placeholder-zinc-400 focus:border-[#0066B2] dark:focus:border-[#38BDF8] focus:outline-none transition shadow-2xs"
-                  />
-                  {searchQuery && (
+              {/* Right Controls: Status Tabs Pod, Custom Sort Dropdown, View Toggle Pod */}
+              <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 justify-between sm:justify-end w-full sm:w-auto min-w-0">
+                
+                {/* Status Tabs Pod */}
+                <div className="flex items-center p-1 bg-zinc-100 dark:bg-[#1C1C20] rounded-xl text-xs font-semibold min-w-0">
+                  {[
+                    { id: "all", label: `All (${sequences.length})` },
+                    { id: "live", label: `Active (${metrics.liveCount})` },
+                    { id: "draft", label: `Paused (${metrics.pausedCount})` },
+                  ].map((tab) => (
                     <button
-                      onClick={() => setSearchQuery("")}
-                      className="absolute right-2 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 cursor-pointer"
+                      key={tab.id}
+                      onClick={() => setStatusFilter(tab.id as FilterStatus)}
+                      className={`relative px-2.5 sm:px-3 py-1 font-semibold rounded-lg transition-colors duration-150 cursor-pointer text-[11px] sm:text-xs ${
+                        statusFilter === tab.id
+                          ? "text-zinc-900 dark:text-white"
+                          : "text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200"
+                      }`}
                     >
-                      <X className="h-3.5 w-3.5" />
+                      {statusFilter === tab.id && (
+                        <motion.div
+                          layoutId="activeStatusFilterTabSequences"
+                          className="absolute inset-0 bg-white dark:bg-[#2A2A30] rounded-lg shadow-xs"
+                          transition={{ type: "spring", stiffness: 500, damping: 32 }}
+                        />
+                      )}
+                      <span className="relative z-10">{tab.label}</span>
                     </button>
-                  )}
+                  ))}
                 </div>
 
                 {/* Custom Animated Sort Dropdown */}
@@ -841,29 +804,39 @@ export default function SequencesPage() {
                   </AnimatePresence>
                 </div>
 
-                {/* View Mode Toggle */}
-                <div className="hidden sm:flex items-center rounded-xl border border-zinc-200 dark:border-white/10 bg-zinc-100 dark:bg-[#18181B] p-0.5 shadow-2xs shrink-0">
+                {/* View Mode Toggle Pod */}
+                <div className="flex items-center p-1 bg-zinc-100 dark:bg-[#1C1C20] rounded-xl">
                   <button
                     onClick={() => setViewMode("grid")}
                     title="Card Grid View"
-                    className={`rounded-lg p-1.5 transition cursor-pointer ${
-                      viewMode === "grid"
-                        ? "bg-white text-[#0066B2] shadow-xs dark:bg-zinc-800 dark:text-white"
-                        : "text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200"
+                    className={`relative p-1.5 rounded-lg transition-colors duration-150 cursor-pointer ${
+                      viewMode === "grid" ? "text-[#0066B2] dark:text-[#38BDF8]" : "text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200"
                     }`}
                   >
-                    <LayoutGrid className="h-3.5 w-3.5" />
+                    {viewMode === "grid" && (
+                      <motion.div
+                        layoutId="activeViewModeTabSequences"
+                        className="absolute inset-0 bg-white dark:bg-[#2A2A30] rounded-lg shadow-xs"
+                        transition={{ type: "spring", stiffness: 500, damping: 32 }}
+                      />
+                    )}
+                    <LayoutGrid className="relative z-10 h-4 w-4" />
                   </button>
                   <button
                     onClick={() => setViewMode("table")}
                     title="Table List View"
-                    className={`rounded-lg p-1.5 transition cursor-pointer ${
-                      viewMode === "table"
-                        ? "bg-white text-[#0066B2] shadow-xs dark:bg-zinc-800 dark:text-white"
-                        : "text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200"
+                    className={`relative p-1.5 rounded-lg transition-colors duration-150 cursor-pointer ${
+                      viewMode === "table" ? "text-[#0066B2] dark:text-[#38BDF8]" : "text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200"
                     }`}
                   >
-                    <List className="h-3.5 w-3.5" />
+                    {viewMode === "table" && (
+                      <motion.div
+                        layoutId="activeViewModeTabSequences"
+                        className="absolute inset-0 bg-white dark:bg-[#2A2A30] rounded-lg shadow-xs"
+                        transition={{ type: "spring", stiffness: 500, damping: 32 }}
+                      />
+                    )}
+                    <List className="relative z-10 h-4 w-4" />
                   </button>
                 </div>
               </div>
