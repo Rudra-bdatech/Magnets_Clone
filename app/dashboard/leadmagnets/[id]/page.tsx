@@ -1582,13 +1582,13 @@ export default function EditLeadMagnetPage() {
           <div className={`rounded-2xl border text-zinc-900 dark:text-zinc-100 shadow-2xl overflow-hidden transition-colors duration-200 ${(account?.themeMode || "light") === "dark" ? "border-[#1F1F24] bg-[#18181B]" : "border-zinc-200 bg-white"}`}>
 
             {/* Inner Header Bar */}
-            <div className={`flex flex-wrap items-center justify-between gap-3 border-b px-4 py-3 sm:px-6 transition-colors duration-200 ${(account?.themeMode || "light") === "dark" ? "border-[#1F1F24] bg-[#18181B] text-white" : "border-zinc-200 bg-zinc-50/80 text-zinc-900"}`}>
+            <div className={`flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-4 border-b px-3.5 py-3 sm:px-6 transition-colors duration-200 ${(account?.themeMode || "light") === "dark" ? "border-[#1F1F24] bg-[#18181B] text-white" : "border-zinc-200 bg-zinc-50/80 text-zinc-900"}`}>
               {/* Left Back link & Page Name/Slug */}
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2.5 sm:gap-3 min-w-0 max-w-full">
                 <Link
                   href={isLockedPdf ? "/dashboard/locked-pdf" : "/dashboard/landing-page"}
                   prefetch={true}
-                  className={`flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-bold active:scale-95 transition-all shadow-xs cursor-pointer ${(account?.themeMode || "light") === "dark"
+                  className={`shrink-0 flex items-center gap-1.5 rounded-lg border px-2.5 sm:px-3 py-1.5 text-xs font-bold active:scale-95 transition-all shadow-xs cursor-pointer ${(account?.themeMode || "light") === "dark"
                     ? "border-[#27272A] bg-[#1E1E24] text-zinc-200 hover:bg-[#27272A]"
                     : "border-zinc-300 bg-white text-zinc-900 hover:bg-zinc-100"
                     }`}
@@ -1596,17 +1596,21 @@ export default function EditLeadMagnetPage() {
                   <ArrowLeft className="h-3.5 w-3.5 stroke-[2.5px]" />
                   <span>{isLockedPdf ? "Locked PDF" : "Landing Page"}</span>
                 </Link>
-                <div className="flex flex-col justify-center">
-                  <span className={`text-xs font-black uppercase tracking-wide leading-tight ${(account?.themeMode || "light") === "dark" ? "text-white" : "text-zinc-900"}`}>{page?.name || "Document"}</span>
-                  <span className={`text-[11px] leading-none mt-0.5 ${(account?.themeMode || "light") === "dark" ? "text-zinc-400" : "text-zinc-500"}`}>/{page?.slug || "page"}</span>
+                <div className="min-w-0 flex-1 flex flex-col justify-center">
+                  <span className={`text-xs font-black uppercase tracking-wide leading-tight truncate block ${(account?.themeMode || "light") === "dark" ? "text-white" : "text-zinc-900"}`} title={page?.name || "Document"}>
+                    {page?.name || "Document"}
+                  </span>
+                  <span className={`text-[11px] leading-none mt-0.5 truncate block font-mono ${(account?.themeMode || "light") === "dark" ? "text-zinc-400" : "text-zinc-500"}`} title={`/${page?.slug || "page"}`}>
+                    /{page?.slug || "page"}
+                  </span>
                 </div>
               </div>
 
               {/* Right Status & Actions */}
-              <div className="flex items-center gap-2.5">
-                <span className="text-xs text-zinc-500 dark:text-zinc-400 font-medium flex items-center gap-1">
+              <div className="flex items-center justify-between sm:justify-end gap-2.5 shrink-0 pt-1.5 sm:pt-0 border-t sm:border-t-0 border-zinc-100 dark:border-zinc-800/60">
+                <span className="text-xs text-zinc-500 dark:text-zinc-400 font-medium flex items-center gap-1 shrink-0">
                   <Check className="h-3.5 w-3.5 stroke-[3px] text-emerald-500" />
-                  {saveStatus === "saving" ? "Waiting to autosave..." : "Autosaved"}
+                  <span>{saveStatus === "saving" ? "Waiting to autosave..." : "Autosaved"}</span>
                 </span>
 
                 {/* AI Autofill & Social Studio (Only on Landing Pages) */}

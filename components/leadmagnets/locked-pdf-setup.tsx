@@ -535,15 +535,15 @@ export default function LockedPdfSetup({
         ) : pages.length > 0 ? (
           <div className="w-full rounded-xl border-2 border-dashed border-emerald-400 dark:border-emerald-600 bg-emerald-50/50 dark:bg-emerald-950/20 p-5 transition">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 min-w-0 flex-1">
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
                   <CheckCircle2 className="h-5 w-5" />
                 </div>
-                <div>
-                  <p className="text-sm font-bold text-zinc-900 dark:text-white">
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-bold text-zinc-900 dark:text-white truncate">
                     {pages.length} page{pages.length !== 1 ? "s" : ""} uploaded
                   </p>
-                  <p className="text-xs text-zinc-500 dark:text-zinc-400 truncate max-w-xs sm:max-w-md">
+                  <p className="text-xs text-zinc-500 dark:text-zinc-400 truncate max-w-full" title={pdfTitle || ""}>
                     {pdfTitle || "PDF document is ready for lead generation"}
                   </p>
                 </div>
