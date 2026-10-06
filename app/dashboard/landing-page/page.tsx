@@ -26,6 +26,7 @@ import {
   Globe,
   Share2,
   SlidersHorizontal,
+  ChevronDown,
   Lock,
   ChevronRight,
   FileText,
@@ -203,6 +204,16 @@ const MagnetCard = React.memo(
     prev.copiedId === next.copiedId
 );
 
+type SortOption = "recent" | "name" | "views" | "signups" | "conversion";
+
+const sortOptions: { id: SortOption; label: string }[] = [
+  { id: "recent", label: "Most Recent" },
+  { id: "name", label: "Name (A-Z)" },
+  { id: "views", label: "Most Views" },
+  { id: "signups", label: "Most Leads" },
+  { id: "conversion", label: "Highest Conv. %" },
+];
+
 export default function PagesPage() {
   const router = useRouter();
   const [account, setAccount] = useState<Account | null>(null);
@@ -211,6 +222,8 @@ export default function PagesPage() {
   const [search, setSearch] = useState("");
   const [viewMode, setViewMode] = useState<"grid" | "table">("grid");
   const [statusFilter, setStatusFilter] = useState<"all" | "live" | "draft">("all");
+  const [sortBy, setSortBy] = useState<SortOption>("recent");
+  const [isSortOpen, setIsSortOpen] = useState(false);
 
   const [selectedPageId, setSelectedPageId] = useState<string | null>(null);
   const [mobileInspectorOpen, setMobileInspectorOpen] = useState(false);
@@ -222,6 +235,17 @@ export default function PagesPage() {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [newName, setNewName] = useState("");
   const [isCreating, setIsCreating] = useState(false);
+
+  // Close sort menu on outside click
+  useEffect(() => {
+    const handleClickOutside = () => {
+      setIsSortOpen(false);
+    };
+    if (isSortOpen) {
+      window.addEventListener("click", handleClickOutside);
+      return () => window.removeEventListener("click", handleClickOutside);
+    }
+  }, [isSortOpen]);
 
   const newSlug = useMemo(() => {
     return newName
@@ -250,8 +274,7 @@ export default function PagesPage() {
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
-    if (!q && statusFilter === "all") return landingPages;
-    return landingPages.filter((p) => {
+    let list = landingPages.filter((p) => {
       const matchesStatus = statusFilter === "all" || p.status === statusFilter;
       if (!matchesStatus) return false;
       if (!q) return true;
@@ -261,7 +284,32 @@ export default function PagesPage() {
         (p.headline && p.headline.toLowerCase().includes(q))
       );
     });
-  }, [landingPages, search, statusFilter]);
+
+    list.sort((a, b) => {
+      if (sortBy === "name") {
+        const nameA = (a.headline || a.name || "").toLowerCase();
+        const nameB = (b.headline || b.name || "").toLowerCase();
+        return nameA.localeCompare(nameB);
+      }
+      if (sortBy === "views") {
+        return (b.views || 0) - (a.views || 0);
+      }
+      if (sortBy === "signups") {
+        return (b.signups || 0) - (a.signups || 0);
+      }
+      if (sortBy === "conversion") {
+        const rateA = a.views && a.views > 0 ? (a.signups || 0) / a.views : (a.conversionRate ? a.conversionRate / 100 : 0);
+        const rateB = b.views && b.views > 0 ? (b.signups || 0) / b.views : (b.conversionRate ? b.conversionRate / 100 : 0);
+        return rateB - rateA;
+      }
+      // default: recent
+      const diff = getMagnetSortTimestamp(b) - getMagnetSortTimestamp(a);
+      if (diff !== 0) return diff;
+      return String(b.id).localeCompare(String(a.id));
+    });
+
+    return list;
+  }, [landingPages, search, statusFilter, sortBy]);
 
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState<number | "all">("all");
@@ -276,7 +324,7 @@ export default function PagesPage() {
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [search, statusFilter, itemsPerPage]);
+  }, [search, statusFilter, itemsPerPage, sortBy]);
 
   const activePage = useMemo(() => {
     if (!selectedPageId) return null;
@@ -560,6 +608,64 @@ export default function PagesPage() {
                       <span className="relative z-10">{tab.label}</span>
                     </button>
                   ))}
+                </div>
+
+                {/* Custom Animated Sort Dropdown */}
+                <div className="relative shrink-0">
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setIsSortOpen((v) => !v);
+                    }}
+                    className="flex h-8 items-center gap-1 sm:gap-2 rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#18181B] px-2 sm:px-3 text-[11px] sm:text-xs font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-[#222226] transition shadow-2xs cursor-pointer select-none"
+                  >
+                    <SlidersHorizontal className="h-3 w-3 text-zinc-400 shrink-0" />
+                    <span className="truncate max-w-[76px] sm:max-w-none">{sortOptions.find((o) => o.id === sortBy)?.label || "Sort"}</span>
+                    <ChevronDown
+                      className={`h-3.5 w-3.5 text-zinc-400 shrink-0 transition-transform duration-200 ${
+                        isSortOpen ? "rotate-180" : ""
+                      }`}
+                    />
+                  </button>
+
+                  <AnimatePresence>
+                    {isSortOpen && (
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0.96, y: -6 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.96, y: -4 }}
+                        transition={{ type: "spring", damping: 28, stiffness: 400 }}
+                        onClick={(e) => e.stopPropagation()}
+                        className="absolute right-0 top-full z-40 mt-1.5 w-48 rounded-xl border border-zinc-200/90 dark:border-white/10 bg-white/95 dark:bg-[#1C1C20]/95 p-1.5 shadow-xl backdrop-blur-xl dark:text-white"
+                      >
+                        <div className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
+                          Sort by
+                        </div>
+                        {sortOptions.map((opt) => {
+                          const isSelected = sortBy === opt.id;
+                          return (
+                            <button
+                              key={opt.id}
+                              type="button"
+                              onClick={() => {
+                                setSortBy(opt.id);
+                                setIsSortOpen(false);
+                              }}
+                              className={`flex w-full items-center justify-between rounded-lg px-2.5 py-1.5 text-xs transition cursor-pointer text-left ${
+                                isSelected
+                                  ? "bg-[#0066B2]/10 text-[#0066B2] font-bold dark:bg-[#38BDF8]/20 dark:text-[#38BDF8]"
+                                  : "text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-white/5 font-medium"
+                              }`}
+                            >
+                              <span>{opt.label}</span>
+                              {isSelected && <Check className="h-3.5 w-3.5" />}
+                            </button>
+                          );
+                        })}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
 
                 <div className="flex items-center p-1 bg-zinc-100 dark:bg-[#1C1C20] rounded-xl">
