@@ -1044,39 +1044,6 @@ function parseCsvLine(line: string): string[] {
                 </div>
 
                 <div className="flex flex-wrap items-center gap-2">
-                  {/* Bulk Selection Actions - Apple Style */}
-                  <AnimatePresence>
-                    {selectedLeadIds.length > 0 && (
-                      <motion.div
-                        initial={{ opacity: 0, scale: 0.95, x: -8 }}
-                        animate={{ opacity: 1, scale: 1, x: 0 }}
-                        exit={{ opacity: 0, scale: 0.95, x: -8 }}
-                        transition={{ type: "spring", stiffness: 500, damping: 28 }}
-                        className="flex items-center gap-2"
-                      >
-                        <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#0066B2]/10 text-[#0066B2] dark:bg-[#38BDF8]/15 dark:text-[#38BDF8] text-xs font-bold border border-[#0066B2]/20 dark:border-[#38BDF8]/30">
-                          <span>{selectedLeadIds.length} selected</span>
-                          <button
-                            type="button"
-                            onClick={() => setSelectedLeadIds([])}
-                            className="ml-1 text-zinc-400 hover:text-zinc-700 dark:hover:text-white transition cursor-pointer"
-                            title="Deselect all"
-                          >
-                            <X className="h-3 w-3" />
-                          </button>
-                        </div>
-                        <button
-                          type="button"
-                          onClick={() => setShowBulkDeleteModal(true)}
-                          className="flex items-center gap-1.5 rounded-xl bg-red-600 hover:bg-red-700 px-3.5 py-1.5 text-xs font-bold text-white shadow-sm transition-all cursor-pointer active:scale-95"
-                        >
-                          <Trash2 className="h-3.5 w-3.5" />
-                          <span>Delete Selected</span>
-                        </button>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-
                   {/* Filter by Magnet — Glassy & Smooth Animated Dropdown */}
                   <div className="relative" ref={filterRef}>
                     <button
@@ -1085,7 +1052,7 @@ function parseCsvLine(line: string): string[] {
                         e.stopPropagation();
                         setFilterOpen((v) => !v);
                       }}
-                      className="flex items-center gap-2 rounded-xl border border-zinc-200/80 bg-white/70 px-3.5 py-2 text-xs font-semibold text-zinc-700 shadow-xs backdrop-blur-md transition-all hover:bg-white/90 focus:outline-none dark:border-white/10 dark:bg-[#18181B]/80 dark:text-zinc-200 dark:hover:bg-[#222226] cursor-pointer select-none"
+                      className="flex h-9 items-center gap-2 rounded-xl border border-zinc-200/80 bg-white/70 px-3.5 text-xs font-semibold text-zinc-700 shadow-xs backdrop-blur-md transition-all hover:bg-white/90 focus:outline-none dark:border-white/10 dark:bg-[#18181B]/80 dark:text-zinc-200 dark:hover:bg-[#222226] cursor-pointer select-none"
                     >
                       {filterMagnet === "All LinkedIn Leads" ? (
                         <Linkedin className="h-3.5 w-3.5 text-[#0A66C2] dark:text-[#38BDF8] shrink-0" />
@@ -1228,7 +1195,7 @@ function parseCsvLine(line: string): string[] {
 
                   {/* Search Bar */}
                   <div className="relative flex-1 min-w-[200px]">
-                    <Search className="absolute left-3 top-2.5 h-3.5 w-3.5 text-zinc-400" />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-400" />
                     <input
                       type="text"
                       placeholder="Search email, name, or magnet..."
@@ -1237,13 +1204,13 @@ function parseCsvLine(line: string): string[] {
                         setSearch(e.target.value);
                         setCurrentPage(1);
                       }}
-                      className="w-full rounded-xl border border-zinc-200 bg-white py-2 pl-9 pr-8 text-xs text-zinc-900 placeholder-zinc-400 focus:border-[#0066B2] focus:outline-none dark:border-[#2e2e38] dark:bg-[#202026] dark:text-white dark:placeholder-zinc-500"
+                      className="w-full h-9 rounded-xl border border-zinc-200 bg-white pl-9 pr-8 text-xs text-zinc-900 placeholder-zinc-400 focus:border-[#0066B2] focus:outline-none dark:border-[#2e2e38] dark:bg-[#202026] dark:text-white dark:placeholder-zinc-500"
                     />
                     {search && (
                       <button
                         type="button"
                         onClick={() => setSearch("")}
-                        className="absolute right-2.5 top-2.5 text-zinc-400 hover:text-zinc-600 dark:hover:text-white cursor-pointer"
+                        className="absolute right-2.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 dark:hover:text-white cursor-pointer"
                       >
                         <X className="h-3.5 w-3.5" />
                       </button>
@@ -1746,52 +1713,46 @@ function parseCsvLine(line: string): string[] {
         </div>
 
         {/* ========================================================================= */}
-        {/* 6. MOBILE Floating Bulk Action Bar (fixed bottom pill)                     */}
+        {/* Floating Bottom Multi-Select Bar - 100% Consistent with Landing Page      */}
         {/* ========================================================================= */}
         <AnimatePresence>
           {selectedLeadIds.length > 0 && (
             <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 30 }}
-              transition={{ type: "spring", damping: 25, stiffness: 350 }}
-              className="fixed bottom-4 left-3 right-3 z-40 flex md:hidden items-center justify-between rounded-2xl border border-zinc-200/90 dark:border-white/10 bg-white/95 dark:bg-[#18181F]/95 px-3 py-2.5 sm:px-4 sm:py-3 shadow-2xl backdrop-blur-xl gap-2"
+              initial={{ opacity: 0, y: 40, x: "-50%" }}
+              animate={{ opacity: 1, y: 0, x: "-50%" }}
+              exit={{ opacity: 0, y: 40, x: "-50%" }}
+              transition={{ type: "spring", stiffness: 450, damping: 30 }}
+              className="fixed bottom-6 left-1/2 z-50 flex items-center gap-3 rounded-2xl bg-zinc-900/95 dark:bg-[#1A1A1E]/95 border border-zinc-700/80 text-white px-4 sm:px-5 py-2.5 shadow-2xl backdrop-blur-md"
             >
-              <div className="flex items-center gap-1.5 sm:gap-2.5 min-w-0">
-                <span className="flex h-5 w-5 sm:h-6 sm:w-6 shrink-0 items-center justify-center rounded-full bg-[#0066B2] text-[11px] sm:text-xs font-bold text-white shadow-xs">
-                  {selectedLeadIds.length}
-                </span>
-                <span className="text-xs font-bold text-zinc-900 dark:text-white whitespace-nowrap">Selected</span>
-                <div className="h-3 w-px bg-zinc-200 dark:bg-zinc-700 shrink-0" />
-                <button
-                  type="button"
-                  onClick={toggleSelectAll}
-                  className="text-xs font-semibold text-[#0066B2] dark:text-[#38BDF8] hover:opacity-80 transition cursor-pointer whitespace-nowrap shrink-0"
-                >
-                  {selectedLeadIds.length === paginatedLeads.length ? "Deselect" : "Select All"}
-                </button>
-              </div>
-
-              <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setSelectedLeadIds([]);
-                    setIsMobileSelectionMode(false);
-                  }}
-                  className="px-2.5 py-1.5 sm:px-3 sm:py-1.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-[#222228] text-xs font-semibold text-zinc-700 dark:text-zinc-200 transition cursor-pointer whitespace-nowrap"
-                >
-                  Clear
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setShowBulkDeleteModal(true)}
-                  className="flex items-center gap-1 sm:gap-1.5 px-3 py-1.5 sm:px-3.5 sm:py-1.5 rounded-xl bg-red-600 hover:bg-red-700 text-xs font-bold text-white transition shadow-sm cursor-pointer whitespace-nowrap"
-                >
-                  <Trash2 className="h-3.5 w-3.5 shrink-0" />
-                  <span>Delete ({selectedLeadIds.length})</span>
-                </button>
-              </div>
+              <span className="text-xs font-bold whitespace-nowrap">
+                <span className="text-[#38BDF8] font-black">{selectedLeadIds.length}</span> selected
+              </span>
+              <div className="h-4 w-px bg-zinc-700" />
+              <button
+                type="button"
+                onClick={toggleSelectAll}
+                className="text-xs font-semibold text-zinc-300 hover:text-white transition cursor-pointer whitespace-nowrap"
+              >
+                {selectedLeadIds.length === paginatedLeads.length && paginatedLeads.length > 0 ? "Deselect All" : "Select All"}
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setSelectedLeadIds([]);
+                  setIsMobileSelectionMode(false);
+                }}
+                className="text-xs font-semibold text-zinc-400 hover:text-zinc-200 transition cursor-pointer whitespace-nowrap"
+              >
+                Clear
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowBulkDeleteModal(true)}
+                className="flex items-center gap-1.5 rounded-xl bg-rose-600 hover:bg-rose-700 px-3.5 py-1.5 text-xs font-bold text-white transition shadow-xs cursor-pointer whitespace-nowrap active:scale-95"
+              >
+                <Trash2 className="h-3.5 w-3.5" />
+                <span>Delete ({selectedLeadIds.length})</span>
+              </button>
             </motion.div>
           )}
         </AnimatePresence>

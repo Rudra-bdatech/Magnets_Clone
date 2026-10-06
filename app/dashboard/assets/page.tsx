@@ -29,6 +29,7 @@ import {
 import { syncWithDatabase, loadResources, loadAccount, loadPages, loadLeads } from "@/lib/store";
 import type { Account, MagnetPage, Lead } from "@/lib/data";
 import { MobileAssetCard } from "@/components/assets/MobileAssetCard";
+import { AppleCheckbox } from "@/components/leads/AppleCheckbox";
 
 interface Resource {
   id: string;
@@ -971,29 +972,19 @@ export default function ResourcesPage() {
                 })}
               </div>
 
-              {/* Search, Bulk Action & Sort */}
+              {/* Search & Sort */}
               <div className="flex items-center gap-2">
-                {selectedResourceIds.length > 0 && (
-                  <button
-                    onClick={() => setShowBulkDeleteModal(true)}
-                    className="flex items-center gap-1.5 rounded-xl bg-red-600 hover:bg-red-700 px-3.5 py-2 text-xs font-bold text-white shadow-sm transition-all cursor-pointer animate-in fade-in zoom-in-95 duration-150"
-                  >
-                    <Trash2 className="h-3.5 w-3.5" />
-                    <span>Delete Selected ({selectedResourceIds.length})</span>
-                  </button>
-                )}
-
                 <div className="relative flex-1 sm:w-64">
-                  <Search className="absolute left-3 top-2.5 h-3.5 w-3.5 text-zinc-400" />
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-400" />
                   <input
                     type="text"
                     placeholder="Search resources..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full rounded-xl border border-zinc-200 bg-white py-2 pl-9 pr-3 text-xs text-zinc-900 placeholder-zinc-400 focus:border-[#0066B2] focus:outline-none dark:border-[#2e2e38] dark:bg-[#18181B] dark:text-white dark:placeholder-zinc-500"
+                    className="w-full h-9 rounded-xl border border-zinc-200 bg-white pl-9 pr-8 text-xs text-zinc-900 placeholder-zinc-400 focus:border-[#0066B2] focus:outline-none dark:border-[#2e2e38] dark:bg-[#18181B] dark:text-white dark:placeholder-zinc-500"
                   />
                   {searchQuery && (
-                    <button onClick={() => setSearchQuery("")} className="absolute right-2.5 top-2.5 text-zinc-400 hover:text-zinc-600 dark:hover:text-white">
+                    <button onClick={() => setSearchQuery("")} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 dark:hover:text-white">
                       <X className="h-3.5 w-3.5" />
                     </button>
                   )}
@@ -1007,7 +998,7 @@ export default function ResourcesPage() {
                       e.stopPropagation();
                       setIsSortOpen((prev) => !prev);
                     }}
-                    className="flex items-center justify-between gap-2 rounded-xl border border-zinc-200/80 bg-white/70 px-3.5 py-2 text-xs font-semibold text-zinc-700 shadow-xs backdrop-blur-md transition-all hover:bg-white/90 focus:outline-none dark:border-white/10 dark:bg-[#18181B]/80 dark:text-zinc-200 dark:hover:bg-[#222226] cursor-pointer"
+                    className="flex h-9 items-center justify-between gap-2 rounded-xl border border-zinc-200/80 bg-white/70 px-3.5 text-xs font-semibold text-zinc-700 shadow-xs backdrop-blur-md transition-all hover:bg-white/90 focus:outline-none dark:border-white/10 dark:bg-[#18181B]/80 dark:text-zinc-200 dark:hover:bg-[#222226] cursor-pointer"
                   >
                     <span>
                       Sort: {sortBy === "newest" ? "Newest" : sortBy === "oldest" ? "Oldest" : sortBy === "size" ? "File Size" : "Name (A-Z)"}
@@ -1310,22 +1301,29 @@ export default function ResourcesPage() {
                       <table className="min-w-full divide-y divide-zinc-200/80 dark:divide-[#2e2e38]">
                         <thead className="bg-[#F8FBFF] dark:bg-[#151518]">
                           <tr>
-                            <th className="px-4 py-3.5 text-center w-10">
-                              <input
-                                type="checkbox"
-                                checked={filteredResources.length > 0 && selectedResourceIds.length === filteredResources.length}
-                                onChange={(e) => {
-                                  if (e.target.checked) {
-                                    setSelectedResourceIds(filteredResources.map((r) => r.id));
-                                  } else {
-                                    setSelectedResourceIds([]);
-                                  }
-                                }}
-                                className="h-4 w-4 rounded border-zinc-300 dark:border-zinc-700 bg-white dark:bg-[#202026] text-[#0066B2] focus:ring-[#0066B2] cursor-pointer"
-                                title="Select All On Page"
-                              />
+                            <th className="px-6 py-3.5 text-left text-[11px] font-semibold tracking-wider text-zinc-500 dark:text-[#9B9085] uppercase">
+                              <div className="flex items-center">
+                                <div className="flex items-center mr-2.5">
+                                  <AppleCheckbox
+                                    checked={filteredResources.length > 0 && selectedResourceIds.length === filteredResources.length}
+                                    indeterminate={selectedResourceIds.length > 0 && selectedResourceIds.length < filteredResources.length}
+                                    onChange={() => {
+                                      if (selectedResourceIds.length === filteredResources.length && filteredResources.length > 0) {
+                                        setSelectedResourceIds([]);
+                                      } else {
+                                        setSelectedResourceIds(filteredResources.map((r) => r.id));
+                                      }
+                                    }}
+                                    title={
+                                      selectedResourceIds.length === filteredResources.length && filteredResources.length > 0
+                                        ? "Deselect all on page"
+                                        : "Select all on page"
+                                    }
+                                  />
+                                </div>
+                                <span>Resource Name</span>
+                              </div>
                             </th>
-                            <th className="px-6 py-3.5 text-left text-[11px] font-semibold tracking-wider text-zinc-500 dark:text-[#9B9085] uppercase">Resource Name</th>
                             <th className="px-6 py-3.5 text-left text-[11px] font-semibold tracking-wider text-zinc-500 dark:text-[#9B9085] uppercase">Size</th>
                             <th className="px-6 py-3.5 text-left text-[11px] font-semibold tracking-wider text-zinc-500 dark:text-[#9B9085] uppercase">Uploaded Date & Time</th>
                             <th className="px-6 py-3.5 text-right text-[11px] font-semibold tracking-wider text-zinc-500 dark:text-[#9B9085] uppercase">Actions</th>
@@ -1339,26 +1337,64 @@ export default function ResourcesPage() {
                             const linkedPages = getResourceLinkedPages(resource.id);
 
                             return (
-                              <tr key={resource.id} className={`transition-colors ${isSelected ? "bg-[#EFF6FF] dark:bg-[#0066B2]/10" : "hover:bg-[#EFF6FF]/40 dark:hover:bg-[#1C1C22]/60"}`}>
-                                <td className="px-4 py-4 text-center w-10">
-                                  <input
-                                    type="checkbox"
-                                    checked={isSelected}
-                                    onChange={(e) => {
-                                      if (e.target.checked) {
-                                        setSelectedResourceIds((prev) => [...prev, resource.id]);
-                                      } else {
-                                        setSelectedResourceIds((prev) => prev.filter((id) => id !== resource.id));
-                                      }
-                                    }}
-                                    className="h-4 w-4 rounded border-zinc-300 dark:border-zinc-700 bg-white dark:bg-[#202026] text-[#0066B2] focus:ring-[#0066B2] cursor-pointer"
-                                  />
-                                </td>
+                              <tr
+                                key={resource.id}
+                                className={`group transition-all duration-200 ${
+                                  isSelected
+                                    ? "bg-gradient-to-r from-[#0066B2]/[0.08] via-[#0066B2]/[0.04] to-transparent dark:from-[#38BDF8]/15 dark:via-[#38BDF8]/[0.06] dark:to-transparent"
+                                    : "hover:bg-zinc-50/80 dark:hover:bg-[#1F1F24]/70"
+                                }`}
+                              >
                                 <td className="whitespace-nowrap px-6 py-4">
-                                  <div className="flex items-center gap-3">
-                                    <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border ${badge.bg}`}>
-                                      {badge.icon}
-                                    </div>
+                                  <div className="flex items-center min-w-0">
+                                    {/* Animated Spring Checkbox - 100% Matching Leads & Mobile Physics */}
+                                    <AnimatePresence initial={false}>
+                                      {(selectedResourceIds.length > 0 || isSelected) && (
+                                        <motion.div
+                                          initial={{ opacity: 0, width: 0, marginRight: 0, scale: 0.6 }}
+                                          animate={{ opacity: 1, width: 22, marginRight: 12, scale: 1 }}
+                                          exit={{ opacity: 0, width: 0, marginRight: 0, scale: 0.6 }}
+                                          transition={{ type: "spring", stiffness: 420, damping: 28 }}
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            if (isSelected) {
+                                              setSelectedResourceIds((prev) => prev.filter((id) => id !== resource.id));
+                                            } else {
+                                              setSelectedResourceIds((prev) => [...prev, resource.id]);
+                                            }
+                                          }}
+                                          className="flex items-center justify-center shrink-0 overflow-hidden cursor-pointer"
+                                        >
+                                          <AppleCheckbox
+                                            checked={isSelected}
+                                            onChange={() => {
+                                              if (isSelected) {
+                                                setSelectedResourceIds((prev) => prev.filter((id) => id !== resource.id));
+                                              } else {
+                                                setSelectedResourceIds((prev) => [...prev, resource.id]);
+                                              }
+                                            }}
+                                            title={isSelected ? "Deselect asset" : "Select asset"}
+                                          />
+                                        </motion.div>
+                                      )}
+                                    </AnimatePresence>
+
+                                    <div className="flex items-center gap-3 min-w-0 flex-1">
+                                      <div
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          if (isSelected) {
+                                            setSelectedResourceIds((prev) => prev.filter((id) => id !== resource.id));
+                                          } else {
+                                            setSelectedResourceIds((prev) => [...prev, resource.id]);
+                                          }
+                                        }}
+                                        title={isSelected ? "Deselect" : "Select"}
+                                        className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border ${badge.bg} cursor-pointer active:scale-95 transition-transform`}
+                                      >
+                                        {badge.icon}
+                                      </div>
                                     <div className="flex-1 min-w-0">
                                       {editingResourceId === resource.id ? (
                                         <div className="flex items-center gap-1.5" onClick={(e) => e.stopPropagation()}>
@@ -1428,7 +1464,8 @@ export default function ResourcesPage() {
                                       )}
                                     </div>
                                   </div>
-                                </td>
+                                </div>
+                              </td>
 
                                 <td className="whitespace-nowrap px-6 py-4 text-xs font-medium text-zinc-600 dark:text-zinc-400">
                                   {formatBytes(resource.size)}
@@ -1439,42 +1476,38 @@ export default function ResourcesPage() {
                                 </td>
 
                                 <td className="whitespace-nowrap px-6 py-4 text-right">
-                                  <div className="flex items-center justify-end gap-2">
-                                    {/* Direct Download Link */}
+                                  <div className="flex items-center justify-end gap-1.5">
+                                    {/* Direct Download / Test File */}
                                     <a
                                       href={resource.url}
                                       target="_blank"
                                       rel="noopener noreferrer"
-                                      title="Test download file"
-                                      className="flex items-center gap-1.5 rounded-lg border border-zinc-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-zinc-700 hover:bg-zinc-50 dark:border-[#2e2e38] dark:bg-[#202026] dark:text-zinc-300 dark:hover:bg-[#282830] transition shadow-xs"
+                                      title="Test / Download file"
+                                      className="inline-flex h-8 w-8 items-center justify-center rounded-xl border border-zinc-200/90 bg-white dark:border-[#2e2e38] dark:bg-[#202026] text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-[#282830] hover:text-[#0066B2] dark:hover:text-[#38BDF8] transition-all duration-150 cursor-pointer shadow-2xs active:scale-95"
                                     >
-                                      <Download className="h-3.5 w-3.5 text-zinc-500" /> Direct Test
+                                      <Download className="h-4 w-4" />
                                     </a>
 
                                     {/* Copy Link Button */}
                                     <button
+                                      type="button"
                                       onClick={() => copyToClipboard(resource.url, resource.id)}
-                                      className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition shadow-xs cursor-pointer ${isCopied
-                                        ? "bg-emerald-500 text-white"
-                                        : "bg-[#0066B2] text-white hover:bg-[#005291]"
-                                        }`}
+                                      title={isCopied ? "Link copied!" : "Copy shareable link"}
+                                      className={`inline-flex h-8 w-8 items-center justify-center rounded-xl border transition-all duration-150 cursor-pointer shadow-2xs active:scale-95 ${
+                                        isCopied
+                                          ? "border-emerald-500/40 bg-emerald-500/15 text-emerald-600 dark:text-emerald-400"
+                                          : "border-zinc-200/90 bg-white dark:border-[#2e2e38] dark:bg-[#202026] text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-[#282830] hover:text-[#0066B2] dark:hover:text-[#38BDF8]"
+                                      }`}
                                     >
-                                      {isCopied ? (
-                                        <>
-                                          <Check className="h-3.5 w-3.5 text-white" /> Copied!
-                                        </>
-                                      ) : (
-                                        <>
-                                          <Link2 className="h-3.5 w-3.5" /> Copy Link
-                                        </>
-                                      )}
+                                      {isCopied ? <Check className="h-4 w-4 text-emerald-500" /> : <Link2 className="h-4 w-4" />}
                                     </button>
 
                                     {/* Delete Button */}
                                     <button
+                                      type="button"
                                       onClick={() => setResourceToDelete(resource)}
-                                      className="rounded-lg p-1.5 text-zinc-400 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950/30 dark:hover:text-red-400 transition cursor-pointer"
-                                      title="Delete Resource"
+                                      title="Delete resource"
+                                      className="inline-flex h-8 w-8 items-center justify-center rounded-xl border border-transparent text-zinc-400 hover:border-red-200 dark:hover:border-red-950/50 hover:bg-red-50 dark:hover:bg-red-950/30 hover:text-red-600 dark:hover:text-red-400 transition-all duration-150 cursor-pointer active:scale-95"
                                     >
                                       <Trash2 className="h-4 w-4" />
                                     </button>
@@ -1535,52 +1568,52 @@ export default function ResourcesPage() {
         </div>
 
         {/* ========================================================================= */}
-        {/* 5. MOBILE Floating Bulk Action Bar (fixed bottom pill)                     */}
+        {/* Floating Bottom Multi-Select Bar - 100% Consistent with Landing Page      */}
         {/* ========================================================================= */}
         <AnimatePresence>
           {selectedResourceIds.length > 0 && (
             <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 30 }}
-              transition={{ type: "spring", damping: 25, stiffness: 350 }}
-              className="fixed bottom-4 left-3 right-3 z-40 flex md:hidden items-center justify-between rounded-2xl border border-zinc-200/90 dark:border-white/10 bg-white/95 dark:bg-[#18181F]/95 px-3 py-2.5 sm:px-4 sm:py-3 shadow-2xl backdrop-blur-xl gap-2"
+              initial={{ opacity: 0, y: 40, x: "-50%" }}
+              animate={{ opacity: 1, y: 0, x: "-50%" }}
+              exit={{ opacity: 0, y: 40, x: "-50%" }}
+              transition={{ type: "spring", stiffness: 450, damping: 30 }}
+              className="fixed bottom-6 left-1/2 z-50 flex items-center gap-3 rounded-2xl bg-zinc-900/95 dark:bg-[#1A1A1E]/95 border border-zinc-700/80 text-white px-4 sm:px-5 py-2.5 shadow-2xl backdrop-blur-md"
             >
-              <div className="flex items-center gap-1.5 sm:gap-2.5 min-w-0">
-                <span className="flex h-5 w-5 sm:h-6 sm:w-6 shrink-0 items-center justify-center rounded-full bg-[#0066B2] text-[11px] sm:text-xs font-bold text-white shadow-xs">
-                  {selectedResourceIds.length}
-                </span>
-                <span className="text-xs font-bold text-zinc-900 dark:text-white whitespace-nowrap">Selected</span>
-                <div className="h-3 w-px bg-zinc-200 dark:bg-zinc-700 shrink-0" />
-                <button
-                  type="button"
-                  onClick={toggleSelectAll}
-                  className="text-xs font-semibold text-[#0066B2] dark:text-[#38BDF8] hover:opacity-80 transition cursor-pointer whitespace-nowrap shrink-0"
-                >
-                  {selectedResourceIds.length === filteredResources.length ? "Deselect" : "Select All"}
-                </button>
-              </div>
-
-              <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-                <button
-                  type="button"
-                  onClick={() => {
+              <span className="text-xs font-bold whitespace-nowrap">
+                <span className="text-[#38BDF8] font-black">{selectedResourceIds.length}</span> selected
+              </span>
+              <div className="h-4 w-px bg-zinc-700" />
+              <button
+                type="button"
+                onClick={() => {
+                  if (selectedResourceIds.length === filteredResources.length && filteredResources.length > 0) {
                     setSelectedResourceIds([]);
-                    setIsMobileSelectionMode(false);
-                  }}
-                  className="px-2.5 py-1.5 sm:px-3 sm:py-1.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-[#222228] text-xs font-semibold text-zinc-700 dark:text-zinc-200 transition cursor-pointer whitespace-nowrap"
-                >
-                  Clear
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setShowBulkDeleteModal(true)}
-                  className="flex items-center gap-1 sm:gap-1.5 px-3 py-1.5 sm:px-3.5 sm:py-1.5 rounded-xl bg-red-600 hover:bg-red-700 text-xs font-bold text-white transition shadow-sm cursor-pointer whitespace-nowrap"
-                >
-                  <Trash2 className="h-3.5 w-3.5 shrink-0" />
-                  <span>Delete ({selectedResourceIds.length})</span>
-                </button>
-              </div>
+                  } else {
+                    setSelectedResourceIds(filteredResources.map((r) => r.id));
+                  }
+                }}
+                className="text-xs font-semibold text-zinc-300 hover:text-white transition cursor-pointer whitespace-nowrap"
+              >
+                {selectedResourceIds.length === filteredResources.length && filteredResources.length > 0 ? "Deselect All" : "Select All"}
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setSelectedResourceIds([]);
+                  setIsMobileSelectionMode(false);
+                }}
+                className="text-xs font-semibold text-zinc-400 hover:text-zinc-200 transition cursor-pointer whitespace-nowrap"
+              >
+                Clear
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowBulkDeleteModal(true)}
+                className="flex items-center gap-1.5 rounded-xl bg-rose-600 hover:bg-rose-700 px-3.5 py-1.5 text-xs font-bold text-white transition shadow-xs cursor-pointer whitespace-nowrap active:scale-95"
+              >
+                <Trash2 className="h-3.5 w-3.5" />
+                <span>Delete ({selectedResourceIds.length})</span>
+              </button>
             </motion.div>
           )}
         </AnimatePresence>
