@@ -1569,11 +1569,11 @@ export default function EditLeadMagnetPage() {
       <div className="flex-1 px-4 py-6 sm:px-6 lg:px-8 w-full max-w-7xl mx-auto">
 
           {/* Page Top Title Header */}
-          <div className="mb-6 flex items-center justify-between">
+          <div className="mb-4 sm:mb-6 flex items-center justify-between">
             <div>
-              <h2 className="flex items-center gap-2 text-2xl sm:text-3xl font-extrabold text-zinc-900 dark:text-white">
+              <h2 className="flex items-center gap-2 text-xl sm:text-2xl lg:text-3xl font-extrabold text-zinc-900 dark:text-white">
                 {isLockedPdf ? "Edit Locked PDF" : "Edit lead magnet"}
-                <span className="cursor-help flex h-5 w-5 items-center justify-center rounded-full border border-zinc-200 dark:border-[#2e2e38] text-xs font-normal text-zinc-500 dark:text-[#9B9085] hover:bg-zinc-100 dark:hover:bg-[#18181B]" title={isLockedPdf ? "Edit the PDF, delivery emails, and post-signup flow" : "Edit the page copy, design, emails, and post-signup flow"}>?</span>
+                <span className="cursor-help flex h-4.5 w-4.5 sm:h-5 sm:w-5 items-center justify-center rounded-full border border-zinc-200 dark:border-[#2e2e38] text-[11px] sm:text-xs font-normal text-zinc-500 dark:text-[#9B9085] hover:bg-zinc-100 dark:hover:bg-[#18181B]" title={isLockedPdf ? "Edit the PDF, delivery emails, and post-signup flow" : "Edit the page copy, design, emails, and post-signup flow"}>?</span>
               </h2>
             </div>
           </div>
@@ -1597,10 +1597,10 @@ export default function EditLeadMagnetPage() {
                   <span>{isLockedPdf ? "Locked PDF" : "Landing Page"}</span>
                 </Link>
                 <div className="min-w-0 flex-1 flex flex-col justify-center">
-                  <span className={`text-xs font-black uppercase tracking-wide leading-tight truncate block ${(account?.themeMode || "light") === "dark" ? "text-white" : "text-zinc-900"}`} title={page?.name || "Document"}>
+                  <span className={`text-[11.5px] sm:text-xs font-bold leading-tight truncate block ${(account?.themeMode || "light") === "dark" ? "text-white" : "text-zinc-900"}`} title={page?.name || "Document"}>
                     {page?.name || "Document"}
                   </span>
-                  <span className={`text-[11px] leading-none mt-0.5 truncate block font-mono ${(account?.themeMode || "light") === "dark" ? "text-zinc-400" : "text-zinc-500"}`} title={`/${page?.slug || "page"}`}>
+                  <span className={`text-[10px] sm:text-[11px] leading-none mt-0.5 truncate block font-mono ${(account?.themeMode || "light") === "dark" ? "text-zinc-400" : "text-zinc-500"}`} title={`/${page?.slug || "page"}`}>
                     /{page?.slug || "page"}
                   </span>
                 </div>
