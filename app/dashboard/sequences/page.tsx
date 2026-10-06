@@ -79,6 +79,7 @@ export default function SequencesPage() {
 
   // Dropdown menu tracking
   const [activeMenuId, setActiveMenuId] = useState<string | null>(null);
+  const [mobileActionSeq, setMobileActionSeq] = useState<Sequence | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   // Mobile New Sequence Drawer state
@@ -98,7 +99,7 @@ export default function SequencesPage() {
 
   // Lock body scroll when mobile modals are open
   useEffect(() => {
-    if (showNewSequenceModal || seqToDelete) {
+    if (showNewSequenceModal || seqToDelete || mobileActionSeq) {
       document.body.style.overflow = "hidden";
     } else {
       document.body.style.overflow = "";
@@ -106,7 +107,7 @@ export default function SequencesPage() {
     return () => {
       document.body.style.overflow = "";
     };
-  }, [showNewSequenceModal, seqToDelete]);
+  }, [showNewSequenceModal, seqToDelete, mobileActionSeq]);
 
   // Close menus on outside click
   useEffect(() => {
@@ -888,7 +889,7 @@ export default function SequencesPage() {
                   return (
                     <div
                       key={seq.id}
-                      className="group relative flex flex-col justify-between rounded-2xl border border-zinc-200/90 dark:border-white/10 bg-white dark:bg-[#18181B] p-3 sm:p-5 transition-all duration-200 hover:border-[#0066B2] dark:hover:border-[#38BDF8] shadow-2xs hover:shadow-sm min-w-0 w-full max-w-full overflow-hidden"
+                      className={`group relative flex flex-col justify-between rounded-2xl border border-zinc-200/90 dark:border-white/10 bg-white dark:bg-[#18181B] p-3 sm:p-5 transition-all duration-200 hover:border-[#0066B2] dark:hover:border-[#38BDF8] shadow-2xs hover:shadow-sm min-w-0 w-full max-w-full ${isMenuOpen ? "z-30" : "z-0"}`}
                     >
                       {/* Top Row: Icon, Title, Actions */}
                       <div className="min-w-0 w-full max-w-full">
@@ -938,7 +939,11 @@ export default function SequencesPage() {
                                 onClick={(e) => {
                                   e.preventDefault();
                                   e.stopPropagation();
-                                  setActiveMenuId(isMenuOpen ? null : seq.id);
+                                  if (typeof window !== "undefined" && window.innerWidth < 640) {
+                                    setMobileActionSeq(seq);
+                                  } else {
+                                    setActiveMenuId(isMenuOpen ? null : seq.id);
+                                  }
                                 }}
                                 className="rounded-lg p-1.5 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-700 dark:hover:bg-white/10 dark:hover:text-zinc-200 transition cursor-pointer"
                                 title="Sequence options"
@@ -946,10 +951,11 @@ export default function SequencesPage() {
                                 <MoreVertical className="h-4 w-4" />
                               </button>
 
+                              {/* Desktop-only dropdown popup */}
                               {isMenuOpen && (
                                 <div
                                   onClick={(e) => e.stopPropagation()}
-                                  className="absolute right-0 top-8 z-30 w-52 rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#1C1C20] py-1 shadow-xl animate-in fade-in zoom-in-95"
+                                  className="hidden sm:block absolute right-0 top-8 z-50 w-52 rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#1C1C20] py-1 shadow-xl animate-in fade-in zoom-in-95"
                                 >
                                   <Link
                                     href={`/dashboard/sequences/${seq.id}`}
@@ -1780,6 +1786,151 @@ export default function SequencesPage() {
                   className="flex-1 sm:flex-none rounded-xl border border-rose-500/30 bg-rose-500/15 dark:bg-rose-500/15 px-4 py-2.5 text-xs font-bold text-rose-600 dark:text-rose-400 hover:bg-rose-600 hover:text-white dark:hover:bg-rose-600 dark:hover:text-white transition-all cursor-pointer shadow-sm text-center"
                 >
                   Delete sequence
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Mobile Action Bottom Sheet for Sequence Options */}
+      <AnimatePresence>
+        {mobileActionSeq && (
+          <motion.div
+            key="mobile-action-sheet-container"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 z-50 flex flex-col justify-end sm:hidden"
+          >
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="fixed inset-0 bg-black/60 backdrop-blur-[2px]"
+              onClick={() => setMobileActionSeq(null)}
+            />
+
+            {/* Bottom Sheet Drawer */}
+            <motion.div
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "100%" }}
+              transition={{ type: "spring", damping: 30, stiffness: 320 }}
+              className="relative z-10 w-full max-h-[85vh] overflow-y-auto rounded-t-[28px] border-t border-zinc-200 dark:border-white/10 bg-white/95 dark:bg-[#141417]/95 backdrop-blur-xl p-5 text-zinc-900 dark:text-white shadow-2xl space-y-3.5 pb-6"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Grab Handle */}
+              <div className="w-10 h-1 rounded-full bg-zinc-300 dark:bg-zinc-700 mx-auto -mt-1 mb-2 cursor-grab active:scale-95 transition-transform" />
+
+              {/* Header Info */}
+              <div className="flex items-center gap-3 min-w-0 px-1">
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#0066B2]/10 text-[#0066B2] dark:bg-[#0066B2]/20 dark:text-[#38BDF8]">
+                  <Rocket className="h-4.5 w-4.5" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <h3 className="text-sm font-bold text-zinc-900 dark:text-white truncate">
+                      {mobileActionSeq.name}
+                    </h3>
+                    <StatusBadge status={mobileActionSeq.status} />
+                  </div>
+                  <p className="text-[11px] text-zinc-500 dark:text-zinc-400 truncate">
+                    {mobileActionSeq.pageId ? `Attached to "${pages.find(p => p.id === mobileActionSeq.pageId)?.name || mobileActionSeq.name}"` : "Standalone sequence"}
+                  </p>
+                </div>
+              </div>
+
+              {/* Actions List */}
+              <div className="space-y-1">
+                <Link
+                  href={`/dashboard/sequences/${mobileActionSeq.id}`}
+                  onClick={() => setMobileActionSeq(null)}
+                  className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-xs font-semibold text-zinc-800 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-white/5 active:bg-zinc-100 dark:active:bg-white/10 transition"
+                >
+                  <Eye className="h-4 w-4 text-zinc-400" />
+                  <span>Open Sequence Editor</span>
+                </Link>
+
+                {mobileActionSeq.pageId && (
+                  <Link
+                    href={`/dashboard/leadmagnets/${mobileActionSeq.pageId}?tab=sequence`}
+                    onClick={() => setMobileActionSeq(null)}
+                    className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-xs font-semibold text-zinc-800 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-white/5 active:bg-zinc-100 dark:active:bg-white/10 transition"
+                  >
+                    <ExternalLink className="h-4 w-4 text-zinc-400" />
+                    <span>Edit in Lead Magnet Builder</span>
+                  </Link>
+                )}
+
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    handleToggleStatus(mobileActionSeq, e);
+                    setMobileActionSeq(null);
+                  }}
+                  className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-xs font-semibold text-zinc-800 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-white/5 active:bg-zinc-100 dark:active:bg-white/10 transition cursor-pointer text-left"
+                >
+                  {mobileActionSeq.status === "live" ? (
+                    <>
+                      <Pause className="h-4 w-4 text-amber-500" />
+                      <span>Pause Sequence</span>
+                    </>
+                  ) : (
+                    <>
+                      <Play className="h-4 w-4 text-emerald-500" />
+                      <span>Resume Sequence</span>
+                    </>
+                  )}
+                </button>
+
+                <Link
+                  href={`/dashboard/leads?search=${encodeURIComponent(mobileActionSeq.pageId ? pages.find(p => p.id === mobileActionSeq.pageId)?.name || mobileActionSeq.name : mobileActionSeq.name)}`}
+                  onClick={() => setMobileActionSeq(null)}
+                  className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-xs font-semibold text-zinc-800 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-white/5 active:bg-zinc-100 dark:active:bg-white/10 transition"
+                >
+                  <Users className="h-4 w-4 text-zinc-400" />
+                  <span>View Sequence Leads</span>
+                </Link>
+
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    handleDuplicate(mobileActionSeq, e);
+                    setMobileActionSeq(null);
+                  }}
+                  className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-xs font-semibold text-zinc-800 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-white/5 active:bg-zinc-100 dark:active:bg-white/10 transition cursor-pointer text-left"
+                >
+                  <Copy className="h-4 w-4 text-zinc-400" />
+                  <span>Duplicate Sequence</span>
+                </button>
+
+                <div className="my-1 border-t border-zinc-100 dark:border-white/5" />
+
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    const toDel = mobileActionSeq;
+                    setMobileActionSeq(null);
+                    handleDelete(toDel, e);
+                  }}
+                  className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-xs font-bold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 active:bg-rose-100 dark:active:bg-rose-950/60 transition cursor-pointer text-left"
+                >
+                  <Trash2 className="h-4 w-4 text-rose-500" />
+                  <span>Delete Sequence</span>
+                </button>
+              </div>
+
+              <div className="pt-1">
+                <button
+                  type="button"
+                  onClick={() => setMobileActionSeq(null)}
+                  className="w-full rounded-xl border border-zinc-200/80 dark:border-white/10 bg-zinc-100/90 dark:bg-[#1E1E24] py-2.5 text-xs font-bold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-200 dark:hover:bg-zinc-800 active:scale-[0.99] transition cursor-pointer text-center shadow-xs"
+                >
+                  Cancel
                 </button>
               </div>
             </motion.div>
