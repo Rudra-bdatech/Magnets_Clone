@@ -22,6 +22,7 @@ import {
   UserCheck,
   ChevronRight,
   TrendingUp,
+  Eye,
 } from "lucide-react";
 import AnalyticsChart, { type TimeRange } from "./analytics-chart";
 import MobileConversionCard from "./MobileConversionCard";
@@ -265,19 +266,58 @@ export default function AnalyticsLinearView({
     socialPct = 0;
   }
 
+  const analyticsKpiCards = [
+    {
+      id: "signups",
+      label: "Total Signups",
+      value: signupsCount.toLocaleString(),
+      sub: `${signupsCount} unique · ${statsInRange.signupsInRange} in range`,
+      icon: Users,
+      iconBg: "bg-[#EFF6FF] dark:bg-[#0066B2]/20",
+      iconColor: "text-[#0066B2] dark:text-[#38BDF8]",
+    },
+    {
+      id: "visits",
+      label: "Total Visits",
+      value: visitsCount.toLocaleString(),
+      sub: `${statsInRange.visitsInRange} in ${rangeLabel}`,
+      icon: Eye,
+      iconBg: "bg-violet-50 dark:bg-violet-500/20",
+      iconColor: "text-violet-600 dark:text-violet-400",
+    },
+    {
+      id: "conversion",
+      label: "Conversion Rate",
+      value: conversionRate,
+      sub: "Tracked conversions ÷ visits",
+      icon: TrendingUp,
+      iconBg: "bg-emerald-50 dark:bg-emerald-500/20",
+      iconColor: "text-emerald-600 dark:text-emerald-400",
+    },
+    {
+      id: "tracked",
+      label: "Tracked Conversions",
+      value: signupsCount.toLocaleString(),
+      sub: `${statsInRange.signupsInRange} in ${rangeLabel}`,
+      icon: CheckCircle2,
+      iconBg: "bg-amber-50 dark:bg-amber-500/20",
+      iconColor: "text-amber-600 dark:text-amber-400",
+    },
+  ];
+
   return (
     <motion.div
       variants={containerVariants}
       initial="hidden"
       animate="visible"
-      className="min-h-screen bg-gradient-to-b from-[#EFF6FF]/50 via-[#F8FBFF] to-[#F8FBFF] dark:bg-none dark:bg-[#09090B] text-zinc-900 dark:text-zinc-100 p-4 sm:p-6 lg:p-8 font-sans selection:bg-[#0066B2]/10 dark:selection:bg-white/10"
+      className="min-h-[calc(100vh-3.5rem)] bg-gradient-to-b from-[#EFF6FF]/40 via-[#F8FBFF] to-[#F8FBFF] dark:bg-none dark:bg-[#0B0B0D] text-zinc-900 dark:text-zinc-100 font-sans selection:bg-[#0066B2]/10 dark:selection:bg-white/10"
     >
-      <div className="max-w-[1600px] mx-auto space-y-6">
+      <div className="flex-1 px-3.5 py-6 sm:px-6 sm:py-7 lg:px-8 max-w-7xl mx-auto w-full flex flex-col gap-4">
 
         {/* 1. DESKTOP HEADER BAR */}
         <motion.header
           variants={itemVariants}
-          className="hidden md:flex flex-row items-center justify-between gap-4 pb-2"
+          className="hidden md:flex flex-row items-center justify-between gap-4"
         >
           <div className="space-y-1">
             <div className="flex items-center gap-3">
@@ -293,11 +333,11 @@ export default function AnalyticsLinearView({
                 ?
               </button>
             </div>
-            <p className="text-xs text-zinc-500 dark:text-zinc-400 font-medium">
-              {isPerMagnet
-                ? page?.name || "Magnet Analytics"
-                : `${account?.name || "LeadMagnets"} · Performance Dashboard`}
-            </p>
+            {isPerMagnet && page?.name && (
+              <p className="text-xs text-zinc-500 dark:text-zinc-400 font-medium">
+                {page.name}
+              </p>
+            )}
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
@@ -417,11 +457,11 @@ export default function AnalyticsLinearView({
             </div>
           </div>
 
-          <p className="text-xs text-zinc-500 dark:text-zinc-400 font-medium">
-            {isPerMagnet
-              ? page?.name || "Magnet Analytics"
-              : `${account?.name || "LeadMagnets"} · Performance`}
-          </p>
+          {isPerMagnet && page?.name && (
+            <p className="text-xs text-zinc-500 dark:text-zinc-400 font-medium">
+              {page.name}
+            </p>
+          )}
 
           {/* Timeframe & Export on Mobile */}
           <div className="flex items-center gap-2 pt-0.5">
@@ -464,140 +504,46 @@ export default function AnalyticsLinearView({
           </div>
         </motion.header>
 
-        {/* 2. DESKTOP CORE 4 METRIC CARDS */}
+        {/* 2. CORE 4 METRIC CARDS (Matches Dashboard Compact Horizontal Row) */}
         <motion.div
           variants={itemVariants}
-          className="hidden md:grid md:grid-cols-4 gap-3.5"
+          className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4"
         >
-          {/* Card 1: Visits */}
-          <motion.div
-            whileHover={{ y: -2 }}
-            className="rounded-2xl bg-white/80 dark:bg-[#0E0E11] border border-zinc-200/80 dark:border-white/[0.08] p-5 space-y-2.5 transition-all shadow-sm backdrop-blur-sm"
-          >
-            <div className="flex items-center justify-between">
-              <span className="text-[11px] font-mono tracking-wider uppercase text-zinc-500 dark:text-zinc-400">Visits</span>
-              <Sparkles className="h-3.5 w-3.5 text-[#0066B2] dark:text-cyan-400" />
-            </div>
-            <div>
-              <div className="text-3xl font-mono font-bold text-zinc-900 dark:text-white tracking-tight">{visitsCount}</div>
-              <div className="text-[11px] font-mono text-[#0066B2] dark:text-cyan-400 mt-1">
-                {statsInRange.visitsInRange} in {rangeLabel}
+          {analyticsKpiCards.map((card) => (
+            <div
+              key={card.id}
+              className="group relative h-full rounded-2xl border border-zinc-200/80 bg-white/90 dark:border-[#2e2e38] dark:bg-[#18181B]/90 p-3.5 sm:p-4 shadow-sm backdrop-blur-sm hover:border-[#0066B2]/40 dark:hover:border-[#38BDF8]/25 hover:shadow-md transition-all duration-200 overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5"
+            >
+              {/* Left on desktop / Top on mobile: Icon Badge */}
+              <div className="flex items-center justify-between sm:justify-start w-full sm:w-auto">
+                <div
+                  className={`flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl ${card.iconBg} ${card.iconColor}`}
+                >
+                  <card.icon className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
+                </div>
               </div>
-            </div>
-          </motion.div>
 
-          {/* Card 2: Total Signups */}
-          <motion.div
-            whileHover={{ y: -2 }}
-            className="rounded-2xl bg-white/80 dark:bg-[#0E0E11] border border-zinc-200/80 dark:border-white/[0.08] p-5 space-y-2.5 transition-all shadow-sm backdrop-blur-sm"
-          >
-            <div className="flex items-center justify-between">
-              <span className="text-[11px] font-mono tracking-wider uppercase text-zinc-500 dark:text-zinc-400">Total Signups</span>
-              <Users className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
-            </div>
-            <div>
-              <div className="text-3xl font-mono font-bold text-zinc-900 dark:text-white tracking-tight">{signupsCount}</div>
-              <div className="text-[11px] font-mono text-emerald-600 dark:text-emerald-400 mt-1 truncate">
-                {signupsCount} unique · {statsInRange.signupsInRange} in range
-              </div>
-            </div>
-          </motion.div>
+              {/* Right: Label, Value & Subtext */}
+              <div className="flex-1 min-w-0 w-full">
+                <div className="flex items-center justify-between gap-1">
+                  <p className="text-[10px] sm:text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-[#9B9085] leading-none whitespace-normal sm:truncate">
+                    {card.label}
+                  </p>
+                </div>
 
-          {/* Card 3: Conversion Rate */}
-          <motion.div
-            whileHover={{ y: -2 }}
-            className="rounded-2xl bg-white/80 dark:bg-[#0E0E11] border border-zinc-200/80 dark:border-white/[0.08] p-5 space-y-2.5 transition-all shadow-sm backdrop-blur-sm"
-          >
-            <div className="flex items-center justify-between">
-              <span className="text-[11px] font-mono tracking-wider uppercase text-zinc-500 dark:text-zinc-400">Conversion Rate</span>
-              <BarChart2 className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
-            </div>
-            <div>
-              <div className="text-3xl font-mono font-bold text-zinc-900 dark:text-white tracking-tight">{conversionRate}</div>
-              <div className="text-[11px] font-mono text-zinc-500 dark:text-zinc-400 mt-1">
-                Tracked conversions ÷ visits
-              </div>
-            </div>
-          </motion.div>
+                <p className="text-xl font-extrabold tabular-nums text-zinc-900 dark:text-white mt-1 leading-none tracking-tight">
+                  {card.value}
+                </p>
 
-          {/* Card 4: Tracked Conversions */}
-          <motion.div
-            whileHover={{ y: -2 }}
-            className="rounded-2xl bg-white/80 dark:bg-[#0E0E11] border border-zinc-200/80 dark:border-white/[0.08] p-5 space-y-2.5 transition-all shadow-sm backdrop-blur-sm"
-          >
-            <div className="flex items-center justify-between">
-              <span className="text-[11px] font-mono tracking-wider uppercase text-zinc-500 dark:text-zinc-400">Tracked Conversions</span>
-              <CheckCircle2 className="h-3.5 w-3.5 text-orange-600 dark:text-orange-400" />
-            </div>
-            <div>
-              <div className="text-3xl font-mono font-bold text-zinc-900 dark:text-white tracking-tight">{signupsCount}</div>
-              <div className="text-[11px] font-mono text-orange-600 dark:text-orange-400 mt-1">
-                {statsInRange.signupsInRange} in {rangeLabel}
+                <p className="mt-1 text-[10px] text-zinc-400 dark:text-[#9B9085] truncate">
+                  {card.sub}
+                </p>
               </div>
-            </div>
-          </motion.div>
-        </motion.div>
 
-        {/* 2. MOBILE 2x2 CORE METRIC GRID */}
-        <motion.div
-          variants={itemVariants}
-          className="grid md:hidden grid-cols-2 gap-2.5"
-        >
-          {/* Mobile Card 1: Visits */}
-          <div className="rounded-2xl bg-white/90 dark:bg-[#0E0E11] border border-zinc-200/80 dark:border-white/[0.08] p-3.5 space-y-1.5 shadow-xs">
-            <div className="flex items-center justify-between">
-              <span className="text-[10px] font-mono font-bold tracking-wider uppercase text-zinc-500 dark:text-zinc-400">Visits</span>
-              <Sparkles className="h-3.5 w-3.5 text-[#0066B2] dark:text-cyan-400" />
+              {/* Hover gradient overlay */}
+              <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0066B2]/[0.04] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             </div>
-            <div>
-              <div className="text-2xl font-mono font-bold text-zinc-900 dark:text-white tracking-tight">{visitsCount}</div>
-              <div className="text-[10px] font-mono text-[#0066B2] dark:text-cyan-400 mt-0.5 truncate">
-                {statsInRange.visitsInRange} in {rangeLabel}
-              </div>
-            </div>
-          </div>
-
-          {/* Mobile Card 2: Total Signups */}
-          <div className="rounded-2xl bg-white/90 dark:bg-[#0E0E11] border border-zinc-200/80 dark:border-white/[0.08] p-3.5 space-y-1.5 shadow-xs">
-            <div className="flex items-center justify-between">
-              <span className="text-[10px] font-mono font-bold tracking-wider uppercase text-zinc-500 dark:text-zinc-400">Signups</span>
-              <Users className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
-            </div>
-            <div>
-              <div className="text-2xl font-mono font-bold text-zinc-900 dark:text-white tracking-tight">{signupsCount}</div>
-              <div className="text-[10px] font-mono text-emerald-600 dark:text-emerald-400 mt-0.5 truncate">
-                {statsInRange.signupsInRange} in range
-              </div>
-            </div>
-          </div>
-
-          {/* Mobile Card 3: Conversion Rate */}
-          <div className="rounded-2xl bg-white/90 dark:bg-[#0E0E11] border border-zinc-200/80 dark:border-white/[0.08] p-3.5 space-y-1.5 shadow-xs">
-            <div className="flex items-center justify-between">
-              <span className="text-[10px] font-mono font-bold tracking-wider uppercase text-zinc-500 dark:text-zinc-400">Conv. Rate</span>
-              <BarChart2 className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
-            </div>
-            <div>
-              <div className="text-2xl font-mono font-bold text-zinc-900 dark:text-white tracking-tight">{conversionRate}</div>
-              <div className="text-[10px] font-mono text-zinc-500 dark:text-zinc-400 mt-0.5 truncate">
-                Tracked ÷ visits
-              </div>
-            </div>
-          </div>
-
-          {/* Mobile Card 4: Tracked Conversions */}
-          <div className="rounded-2xl bg-white/90 dark:bg-[#0E0E11] border border-zinc-200/80 dark:border-white/[0.08] p-3.5 space-y-1.5 shadow-xs">
-            <div className="flex items-center justify-between">
-              <span className="text-[10px] font-mono font-bold tracking-wider uppercase text-zinc-500 dark:text-zinc-400">Conversions</span>
-              <CheckCircle2 className="h-3.5 w-3.5 text-orange-600 dark:text-orange-400" />
-            </div>
-            <div>
-              <div className="text-2xl font-mono font-bold text-zinc-900 dark:text-white tracking-tight">{signupsCount}</div>
-              <div className="text-[10px] font-mono text-orange-600 dark:text-orange-400 mt-0.5 truncate">
-                {statsInRange.signupsInRange} in {rangeLabel}
-              </div>
-            </div>
-          </div>
+          ))}
         </motion.div>
 
         {/* 3. VISITS OVER TIME (CHART CONTAINER) */}
