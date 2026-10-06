@@ -390,11 +390,11 @@ export default function PagesPage() {
 
   return (
     <>
-      <div className="flex flex-col min-h-[calc(100vh-3.5rem)] bg-zinc-50/50 dark:bg-[#0B0B0D]">
+      <div className="flex flex-col min-h-[calc(100vh-3.5rem)] bg-zinc-50/50 dark:bg-[#0B0B0D] w-full max-w-full overflow-x-hidden">
         {/* Top Executive Header */}
-        <div className="px-3.5 sm:px-6 pt-4 sm:pt-6 lg:px-8 border-b border-zinc-200/80 dark:border-zinc-800/60 bg-white/80 dark:bg-[#121215] dark:bg-opacity-85 backdrop-blur-md sticky top-0 z-30 shadow-xs">
+        <div className="px-3.5 sm:px-6 pt-4 sm:pt-6 lg:px-8 border-b border-zinc-200/80 dark:border-zinc-800/60 bg-white/80 dark:bg-[#121215] dark:bg-opacity-85 backdrop-blur-md sticky top-0 z-30 shadow-xs w-full max-w-full overflow-x-hidden">
           <div className="flex items-center justify-between gap-3 pb-4">
-            <div className="min-w-0">
+            <div className="min-w-0 flex-1">
               <h1 className="text-xl sm:text-2xl lg:text-3xl font-extrabold tracking-tight text-zinc-900 dark:text-white truncate">
                 Landing Page
               </h1>
@@ -413,70 +413,70 @@ export default function PagesPage() {
           </div>
 
           {/* Quick Metrics Bar */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 py-3 text-xs">
-            <div className="flex items-center gap-2.5 sm:gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-4 py-3 text-xs w-full max-w-full">
+            <div className="flex items-center gap-2 sm:gap-3 min-w-0">
               <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#EFF6FF] border border-[#0066B2]/15 dark:border-[#38BDF8]/20 dark:bg-[#0066B2]/15 text-[#0066B2] dark:text-[#38BDF8] shrink-0 shadow-2xs">
                 <Globe className="h-4 w-4" />
               </div>
-              <div className="min-w-0">
+              <div className="min-w-0 flex-1">
                 <p className="text-[10px] sm:text-[10.5px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider truncate">Active Pages</p>
-                <p className="text-sm sm:text-base font-bold text-zinc-900 dark:text-white leading-tight mt-0.5">{liveCount} <span className="text-xs font-normal text-zinc-400">/ {total}</span></p>
+                <p className="text-sm sm:text-base font-bold text-zinc-900 dark:text-white leading-tight mt-0.5 truncate">{liveCount} <span className="text-xs font-normal text-zinc-400">/ {total}</span></p>
               </div>
             </div>
 
-            <div className="flex items-center gap-2.5 sm:gap-3">
+            <div className="flex items-center gap-2 sm:gap-3 min-w-0">
               <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-50 border border-emerald-500/20 dark:border-emerald-500/20 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 shrink-0 shadow-2xs">
                 <Eye className="h-4 w-4" />
               </div>
-              <div className="min-w-0">
+              <div className="min-w-0 flex-1">
                 <p className="text-[10px] sm:text-[10.5px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider truncate">Total Traffic</p>
-                <p className="text-sm sm:text-base font-bold text-zinc-900 dark:text-white leading-tight mt-0.5">{totalViews.toLocaleString()}</p>
+                <p className="text-sm sm:text-base font-bold text-zinc-900 dark:text-white leading-tight mt-0.5 truncate">{totalViews.toLocaleString()}</p>
               </div>
             </div>
 
-            <div className="flex items-center gap-2.5 sm:gap-3">
+            <div className="flex items-center gap-2 sm:gap-3 min-w-0">
               <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-purple-50 border border-purple-500/20 dark:border-purple-500/20 dark:bg-purple-950/40 text-purple-600 dark:text-purple-400 shrink-0 shadow-2xs">
                 <MousePointerClick className="h-4 w-4" />
               </div>
-              <div className="min-w-0">
+              <div className="min-w-0 flex-1">
                 <p className="text-[10px] sm:text-[10.5px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider truncate">Leads Collected</p>
-                <p className="text-sm sm:text-base font-bold text-zinc-900 dark:text-white leading-tight mt-0.5">{totalSignups.toLocaleString()}</p>
+                <p className="text-sm sm:text-base font-bold text-zinc-900 dark:text-white leading-tight mt-0.5 truncate">{totalSignups.toLocaleString()}</p>
               </div>
             </div>
 
-            <div className="flex items-center gap-2.5 sm:gap-3">
+            <div className="flex items-center gap-2 sm:gap-3 min-w-0">
               <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-amber-50 border border-amber-500/20 dark:border-amber-500/20 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 shrink-0 shadow-2xs">
                 <TrendingUp className="h-4 w-4" />
               </div>
-              <div className="min-w-0">
+              <div className="min-w-0 flex-1">
                 <p className="text-[10px] sm:text-[10.5px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider truncate">Avg. Conv. Rate</p>
-                <p className="text-sm sm:text-base font-bold text-zinc-900 dark:text-white leading-tight mt-0.5">{avgConversion}%</p>
+                <p className="text-sm sm:text-base font-bold text-zinc-900 dark:text-white leading-tight mt-0.5 truncate">{avgConversion}%</p>
               </div>
             </div>
           </div>
         </div>
 
         {/* Main Split-Pane Workspace */}
-        <div className="flex-1 px-3.5 sm:px-6 py-4 sm:py-6 lg:px-8 flex flex-col lg:flex-row gap-4 sm:gap-6 items-start">
-          <div className="w-full lg:w-[65%] flex flex-col space-y-4">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              <div className="flex items-center gap-2 flex-1 rounded-xl bg-zinc-50 dark:bg-[#1C1C20] px-3.5 py-2 border border-zinc-200/60 dark:border-zinc-800 focus-within:border-[#0066B2] dark:focus-within:border-[#0066B2]">
+        <div className="flex-1 px-3.5 sm:px-6 py-4 sm:py-6 lg:px-8 flex flex-col lg:flex-row gap-4 sm:gap-6 items-start w-full max-w-full min-w-0 overflow-x-hidden">
+          <div className="w-full lg:w-[65%] flex flex-col space-y-4 min-w-0 max-w-full">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3 w-full max-w-full min-w-0">
+              <div className="flex items-center gap-2 flex-1 rounded-xl bg-zinc-50 dark:bg-[#1C1C20] px-3.5 py-2 border border-zinc-200/60 dark:border-zinc-800 focus-within:border-[#0066B2] dark:focus-within:border-[#0066B2] min-w-0">
                 <Search className="h-4 w-4 text-zinc-400 shrink-0" />
                 <input
                   type="text"
                   placeholder="Filter lead magnets by title or slug..."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  className="bg-transparent text-xs text-zinc-900 dark:text-white outline-none placeholder:text-zinc-400 w-full"
+                  className="bg-transparent text-xs text-zinc-900 dark:text-white outline-none placeholder:text-zinc-400 w-full min-w-0"
                 />
                 {search && (
-                  <button onClick={() => setSearch("")} className="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200">
+                  <button onClick={() => setSearch("")} className="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 shrink-0">
                     <X className="h-3.5 w-3.5" />
                   </button>
                 )}
               </div>
 
-              <div className="flex items-center gap-2 shrink-0 justify-between sm:justify-end">
+              <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 justify-between sm:justify-end w-full sm:w-auto min-w-0">
                 <div className="flex items-center p-1 bg-zinc-100 dark:bg-[#1C1C20] rounded-xl text-xs font-semibold">
                   {[
                     { id: "all", label: `All (${total})` },
@@ -1213,7 +1213,7 @@ export default function PagesPage() {
       {/* Mobile Slide-Up Inspector Bottom Sheet Drawer */}
       <AnimatePresence>
         {mobileInspectorOpen && activePage && (
-          <div className="fixed inset-0 z-50 lg:hidden flex flex-col justify-end">
+          <div className="fixed inset-0 z-50 lg:hidden flex flex-col justify-end overflow-hidden w-full max-w-full">
             {/* Backdrop with Subtle Soft Blur */}
             <motion.div
               initial={{ opacity: 0 }}
@@ -1230,7 +1230,7 @@ export default function PagesPage() {
               animate={{ y: 0 }}
               exit={{ y: "100%" }}
               transition={{ type: "spring", damping: 30, stiffness: 320 }}
-              className="relative z-10 w-full max-h-[85vh] overflow-y-auto rounded-t-[28px] border-t border-zinc-200 dark:border-white/10 bg-white/95 dark:bg-[#141417]/95 backdrop-blur-xl p-5 shadow-2xl space-y-5"
+              className="relative z-10 w-full max-w-full max-h-[85vh] overflow-y-auto overflow-x-hidden rounded-t-[28px] border-t border-zinc-200 dark:border-white/10 bg-white/95 dark:bg-[#141417]/95 backdrop-blur-xl p-4 sm:p-5 shadow-2xl space-y-4 sm:space-y-5"
               onClick={(e) => e.stopPropagation()}
             >
               {/* Grab Handle */}

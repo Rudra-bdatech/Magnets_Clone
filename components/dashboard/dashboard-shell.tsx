@@ -367,7 +367,7 @@ export default function DashboardShell({
       triggerRadius="8px"
       contentRadius="20px"
     >
-      <div className="dashboard-canvas flex min-h-screen relative">
+      <div className="dashboard-canvas flex min-h-screen relative w-full max-w-full overflow-x-hidden">
 
         <aside className="shadow-sm hidden h-screen w-[14.5rem] shrink-0 flex-col border-r border-[#E0EDFB] bg-[#F0F7FF] text-zinc-900 sticky top-0 md:flex z-50 dark:border-white/10 dark:bg-[#18181B] dark:text-[#9B9085]">
           <div className="flex shrink-0 items-center px-3.5 pt-3 pb-1">
@@ -951,8 +951,8 @@ export default function DashboardShell({
         )}
       </AnimatePresence>
 
-        <div className="flex min-h-screen min-w-0 flex-1 flex-col bg-[#FAFAFA] dark:bg-[#0E0E10]">
-          <header className="dashboard-chrome sticky top-0 z-30 flex h-12 shrink-0 items-center justify-between border-b border-zinc-200/70 bg-white/75 dark:bg-[#141417]/75 dark:border-white/10 backdrop-blur-xl supports-[backdrop-filter]:bg-white/60 dark:supports-[backdrop-filter]:bg-[#141417]/60 px-4 sm:px-6 md:hidden transition-colors">
+        <div className="flex min-h-screen min-w-0 flex-1 flex-col bg-[#FAFAFA] dark:bg-[#0E0E10] w-full max-w-full overflow-x-hidden">
+          <header className="dashboard-chrome sticky top-0 z-30 flex h-12 shrink-0 items-center justify-between border-b border-zinc-200/70 bg-white/75 dark:bg-[#141417]/75 dark:border-white/10 backdrop-blur-xl supports-[backdrop-filter]:bg-white/60 dark:supports-[backdrop-filter]:bg-[#141417]/60 px-4 sm:px-6 md:hidden transition-colors w-full max-w-full">
             <div className="flex items-center gap-2.5">
               <button
                 aria-label="Open menu"
@@ -969,7 +969,7 @@ export default function DashboardShell({
               <ThemeToggle />
             </div>
           </header>
-          <main className="min-w-0 flex-1 bg-[#FAFAF8] dark:bg-[#0E0E10]">
+          <main className="min-w-0 flex-1 bg-[#FAFAF8] dark:bg-[#0E0E10] w-full max-w-full overflow-x-hidden">
             <AnimatePresence mode="wait">
               <motion.div
                 key={pathname}
@@ -977,7 +977,7 @@ export default function DashboardShell({
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: -6, scale: 0.99 }}
                 transition={{ duration: 0.10, ease: [0.16, 1, 0.3, 1] }}
-                className="w-full h-full"
+                className="w-full h-full max-w-full overflow-x-hidden"
               >
                 {children}
               </motion.div>

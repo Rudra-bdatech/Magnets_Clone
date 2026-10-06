@@ -11,6 +11,13 @@
   font-family: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
+html,
+body {
+  max-width: 100%;
+  overflow-x: hidden;
+  position: relative;
+}
+
 /* Lenis Smooth Scroll CSS */
 html.lenis,
 html.lenis body {
