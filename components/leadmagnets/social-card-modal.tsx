@@ -512,23 +512,23 @@ export default function SocialCardModal({
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: 120 }}
         transition={{ type: "spring", damping: 30, stiffness: 360, mass: 0.8 }}
-        className="relative w-full max-w-4xl h-[92vh] sm:h-[88vh] max-h-[92vh] flex flex-col overflow-hidden rounded-t-3xl sm:rounded-2xl border-t sm:border border-zinc-200 bg-white shadow-2xl dark:border-[#27272A] dark:bg-[#121215] overscroll-contain mt-auto sm:mt-0"
+        className="relative w-full max-w-4xl h-[96vh] sm:h-[88vh] max-h-[96vh] flex flex-col overflow-hidden rounded-t-3xl sm:rounded-2xl border-t sm:border border-zinc-200 bg-white shadow-2xl dark:border-[#27272A] dark:bg-[#121215] overscroll-contain mt-auto sm:mt-0"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Mobile Bottom Sheet Grab Handle */}
-        <div className="sm:hidden flex justify-center pb-1 pt-2 shrink-0 bg-white dark:bg-[#121215]">
-          <div className="h-1.5 w-12 rounded-full bg-zinc-300 dark:bg-zinc-700/80" />
+        <div className="sm:hidden flex justify-center pb-0.5 pt-1.5 shrink-0 bg-white dark:bg-[#121215]">
+          <div className="h-1 w-10 rounded-full bg-zinc-300 dark:bg-zinc-700/80" />
         </div>
         {/* Header Bar */}
-        <div className="flex items-center justify-between border-b border-zinc-200 dark:border-[#27272A] px-3.5 py-3 sm:px-5 sm:py-3.5 bg-white dark:bg-[#121215] shrink-0">
-          <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
-            <span className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-xl bg-indigo-500/10 text-indigo-500 border border-indigo-500/20 dark:bg-indigo-950/50 shrink-0">
-              <ImageIcon className="h-4 w-4 sm:h-5 sm:w-5" />
+        <div className="flex items-center justify-between border-b border-zinc-200 dark:border-[#27272A] px-3.5 py-2 sm:px-5 sm:py-3.5 bg-white dark:bg-[#121215] shrink-0">
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+            <span className="flex h-7 w-7 sm:h-9 sm:w-9 items-center justify-center rounded-xl bg-indigo-500/10 text-indigo-500 border border-indigo-500/20 dark:bg-indigo-950/50 shrink-0">
+              <ImageIcon className="h-3.5 w-3.5 sm:h-5 sm:w-5" />
             </span>
             <div className="min-w-0">
-              <h3 className="text-sm sm:text-base font-bold text-zinc-900 dark:text-white flex items-center gap-1.5 truncate">
+              <h3 className="text-xs sm:text-base font-bold text-zinc-900 dark:text-white flex items-center gap-1.5 truncate">
                 Social Card Studio
-                <span className="rounded-full bg-emerald-500/10 px-1.5 py-0.5 text-[9px] font-bold text-emerald-600 dark:text-emerald-400 shrink-0">
+                <span className="rounded-full bg-emerald-500/10 px-1.5 py-0.5 text-[8px] sm:text-[9px] font-bold text-emerald-600 dark:text-emerald-400 shrink-0">
                   LIVE
                 </span>
               </h3>
@@ -542,12 +542,12 @@ export default function SocialCardModal({
             onClick={onClose}
             className="rounded-lg p-1.5 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-700 dark:hover:bg-[#27272A] dark:hover:text-white transition cursor-pointer shrink-0"
           >
-            <X className="h-5 w-5" />
+            <X className="h-4 w-4 sm:h-5 sm:w-5" />
           </button>
         </div>
 
         {/* Studio Sub-Navigation Tabs & Format Selector */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-zinc-200 dark:border-[#27272A] bg-zinc-50/80 dark:bg-[#18181C] px-3 sm:px-5 py-2 shrink-0">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 sm:gap-2 border-b border-zinc-200 dark:border-[#27272A] bg-zinc-50/80 dark:bg-[#18181C] px-3 sm:px-5 py-1.5 sm:py-2 shrink-0">
           {/* Category Tabs */}
           <div className="flex items-center gap-1 overflow-x-auto scrollbar-none">
             {[
@@ -596,7 +596,7 @@ export default function SocialCardModal({
         </div>
 
         {/* Tab Controls Bar */}
-        <div className="border-b border-zinc-200 dark:border-[#27272A] bg-white px-3 sm:px-5 py-2.5 dark:bg-[#121215] overflow-x-auto shrink-0">
+        <div className="border-b border-zinc-200 dark:border-[#27272A] bg-white px-3 sm:px-5 py-2 sm:py-2.5 dark:bg-[#121215] overflow-x-auto shrink-0">
           {activeTab === "styles" && (
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 text-xs">
               {/* Mobile: Clean Side-by-Side Dropdowns for Theme & Font (sm:hidden) */}
@@ -688,9 +688,9 @@ export default function SocialCardModal({
           )}
 
           {activeTab === "content" && (
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-xs">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
               <div>
-                <label className="block text-[11px] font-semibold text-zinc-600 dark:text-zinc-400 mb-1">
+                <label className="block text-[10px] sm:text-[11px] font-semibold text-zinc-600 dark:text-zinc-400 mb-0.5 sm:mb-1">
                   Card Headline / Hook:
                 </label>
                 <input
@@ -703,7 +703,7 @@ export default function SocialCardModal({
               </div>
 
               <div>
-                <label className="block text-[11px] font-semibold text-zinc-600 dark:text-zinc-400 mb-1">
+                <label className="block text-[10px] sm:text-[11px] font-semibold text-zinc-600 dark:text-zinc-400 mb-0.5 sm:mb-1">
                   Card Subtitle:
                 </label>
                 <input
@@ -716,7 +716,7 @@ export default function SocialCardModal({
               </div>
 
               <div>
-                <label className="block text-[11px] font-semibold text-zinc-600 dark:text-zinc-400 mb-1">
+                <label className="block text-[10px] sm:text-[11px] font-semibold text-zinc-600 dark:text-zinc-400 mb-0.5 sm:mb-1">
                   Badge Tag:
                 </label>
                 <div className="flex items-center gap-1">
@@ -787,8 +787,8 @@ export default function SocialCardModal({
         </div>
 
         {/* Visual Live Card Canvas / DOM Preview Container */}
-        <div className="flex-1 min-h-[200px] overflow-y-auto overscroll-contain touch-pan-y p-3 sm:p-6 flex flex-col items-center justify-center bg-zinc-950/95 relative">
-          <div className="w-full flex items-center justify-center">
+        <div className="flex-1 min-h-[160px] overflow-y-auto overscroll-contain touch-pan-y p-3 sm:p-6 flex flex-col items-center justify-start bg-zinc-950/95 relative">
+          <div className="w-full my-auto flex items-center justify-center py-2 shrink-0">
             <div
               ref={cardRef}
               style={{
@@ -804,10 +804,10 @@ export default function SocialCardModal({
                         : undefined),
               }}
               className={`flex flex-col justify-between rounded-2xl sm:rounded-3xl shadow-2xl transition-all duration-300 relative overflow-hidden w-full ${isLandscape
-                ? "max-w-[340px] sm:max-w-[480px] md:max-w-[540px] aspect-[16/9] p-3.5 sm:p-5"
+                ? "max-w-[300px] xs:max-w-[340px] sm:max-w-[480px] md:max-w-[540px] aspect-[16/9] p-3 sm:p-5"
                 : format === "story"
-                  ? "max-w-[220px] sm:max-w-[280px] md:max-w-[340px] aspect-[9/16] p-4 sm:p-7"
-                  : "max-w-[290px] sm:max-w-[350px] md:max-w-[400px] aspect-square p-4 sm:p-6"
+                  ? "max-w-[175px] xs:max-w-[200px] sm:max-w-[230px] md:max-w-[250px] aspect-[9/16] p-3 sm:p-5"
+                  : "max-w-[240px] xs:max-w-[280px] sm:max-w-[340px] md:max-w-[380px] aspect-square p-3.5 sm:p-6"
                 } ${theme === "dark"
                   ? "bg-slate-900 text-white border border-slate-800"
                   : theme === "gradient"
@@ -821,38 +821,38 @@ export default function SocialCardModal({
               <div className="flex flex-col min-h-0">
                 <div>
                   <span
-                    className={`inline-flex items-center gap-1 rounded-full font-bold uppercase tracking-wider ${isLandscape ? "px-2 py-0.5 text-[9px]" : "px-2.5 py-0.5 sm:px-3 sm:py-1 text-[10px] sm:text-xs"
+                    className={`inline-flex items-center gap-1 rounded-full font-bold uppercase tracking-wider ${isLandscape ? "px-2 py-0.5 text-[8px] sm:text-[9px]" : "px-2 py-0.5 sm:px-2.5 sm:py-1 text-[8px] sm:text-[10px]"
                       } ${theme === "minimal"
                         ? "bg-indigo-500/10 text-indigo-600"
                         : "bg-white/20 text-white backdrop-blur-md"
                       }`}
                   >
-                    <Sparkles className={isLandscape ? "h-2.5 w-2.5" : "h-3 w-3"} /> {badgeText}
+                    <Sparkles className={isLandscape ? "h-2 w-2 sm:h-2.5 sm:w-2.5" : "h-2.5 w-2.5 sm:h-3 sm:w-3"} /> {badgeText}
                   </span>
                 </div>
 
-                <h4 className={`font-black leading-tight tracking-tight ${isLandscape ? "mt-1.5 text-xs sm:text-base line-clamp-2" : "mt-2 sm:mt-3 text-sm sm:text-lg md:text-xl line-clamp-2"
+                <h4 className={`font-black leading-tight tracking-tight ${isLandscape ? "mt-1 text-[11px] sm:text-base line-clamp-2" : format === "story" ? "mt-1.5 sm:mt-2.5 text-xs sm:text-base md:text-lg line-clamp-2" : "mt-2 sm:mt-3 text-sm sm:text-lg md:text-xl line-clamp-2"
                   }`}>
                   {cardHeadline}
                 </h4>
 
                 {cardSubheadline && (
-                  <p className={`leading-snug opacity-90 font-medium ${isLandscape ? "mt-0.5 text-[10px] sm:text-xs line-clamp-1" : "mt-1 text-[11px] sm:text-xs line-clamp-2"
+                  <p className={`leading-snug opacity-90 font-medium ${isLandscape ? "mt-0.5 text-[8px] sm:text-xs line-clamp-1" : "mt-0.5 sm:mt-1 text-[9px] sm:text-xs line-clamp-2"
                     }`}>
-                  {cardSubheadline}
+                    {cardSubheadline}
                   </p>
                 )}
 
                 {/* Bullets Highlight Box */}
                 {showBullets && (
                   <div className={`backdrop-blur-md border ${isLandscape
-                    ? "mt-1.5 rounded-lg p-2"
-                    : "mt-2 sm:mt-3 rounded-xl p-2.5 sm:p-3"
+                    ? "mt-1 rounded-lg p-1.5"
+                    : "mt-1.5 sm:mt-2.5 rounded-xl p-2 sm:p-2.5"
                     } ${theme === "minimal"
                       ? "bg-zinc-50 border-zinc-200 text-zinc-900"
                       : "bg-white/10 border-white/20 text-white"
                     }`}>
-                    <div className={`font-semibold ${isLandscape ? "space-y-0.5 text-[9px] sm:text-[10px]" : "space-y-1 sm:space-y-1.5 text-[10px] sm:text-xs"
+                    <div className={`font-semibold ${isLandscape ? "space-y-0.5 text-[8px] sm:text-[10px]" : "space-y-0.5 sm:space-y-1 text-[8.5px] sm:text-[11px]"
                       }`}>
                       {(page.bullets && page.bullets.length > 0
                         ? page.bullets.slice(0, 2)
@@ -872,17 +872,17 @@ export default function SocialCardModal({
               </div>
 
               {/* Card Footer Bar */}
-              <div className={`flex items-center justify-between gap-1.5 border-t border-current/20 shrink-0 ${isLandscape ? "mt-1.5 pt-1.5" : "mt-2.5 pt-2 sm:mt-3 sm:pt-2.5"
+              <div className={`flex items-center justify-between gap-1.5 border-t border-current/20 shrink-0 ${isLandscape ? "mt-1 pt-1" : "mt-1.5 pt-1.5 sm:mt-2.5 sm:pt-2"
                 }`}>
                 {showAvatar ? (
                   <div className="min-w-0">
-                    <p className={`font-bold truncate ${isLandscape ? "text-[10px]" : "text-[11px] sm:text-xs"}`}>By {creatorName}</p>
-                    <p className={`opacity-75 truncate ${isLandscape ? "text-[8px]" : "text-[9px] sm:text-[10px]"}`}>@{username}</p>
+                    <p className={`font-bold truncate ${isLandscape ? "text-[8px] sm:text-[10px]" : "text-[9px] sm:text-[11px]"}`}>By {creatorName}</p>
+                    <p className={`opacity-75 truncate ${isLandscape ? "text-[7px] sm:text-[8px]" : "text-[8px] sm:text-[9.5px]"}`}>@{username}</p>
                   </div>
                 ) : <div />}
 
                 {showUrlPill && (
-                  <span className={`rounded-lg bg-white font-bold text-indigo-600 shadow-sm shrink-0 ${isLandscape ? "px-2 py-0.5 text-[9px]" : "px-2.5 py-1 text-[10px] sm:text-xs"
+                  <span className={`rounded-lg bg-white font-bold text-indigo-600 shadow-sm shrink-0 ${isLandscape ? "px-1.5 py-0.5 text-[8px] sm:text-[9px]" : "px-2 py-0.5 sm:px-2 sm:py-0.5 text-[8.5px] sm:text-[10px]"
                     }`}>
                     {cleanUrlDisplay}
                   </span>
