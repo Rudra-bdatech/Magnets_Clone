@@ -883,15 +883,14 @@ export default function ResourcesPage() {
           )}
 
           {/* ========================================================================= */}
-          {/* Main Table Card Container (Standardized 16px gap to match Dashboard)     */}
+          {/* Main Table & Filter Container (Standardized 16px gap to match Dashboard)   */}
           {/* ========================================================================= */}
           {resources.length > 0 && (
-            <div className="rounded-2xl border border-zinc-200/80 bg-white/90 dark:border-[#2e2e38] dark:bg-[#18181B]/90 shadow-sm backdrop-blur-sm relative overflow-hidden">
+            <>
               {/* ===================================================================== */}
-              {/* Universal Responsive Search, Filter & Sort Toolbar                     */}
+              {/* 3. Search, Filter & Sort Toolbar (Floating Controls Row)              */}
               {/* ===================================================================== */}
-              <div className="p-3 sm:p-4 border-b border-zinc-200/80 dark:border-[#2e2e38]">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3 w-full max-w-full min-w-0">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3 w-full max-w-full min-w-0">
                   {/* Search Bar */}
                   <div className="flex items-center gap-2 flex-1 rounded-xl bg-zinc-50 dark:bg-[#1C1C20] px-3.5 py-2 border border-zinc-200/60 dark:border-zinc-800 focus-within:border-[#0066B2] dark:focus-within:border-[#0066B2] min-w-0">
                     <Search className="h-4 w-4 text-zinc-400 shrink-0" />
@@ -1118,44 +1117,47 @@ export default function ResourcesPage() {
                     </div>
                   </div>
                 </div>
-              </div>
 
-              {/* Mobile Select All Strip when in selection mode */}
-              <AnimatePresence>
-                {isMobileSelectionMode && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: "auto", opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    transition={{ type: "spring", stiffness: 450, damping: 35 }}
-                    className="md:hidden overflow-hidden border-b border-zinc-200/80 bg-zinc-50/90 dark:border-[#2e2e38] dark:bg-white/[0.03]"
-                  >
-                    <div className="px-3.5 py-2.5 flex items-center justify-between">
-                      <div
-                        onClick={toggleSelectAll}
-                        className="flex items-center gap-2.5 cursor-pointer select-none"
-                      >
-                        <AppleCheckbox
-                          checked={filteredResources.length > 0 && selectedResourceIds.length === filteredResources.length}
-                          onChange={toggleSelectAll}
-                          title="Select All"
-                        />
-                        <span className="font-bold text-xs text-zinc-900 dark:text-white">
-                          Select All ({filteredResources.length})
+              {/* ========================================================================= */}
+              {/* 4. Table & Cards Data Container (Standalone Separated Card)               */}
+              {/* ========================================================================= */}
+              <div className="rounded-2xl border border-zinc-200/80 bg-white/90 dark:border-[#2e2e38] dark:bg-[#18181B]/90 shadow-sm backdrop-blur-sm relative overflow-hidden">
+                {/* Mobile Select All Strip when in selection mode */}
+                <AnimatePresence>
+                  {isMobileSelectionMode && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ type: "spring", stiffness: 450, damping: 35 }}
+                      className="md:hidden overflow-hidden border-b border-zinc-200/80 bg-zinc-50/90 dark:border-[#2e2e38] dark:bg-white/[0.03]"
+                    >
+                      <div className="px-3.5 py-2.5 flex items-center justify-between">
+                        <div
+                          onClick={toggleSelectAll}
+                          className="flex items-center gap-2.5 cursor-pointer select-none"
+                        >
+                          <AppleCheckbox
+                            checked={filteredResources.length > 0 && selectedResourceIds.length === filteredResources.length}
+                            onChange={toggleSelectAll}
+                            title="Select All"
+                          />
+                          <span className="font-bold text-xs text-zinc-900 dark:text-white">
+                            Select All ({filteredResources.length})
+                          </span>
+                        </div>
+                        <span className="text-xs text-zinc-500 font-medium">
+                          {selectedResourceIds.length} selected
                         </span>
                       </div>
-                      <span className="text-xs text-zinc-500 font-medium">
-                        {selectedResourceIds.length} selected
-                      </span>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
 
-            {/* ========================================================================= */}
-            {/* Table / List Body                                                         */}
-            {/* ========================================================================= */}
-            <div>
+                {/* ========================================================================= */}
+                {/* Table / List Body                                                         */}
+                {/* ========================================================================= */}
+                <div>
               {filteredResources.length === 0 ? (
                   <div className="py-12 text-center">
                     <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-xl bg-[#EFF6FF] text-[#0066B2] dark:bg-[#0066B2]/20 dark:text-[#38BDF8]">
@@ -1450,7 +1452,8 @@ export default function ResourcesPage() {
                 )}
               </div>
             </div>
-          )}
+          </>
+        )}
         </div>
 
         {/* ========================================================================= */}
