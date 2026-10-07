@@ -39,15 +39,19 @@ import { TableHeader } from "@tiptap/extension-table-header";
 import { TextAlign } from "@tiptap/extension-text-align";
 import { type Account } from "@/lib/data";
 import { loadResources } from "@/lib/store";
+import { WheelPicker } from "@/components/motion/wheel-picker";
 
 export interface SequenceEmailItem {
   id: string;
   subject: string;
   delayDays: number;
-  delayUnit?: "hours" | "minutes";
+  delayUnit?: "hours" | "minutes" | "days";
   previewText?: string;
   body: string;
 }
+
+const DELAY_UNITS = ["minutes", "hours", "days"] as const;
+const DELAY_NUMBERS = Array.from({ length: 60 }, (_, i) => String(i + 1));
 
 export interface SequenceTabProps {
   account: Account | null;
@@ -90,6 +94,20 @@ export default function SequenceTab({
   const [showInsertResourceMenu, setShowInsertResourceMenu] = useState(false);
   const [hostedResources, setHostedResources] = useState<any[]>(initialResources || []);
   const toolbarRef = useRef<HTMLDivElement>(null);
+  const wheelCardRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = wheelCardRef.current;
+    if (!el) return;
+    const preventBackgroundScroll = (e: WheelEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+    };
+    el.addEventListener("wheel", preventBackgroundScroll, { passive: false });
+    return () => {
+      el.removeEventListener("wheel", preventBackgroundScroll);
+    };
+  }, []);
 
   const activeEmail = sequenceEmails[selectedSequenceIndex] || sequenceEmails[0];
 
@@ -287,7 +305,19 @@ export default function SequenceTab({
                           </span>
                         </div>
                         <span className="block text-[11px] text-zinc-400 font-normal truncate mt-0.5 ml-5.5">
-                          {item.delayDays || 1} {item.delayUnit || "hours"} delay
+                          {item.delayDays || 1}{" "}
+                          {item.delayUnit === "minutes"
+                            ? Number(item.delayDays || 1) === 1
+                              ? "minute"
+                              : "minutes"
+                            : item.delayUnit === "days"
+                            ? Number(item.delayDays || 1) === 1
+                              ? "day"
+                              : "days"
+                            : Number(item.delayDays || 1) === 1
+                            ? "hour"
+                            : "hours"}{" "}
+                          delay
                         </span>
                       </div>
                       <button
@@ -357,55 +387,68 @@ export default function SequenceTab({
                 </div>
 
                 {/* Delay */}
-                <div>
-                  <label className="text-xs font-semibold text-zinc-400 flex items-center gap-1.5 mb-1.5">
-                    <Clock className="h-3.5 w-3.5 text-zinc-400" />
-                    <span>Delay from previous email</span>
-                  </label>
-                  <div className="flex items-center gap-2 max-w-xs">
-                    <input
-                      type="number"
-                      min={1}
-                      max={365}
-                      disabled={!sequenceEnabled}
-                      value={activeEmail.delayDays === undefined || activeEmail.delayDays === null || (typeof activeEmail.delayDays === "number" && isNaN(activeEmail.delayDays)) || (activeEmail.delayDays as any) === "" ? "" : activeEmail.delayDays}
-                      onChange={(e) => {
-                        const raw = e.target.value;
-                        const val = raw === "" ? ("" as any) : isNaN(parseInt(raw, 10)) ? ("" as any) : parseInt(raw, 10);
-                        setSequenceEmails(sequenceEmails.map((item, idx) => idx === selectedSequenceIndex ? { ...item, delayDays: val } : item));
-                      }}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter") {
-                          e.preventDefault();
-                          (e.target as HTMLInputElement).blur();
-                        }
-                      }}
-                      onBlur={(e) => {
-                        const raw = String(e.target.value || "").trim();
-                        if (raw === "") {
-                          // Allow field to stay empty if cleared
-                          return;
-                        }
-                        const parsed = parseInt(raw, 10);
-                        if (!isNaN(parsed)) {
-                          const clamped = Math.max(1, Math.min(365, parsed));
-                          setSequenceEmails(sequenceEmails.map((item, idx) => idx === selectedSequenceIndex ? { ...item, delayDays: clamped } : item));
-                        }
-                      }}
-                      className={`w-24 rounded-xl border px-3 py-2 text-xs font-bold outline-none disabled:cursor-not-allowed ${(account?.themeMode || "light") === "dark" ? "border-[#27272A] bg-[#121216] text-white focus:border-[#0066B2]" : "border-zinc-200 bg-white text-zinc-900 focus:border-[#0066B2]"}`}
-                    />
-                    <select
-                      disabled={!sequenceEnabled}
-                      value={activeEmail.delayUnit || "hours"}
-                      onChange={(e) => {
-                        const unit = e.target.value as "hours" | "minutes";
-                        setSequenceEmails(sequenceEmails.map((item, idx) => idx === selectedSequenceIndex ? { ...item, delayUnit: unit } : item));
-                      }}
-                      className={`rounded-xl border px-3 py-2 text-xs font-bold outline-none cursor-pointer disabled:cursor-not-allowed ${(account?.themeMode || "light") === "dark" ? "border-[#27272A] bg-[#121216] text-white focus:border-[#0066B2]" : "border-zinc-200 bg-white text-zinc-900 focus:border-[#0066B2]"}`}
-                    >
-                      <option value="minutes">minutes</option>
-                      <option value="hours">hours</option>
-                    </select>
+                <div className="space-y-2.5">
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-semibold text-zinc-400 flex items-center gap-1.5">
+                      <Clock className="h-3.5 w-3.5 text-zinc-400" />
+                      <span>Delay from previous email</span>
+                    </label>
+                    <div className="flex items-center gap-2">
+                      <span className="text-[11px] text-zinc-400">
+                        Sending after:{" "}
+                        <span className="font-bold text-zinc-900 dark:text-white">
+                          {activeEmail?.delayDays || 1}{" "}
+                          {activeEmail?.delayUnit === "minutes"
+                            ? Number(activeEmail?.delayDays || 1) === 1
+                              ? "minute"
+                              : "minutes"
+                            : activeEmail?.delayUnit === "days"
+                            ? Number(activeEmail?.delayDays || 1) === 1
+                              ? "day"
+                              : "days"
+                            : Number(activeEmail?.delayDays || 1) === 1
+                            ? "hour"
+                            : "hours"}
+                        </span>
+                      </span>
+                    </div>
+                  </div>
+
+                  <div ref={wheelCardRef} className="w-full max-w-sm sm:max-w-md">
+                    {/* iOS Alarm Style Wide 3D Drum Wheel Picker */}
+                    <div className="relative flex items-stretch rounded-3xl border border-zinc-200 dark:border-[#27272A] bg-zinc-50/80 dark:bg-[#121216] p-2.5 shadow-xs overflow-hidden">
+                      {/* Shared horizontal center selection lens */}
+                      <div className="pointer-events-none absolute inset-x-2.5 top-1/2 -translate-y-1/2 h-[42px] rounded-xl bg-zinc-200/50 dark:bg-white/[0.06] border border-zinc-300/40 dark:border-white/10 z-0" />
+
+                      <WheelPicker
+                        options={DELAY_NUMBERS}
+                        value={String(activeEmail?.delayDays && activeEmail.delayDays > 0 ? activeEmail.delayDays : 1)}
+                        onValueChange={(val) => {
+                          const num = Math.max(1, parseInt(val, 10) || 1);
+                          setSequenceEmails(sequenceEmails.map((item, idx) => idx === selectedSequenceIndex ? { ...item, delayDays: num } : item));
+                        }}
+                        disabled={!sequenceEnabled}
+                        className="flex-1 border-0 bg-transparent text-base font-bold z-10"
+                        visibleCount={3}
+                        itemHeight={42}
+                        sound={true}
+                        aria-label="Delay Duration"
+                      />
+                      <div className="w-[1px] bg-zinc-200/60 dark:bg-zinc-800/80 my-3 z-20" />
+                      <WheelPicker
+                        options={DELAY_UNITS as unknown as string[]}
+                        value={activeEmail?.delayUnit || "hours"}
+                        onValueChange={(unit) => {
+                          setSequenceEmails(sequenceEmails.map((item, idx) => idx === selectedSequenceIndex ? { ...item, delayUnit: unit as "minutes" | "hours" | "days" } : item));
+                        }}
+                        disabled={!sequenceEnabled}
+                        className="flex-1 border-0 bg-transparent text-base font-bold z-10"
+                        visibleCount={3}
+                        itemHeight={42}
+                        sound={true}
+                        aria-label="Delay Unit"
+                      />
+                    </div>
                   </div>
                 </div>
 

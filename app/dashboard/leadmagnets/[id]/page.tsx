@@ -443,7 +443,7 @@ export default function EditLeadMagnetPage() {
   // Sequence State (Tab 3: Sequence)
   const [sequenceEnabled, setSequenceEnabled] = useState(page?.sequenceEnabled || false);
   const [stopOnCall, setStopOnCall] = useState(page?.stopOnCall !== undefined ? page.stopOnCall : true);
-  const [sequenceEmails, setSequenceEmails] = useState<{ id: string; subject: string; delayDays: number; delayUnit?: "hours" | "minutes"; previewText?: string; body: string }[]>(page?.sequenceEmails || []);
+  const [sequenceEmails, setSequenceEmails] = useState<{ id: string; subject: string; delayDays: number; delayUnit?: "hours" | "minutes" | "days"; previewText?: string; body: string }[]>(page?.sequenceEmails || []);
   const [selectedSequenceIndex, setSelectedSequenceIndex] = useState<number>(0);
   const [showSequencePreviewModal, setShowSequencePreviewModal] = useState(false);
   const [previewSequenceIndex, setPreviewSequenceIndex] = useState<number>(0);

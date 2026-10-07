@@ -7,7 +7,7 @@ interface SequenceEmail {
   id: string;
   subject: string;
   delayDays: number;
-  delayUnit?: "hours" | "minutes";
+  delayUnit?: "hours" | "minutes" | "days";
   previewText?: string;
   body: string;
 }
@@ -131,7 +131,7 @@ export default function SequencePreviewModal({
                     </span>
                   </div>
                   <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${isSelected ? "bg-white/20 text-white" : "bg-zinc-800/40 text-zinc-400"}`}>
-                    {item.delayDays || 1}{item.delayUnit === "minutes" ? "m" : "h"}
+                    {item.delayDays || 1}{item.delayUnit === "minutes" ? "m" : item.delayUnit === "days" ? "d" : "h"}
                   </span>
                 </div>
               );
