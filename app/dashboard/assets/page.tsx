@@ -24,7 +24,10 @@ import {
   Loader2,
   Plus,
   ChevronDown,
-  Pencil
+  Pencil,
+  SlidersHorizontal,
+  Filter,
+  CheckSquare,
 } from "lucide-react";
 import { syncWithDatabase, loadResources, loadAccount, loadPages, loadLeads } from "@/lib/store";
 import type { Account, MagnetPage, Lead } from "@/lib/data";
@@ -884,266 +887,232 @@ export default function ResourcesPage() {
               {/* ===================================================================== */}
               {/* Universal Responsive Search, Filter & Sort Toolbar                     */}
               {/* ===================================================================== */}
-              <div className="p-3 sm:p-4 border-b border-zinc-200/80 dark:border-[#2e2e38] flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-                {/* Desktop Category Tabs with Framer Motion Spring Pill */}
-                <div className="hidden md:block w-auto overflow-x-auto scrollbar-none">
-                  <div
-                    onMouseLeave={() => setHoveredCategory(null)}
-                    className="relative flex items-center gap-1 sm:gap-1.5 min-w-max"
-                  >
-                    {[
-                      { id: "all", label: "All Files", count: categoryCounts.all },
-                      { id: "docs", label: "Documents", count: categoryCounts.docs },
-                      { id: "images", label: "Images", count: categoryCounts.images },
-                      { id: "media", label: "Audio & Video", count: categoryCounts.media },
-                      { id: "archives", label: "Archives", count: categoryCounts.archives },
-                    ].map((tab) => {
-                      const isActive = activeCategory === tab.id;
-                      const isHovered = hoveredCategory === tab.id;
-
-                      return (
-                        <button
-                          key={tab.id}
-                          onClick={() => setActiveCategory(tab.id as any)}
-                          onMouseEnter={() => setHoveredCategory(tab.id)}
-                          className={`relative inline-flex items-center gap-1.5 whitespace-nowrap rounded-xl px-2.5 sm:px-3.5 py-1.5 text-[11px] sm:text-xs font-semibold transition-colors shrink-0 cursor-pointer ${
-                            isActive
-                              ? "text-white font-bold"
-                              : "text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white"
-                          }`}
-                        >
-                          {/* Active Tab Solid Sliding Pill */}
-                          {isActive && (
-                            <motion.div
-                              layoutId="activeAssetCategoryTab"
-                              transition={{ type: "spring", stiffness: 500, damping: 32 }}
-                              className="absolute inset-0 rounded-xl bg-[#0066B2] shadow-sm"
-                            />
-                          )}
-
-                          {/* Hover Morphing Pill */}
-                          {!isActive && isHovered && (
-                            <motion.div
-                              layoutId="hoverAssetCategoryTab"
-                              transition={{ type: "spring", stiffness: 500, damping: 32 }}
-                              className="absolute inset-0 rounded-xl bg-zinc-200/60 dark:bg-white/10"
-                            />
-                          )}
-
-                          <span className="relative z-10">{tab.label}</span>
-                          <span
-                            className={`relative z-10 rounded-full px-1.5 py-0.2 text-[9.5px] sm:text-[10px] font-extrabold transition-colors ${
-                              isActive
-                                ? "bg-white/20 text-white"
-                                : "bg-zinc-200/70 text-zinc-700 dark:bg-white/10 dark:text-zinc-300"
-                            }`}
-                          >
-                            {tab.count}
-                          </span>
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                {/* Right Controls: Search, Desktop Sort Dropdown, Mobile Unified Filter Dropdown, Mobile Select Button */}
-                <div className="flex items-center gap-2 w-full md:w-auto">
-                  {/* Search Input */}
-                  <div className="relative flex-1 sm:w-60">
-                    <Search className="absolute left-2.5 sm:left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-400" />
+              <div className="p-3 sm:p-4 border-b border-zinc-200/80 dark:border-[#2e2e38]">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3 w-full max-w-full min-w-0">
+                  {/* Search Bar */}
+                  <div className="flex items-center gap-2 flex-1 rounded-xl bg-zinc-50 dark:bg-[#1C1C20] px-3.5 py-2 border border-zinc-200/60 dark:border-zinc-800 focus-within:border-[#0066B2] dark:focus-within:border-[#0066B2] min-w-0">
+                    <Search className="h-4 w-4 text-zinc-400 shrink-0" />
                     <input
                       type="text"
-                      placeholder="Search files..."
+                      placeholder="Search files by name or type..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      className="w-full h-9 rounded-xl border border-zinc-200/90 bg-white pl-8 sm:pl-9 pr-7 text-xs text-zinc-900 placeholder-zinc-400 focus:border-[#0066B2] focus:outline-none dark:border-[#2e2e38] dark:bg-[#18181B] dark:text-white dark:placeholder-zinc-500 shadow-2xs"
+                      className="bg-transparent text-xs text-zinc-900 dark:text-white outline-none placeholder:text-zinc-400 w-full min-w-0"
                     />
                     {searchQuery && (
                       <button
                         type="button"
                         onClick={() => setSearchQuery("")}
-                        className="absolute right-2 top-1/2 -translate-y-1/2 p-0.5 rounded-full text-zinc-400 hover:text-zinc-600 dark:hover:text-white cursor-pointer"
+                        className="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 shrink-0 cursor-pointer"
                       >
-                        <X className="h-3 w-3" />
+                        <X className="h-3.5 w-3.5" />
                       </button>
                     )}
                   </div>
 
-                  {/* Desktop Sort Dropdown */}
-                  <div className="hidden md:block relative shrink-0" ref={sortRef}>
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setIsSortOpen((prev) => !prev);
-                      }}
-                      className="flex h-9 items-center justify-between gap-1.5 sm:gap-2 rounded-xl border border-zinc-200/80 bg-white/70 px-2.5 sm:px-3.5 text-xs font-semibold text-zinc-700 shadow-2xs backdrop-blur-md transition-all hover:bg-white/90 focus:outline-none dark:border-white/10 dark:bg-[#18181B]/80 dark:text-zinc-200 dark:hover:bg-[#222226] cursor-pointer select-none"
-                    >
-                      <span className="truncate max-w-[85px] sm:max-w-none">
-                        Sort: {sortBy === "newest" ? "Newest" : sortBy === "oldest" ? "Oldest" : sortBy === "size" ? "File Size" : "Name (A-Z)"}
-                      </span>
-                      <ChevronDown className={`h-3.5 w-3.5 text-zinc-400 transition-transform duration-300 shrink-0 ${isSortOpen ? "rotate-180" : ""}`} />
-                    </button>
-
-                    <AnimatePresence>
-                      {isSortOpen && (
-                        <motion.div
-                          initial={{ opacity: 0, scale: 0.96, y: -6 }}
-                          animate={{ opacity: 1, scale: 1, y: 0 }}
-                          exit={{ opacity: 0, scale: 0.96, y: -4 }}
-                          transition={{ type: "spring", damping: 28, stiffness: 400 }}
-                          style={{ transformOrigin: "top right" }}
-                          className="absolute right-0 top-full z-40 mt-1.5 w-52 max-w-[calc(100vw-2rem)] rounded-xl border border-zinc-200/80 bg-white/95 p-1.5 shadow-2xl backdrop-blur-xl dark:border-white/10 dark:bg-[#18181F]/95 dark:text-white dark:shadow-[0_8px_24px_rgba(0,0,0,0.6)]"
+                  <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 justify-between sm:justify-end w-full sm:w-auto min-w-0">
+                    {/* Desktop Category Tabs Pod */}
+                    <div className="hidden sm:flex items-center p-1 bg-zinc-100 dark:bg-[#1C1C20] rounded-xl text-xs font-semibold min-w-0">
+                      {[
+                        { id: "all", label: `All (${categoryCounts.all})` },
+                        { id: "docs", label: `Docs (${categoryCounts.docs})` },
+                        { id: "images", label: `Images (${categoryCounts.images})` },
+                        { id: "media", label: `Media (${categoryCounts.media})` },
+                        { id: "archives", label: `Archives (${categoryCounts.archives})` },
+                      ].map((tab) => (
+                        <button
+                          key={tab.id}
+                          type="button"
+                          onClick={() => setActiveCategory(tab.id as any)}
+                          className={`relative px-3 py-1 rounded-lg transition-colors duration-200 cursor-pointer ${
+                            activeCategory === tab.id
+                              ? "text-zinc-900 dark:text-white font-bold"
+                              : "text-zinc-500 hover:text-zinc-900 dark:hover:text-white"
+                          }`}
                         >
-                          <div className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
-                            Sort By
-                          </div>
-                          {[
-                            { id: "newest", label: "Newest First" },
-                            { id: "oldest", label: "Oldest First" },
-                            { id: "size", label: "File Size" },
-                            { id: "name", label: "Name (A-Z)" },
-                          ].map((opt) => (
-                            <button
-                              key={opt.id}
-                              type="button"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setSortBy(opt.id as any);
-                                setIsSortOpen(false);
-                              }}
-                              className={`flex w-full items-center justify-between rounded-lg px-2.5 py-2 text-xs font-medium transition-all cursor-pointer ${
-                                sortBy === opt.id
-                                  ? "bg-[#0066B2]/10 text-[#0066B2] font-bold dark:bg-[#38BDF8]/20 dark:text-[#38BDF8]"
-                                  : "text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-white/5"
-                              }`}
-                            >
-                              <span>{opt.label}</span>
-                              {sortBy === opt.id && <Check className="h-3.5 w-3.5 text-current shrink-0" />}
-                            </button>
-                          ))}
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </div>
+                          {activeCategory === tab.id && (
+                            <motion.div
+                              layoutId="activeAssetCategoryTab"
+                              className="absolute inset-0 bg-white dark:bg-[#2A2A30] rounded-lg shadow-xs"
+                              transition={{ type: "spring", stiffness: 500, damping: 32 }}
+                            />
+                          )}
+                          <span className="relative z-10">{tab.label}</span>
+                        </button>
+                      ))}
+                    </div>
 
-                  {/* Mobile All-In-One Filter & Sort Dropdown */}
-                  <div className="md:hidden relative shrink-0" ref={mobileFilterRef}>
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setIsMobileFilterOpen((prev) => !prev);
-                      }}
-                      className="flex h-9 items-center justify-between gap-1.5 rounded-xl border border-zinc-200/80 bg-white/80 px-2.5 text-xs font-semibold text-zinc-700 shadow-2xs backdrop-blur-md transition-all hover:bg-white focus:outline-none dark:border-white/10 dark:bg-[#18181B]/80 dark:text-zinc-200 dark:hover:bg-[#222226] cursor-pointer select-none"
-                    >
-                      <span className="truncate max-w-[90px] text-[11px] font-bold">
-                        {activeCategory === "all"
-                          ? "All Files"
-                          : activeCategory === "docs"
-                          ? "Documents"
-                          : activeCategory === "images"
-                          ? "Images"
-                          : activeCategory === "media"
-                          ? "Audio/Video"
-                          : "Archives"}
-                      </span>
-                      <ChevronDown className={`h-3.5 w-3.5 text-zinc-400 transition-transform duration-300 shrink-0 ${isMobileFilterOpen ? "rotate-180" : ""}`} />
-                    </button>
+                    {/* Mobile Filter Dropdown Button */}
+                    <div className="sm:hidden relative shrink-0" ref={mobileFilterRef}>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setIsSortOpen(false);
+                          setIsMobileFilterOpen((v) => !v);
+                        }}
+                        className="flex h-8 items-center gap-1.5 rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#18181B] px-2.5 text-[11px] font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-[#222226] transition shadow-2xs cursor-pointer select-none"
+                      >
+                        <Filter className="h-3 w-3 text-zinc-400 shrink-0" />
+                        <span className="truncate">
+                          {activeCategory === "all"
+                            ? `All (${categoryCounts.all})`
+                            : activeCategory === "docs"
+                            ? `Docs (${categoryCounts.docs})`
+                            : activeCategory === "images"
+                            ? `Images (${categoryCounts.images})`
+                            : activeCategory === "media"
+                            ? `Media (${categoryCounts.media})`
+                            : `Archives (${categoryCounts.archives})`}
+                        </span>
+                        <ChevronDown
+                          className={`h-3.5 w-3.5 text-zinc-400 shrink-0 transition-transform duration-200 ${
+                            isMobileFilterOpen ? "rotate-180" : ""
+                          }`}
+                        />
+                      </button>
 
-                    <AnimatePresence>
-                      {isMobileFilterOpen && (
-                        <motion.div
-                          initial={{ opacity: 0, scale: 0.96, y: -6 }}
-                          animate={{ opacity: 1, scale: 1, y: 0 }}
-                          exit={{ opacity: 0, scale: 0.96, y: -4 }}
-                          transition={{ type: "spring", damping: 28, stiffness: 400 }}
-                          style={{ transformOrigin: "top right" }}
-                          className="absolute right-0 top-full z-50 mt-1.5 w-56 max-w-[calc(100vw-2rem)] max-h-[75vh] overflow-y-auto scrollbar-none rounded-xl border border-zinc-200/80 bg-white/95 p-1.5 shadow-2xl backdrop-blur-xl dark:border-white/10 dark:bg-[#18181F]/95 dark:text-white dark:shadow-[0_8px_24px_rgba(0,0,0,0.6)]"
-                        >
-                          {/* Categories Section */}
-                          <div className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
-                            Category / Type
-                          </div>
-                          {[
-                            { id: "all", label: "All Files", count: categoryCounts.all },
-                            { id: "docs", label: "Documents", count: categoryCounts.docs },
-                            { id: "images", label: "Images", count: categoryCounts.images },
-                            { id: "media", label: "Audio & Video", count: categoryCounts.media },
-                            { id: "archives", label: "Archives", count: categoryCounts.archives },
-                          ].map((cat) => (
-                            <button
-                              key={cat.id}
-                              type="button"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setActiveCategory(cat.id as any);
-                                setIsMobileFilterOpen(false);
-                              }}
-                              className={`flex w-full items-center justify-between rounded-lg px-2.5 py-1.5 text-xs font-medium transition-all cursor-pointer ${
-                                activeCategory === cat.id
-                                  ? "bg-[#0066B2]/10 text-[#0066B2] font-bold dark:bg-[#38BDF8]/20 dark:text-[#38BDF8]"
-                                  : "text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-white/5"
-                              }`}
-                            >
-                              <div className="flex items-center gap-2">
-                                <span>{cat.label}</span>
-                                <span className="rounded-full bg-zinc-100 dark:bg-white/10 px-1.5 py-0.2 text-[9.5px] font-semibold text-zinc-500 dark:text-zinc-400">
-                                  {cat.count}
-                                </span>
-                              </div>
-                              {activeCategory === cat.id && <Check className="h-3.5 w-3.5 text-current shrink-0" />}
-                            </button>
-                          ))}
+                      <AnimatePresence>
+                        {isMobileFilterOpen && (
+                          <motion.div
+                            initial={{ opacity: 0, scale: 0.96, y: -6 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.96, y: -4 }}
+                            transition={{ type: "spring", damping: 28, stiffness: 400 }}
+                            onClick={(e) => e.stopPropagation()}
+                            className="absolute left-0 top-full z-40 mt-1.5 w-48 rounded-xl border border-zinc-200/90 dark:border-white/10 bg-white/95 dark:bg-[#1C1C20]/95 p-1.5 shadow-xl backdrop-blur-xl dark:text-white"
+                          >
+                            <div className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
+                              Filter Category
+                            </div>
+                            {[
+                              { id: "all", label: "All Files", count: categoryCounts.all },
+                              { id: "docs", label: "Documents", count: categoryCounts.docs },
+                              { id: "images", label: "Images", count: categoryCounts.images },
+                              { id: "media", label: "Audio & Video", count: categoryCounts.media },
+                              { id: "archives", label: "Archives", count: categoryCounts.archives },
+                            ].map((item) => {
+                              const isSelected = activeCategory === item.id;
+                              return (
+                                <button
+                                  key={item.id}
+                                  type="button"
+                                  onClick={() => {
+                                    setActiveCategory(item.id as any);
+                                    setIsMobileFilterOpen(false);
+                                  }}
+                                  className={`flex w-full items-center justify-between rounded-lg px-2.5 py-1.5 text-xs transition cursor-pointer text-left ${
+                                    isSelected
+                                      ? "bg-[#0066B2]/10 text-[#0066B2] font-bold dark:bg-[#38BDF8]/20 dark:text-[#38BDF8]"
+                                      : "text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-white/5 font-medium"
+                                  }`}
+                                >
+                                  <span>{item.label}</span>
+                                  <div className="flex items-center gap-1.5">
+                                    <span className="text-[10px] text-zinc-400">({item.count})</span>
+                                    {isSelected && <Check className="h-3.5 w-3.5" />}
+                                  </div>
+                                </button>
+                              );
+                            })}
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
 
-                          <div className="my-1.5 border-t border-zinc-100 dark:border-white/10" />
+                    {/* Custom Animated Sort Dropdown */}
+                    <div className="relative shrink-0" ref={sortRef}>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setIsMobileFilterOpen(false);
+                          setIsSortOpen((v) => !v);
+                        }}
+                        className="flex h-8 items-center gap-1 sm:gap-2 rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#18181B] px-2 sm:px-3 text-[11px] sm:text-xs font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-[#222226] transition shadow-2xs cursor-pointer select-none"
+                      >
+                        <SlidersHorizontal className="h-3 w-3 text-zinc-400 shrink-0" />
+                        <span className="truncate max-w-[76px] sm:max-w-none">
+                          {sortBy === "newest"
+                            ? "Newest"
+                            : sortBy === "oldest"
+                            ? "Oldest"
+                            : sortBy === "size"
+                            ? "File Size"
+                            : "Name (A-Z)"}
+                        </span>
+                        <ChevronDown
+                          className={`h-3.5 w-3.5 text-zinc-400 shrink-0 transition-transform duration-200 ${
+                            isSortOpen ? "rotate-180" : ""
+                          }`}
+                        />
+                      </button>
 
-                          {/* Sort Section */}
-                          <div className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
-                            Sort By
-                          </div>
-                          {[
-                            { id: "newest", label: "Newest First" },
-                            { id: "oldest", label: "Oldest First" },
-                            { id: "size", label: "File Size" },
-                            { id: "name", label: "Name (A-Z)" },
-                          ].map((opt) => (
-                            <button
-                              key={opt.id}
-                              type="button"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setSortBy(opt.id as any);
-                                setIsMobileFilterOpen(false);
-                              }}
-                              className={`flex w-full items-center justify-between rounded-lg px-2.5 py-1.5 text-xs font-medium transition-all cursor-pointer ${
-                                sortBy === opt.id
-                                  ? "bg-[#0066B2]/10 text-[#0066B2] font-bold dark:bg-[#38BDF8]/20 dark:text-[#38BDF8]"
-                                  : "text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-white/5"
-                              }`}
-                            >
-                              <span>{opt.label}</span>
-                              {sortBy === opt.id && <Check className="h-3.5 w-3.5 text-current shrink-0" />}
-                            </button>
-                          ))}
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </div>
+                      <AnimatePresence>
+                        {isSortOpen && (
+                          <motion.div
+                            initial={{ opacity: 0, scale: 0.96, y: -6 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.96, y: -4 }}
+                            transition={{ type: "spring", damping: 28, stiffness: 400 }}
+                            onClick={(e) => e.stopPropagation()}
+                            className="absolute right-0 top-full z-40 mt-1.5 w-48 rounded-xl border border-zinc-200/90 dark:border-white/10 bg-white/95 dark:bg-[#1C1C20]/95 p-1.5 shadow-xl backdrop-blur-xl dark:text-white"
+                          >
+                            <div className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
+                              Sort by
+                            </div>
+                            {[
+                              { id: "newest", label: "Newest First" },
+                              { id: "oldest", label: "Oldest First" },
+                              { id: "size", label: "File Size" },
+                              { id: "name", label: "Name (A-Z)" },
+                            ].map((opt) => {
+                              const isSelected = sortBy === opt.id;
+                              return (
+                                <button
+                                  key={opt.id}
+                                  type="button"
+                                  onClick={() => {
+                                    setSortBy(opt.id as any);
+                                    setIsSortOpen(false);
+                                  }}
+                                  className={`flex w-full items-center justify-between rounded-lg px-2.5 py-1.5 text-xs transition cursor-pointer text-left ${
+                                    isSelected
+                                      ? "bg-[#0066B2]/10 text-[#0066B2] font-bold dark:bg-[#38BDF8]/20 dark:text-[#38BDF8]"
+                                      : "text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-white/5 font-medium"
+                                  }`}
+                                >
+                                  <span>{opt.label}</span>
+                                  {isSelected && <Check className="h-3.5 w-3.5 text-[#0066B2] dark:text-[#38BDF8]" />}
+                                </button>
+                              );
+                            })}
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
 
-                  {/* Mobile Selection Mode Button */}
-                  <div className="md:hidden shrink-0">
-                    <button
-                      type="button"
-                      onClick={() => setIsMobileSelectionMode((v) => !v)}
-                      className={`h-9 px-3 rounded-xl border text-xs font-bold transition cursor-pointer shadow-2xs ${
-                        isMobileSelectionMode
-                          ? "bg-[#0066B2] text-white border-[#0066B2]"
-                          : "border-zinc-200/90 bg-white text-zinc-700 hover:bg-zinc-50 dark:border-[#2e2e38] dark:bg-[#202026] dark:text-zinc-200"
-                      }`}
-                    >
-                      <span>{isMobileSelectionMode ? "Done" : "Select"}</span>
-                    </button>
+                    {/* Select Mode Toggle Pod with CheckSquare icon */}
+                    <div className="flex items-center p-1 bg-zinc-100 dark:bg-[#1C1C20] rounded-xl shrink-0">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setIsMobileSelectionMode((prev) => {
+                            const next = !prev;
+                            if (!next) setSelectedResourceIds([]);
+                            return next;
+                          });
+                        }}
+                        className={`relative p-1.5 rounded-lg transition-colors duration-150 cursor-pointer ${
+                          isMobileSelectionMode || selectedResourceIds.length > 0
+                            ? "bg-white dark:bg-[#2A2A30] text-[#0066B2] dark:text-[#38BDF8] shadow-xs"
+                            : "text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200"
+                        }`}
+                        title={isMobileSelectionMode || selectedResourceIds.length > 0 ? "Exit Select Mode" : "Select Files"}
+                      >
+                        <CheckSquare className="relative z-10 h-4 w-4" />
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -1207,24 +1176,34 @@ export default function ResourcesPage() {
                           <tr>
                             <th className="px-6 py-3.5 text-left text-[11px] font-semibold tracking-wider text-zinc-500 dark:text-[#9B9085] uppercase">
                               <div className="flex items-center">
-                                <div className="flex items-center mr-2.5">
-                                  <AppleCheckbox
-                                    checked={filteredResources.length > 0 && selectedResourceIds.length === filteredResources.length}
-                                    indeterminate={selectedResourceIds.length > 0 && selectedResourceIds.length < filteredResources.length}
-                                    onChange={() => {
-                                      if (selectedResourceIds.length === filteredResources.length && filteredResources.length > 0) {
-                                        setSelectedResourceIds([]);
-                                      } else {
-                                        setSelectedResourceIds(filteredResources.map((r) => r.id));
-                                      }
-                                    }}
-                                    title={
-                                      selectedResourceIds.length === filteredResources.length && filteredResources.length > 0
-                                        ? "Deselect all on page"
-                                        : "Select all on page"
-                                    }
-                                  />
-                                </div>
+                                <AnimatePresence initial={false}>
+                                  {(isMobileSelectionMode || selectedResourceIds.length > 0) && (
+                                    <motion.div
+                                      initial={{ opacity: 0, width: 0, marginRight: 0 }}
+                                      animate={{ opacity: 1, width: 22, marginRight: 10 }}
+                                      exit={{ opacity: 0, width: 0, marginRight: 0 }}
+                                      transition={{ type: "spring", stiffness: 450, damping: 35 }}
+                                      className="flex items-center overflow-hidden shrink-0"
+                                    >
+                                      <AppleCheckbox
+                                        checked={filteredResources.length > 0 && selectedResourceIds.length === filteredResources.length}
+                                        indeterminate={selectedResourceIds.length > 0 && selectedResourceIds.length < filteredResources.length}
+                                        onChange={() => {
+                                          if (selectedResourceIds.length === filteredResources.length && filteredResources.length > 0) {
+                                            setSelectedResourceIds([]);
+                                          } else {
+                                            setSelectedResourceIds(filteredResources.map((r) => r.id));
+                                          }
+                                        }}
+                                        title={
+                                          selectedResourceIds.length === filteredResources.length && filteredResources.length > 0
+                                            ? "Deselect all on page"
+                                            : "Select all on page"
+                                        }
+                                      />
+                                    </motion.div>
+                                  )}
+                                </AnimatePresence>
                                 <span>Resource Name</span>
                               </div>
                             </th>
@@ -1253,7 +1232,7 @@ export default function ResourcesPage() {
                                   <div className="flex items-center min-w-0">
                                     {/* Animated Spring Checkbox - 100% Matching Leads & Mobile Physics */}
                                     <AnimatePresence initial={false}>
-                                      {(selectedResourceIds.length > 0 || isSelected) && (
+                                      {(isMobileSelectionMode || selectedResourceIds.length > 0 || isSelected) && (
                                         <motion.div
                                           initial={{ opacity: 0, width: 0, marginRight: 0 }}
                                           animate={{ opacity: 1, width: 22, marginRight: 12 }}

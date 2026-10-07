@@ -21,6 +21,8 @@ import {
   Layers,
   Linkedin,
   Zap,
+  SlidersHorizontal,
+  CheckSquare,
 } from "lucide-react";
 import {
   syncWithDatabase,
@@ -74,12 +76,24 @@ export default function LeadsPage() {
   // Filtering & Search (React 18 Concurrent Search)
   const [search, setSearch] = useState("");
   const deferredSearch = useDeferredValue(search);
+  const [statusFilter, setStatusFilter] = useState<"all" | "active" | "replied">("all");
+  const [isStatusFilterOpen, setIsStatusFilterOpen] = useState(false);
   const [filterMagnet, setFilterMagnet] = useState("All lead magnets");
   const [filterOpen, setFilterOpen] = useState(false);
-  const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
+  const [sortBy, setSortBy] = useState<"newest" | "oldest" | "name" | "email">("newest");
+  const [isSortOpen, setIsSortOpen] = useState(false);
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
   const filterRef = useRef<HTMLDivElement>(null);
+  const sortRef = useRef<HTMLDivElement>(null);
+  const statusFilterRef = useRef<HTMLDivElement>(null);
   const mobileFilterRef = useRef<HTMLDivElement>(null);
+
+  const sortOptions = [
+    { id: "newest", label: "Most Recent" },
+    { id: "oldest", label: "Oldest First" },
+    { id: "name", label: "Name (A-Z)" },
+    { id: "email", label: "Email (A-Z)" },
+  ];
 
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
@@ -132,14 +146,17 @@ export default function LeadsPage() {
     });
   }, []);
 
-  // Close filter dropdown on outside click
+  // Close popovers on outside click
   useEffect(() => {
     function handler(e: MouseEvent | TouchEvent) {
       if (filterRef.current && !filterRef.current.contains(e.target as Node)) {
         setFilterOpen(false);
       }
-      if (mobileFilterRef.current && !mobileFilterRef.current.contains(e.target as Node)) {
-        setMobileFilterOpen(false);
+      if (sortRef.current && !sortRef.current.contains(e.target as Node)) {
+        setIsSortOpen(false);
+      }
+      if (statusFilterRef.current && !statusFilterRef.current.contains(e.target as Node)) {
+        setIsStatusFilterOpen(false);
       }
     }
     document.addEventListener("mousedown", handler);
@@ -227,10 +244,29 @@ export default function LeadsPage() {
     };
   }, [leads, checkIsLockedPdfLead, checkIsLinkedInLead]);
 
+  const activeCount = useMemo(() => {
+    return leads.filter(
+      (l) => (l.status === "delivered" || l.status === "opened" || l.status === "new") && Boolean(l.sequence || l.page)
+    ).length;
+  }, [leads]);
+
+  const repliedCount = useMemo(() => {
+    return leads.filter((l) => l.status === "replied" || l.status === "converted").length;
+  }, [leads]);
+
   // Filtered leads using React 18 Deferred Search Value
   const filtered = useMemo(() => {
     const q = deferredSearch.trim().toLowerCase();
     const matched = leads.filter((l) => {
+      // Status filter
+      if (statusFilter === "active") {
+        const isActive = (l.status === "delivered" || l.status === "opened" || l.status === "new") && Boolean(l.sequence || l.page);
+        if (!isActive) return false;
+      } else if (statusFilter === "replied") {
+        const isReplied = l.status === "replied" || l.status === "converted";
+        if (!isReplied) return false;
+      }
+
       let matchMagnet = false;
       const isLocked = checkIsLockedPdfLead(l);
       const isLinkedIn = checkIsLinkedInLead(l);
@@ -258,11 +294,20 @@ export default function LeadsPage() {
     });
 
     return matched.sort((a, b) => {
+      if (sortBy === "name") {
+        return (a.name || a.email).localeCompare(b.name || b.email);
+      }
+      if (sortBy === "email") {
+        return a.email.localeCompare(b.email);
+      }
       const timeA = parseFlexibleDate(a.signedUpAt)?.getTime() || 0;
       const timeB = parseFlexibleDate(b.signedUpAt)?.getTime() || 0;
+      if (sortBy === "oldest") {
+        return timeA - timeB;
+      }
       return timeB - timeA;
     });
-  }, [leads, filterMagnet, deferredSearch, checkIsLockedPdfLead, checkIsLinkedInLead]);
+  }, [leads, statusFilter, filterMagnet, deferredSearch, sortBy, checkIsLockedPdfLead, checkIsLinkedInLead]);
 
   // 5. Pagination Logic
   const totalPages = useMemo(() => Math.ceil(filtered.length / pageSize) || 1, [filtered.length, pageSize]);
@@ -1014,60 +1059,175 @@ function parseCsvLine(line: string): string[] {
           <div className="rounded-2xl border border-zinc-200/80 bg-white/90 dark:border-[#2e2e38] dark:bg-[#18181B]/90 shadow-sm backdrop-blur-sm relative">
 
             {/* ========================================================================= */}
-            {/* 3. DESKTOP Toolbar (hidden md:block) - Preserved 100% Unchanged           */}
+            {/* Standardized Responsive Search, Filter & Sort Toolbar                     */}
             {/* ========================================================================= */}
-            <div className="hidden md:block p-3.5 sm:p-5 border-b border-zinc-200/80 dark:border-[#2e2e38]">
-              <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-                <div>
-                  <h3 className="text-base font-bold text-zinc-900 dark:text-white">All Subscribers</h3>
-                </div>
-
-                <div className="flex flex-wrap items-center gap-2">
-                  {/* Search Bar */}
-                  <div className="relative flex-1 min-w-[200px] sm:w-64">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-400" />
-                    <input
-                      type="text"
-                      placeholder="Search email, name, or magnet..."
-                      value={search}
-                      onChange={(e) => {
-                        setSearch(e.target.value);
+            <div className="p-3 sm:p-4 border-b border-zinc-200/80 dark:border-[#2e2e38]">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3 w-full max-w-full min-w-0">
+                {/* Search Bar */}
+                <div className="flex items-center gap-2 flex-1 rounded-xl bg-zinc-50 dark:bg-[#1C1C20] px-3.5 py-2 border border-zinc-200/60 dark:border-zinc-800 focus-within:border-[#0066B2] dark:focus-within:border-[#0066B2] min-w-0">
+                  <Search className="h-4 w-4 text-zinc-400 shrink-0" />
+                  <input
+                    type="text"
+                    placeholder="Search subscribers by name, email, or magnet..."
+                    value={search}
+                    onChange={(e) => {
+                      setSearch(e.target.value);
+                      setCurrentPage(1);
+                    }}
+                    className="bg-transparent text-xs text-zinc-900 dark:text-white outline-none placeholder:text-zinc-400 w-full min-w-0"
+                  />
+                  {search && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSearch("");
                         setCurrentPage(1);
                       }}
-                      className="w-full h-9 rounded-xl border border-zinc-200 bg-white pl-9 pr-8 text-xs text-zinc-900 placeholder-zinc-400 focus:border-[#0066B2] focus:outline-none dark:border-[#2e2e38] dark:bg-[#202026] dark:text-white dark:placeholder-zinc-500"
-                    />
-                    {search && (
+                      className="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 shrink-0 cursor-pointer"
+                    >
+                      <X className="h-3.5 w-3.5" />
+                    </button>
+                  )}
+                </div>
+
+                <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 justify-between sm:justify-end w-full sm:w-auto min-w-0">
+                  {/* Desktop Status Tabs Pod */}
+                  <div className="hidden sm:flex items-center p-1 bg-zinc-100 dark:bg-[#1C1C20] rounded-xl text-xs font-semibold min-w-0">
+                    {[
+                      { id: "all", label: `All (${leads.length})` },
+                      { id: "active", label: `Active (${activeCount})` },
+                      { id: "replied", label: `Replied (${repliedCount})` },
+                    ].map((tab) => (
                       <button
+                        key={tab.id}
                         type="button"
-                        onClick={() => setSearch("")}
-                        className="absolute right-2.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 dark:hover:text-white cursor-pointer"
+                        onClick={() => {
+                          setStatusFilter(tab.id as any);
+                          setCurrentPage(1);
+                        }}
+                        className={`relative px-3 py-1 rounded-lg transition-colors duration-200 cursor-pointer ${
+                          statusFilter === tab.id
+                            ? tab.id === "replied"
+                              ? "text-emerald-600 dark:text-emerald-400 font-bold"
+                              : "text-zinc-900 dark:text-white font-bold"
+                            : "text-zinc-500 hover:text-zinc-900 dark:hover:text-white"
+                        }`}
                       >
-                        <X className="h-3.5 w-3.5" />
+                        {statusFilter === tab.id && (
+                          <motion.div
+                            layoutId="activeLeadsStatusFilterTab"
+                            className="absolute inset-0 bg-white dark:bg-[#2A2A30] rounded-lg shadow-xs"
+                            transition={{ type: "spring", stiffness: 500, damping: 32 }}
+                          />
+                        )}
+                        <span className="relative z-10">{tab.label}</span>
                       </button>
-                    )}
+                    ))}
                   </div>
 
-                  {/* Filter by Magnet — Glassy & Smooth Animated Dropdown */}
-                  <div className="relative" ref={filterRef}>
+                  {/* Mobile Status Filter Dropdown Button */}
+                  <div className="sm:hidden relative shrink-0" ref={statusFilterRef}>
                     <button
                       type="button"
                       onClick={(e) => {
                         e.stopPropagation();
+                        setIsSortOpen(false);
+                        setFilterOpen(false);
+                        setIsStatusFilterOpen((v) => !v);
+                      }}
+                      className="flex h-8 items-center gap-1.5 rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#18181B] px-2.5 text-[11px] font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-[#222226] transition shadow-2xs cursor-pointer select-none"
+                    >
+                      <Filter className="h-3 w-3 text-zinc-400 shrink-0" />
+                      <span className="truncate">
+                        {statusFilter === "all"
+                          ? `All (${leads.length})`
+                          : statusFilter === "active"
+                          ? `Active (${activeCount})`
+                          : `Replied (${repliedCount})`}
+                      </span>
+                      <ChevronDown
+                        className={`h-3.5 w-3.5 text-zinc-400 shrink-0 transition-transform duration-200 ${
+                          isStatusFilterOpen ? "rotate-180" : ""
+                        }`}
+                      />
+                    </button>
+
+                    <AnimatePresence>
+                      {isStatusFilterOpen && (
+                        <motion.div
+                          initial={{ opacity: 0, scale: 0.96, y: -6 }}
+                          animate={{ opacity: 1, scale: 1, y: 0 }}
+                          exit={{ opacity: 0, scale: 0.96, y: -4 }}
+                          transition={{ type: "spring", damping: 28, stiffness: 400 }}
+                          onClick={(e) => e.stopPropagation()}
+                          className="absolute left-0 top-full z-40 mt-1.5 w-48 rounded-xl border border-zinc-200/90 dark:border-white/10 bg-white/95 dark:bg-[#1C1C20]/95 p-1.5 shadow-xl backdrop-blur-xl dark:text-white"
+                        >
+                          <div className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
+                            Filter Status
+                          </div>
+                          {[
+                            { id: "all", label: "All Leads", count: leads.length },
+                            { id: "active", label: "Active in Sequence", count: activeCount },
+                            { id: "replied", label: "Replied / Converted", count: repliedCount },
+                          ].map((item) => {
+                            const isSelected = statusFilter === item.id;
+                            return (
+                              <button
+                                key={item.id}
+                                type="button"
+                                onClick={() => {
+                                  setStatusFilter(item.id as any);
+                                  setIsStatusFilterOpen(false);
+                                  setCurrentPage(1);
+                                }}
+                                className={`flex w-full items-center justify-between rounded-lg px-2.5 py-1.5 text-xs transition cursor-pointer text-left ${
+                                  isSelected
+                                    ? "bg-[#0066B2]/10 text-[#0066B2] font-bold dark:bg-[#38BDF8]/20 dark:text-[#38BDF8]"
+                                    : "text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-white/5 font-medium"
+                                }`}
+                              >
+                                <span>{item.label}</span>
+                                <div className="flex items-center gap-1.5">
+                                  <span className="text-[10px] text-zinc-400">({item.count})</span>
+                                  {isSelected && <Check className="h-3.5 w-3.5" />}
+                                </div>
+                              </button>
+                            );
+                          })}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+
+                  {/* Magnet / Channel Filter Dropdown */}
+                  <div className="relative shrink-0" ref={filterRef}>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setIsSortOpen(false);
+                        setIsStatusFilterOpen(false);
                         setFilterOpen((v) => !v);
                       }}
-                      className="flex h-9 items-center gap-2 rounded-xl border border-zinc-200/80 bg-white/70 px-3.5 text-xs font-semibold text-zinc-700 shadow-xs backdrop-blur-md transition-all hover:bg-white/90 focus:outline-none dark:border-white/10 dark:bg-[#18181B]/80 dark:text-zinc-200 dark:hover:bg-[#222226] cursor-pointer select-none"
+                      className="flex h-8 items-center gap-1 sm:gap-2 rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#18181B] px-2 sm:px-3 text-[11px] sm:text-xs font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-[#222226] transition shadow-2xs cursor-pointer select-none"
                     >
                       {filterMagnet === "All LinkedIn Leads" ? (
-                        <Linkedin className="h-3.5 w-3.5 text-[#0A66C2] dark:text-[#38BDF8] shrink-0" />
+                        <Linkedin className="h-3 w-3 text-[#0A66C2] dark:text-[#38BDF8] shrink-0" />
                       ) : filterMagnet === "All Locked PDFs" ? (
-                        <Lock className="h-3.5 w-3.5 text-amber-500 dark:text-amber-400 shrink-0" />
+                        <Lock className="h-3 w-3 text-amber-500 dark:text-amber-400 shrink-0" />
                       ) : filterMagnet === "All Form Magnets" ? (
-                        <FileText className="h-3.5 w-3.5 text-[#0066B2] dark:text-[#38BDF8] shrink-0" />
+                        <FileText className="h-3 w-3 text-[#0066B2] dark:text-[#38BDF8] shrink-0" />
                       ) : (
-                        <Layers className="h-3.5 w-3.5 text-zinc-400 shrink-0" />
+                        <Layers className="h-3 w-3 text-zinc-400 shrink-0" />
                       )}
-                      <span className="truncate max-w-[150px]">{filterMagnet}</span>
-                      <ChevronDown className={`h-3.5 w-3.5 text-zinc-400 transition-transform duration-300 ${filterOpen ? "rotate-180" : ""}`} />
+                      <span className="truncate max-w-[85px] sm:max-w-[130px]">
+                        {filterMagnet === "All lead magnets" ? "All Magnets" : filterMagnet}
+                      </span>
+                      <ChevronDown
+                        className={`h-3.5 w-3.5 text-zinc-400 shrink-0 transition-transform duration-200 ${
+                          filterOpen ? "rotate-180" : ""
+                        }`}
+                      />
                     </button>
 
                     <AnimatePresence>
@@ -1078,7 +1238,7 @@ function parseCsvLine(line: string): string[] {
                           exit={{ opacity: 0, scale: 0.96, y: -4 }}
                           transition={{ type: "spring", damping: 28, stiffness: 400 }}
                           style={{ transformOrigin: "top right" }}
-                          className="absolute right-0 top-full z-40 mt-1.5 w-64 max-w-[calc(100vw-3rem)] rounded-xl border border-zinc-200/80 bg-white/95 p-1.5 shadow-2xl backdrop-blur-xl dark:border-white/10 dark:bg-[#18181F]/95 dark:text-white dark:shadow-[0_8px_24px_rgba(0,0,0,0.6)]"
+                          className="absolute right-0 top-full z-40 mt-1.5 w-64 max-w-[calc(100vw-2rem)] rounded-xl border border-zinc-200/80 bg-white/95 p-1.5 shadow-2xl backdrop-blur-xl dark:border-white/10 dark:bg-[#18181F]/95 dark:text-white dark:shadow-[0_8px_24px_rgba(0,0,0,0.6)]"
                         >
                           <div className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
                             Quick Filters
@@ -1195,192 +1355,91 @@ function parseCsvLine(line: string): string[] {
                       )}
                     </AnimatePresence>
                   </div>
-                </div>
-              </div>
-            </div>
 
-            {/* ========================================================================= */}
-            {/* 3. MOBILE Toolbar (block md:hidden) - Exact Match with Assets Page        */}
-            {/* ========================================================================= */}
-            <div className="block md:hidden p-3 sm:p-4 border-b border-zinc-200/80 dark:border-[#2e2e38]">
-              <div className="flex items-center gap-2 w-full">
-                {/* Search Input */}
-                <div className="relative flex-1">
-                  <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-zinc-400" />
-                  <input
-                    type="text"
-                    placeholder="Search leads..."
-                    value={search}
-                    onChange={(e) => {
-                      setSearch(e.target.value);
-                      setCurrentPage(1);
-                    }}
-                    className="w-full rounded-xl border border-zinc-200/90 bg-zinc-50/70 py-2 pl-7 pr-6 text-xs text-zinc-900 placeholder-zinc-400 focus:border-[#0066B2] focus:bg-white focus:outline-none dark:border-[#2e2e38] dark:bg-[#1C1C22] dark:text-white dark:placeholder-zinc-500 transition-all shadow-2xs"
-                  />
-                  {search && (
+                  {/* Custom Animated Sort Dropdown */}
+                  <div className="relative shrink-0" ref={sortRef}>
                     <button
                       type="button"
-                      onClick={() => setSearch("")}
-                      className="absolute right-2 top-2 p-0.5 rounded-full text-zinc-400 hover:text-zinc-600 dark:hover:text-white cursor-pointer"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setIsStatusFilterOpen(false);
+                        setFilterOpen(false);
+                        setIsSortOpen((v) => !v);
+                      }}
+                      className="flex h-8 items-center gap-1 sm:gap-2 rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#18181B] px-2 sm:px-3 text-[11px] sm:text-xs font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-[#222226] transition shadow-2xs cursor-pointer select-none"
                     >
-                      <X className="h-3 w-3" />
-                    </button>
-                  )}
-                </div>
-
-                {/* 50% Filter Dropdown */}
-                <div className="relative" ref={mobileFilterRef}>
-                  <button
-                    type="button"
-                    onClick={() => setMobileFilterOpen((v) => !v)}
-                    className="flex w-full items-center justify-between gap-1 rounded-xl border border-zinc-200/90 bg-white py-2 px-2.5 text-xs font-semibold text-zinc-700 hover:bg-zinc-50 dark:border-[#2e2e38] dark:bg-[#1C1C22] dark:text-zinc-200 active:scale-98 transition cursor-pointer shadow-2xs select-none"
-                  >
-                    <div className="flex items-center gap-1.5 truncate">
-                      {filterMagnet === "All LinkedIn Leads" ? (
-                        <Linkedin className="h-3.5 w-3.5 text-[#0A66C2] dark:text-[#38BDF8] shrink-0" />
-                      ) : filterMagnet === "All Locked PDFs" ? (
-                        <Lock className="h-3.5 w-3.5 text-amber-500 dark:text-amber-400 shrink-0" />
-                      ) : filterMagnet === "All Form Magnets" ? (
-                        <FileText className="h-3.5 w-3.5 text-[#0066B2] dark:text-[#38BDF8] shrink-0" />
-                      ) : (
-                        <Layers className="h-3.5 w-3.5 text-zinc-400 shrink-0" />
-                      )}
-                      <span className="truncate text-[11px]">
-                        {filterMagnet === "All lead magnets"
-                          ? "All Leads"
-                          : filterMagnet === "All LinkedIn Leads"
-                          ? "LinkedIn"
-                          : filterMagnet === "All Locked PDFs"
-                          ? "Locked PDFs"
-                          : "Forms"}
+                      <SlidersHorizontal className="h-3 w-3 text-zinc-400 shrink-0" />
+                      <span className="truncate max-w-[76px] sm:max-w-none">
+                        {sortOptions.find((o) => o.id === sortBy)?.label || "Sort"}
                       </span>
-                    </div>
-                    <ChevronDown
-                      className={`h-3.5 w-3.5 text-zinc-400 transition-transform duration-200 shrink-0 ${
-                        mobileFilterOpen ? "rotate-180" : ""
+                      <ChevronDown
+                        className={`h-3.5 w-3.5 text-zinc-400 shrink-0 transition-transform duration-200 ${
+                          isSortOpen ? "rotate-180" : ""
+                        }`}
+                      />
+                    </button>
+
+                    <AnimatePresence>
+                      {isSortOpen && (
+                        <motion.div
+                          initial={{ opacity: 0, scale: 0.96, y: -6 }}
+                          animate={{ opacity: 1, scale: 1, y: 0 }}
+                          exit={{ opacity: 0, scale: 0.96, y: -4 }}
+                          transition={{ type: "spring", damping: 28, stiffness: 400 }}
+                          onClick={(e) => e.stopPropagation()}
+                          className="absolute right-0 top-full z-40 mt-1.5 w-48 rounded-xl border border-zinc-200/90 dark:border-white/10 bg-white/95 dark:bg-[#1C1C20]/95 p-1.5 shadow-xl backdrop-blur-xl dark:text-white"
+                        >
+                          <div className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
+                            Sort by
+                          </div>
+                          {sortOptions.map((opt) => {
+                            const isSelected = sortBy === opt.id;
+                            return (
+                              <button
+                                key={opt.id}
+                                type="button"
+                                onClick={() => {
+                                  setSortBy(opt.id as any);
+                                  setIsSortOpen(false);
+                                  setCurrentPage(1);
+                                }}
+                                className={`flex w-full items-center justify-between rounded-lg px-2.5 py-1.5 text-xs transition cursor-pointer text-left ${
+                                  isSelected
+                                    ? "bg-[#0066B2]/10 text-[#0066B2] font-bold dark:bg-[#38BDF8]/20 dark:text-[#38BDF8]"
+                                    : "text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-white/5 font-medium"
+                                }`}
+                              >
+                                <span>{opt.label}</span>
+                                {isSelected && <Check className="h-3.5 w-3.5 text-[#0066B2] dark:text-[#38BDF8]" />}
+                              </button>
+                            );
+                          })}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+
+                  {/* Select Mode Toggle Pod with CheckSquare icon */}
+                  <div className="flex items-center p-1 bg-zinc-100 dark:bg-[#1C1C20] rounded-xl shrink-0">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsMobileSelectionMode((prev) => {
+                          const next = !prev;
+                          if (!next) setSelectedLeadIds([]);
+                          return next;
+                        });
+                      }}
+                      className={`relative p-1.5 rounded-lg transition-colors duration-150 cursor-pointer ${
+                        isMobileSelectionMode || selectedLeadIds.length > 0
+                          ? "bg-white dark:bg-[#2A2A30] text-[#0066B2] dark:text-[#38BDF8] shadow-xs"
+                          : "text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200"
                       }`}
-                    />
-                  </button>
-
-                  <AnimatePresence>
-                    {mobileFilterOpen && (
-                      <motion.div
-                        initial={{ opacity: 0, scale: 0.95, y: -4 }}
-                        animate={{ opacity: 1, scale: 1, y: 0 }}
-                        exit={{ opacity: 0, scale: 0.95, y: -4 }}
-                        transition={{ duration: 0.15 }}
-                        className="absolute right-0 top-full z-40 mt-1.5 w-56 rounded-xl border border-zinc-200/90 bg-white/95 p-1.5 shadow-2xl backdrop-blur-xl dark:border-white/10 dark:bg-[#18181F]/95 dark:text-white"
-                      >
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setFilterMagnet("All lead magnets");
-                            setMobileFilterOpen(false);
-                            setCurrentPage(1);
-                          }}
-                          className={`flex w-full items-center justify-between rounded-lg px-2.5 py-2 text-xs font-medium transition-all cursor-pointer ${
-                            filterMagnet === "All lead magnets"
-                              ? "bg-[#0066B2]/10 text-[#0066B2] font-bold dark:bg-[#38BDF8]/20 dark:text-[#38BDF8]"
-                              : "text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-white/5"
-                          }`}
-                        >
-                          <span className="flex items-center gap-2 truncate">
-                            <Layers className="h-3.5 w-3.5 text-zinc-400 shrink-0" />
-                            All Leads
-                          </span>
-                          <span className="px-1.5 py-0.2 rounded bg-zinc-200/60 text-[9px] font-semibold text-zinc-600 dark:bg-white/10 dark:text-zinc-300">
-                            {filterCounts.all}
-                          </span>
-                        </button>
-
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setFilterMagnet("All LinkedIn Leads");
-                            setMobileFilterOpen(false);
-                            setCurrentPage(1);
-                          }}
-                          className={`flex w-full items-center justify-between rounded-lg px-2.5 py-2 text-xs font-medium transition-all cursor-pointer ${
-                            filterMagnet === "All LinkedIn Leads"
-                              ? "bg-[#0A66C2]/10 text-[#0A66C2] font-bold dark:bg-[#0A66C2]/20 dark:text-[#38BDF8]"
-                              : "text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-white/5"
-                          }`}
-                        >
-                          <span className="flex items-center gap-2 truncate">
-                            <Linkedin className="h-3.5 w-3.5 text-[#0A66C2] dark:text-[#38BDF8] shrink-0" />
-                            LinkedIn
-                          </span>
-                          <span className="px-1.5 py-0.2 rounded bg-[#0A66C2]/10 text-[9px] font-semibold text-[#0A66C2] dark:bg-[#0A66C2]/25 dark:text-[#38BDF8]">
-                            {filterCounts.linkedIn}
-                          </span>
-                        </button>
-
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setFilterMagnet("All Locked PDFs");
-                            setMobileFilterOpen(false);
-                            setCurrentPage(1);
-                          }}
-                          className={`flex w-full items-center justify-between rounded-lg px-2.5 py-2 text-xs font-medium transition-all cursor-pointer ${
-                            filterMagnet === "All Locked PDFs"
-                              ? "bg-amber-500/10 text-amber-600 font-bold dark:bg-amber-500/20 dark:text-amber-400"
-                              : "text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-white/5"
-                          }`}
-                        >
-                          <span className="flex items-center gap-2 truncate">
-                            <Lock className="h-3.5 w-3.5 text-amber-500 shrink-0" />
-                            Locked PDFs
-                          </span>
-                          <span className="px-1.5 py-0.2 rounded bg-amber-500/10 text-[9px] font-semibold text-amber-600 dark:bg-amber-500/25 dark:text-amber-400">
-                            {filterCounts.lockedPdf}
-                          </span>
-                        </button>
-
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setFilterMagnet("All Form Magnets");
-                            setMobileFilterOpen(false);
-                            setCurrentPage(1);
-                          }}
-                          className={`flex w-full items-center justify-between rounded-lg px-2.5 py-2 text-xs font-medium transition-all cursor-pointer ${
-                            filterMagnet === "All Form Magnets"
-                              ? "bg-sky-500/10 text-sky-600 font-bold dark:bg-sky-500/20 dark:text-sky-400"
-                              : "text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-white/5"
-                          }`}
-                        >
-                          <span className="flex items-center gap-2 truncate">
-                            <FileText className="h-3.5 w-3.5 text-[#0066B2] dark:text-[#38BDF8] shrink-0" />
-                            Form Magnets
-                          </span>
-                          <span className="px-1.5 py-0.2 rounded bg-sky-500/10 text-[9px] font-semibold text-sky-600 dark:bg-sky-500/25 dark:text-sky-400">
-                            {filterCounts.forms}
-                          </span>
-                        </button>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-
-                {/* Mobile Selection Mode Button */}
-                <div className="shrink-0">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (isMobileSelectionMode) {
-                        setSelectedLeadIds([]);
-                      }
-                      setIsMobileSelectionMode((v) => !v);
-                    }}
-                    className={`h-9 px-3 rounded-xl border text-xs font-bold transition cursor-pointer shadow-2xs ${
-                      isMobileSelectionMode
-                        ? "bg-[#0066B2] text-white border-[#0066B2]"
-                        : "border-zinc-200/90 bg-white text-zinc-700 hover:bg-zinc-50 dark:border-[#2e2e38] dark:bg-[#202026] dark:text-zinc-200"
-                    }`}
-                  >
-                    <span>{isMobileSelectionMode ? "Done" : "Select"}</span>
-                  </button>
+                      title={isMobileSelectionMode || selectedLeadIds.length > 0 ? "Exit Select Mode" : "Select Subscribers"}
+                    >
+                      <CheckSquare className="relative z-10 h-4 w-4" />
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -1426,18 +1485,28 @@ function parseCsvLine(line: string): string[] {
                   <tr>
                     <th className="px-3 lg:px-4 py-3.5 text-left text-[11px] font-semibold uppercase tracking-wider text-zinc-500 dark:text-[#9B9085]">
                       <div className="flex items-center">
-                        <div className="flex items-center mr-2.5">
-                          <AppleCheckbox
-                            checked={paginatedLeads.length > 0 && selectedLeadIds.length === paginatedLeads.length}
-                            indeterminate={selectedLeadIds.length > 0 && selectedLeadIds.length < paginatedLeads.length}
-                            onChange={toggleSelectAll}
-                            title={
-                              selectedLeadIds.length === paginatedLeads.length && paginatedLeads.length > 0
-                                ? "Deselect all on page"
-                                : "Select all on page"
-                            }
-                          />
-                        </div>
+                        <AnimatePresence initial={false}>
+                          {(isMobileSelectionMode || selectedLeadIds.length > 0) && (
+                            <motion.div
+                              initial={{ opacity: 0, width: 0, marginRight: 0 }}
+                              animate={{ opacity: 1, width: 22, marginRight: 10 }}
+                              exit={{ opacity: 0, width: 0, marginRight: 0 }}
+                              transition={{ type: "spring", stiffness: 450, damping: 35 }}
+                              className="flex items-center overflow-hidden shrink-0"
+                            >
+                              <AppleCheckbox
+                                checked={paginatedLeads.length > 0 && selectedLeadIds.length === paginatedLeads.length}
+                                indeterminate={selectedLeadIds.length > 0 && selectedLeadIds.length < paginatedLeads.length}
+                                onChange={toggleSelectAll}
+                                title={
+                                  selectedLeadIds.length === paginatedLeads.length && paginatedLeads.length > 0
+                                    ? "Deselect all on page"
+                                    : "Select all on page"
+                                }
+                              />
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
                         <span>Subscriber</span>
                       </div>
                     </th>
@@ -1465,7 +1534,7 @@ function parseCsvLine(line: string): string[] {
                         key={lead.id}
                         lead={lead}
                         isSelected={isSelected}
-                        isSelectionActive={selectedLeadIds.length > 0}
+                        isSelectionActive={isMobileSelectionMode || selectedLeadIds.length > 0}
                         isLockedPdf={isLockedPdf}
                         isManual={isManual}
                         isLinkedIn={isLinkedIn}
