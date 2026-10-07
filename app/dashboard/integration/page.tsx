@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Sparkles, Plug, ChevronDown } from "lucide-react";
+import { Plug, ChevronDown } from "lucide-react";
 import { syncWithDatabase, saveAccount, loadAccount } from "@/lib/store";
 import { type Account, getAppUrl } from "@/lib/data";
 import {
@@ -204,8 +204,8 @@ export default function WorkspaceSetupPage() {
       <div className="flex flex-col min-h-[calc(100vh-3rem)] bg-[#F8FBFF] dark:bg-[#0E0E10]">
         <div className="flex-1 px-3.5 sm:px-6 py-4 sm:py-6 lg:px-8 max-w-7xl mx-auto w-full">
 
-          {/* Page heading */}
-          <div className="mb-5 sm:mb-6">
+          {/* Page heading & status */}
+          <div className="mb-5 sm:mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <h2 className="flex items-center gap-2 text-2xl sm:text-3xl font-bold text-zinc-900 dark:text-white">
               Integration
               <button
@@ -217,51 +217,26 @@ export default function WorkspaceSetupPage() {
                 ?
               </button>
             </h2>
-          </div>
 
-          {/* Workspace Essentials banner */}
-          <div
-            className="conversion-banner-bg relative mb-5 overflow-hidden rounded-2xl border border-[#0066B2]/30 bg-white p-4 sm:p-6 lg:py-7 lg:px-8 shadow-sm dark:border-[#0066B2]/35 dark:bg-[#18181C] transition-colors"
-          >
-            {/* Badge */}
-            <div className="mb-3 sm:mb-4 flex items-center">
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-[#0066B2]/30 bg-[#EFF6FF] px-2.5 sm:px-3 py-1 text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-[#0066B2] dark:border-[#0066B2]/40 dark:bg-[#0066B2]/15 dark:text-[#38BDF8]">
-                <Sparkles className="h-3.5 w-3.5 text-[#0066B2] dark:text-[#38BDF8] fill-[#0066B2]/20" />
-                WORKSPACE ESSENTIALS
-              </span>
-            </div>
-
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-              <div className="max-w-lg">
-                <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold text-zinc-900 dark:text-white tracking-tight mb-1.5 sm:mb-2">
-                  Set up once, then get back to creating
-                </h3>
-                <p className="text-xs sm:text-sm text-zinc-600 dark:text-[#9B9085]/90 leading-relaxed">
-                  Your LeadMagnets URL is the only required setting. Domains and integrations stay out
-                  of the way until you need them.
-                </p>
-              </div>
-
-              {/* Public URL ready status card */}
-              <div className="flex items-center gap-2.5 rounded-2xl border border-[#0066B2]/30 bg-white/80 dark:border-[#0066B2]/35 dark:bg-[#0E0E10]/70 px-3.5 sm:px-4 py-2.5 sm:py-3 shrink-0 shadow-sm dark:shadow-none w-full sm:w-auto">
-                <span className={`h-2 w-2 rounded-full ${cnameVerified || domainVerified ? "bg-emerald-500" : "bg-amber-500"} shrink-0`} />
-                <div className="min-w-0 flex-1 sm:flex-initial">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <p className="text-xs font-semibold text-zinc-900 dark:text-white">
-                      {cnameVerified ? "Custom Domain Active" : "Public URL ready"}
-                    </p>
-                    {cnameVerified && (
-                      <span className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-bold text-emerald-600 dark:text-emerald-400">
-                        SSL Active ✓
-                      </span>
-                    )}
-                  </div>
-                  <p className="text-[11px] text-zinc-500 dark:text-[#9B9085] mt-0.5 font-mono truncate max-w-[260px] sm:max-w-xs">
-                    {cnameVerified && rootDomain
-                      ? formatFullHost(rootDomain, pageSubdomain)
-                      : `${appBaseUrl}/${username}`}
+            {/* Public URL ready status card */}
+            <div className="flex items-center gap-2.5 rounded-2xl border border-zinc-200/80 bg-white/80 dark:border-white/[0.08] dark:bg-[#141417] px-3.5 sm:px-4 py-2 sm:py-2.5 shrink-0 shadow-xs backdrop-blur-sm w-full sm:w-auto">
+              <span className={`h-2 w-2 rounded-full ${cnameVerified || domainVerified ? "bg-emerald-500" : "bg-amber-500"} shrink-0`} />
+              <div className="min-w-0 flex-1 sm:flex-initial">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <p className="text-xs font-bold text-zinc-900 dark:text-white">
+                    {cnameVerified ? "Custom Domain Active" : "Public URL ready"}
                   </p>
+                  {cnameVerified && (
+                    <span className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-bold text-emerald-600 dark:text-emerald-400">
+                      SSL Active ✓
+                    </span>
+                  )}
                 </div>
+                <p className="text-[11px] text-zinc-500 dark:text-[#9B9085] mt-0.5 font-mono truncate max-w-[260px] sm:max-w-xs">
+                  {cnameVerified && rootDomain
+                    ? formatFullHost(rootDomain, pageSubdomain)
+                    : `${appBaseUrl}/${username}`}
+                </p>
               </div>
             </div>
           </div>
