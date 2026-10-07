@@ -785,9 +785,6 @@ export default function ResourcesPage() {
                 <p className="text-xl font-extrabold tabular-nums text-zinc-900 dark:text-white mt-1 leading-none tracking-tight">
                   {resources.length}
                 </p>
-                <p className="mt-1 text-[10px] text-zinc-400 dark:text-[#9B9085] truncate">
-                  {resources.length === 1 ? "1 file hosted" : `${resources.length} files hosted`}
-                </p>
               </div>
               <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0066B2]/[0.04] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             </div>
@@ -805,9 +802,6 @@ export default function ResourcesPage() {
                 </p>
                 <p className="text-xl font-extrabold tabular-nums text-zinc-900 dark:text-white mt-1 leading-none tracking-tight truncate">
                   {formatBytes(totalSizeBytes)}
-                </p>
-                <p className="mt-1 text-[10px] text-zinc-400 dark:text-[#9B9085] truncate">
-                  {storagePercentage}% of 500 MB
                 </p>
               </div>
               <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0066B2]/[0.04] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
@@ -827,9 +821,6 @@ export default function ResourcesPage() {
                 <p className="text-xl font-extrabold tabular-nums text-zinc-900 dark:text-white mt-1 leading-none tracking-tight">
                   {linkedStats.linkedCount}
                 </p>
-                <p className="mt-1 text-[10px] text-zinc-400 dark:text-[#9B9085] truncate">
-                  {linkedStats.unlinkedCount > 0 ? `${linkedStats.unlinkedCount} unlinked` : "all connected"}
-                </p>
               </div>
               <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0066B2]/[0.04] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             </div>
@@ -847,9 +838,6 @@ export default function ResourcesPage() {
                 </p>
                 <p className="text-xl font-extrabold tabular-nums text-zinc-900 dark:text-white mt-1 leading-none tracking-tight">
                   {totalDeliveries}
-                </p>
-                <p className="mt-1 text-[10px] text-zinc-400 dark:text-[#9B9085] truncate">
-                  sent to leads
                 </p>
               </div>
               <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0066B2]/[0.04] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />

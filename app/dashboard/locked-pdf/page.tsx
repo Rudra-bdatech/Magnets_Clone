@@ -958,9 +958,6 @@ export default function LockedPdfPage() {
                 <p className="text-xl font-extrabold tabular-nums text-zinc-900 dark:text-white mt-1 leading-none tracking-tight">
                   {liveCount} <span className="text-xs font-normal text-zinc-400">/ {total}</span>
                 </p>
-                <p className="mt-1 text-[10px] text-zinc-400 dark:text-[#9B9085] truncate">
-                  of {total} documents
-                </p>
               </div>
               <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0066B2]/[0.04] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             </div>
@@ -978,9 +975,6 @@ export default function LockedPdfPage() {
                 </p>
                 <p className="text-xl font-extrabold tabular-nums text-zinc-900 dark:text-white mt-1 leading-none tracking-tight">
                   {totalViews.toLocaleString()}
-                </p>
-                <p className="mt-1 text-[10px] text-zinc-400 dark:text-[#9B9085] truncate">
-                  all PDF views
                 </p>
               </div>
               <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0066B2]/[0.04] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
@@ -1000,9 +994,6 @@ export default function LockedPdfPage() {
                 <p className="text-xl font-extrabold tabular-nums text-zinc-900 dark:text-white mt-1 leading-none tracking-tight">
                   {totalSignups.toLocaleString()}
                 </p>
-                <p className="mt-1 text-[10px] text-zinc-400 dark:text-[#9B9085] truncate">
-                  PDF unlocks
-                </p>
               </div>
               <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0066B2]/[0.04] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             </div>
@@ -1020,9 +1011,6 @@ export default function LockedPdfPage() {
                 </p>
                 <p className="text-xl font-extrabold tabular-nums text-zinc-900 dark:text-white mt-1 leading-none tracking-tight">
                   {avgConversion}%
-                </p>
-                <p className="mt-1 text-[10px] text-zinc-400 dark:text-[#9B9085] truncate">
-                  visitor to unlock
                 </p>
               </div>
               <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0066B2]/[0.04] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />

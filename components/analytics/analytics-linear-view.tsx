@@ -271,7 +271,6 @@ export default function AnalyticsLinearView({
       id: "signups",
       label: "Total Signups",
       value: signupsCount.toLocaleString(),
-      sub: `${signupsCount} unique · ${statsInRange.signupsInRange} in range`,
       icon: Users,
       iconBg: "bg-[#EFF6FF] dark:bg-[#0066B2]/20",
       iconColor: "text-[#0066B2] dark:text-[#38BDF8]",
@@ -280,7 +279,6 @@ export default function AnalyticsLinearView({
       id: "visits",
       label: "Total Visits",
       value: visitsCount.toLocaleString(),
-      sub: `${statsInRange.visitsInRange} in ${rangeLabel}`,
       icon: Eye,
       iconBg: "bg-violet-50 dark:bg-violet-500/20",
       iconColor: "text-violet-600 dark:text-violet-400",
@@ -289,7 +287,6 @@ export default function AnalyticsLinearView({
       id: "conversion",
       label: "Conversion Rate",
       value: conversionRate,
-      sub: "Tracked conversions ÷ visits",
       icon: TrendingUp,
       iconBg: "bg-emerald-50 dark:bg-emerald-500/20",
       iconColor: "text-emerald-600 dark:text-emerald-400",
@@ -298,7 +295,6 @@ export default function AnalyticsLinearView({
       id: "tracked",
       label: "Tracked Conversions",
       value: signupsCount.toLocaleString(),
-      sub: `${statsInRange.signupsInRange} in ${rangeLabel}`,
       icon: CheckCircle2,
       iconBg: "bg-amber-50 dark:bg-amber-500/20",
       iconColor: "text-amber-600 dark:text-amber-400",
@@ -523,7 +519,7 @@ export default function AnalyticsLinearView({
                 </div>
               </div>
 
-              {/* Right: Label, Value & Subtext */}
+              {/* Right: Label & Value */}
               <div className="flex-1 min-w-0 w-full">
                 <div className="flex items-center justify-between gap-1">
                   <p className="text-[10px] sm:text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-[#9B9085] leading-none whitespace-normal sm:truncate">
@@ -533,10 +529,6 @@ export default function AnalyticsLinearView({
 
                 <p className="text-xl font-extrabold tabular-nums text-zinc-900 dark:text-white mt-1 leading-none tracking-tight">
                   {card.value}
-                </p>
-
-                <p className="mt-1 text-[10px] text-zinc-400 dark:text-[#9B9085] truncate">
-                  {card.sub}
                 </p>
               </div>
 

@@ -991,9 +991,6 @@ function parseCsvLine(line: string): string[] {
               <p className="text-xl font-extrabold tabular-nums text-zinc-900 dark:text-white mt-1 leading-none tracking-tight">
                 {totalLeads}
               </p>
-              <p className="mt-1 text-[10px] text-zinc-400 dark:text-[#9B9085] truncate">
-                all captures
-              </p>
             </div>
             <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0066B2]/[0.04] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           </div>
@@ -1011,9 +1008,6 @@ function parseCsvLine(line: string): string[] {
               </p>
               <p className="text-xl font-extrabold tabular-nums text-zinc-900 dark:text-white mt-1 leading-none tracking-tight">
                 {uniqueSignups}
-              </p>
-              <p className="mt-1 text-[10px] text-zinc-400 dark:text-[#9B9085] truncate">
-                distinct emails
               </p>
             </div>
             <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0066B2]/[0.04] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
@@ -1033,9 +1027,6 @@ function parseCsvLine(line: string): string[] {
               <p className="text-xl font-extrabold tabular-nums text-zinc-900 dark:text-white mt-1 leading-none tracking-tight">
                 +{recentMonthCount}
               </p>
-              <p className="mt-1 text-[10px] text-zinc-400 dark:text-[#9B9085] truncate">
-                past 30 days
-              </p>
             </div>
             <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0066B2]/[0.04] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           </div>
@@ -1053,9 +1044,6 @@ function parseCsvLine(line: string): string[] {
               </p>
               <p className="text-xl font-extrabold tabular-nums text-zinc-900 dark:text-white mt-1 leading-none tracking-tight">
                 {activeInSequenceCount}
-              </p>
-              <p className="mt-1 text-[10px] text-zinc-400 dark:text-[#9B9085] truncate">
-                in automation
               </p>
             </div>
             <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0066B2]/[0.04] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />

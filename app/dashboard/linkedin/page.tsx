@@ -780,39 +780,60 @@ export default function LinkedInAutomationPage() {
             </h2>
           </div>
 
-          {/* â”€â”€ Funnel KPI Cards â”€â”€ */}
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 mb-5">
-            <div className="rounded-2xl border border-[#0A66C2]/20 bg-white p-5 shadow-xs dark:border-[#0A66C2]/25 dark:bg-[#18181C]">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-zinc-500 dark:text-[#9B9085]">Total LinkedIn Inbound</span>
-                <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#EFF6FF] text-[#0A66C2] dark:bg-[#0A66C2]/20 dark:text-[#38BDF8]">
-                  <Linkedin className="h-3.5 w-3.5" />
-                </span>
+          {/* ── Funnel KPI Cards ── */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-5">
+            {/* Total LinkedIn Inbound */}
+            <div className="group relative h-full rounded-2xl border border-zinc-200/80 bg-white/90 dark:border-[#2e2e38] dark:bg-[#18181B]/90 p-3.5 sm:p-4 shadow-sm backdrop-blur-sm hover:border-[#0066B2]/40 dark:hover:border-[#38BDF8]/25 hover:shadow-md transition-all duration-200 overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
+              <div className="flex items-center justify-between sm:justify-start w-full sm:w-auto">
+                <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl border border-[#0A66C2]/30 bg-[#EFF6FF] text-[#0A66C2] dark:border-[#0A66C2]/30 dark:bg-[#0A66C2]/20 dark:text-[#38BDF8]">
+                  <Linkedin className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
+                </div>
               </div>
-              <p className="mt-2 text-2xl font-bold text-zinc-900 dark:text-white">{loading ? "â€”" : linkedinLeads.length}</p>
-              <p className="text-[11px] text-zinc-400 dark:text-[#9B9085] mt-0.5">Commenters delivered via DM</p>
+              <div className="flex-1 min-w-0 w-full">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-[#9B9085] leading-none truncate">
+                  Total LinkedIn Inbound
+                </p>
+                <p className="text-xl font-extrabold tabular-nums text-zinc-900 dark:text-white mt-1 leading-none tracking-tight">
+                  {loading ? "—" : linkedinLeads.length}
+                </p>
+              </div>
+              <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0066B2]/[0.04] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             </div>
 
-            <div className="rounded-2xl border border-emerald-500/20 bg-white p-5 shadow-xs dark:border-emerald-500/25 dark:bg-[#18181C]">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-emerald-700 dark:text-emerald-400">Converted (Emails Captured)</span>
-                <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600 dark:bg-emerald-500/15 dark:text-emerald-400">
-                  <Check className="h-3.5 w-3.5" />
-                </span>
+            {/* Converted (Emails Captured) */}
+            <div className="group relative h-full rounded-2xl border border-zinc-200/80 bg-white/90 dark:border-[#2e2e38] dark:bg-[#18181B]/90 p-3.5 sm:p-4 shadow-sm backdrop-blur-sm hover:border-[#0066B2]/40 dark:hover:border-[#38BDF8]/25 hover:shadow-md transition-all duration-200 overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
+              <div className="flex items-center justify-between sm:justify-start w-full sm:w-auto">
+                <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl border border-emerald-500/30 bg-emerald-50 text-emerald-600 dark:border-emerald-500/30 dark:bg-emerald-500/20 dark:text-emerald-400">
+                  <Check className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
+                </div>
               </div>
-              <p className="mt-2 text-2xl font-bold text-zinc-900 dark:text-white">{loading ? "â€”" : convertedLeads.length}</p>
-              <p className="text-[11px] text-emerald-600/80 dark:text-emerald-400/80 mt-0.5">Unlocked PDF & subscribed</p>
+              <div className="flex-1 min-w-0 w-full">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-[#9B9085] leading-none truncate">
+                  Converted (Emails Captured)
+                </p>
+                <p className="text-xl font-extrabold tabular-nums text-zinc-900 dark:text-white mt-1 leading-none tracking-tight">
+                  {loading ? "—" : convertedLeads.length}
+                </p>
+              </div>
+              <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0066B2]/[0.04] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             </div>
 
-            <div className="rounded-2xl border border-amber-500/20 bg-white p-5 shadow-xs dark:border-amber-500/25 dark:bg-[#18181C]">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-amber-700 dark:text-amber-400">Conversion Rate</span>
-                <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-amber-50 text-amber-600 dark:bg-amber-500/15 dark:text-amber-400">
-                  <Zap className="h-3.5 w-3.5" />
-                </span>
+            {/* Conversion Rate */}
+            <div className="group relative h-full rounded-2xl border border-zinc-200/80 bg-white/90 dark:border-[#2e2e38] dark:bg-[#18181B]/90 p-3.5 sm:p-4 shadow-sm backdrop-blur-sm hover:border-[#0066B2]/40 dark:hover:border-[#38BDF8]/25 hover:shadow-md transition-all duration-200 overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
+              <div className="flex items-center justify-between sm:justify-start w-full sm:w-auto">
+                <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl border border-amber-500/30 bg-amber-50 text-amber-600 dark:border-amber-500/30 dark:bg-amber-500/20 dark:text-amber-400">
+                  <Zap className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
+                </div>
               </div>
-              <p className="mt-2 text-2xl font-bold text-zinc-900 dark:text-white">{loading ? "â€”" : `${conversionRate}%`}</p>
-              <p className="text-[11px] text-amber-600/80 dark:text-amber-400/80 mt-0.5">{pendingLeads.length} waiting to signup</p>
+              <div className="flex-1 min-w-0 w-full">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-[#9B9085] leading-none truncate">
+                  Conversion Rate
+                </p>
+                <p className="text-xl font-extrabold tabular-nums text-zinc-900 dark:text-white mt-1 leading-none tracking-tight">
+                  {loading ? "—" : `${conversionRate}%`}
+                </p>
+              </div>
+              <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0066B2]/[0.04] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             </div>
           </div>
 
