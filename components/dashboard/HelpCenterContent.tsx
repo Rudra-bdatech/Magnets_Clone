@@ -1601,7 +1601,7 @@ export default function HelpCenterContent({
                   {/* Bottom Action Button */}
                   <div className="pt-2">
                     <Link
-                      href="/dashboard/brand"
+                      href="/dashboard/templates"
                       onClick={() => setShowHelp(false)}
                       className="inline-flex items-center gap-2 rounded-xl bg-[#0066B2] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#005799] transition-all cursor-pointer shadow-sm"
                     >

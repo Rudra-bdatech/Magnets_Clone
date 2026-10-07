@@ -28,7 +28,7 @@ const baseNavItems: { href: string; label: string; icon: any; isModal?: boolean;
   { href: "/dashboard/assets", label: "Assets", icon: FolderOpen },
   { href: "/dashboard/integration", label: "Integration", icon: Sliders },
   { href: "/dashboard/linkedin", label: "LinkedIn Auto-Reply", icon: Linkedin },
-  { href: "/dashboard/brand", label: "Brand", icon: Palette },
+  { href: "/dashboard/templates", label: "Templates", icon: Palette },
 ];
 
 export default function DashboardShell({

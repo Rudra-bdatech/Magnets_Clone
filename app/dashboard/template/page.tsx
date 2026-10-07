@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
 
-export default function BrandPageRedirect() {
+export default function TemplatePageRedirect() {
   redirect("/dashboard/templates");
 }

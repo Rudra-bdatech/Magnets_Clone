@@ -80,7 +80,7 @@ export function computeOnboardingStatus({
       description: "Configure your primary brand color, logo, and brand name for consistent visitor trust.",
       done: hasCustomBrand,
       ctaText: hasCustomBrand ? "Edit Brand" : "Set Brand",
-      href: "/dashboard/brand",
+      href: "/dashboard/templates",
       category: "Identity",
       iconName: "Palette",
     },
