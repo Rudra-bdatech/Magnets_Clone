@@ -43,6 +43,11 @@ export function computeOnboardingStatus({
     account?.customDomain
   );
 
+  const hasEmailConnected = Boolean(
+    account?.gmailOAuth?.connected ||
+    (account?.customSmtp?.enabled && account?.customSmtp?.isVerified)
+  );
+
   const steps: OnboardingStep[] = [
     {
       id: "create-magnet",
@@ -53,6 +58,16 @@ export function computeOnboardingStatus({
       href: "/dashboard/landing-page",
       category: "Lead Capture",
       iconName: "FileText",
+    },
+    {
+      id: "connect-email",
+      title: "Connect your Gmail or SMTP",
+      description: "Link your Gmail account or custom SMTP so automated emails and resources are sent to your leads.",
+      done: hasEmailConnected,
+      ctaText: hasEmailConnected ? "Connected ✓" : "Connect Gmail",
+      href: "/dashboard/settings?tab=email",
+      category: "Email Delivery",
+      iconName: "Mail",
     },
     {
       id: "publish-live",
