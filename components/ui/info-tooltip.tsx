@@ -49,7 +49,6 @@ export function InfoTooltip({
     if (!buttonRef.current) return;
     const rect = buttonRef.current.getBoundingClientRect();
     const tooltipWidth = Math.min(300, window.innerWidth - 24);
-    const tooltipHeight = 110; // Approximate fallback for position calculation
 
     // Decide whether to show above or below
     let resolvedSide: "top" | "bottom" = "bottom";
@@ -189,22 +188,22 @@ export function InfoTooltip({
               width: `${Math.min(300, window.innerWidth - 24)}px`,
               zIndex: 99999,
             }}
-            className="rounded-xl border border-zinc-700/80 bg-zinc-900/98 dark:bg-zinc-950/98 p-3 text-xs leading-relaxed text-zinc-100 shadow-2xl backdrop-blur-md animate-in fade-in zoom-in-95 duration-150 select-text"
+            className="rounded-xl border border-zinc-200 bg-white/80 dark:border-zinc-700/80 dark:bg-zinc-950/80 p-3 text-xs leading-relaxed shadow-2xl backdrop-blur-md animate-in fade-in zoom-in-95 duration-150 select-text"
           >
             {title && (
-              <div className="font-semibold text-white mb-1 flex items-center gap-1.5 border-b border-zinc-800 pb-1">
-                <Info className="h-3 w-3 text-sky-400 shrink-0" />
+              <div className="font-semibold text-zinc-900 dark:text-white mb-1 flex items-center gap-1.5 border-b border-zinc-100 dark:border-zinc-800 pb-1 text-xs">
+                <Info className="h-3.5 w-3.5 text-sky-500 dark:text-sky-400 shrink-0" />
                 <span>{title}</span>
               </div>
             )}
-            <div className="text-[11.5px] sm:text-xs text-zinc-300 font-normal leading-normal">
+            <div className="text-[11.5px] sm:text-xs text-zinc-700 dark:text-zinc-300 font-normal leading-normal">
               {content}
             </div>
 
             {/* Pointer arrow tip accurately positioned under/above button */}
             <div
               style={{ left: `${coords.arrowLeft}px` }}
-              className={`absolute h-2 w-2 -translate-x-1/2 rotate-45 border-zinc-700/80 bg-zinc-900 dark:bg-zinc-950 ${
+              className={`absolute h-2 w-2 -translate-x-1/2 rotate-45 border-zinc-200 bg-white/80 backdrop-blur-md dark:border-zinc-700/80 dark:bg-zinc-950/80 ${
                 coords.actualSide === "bottom"
                   ? "-top-1 border-t border-l"
                   : "-bottom-1 border-b border-r"
