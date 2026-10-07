@@ -3,6 +3,7 @@
 import React, { useState, memo } from "react";
 import { ChevronDown, Check, Eye, EyeOff, Slack, Zap, Mail } from "lucide-react";
 import { type Account } from "@/lib/data";
+import { InfoTooltip } from "@/components/ui/info-tooltip";
 
 interface AutomationsSectionProps {
   account: Account | null;
@@ -45,8 +46,14 @@ export const AutomationsSection = memo(function AutomationsSection({
       {/* AUTOMATIONS Section */}
       <div className="space-y-3">
         <div>
-          <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 dark:text-[#9B9085]">AUTOMATIONS</p>
-          <p className="text-xs text-zinc-500 dark:text-[#666675]">Send each new signup to the tools your team already uses.</p>
+          <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 dark:text-[#9B9085] flex items-center gap-1.5">
+            AUTOMATIONS
+            <InfoTooltip
+              content="Send each new signup to the tools your team already uses."
+              title="Automations"
+              align="start"
+            />
+          </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -61,8 +68,14 @@ export const AutomationsSection = memo(function AutomationsSection({
                   <img src="/brand/slack.svg" alt="Slack" className="h-full w-full object-contain" />
                 </div>
                 <div>
-                  <h5 className="text-xs font-bold text-zinc-900 dark:text-white">Slack</h5>
-                  <p className="text-xs text-zinc-500 dark:text-[#9B9085] mt-0.5">Get a compact Slack message whenever a new lead signs up.</p>
+                  <h5 className="text-xs font-bold text-zinc-900 dark:text-white flex items-center gap-1.5">
+                    Slack
+                    <InfoTooltip
+                      content="Get a compact Slack message whenever a new lead signs up."
+                      title="Slack Automation"
+                      align="start"
+                    />
+                  </h5>
                 </div>
               </div>
               <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-[#0066B2]/30 bg-white text-zinc-500 shadow-sm dark:border-[#0066B2]/30 dark:bg-[#18181B] transition-transform duration-300">
@@ -179,8 +192,14 @@ export const AutomationsSection = memo(function AutomationsSection({
                   <Zap className="h-4.5 w-4.5 fill-current" />
                 </div>
                 <div>
-                  <h5 className="text-xs font-bold text-zinc-900 dark:text-white">Zapier</h5>
-                  <p className="text-xs text-zinc-500 dark:text-[#9B9085] mt-0.5">Trigger a Zap whenever a new lead signs up.</p>
+                  <h5 className="text-xs font-bold text-zinc-900 dark:text-white flex items-center gap-1.5">
+                    Zapier
+                    <InfoTooltip
+                      content="Trigger a Zap whenever a new lead signs up."
+                      title="Zapier Automation"
+                      align="start"
+                    />
+                  </h5>
                 </div>
               </div>
               <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-[#0066B2]/30 bg-white text-zinc-500 shadow-sm dark:border-[#0066B2]/30 dark:bg-[#18181B] transition-transform duration-300">
@@ -302,8 +321,14 @@ export const AutomationsSection = memo(function AutomationsSection({
                   <img src="/brand/pipedrive.svg" alt="Pipedrive" className="h-full w-full object-contain" />
                 </div>
                 <div>
-                  <h5 className="text-xs font-bold text-zinc-900 dark:text-white">Pipedrive</h5>
-                  <p className="text-xs text-zinc-500 dark:text-[#9B9085] mt-0.5">Create or update a person for each signup using their email address.</p>
+                  <h5 className="text-xs font-bold text-zinc-900 dark:text-white flex items-center gap-1.5">
+                    Pipedrive
+                    <InfoTooltip
+                      content="Create or update a person for each signup using their email address."
+                      title="Pipedrive CRM"
+                      align="start"
+                    />
+                  </h5>
                 </div>
               </div>
               <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-[#0066B2]/30 bg-white text-zinc-500 shadow-sm dark:border-[#0066B2]/30 dark:bg-[#18181B] transition-transform duration-300">
@@ -399,8 +424,14 @@ export const AutomationsSection = memo(function AutomationsSection({
                   <Mail className="h-4.5 w-4.5" />
                 </div>
                 <div>
-                  <h5 className="text-xs font-bold text-zinc-900 dark:text-white">Kit</h5>
-                  <p className="text-xs text-zinc-500 dark:text-[#9B9085] mt-0.5">Add every signup to Kit and tag the lead magnet they requested.</p>
+                  <h5 className="text-xs font-bold text-zinc-900 dark:text-white flex items-center gap-1.5">
+                    Kit
+                    <InfoTooltip
+                      content="Add every signup to Kit and tag the lead magnet they requested."
+                      title="Kit (ConvertKit) Automation"
+                      align="start"
+                    />
+                  </h5>
                 </div>
               </div>
               <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-[#0066B2]/30 bg-white text-zinc-500 shadow-sm dark:border-[#0066B2]/30 dark:bg-[#18181B] transition-transform duration-300">
