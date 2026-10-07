@@ -114,7 +114,7 @@ export default function AuthShell({
       </header>
 
       {/* Main Container */}
-      <div className="flex flex-1 items-center justify-center px-4 py-3 sm:py-6">
+      <div className="apple-page-enter flex flex-1 items-center justify-center px-4 py-3 sm:py-6">
         <div className={`w-full ${showSidecar ? "max-w-5xl grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-center" : "max-w-md"}`}>
 
           {/* LEFT COLUMN: Compact Sidecar Showcase */}

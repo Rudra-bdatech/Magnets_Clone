@@ -983,13 +983,17 @@ export default function DashboardShell({
             </div>
           </header>
           <main className="min-w-0 flex-1 bg-[#FAFAF8] dark:bg-[#0E0E10] w-full max-w-full">
-            <AnimatePresence mode="wait">
+            <AnimatePresence mode="wait" initial={false}>
               <motion.div
                 key={pathname}
-                initial={{ opacity: 0, y: 8, scale: 0.99 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: -6, scale: 0.99 }}
-                transition={{ duration: 0.10, ease: [0.16, 1, 0.3, 1] }}
+                initial={{ opacity: 0, y: 4 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, transition: { duration: 0.05, ease: "easeOut" } }}
+                transition={{
+                  duration: 0.13,
+                  ease: [0.22, 1, 0.36, 1],
+                }}
+                style={{ willChange: "opacity, transform" }}
                 className="w-full h-full max-w-full"
               >
                 {children}

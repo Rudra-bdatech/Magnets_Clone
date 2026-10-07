@@ -313,7 +313,7 @@ export default async function MagnetPageRoute({
 
   return (
     <main
-      className="flex min-h-screen flex-col font-sans transition-colors duration-300 relative overflow-x-clip"
+      className="apple-page-enter flex min-h-screen flex-col font-sans transition-colors duration-300 relative overflow-x-clip"
       style={{
         colorScheme: themeMode === "dark" ? "dark" : "light",
         backgroundColor: isTemplate8

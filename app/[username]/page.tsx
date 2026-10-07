@@ -74,7 +74,7 @@ export default async function UserProfileRoute({
   const logo = accountDoc.logo || null;
 
   return (
-    <main className="min-h-screen bg-[#F8FAFC] dark:bg-[#090D16] text-zinc-900 dark:text-white transition-colors duration-200 py-12 px-4 sm:px-6">
+    <main className="apple-page-enter min-h-screen bg-[#F8FAFC] dark:bg-[#090D16] text-zinc-900 dark:text-white transition-colors duration-200 py-12 px-4 sm:px-6">
       <div className="max-w-3xl mx-auto space-y-8">
         
         {/* Profile Card Header */}

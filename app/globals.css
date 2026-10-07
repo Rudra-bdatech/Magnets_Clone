@@ -87,6 +87,22 @@ html.lenis body {
   will-change: transform;
 }
 
+@keyframes applePageEnter {
+  0% {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.apple-page-enter {
+  animation: applePageEnter 0.14s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  will-change: opacity, transform;
+}
+
 /* Landing page GPU composite layers — keep animated elements on their own layer
    to avoid triggering full-page layout/paint on scroll. */
 .landing-section-gpu {
