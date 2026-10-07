@@ -1291,12 +1291,12 @@ export default function PagesPage() {
                   <p className="text-[11px] text-zinc-500 dark:text-[#666675]">The path of the page. Lowercase, digits, and hyphens only.</p>
                 </div>
 
-                <div className="pt-3 flex flex-wrap items-center justify-end gap-2.5">
+                <div className="pt-3 flex items-center justify-end gap-2.5 w-full">
                   <button
                     type="button"
                     disabled={isCreating}
                     onClick={() => setShowCreateModal(false)}
-                    className="rounded-xl border border-[#0066B2]/30 bg-white px-4 py-2 text-xs font-semibold text-zinc-700 hover:bg-zinc-100 dark:border-[#0066B2]/35 dark:bg-[#222228] dark:text-white dark:hover:bg-[#2c2c34] transition-all cursor-pointer disabled:opacity-50"
+                    className="flex-1 sm:flex-initial rounded-xl border border-zinc-200 dark:border-[#2e2e38] bg-white dark:bg-[#222228] px-4 py-2.5 text-xs font-semibold text-zinc-700 dark:text-white hover:bg-zinc-100 dark:hover:bg-[#2c2c34] transition-all cursor-pointer disabled:opacity-50 text-center"
                   >
                     Cancel
                   </button>
@@ -1337,7 +1337,7 @@ export default function PagesPage() {
                       setIsCreating(false);
                       router.push(`/dashboard/leadmagnets/${newId}`);
                     }}
-                    className="flex items-center gap-1.5 rounded-xl bg-emerald-600 px-4 py-2 text-xs font-bold text-white hover:bg-emerald-700 transition-all cursor-pointer shadow-sm disabled:opacity-50"
+                    className="flex-[1.5] sm:flex-initial inline-flex items-center justify-center gap-1.5 rounded-xl bg-[#059669] px-5 py-2.5 text-xs font-bold text-white hover:bg-[#047857] shadow-[0_4px_14px_rgba(5,150,105,0.3)] active:scale-95 transition-all cursor-pointer disabled:opacity-50"
                   >
                     <FileText className="h-3.5 w-3.5" />
                     <span>Create Landing Page</span>

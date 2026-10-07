@@ -286,7 +286,7 @@ export default function DashboardHome({
   const [resources, setResources] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [showCreateModal, setShowCreateModal] = useState(false);
-  const [createModalType, setCreateModalType] = useState<"classic" | "locked-pdf" | null>(null);
+  const [selectedMagnetType, setSelectedMagnetType] = useState<"classic" | "locked-pdf">("locked-pdf");
   const [createMagnetName, setCreateMagnetName] = useState("");
 
   const handleCreateMagnet = (templateType: "classic" | "locked-pdf") => {
@@ -572,7 +572,7 @@ export default function DashboardHome({
                 type="button"
                 onClick={() => {
                   setCreateMagnetName("");
-                  setCreateModalType(null);
+                  setSelectedMagnetType("locked-pdf");
                   setShowCreateModal(true);
                 }}
                 className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-[#0066B2] text-white text-xs font-bold shadow-md hover:bg-[#005291] active:scale-95 transition-all duration-150 hover:shadow-[0_4px_16px_rgba(0,102,178,0.35)] hover:-translate-y-0.5 cursor-pointer"
@@ -704,7 +704,7 @@ export default function DashboardHome({
                   type="button"
                   onClick={() => {
                     setCreateMagnetName("");
-                    setCreateModalType("classic");
+                    setSelectedMagnetType("classic");
                     setShowCreateModal(true);
                   }}
                   className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#0066B2] text-white text-xs font-bold shadow-sm hover:bg-[#005291] active:scale-95 transition-all cursor-pointer whitespace-nowrap shrink-0"
@@ -780,7 +780,7 @@ export default function DashboardHome({
                   type="button"
                   onClick={() => {
                     setCreateMagnetName("");
-                    setCreateModalType("locked-pdf");
+                    setSelectedMagnetType("locked-pdf");
                     setShowCreateModal(true);
                   }}
                   className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-600 text-white text-xs font-bold shadow-sm hover:bg-amber-700 active:scale-95 transition-all cursor-pointer whitespace-nowrap shrink-0"
@@ -1018,39 +1018,91 @@ export default function DashboardHome({
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: "100%", scale: 1 }}
               transition={{ type: "spring", stiffness: 400, damping: 32, mass: 0.8 }}
-              className="relative w-full max-w-[460px] rounded-t-3xl sm:rounded-2xl border-t sm:border border-zinc-200/80 dark:border-[#2e2e38] bg-white dark:bg-[#18181c] p-5 sm:p-6 text-zinc-900 dark:text-white shadow-2xl space-y-4 sm:space-y-5 max-h-[90vh] overflow-y-auto"
+              className="relative w-full max-w-[480px] rounded-t-3xl sm:rounded-2xl border-t sm:border border-zinc-200/80 dark:border-[#2e2e38] bg-white dark:bg-[#18181c] p-5 sm:p-6 text-zinc-900 dark:text-white shadow-2xl space-y-4 sm:space-y-5 max-h-[92vh] overflow-y-auto"
               onClick={(e) => e.stopPropagation()}
             >
               {/* Mobile Drag Indicator */}
-              <div className="flex sm:hidden justify-center pb-1">
-                <div className="w-10 h-1 rounded-full bg-zinc-300 dark:bg-zinc-700" />
+              <div className="flex sm:hidden justify-center pb-1 -mt-1">
+                <div className="w-10 h-1.5 rounded-full bg-zinc-300 dark:bg-zinc-700" />
               </div>
 
               {/* Modal Header */}
-              <div className="flex items-start justify-between">
-                <div>
-                  <h3 className="text-base font-bold text-zinc-900 dark:text-white">
-                    {createModalType === "classic"
-                      ? "Create Landing Page"
-                      : createModalType === "locked-pdf"
-                      ? "Create Locked PDF"
-                      : "Create a magnet"}
-                  </h3>
-                  <p className="text-xs text-zinc-500 dark:text-[#9B9085] mt-1">
-                    Name the page and choose its URL.
-                  </p>
-                </div>
+              <div className="flex items-center justify-between">
+                <h3 className="text-base font-bold text-zinc-900 dark:text-white">
+                  Create a magnet
+                </h3>
                 <button
                   type="button"
                   onClick={() => setShowCreateModal(false)}
-                  className="rounded-lg p-1 text-zinc-400 hover:bg-zinc-100 dark:hover:bg-[#25252b] dark:hover:text-white transition-colors cursor-pointer"
+                  className="rounded-lg p-1.5 text-zinc-400 hover:bg-zinc-100 dark:hover:bg-[#25252b] dark:hover:text-white transition-colors cursor-pointer"
                 >
                   <X className="h-4 w-4" />
                 </button>
               </div>
 
-              {/* Form */}
+              {/* Form Content */}
               <div className="space-y-4">
+                {/* Format Selection Cards */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                    {/* Locked PDF Card */}
+                    <button
+                      type="button"
+                      onClick={() => setSelectedMagnetType("locked-pdf")}
+                      className={`relative flex items-start gap-3 p-3 rounded-xl border text-left transition-all cursor-pointer ${
+                        selectedMagnetType === "locked-pdf"
+                          ? "border-[#0066B2] bg-[#0066B2]/10 dark:bg-[#0066B2]/15 ring-2 ring-[#0066B2] shadow-sm"
+                          : "border-zinc-200 dark:border-[#2e2e38] bg-zinc-50/70 dark:bg-[#121214] hover:border-zinc-300 dark:hover:border-[#3e3e4a]"
+                      }`}
+                    >
+                      <div
+                        className={`p-2 rounded-lg shrink-0 transition-colors ${
+                          selectedMagnetType === "locked-pdf"
+                            ? "bg-[#0066B2] text-white"
+                            : "bg-zinc-200 dark:bg-[#25252b] text-zinc-600 dark:text-zinc-400"
+                        }`}
+                      >
+                        <Lock className="h-4 w-4" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <span className="text-xs font-bold text-zinc-900 dark:text-white">
+                          Locked PDF
+                        </span>
+                        <p className="text-[11px] text-zinc-500 dark:text-[#9B9085] mt-0.5 leading-snug">
+                          OTP verification gate with live interactive preview.
+                        </p>
+                      </div>
+                    </button>
+
+                    {/* Classic Landing Page Card */}
+                    <button
+                      type="button"
+                      onClick={() => setSelectedMagnetType("classic")}
+                      className={`relative flex items-start gap-3 p-3 rounded-xl border text-left transition-all cursor-pointer ${
+                        selectedMagnetType === "classic"
+                          ? "border-[#059669] bg-[#059669]/10 dark:bg-[#059669]/15 ring-2 ring-[#059669] shadow-sm"
+                          : "border-zinc-200 dark:border-[#2e2e38] bg-zinc-50/70 dark:bg-[#121214] hover:border-zinc-300 dark:hover:border-[#3e3e4a]"
+                      }`}
+                    >
+                      <div
+                        className={`p-2 rounded-lg shrink-0 transition-colors ${
+                          selectedMagnetType === "classic"
+                            ? "bg-[#059669] text-white"
+                            : "bg-zinc-200 dark:bg-[#25252b] text-zinc-600 dark:text-zinc-400"
+                        }`}
+                      >
+                        <FileText className="h-4 w-4" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <span className="text-xs font-bold text-zinc-900 dark:text-white">
+                          Landing Page
+                        </span>
+                        <p className="text-[11px] text-zinc-500 dark:text-[#9B9085] mt-0.5 leading-snug">
+                          Opt-in landing page with automated lead delivery.
+                        </p>
+                      </div>
+                    </button>
+                  </div>
+
                 {/* Page Name */}
                 <div className="space-y-1.5">
                   <label className="block text-xs font-semibold text-zinc-700 dark:text-[#d4c8bc]">
@@ -1061,8 +1113,18 @@ export default function DashboardHome({
                     autoFocus
                     value={createMagnetName}
                     onChange={(e) => setCreateMagnetName(e.target.value)}
-                    placeholder="AI Pipeline Playbook"
-                    className="w-full rounded-xl border border-zinc-200 dark:border-[#2e2e38] bg-zinc-50 dark:bg-[#121214] px-3.5 py-2.5 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-[#52525b] outline-none focus:ring-2 focus:ring-[#0066B2] transition-all"
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        handleCreateMagnet(selectedMagnetType);
+                      }
+                    }}
+                    placeholder={
+                      selectedMagnetType === "locked-pdf"
+                        ? "e.g. AI Pipeline Playbook"
+                        : "e.g. 2026 Growth Checklist"
+                    }
+                    className="w-full rounded-xl border border-zinc-200 dark:border-[#2e2e38] bg-zinc-50 dark:bg-[#121214] px-3.5 py-2.5 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-[#52525b] outline-none focus:ring-2 focus:ring-[#0066B2] focus:border-[#0066B2] transition-all"
                   />
                 </div>
 
@@ -1072,13 +1134,16 @@ export default function DashboardHome({
                     URL slug
                   </label>
                   <div className="flex items-center rounded-xl border border-zinc-200 dark:border-[#2e2e38] bg-zinc-50 dark:bg-[#121214] px-3.5 py-2.5 text-xs text-zinc-500 dark:text-[#9B9085]">
-                    <span className="text-zinc-400 dark:text-[#666675] shrink-0 mr-1.5">/</span>
+                    <span className="text-zinc-400 dark:text-[#666675] shrink-0 mr-1.5 font-mono">/</span>
                     <span className="font-mono text-zinc-800 dark:text-[#d4c8bc] truncate">
                       {createMagnetName
                         .toLowerCase()
                         .trim()
                         .replace(/[^a-z0-9\s-]/g, "")
-                        .replace(/\s+/g, "-") || "untitled-page"}
+                        .replace(/\s+/g, "-") ||
+                        (selectedMagnetType === "locked-pdf"
+                          ? "locked-pdf"
+                          : "untitled-page")}
                     </span>
                   </div>
                   <p className="text-[11px] text-zinc-400 dark:text-[#666675]">
@@ -1087,53 +1152,36 @@ export default function DashboardHome({
                 </div>
 
                 {/* Modal Action Buttons */}
-                <div className="pt-3 flex flex-wrap items-center justify-end gap-2.5">
+                <div className="pt-3 flex items-center justify-end gap-2.5 w-full">
                   <button
                     type="button"
                     onClick={() => setShowCreateModal(false)}
-                    className="rounded-xl border border-zinc-200 dark:border-[#2e2e38] bg-white dark:bg-[#222228] px-4 py-2.5 text-xs font-semibold text-zinc-700 dark:text-white hover:bg-zinc-100 dark:hover:bg-[#2c2c34] transition-all cursor-pointer"
+                    className="flex-1 sm:flex-initial rounded-xl border border-zinc-200 dark:border-[#2e2e38] bg-white dark:bg-[#222228] px-4 py-2.5 text-xs font-semibold text-zinc-700 dark:text-white hover:bg-zinc-100 dark:hover:bg-[#2c2c34] transition-all cursor-pointer text-center"
                   >
                     Cancel
                   </button>
 
-                  {createModalType === "classic" ? (
-                    <button
-                      type="button"
-                      onClick={() => handleCreateMagnet("classic")}
-                      className="inline-flex items-center gap-1.5 rounded-xl bg-[#059669] hover:bg-[#047857] px-4 py-2.5 text-xs font-bold text-white shadow-sm transition-all cursor-pointer"
-                    >
-                      <FileText className="h-3.5 w-3.5" />
-                      Create Landing Page
-                    </button>
-                  ) : createModalType === "locked-pdf" ? (
-                    <button
-                      type="button"
-                      onClick={() => handleCreateMagnet("locked-pdf")}
-                      className="inline-flex items-center gap-1.5 rounded-xl bg-[#0066B2] hover:bg-[#005291] px-4 py-2.5 text-xs font-bold text-white shadow-sm transition-all cursor-pointer"
-                    >
-                      <Lock className="h-3.5 w-3.5" />
-                      Create Locked PDF
-                    </button>
-                  ) : (
-                    <>
-                      <button
-                        type="button"
-                        onClick={() => handleCreateMagnet("locked-pdf")}
-                        className="inline-flex items-center gap-1.5 rounded-xl bg-[#0066B2] hover:bg-[#005291] px-4 py-2.5 text-xs font-bold text-white shadow-sm transition-all cursor-pointer"
-                      >
+                  <button
+                    type="button"
+                    onClick={() => handleCreateMagnet(selectedMagnetType)}
+                    className={`flex-[1.5] sm:flex-initial inline-flex items-center justify-center gap-1.5 rounded-xl px-5 py-2.5 text-xs font-bold text-white shadow-md active:scale-95 transition-all cursor-pointer ${
+                      selectedMagnetType === "locked-pdf"
+                        ? "bg-[#0066B2] hover:bg-[#005291] shadow-[0_4px_14px_rgba(0,102,178,0.3)]"
+                        : "bg-[#059669] hover:bg-[#047857] shadow-[0_4px_14px_rgba(5,150,105,0.3)]"
+                    }`}
+                  >
+                    {selectedMagnetType === "locked-pdf" ? (
+                      <>
                         <Lock className="h-3.5 w-3.5" />
-                        Locked PDF
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handleCreateMagnet("classic")}
-                        className="inline-flex items-center gap-1.5 rounded-xl bg-[#059669] hover:bg-[#047857] px-4 py-2.5 text-xs font-bold text-white shadow-sm transition-all cursor-pointer"
-                      >
+                        <span>Create Locked PDF</span>
+                      </>
+                    ) : (
+                      <>
                         <FileText className="h-3.5 w-3.5" />
-                        Landing Page
-                      </button>
-                    </>
-                  )}
+                        <span>Create Landing Page</span>
+                      </>
+                    )}
+                  </button>
                 </div>
               </div>
             </motion.div>

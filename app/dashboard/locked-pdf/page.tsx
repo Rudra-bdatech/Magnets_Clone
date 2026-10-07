@@ -2071,7 +2071,7 @@ export default function LockedPdfPage() {
                 </div>
 
                 {/* Action Buttons */}
-                <div className="pt-3 flex flex-wrap items-center justify-end gap-2.5">
+                <div className="pt-3 flex items-center justify-end gap-2.5 w-full">
                   <button
                     type="button"
                     onClick={() => {
@@ -2080,7 +2080,7 @@ export default function LockedPdfPage() {
                       setCustomSlug("");
                       setIsCustomSlugEdited(false);
                     }}
-                    className="rounded-xl border border-zinc-200 dark:border-[#2e2e38] bg-white dark:bg-[#222228] px-4 py-2 text-xs font-semibold text-zinc-700 dark:text-white hover:bg-zinc-100 dark:hover:bg-[#2c2c34] transition-all cursor-pointer"
+                    className="flex-1 sm:flex-initial rounded-xl border border-zinc-200 dark:border-[#2e2e38] bg-white dark:bg-[#222228] px-4 py-2.5 text-xs font-semibold text-zinc-700 dark:text-white hover:bg-zinc-100 dark:hover:bg-[#2c2c34] transition-all cursor-pointer text-center"
                   >
                     Cancel
                   </button>
@@ -2088,7 +2088,7 @@ export default function LockedPdfPage() {
                   <button
                     type="button"
                     onClick={handleCreateLockedPdf}
-                    className="flex items-center gap-1.5 rounded-xl bg-[#0066B2] px-4 py-2 text-xs font-bold text-white hover:bg-[#005799] transition-all cursor-pointer shadow-sm"
+                    className="flex-[1.5] sm:flex-initial inline-flex items-center justify-center gap-1.5 rounded-xl bg-[#0066B2] px-5 py-2.5 text-xs font-bold text-white hover:bg-[#005799] shadow-[0_4px_14px_rgba(0,102,178,0.3)] active:scale-95 transition-all cursor-pointer"
                   >
                     <Lock className="h-3.5 w-3.5" />
                     <span>Create Locked PDF</span>
