@@ -3,6 +3,7 @@
 import React, { useState, memo } from "react";
 import { Globe, FileText, ChevronDown, Sparkles, Loader2, AlertCircle } from "lucide-react";
 import { type Account } from "@/lib/data";
+import { InfoTooltip } from "@/components/ui/info-tooltip";
 
 interface BrandingSectionProps {
   rootDomain: string;
@@ -64,10 +65,14 @@ export const BrandingSection = memo(function BrandingSection({
               <FileText className="h-4.5 w-4.5" />
             </div>
             <div>
-              <h4 className="text-[14.2px] font-bold text-zinc-900 dark:text-white">Legal links</h4>
-              <p className="text-xs text-zinc-500 dark:text-[#9B9085] mt-0.5">
-                Optionally add your own privacy policy and terms to every page footer.
-              </p>
+              <h4 className="text-[14.2px] font-bold text-zinc-900 dark:text-white flex items-center gap-1.5">
+                Legal links
+                <InfoTooltip
+                  content="Optionally add your own privacy policy and terms to every page footer."
+                  title="Legal Links"
+                  align="start"
+                />
+              </h4>
             </div>
           </div>
           <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-[#E2E8F0] bg-white text-zinc-500 shadow-sm dark:border-[#2e2e38] dark:bg-[#18181B] dark:text-[#9B9085]">
@@ -192,10 +197,14 @@ export const BrandingSection = memo(function BrandingSection({
               <Globe className="h-4.5 w-4.5" />
             </div>
             <div>
-              <h4 className="text-[14.2px] font-bold text-zinc-900 dark:text-white">Social Sharing Thumbnail & Favicon</h4>
-              <p className="text-xs text-zinc-500 dark:text-[#9B9085] mt-0.5">
-                Upload your brand's tab icon and Open Graph thumbnail for social media sharing.
-              </p>
+              <h4 className="text-[14.2px] font-bold text-zinc-900 dark:text-white flex items-center gap-1.5">
+                Social Sharing Thumbnail & Favicon
+                <InfoTooltip
+                  content="Upload your brand's tab icon and Open Graph thumbnail for social media sharing."
+                  title="Social Preview & Favicon"
+                  align="start"
+                />
+              </h4>
             </div>
           </div>
           <div className="flex items-center gap-2 shrink-0">

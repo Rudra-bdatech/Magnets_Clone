@@ -24,6 +24,7 @@ import {
   formatCustomDomainUrl,
   formatFullHost,
 } from "@/lib/domain-verify";
+import { InfoTooltip } from "@/components/ui/info-tooltip";
 
 interface DomainSectionProps {
   appBaseUrl: string;
@@ -116,12 +117,14 @@ export const DomainSection = memo(function DomainSection({
               <Globe className="h-5 w-5" />
             </div>
             <div>
-              <h4 className="text-sm sm:text-base font-bold text-zinc-900 dark:text-white">
+              <h4 className="text-sm sm:text-base font-bold text-zinc-900 dark:text-white flex items-center gap-1.5">
                 Public URL & Custom Domain
+                <InfoTooltip
+                  content="Share your lead magnets directly or connect a white-label custom domain."
+                  title="Public URL & Custom Domain"
+                  align="start"
+                />
               </h4>
-              <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
-                Share your lead magnets directly or connect a white-label custom domain.
-              </p>
             </div>
           </div>
 
@@ -237,8 +240,13 @@ export const DomainSection = memo(function DomainSection({
               </div>
               <div className="min-w-0">
                 <div className="flex items-center gap-2 flex-wrap">
-                  <p className="text-xs sm:text-sm font-bold text-zinc-900 dark:text-white">
+                  <p className="text-xs sm:text-sm font-bold text-zinc-900 dark:text-white flex items-center gap-1.5">
                     Custom Domain Configuration
+                    <InfoTooltip
+                      content="Connect your custom brand domain (e.g. get.yourdomain.com) to your lead magnets."
+                      title="Custom Domain Configuration"
+                      align="start"
+                    />
                   </p>
                   {cnameVerified && (
                     <span className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-bold text-emerald-600 dark:text-emerald-400">
@@ -246,9 +254,6 @@ export const DomainSection = memo(function DomainSection({
                     </span>
                   )}
                 </div>
-                <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5 truncate">
-                  Connect your custom brand domain (e.g. get.yourdomain.com) to your lead magnets.
-                </p>
               </div>
             </div>
             <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-zinc-200 bg-white text-zinc-500 shadow-2xs dark:border-zinc-700 dark:bg-[#1E1E24] dark:text-zinc-300 ml-2">
@@ -323,12 +328,14 @@ export const DomainSection = memo(function DomainSection({
                           1
                         </span>
                         <div>
-                          <h5 className="text-xs sm:text-sm font-bold text-zinc-900 dark:text-white">
+                          <h5 className="text-xs sm:text-sm font-bold text-zinc-900 dark:text-white flex items-center gap-1.5">
                             Step 1: Prove Domain Ownership (TXT Record)
+                            <InfoTooltip
+                              content="Add this TXT record to your DNS provider, then click Check Ownership."
+                              title="Domain Ownership (TXT Record)"
+                              align="start"
+                            />
                           </h5>
-                          <p className="text-[11px] sm:text-xs text-zinc-500 dark:text-zinc-400">
-                            Add this TXT record to your DNS provider, then click Check Ownership.
-                          </p>
                         </div>
                       </div>
 
@@ -490,12 +497,14 @@ export const DomainSection = memo(function DomainSection({
                           2
                         </span>
                         <div>
-                          <h5 className="text-xs sm:text-sm font-bold text-zinc-900 dark:text-white">
+                          <h5 className="text-xs sm:text-sm font-bold text-zinc-900 dark:text-white flex items-center gap-1.5">
                             Step 2: Route Traffic (CNAME Record)
+                            <InfoTooltip
+                              content="Add this CNAME record to route traffic from your subdomain to your magnets."
+                              title="Route Traffic (CNAME Record)"
+                              align="start"
+                            />
                           </h5>
-                          <p className="text-[11px] sm:text-xs text-zinc-500 dark:text-zinc-400">
-                            Add this CNAME record to route traffic from your subdomain to your magnets.
-                          </p>
                         </div>
                       </div>
 

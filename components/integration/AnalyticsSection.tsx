@@ -3,6 +3,7 @@
 import React, { useState, memo } from "react";
 import { Sparkles, ChevronDown, AlertCircle } from "lucide-react";
 import { type Account } from "@/lib/data";
+import { InfoTooltip } from "@/components/ui/info-tooltip";
 
 interface AnalyticsSectionProps {
   ga4MeasurementId: string;
@@ -54,10 +55,14 @@ export const AnalyticsSection = memo(function AnalyticsSection({
             <Sparkles className="h-4.5 w-4.5" />
           </div>
           <div>
-            <h4 className="text-[14.2px] font-bold text-zinc-900 dark:text-white">Analytics & Conversion Tracking</h4>
-            <p className="text-xs text-zinc-500 dark:text-[#9B9085] mt-0.5">
-              Track page views and ad campaign conversions with Google Analytics 4 and Meta Pixel.
-            </p>
+            <h4 className="text-[14.2px] font-bold text-zinc-900 dark:text-white flex items-center gap-1.5">
+              Analytics & Conversion Tracking
+              <InfoTooltip
+                content="Track page views and ad campaign conversions with Google Analytics 4 and Meta Pixel."
+                title="Analytics & Tracking"
+                align="start"
+              />
+            </h4>
           </div>
         </div>
         <div className="flex items-center gap-2 shrink-0">

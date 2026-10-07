@@ -16,6 +16,7 @@ import { AnalyticsSection } from "@/components/integration/AnalyticsSection";
 import { BrandingSection } from "@/components/integration/BrandingSection";
 import { HelpModal } from "@/components/integration/HelpModal";
 import { useToast, IntegrationToastContainer } from "@/components/integration/IntegrationToast";
+import { InfoTooltip } from "@/components/ui/info-tooltip";
 
 export default function WorkspaceSetupPage() {
   const [account, setAccount] = useState<Account | null>(null);
@@ -310,10 +311,14 @@ export default function WorkspaceSetupPage() {
                     <Plug className="h-4.5 w-4.5" />
                   </div>
                   <div>
-                    <h4 className="text-[14.2px] font-bold text-zinc-900 dark:text-white">Optional automations</h4>
-                    <p className="text-xs text-zinc-500 dark:text-[#9B9085] mt-0.5">
-                      Sync new signups directly to your external tools (Slack, Zapier, Kit, Pipedrive, Substack).
-                    </p>
+                    <h4 className="text-[14.2px] font-bold text-zinc-900 dark:text-white flex items-center gap-1.5">
+                      Optional automations
+                      <InfoTooltip
+                        content="Sync new signups directly to your external tools (Slack, Zapier, Kit, Pipedrive, Substack)."
+                        title="Optional Automations"
+                        align="start"
+                      />
+                    </h4>
                   </div>
                 </div>
                 <div className="flex items-center gap-2.5 shrink-0">
