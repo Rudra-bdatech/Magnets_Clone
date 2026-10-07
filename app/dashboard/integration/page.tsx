@@ -12,6 +12,7 @@ import {
 
 import { DomainSection } from "@/components/integration/DomainSection";
 import { AutomationsSection } from "@/components/integration/AutomationsSection";
+import { EmailSenderSection } from "@/components/integration/EmailSenderSection";
 import { AnalyticsSection } from "@/components/integration/AnalyticsSection";
 import { BrandingSection } from "@/components/integration/BrandingSection";
 import { HelpModal } from "@/components/integration/HelpModal";
@@ -319,7 +320,14 @@ export default function WorkspaceSetupPage() {
                     setSubstackPublication={setSubstackPublication}
                     addToast={addToast}
                   />
+                  {/* Email Sender (Gmail OAuth2 + Custom SMTP) */}
+                  <EmailSenderSection
+                    account={account}
+                    setAccount={setAccount}
+                    addToast={addToast}
+                  />
                 </div>
+
               )}
             </div>
 

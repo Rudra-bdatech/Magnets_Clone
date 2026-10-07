@@ -69,6 +69,27 @@ const AccountSchema = new Schema({
     ],
     default: [],
   },
+  // Custom SMTP — user's own email server credentials (AES-256 encrypted at rest)
+  customSmtp: {
+    enabled: { type: Boolean, default: false },
+    host: { type: String, default: "" },
+    port: { type: Number, default: 587 },
+    secure: { type: Boolean, default: false },
+    user: { type: String, default: "" },
+    pass: { type: String, default: "" },       // AES-256 encrypted
+    fromEmail: { type: String, default: "" },
+    fromName: { type: String, default: "" },
+    isVerified: { type: Boolean, default: false },
+  },
+  // Gmail OAuth2 — refresh token stored AES-256 encrypted
+  gmailOAuth: {
+    connected: { type: Boolean, default: false },
+    gmailAddress: { type: String, default: "" },
+    accessToken: { type: String, default: "" },   // AES-256 encrypted
+    refreshToken: { type: String, default: "" },  // AES-256 encrypted
+    tokenExpiry: { type: Date, default: null },
+    fromName: { type: String, default: "" },
+  },
 });
 
 AccountSchema.index({ resetPasswordToken: 1 });

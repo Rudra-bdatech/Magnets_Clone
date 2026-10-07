@@ -193,6 +193,23 @@ export interface Account {
   linkedinDefaultMagnetId?: string;
   linkedinTriggerWord?: string;
   linkedinPostCampaigns?: LinkedInPostCampaign[];
+  // Custom SMTP settings (password is never sent to client)
+  customSmtp?: {
+    enabled: boolean;
+    host: string;
+    port: number;
+    secure: boolean;
+    user: string;
+    fromEmail: string;
+    fromName: string;
+    isVerified: boolean;
+  };
+  // Gmail OAuth2 settings (tokens are never sent to client)
+  gmailOAuth?: {
+    connected: boolean;
+    gmailAddress: string;
+    fromName: string;
+  };
 }
 
 export interface LinkedInPostCampaign {

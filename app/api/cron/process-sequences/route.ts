@@ -324,20 +324,22 @@ export async function GET(req: NextRequest) {
 </html>
       `;
 
-      const sendResult = await sendMail({
-        to: lead.email.trim(),
-        from: `${senderName} <${defaultFrom}>`,
-        subject: formattedSubject,
-        html: htmlBody,
-        tracking: {
-          leadId: lead.id,
-          pageId: pageDoc.id || lead.pageId,
-          sequenceId: pageDoc.id,
-          stepId: nextEmail.id || `step_${nextEmailIndex + 1}`,
-          userEmail: ownerEmail || lead.userEmail,
-          recipient: lead.email.trim(),
+      const sendResult = await sendMail(
+        {
+          to: lead.email.trim(),
+          subject: formattedSubject,
+          html: htmlBody,
+          tracking: {
+            leadId: lead.id,
+            pageId: pageDoc.id || lead.pageId,
+            sequenceId: pageDoc.id,
+            stepId: nextEmail.id || `step_${nextEmailIndex + 1}`,
+            userEmail: ownerEmail || lead.userEmail,
+            recipient: lead.email.trim(),
+          },
         },
-      });
+        ownerEmail || lead.userEmail
+      );
 
       if (sendResult.success) {
         deliveredCount++;

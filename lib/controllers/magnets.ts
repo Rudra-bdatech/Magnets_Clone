@@ -192,11 +192,18 @@ export async function handleSendTestSequenceEmail(data: any, normEmail: string |
     </div>
   `;
 
-  const result = await sendMail({
-    to: recipient,
-    subject: subject.startsWith("[TEST]") ? subject : `[TEST] ${subject}`,
-    html: formattedHtml,
-  });
+  const result = await sendMail(
+    {
+      to: recipient,
+      subject: subject.startsWith("[TEST]") ? subject : `[TEST] ${subject}`,
+      html: formattedHtml,
+      tracking: {
+        userEmail: normEmail || "",
+        recipient: recipient,
+      },
+    },
+    normEmail || undefined
+  );
 
   return NextResponse.json(result);
 }

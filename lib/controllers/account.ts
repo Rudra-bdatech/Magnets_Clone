@@ -29,6 +29,28 @@ export function sanitizeAccount(accountDoc: any) {
   delete acc.resetPasswordExpires;
   delete acc.linkedinLiAt;
   delete acc.linkedinJSessionId;
+  // Strip encrypted secrets — never send raw credentials to the client
+  if (acc.customSmtp) {
+    acc.customSmtp = {
+      enabled: acc.customSmtp.enabled ?? false,
+      host: acc.customSmtp.host ?? "",
+      port: acc.customSmtp.port ?? 587,
+      secure: acc.customSmtp.secure ?? false,
+      user: acc.customSmtp.user ?? "",
+      fromEmail: acc.customSmtp.fromEmail ?? "",
+      fromName: acc.customSmtp.fromName ?? "",
+      isVerified: acc.customSmtp.isVerified ?? false,
+      // pass is intentionally omitted
+    };
+  }
+  if (acc.gmailOAuth) {
+    acc.gmailOAuth = {
+      connected: acc.gmailOAuth.connected ?? false,
+      gmailAddress: acc.gmailOAuth.gmailAddress ?? "",
+      fromName: acc.gmailOAuth.fromName ?? "",
+      // accessToken and refreshToken are intentionally omitted
+    };
+  }
   return acc;
 }
 

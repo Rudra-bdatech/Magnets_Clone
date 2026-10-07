@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { dbConnect } from "@/lib/mongodb";
 import { sendMail } from "@/lib/email";
 import { checkRateLimit } from "@/lib/rate-limit";
-import { PdfOtpModel } from "@/lib/models";
+import { PdfOtpModel, MagnetPageModel } from "@/lib/models";
 import crypto from "crypto";
 
 export const dynamic = "force-dynamic";
@@ -58,6 +58,12 @@ export async function POST(req: NextRequest) {
 
     await dbConnect();
 
+    // Look up page owner so we send via their synced email if available
+    const pageDoc = await MagnetPageModel.findOne({
+      $or: [{ id: magnetId }, { slug: magnetId }, { customUrl: magnetId }],
+    }).lean().catch(() => null);
+    const ownerEmail = (pageDoc as any)?.userEmail || "";
+
     // ── Clean up any old unused OTPs for this email+magnet ────────────────
     await PdfOtpModel.deleteMany({ email, magnetId, used: false }).catch(() => {});
 
@@ -74,10 +80,16 @@ export async function POST(req: NextRequest) {
     const appUrl = (process.env.NEXT_PUBLIC_APP_URL || "https://magnets.bdatech.in").replace(/\/$/, "");
     const logoUrl = `${appUrl}/brand/custom-logo-light.png`;
 
-    const mailResult = await sendMail({
-      to: email,
-      subject: `🔐 Your Access Code: ${code}`,
-      html: `
+    const mailResult = await sendMail(
+      {
+        to: email,
+        subject: `🔐 Your Access Code: ${code}`,
+        tracking: {
+          userEmail: ownerEmail,
+          pageId: (pageDoc as any)?.id || magnetId,
+          recipient: email,
+        },
+        html: `
 <!DOCTYPE html>
 <html lang="en">
 <head>

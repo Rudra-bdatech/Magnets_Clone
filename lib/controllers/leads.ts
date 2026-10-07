@@ -450,18 +450,20 @@ export async function handleAddLead(data: any, req: Request, normEmail: string |
           const defaultFrom = process.env.SMTP_FROM || "non-reply@bdatech.in";
 
           try {
-            const res = await sendMail({
-              to: data.email.trim(),
-              from: `${senderName} <${defaultFrom}>`,
-              subject: subject,
-              html: subscriberHtml,
-              tracking: {
-                leadId: data.id,
-                pageId: foundPageDoc?.id || data.pageId || "",
-                userEmail: ownerEmail || ownerAccount?.email || "",
-                recipient: data.email.trim(),
+            const res = await sendMail(
+              {
+                to: data.email.trim(),
+                subject: subject,
+                html: subscriberHtml,
+                tracking: {
+                  leadId: data.id,
+                  pageId: foundPageDoc?.id || data.pageId || "",
+                  userEmail: ownerEmail || ownerAccount?.email || "",
+                  recipient: data.email.trim(),
+                },
               },
-            });
+              ownerEmail || ownerAccount?.email
+            );
             if (res.success) {
               console.log(`✅ Deliverable email successfully sent to subscriber: ${data.email}`);
             } else {
