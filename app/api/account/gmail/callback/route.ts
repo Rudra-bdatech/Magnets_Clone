@@ -10,15 +10,15 @@ export async function GET(req: NextRequest) {
   const error = searchParams.get("error");
 
   const origin = req.nextUrl.origin;
-  const settingsUrl = `${origin}/dashboard/integration`;
+  const settingsUrl = `${origin}/dashboard/settings?tab=email`;
 
   if (error) {
     console.error("[gmail/callback] OAuth error:", error);
-    return NextResponse.redirect(`${settingsUrl}?gmailError=${encodeURIComponent(error)}`);
+    return NextResponse.redirect(`${settingsUrl}&gmailError=${encodeURIComponent(error)}`);
   }
 
   if (!code || !state) {
-    return NextResponse.redirect(`${settingsUrl}?gmailError=missing_params`);
+    return NextResponse.redirect(`${settingsUrl}&gmailError=missing_params`);
   }
 
   let ownerEmail: string;
@@ -92,9 +92,9 @@ export async function GET(req: NextRequest) {
     );
 
     console.log("[gmail/callback] Gmail connected for:", ownerEmail, "->", gmailAddress);
-    return NextResponse.redirect(`${settingsUrl}?gmail=connected`);
+    return NextResponse.redirect(`${settingsUrl}&gmail=connected`);
   } catch (err: any) {
     console.error("[gmail/callback] Failed to connect Gmail:", err);
-    return NextResponse.redirect(`${settingsUrl}?gmailError=${encodeURIComponent(err.message || "token_exchange_failed")}`);
+    return NextResponse.redirect(`${settingsUrl}&gmailError=${encodeURIComponent(err.message || "token_exchange_failed")}`);
   }
 }

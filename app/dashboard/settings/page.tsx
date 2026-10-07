@@ -30,6 +30,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import PasswordInputWithStrength, {
   validatePasswordStrength,
 } from "@/components/ui/password-input-with-strength";
+import { EmailSenderSection } from "@/components/integration/EmailSenderSection";
 
 // --- Toast Notification Types & Component ---
 interface ToastItem {
@@ -176,7 +177,7 @@ export default function AccountSettingsPage() {
   const [deleteError, setDeleteError] = useState("");
 
   // Tab Navigation State
-  const [activeTab, setActiveTab] = useState<"profile" | "security" | "notifications" | "danger">("profile");
+  const [activeTab, setActiveTab] = useState<"profile" | "email" | "security" | "notifications" | "danger">("profile");
   const [hoveredTab, setHoveredTab] = useState<string | null>(null);
 
   // Instant Lead Alerts State
@@ -201,6 +202,18 @@ export default function AccountSettingsPage() {
   }, []);
 
   useEffect(() => {
+    // Check URL parameters for tab selection (e.g. ?tab=email)
+    if (typeof window !== "undefined") {
+      const urlParams = new URLSearchParams(window.location.search);
+      const tabParam = urlParams.get("tab");
+      const hasGmailParam = urlParams.has("gmail") || urlParams.has("gmailError");
+      if (tabParam === "email" || hasGmailParam) {
+        setActiveTab("email");
+      } else if (tabParam === "security" || tabParam === "notifications" || tabParam === "danger") {
+        setActiveTab(tabParam);
+      }
+    }
+
     // Load local data instantly
     const localAccount = loadAccount();
     if (localAccount) {
@@ -546,6 +559,7 @@ export default function AccountSettingsPage() {
           >
             {[
               { id: "profile", label: "Profile & Identity", icon: User },
+              { id: "email", label: "Email & Gmail Sync", icon: Mail },
               { id: "security", label: "Security & Password", icon: KeyRound },
               { id: "notifications", label: "Instant Lead Alerts", icon: Bell },
               { id: "danger", label: "Danger Zone", icon: AlertTriangle, danger: true },
@@ -771,7 +785,25 @@ export default function AccountSettingsPage() {
                 </motion.section>
               )}
 
-              {/* TAB 2: Security & Password */}
+              {/* TAB 2: Email & Gmail Sync */}
+              {activeTab === "email" && (
+                <motion.section
+                  key="email"
+                  initial={{ opacity: 0, y: 8, scale: 0.99 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -6, scale: 0.99 }}
+                  transition={{ duration: 0.1, ease: [0.16, 1, 0.3, 1] }}
+                  className="rounded-2xl border border-zinc-200/80 bg-white dark:border-[#2e2e38] dark:bg-[#18181B] p-4 sm:p-6 shadow-sm"
+                >
+                  <EmailSenderSection
+                    account={account}
+                    setAccount={setAccount}
+                    addToast={addToast}
+                  />
+                </motion.section>
+              )}
+
+              {/* TAB 3: Security & Password */}
               {activeTab === "security" && (
                 <motion.section
                   key="security"
