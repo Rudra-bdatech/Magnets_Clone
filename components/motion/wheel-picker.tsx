@@ -33,21 +33,18 @@ export interface WheelPickerProps {
   /** Play a short tick each time the selected value changes. Default false. */
   sound?: boolean;
   className?: string;
+  /** Alignment of options: center | left | right. Default center. */
+  align?: "center" | "left" | "right";
   "aria-label"?: string;
 }
 
 const DEG = Math.PI / 180;
-// Physics constants, tuned for an iOS-like flick rather than reused from the
-// shared spring tokens: the wheel coasts in whole-row units and springs to an
-// integer detent, which a layout spring can't express cleanly.
-const DECELERATION = 0.00042; // rows per ms², how fast a flick bleeds off (lower = freer)
-const MAX_VELOCITY = 0.18; // rows per ms, caps a hard fling
-const VELOCITY_WINDOW = 90; // ms of recent drag to average a release velocity over
-const WHEEL_SENS = 0.012; // rows per pixel of wheel delta
-const WHEEL_SETTLE = 110; // ms of wheel idle before snapping to a row
+const DECELERATION = 0.00042;
+const MAX_VELOCITY = 0.18;
+const VELOCITY_WINDOW = 90;
+const WHEEL_SENS = 0.012;
+const WHEEL_SETTLE = 110;
 const easeOutCubic = (p: number) => 1 - (1 - p) ** 3;
-// Overshoots the target by a few percent then settles — the little spring
-// bounce as a row snaps home. `BACK` sets how far it drifts past.
 const BACK = 1.35;
 const easeOutBack = (p: number) =>
   1 + (BACK + 1) * (p - 1) ** 3 + BACK * (p - 1) ** 2;
@@ -72,6 +69,7 @@ export function WheelPicker({
   disabled = false,
   sound = false,
   className,
+  align = "center",
   "aria-label": ariaLabel,
 }: WheelPickerProps) {
   const reduce = useReducedMotion() ?? false;
@@ -90,29 +88,21 @@ export function WheelPicker({
   const currentValue = controlled ? value : internal;
   const [grabbing, setGrabbing] = useState(false);
 
-  // Cylinder geometry. Each row spans `itemAngle`; `radius` seats the rows on
-  // the drum; rows past `hideBeyond` sit behind the horizon and are dropped.
+  // Cylinder geometry: tuned for single crisp drum with gentle Apple iOS curvature
   const { itemAngle, radius, height, hideBeyond } = useMemo(() => {
     const rowsEachSide = Math.max(1, Math.floor(visibleCount / 2));
-    const cutoff = rowsEachSide + 0.35;
-    const angle = 90 / (rowsEachSide + 1);
+    const angle = visibleCount === 3 ? 24 : 90 / (rowsEachSide + 1);
     const r = itemHeight / Math.tan(angle * DEG);
     return {
       itemAngle: angle,
       radius: r,
-      hideBeyond: cutoff,
-      height: Math.round(
-        2 * r * Math.sin(rowsEachSide * angle * DEG) + itemHeight,
-      ),
+      hideBeyond: rowsEachSide + 0.35,
+      height: visibleCount === 3 ? Math.round(itemHeight * 2.5) : Math.round(2 * r * Math.sin(rowsEachSide * angle * DEG) + itemHeight),
     };
   }, [visibleCount, itemHeight]);
 
   const container = useRef<HTMLDivElement>(null);
   const drumRef = useRef<HTMLUListElement>(null);
-  const bandRef = useRef<HTMLUListElement>(null);
-  // Scroll position measured in rows (a float index). One source of truth for
-  // both layers: the drum rotates by `itemAngle·scroll`, the crisp band slides
-  // by `itemHeight·scroll`.
   const scroll = useRef(indexOf(currentValue));
   const raf = useRef(0);
   const emitted = useRef(currentValue);
@@ -122,29 +112,21 @@ export function WheelPicker({
   const paint = useCallback(
     (s: number) => {
       const drum = drumRef.current;
-      const band = bandRef.current;
-      if (drum) {
-        drum.style.transform = `translateZ(${-radius}px) rotateX(${itemAngle * s}deg)`;
-        for (const node of Array.from(drum.children)) {
-          const li = node as HTMLLIElement;
-          const i = Number(li.dataset.index);
-          const want = Math.abs(i - s) > hideBeyond ? "hidden" : "visible";
-          // Write only on change — an unconditional write every frame thrashes
-          // style recalc and is what made the drag feel draggy on mobile.
-          if (li.style.visibility !== want) li.style.visibility = want;
-        }
-      }
-      // The band is the SAME drum, clipped to the centre row — driven by the
-      // identical transform so the crisp copy sits exactly on the dimmed one,
-      // with no parallax ghost as rows cross the window. It needs the same
-      // horizon cull, or the row on the back of the drum bleeds into the front.
-      if (band) {
-        band.style.transform = `translateZ(${-radius}px) rotateX(${itemAngle * s}deg)`;
-        for (const node of Array.from(band.children)) {
-          const li = node as HTMLLIElement;
-          const i = Number(li.dataset.index);
-          const want = Math.abs(i - s) > hideBeyond ? "hidden" : "visible";
-          if (li.style.visibility !== want) li.style.visibility = want;
+      if (!drum) return;
+      drum.style.transform = `translateZ(${-radius}px) rotateX(${itemAngle * s}deg)`;
+      for (const node of Array.from(drum.children)) {
+        const li = node as HTMLLIElement;
+        const i = Number(li.dataset.index);
+        const dist = Math.abs(i - s);
+        if (dist > hideBeyond) {
+          if (li.style.visibility !== "hidden") li.style.visibility = "hidden";
+        } else {
+          if (li.style.visibility !== "visible") li.style.visibility = "visible";
+          const opacity = Math.max(0.28, Math.min(1, 1 - dist * 0.65));
+          li.style.opacity = String(opacity);
+          const isCenter = dist < 0.5;
+          const targetWeight = isCenter ? "700" : "500";
+          if (li.style.fontWeight !== targetWeight) li.style.fontWeight = targetWeight;
         }
       }
     },
@@ -161,8 +143,6 @@ export function WheelPicker({
       const v = optionValue(options[clamp(i, 0, last)]);
       if (v === emitted.current) return;
       emitted.current = v;
-      // Reduced motion has no drum/glide path to tick from — it's an
-      // onClick straight into emit, so the tick lives here instead.
       if (sound && reduce) getPlayer().play();
       if (!controlled) setInternal(v);
       onValueChange?.(v);
@@ -170,9 +150,6 @@ export function WheelPicker({
     [options, last, controlled, onValueChange, sound, reduce, getPlayer],
   );
 
-  // Drum path: fires a tick whenever the nearest row changes, independent of
-  // `emit` (which only fires on settle during a glide/fling, not per row
-  // crossed). Gated on `!reduce` since the reduced render never calls this.
   const maybeTick = useCallback(
     (pos: number) => {
       const row = clamp(Math.round(pos), 0, last);
@@ -189,8 +166,6 @@ export function WheelPicker({
 
   const stop = useCallback(() => cancelAnimationFrame(raf.current), []);
 
-  // Ease `scroll` from where it is to an integer detent over `duration`. The
-  // easing may overshoot (spring bounce) before it resolves exactly on `to`.
   const glide = useCallback(
     (
       to: number,
@@ -227,19 +202,16 @@ export function WheelPicker({
     [stop, paint, emit, maybeTick],
   );
 
-  // Project where a flick of `velocity` (rows/ms) coasts to, snap to a row.
   const fling = useCallback(
     (velocity: number) => {
       const from = scroll.current;
       if (from < 0 || from > last) {
-        glide(clamp(Math.round(from), 0, last), 260); // rubber-band back
+        glide(clamp(Math.round(from), 0, last), 260);
         return;
       }
       const dir = Math.sign(velocity);
       const coast = ((velocity * velocity) / (2 * DECELERATION)) * dir;
       const to = clamp(Math.round(from + coast), 0, last);
-      // Long, spring-tipped settle so a hard flick reads as free momentum
-      // coasting to rest with a gentle bounce, never a clipped stop.
       const duration = clamp(
         Math.sqrt(Math.abs(to - from)) * 300 + 240,
         280,
@@ -256,22 +228,14 @@ export function WheelPicker({
     [glide, last],
   );
 
-  // Drag: track recent points for a release velocity; rubber-band past the ends.
   const drag = useRef<{
     y: number;
     scroll: number;
     pts: [number, number][];
   } | null>(null);
-  // Coalesce touch/pointer moves to one paint per animation frame — raw move
-  // events fire several times per frame (and off-frame) on high-refresh
-  // screens, and painting each one is what made the drag feel choppy.
   const dragFrame = useRef(0);
   const latestY = useRef(0);
-  // Shared drag core, driven by a Y coordinate from either a mouse pointer or a
-  // native touch. Touch is bound with non-passive listeners in the effect below
-  // so the move can preventDefault the page scroll — React's synthetic touch
-  // events are passive and can't, which is why finger-drag did nothing on
-  // mobile.
+
   const beginDrag = useCallback(
     (y: number) => {
       stop();
@@ -289,8 +253,6 @@ export function WheelPicker({
     (y: number) => {
       const d = drag.current;
       if (!d) return;
-      // Record every sample for an accurate release velocity, but only render
-      // the newest position once per frame.
       latestY.current = y;
       d.pts.push([y, performance.now()]);
       if (d.pts.length > 8) d.pts.shift();
@@ -319,9 +281,6 @@ export function WheelPicker({
     }
     drag.current = null;
     setGrabbing(false);
-    // Average velocity over the last `VELOCITY_WINDOW` ms of movement rather
-    // than the final two samples — a single noisy frame otherwise makes an
-    // even flick feel like it caught or slipped.
     const pts = d.pts;
     let v = 0;
     if (pts.length > 1) {
@@ -342,7 +301,6 @@ export function WheelPicker({
     fling(v);
   }, [itemHeight, fling]);
 
-  // Mouse / pen only — touch runs through the native listeners in the effect.
   const onPointerDown = useCallback(
     (event: PointerEvent<HTMLDivElement>) => {
       if (disabled || reduce || event.pointerType === "touch") return;
@@ -361,23 +319,15 @@ export function WheelPicker({
   const onPointerUp = useCallback(
     (event: PointerEvent<HTMLDivElement>) => {
       if (event.pointerType === "touch") return;
-      // Also the pointercancel handler, where the capture is already gone —
-      // an unguarded release throws there and the drum never settles.
       releasePointer(event.currentTarget, event.pointerId);
       endDrag();
     },
     [endDrag],
   );
 
-  // Wheel drives `scroll` continuously — like a drag — then snaps once it goes
-  // idle. Firing a fresh eased step per notch instead stacks overlapping
-  // animations that keep interrupting each other, which read as lag.
   const wheelSnap = useRef<ReturnType<typeof setTimeout> | null>(null);
   const onWheel = useCallback(
     (event: globalThis.WheelEvent) => {
-      // Native (non-passive) so preventDefault actually stops the page from
-      // scrolling behind the wheel — React's synthetic wheel listener is
-      // passive, so a handler on the element cannot cancel the scroll.
       event.preventDefault();
       event.stopPropagation();
       if (disabled || reduce) return;
@@ -427,8 +377,6 @@ export function WheelPicker({
     [disabled, sound, last, step, getPlayer],
   );
 
-  // Paint the starting frame, and follow controlled/value changes from outside
-  // unless a gesture is mid-flight.
   useEffect(() => {
     if (drag.current) return;
     const target = indexOf(currentValue);
@@ -450,10 +398,6 @@ export function WheelPicker({
     [],
   );
 
-  // Native touch + wheel listeners, bound non-passively so touchmove and wheel
-  // can block the page from scrolling while the wheel spins. React's synthetic
-  // touch/wheel handlers are passive, so preventDefault there is a no-op and the
-  // gesture scrolls the page instead of driving the drum.
   useEffect(() => {
     const el = container.current;
     if (!el) return;
@@ -488,7 +432,7 @@ export function WheelPicker({
   }, [reduce, disabled, beginDrag, moveDrag, endDrag, onWheel]);
 
   const maskFade =
-    "[mask-image:linear-gradient(to_bottom,transparent,#000_22%,#000_78%,transparent)]";
+    "[mask-image:linear-gradient(to_bottom,transparent_0%,#000_18%,#000_82%,transparent_100%)]";
 
   if (reduce) {
     const pad = (height - itemHeight) / 2;
@@ -521,10 +465,10 @@ export function WheelPicker({
                   disabled={disabled}
                   onClick={() => emit(options.indexOf(option))}
                   className={cn(
-                    "flex w-full items-center justify-center font-medium",
+                    "flex w-full items-center justify-center font-bold text-base",
                     v === currentValue
                       ? "text-foreground"
-                      : "text-muted-foreground",
+                      : "text-muted-foreground/40",
                   )}
                   style={{ height: itemHeight }}
                 >
@@ -537,6 +481,13 @@ export function WheelPicker({
       </div>
     );
   }
+
+  const justifyClass =
+    align === "right"
+      ? "justify-end pr-5 sm:pr-6"
+      : align === "left"
+      ? "justify-start pl-5 sm:pl-6"
+      : "justify-center";
 
   return (
     <div
@@ -551,17 +502,15 @@ export function WheelPicker({
       onPointerCancel={onPointerUp}
       className={cn(
         "relative touch-none overflow-hidden rounded-2xl border border-border bg-card outline-none focus-visible:ring-2 focus-visible:ring-foreground/20",
-        // The drum owns the whole gesture; iOS must not open its callout or
-        // start a drag out of the same press and cancel ours.
         TOUCH_GESTURE_CLASS,
         grabbing ? "cursor-grabbing" : "cursor-grab",
         disabled && "pointer-events-none opacity-50",
         maskFade,
         className,
       )}
-      style={{ height, perspective: 1000 }}
+      style={{ height, perspective: 800 }}
     >
-      {/* Curved drum of dimmed rows. */}
+      {/* Razor-sharp single drum: zero ghosting, zero overlapping text */}
       <ul
         ref={drumRef}
         aria-hidden
@@ -571,7 +520,10 @@ export function WheelPicker({
           <li
             key={optionValue(option)}
             data-index={i}
-            className="absolute inset-x-0 flex items-center justify-center font-medium text-muted-foreground"
+            className={cn(
+              "absolute inset-x-0 flex items-center text-foreground text-base sm:text-lg tracking-tight select-none",
+              justifyClass,
+            )}
             style={{
               top: -itemHeight / 2,
               height: itemHeight,
@@ -582,35 +534,6 @@ export function WheelPicker({
           </li>
         ))}
       </ul>
-
-      {/* Center band: the very same drum, clipped to one row and drawn crisp.
-          Its own perspective, centred on the container middle, matches the main
-          drum's projection so the two copies register exactly. */}
-      <div
-        className="pointer-events-none absolute inset-x-0 top-1/2 z-10 -translate-y-1/2 overflow-hidden rounded-md bg-foreground/[0.04]"
-        style={{ height: itemHeight, perspective: 1000 }}
-      >
-        <ul
-          ref={bandRef}
-          aria-hidden
-          className="absolute inset-x-0 top-1/2 m-0 h-0 list-none p-0 [backface-visibility:hidden] [transform-style:preserve-3d] [will-change:transform]"
-        >
-          {options.map((option, i) => (
-            <li
-              key={optionValue(option)}
-              data-index={i}
-              className="absolute inset-x-0 flex items-center justify-center font-medium text-foreground"
-              style={{
-                top: -itemHeight / 2,
-                height: itemHeight,
-                transform: `rotateX(${-itemAngle * i}deg) translateZ(${radius}px)`,
-              }}
-            >
-              {optionLabel(option)}
-            </li>
-          ))}
-        </ul>
-      </div>
     </div>
   );
 }

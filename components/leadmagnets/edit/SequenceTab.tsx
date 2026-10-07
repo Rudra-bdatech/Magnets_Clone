@@ -311,12 +311,12 @@ export default function SequenceTab({
                               ? "minute"
                               : "minutes"
                             : item.delayUnit === "days"
-                            ? Number(item.delayDays || 1) === 1
-                              ? "day"
-                              : "days"
-                            : Number(item.delayDays || 1) === 1
-                            ? "hour"
-                            : "hours"}{" "}
+                              ? Number(item.delayDays || 1) === 1
+                                ? "day"
+                                : "days"
+                              : Number(item.delayDays || 1) === 1
+                                ? "hour"
+                                : "hours"}{" "}
                           delay
                         </span>
                       </div>
@@ -403,22 +403,22 @@ export default function SequenceTab({
                               ? "minute"
                               : "minutes"
                             : activeEmail?.delayUnit === "days"
-                            ? Number(activeEmail?.delayDays || 1) === 1
-                              ? "day"
-                              : "days"
-                            : Number(activeEmail?.delayDays || 1) === 1
-                            ? "hour"
-                            : "hours"}
+                              ? Number(activeEmail?.delayDays || 1) === 1
+                                ? "day"
+                                : "days"
+                              : Number(activeEmail?.delayDays || 1) === 1
+                                ? "hour"
+                                : "hours"}
                         </span>
                       </span>
                     </div>
                   </div>
 
-                  <div ref={wheelCardRef} className="w-full max-w-sm sm:max-w-md">
-                    {/* iOS Alarm Style Wide 3D Drum Wheel Picker */}
-                    <div className="relative flex items-stretch rounded-3xl border border-zinc-200 dark:border-[#27272A] bg-zinc-50/80 dark:bg-[#121216] p-2.5 shadow-xs overflow-hidden">
-                      {/* Shared horizontal center selection lens */}
-                      <div className="pointer-events-none absolute inset-x-2.5 top-1/2 -translate-y-1/2 h-[42px] rounded-xl bg-zinc-200/50 dark:bg-white/[0.06] border border-zinc-300/40 dark:border-white/10 z-0" />
+                  <div ref={wheelCardRef} className="w-full max-w-[300px]">
+                    {/* Compact Apple iOS Drum Picker */}
+                    <div className="relative flex items-stretch rounded-2xl border border-zinc-200 dark:border-[#27272A] bg-zinc-100/70 dark:bg-[#141418] p-1 shadow-xs overflow-hidden">
+                      {/* Shared Apple iOS Glass Selection Lens */}
+                      <div className="pointer-events-none absolute inset-x-2 top-1/2 -translate-y-1/2 h-[36px] rounded-xl bg-zinc-900/[0.04] dark:bg-white/[0.08] backdrop-blur-md border border-zinc-900/10 dark:border-white/10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.12)] z-0" />
 
                       <WheelPicker
                         options={DELAY_NUMBERS}
@@ -428,13 +428,13 @@ export default function SequenceTab({
                           setSequenceEmails(sequenceEmails.map((item, idx) => idx === selectedSequenceIndex ? { ...item, delayDays: num } : item));
                         }}
                         disabled={!sequenceEnabled}
-                        className="flex-1 border-0 bg-transparent text-base font-bold z-10"
+                        align="right"
+                        className="flex-[0.42] border-0 bg-transparent tabular-nums z-10"
                         visibleCount={3}
-                        itemHeight={42}
+                        itemHeight={36}
                         sound={true}
                         aria-label="Delay Duration"
                       />
-                      <div className="w-[1px] bg-zinc-200/60 dark:bg-zinc-800/80 my-3 z-20" />
                       <WheelPicker
                         options={DELAY_UNITS as unknown as string[]}
                         value={activeEmail?.delayUnit || "hours"}
@@ -442,9 +442,10 @@ export default function SequenceTab({
                           setSequenceEmails(sequenceEmails.map((item, idx) => idx === selectedSequenceIndex ? { ...item, delayUnit: unit as "minutes" | "hours" | "days" } : item));
                         }}
                         disabled={!sequenceEnabled}
-                        className="flex-1 border-0 bg-transparent text-base font-bold z-10"
+                        align="left"
+                        className="flex-[0.58] border-0 bg-transparent z-10"
                         visibleCount={3}
-                        itemHeight={42}
+                        itemHeight={36}
                         sound={true}
                         aria-label="Delay Unit"
                       />
@@ -490,7 +491,7 @@ export default function SequenceTab({
                   <div className={`rounded-2xl border shadow-xs ${(account?.themeMode || "light") === "dark" ? "border-[#27272A] bg-[#18181B]" : "border-zinc-200/90 bg-white"}`}>
                     {/* Toolbar matching DeliveryEmailTab exact screenshot design + Insert {name} */}
                     <div ref={toolbarRef} className={`flex flex-wrap items-center gap-1.5 border-b px-3 py-2 text-xs font-semibold ${(account?.themeMode || "light") === "dark" ? "border-[#27272A] bg-[#18181B] text-zinc-300" : "border-zinc-200 bg-[#F9F9FB] text-zinc-600"}`}>
-                      
+
                       {/* Headings Dropdown: T ⌄ */}
                       <div className="relative">
                         <button
