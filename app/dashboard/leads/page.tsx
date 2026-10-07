@@ -78,6 +78,7 @@ export default function LeadsPage() {
   const deferredSearch = useDeferredValue(search);
   const [statusFilter, setStatusFilter] = useState<"all" | "active" | "replied">("all");
   const [isStatusFilterOpen, setIsStatusFilterOpen] = useState(false);
+  const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
   const [filterMagnet, setFilterMagnet] = useState("All lead magnets");
   const [filterOpen, setFilterOpen] = useState(false);
   const [sortBy, setSortBy] = useState<"newest" | "oldest" | "name" | "email">("newest");
@@ -157,6 +158,9 @@ export default function LeadsPage() {
       }
       if (statusFilterRef.current && !statusFilterRef.current.contains(e.target as Node)) {
         setIsStatusFilterOpen(false);
+      }
+      if (mobileFilterRef.current && !mobileFilterRef.current.contains(e.target as Node)) {
+        setIsMobileFilterOpen(false);
       }
     }
     document.addEventListener("mousedown", handler);
@@ -1125,42 +1129,57 @@ function parseCsvLine(line: string): string[] {
                     ))}
                   </div>
 
-                  {/* Mobile Status Filter Dropdown Button */}
-                  <div className="sm:hidden relative shrink-0" ref={statusFilterRef}>
+                  {/* Unified Mobile Filter Dropdown Button (Status + Campaign) */}
+                  <div className="sm:hidden relative shrink-0" ref={mobileFilterRef}>
                     <button
                       type="button"
                       onClick={(e) => {
                         e.stopPropagation();
                         setIsSortOpen(false);
-                        setFilterOpen(false);
-                        setIsStatusFilterOpen((v) => !v);
+                        setIsMobileFilterOpen((v) => !v);
                       }}
                       className="flex h-8 items-center gap-1.5 rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#18181B] px-2.5 text-[11px] font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-[#222226] transition shadow-2xs cursor-pointer select-none"
                     >
-                      <Filter className="h-3 w-3 text-zinc-400 shrink-0" />
-                      <span className="truncate">
-                        {statusFilter === "all"
-                          ? `All (${leads.length})`
+                      {filterMagnet === "All LinkedIn Leads" ? (
+                        <Linkedin className="h-3 w-3 text-[#0A66C2] dark:text-[#38BDF8] shrink-0" />
+                      ) : filterMagnet === "All Locked PDFs" ? (
+                        <Lock className="h-3 w-3 text-amber-500 dark:text-amber-400 shrink-0" />
+                      ) : filterMagnet === "All Form Magnets" ? (
+                        <FileText className="h-3 w-3 text-[#0066B2] dark:text-[#38BDF8] shrink-0" />
+                      ) : (
+                        <Filter className="h-3 w-3 text-zinc-400 shrink-0" />
+                      )}
+                      <span className="truncate max-w-[82px]">
+                        {filterMagnet !== "All lead magnets"
+                          ? filterMagnet === "All LinkedIn Leads"
+                            ? "LinkedIn"
+                            : filterMagnet === "All Locked PDFs"
+                            ? "Locked PDFs"
+                            : filterMagnet === "All Form Magnets"
+                            ? "Forms"
+                            : filterMagnet
                           : statusFilter === "active"
                           ? `Active (${activeCount})`
-                          : `Replied (${repliedCount})`}
+                          : statusFilter === "replied"
+                          ? `Replied (${repliedCount})`
+                          : `Filter (${filtered.length})`}
                       </span>
                       <ChevronDown
                         className={`h-3.5 w-3.5 text-zinc-400 shrink-0 transition-transform duration-200 ${
-                          isStatusFilterOpen ? "rotate-180" : ""
+                          isMobileFilterOpen ? "rotate-180" : ""
                         }`}
                       />
                     </button>
 
                     <AnimatePresence>
-                      {isStatusFilterOpen && (
+                      {isMobileFilterOpen && (
                         <motion.div
                           initial={{ opacity: 0, scale: 0.96, y: -6 }}
                           animate={{ opacity: 1, scale: 1, y: 0 }}
                           exit={{ opacity: 0, scale: 0.96, y: -4 }}
                           transition={{ type: "spring", damping: 28, stiffness: 400 }}
                           onClick={(e) => e.stopPropagation()}
-                          className="absolute left-0 top-full z-40 mt-1.5 w-48 rounded-xl border border-zinc-200/90 dark:border-white/10 bg-white/95 dark:bg-[#1C1C20]/95 p-1.5 shadow-xl backdrop-blur-xl dark:text-white"
+                          className="absolute left-0 top-full z-40 mt-1.5 w-56 rounded-xl border border-zinc-200/90 dark:border-white/10 bg-white/95 dark:bg-[#1C1C20]/95 p-1.5 shadow-xl backdrop-blur-xl dark:text-white"
                         >
                           <div className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
                             Filter Status
@@ -1177,7 +1196,7 @@ function parseCsvLine(line: string): string[] {
                                 type="button"
                                 onClick={() => {
                                   setStatusFilter(item.id as any);
-                                  setIsStatusFilterOpen(false);
+                                  setIsMobileFilterOpen(false);
                                   setCurrentPage(1);
                                 }}
                                 className={`flex w-full items-center justify-between rounded-lg px-2.5 py-1.5 text-xs transition cursor-pointer text-left ${
@@ -1194,19 +1213,59 @@ function parseCsvLine(line: string): string[] {
                               </button>
                             );
                           })}
+
+                          <div className="my-1 border-t border-zinc-100 dark:border-white/10" />
+
+                          <div className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
+                            Campaign & Source
+                          </div>
+                          {[
+                            { id: "All lead magnets", label: "All lead magnets", count: filterCounts.all, icon: Layers },
+                            { id: "All LinkedIn Leads", label: "LinkedIn Leads", count: filterCounts.linkedIn, icon: Linkedin },
+                            { id: "All Locked PDFs", label: "Locked PDFs", count: filterCounts.lockedPdf, icon: Lock },
+                            { id: "All Form Magnets", label: "Form Magnets", count: filterCounts.forms, icon: FileText },
+                          ].map((item) => {
+                            const isSelected = filterMagnet === item.id;
+                            const IconComp = item.icon;
+                            return (
+                              <button
+                                key={item.id}
+                                type="button"
+                                onClick={() => {
+                                  setFilterMagnet(item.id);
+                                  setIsMobileFilterOpen(false);
+                                  setCurrentPage(1);
+                                }}
+                                className={`flex w-full items-center justify-between rounded-lg px-2.5 py-1.5 text-xs transition cursor-pointer text-left ${
+                                  isSelected
+                                    ? "bg-[#0066B2]/10 text-[#0066B2] font-bold dark:bg-[#38BDF8]/20 dark:text-[#38BDF8]"
+                                    : "text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-white/5 font-medium"
+                                }`}
+                              >
+                                <span className="flex items-center gap-1.5 truncate">
+                                  <IconComp className="h-3.5 w-3.5 text-zinc-400 shrink-0" />
+                                  {item.label}
+                                </span>
+                                <div className="flex items-center gap-1.5 shrink-0">
+                                  <span className="text-[10px] text-zinc-400">({item.count})</span>
+                                  {isSelected && <Check className="h-3.5 w-3.5" />}
+                                </div>
+                              </button>
+                            );
+                          })}
                         </motion.div>
                       )}
                     </AnimatePresence>
                   </div>
 
-                  {/* Magnet / Channel Filter Dropdown */}
-                  <div className="relative shrink-0" ref={filterRef}>
+                  {/* Desktop Magnet / Channel Filter Dropdown (hidden on mobile) */}
+                  <div className="hidden sm:block relative shrink-0" ref={filterRef}>
                     <button
                       type="button"
                       onClick={(e) => {
                         e.stopPropagation();
                         setIsSortOpen(false);
-                        setIsStatusFilterOpen(false);
+                        setIsMobileFilterOpen(false);
                         setFilterOpen((v) => !v);
                       }}
                       className="flex h-8 items-center gap-1 sm:gap-2 rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#18181B] px-2 sm:px-3 text-[11px] sm:text-xs font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-[#222226] transition shadow-2xs cursor-pointer select-none"
@@ -1362,7 +1421,7 @@ function parseCsvLine(line: string): string[] {
                       type="button"
                       onClick={(e) => {
                         e.stopPropagation();
-                        setIsStatusFilterOpen(false);
+                        setIsMobileFilterOpen(false);
                         setFilterOpen(false);
                         setIsSortOpen((v) => !v);
                       }}
