@@ -186,120 +186,142 @@ export default function SocialCardModal({
 
     const paddingX = (format === "story" ? 90 : 80) * scale;
     const maxTextWidth = width - paddingX * 2;
+    const footerY = height - (isLandscape ? 95 : 150) * scale;
+    const topPadding = (format === "story" ? 140 : isLandscape ? 50 : 80) * scale;
+    const availableHeight = footerY - topPadding - 30 * scale;
 
-    // Badge Pill
-    const badgeY = (format === "story" ? 160 : isLandscape ? 60 : 100) * scale;
-    const badgeFontSize = (isLandscape ? 18 : 22) * scale;
+    // Estimate base font sizes
+    let headlineBaseSize = (format === "story" ? 64 : format === "linkedin" ? 48 : 36) * scale;
+    if (cardHeadline.length < 25) {
+      headlineBaseSize *= 1.15; // Punchy bold headline for short titles
+    } else if (cardHeadline.length > 60) {
+      headlineBaseSize *= 0.85; // Gracefully scale down for long headlines
+    }
 
+    let subFontSize = (format === "story" ? 28 : isLandscape ? 19 : 24) * scale;
+    let badgeFontSize = (isLandscape ? 17 : 21) * scale;
+    let bulletFontSize = (format === "story" ? 24 : isLandscape ? 16 : 20) * scale;
+
+    // Helper: Wrap text
+    const wrapText = (text: string, font: string, maxWidth: number) => {
+      ctx.font = font;
+      const words = text.split(" ");
+      const lines: string[] = [];
+      let currentLine = "";
+      for (let i = 0; i < words.length; i++) {
+        const testLine = currentLine ? currentLine + " " + words[i] : words[i];
+        if (ctx.measureText(testLine).width > maxWidth && i > 0) {
+          lines.push(currentLine);
+          currentLine = words[i];
+        } else {
+          currentLine = testLine;
+        }
+      }
+      if (currentLine) lines.push(currentLine);
+      return lines;
+    };
+
+    // Helper to calculate total height needed
+    const calcLayout = (hSize: number, sSize: number, bSize: number) => {
+      const hLines = wrapText(cardHeadline, `800 ${hSize}px ${selectedFont}`, maxTextWidth);
+      const sLines = cardSubheadline ? wrapText(cardSubheadline, `500 ${sSize}px ${selectedFont}`, maxTextWidth) : [];
+      
+      const bulletItems = showBullets
+        ? (page.bullets && page.bullets.length > 0 ? page.bullets.slice(0, 3) : [
+            "100% actionable framework built for immediate results",
+            "Includes pre-built copy-paste templates and workflow checklists",
+          ])
+        : [];
+      
+      const bulletLineHeight = bSize * 1.35;
+      const bulletTextWidth = maxTextWidth - 80 * scale;
+      let totalBulletsContentH = (isLandscape ? 16 : 26) * scale;
+      bulletItems.forEach((b) => {
+        const lines = wrapText(b, `bold ${bSize}px ${selectedFont}`, bulletTextWidth);
+        totalBulletsContentH += lines.length * bulletLineHeight + (isLandscape ? 6 : 10) * scale;
+      });
+
+      const badgeH = badgeFontSize + 20 * scale;
+      const headlineH = hLines.length * (hSize * 1.22);
+      const subH = sLines.length > 0 ? sLines.length * (sSize * 1.28) + (isLandscape ? 12 : 20) * scale : 0;
+      const bulletsH = showBullets ? totalBulletsContentH + (isLandscape ? 14 : 24) * scale : 0;
+
+      const totalH = badgeH + headlineH + subH + bulletsH + (isLandscape ? 16 : 28) * scale;
+      return { totalH, hLines, sLines, bulletItems, bulletLineHeight, bulletTextWidth, totalBulletsContentH };
+    };
+
+    let layout = calcLayout(headlineBaseSize, subFontSize, bulletFontSize);
+    // If total content exceeds available height, scale font down to fit perfectly
+    if (layout.totalH > availableHeight) {
+      const fitFactor = Math.max(0.7, availableHeight / layout.totalH);
+      headlineBaseSize *= fitFactor;
+      subFontSize *= fitFactor;
+      bulletFontSize *= fitFactor;
+      badgeFontSize *= fitFactor;
+      layout = calcLayout(headlineBaseSize, subFontSize, bulletFontSize);
+    }
+
+    // Dynamic Vertical Centering: Center content vertically in the available body area
+    const verticalOffset = Math.max(0, (availableHeight - layout.totalH) / 2);
+    let currentY = topPadding + verticalOffset;
+
+    // 1. Badge Pill
     ctx.font = `bold ${badgeFontSize}px ${selectedFont}`;
     const badgeMeasure = ctx.measureText(badgeText);
-    const badgePillWidth = badgeMeasure.width + 36 * scale;
-    const badgePillHeight = badgeFontSize + 18 * scale;
+    const badgePillWidth = badgeMeasure.width + 32 * scale;
+    const badgePillHeight = badgeFontSize + 16 * scale;
 
     ctx.fillStyle = theme === "minimal" ? "rgba(0, 102, 178, 0.12)" : "rgba(255, 255, 255, 0.22)";
     ctx.beginPath();
-    ctx.roundRect(paddingX, badgeY - badgePillHeight + 8 * scale, badgePillWidth, badgePillHeight, 9999 * scale);
+    ctx.roundRect(paddingX, currentY, badgePillWidth, badgePillHeight, 9999 * scale);
     ctx.fill();
 
     ctx.fillStyle = theme === "minimal" ? "#0066B2" : "#FFFFFF";
-    ctx.fillText(badgeText, paddingX + 18 * scale, badgeY);
+    ctx.fillText(badgeText, paddingX + 16 * scale, currentY + badgeFontSize + 2 * scale);
 
-    // Headline (Multi-line text wrapping)
-    const fontSize = (format === "story" ? 64 : format === "linkedin" ? 48 : 34) * scale;
-    ctx.font = `800 ${fontSize}px ${selectedFont}`;
+    currentY += badgePillHeight + (isLandscape ? 14 : 22) * scale;
+
+    // 2. Headline
+    ctx.font = `800 ${headlineBaseSize}px ${selectedFont}`;
     ctx.fillStyle = theme === "minimal" ? "#0F172A" : "#FFFFFF";
+    const headlineLineHeight = headlineBaseSize * 1.22;
+    layout.hLines.forEach((line) => {
+      currentY += headlineLineHeight;
+      ctx.fillText(line, paddingX, currentY);
+    });
 
-    const words = cardHeadline.split(" ");
-    let line = "";
-    let y = badgeY + fontSize + (isLandscape ? 20 : 32) * scale;
-
-    for (let i = 0; i < words.length; i++) {
-      const testLine = line + words[i] + " ";
-      const metrics = ctx.measureText(testLine);
-      if (metrics.width > maxTextWidth && i > 0) {
-        ctx.fillText(line, paddingX, y);
-        line = words[i] + " ";
-        y += fontSize * 1.22;
-      } else {
-        line = testLine;
-      }
-    }
-    ctx.fillText(line, paddingX, y);
-
-    // Subheadline
-    if (cardSubheadline) {
-      y += (isLandscape ? 18 : 26) * scale;
-      const subFontSize = (format === "story" ? 30 : isLandscape ? 20 : 26) * scale;
+    // 3. Subheadline
+    if (layout.sLines.length > 0) {
+      currentY += (isLandscape ? 10 : 18) * scale;
       ctx.font = `500 ${subFontSize}px ${selectedFont}`;
       ctx.fillStyle = theme === "minimal" ? "#475569" : "rgba(255, 255, 255, 0.88)";
-      const subWords = cardSubheadline.split(" ");
-      let subLine = "";
-      for (let i = 0; i < subWords.length; i++) {
-        const testLine = subLine + subWords[i] + " ";
-        if (ctx.measureText(testLine).width > maxTextWidth && i > 0) {
-          ctx.fillText(subLine, paddingX, y);
-          subLine = subWords[i] + " ";
-          y += subFontSize * 1.28;
-        } else {
-          subLine = testLine;
-        }
-      }
-      ctx.fillText(subLine, paddingX, y);
+      const subLineHeight = subFontSize * 1.28;
+      layout.sLines.forEach((line) => {
+        currentY += subLineHeight;
+        ctx.fillText(line, paddingX, currentY);
+      });
     }
 
-    // Visual Mockup / Bullets Content Box
-    if (showBullets) {
-      const bulletItems = page.bullets && page.bullets.length > 0
-        ? page.bullets.slice(0, 3)
-        : [
-          "100% actionable framework built for immediate results",
-          "Includes pre-built copy-paste templates and workflow checklists",
-          "Zero fluff: implementation ready step-by-step process",
-        ];
+    // 4. Bullets Box
+    if (showBullets && layout.bulletItems.length > 0) {
+      currentY += (isLandscape ? 14 : 26) * scale;
+      const cardBoxY = currentY;
+      const cardBoxHeight = layout.totalBulletsContentH;
 
-      const bulletFontSize = (format === "story" ? 26 : isLandscape ? 17 : 22) * scale;
-      ctx.font = `bold ${bulletFontSize}px ${selectedFont}`;
-      const bulletLineHeight = bulletFontSize * 1.35;
-      const bulletTextWidth = maxTextWidth - 80 * scale;
-      const bulletItemGap = (isLandscape ? 8 : 16) * scale;
-      const boxPaddingTopBottom = (isLandscape ? 20 : 34) * scale;
-
-      let calculatedBulletsHeight = boxPaddingTopBottom;
-      bulletItems.forEach((bText) => {
-        const bWords = bText.split(" ");
-        let bLine = "";
-        let linesCount = 1;
-        for (let i = 0; i < bWords.length; i++) {
-          const testLine = bLine + bWords[i] + " ";
-          if (ctx.measureText(testLine).width > bulletTextWidth && i > 0) {
-            linesCount++;
-            bLine = bWords[i] + " ";
-          } else {
-            bLine = testLine;
-          }
-        }
-        calculatedBulletsHeight += linesCount * bulletLineHeight + bulletItemGap;
-      });
-
-      const cardBoxY = y + (isLandscape ? 18 : 36) * scale;
-      const cardBoxHeight = calculatedBulletsHeight;
-
-      // Draw Translucent Glass Container Box
       ctx.fillStyle = theme === "minimal" ? "rgba(15, 23, 42, 0.04)" : "rgba(255, 255, 255, 0.12)";
       ctx.beginPath();
-      ctx.roundRect(paddingX, cardBoxY, maxTextWidth, cardBoxHeight, (isLandscape ? 14 : 20) * scale);
+      ctx.roundRect(paddingX, cardBoxY, maxTextWidth, cardBoxHeight, (isLandscape ? 12 : 18) * scale);
       ctx.fill();
 
       ctx.strokeStyle = theme === "minimal" ? "rgba(15, 23, 42, 0.1)" : "rgba(255, 255, 255, 0.22)";
       ctx.lineWidth = 2 * scale;
       ctx.stroke();
 
-      // Render Bullets with Checkmarks
-      let bulletY = cardBoxY + (isLandscape ? 22 : 36) * scale;
-      const checkX = paddingX + (isLandscape ? 18 : 26) * scale;
-      const textX = checkX + (isLandscape ? 28 : 38) * scale;
+      let bulletY = cardBoxY + (isLandscape ? 18 : 28) * scale;
+      const checkX = paddingX + (isLandscape ? 16 : 24) * scale;
+      const textX = checkX + (isLandscape ? 26 : 34) * scale;
 
-      bulletItems.forEach((bText) => {
+      layout.bulletItems.forEach((bText) => {
         ctx.fillStyle = "#34D399";
         ctx.font = `bold ${bulletFontSize + 2 * scale}px ${selectedFont}`;
         ctx.fillText("✓", checkX, bulletY);
@@ -307,27 +329,15 @@ export default function SocialCardModal({
         ctx.fillStyle = theme === "minimal" ? "#0F172A" : "#FFFFFF";
         ctx.font = `bold ${bulletFontSize}px ${selectedFont}`;
 
-        const bWords = bText.split(" ");
-        let bLine = "";
-        let lineY = bulletY;
-
-        for (let i = 0; i < bWords.length; i++) {
-          const testLine = bLine + bWords[i] + " ";
-          if (ctx.measureText(testLine).width > bulletTextWidth && i > 0) {
-            ctx.fillText(bLine, textX, lineY);
-            bLine = bWords[i] + " ";
-            lineY += bulletLineHeight;
-          } else {
-            bLine = testLine;
-          }
-        }
-        ctx.fillText(bLine, textX, lineY);
-        bulletY = lineY + bulletLineHeight + (isLandscape ? 8 : 14) * scale;
+        const lines = wrapText(bText, `bold ${bulletFontSize}px ${selectedFont}`, layout.bulletTextWidth);
+        lines.forEach((line, lineIdx) => {
+          ctx.fillText(line, textX, bulletY + lineIdx * layout.bulletLineHeight);
+        });
+        bulletY += lines.length * layout.bulletLineHeight + (isLandscape ? 6 : 10) * scale;
       });
     }
 
     // Footer divider line
-    const footerY = height - (isLandscape ? 95 : 150) * scale;
     ctx.strokeStyle = theme === "minimal" ? "#E2E8F0" : "rgba(255, 255, 255, 0.22)";
     ctx.lineWidth = 2 * scale;
     ctx.beginPath();
@@ -817,8 +827,8 @@ export default function SocialCardModal({
                       : ""
                 }`}
             >
-              {/* Card Top / Body */}
-              <div className="flex flex-col min-h-0">
+              {/* Card Body - Vertically Centered with Dynamic Spacing & No Line Clamping */}
+              <div className="flex-1 flex flex-col justify-center min-h-0 py-1 gap-1.5 sm:gap-2.5">
                 <div>
                   <span
                     className={`inline-flex items-center gap-1 rounded-full font-bold uppercase tracking-wider ${isLandscape ? "px-2 py-0.5 text-[8px] sm:text-[9px]" : "px-2 py-0.5 sm:px-2.5 sm:py-1 text-[8px] sm:text-[10px]"
@@ -831,13 +841,18 @@ export default function SocialCardModal({
                   </span>
                 </div>
 
-                <h4 className={`font-black leading-tight tracking-tight ${isLandscape ? "mt-1 text-[11px] sm:text-base line-clamp-2" : format === "story" ? "mt-1.5 sm:mt-2.5 text-xs sm:text-base md:text-lg line-clamp-2" : "mt-2 sm:mt-3 text-sm sm:text-lg md:text-xl line-clamp-2"
-                  }`}>
+                <h4 className={`font-black leading-tight tracking-tight break-words ${
+                  cardHeadline.length < 25
+                    ? isLandscape ? "text-xs sm:text-base" : format === "story" ? "text-sm sm:text-lg md:text-xl" : "text-base sm:text-xl md:text-2xl"
+                    : cardHeadline.length < 55
+                      ? isLandscape ? "text-[11px] sm:text-sm" : format === "story" ? "text-xs sm:text-base md:text-lg" : "text-sm sm:text-lg md:text-xl"
+                      : isLandscape ? "text-[10px] sm:text-xs" : format === "story" ? "text-[11px] sm:text-sm md:text-base" : "text-xs sm:text-base md:text-lg"
+                }`}>
                   {cardHeadline}
                 </h4>
 
                 {cardSubheadline && (
-                  <p className={`leading-snug opacity-90 font-medium ${isLandscape ? "mt-0.5 text-[8px] sm:text-xs line-clamp-1" : "mt-0.5 sm:mt-1 text-[9px] sm:text-xs line-clamp-2"
+                  <p className={`leading-snug opacity-90 font-medium break-words ${isLandscape ? "text-[8px] sm:text-xs" : "text-[9px] sm:text-xs"
                     }`}>
                     {cardSubheadline}
                   </p>
@@ -846,8 +861,8 @@ export default function SocialCardModal({
                 {/* Bullets Highlight Box */}
                 {showBullets && (
                   <div className={`backdrop-blur-md border ${isLandscape
-                    ? "mt-1 rounded-lg p-1.5"
-                    : "mt-1.5 sm:mt-2.5 rounded-xl p-2 sm:p-2.5"
+                    ? "rounded-lg p-1.5"
+                    : "rounded-xl p-2 sm:p-2.5"
                     } ${theme === "minimal"
                       ? "bg-zinc-50 border-zinc-200 text-zinc-900"
                       : "bg-white/10 border-white/20 text-white"
@@ -855,7 +870,7 @@ export default function SocialCardModal({
                     <div className={`font-semibold ${isLandscape ? "space-y-0.5 text-[8px] sm:text-[10px]" : "space-y-0.5 sm:space-y-1 text-[8.5px] sm:text-[11px]"
                       }`}>
                       {(page.bullets && page.bullets.length > 0
-                        ? page.bullets.slice(0, 2)
+                        ? page.bullets.slice(0, 3)
                         : [
                           "100% actionable framework for immediate results",
                           "Pre-built templates and checklists",
@@ -863,7 +878,7 @@ export default function SocialCardModal({
                       ).map((bullet, idx) => (
                         <div key={idx} className="flex items-start gap-1">
                           <span className="text-emerald-400 font-bold shrink-0">✓</span>
-                          <span className="leading-tight line-clamp-1">{bullet}</span>
+                          <span className="leading-tight break-words">{bullet}</span>
                         </div>
                       ))}
                     </div>
