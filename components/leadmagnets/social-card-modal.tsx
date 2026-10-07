@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { motion } from "framer-motion";
 import {
   X,
   Download,
@@ -82,13 +83,28 @@ export default function SocialCardModal({
 
   const cardRef = useRef<HTMLDivElement>(null);
 
-  // Reset/Sync local states when modal opens
+  // Reset/Sync local states and lock background scroll when modal opens
   useEffect(() => {
     if (isOpen) {
       setCardHeadline(page.headline || page.name || "Free Resource");
       setCardSubheadline(page.subheadline || "");
       setShowCoverImage(Boolean(page.imageUrl));
       setSaveOGSuccess(false);
+
+      // Lock background page scroll on both mobile and desktop
+      const originalBodyOverflow = document.body.style.overflow;
+      const originalHtmlOverflow = document.documentElement.style.overflow;
+      const originalTouchAction = document.body.style.touchAction;
+
+      document.body.style.overflow = "hidden";
+      document.documentElement.style.overflow = "hidden";
+      document.body.style.touchAction = "none";
+
+      return () => {
+        document.body.style.overflow = originalBodyOverflow;
+        document.documentElement.style.overflow = originalHtmlOverflow;
+        document.body.style.touchAction = originalTouchAction;
+      };
     }
   }, [isOpen, page.headline, page.name, page.subheadline, page.imageUrl]);
 
@@ -469,8 +485,30 @@ export default function SocialCardModal({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-md p-2 sm:p-4 animate-in fade-in duration-200">
-      <div className="relative w-full max-w-4xl h-[94vh] sm:h-auto sm:max-h-[92vh] flex flex-col overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-2xl dark:border-[#27272A] dark:bg-[#121215]">
+    <motion.div
+      key="social-card-backdrop"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.22, ease: "easeOut" }}
+      className="fixed inset-0 z-50 flex flex-col justify-end sm:justify-center sm:items-center bg-black/75 backdrop-blur-md p-0 sm:p-4 overscroll-contain overflow-hidden"
+      onWheel={(e) => e.stopPropagation()}
+      onTouchMove={(e) => e.stopPropagation()}
+      onClick={onClose}
+    >
+      <motion.div
+        key="social-card-sheet"
+        initial={{ opacity: 0, y: 120 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: 120 }}
+        transition={{ type: "spring", damping: 30, stiffness: 360, mass: 0.8 }}
+        className="relative w-full max-w-4xl h-[92vh] sm:h-[88vh] max-h-[92vh] flex flex-col overflow-hidden rounded-t-3xl sm:rounded-2xl border-t sm:border border-zinc-200 bg-white shadow-2xl dark:border-[#27272A] dark:bg-[#121215] overscroll-contain mt-auto sm:mt-0"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Mobile Bottom Sheet Grab Handle */}
+        <div className="sm:hidden flex justify-center pb-1 pt-2 shrink-0 bg-white dark:bg-[#121215]">
+          <div className="h-1.5 w-12 rounded-full bg-zinc-300 dark:bg-zinc-700/80" />
+        </div>
         {/* Header Bar */}
         <div className="flex items-center justify-between border-b border-zinc-200 dark:border-[#27272A] px-3.5 py-3 sm:px-5 sm:py-3.5 bg-white dark:bg-[#121215] shrink-0">
           <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
@@ -717,7 +755,7 @@ export default function SocialCardModal({
         </div>
 
         {/* Visual Live Card Canvas / DOM Preview Container */}
-        <div className="flex-1 min-h-[260px] overflow-y-auto p-3 sm:p-6 flex flex-col items-center justify-center bg-zinc-950/95 relative">
+        <div className="flex-1 min-h-[200px] overflow-y-auto overscroll-contain touch-pan-y p-3 sm:p-6 flex flex-col items-center justify-center bg-zinc-950/95 relative">
           <div className="w-full flex items-center justify-center">
             <div
               ref={cardRef}
@@ -942,7 +980,7 @@ export default function SocialCardModal({
             </button>
           </div>
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }

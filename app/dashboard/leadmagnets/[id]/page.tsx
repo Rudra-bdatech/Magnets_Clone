@@ -2096,18 +2096,20 @@ export default function EditLeadMagnetPage() {
         />
       )}
 
-      {page && (
-        <SocialCardModal
-          isOpen={showSocialModal}
-          onClose={() => setShowSocialModal(false)}
-          page={{ ...page, headline, subheadline, imageUrl }}
-          account={account}
-          onSaveAsCover={(newImageUrl: string) => {
-            setImageUrl(newImageUrl);
-            update({ imageUrl: newImageUrl });
-          }}
-        />
-      )}
+      <AnimatePresence>
+        {showSocialModal && page && (
+          <SocialCardModal
+            isOpen={showSocialModal}
+            onClose={() => setShowSocialModal(false)}
+            page={{ ...page, headline, subheadline, imageUrl }}
+            account={account}
+            onSaveAsCover={(newImageUrl: string) => {
+              setImageUrl(newImageUrl);
+              update({ imageUrl: newImageUrl });
+            }}
+          />
+        )}
+      </AnimatePresence>
 
       {/* Functional Sequence Preview Modal */}
       {showSequencePreviewModal && (
