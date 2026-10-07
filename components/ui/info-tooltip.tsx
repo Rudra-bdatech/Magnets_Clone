@@ -152,7 +152,7 @@ export function InfoTooltip({
 
   return (
     <span
-      className={`relative inline-flex items-center align-middle ${className}`}
+      className={`relative inline-flex items-center align-middle touch-manipulation ${className}`}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       onClick={(e) => e.stopPropagation()}
@@ -163,7 +163,7 @@ export function InfoTooltip({
         onClick={toggle}
         aria-expanded={isOpen}
         aria-label={title || "More information"}
-        className={`group/info flex ${buttonSize} items-center justify-center rounded-full text-sky-500/80 hover:text-sky-600 bg-sky-50 hover:bg-sky-100 dark:text-sky-400 dark:bg-sky-950/50 dark:hover:bg-sky-900/60 transition-all cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500/50 shrink-0`}
+        className={`group/info relative flex ${buttonSize} items-center justify-center rounded-full text-sky-500/80 hover:text-sky-600 bg-sky-50 hover:bg-sky-100 dark:text-sky-400 dark:bg-sky-950/50 dark:hover:bg-sky-900/60 transition-all cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500/50 shrink-0 touch-manipulation after:absolute after:-inset-2 after:content-['']`}
       >
         <Info className={`${iconSize} transition-transform group-hover/info:scale-110 ${iconClassName}`} />
       </button>
