@@ -1566,14 +1566,14 @@ export default function EditLeadMagnetPage() {
   return (
     <>
       <div className="flex flex-col min-h-[calc(100vh-3rem)] bg-gradient-to-b from-[#EFF6FF]/60 via-[#F8FBFF] to-[#F8FBFF] dark:bg-none dark:bg-[#0E0E10] text-zinc-900 dark:text-white transition-colors duration-200">
-      <div className="flex-1 px-4 py-6 sm:px-6 lg:px-8 w-full max-w-7xl mx-auto">
+        <div className="flex-1 px-4 py-6 sm:px-6 lg:px-8 w-full max-w-7xl mx-auto">
 
           {/* Page Top Title Header */}
           <div className="mb-4 sm:mb-6 flex items-center justify-between">
             <div>
               <h2 className="flex items-center gap-2 text-xl sm:text-2xl lg:text-3xl font-extrabold text-zinc-900 dark:text-white">
                 {isLockedPdf ? "Edit Locked PDF" : "Edit lead magnet"}
-                <span className="cursor-help flex h-4.5 w-4.5 sm:h-5 sm:w-5 items-center justify-center rounded-full border border-zinc-200 dark:border-[#2e2e38] text-[11px] sm:text-xs font-normal text-zinc-500 dark:text-[#9B9085] hover:bg-zinc-100 dark:hover:bg-[#18181B]" title={isLockedPdf ? "Edit the PDF, delivery emails, and post-signup flow" : "Edit the page copy, design, emails, and post-signup flow"}>?</span>
+                <span className="shrink-0 cursor-help inline-flex h-5 w-5 items-center justify-center rounded-full border border-zinc-200 dark:border-[#2e2e38] text-[11px] font-semibold text-zinc-500 dark:text-[#9B9085] hover:bg-zinc-100 dark:hover:bg-[#18181B] leading-none select-none" title={isLockedPdf ? "Edit the PDF, delivery emails, and post-signup flow" : "Edit the page copy, design, emails, and post-signup flow"}>?</span>
               </h2>
             </div>
           </div>
@@ -1582,166 +1582,277 @@ export default function EditLeadMagnetPage() {
           <div className={`rounded-2xl border text-zinc-900 dark:text-zinc-100 shadow-2xl overflow-hidden transition-colors duration-200 ${(account?.themeMode || "light") === "dark" ? "border-[#1F1F24] bg-[#18181B]" : "border-zinc-200 bg-white"}`}>
 
             {/* Inner Header Bar */}
-            <div className={`flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-4 border-b px-3.5 py-3 sm:px-6 transition-colors duration-200 ${(account?.themeMode || "light") === "dark" ? "border-[#1F1F24] bg-[#18181B] text-white" : "border-zinc-200 bg-zinc-50/80 text-zinc-900"}`}>
-              {/* Left Back link & Page Name/Slug */}
-              <div className="flex items-center gap-2.5 sm:gap-3 min-w-0 max-w-full">
-                <Link
-                  href={isLockedPdf ? "/dashboard/locked-pdf" : "/dashboard/landing-page"}
-                  prefetch={true}
-                  className={`shrink-0 flex items-center gap-1.5 rounded-lg border px-2.5 sm:px-3 py-1.5 text-xs font-bold active:scale-95 transition-all shadow-xs cursor-pointer ${(account?.themeMode || "light") === "dark"
-                    ? "border-[#27272A] bg-[#1E1E24] text-zinc-200 hover:bg-[#27272A]"
-                    : "border-zinc-300 bg-white text-zinc-900 hover:bg-zinc-100"
-                    }`}
-                >
-                  <ArrowLeft className="h-3.5 w-3.5 stroke-[2.5px]" />
-                  <span>{isLockedPdf ? "Locked PDF" : "Landing Page"}</span>
-                </Link>
-                <div className="min-w-0 flex-1 flex flex-col justify-center">
-                  <span className={`text-[11.5px] sm:text-xs font-bold leading-tight truncate block ${(account?.themeMode || "light") === "dark" ? "text-white" : "text-zinc-900"}`} title={page?.name || "Document"}>
-                    {page?.name || "Document"}
-                  </span>
-                  <span className={`text-[10px] sm:text-[11px] leading-none mt-0.5 truncate block font-mono ${(account?.themeMode || "light") === "dark" ? "text-zinc-400" : "text-zinc-500"}`} title={`/${page?.slug || "page"}`}>
-                    /{page?.slug || "page"}
-                  </span>
+            <div className={`border-b px-3.5 py-2.5 sm:py-3 sm:px-6 transition-colors duration-200 ${(account?.themeMode || "light") === "dark" ? "border-[#1F1F24] bg-[#18181B] text-white" : "border-zinc-200 bg-zinc-50/80 text-zinc-900"}`}>
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-4">
+                {/* Row 1 (Mobile): Back link & Page Name/Slug + Top-Right Mobile Actions */}
+                <div className="flex items-center justify-between gap-2.5 sm:gap-3 min-w-0 max-w-full">
+                  <div className="flex items-center gap-2 sm:gap-3 min-w-0 max-w-full flex-1">
+                    <Link
+                      href={isLockedPdf ? "/dashboard/locked-pdf" : "/dashboard/landing-page"}
+                      prefetch={true}
+                      className={`shrink-0 flex items-center gap-1.5 rounded-lg border px-2.5 sm:px-3 py-1.5 text-xs font-bold active:scale-95 transition-all shadow-xs cursor-pointer ${(account?.themeMode || "light") === "dark"
+                        ? "border-[#27272A] bg-[#1E1E24] text-zinc-200 hover:bg-[#27272A]"
+                        : "border-zinc-300 bg-white text-zinc-900 hover:bg-zinc-100"
+                        }`}
+                    >
+                      <ArrowLeft className="h-3.5 w-3.5 stroke-[2.5px]" />
+                      <span className="hidden xs:inline">{isLockedPdf ? "Locked PDF" : "Landing Page"}</span>
+                      <span className="xs:hidden">Back</span>
+                    </Link>
+                    <div className="min-w-0 flex-1 flex flex-col justify-center">
+                      <span className={`text-[11.5px] sm:text-xs font-bold leading-tight truncate block ${(account?.themeMode || "light") === "dark" ? "text-white" : "text-zinc-900"}`} title={page?.name || "Document"}>
+                        {page?.name || "Document"}
+                      </span>
+                      <span className={`text-[10px] sm:text-[11px] leading-none mt-0.5 truncate block font-mono ${(account?.themeMode || "light") === "dark" ? "text-zinc-400" : "text-zinc-500"}`} title={`/${page?.slug || "page"}`}>
+                        /{page?.slug || "page"}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Mobile-Only Top-Right Cluster: Status Pill + Preview + Overflow Menu */}
+                  <div className="flex sm:hidden items-center gap-1.5 shrink-0">
+                    {!isLockedPdf && (
+                      <button
+                        type="button"
+                        onClick={() => update({ status: live ? "draft" : "live", publishedAt: live ? page?.publishedAt : new Date().toISOString() })}
+                        className={`inline-flex items-center gap-1 rounded-lg px-2 py-1 text-[11px] font-bold transition cursor-pointer shadow-xs ${
+                          live
+                            ? "bg-emerald-50 text-emerald-700 border border-emerald-300 dark:bg-emerald-950/80 dark:text-emerald-300 dark:border-emerald-700/60"
+                            : "bg-zinc-100 text-zinc-700 border border-zinc-300 dark:bg-[#1E1E24] dark:text-zinc-300 dark:border-[#27272A]"
+                        }`}
+                      >
+                        <span className={`h-1.5 w-1.5 rounded-full ${live ? "bg-emerald-500" : "bg-zinc-400"}`} />
+                        <span>{live ? "Live" : "Draft"}</span>
+                      </button>
+                    )}
+
+                    <a
+                      href={isLockedPdf ? (page ? `/pdf-viewer/${page.id}` : "/dashboard/locked-pdf") : (page ? `/${account?.username || "user"}/${page.slug}` : "/dashboard/landing-page")}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={`p-1.5 rounded-lg transition cursor-pointer ${(account?.themeMode || "light") === "dark"
+                        ? "text-zinc-400 hover:text-white hover:bg-[#27272A]"
+                        : "text-zinc-700 hover:text-zinc-900 hover:bg-zinc-200/70"
+                        }`}
+                      title="Open live page in new tab"
+                    >
+                      <ExternalLink className="h-3.5 w-3.5" />
+                    </a>
+
+                    <div className="relative">
+                      <button
+                        type="button"
+                        onClick={() => setShowMenu(!showMenu)}
+                        className={`p-1.5 rounded-lg transition cursor-pointer ${(account?.themeMode || "light") === "dark"
+                          ? "text-zinc-400 hover:text-white hover:bg-[#27272A]"
+                          : "text-zinc-700 hover:text-zinc-900 hover:bg-zinc-200/70"
+                          }`}
+                        title="More actions"
+                      >
+                        <MoreHorizontal className="h-3.5 w-3.5" />
+                      </button>
+
+                      {showMenu && (
+                        <div className="absolute right-0 top-9 w-48 rounded-2xl border p-1.5 shadow-xl z-50 animate-in fade-in slide-in-from-top-2 duration-150 border-zinc-200 bg-white text-zinc-900 dark:border-[#27272A] dark:bg-[#18181C] dark:text-zinc-200">
+                          <button
+                            onClick={() => {
+                              setShowMenu(false);
+                              handleAnalytics();
+                            }}
+                            className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-semibold transition cursor-pointer text-zinc-700 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-300 dark:hover:bg-[#27272A] dark:hover:text-white"
+                          >
+                            <BarChart2 className="h-4 w-4 text-zinc-400" />
+                            <span>Analytics</span>
+                          </button>
+
+                          <button
+                            onClick={() => {
+                              setShowMenu(false);
+                              handleDownloadQR();
+                            }}
+                            className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-semibold transition cursor-pointer text-zinc-700 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-300 dark:hover:bg-[#27272A] dark:hover:text-white"
+                          >
+                            <QrCode className="h-4 w-4 text-zinc-400" />
+                            <span>Download QR code</span>
+                          </button>
+
+                          <div className="my-1 h-px bg-zinc-200 dark:bg-[#27272A]" />
+
+                          <button
+                            onClick={() => {
+                              setShowMenu(false);
+                              handleDeletePage();
+                            }}
+                            className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-semibold text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 transition cursor-pointer"
+                          >
+                            <Trash2 className="h-4 w-4 text-red-400" />
+                            <span>Delete lead magnet</span>
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 </div>
-              </div>
 
-              {/* Right Status & Actions */}
-              <div className="flex items-center justify-between sm:justify-end gap-2.5 shrink-0 pt-1.5 sm:pt-0 border-t sm:border-t-0 border-zinc-100 dark:border-zinc-800/60">
-                <span className="text-xs text-zinc-500 dark:text-zinc-400 font-medium flex items-center gap-1 shrink-0">
-                  <Check className="h-3.5 w-3.5 stroke-[3px] text-emerald-500" />
-                  <span>{saveStatus === "saving" ? "Waiting to autosave..." : "Autosaved"}</span>
-                </span>
+                {/* Toolbar / Actions Row (Desktop right-side, Mobile bottom row with horizontal scroll support) */}
+                <div className="flex items-center justify-between sm:justify-end gap-2 sm:gap-2.5 max-w-full overflow-x-auto scrollbar-none pt-2 sm:pt-0 border-t sm:border-t-0 border-zinc-100 dark:border-zinc-800/60 min-w-0">
+                  {/* Autosave Status */}
+                  <span className="text-[11px] sm:text-xs text-zinc-500 dark:text-zinc-400 font-medium flex items-center gap-1 shrink-0 select-none">
+                    <Check className="h-3.5 w-3.5 stroke-[3px] text-emerald-500 shrink-0" />
+                    <span>{saveStatus === "saving" ? "Saving..." : "Autosaved"}</span>
+                  </span>
 
-                {/* AI Autofill & Social Studio (Only on Landing Pages) */}
-                {!isLockedPdf && (
-                  <>
-                    <button
-                      onClick={() => setShowAIModal(true)}
-                      className="flex items-center gap-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 px-3 py-1.5 text-xs font-bold text-white shadow-xs transition cursor-pointer"
-                      title="AI Autofill: Regenerate headlines & copy"
-                    >
-                      <Sparkles className="h-3.5 w-3.5" />
-                      <span>AI Autofill</span>
-                    </button>
+                  <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+                    {/* AI Autofill & Social Studio (Only on Landing Pages) */}
+                    {!isLockedPdf && (
+                      <>
+                        <button
+                          type="button"
+                          onClick={() => setShowAIModal(true)}
+                          className="flex items-center gap-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 px-2.5 sm:px-3 py-1.5 text-xs font-bold text-white shadow-xs transition cursor-pointer shrink-0 active:scale-95"
+                          title="AI Autofill: Regenerate headlines & copy"
+                        >
+                          <Sparkles className="h-3.5 w-3.5 shrink-0" />
+                          <span>AI Autofill</span>
+                        </button>
 
-                    <button
-                      onClick={() => setShowSocialModal(true)}
-                      className="group flex items-center gap-1.5 rounded-lg border border-indigo-500/30 bg-indigo-500/10 px-3 py-1.5 text-xs font-bold text-indigo-400 hover:bg-indigo-600 hover:text-white transition shadow-xs cursor-pointer"
-                      title="Generate Social Media Graphic Cards"
-                    >
-                      <ImageIcon className="h-3.5 w-3.5 text-indigo-400 group-hover:text-white transition-colors" />
-                      <span>Social Cards</span>
-                    </button>
+                        <button
+                          type="button"
+                          onClick={() => setShowSocialModal(true)}
+                          className="group flex items-center gap-1.5 rounded-lg border border-indigo-500/30 bg-indigo-500/10 px-2.5 sm:px-3 py-1.5 text-xs font-bold text-indigo-400 hover:bg-indigo-600 hover:text-white transition shadow-xs cursor-pointer shrink-0 active:scale-95"
+                          title="Generate Social Media Graphic Cards"
+                        >
+                          <ImageIcon className="h-3.5 w-3.5 text-indigo-400 group-hover:text-white transition-colors shrink-0" />
+                          <span>Social Cards</span>
+                        </button>
 
-                    <div className="h-4 w-px bg-zinc-200 dark:bg-[#27272A] mx-1" />
-                  </>
-                )}
+                        <div className="hidden sm:block h-4 w-px bg-zinc-200 dark:bg-[#27272A] mx-0.5" />
+                      </>
+                    )}
 
-                {/* Undo / Redo */}
-                <button
-                  onClick={handleUndo}
-                  disabled={!canUndo}
-                  className={`p-1.5 rounded-lg transition ${canUndo
-                    ? ((account?.themeMode || "light") === "dark"
-                      ? "text-zinc-300 hover:text-white hover:bg-[#27272A] cursor-pointer"
-                      : "text-zinc-700 hover:text-zinc-900 hover:bg-zinc-200/70 cursor-pointer")
-                    : ((account?.themeMode || "light") === "dark"
-                      ? "text-zinc-600 cursor-not-allowed opacity-40"
-                      : "text-zinc-300 cursor-not-allowed opacity-40")
-                    }`}
-                  title={canUndo ? "Undo (Ctrl+Z)" : "Nothing to undo"}
-                >
-                  <Undo2 className="h-4 w-4" />
-                </button>
-                <button
-                  onClick={handleRedo}
-                  disabled={!canRedo}
-                  className={`p-1.5 rounded-lg transition ${canRedo
-                    ? ((account?.themeMode || "light") === "dark"
-                      ? "text-zinc-300 hover:text-white hover:bg-[#27272A] cursor-pointer"
-                      : "text-zinc-700 hover:text-zinc-900 hover:bg-zinc-200/70 cursor-pointer")
-                    : ((account?.themeMode || "light") === "dark"
-                      ? "text-zinc-600 cursor-not-allowed opacity-40"
-                      : "text-zinc-300 cursor-not-allowed opacity-40")
-                    }`}
-                  title={canRedo ? "Redo (Ctrl+Y)" : "Nothing to redo"}
-                >
-                  <Redo2 className="h-4 w-4" />
-                </button>
-
-                {/* Copy Link / Open Preview */}
-                <a
-                  href={isLockedPdf ? (page ? `/pdf-viewer/${page.id}` : "/dashboard/locked-pdf") : (page ? `/${account?.username || "user"}/${page.slug}` : "/dashboard/landing-page")}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={`p-1.5 rounded-lg transition cursor-pointer ${(account?.themeMode || "light") === "dark"
-                    ? "text-zinc-400 hover:text-white hover:bg-[#27272A]"
-                    : "text-zinc-700 hover:text-zinc-900 hover:bg-zinc-200/70"
-                    }`}
-                  title="Open live page in new tab"
-                >
-                  <ExternalLink className="h-4 w-4" />
-                </a>
-
-                {/* Overflow menu */}
-                <div className="relative" ref={menuRef}>
-                  <button
-                    onClick={() => setShowMenu(!showMenu)}
-                    className={`p-1.5 rounded-lg transition cursor-pointer ${(account?.themeMode || "light") === "dark"
-                      ? "text-zinc-400 hover:text-white hover:bg-[#27272A]"
-                      : "text-zinc-700 hover:text-zinc-900 hover:bg-zinc-200/70"
-                      }`}
-                    title="More actions"
-                  >
-                    <MoreHorizontal className="h-4 w-4" />
-                  </button>
-
-                  {showMenu && (
-                    <div className="absolute right-0 top-9 w-48 rounded-2xl border p-1.5 shadow-xl z-50 animate-in fade-in slide-in-from-top-2 duration-150 border-zinc-200 bg-white text-zinc-900 dark:border-[#27272A] dark:bg-[#18181C] dark:text-zinc-200">
+                    {/* Undo / Redo Pod */}
+                    <div className="flex items-center rounded-lg border border-zinc-200/80 dark:border-[#27272A] p-0.5 shrink-0 bg-white/50 dark:bg-[#1E1E24]/50">
                       <button
-                        onClick={handleAnalytics}
-                        className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-semibold transition cursor-pointer text-zinc-700 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-300 dark:hover:bg-[#27272A] dark:hover:text-white"
+                        type="button"
+                        onClick={handleUndo}
+                        disabled={!canUndo}
+                        className={`p-1 rounded-md transition ${canUndo
+                          ? ((account?.themeMode || "light") === "dark"
+                            ? "text-zinc-300 hover:text-white hover:bg-[#27272A] cursor-pointer"
+                            : "text-zinc-700 hover:text-zinc-900 hover:bg-zinc-200/70 cursor-pointer")
+                          : ((account?.themeMode || "light") === "dark"
+                            ? "text-zinc-600 cursor-not-allowed opacity-30"
+                            : "text-zinc-300 cursor-not-allowed opacity-30")
+                          }`}
+                        title={canUndo ? "Undo (Ctrl+Z)" : "Nothing to undo"}
                       >
-                        <BarChart2 className="h-4 w-4 text-zinc-400" />
-                        <span>Analytics</span>
+                        <Undo2 className="h-3.5 w-3.5" />
                       </button>
-
                       <button
-                        onClick={handleDownloadQR}
-                        className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-semibold transition cursor-pointer text-zinc-700 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-300 dark:hover:bg-[#27272A] dark:hover:text-white"
+                        type="button"
+                        onClick={handleRedo}
+                        disabled={!canRedo}
+                        className={`p-1 rounded-md transition ${canRedo
+                          ? ((account?.themeMode || "light") === "dark"
+                            ? "text-zinc-300 hover:text-white hover:bg-[#27272A] cursor-pointer"
+                            : "text-zinc-700 hover:text-zinc-900 hover:bg-zinc-200/70 cursor-pointer")
+                          : ((account?.themeMode || "light") === "dark"
+                            ? "text-zinc-600 cursor-not-allowed opacity-30"
+                            : "text-zinc-300 cursor-not-allowed opacity-30")
+                          }`}
+                        title={canRedo ? "Redo (Ctrl+Y)" : "Nothing to redo"}
                       >
-                        <QrCode className="h-4 w-4 text-zinc-400" />
-                        <span>Download QR code</span>
-                      </button>
-
-                      <div className="my-1 h-px bg-zinc-200 dark:bg-[#27272A]" />
-
-                      <button
-                        onClick={handleDeletePage}
-                        className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-semibold text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 transition cursor-pointer"
-                      >
-                        <Trash2 className="h-4 w-4 text-red-400" />
-                        <span>Delete lead magnet</span>
+                        <Redo2 className="h-3.5 w-3.5" />
                       </button>
                     </div>
-                  )}
-                </div>
 
-                {/* Status Pill (Only for regular Landing Pages) */}
-                {!isLockedPdf && (
-                  <button
-                    onClick={() => update({ status: live ? "draft" : "live", publishedAt: live ? page?.publishedAt : new Date().toISOString() })}
-                    className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-bold transition cursor-pointer shadow-xs ${
-                      live
-                        ? "bg-emerald-50 text-emerald-700 border border-emerald-300 hover:bg-emerald-100 dark:bg-emerald-950/80 dark:text-emerald-300 dark:border-emerald-700/60"
-                        : "bg-zinc-100 text-zinc-700 border border-zinc-300 hover:bg-zinc-200 dark:bg-[#1E1E24] dark:text-zinc-300 dark:border-[#27272A] dark:hover:bg-[#27272A]"
-                    }`}
-                  >
-                    <span className={`h-2 w-2 rounded-full ${live ? "bg-emerald-500" : "bg-zinc-400"}`} />
-                    <span>{live ? "Published" : "Draft"}</span>
-                  </button>
-                )}
+                    {/* Desktop-only: Copy Link / Open Preview, Overflow menu, and Status Pill */}
+                    <div className="hidden sm:flex items-center gap-1.5">
+                      <a
+                        href={isLockedPdf ? (page ? `/pdf-viewer/${page.id}` : "/dashboard/locked-pdf") : (page ? `/${account?.username || "user"}/${page.slug}` : "/dashboard/landing-page")}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={`p-1.5 rounded-lg transition cursor-pointer ${(account?.themeMode || "light") === "dark"
+                          ? "text-zinc-400 hover:text-white hover:bg-[#27272A]"
+                          : "text-zinc-700 hover:text-zinc-900 hover:bg-zinc-200/70"
+                          }`}
+                        title="Open live page in new tab"
+                      >
+                        <ExternalLink className="h-4 w-4" />
+                      </a>
+
+                      {/* Desktop Overflow menu */}
+                      <div className="relative" ref={menuRef}>
+                        <button
+                          type="button"
+                          onClick={() => setShowMenu(!showMenu)}
+                          className={`p-1.5 rounded-lg transition cursor-pointer ${(account?.themeMode || "light") === "dark"
+                            ? "text-zinc-400 hover:text-white hover:bg-[#27272A]"
+                            : "text-zinc-700 hover:text-zinc-900 hover:bg-zinc-200/70"
+                            }`}
+                          title="More actions"
+                        >
+                          <MoreHorizontal className="h-4 w-4" />
+                        </button>
+
+                        {showMenu && (
+                          <div className="absolute right-0 top-9 w-48 rounded-2xl border p-1.5 shadow-xl z-50 animate-in fade-in slide-in-from-top-2 duration-150 border-zinc-200 bg-white text-zinc-900 dark:border-[#27272A] dark:bg-[#18181C] dark:text-zinc-200">
+                            <button
+                              onClick={() => {
+                                setShowMenu(false);
+                                handleAnalytics();
+                              }}
+                              className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-semibold transition cursor-pointer text-zinc-700 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-300 dark:hover:bg-[#27272A] dark:hover:text-white"
+                            >
+                              <BarChart2 className="h-4 w-4 text-zinc-400" />
+                              <span>Analytics</span>
+                            </button>
+
+                            <button
+                              onClick={() => {
+                                setShowMenu(false);
+                                handleDownloadQR();
+                              }}
+                              className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-semibold transition cursor-pointer text-zinc-700 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-300 dark:hover:bg-[#27272A] dark:hover:text-white"
+                            >
+                              <QrCode className="h-4 w-4 text-zinc-400" />
+                              <span>Download QR code</span>
+                            </button>
+
+                            <div className="my-1 h-px bg-zinc-200 dark:bg-[#27272A]" />
+
+                            <button
+                              onClick={() => {
+                                setShowMenu(false);
+                                handleDeletePage();
+                              }}
+                              className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-semibold text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 transition cursor-pointer"
+                            >
+                              <Trash2 className="h-4 w-4 text-red-400" />
+                              <span>Delete lead magnet</span>
+                            </button>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Desktop Status Pill */}
+                      {!isLockedPdf && (
+                        <button
+                          type="button"
+                          onClick={() => update({ status: live ? "draft" : "live", publishedAt: live ? page?.publishedAt : new Date().toISOString() })}
+                          className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-bold transition cursor-pointer shadow-xs ${
+                            live
+                              ? "bg-emerald-50 text-emerald-700 border border-emerald-300 hover:bg-emerald-100 dark:bg-emerald-950/80 dark:text-emerald-300 dark:border-emerald-700/60"
+                              : "bg-zinc-100 text-zinc-700 border border-zinc-300 hover:bg-zinc-200 dark:bg-[#1E1E24] dark:text-zinc-300 dark:border-[#27272A] dark:hover:bg-[#27272A]"
+                          }`}
+                        >
+                          <span className={`h-2 w-2 rounded-full ${live ? "bg-emerald-500" : "bg-zinc-400"}`} />
+                          <span>{live ? "Published" : "Draft"}</span>
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
 
