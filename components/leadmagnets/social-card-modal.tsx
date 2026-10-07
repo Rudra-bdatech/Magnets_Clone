@@ -469,41 +469,42 @@ export default function SocialCardModal({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-md p-3 sm:p-4 animate-in fade-in duration-200">
-      <div className="relative w-full max-w-4xl max-h-[94vh] flex flex-col overflow-hidden rounded-2xl border border-ink-200 bg-white shadow-2xl dark:border-ink-800 dark:bg-ink-900">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-md p-2 sm:p-4 animate-in fade-in duration-200">
+      <div className="relative w-full max-w-4xl h-[94vh] sm:h-auto sm:max-h-[92vh] flex flex-col overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-2xl dark:border-[#27272A] dark:bg-[#121215]">
         {/* Header Bar */}
-        <div className="flex items-center justify-between border-b border-ink-100 px-5 py-3.5 dark:border-ink-800">
-          <div className="flex items-center gap-3">
-            <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-indigo-500/10 text-indigo-500 border border-indigo-500/20 dark:bg-indigo-950/50">
-              <ImageIcon className="h-5 w-5" />
+        <div className="flex items-center justify-between border-b border-zinc-200 dark:border-[#27272A] px-3.5 py-3 sm:px-5 sm:py-3.5 bg-white dark:bg-[#121215] shrink-0">
+          <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+            <span className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-xl bg-indigo-500/10 text-indigo-500 border border-indigo-500/20 dark:bg-indigo-950/50 shrink-0">
+              <ImageIcon className="h-4 w-4 sm:h-5 sm:w-5" />
             </span>
-            <div>
-              <h3 className="text-base sm:text-lg font-bold text-ink-950 dark:text-white flex items-center gap-2">
-                Social Card & Promotion Studio
-                <span className="rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-bold text-emerald-600 dark:text-emerald-400">
+            <div className="min-w-0">
+              <h3 className="text-sm sm:text-base font-bold text-zinc-900 dark:text-white flex items-center gap-1.5 truncate">
+                Social Card Studio
+                <span className="rounded-full bg-emerald-500/10 px-1.5 py-0.5 text-[9px] font-bold text-emerald-600 dark:text-emerald-400 shrink-0">
                   LIVE
                 </span>
               </h3>
-              <p className="text-xs text-ink-500 dark:text-ink-400">
-                Design & export high-converting preview cards for LinkedIn, X, Stories & WhatsApp.
+              <p className="text-[10px] sm:text-xs text-zinc-500 dark:text-zinc-400 truncate hidden xs:block">
+                Design & export high-converting preview cards for LinkedIn, X & Stories.
               </p>
             </div>
           </div>
 
           <button
             onClick={onClose}
-            className="rounded-lg p-1.5 text-ink-400 hover:bg-ink-100 hover:text-ink-700 dark:hover:bg-ink-800 dark:hover:text-white transition"
+            className="rounded-lg p-1.5 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-700 dark:hover:bg-[#27272A] dark:hover:text-white transition cursor-pointer shrink-0"
           >
             <X className="h-5 w-5" />
           </button>
         </div>
 
-        {/* Studio Sub-Navigation Tabs */}
-        <div className="flex items-center justify-between border-b border-ink-100 bg-ink-50/50 px-5 py-2 dark:border-ink-800 dark:bg-ink-950/40">
-          <div className="flex items-center gap-1.5">
+        {/* Studio Sub-Navigation Tabs & Format Selector */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-zinc-200 dark:border-[#27272A] bg-zinc-50/80 dark:bg-[#18181C] px-3 sm:px-5 py-2 shrink-0">
+          {/* Category Tabs */}
+          <div className="flex items-center gap-1 overflow-x-auto scrollbar-none">
             {[
               { id: "styles", label: "Theme & Layout", icon: Palette },
-              { id: "content", label: "Card Copy & Hook", icon: Type },
+              { id: "content", label: "Card Copy", icon: Type },
               { id: "layers", label: "Visual Layers", icon: Layers },
             ].map((tab) => {
               const IconComp = tab.icon;
@@ -511,12 +512,12 @@ export default function SocialCardModal({
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id as any)}
-                  className={`flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-semibold transition ${activeTab === tab.id
-                    ? "bg-white text-ink-950 shadow-xs dark:bg-ink-800 dark:text-white"
-                    : "text-ink-500 hover:text-ink-800 dark:text-ink-400 dark:hover:text-ink-200"
+                  className={`flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-semibold whitespace-nowrap transition cursor-pointer ${activeTab === tab.id
+                    ? "bg-white text-zinc-900 shadow-xs dark:bg-[#27272A] dark:text-white font-bold"
+                    : "text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-200"
                     }`}
                 >
-                  <IconComp className="h-3.5 w-3.5" />
+                  <IconComp className="h-3.5 w-3.5 shrink-0" />
                   <span>{tab.label}</span>
                 </button>
               );
@@ -524,7 +525,7 @@ export default function SocialCardModal({
           </div>
 
           {/* Preset Aspect Ratio Switcher */}
-          <div className="flex items-center gap-1 bg-ink-200/50 dark:bg-ink-800/80 p-0.5 rounded-lg">
+          <div className="flex items-center gap-1 bg-zinc-200/60 dark:bg-zinc-800 p-0.5 rounded-lg shrink-0 overflow-x-auto scrollbar-none">
             {[
               { id: "linkedin", title: "LinkedIn (1:1)", label: "1:1 Square" },
               { id: "twitter", title: "X / Twitter (16:9)", label: "16:9 Landscape" },
@@ -535,9 +536,9 @@ export default function SocialCardModal({
                 key={f.id}
                 onClick={() => setFormat(f.id as any)}
                 title={f.title}
-                className={`px-2 py-0.5 rounded-md text-[11px] font-bold transition ${format === f.id
+                className={`px-2 py-0.5 rounded-md text-[10px] sm:text-[11px] font-bold whitespace-nowrap transition cursor-pointer ${format === f.id
                   ? "bg-indigo-600 text-white shadow-xs"
-                  : "text-ink-600 dark:text-ink-300 hover:text-ink-950 dark:hover:text-white"
+                  : "text-zinc-600 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white"
                   }`}
               >
                 {f.label}
@@ -547,12 +548,12 @@ export default function SocialCardModal({
         </div>
 
         {/* Tab Controls Bar */}
-        <div className="border-b border-ink-100 bg-white px-5 py-2.5 dark:border-ink-800 dark:bg-ink-900 overflow-x-auto">
+        <div className="border-b border-zinc-200 dark:border-[#27272A] bg-white px-3 sm:px-5 py-2.5 dark:bg-[#121215] overflow-x-auto shrink-0">
           {activeTab === "styles" && (
-            <div className="flex flex-wrap items-center justify-between gap-3 text-xs">
+            <div className="flex flex-wrap items-center justify-between gap-2.5 text-xs">
               {/* Theme presets */}
               <div className="flex items-center gap-1.5 flex-wrap">
-                <span className="font-semibold text-ink-500 text-[11px]">Theme:</span>
+                <span className="font-semibold text-zinc-500 text-[11px]">Theme:</span>
                 {[
                   { id: "gradient", label: "Vibrant Glow" },
                   { id: "sunset", label: "Sunset Fire" },
@@ -565,9 +566,9 @@ export default function SocialCardModal({
                   <button
                     key={t.id}
                     onClick={() => setTheme(t.id as any)}
-                    className={`rounded-lg px-2 py-0.5 text-[11px] font-semibold transition ${theme === t.id
+                    className={`rounded-lg px-2 py-0.5 text-[11px] font-semibold transition cursor-pointer ${theme === t.id
                       ? "bg-indigo-600 text-white shadow-xs"
-                      : "bg-ink-100 text-ink-700 hover:bg-ink-200 dark:bg-ink-800 dark:text-ink-300"
+                      : "bg-zinc-100 text-zinc-700 hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-300"
                       }`}
                   >
                     {t.label}
@@ -575,63 +576,64 @@ export default function SocialCardModal({
                 ))}
               </div>
 
-              {/* Typography pairing */}
-              <div className="flex items-center gap-2">
-                <span className="font-semibold text-ink-500 text-[11px]">Font:</span>
-                <select
-                  value={fontFamily}
-                  onChange={(e) => setFontFamily(e.target.value)}
-                  className="rounded-lg border border-ink-200 bg-white px-2 py-0.5 text-[11px] font-semibold text-ink-800 dark:border-ink-700 dark:bg-ink-800 dark:text-ink-200"
-                >
-                  {TYPOGRAPHY_PRESETS.map((t) => (
-                    <option key={t.id} value={t.id}>{t.label}</option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Custom Gradient Pickers if selected */}
-              {theme === "custom" && (
-                <div className="flex items-center gap-3 bg-ink-100 dark:bg-ink-800 px-2 py-1 rounded-lg">
-                  <div className="flex items-center gap-1">
-                    <span className="text-[10px] font-medium text-ink-500">From:</span>
-                    <input
-                      type="color"
-                      value={colorStart}
-                      onChange={(e) => setColorStart(e.target.value)}
-                      className="h-4 w-5 cursor-pointer rounded border-0 bg-transparent p-0"
-                    />
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <span className="text-[10px] font-medium text-ink-500">To:</span>
-                    <input
-                      type="color"
-                      value={colorEnd}
-                      onChange={(e) => setColorEnd(e.target.value)}
-                      className="h-4 w-5 cursor-pointer rounded border-0 bg-transparent p-0"
-                    />
-                  </div>
+              {/* Typography pairing & Custom gradient */}
+              <div className="flex items-center gap-2 flex-wrap">
+                <div className="flex items-center gap-1.5">
+                  <span className="font-semibold text-zinc-500 text-[11px]">Font:</span>
+                  <select
+                    value={fontFamily}
+                    onChange={(e) => setFontFamily(e.target.value)}
+                    className="rounded-lg border border-zinc-200 bg-white px-2 py-0.5 text-[11px] font-semibold text-zinc-800 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-200 cursor-pointer"
+                  >
+                    {TYPOGRAPHY_PRESETS.map((t) => (
+                      <option key={t.id} value={t.id}>{t.label}</option>
+                    ))}
+                  </select>
                 </div>
-              )}
+
+                {theme === "custom" && (
+                  <div className="flex items-center gap-2 bg-zinc-100 dark:bg-zinc-800 px-2 py-0.5 rounded-lg">
+                    <div className="flex items-center gap-1">
+                      <span className="text-[10px] font-medium text-zinc-500">From:</span>
+                      <input
+                        type="color"
+                        value={colorStart}
+                        onChange={(e) => setColorStart(e.target.value)}
+                        className="h-4 w-5 cursor-pointer rounded border-0 bg-transparent p-0"
+                      />
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <span className="text-[10px] font-medium text-zinc-500">To:</span>
+                      <input
+                        type="color"
+                        value={colorEnd}
+                        onChange={(e) => setColorEnd(e.target.value)}
+                        className="h-4 w-5 cursor-pointer rounded border-0 bg-transparent p-0"
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           )}
 
           {activeTab === "content" && (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-xs">
               <div>
-                <label className="block text-[11px] font-semibold text-ink-600 dark:text-ink-400 mb-1">
+                <label className="block text-[11px] font-semibold text-zinc-600 dark:text-zinc-400 mb-1">
                   Card Headline / Hook:
                 </label>
                 <input
                   type="text"
                   value={cardHeadline}
                   onChange={(e) => setCardHeadline(e.target.value)}
-                  placeholder="Punchy 4-8 word title..."
-                  className="w-full rounded-lg border border-ink-200 px-2.5 py-1 text-xs text-ink-900 dark:border-ink-700 dark:bg-ink-800 dark:text-white"
+                  placeholder="Punchy title..."
+                  className="w-full rounded-lg border border-zinc-200 px-2.5 py-1 text-xs text-zinc-900 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
                 />
               </div>
 
               <div>
-                <label className="block text-[11px] font-semibold text-ink-600 dark:text-ink-400 mb-1">
+                <label className="block text-[11px] font-semibold text-zinc-600 dark:text-zinc-400 mb-1">
                   Card Subtitle:
                 </label>
                 <input
@@ -639,12 +641,12 @@ export default function SocialCardModal({
                   value={cardSubheadline}
                   onChange={(e) => setCardSubheadline(e.target.value)}
                   placeholder="Supporting takeaway..."
-                  className="w-full rounded-lg border border-ink-200 px-2.5 py-1 text-xs text-ink-900 dark:border-ink-700 dark:bg-ink-800 dark:text-white"
+                  className="w-full rounded-lg border border-zinc-200 px-2.5 py-1 text-xs text-zinc-900 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
                 />
               </div>
 
               <div>
-                <label className="block text-[11px] font-semibold text-ink-600 dark:text-ink-400 mb-1">
+                <label className="block text-[11px] font-semibold text-zinc-600 dark:text-zinc-400 mb-1">
                   Badge Tag:
                 </label>
                 <div className="flex items-center gap-1">
@@ -658,7 +660,7 @@ export default function SocialCardModal({
                         setBadgeText(e.target.value);
                       }
                     }}
-                    className="flex-1 rounded-lg border border-ink-200 bg-white px-2 py-1 text-xs text-ink-800 dark:border-ink-700 dark:bg-ink-800 dark:text-ink-200"
+                    className="flex-1 rounded-lg border border-zinc-200 bg-white px-2 py-1 text-xs text-zinc-800 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-200 cursor-pointer"
                   >
                     {BADGE_PRESETS.map((b) => (
                       <option key={b} value={b}>{b}</option>
@@ -671,7 +673,7 @@ export default function SocialCardModal({
                       value={badgeText}
                       onChange={(e) => setBadgeText(e.target.value)}
                       placeholder="Custom badge..."
-                      className="w-28 rounded-lg border border-ink-200 px-2 py-1 text-xs text-ink-900 dark:border-ink-700 dark:bg-ink-800 dark:text-white"
+                      className="w-24 sm:w-28 rounded-lg border border-zinc-200 px-2 py-1 text-xs text-zinc-900 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
                     />
                   )}
                 </div>
@@ -680,50 +682,43 @@ export default function SocialCardModal({
           )}
 
           {activeTab === "layers" && (
-            <div className="flex flex-wrap items-center gap-4 text-xs font-semibold text-ink-700 dark:text-ink-300">
-              <label className="flex items-center gap-1.5 cursor-pointer">
+            <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-xs font-semibold text-zinc-700 dark:text-zinc-300">
+              <label className="flex items-center gap-1.5 cursor-pointer select-none">
                 <input
                   type="checkbox"
                   checked={showAvatar}
                   onChange={(e) => setShowAvatar(e.target.checked)}
                   className="rounded text-indigo-600 focus:ring-0"
                 />
-                <span>Author Branding (@{username})</span>
+                <span>Author (@{username})</span>
               </label>
 
-              <label className="flex items-center gap-1.5 cursor-pointer">
+              <label className="flex items-center gap-1.5 cursor-pointer select-none">
                 <input
                   type="checkbox"
                   checked={showBullets}
                   onChange={(e) => setShowBullets(e.target.checked)}
                   className="rounded text-indigo-600 focus:ring-0"
                 />
-                <span>Benefit Highlights Box</span>
+                <span>Highlights Box</span>
               </label>
 
-              <label className="flex items-center gap-1.5 cursor-pointer">
+              <label className="flex items-center gap-1.5 cursor-pointer select-none">
                 <input
                   type="checkbox"
                   checked={showUrlPill}
                   onChange={(e) => setShowUrlPill(e.target.checked)}
                   className="rounded text-indigo-600 focus:ring-0"
                 />
-                <span>Public URL Link Pill</span>
+                <span>URL Link Pill</span>
               </label>
             </div>
           )}
         </div>
 
         {/* Visual Live Card Canvas / DOM Preview Container */}
-        <div className="flex-1 overflow-y-auto p-4 flex flex-col items-center justify-center bg-zinc-950/90 relative min-h-[360px]">
-          <div
-            className={`transition-all duration-300 flex items-center justify-center ${format === "story"
-              ? "scale-[0.62]"
-              : format === "linkedin"
-                ? "scale-[0.80]"
-                : "scale-[0.88]"
-              }`}
-          >
+        <div className="flex-1 min-h-[260px] overflow-y-auto p-3 sm:p-6 flex flex-col items-center justify-center bg-zinc-950/95 relative">
+          <div className="w-full flex items-center justify-center">
             <div
               ref={cardRef}
               style={{
@@ -738,17 +733,17 @@ export default function SocialCardModal({
                         ? { background: "linear-gradient(135deg, #4338CA, #DB2777)", color: "#ffffff" }
                         : undefined),
               }}
-              className={`flex flex-col justify-between rounded-3xl shadow-2xl transition-all duration-300 relative overflow-hidden ${isLandscape
-                ? "w-[540px] aspect-[16/9] p-5"
+              className={`flex flex-col justify-between rounded-2xl sm:rounded-3xl shadow-2xl transition-all duration-300 relative overflow-hidden w-full ${isLandscape
+                ? "max-w-[340px] sm:max-w-[480px] md:max-w-[540px] aspect-[16/9] p-3.5 sm:p-5"
                 : format === "story"
-                  ? "w-[340px] aspect-[9/16] p-7"
-                  : "w-[400px] aspect-square p-6 sm:p-7"
+                  ? "max-w-[220px] sm:max-w-[280px] md:max-w-[340px] aspect-[9/16] p-4 sm:p-7"
+                  : "max-w-[290px] sm:max-w-[350px] md:max-w-[400px] aspect-square p-4 sm:p-6"
                 } ${theme === "dark"
                   ? "bg-slate-900 text-white border border-slate-800"
                   : theme === "gradient"
                     ? "bg-gradient-to-br from-[#0066B2] via-purple-600 to-indigo-700 text-white"
                     : theme === "minimal"
-                      ? "bg-white text-ink-950 border-4 border-ink-100 shadow-xl"
+                      ? "bg-white text-zinc-950 border-2 sm:border-4 border-zinc-200 shadow-xl"
                       : ""
                 }`}
             >
@@ -756,7 +751,7 @@ export default function SocialCardModal({
               <div className="flex flex-col min-h-0">
                 <div>
                   <span
-                    className={`inline-flex items-center gap-1.5 rounded-full font-bold uppercase tracking-wider ${isLandscape ? "px-2.5 py-0.5 text-[10px]" : "px-3.5 py-1 text-xs"
+                    className={`inline-flex items-center gap-1 rounded-full font-bold uppercase tracking-wider ${isLandscape ? "px-2 py-0.5 text-[9px]" : "px-2.5 py-0.5 sm:px-3 sm:py-1 text-[10px] sm:text-xs"
                       } ${theme === "minimal"
                         ? "bg-indigo-500/10 text-indigo-600"
                         : "bg-white/20 text-white backdrop-blur-md"
@@ -766,38 +761,38 @@ export default function SocialCardModal({
                   </span>
                 </div>
 
-                <h4 className={`font-black leading-tight tracking-tight ${isLandscape ? "mt-2 text-base sm:text-lg line-clamp-2" : "mt-3.5 text-lg sm:text-xl"
+                <h4 className={`font-black leading-tight tracking-tight ${isLandscape ? "mt-1.5 text-xs sm:text-base line-clamp-2" : "mt-2 sm:mt-3 text-sm sm:text-lg md:text-xl line-clamp-2"
                   }`}>
                   {cardHeadline}
                 </h4>
 
                 {cardSubheadline && (
-                  <p className={`leading-snug opacity-90 font-medium ${isLandscape ? "mt-1 text-xs line-clamp-1" : "mt-2 text-xs sm:text-sm"
+                  <p className={`leading-snug opacity-90 font-medium ${isLandscape ? "mt-0.5 text-[10px] sm:text-xs line-clamp-1" : "mt-1 text-[11px] sm:text-xs line-clamp-2"
                     }`}>
-                    {cardSubheadline}
+                  {cardSubheadline}
                   </p>
                 )}
 
                 {/* Bullets Highlight Box */}
                 {showBullets && (
                   <div className={`backdrop-blur-md border ${isLandscape
-                    ? "mt-2 rounded-xl p-2.5"
-                    : "mt-3.5 rounded-2xl p-3.5"
+                    ? "mt-1.5 rounded-lg p-2"
+                    : "mt-2 sm:mt-3 rounded-xl p-2.5 sm:p-3"
                     } ${theme === "minimal"
-                      ? "bg-ink-50 border-ink-200 text-ink-900"
+                      ? "bg-zinc-50 border-zinc-200 text-zinc-900"
                       : "bg-white/10 border-white/20 text-white"
                     }`}>
-                    <div className={`font-semibold ${isLandscape ? "space-y-1 text-[11px]" : "space-y-2 text-xs"
+                    <div className={`font-semibold ${isLandscape ? "space-y-0.5 text-[9px] sm:text-[10px]" : "space-y-1 sm:space-y-1.5 text-[10px] sm:text-xs"
                       }`}>
                       {(page.bullets && page.bullets.length > 0
-                        ? page.bullets.slice(0, 3)
+                        ? page.bullets.slice(0, 2)
                         : [
                           "100% actionable framework for immediate results",
                           "Pre-built templates and checklists",
                         ]
                       ).map((bullet, idx) => (
-                        <div key={idx} className="flex items-start gap-1.5">
-                          <span className="text-emerald-400 font-bold shrink-0 mt-0.5">✓</span>
+                        <div key={idx} className="flex items-start gap-1">
+                          <span className="text-emerald-400 font-bold shrink-0">✓</span>
                           <span className="leading-tight line-clamp-1">{bullet}</span>
                         </div>
                       ))}
@@ -807,17 +802,17 @@ export default function SocialCardModal({
               </div>
 
               {/* Card Footer Bar */}
-              <div className={`flex items-center justify-between gap-2 border-t border-current/20 shrink-0 ${isLandscape ? "mt-2.5 pt-2" : "mt-4 pt-3.5"
+              <div className={`flex items-center justify-between gap-1.5 border-t border-current/20 shrink-0 ${isLandscape ? "mt-1.5 pt-1.5" : "mt-2.5 pt-2 sm:mt-3 sm:pt-2.5"
                 }`}>
                 {showAvatar ? (
                   <div className="min-w-0">
-                    <p className={`font-bold truncate ${isLandscape ? "text-xs" : "text-xs sm:text-sm"}`}>By {creatorName}</p>
-                    <p className={`opacity-75 truncate ${isLandscape ? "text-[10px]" : "text-xs"}`}>@{username}</p>
+                    <p className={`font-bold truncate ${isLandscape ? "text-[10px]" : "text-[11px] sm:text-xs"}`}>By {creatorName}</p>
+                    <p className={`opacity-75 truncate ${isLandscape ? "text-[8px]" : "text-[9px] sm:text-[10px]"}`}>@{username}</p>
                   </div>
                 ) : <div />}
 
                 {showUrlPill && (
-                  <span className={`rounded-xl bg-white font-bold text-indigo-600 shadow-md shrink-0 ${isLandscape ? "px-2.5 py-1 text-[10px]" : "px-3 py-1.5 text-xs"
+                  <span className={`rounded-lg bg-white font-bold text-indigo-600 shadow-sm shrink-0 ${isLandscape ? "px-2 py-0.5 text-[9px]" : "px-2.5 py-1 text-[10px] sm:text-xs"
                     }`}>
                     {cleanUrlDisplay}
                   </span>
@@ -828,116 +823,123 @@ export default function SocialCardModal({
         </div>
 
         {/* Footer Action & Distribution Bar */}
-        <div className="border-t border-ink-100 bg-ink-50/80 p-4 dark:border-ink-800 dark:bg-ink-950 flex flex-col sm:flex-row items-center justify-between gap-3">
-          {/* Left: 1-Click Social Media Sharing Intents */}
-          <div className="flex items-center gap-1.5 flex-wrap">
-            <span className="text-[11px] font-bold text-ink-500 mr-1 flex items-center gap-1">
-              <Share2 className="h-3 w-3" /> Share:
-            </span>
+        <div className="border-t border-zinc-200 dark:border-[#27272A] bg-zinc-50/90 dark:bg-[#18181C] p-3 sm:p-4 flex flex-col gap-2.5 shrink-0">
+          {/* Top Actions: Export Buttons & Resolution */}
+          <div className="flex items-center justify-between gap-2 flex-wrap sm:flex-nowrap">
+            <div className="flex items-center gap-1.5 flex-1 sm:flex-initial">
+              {/* Resolution Switcher */}
+              <select
+                value={resolution}
+                onChange={(e) => setResolution(e.target.value as any)}
+                className="rounded-lg border border-zinc-200 bg-white px-2 py-1.5 text-[11px] sm:text-xs font-bold text-zinc-700 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-200 cursor-pointer"
+              >
+                <option value="1x">Standard (1x)</option>
+                <option value="2x">Ultra 4K (2x)</option>
+              </select>
 
-            {/* X / Twitter Intent */}
-            <button
-              type="button"
-              onClick={handleShareTwitter}
-              title="Post to X / Twitter"
-              className="flex items-center gap-1 rounded-lg bg-black hover:bg-zinc-800 text-white px-2.5 py-1 text-xs font-bold transition shadow-xs cursor-pointer"
-            >
-              <svg className="h-3 w-3 fill-current" viewBox="0 0 24 24">
-                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-              </svg>
-              <span>X / Tweet</span>
-            </button>
+              {/* Copy Image to Clipboard Button */}
+              <button
+                type="button"
+                onClick={handleCopyImage}
+                className="flex items-center gap-1 rounded-lg border border-zinc-300 bg-white hover:bg-zinc-100 px-2.5 sm:px-3 py-1.5 text-[11px] sm:text-xs font-bold text-zinc-800 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-200 transition shadow-xs cursor-pointer active:scale-95"
+              >
+                {copiedImage ? <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" /> : <Copy className="h-3.5 w-3.5" />}
+                <span className="hidden xs:inline">{copiedImage ? "Copied!" : "Copy Image"}</span>
+              </button>
+            </div>
 
-            {/* LinkedIn Intent */}
-            <button
-              type="button"
-              onClick={handleShareLinkedIn}
-              title="Share on LinkedIn"
-              className="flex items-center gap-1 rounded-lg bg-[#0077B5] hover:bg-[#006399] text-white px-2.5 py-1 text-xs font-bold transition shadow-xs cursor-pointer"
-            >
-              <svg className="h-3 w-3 fill-current" viewBox="0 0 24 24">
-                <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z" />
-              </svg>
-              <span>LinkedIn</span>
-            </button>
+            <div className="flex items-center gap-1.5 flex-1 sm:flex-initial justify-end">
+              {/* Set as Page OG Image / Cover */}
+              <button
+                type="button"
+                onClick={handleSaveAsOGCover}
+                disabled={isSavingOG}
+                className={`flex items-center gap-1 rounded-lg px-2.5 sm:px-3 py-1.5 text-[11px] sm:text-xs font-bold transition shadow-xs cursor-pointer active:scale-95 ${saveOGSuccess
+                  ? "bg-emerald-600 text-white"
+                  : "border border-indigo-500/30 bg-indigo-500/10 text-indigo-500 hover:bg-indigo-600 hover:text-white dark:bg-indigo-950 dark:text-indigo-400"
+                  }`}
+              >
+                {isSavingOG ? (
+                  <>
+                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    <span>Saving...</span>
+                  </>
+                ) : saveOGSuccess ? (
+                  <>
+                    <CheckCircle2 className="h-3.5 w-3.5 text-white" />
+                    <span>Saved!</span>
+                  </>
+                ) : (
+                  <>
+                    <Upload className="h-3.5 w-3.5" />
+                    <span className="hidden xs:inline">Set Link Preview</span>
+                    <span className="xs:hidden">Set OG</span>
+                  </>
+                )}
+              </button>
 
-            {/* WhatsApp Intent */}
-            <button
-              type="button"
-              onClick={handleShareWhatsApp}
-              title="Send to WhatsApp"
-              className="flex items-center gap-1 rounded-lg bg-[#25D366] hover:bg-[#1EBE5D] text-white px-2.5 py-1 text-xs font-bold transition shadow-xs cursor-pointer"
-            >
-              <Smartphone className="h-3 w-3" />
-              <span>WhatsApp</span>
-            </button>
+              {/* Download PNG Button */}
+              <Button onClick={handleDownload} className="py-1.5 px-3 text-xs font-bold">
+                <Download className="h-3.5 w-3.5" />
+                <span>Download PNG</span>
+              </Button>
+            </div>
+          </div>
+
+          {/* Bottom Social Quick Sharing Bar */}
+          <div className="flex items-center justify-between gap-1.5 pt-1.5 border-t border-zinc-200/60 dark:border-zinc-800/60 overflow-x-auto scrollbar-none">
+            <div className="flex items-center gap-1 shrink-0">
+              <span className="text-[10px] font-bold text-zinc-500 flex items-center gap-1 mr-1">
+                <Share2 className="h-3 w-3" /> Share:
+              </span>
+
+              {/* X / Twitter Intent */}
+              <button
+                type="button"
+                onClick={handleShareTwitter}
+                title="Post to X / Twitter"
+                className="flex items-center gap-1 rounded-lg bg-black hover:bg-zinc-800 text-white px-2 py-0.5 text-[10px] sm:text-[11px] font-bold transition shadow-xs cursor-pointer shrink-0"
+              >
+                <svg className="h-2.5 w-2.5 fill-current" viewBox="0 0 24 24">
+                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                </svg>
+                <span>X / Tweet</span>
+              </button>
+
+              {/* LinkedIn Intent */}
+              <button
+                type="button"
+                onClick={handleShareLinkedIn}
+                title="Share on LinkedIn"
+                className="flex items-center gap-1 rounded-lg bg-[#0077B5] hover:bg-[#006399] text-white px-2 py-0.5 text-[10px] sm:text-[11px] font-bold transition shadow-xs cursor-pointer shrink-0"
+              >
+                <svg className="h-2.5 w-2.5 fill-current" viewBox="0 0 24 24">
+                  <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z" />
+                </svg>
+                <span>LinkedIn</span>
+              </button>
+
+              {/* WhatsApp Intent */}
+              <button
+                type="button"
+                onClick={handleShareWhatsApp}
+                title="Send to WhatsApp"
+                className="flex items-center gap-1 rounded-lg bg-[#25D366] hover:bg-[#1EBE5D] text-white px-2 py-0.5 text-[10px] sm:text-[11px] font-bold transition shadow-xs cursor-pointer shrink-0"
+              >
+                <Smartphone className="h-2.5 w-2.5" />
+                <span>WhatsApp</span>
+              </button>
+            </div>
 
             {/* Copy Post Copy */}
             <button
               type="button"
               onClick={handleCopyPromoText}
-              className="flex items-center gap-1 rounded-lg border border-ink-200 bg-white hover:bg-ink-100 text-ink-700 dark:border-ink-700 dark:bg-ink-800 dark:text-ink-200 px-2 py-1 text-xs font-semibold transition"
+              className="flex items-center gap-1 rounded-lg border border-zinc-200 bg-white hover:bg-zinc-100 text-zinc-700 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-200 px-2 py-0.5 text-[10px] sm:text-[11px] font-semibold transition shrink-0 cursor-pointer"
             >
-              {copiedText ? <Check className="h-3 w-3 text-emerald-500" /> : <Copy className="h-3 w-3" />}
+              {copiedText ? <Check className="h-2.5 w-2.5 text-emerald-500" /> : <Copy className="h-2.5 w-2.5" />}
               <span>{copiedText ? "Copied!" : "Copy Post Text"}</span>
             </button>
-          </div>
-
-          {/* Right: Export, Copy Image, & Save as OG Cover */}
-          <div className="flex items-center gap-2 flex-wrap">
-            {/* Resolution Switcher */}
-            <select
-              value={resolution}
-              onChange={(e) => setResolution(e.target.value as any)}
-              className="rounded-lg border border-ink-200 bg-white px-2 py-1.5 text-xs font-bold text-ink-700 dark:border-ink-700 dark:bg-ink-800 dark:text-ink-200"
-            >
-              <option value="1x">Standard (1x)</option>
-              <option value="2x">Ultra 4K (2x)</option>
-            </select>
-
-            {/* Copy Image to Clipboard Button */}
-            <button
-              type="button"
-              onClick={handleCopyImage}
-              className="flex items-center gap-1.5 rounded-lg border border-ink-300 bg-white hover:bg-ink-100 px-3 py-1.5 text-xs font-bold text-ink-800 dark:border-ink-700 dark:bg-ink-800 dark:text-ink-200 transition shadow-xs cursor-pointer"
-            >
-              {copiedImage ? <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" /> : <Copy className="h-3.5 w-3.5" />}
-              <span>{copiedImage ? "Image Copied!" : "Copy Image"}</span>
-            </button>
-
-            {/* Set as Page OG Image / Cover */}
-            <button
-              type="button"
-              onClick={handleSaveAsOGCover}
-              disabled={isSavingOG}
-              className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-bold transition shadow-xs cursor-pointer ${saveOGSuccess
-                ? "bg-emerald-600 text-white"
-                : "border border-indigo-500/30 bg-indigo-500/10 text-indigo-500 hover:bg-indigo-600 hover:text-white dark:bg-indigo-950 dark:text-indigo-400"
-                }`}
-            >
-              {isSavingOG ? (
-                <>
-                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                  <span>Saving...</span>
-                </>
-              ) : saveOGSuccess ? (
-                <>
-                  <CheckCircle2 className="h-3.5 w-3.5 text-white" />
-                  <span>Saved as Link Preview!</span>
-                </>
-              ) : (
-                <>
-                  <Upload className="h-3.5 w-3.5" />
-                  <span>Set as Link Preview (OG)</span>
-                </>
-              )}
-            </button>
-
-            {/* Download PNG Button */}
-            <Button onClick={handleDownload} className="py-1.5 text-xs font-bold">
-              <Download className="h-3.5 w-3.5" />
-              <span>Download PNG</span>
-            </Button>
           </div>
         </div>
       </div>
