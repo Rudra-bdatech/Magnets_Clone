@@ -1160,16 +1160,23 @@ export default function PagesPage() {
             {filtered.length > 0 && (
               <div className="flex flex-col sm:flex-row items-center justify-between gap-3 sm:bg-white sm:dark:bg-[#141417] px-2 sm:px-4 py-2 sm:py-3 rounded-2xl sm:border sm:border-zinc-200/80 sm:dark:border-zinc-800/80 text-xs sm:shadow-xs">
                 <p className="text-zinc-500 dark:text-zinc-400 text-[11px] font-medium text-center sm:text-left">
-                  Showing{" "}
-                  <span className="font-bold text-zinc-900 dark:text-white">
-                    {itemsPerPage === "all" ? filtered.length : Math.min(filtered.length, (currentPage - 1) * (itemsPerPage as number) + 1)}
-                  </span>
-                  {itemsPerPage !== "all" && (
+                  {itemsPerPage === "all" || filtered.length <= (itemsPerPage as number) ? (
                     <>
-                      {" "}to <span className="font-bold text-zinc-900 dark:text-white">{Math.min(currentPage * (itemsPerPage as number), filtered.length)}</span>
+                      Showing <span className="font-bold text-zinc-900 dark:text-white">{filtered.length}</span> {filtered.length === 1 ? "lead magnet" : "lead magnets"}
                     </>
-                  )}{" "}
-                  of <span className="font-bold text-zinc-900 dark:text-white">{filtered.length}</span> lead magnets
+                  ) : (
+                    <>
+                      Showing{" "}
+                      <span className="font-bold text-zinc-900 dark:text-white">
+                        {(currentPage - 1) * (itemsPerPage as number) + 1}
+                      </span>{" "}
+                      to{" "}
+                      <span className="font-bold text-zinc-900 dark:text-white">
+                        {Math.min(currentPage * (itemsPerPage as number), filtered.length)}
+                      </span>{" "}
+                      of <span className="font-bold text-zinc-900 dark:text-white">{filtered.length}</span> lead magnets
+                    </>
+                  )}
                 </p>
 
                 {filtered.length > 10 && (

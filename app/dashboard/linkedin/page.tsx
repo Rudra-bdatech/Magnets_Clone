@@ -1264,7 +1264,7 @@ export default function LinkedInAutomationPage() {
                   {totalPostPages > 1 && (
                     <div className="flex items-center justify-between pt-4 mt-4 border-t border-zinc-100 dark:border-white/5 text-xs text-zinc-500 dark:text-[#9B9085]">
                       <span>
-                        Showing {startIndex + 1}â€“{Math.min(startIndex + POSTS_PER_PAGE, filteredPosts.length)} of {filteredPosts.length} posts
+                        Showing {startIndex + 1}–{Math.min(startIndex + POSTS_PER_PAGE, filteredPosts.length)} of {filteredPosts.length} posts
                       </span>
                       <div className="flex items-center gap-2">
                         <button

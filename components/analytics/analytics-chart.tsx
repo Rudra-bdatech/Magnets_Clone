@@ -44,7 +44,7 @@ export default function AnalyticsChart({
   totalSignups,
   leads = [],
   title = "Visits & Conversions",
-  subtitle = "Each bar is one day. Orange shows tracked conversions.",
+  subtitle = "Each bar is one day. Orange shows conversions.",
   range = "30d",
   onDataCalculated,
 }: AnalyticsChartProps) {

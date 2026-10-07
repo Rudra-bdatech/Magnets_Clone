@@ -19,13 +19,11 @@ import {
   Search as SearchIcon,
   Download,
   Trophy,
-  UserCheck,
   ChevronRight,
   TrendingUp,
   Eye,
 } from "lucide-react";
 import AnalyticsChart, { type TimeRange } from "./analytics-chart";
-import MobileConversionCard from "./MobileConversionCard";
 import { type MagnetPage, type Account, type Lead } from "@/lib/data";
 
 interface AnalyticsLinearViewProps {
@@ -293,7 +291,7 @@ export default function AnalyticsLinearView({
     },
     {
       id: "tracked",
-      label: "Tracked Conversions",
+      label: "Conversions",
       value: signupsCount.toLocaleString(),
       icon: CheckCircle2,
       iconBg: "bg-amber-50 dark:bg-amber-500/20",
@@ -546,7 +544,7 @@ export default function AnalyticsLinearView({
             leads={leads}
             range={timeRange}
             title={`Visits over the ${rangeLabel}`}
-            subtitle="Each bar is one day. Orange shows tracked conversions."
+            subtitle="Each bar is one day. Orange shows conversions."
             onDataCalculated={handleDataCalculated}
           />
         </motion.div>
@@ -729,86 +727,6 @@ export default function AnalyticsLinearView({
             </div>
           </div>
         </motion.div>
-
-        {/* 6. RECENT CONVERSIONS ACTIVITY STREAM */}
-        <motion.div
-          variants={itemVariants}
-          className="rounded-2xl bg-white/80 dark:bg-[#0E0E11] border border-zinc-200/80 dark:border-white/[0.08] p-4 sm:p-6 space-y-4 shadow-sm backdrop-blur-sm"
-        >
-          <div className="flex items-center justify-between border-b border-zinc-200/80 dark:border-white/[0.08] pb-3">
-            <div>
-              <h3 className="text-sm font-bold text-zinc-900 dark:text-white flex items-center gap-2">
-                <UserCheck className="h-4 w-4 text-[#0066B2] dark:text-cyan-400" />
-                <span>Recent Conversions & Lead Activity</span>
-              </h3>
-              <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
-                {isPerMagnet
-                  ? `Form submissions captured on "${page?.name || "Magnet"}"`
-                  : "Latest signups captured across all lead magnets"}
-              </p>
-            </div>
-            <span className="text-xs font-mono px-2.5 py-0.5 rounded-md bg-zinc-100 dark:bg-white/[0.05] border border-zinc-200 dark:border-white/[0.08] text-zinc-700 dark:text-zinc-300">
-              {leads.length} Leads
-            </span>
-          </div>
-
-          {leads.length === 0 ? (
-            <div className="text-center py-8 text-xs font-mono text-zinc-500 dark:text-zinc-400">
-              No recent lead signups recorded yet.
-            </div>
-          ) : (
-            <>
-              {/* Desktop Table View */}
-              <div className="hidden md:block overflow-x-auto">
-                <table className="w-full text-left text-xs font-sans">
-                  <thead>
-                    <tr className="border-b border-zinc-200/80 dark:border-white/[0.08] text-zinc-500 dark:text-zinc-400 font-mono text-[11px] uppercase tracking-wider">
-                      <th className="pb-2.5">Subscriber Name</th>
-                      <th className="pb-2.5">Email</th>
-                      {!isPerMagnet && <th className="pb-2.5">Lead Magnet</th>}
-                      <th className="pb-2.5">Signed Up At</th>
-                      <th className="pb-2.5">Status</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-zinc-200/60 dark:divide-white/[0.04] font-medium text-zinc-700 dark:text-zinc-300">
-                    {leads.slice(0, 5).map((lead) => (
-                      <tr
-                        key={lead.id}
-                        className="hover:bg-zinc-50/50 dark:hover:bg-white/[0.02] transition-colors"
-                      >
-                        <td className="py-3 font-bold text-zinc-900 dark:text-white">{lead.name}</td>
-                        <td className="py-3 font-mono text-zinc-500 dark:text-zinc-400">{lead.email}</td>
-                        {!isPerMagnet && <td className="py-3">{lead.page}</td>}
-                        <td className="py-3 font-mono text-zinc-500 dark:text-zinc-400">{lead.signedUpAt}</td>
-                        <td className="py-3">
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-                            {lead.status || "delivered"}
-                          </span>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-
-              {/* Mobile Cards View */}
-              <div className="block md:hidden space-y-2.5">
-                {leads.slice(0, 6).map((lead) => (
-                  <MobileConversionCard key={lead.id} lead={lead} isPerMagnet={isPerMagnet} />
-                ))}
-              </div>
-            </>
-          )}
-        </motion.div>
-
-        {/* 7. METHODOLOGY NOTICE */}
-        <motion.footer
-          variants={itemVariants}
-          className="rounded-2xl border border-zinc-200/80 bg-white/80 dark:border-white/[0.08] dark:bg-[#0C0C0E] p-4 sm:p-5 text-[11px] sm:text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed font-normal shadow-xs backdrop-blur-sm"
-        >
-          Total signups count every successful submission, including repeat requests from the same person. The unique people figure deduplicates those records by email address. A tracked conversion is a successful signup matched to an anonymous browser-tab visit; tracked conversions are used for the conversion rate, chart, and A/B tests. Refreshing the same page does not inflate visits. Engaged time only counts while the page is visible. A video play is one successful signup explicitly pressing Play, counted once. A quiz completion requires every configured answer to be saved. No names, emails, cookies, or raw IP addresses are stored in visit analytics. Historical visit activity from before tracking began cannot be reconstructed.
-        </motion.footer>
-
       </div>
     </motion.div>
   );

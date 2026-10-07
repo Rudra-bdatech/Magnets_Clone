@@ -1697,9 +1697,24 @@ function parseCsvLine(line: string): string[] {
             {filtered.length > 0 && (
               <div className="hidden md:flex flex-col sm:flex-row items-center justify-between gap-3 px-4 sm:px-6 py-2.5 border-t border-zinc-200/80 dark:border-[#2e2e38] bg-[#F8FBFF]/50 dark:bg-[#151518]/50 text-xs text-zinc-600 dark:text-[#9B9085]">
                 <div>
-                  Showing <strong className="text-zinc-900 dark:text-white">{(currentPage - 1) * pageSize + 1}</strong> to{" "}
-                  <strong className="text-zinc-900 dark:text-white">{Math.min(currentPage * pageSize, filtered.length)}</strong> of{" "}
-                  <strong className="text-zinc-900 dark:text-white">{filtered.length}</strong> leads
+                  {filtered.length <= pageSize ? (
+                    <>
+                      Showing <strong className="text-zinc-900 dark:text-white">{filtered.length}</strong> {filtered.length === 1 ? "lead" : "leads"}
+                    </>
+                  ) : (
+                    <>
+                      Showing{" "}
+                      {(currentPage - 1) * pageSize + 1 === Math.min(currentPage * pageSize, filtered.length) ? (
+                        <strong className="text-zinc-900 dark:text-white">{(currentPage - 1) * pageSize + 1}</strong>
+                      ) : (
+                        <>
+                          <strong className="text-zinc-900 dark:text-white">{(currentPage - 1) * pageSize + 1}</strong> to{" "}
+                          <strong className="text-zinc-900 dark:text-white">{Math.min(currentPage * pageSize, filtered.length)}</strong>
+                        </>
+                      )}{" "}
+                      of <strong className="text-zinc-900 dark:text-white">{filtered.length}</strong> leads
+                    </>
+                  )}
                 </div>
 
                 <div className="flex items-center gap-4">
@@ -1751,9 +1766,24 @@ function parseCsvLine(line: string): string[] {
               <div className="flex md:hidden flex-col gap-2.5 p-3.5 border-t border-zinc-200/80 dark:border-[#2e2e38] bg-[#F8FBFF]/50 dark:bg-[#151518]/50">
                 <div className="flex items-center justify-between text-xs text-zinc-600 dark:text-[#9B9085]">
                   <div>
-                    Showing <strong className="text-zinc-900 dark:text-white">{(currentPage - 1) * pageSize + 1}</strong>-
-                    <strong className="text-zinc-900 dark:text-white">{Math.min(currentPage * pageSize, filtered.length)}</strong> of{" "}
-                    <strong className="text-zinc-900 dark:text-white">{filtered.length}</strong>
+                    {filtered.length <= pageSize ? (
+                      <>
+                        Showing <strong className="text-zinc-900 dark:text-white">{filtered.length}</strong> {filtered.length === 1 ? "lead" : "leads"}
+                      </>
+                    ) : (
+                      <>
+                        Showing{" "}
+                        {(currentPage - 1) * pageSize + 1 === Math.min(currentPage * pageSize, filtered.length) ? (
+                          <strong className="text-zinc-900 dark:text-white">{(currentPage - 1) * pageSize + 1}</strong>
+                        ) : (
+                          <>
+                            <strong className="text-zinc-900 dark:text-white">{(currentPage - 1) * pageSize + 1}</strong>-
+                            <strong className="text-zinc-900 dark:text-white">{Math.min(currentPage * pageSize, filtered.length)}</strong>
+                          </>
+                        )}{" "}
+                        of <strong className="text-zinc-900 dark:text-white">{filtered.length}</strong>
+                      </>
+                    )}
                   </div>
                   <div className="flex items-center gap-1.5">
                     <span className="text-[11px]">Rows:</span>
