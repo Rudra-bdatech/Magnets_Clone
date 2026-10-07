@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState, useDeferredValue } from "react";
+import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   MailOpen,
@@ -70,6 +71,11 @@ export default function SequencesPage() {
   const [sequences, setSequences] = useState<Sequence[]>([]);
   const [pages, setPages] = useState<MagnetPage[]>([]);
   const [leads, setLeads] = useState<Lead[]>([]);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Search & Filtering States
   const [searchQuery, setSearchQuery] = useState("");
@@ -2238,68 +2244,76 @@ export default function SequencesPage() {
       </AnimatePresence>
 
       {/* Floating Bottom Multi-Select Bar */}
-      <AnimatePresence>
-        {checkedIds.length > 0 && !showBulkDeleteModal && !seqToDelete && !mobileActionSeq && !showNewSequenceModal && (
-          <motion.div
-            initial={{ opacity: 0, y: 40, x: "-50%" }}
-            animate={{ opacity: 1, y: 0, x: "-50%" }}
-            exit={{ opacity: 0, y: 40, x: "-50%" }}
-            transition={{ type: "spring", stiffness: 450, damping: 30 }}
-            className="fixed bottom-6 left-1/2 z-40 flex items-center gap-2 sm:gap-3 rounded-2xl bg-white/80 dark:bg-zinc-900/85 border border-zinc-200/80 dark:border-zinc-700/60 text-zinc-900 dark:text-white px-3 sm:px-5 py-2.5 shadow-[0_16px_40px_rgba(0,0,0,0.12)] dark:shadow-[0_16px_40px_rgba(0,0,0,0.5)] backdrop-blur-xl ring-1 ring-black/5 dark:ring-white/10 max-w-[95vw] overflow-x-auto"
-          >
-            <span className="text-xs font-bold whitespace-nowrap text-zinc-900 dark:text-white">
-              <span className="text-[#0066B2] dark:text-[#38BDF8] font-black">{checkedIds.length}</span> selected
-            </span>
-
-            <div className="h-4 w-px bg-zinc-200 dark:bg-zinc-700 shrink-0" />
-
-            <button
-              onClick={handleToggleSelectAll}
-              className="text-xs font-semibold text-zinc-600 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-white transition cursor-pointer whitespace-nowrap"
+      {mounted && typeof document !== "undefined" && createPortal(
+        <AnimatePresence>
+          {checkedIds.length > 0 && !showBulkDeleteModal && !seqToDelete && !mobileActionSeq && !showNewSequenceModal && (
+            <motion.div
+              initial={{ opacity: 0, y: 40, x: "-50%" }}
+              animate={{ opacity: 1, y: 0, x: "-50%" }}
+              exit={{ opacity: 0, y: 40, x: "-50%" }}
+              transition={{ type: "spring", stiffness: 450, damping: 30 }}
+              className="fixed bottom-6 left-1/2 z-[100] flex items-center gap-2 sm:gap-3 rounded-2xl bg-white/90 dark:bg-[#18181B]/95 border border-zinc-200/90 dark:border-white/10 text-zinc-900 dark:text-white px-3 sm:px-5 py-2.5 shadow-[0_16px_40px_rgba(0,0,0,0.2)] dark:shadow-[0_16px_40px_rgba(0,0,0,0.6)] backdrop-blur-xl ring-1 ring-black/5 dark:ring-white/10 max-w-[calc(100vw-24px)] overflow-x-auto scrollbar-none"
             >
-              {filteredSequences.length > 0 && filteredSequences.every((s) => checkedIds.includes(s.id))
-                ? "Deselect All"
-                : "Select All"}
-            </button>
+              <span className="text-xs font-bold whitespace-nowrap text-zinc-900 dark:text-white">
+                <span className="text-[#0066B2] dark:text-[#38BDF8] font-black">{checkedIds.length}</span> selected
+              </span>
 
-            <button
-              onClick={() => handleBulkToggleStatus("live")}
-              className="hidden sm:inline-flex items-center gap-1 text-xs font-semibold text-emerald-600 hover:text-emerald-700 dark:text-emerald-400 dark:hover:text-emerald-300 transition cursor-pointer whitespace-nowrap"
-              title="Resume selected sequences"
-            >
-              <Play className="h-3 w-3" />
-              <span>Resume</span>
-            </button>
+              <div className="h-4 w-px bg-zinc-200 dark:bg-zinc-700 shrink-0" />
 
-            <button
-              onClick={() => handleBulkToggleStatus("draft")}
-              className="hidden sm:inline-flex items-center gap-1 text-xs font-semibold text-amber-600 hover:text-amber-700 dark:text-amber-400 dark:hover:text-amber-300 transition cursor-pointer whitespace-nowrap"
-              title="Pause selected sequences"
-            >
-              <Pause className="h-3 w-3" />
-              <span>Pause</span>
-            </button>
+              <button
+                type="button"
+                onClick={handleToggleSelectAll}
+                className="text-xs font-semibold text-zinc-600 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-white transition cursor-pointer whitespace-nowrap"
+              >
+                {filteredSequences.length > 0 && filteredSequences.every((s) => checkedIds.includes(s.id))
+                  ? "Deselect All"
+                  : "Select All"}
+              </button>
 
-            <button
-              onClick={() => {
-                setCheckedIds([]);
-                setIsSelectMode(false);
-              }}
-              className="text-xs font-semibold text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200 transition cursor-pointer whitespace-nowrap"
-            >
-              Clear
-            </button>
+              <button
+                type="button"
+                onClick={() => handleBulkToggleStatus("live")}
+                className="hidden sm:inline-flex items-center gap-1 text-xs font-semibold text-emerald-600 hover:text-emerald-700 dark:text-emerald-400 dark:hover:text-emerald-300 transition cursor-pointer whitespace-nowrap"
+                title="Resume selected sequences"
+              >
+                <Play className="h-3 w-3" />
+                <span>Resume</span>
+              </button>
 
-            <button
-              onClick={() => setShowBulkDeleteModal(true)}
-              className="flex items-center gap-1.5 rounded-xl bg-rose-600 hover:bg-rose-700 px-3 sm:px-3.5 py-1.5 text-xs font-bold text-white transition shadow-xs cursor-pointer whitespace-nowrap active:scale-95"
-            >
-              <Trash2 className="h-3.5 w-3.5" />
-              <span>Delete ({checkedIds.length})</span>
-            </button>
-          </motion.div>
-        )}
-      </AnimatePresence>
+              <button
+                type="button"
+                onClick={() => handleBulkToggleStatus("draft")}
+                className="hidden sm:inline-flex items-center gap-1 text-xs font-semibold text-amber-600 hover:text-amber-700 dark:text-amber-400 dark:hover:text-amber-300 transition cursor-pointer whitespace-nowrap"
+                title="Pause selected sequences"
+              >
+                <Pause className="h-3 w-3" />
+                <span>Pause</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setCheckedIds([]);
+                  setIsSelectMode(false);
+                }}
+                className="text-xs font-semibold text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200 transition cursor-pointer whitespace-nowrap"
+              >
+                Clear
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setShowBulkDeleteModal(true)}
+                className="flex items-center gap-1.5 rounded-xl bg-rose-600 hover:bg-rose-700 px-3 sm:px-3.5 py-1.5 text-xs font-bold text-white transition shadow-xs cursor-pointer whitespace-nowrap active:scale-95"
+              >
+                <Trash2 className="h-3.5 w-3.5" />
+                <span>Delete ({checkedIds.length})</span>
+              </button>
+            </motion.div>
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
 
       {/* Bulk Delete Modal */}
       <AnimatePresence>

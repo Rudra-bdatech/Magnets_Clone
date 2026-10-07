@@ -993,7 +993,6 @@ export default function DashboardShell({
                   duration: 0.13,
                   ease: [0.22, 1, 0.36, 1],
                 }}
-                style={{ willChange: "opacity, transform" }}
                 className="w-full h-full max-w-full"
               >
                 {children}
