@@ -47,6 +47,16 @@ const TYPOGRAPHY_PRESETS = [
   { id: "mono", label: "Tech Mono", fontFamily: "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" },
 ];
 
+const THEME_PRESETS = [
+  { id: "gradient", label: "Vibrant Glow" },
+  { id: "sunset", label: "Sunset Fire" },
+  { id: "emerald", label: "Emerald Cyber" },
+  { id: "neon", label: "Midnight" },
+  { id: "dark", label: "Dark Tech" },
+  { id: "minimal", label: "Clean White" },
+  { id: "custom", label: "Custom 🎨" },
+];
+
 export default function SocialCardModal({
   isOpen,
   onClose,
@@ -588,21 +598,43 @@ export default function SocialCardModal({
         {/* Tab Controls Bar */}
         <div className="border-b border-zinc-200 dark:border-[#27272A] bg-white px-3 sm:px-5 py-2.5 dark:bg-[#121215] overflow-x-auto shrink-0">
           {activeTab === "styles" && (
-            <div className="flex flex-wrap items-center justify-between gap-2.5 text-xs">
-              {/* Theme presets */}
-              <div className="flex items-center gap-1.5 flex-wrap">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 text-xs">
+              {/* Mobile: Clean Side-by-Side Dropdowns for Theme & Font (sm:hidden) */}
+              <div className="grid grid-cols-2 gap-2 w-full sm:hidden">
+                <div className="flex items-center gap-1.5 min-w-0 bg-zinc-100/70 dark:bg-zinc-800/80 px-2 py-1 rounded-lg border border-zinc-200/80 dark:border-zinc-700/80">
+                  <span className="font-bold text-zinc-500 text-[11px] shrink-0">Theme:</span>
+                  <select
+                    value={theme}
+                    onChange={(e) => setTheme(e.target.value as any)}
+                    className="w-full bg-transparent text-[11px] font-semibold text-zinc-900 dark:text-zinc-100 cursor-pointer min-w-0 outline-none truncate"
+                  >
+                    {THEME_PRESETS.map((t) => (
+                      <option key={t.id} value={t.id} className="dark:bg-zinc-800 dark:text-white">{t.label}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="flex items-center gap-1.5 min-w-0 bg-zinc-100/70 dark:bg-zinc-800/80 px-2 py-1 rounded-lg border border-zinc-200/80 dark:border-zinc-700/80">
+                  <span className="font-bold text-zinc-500 text-[11px] shrink-0">Font:</span>
+                  <select
+                    value={fontFamily}
+                    onChange={(e) => setFontFamily(e.target.value)}
+                    className="w-full bg-transparent text-[11px] font-semibold text-zinc-900 dark:text-zinc-100 cursor-pointer min-w-0 outline-none truncate"
+                  >
+                    {TYPOGRAPHY_PRESETS.map((t) => (
+                      <option key={t.id} value={t.id} className="dark:bg-zinc-800 dark:text-white">{t.label}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              {/* Desktop Theme presets (hidden sm:flex) */}
+              <div className="hidden sm:flex items-center gap-1.5 flex-wrap">
                 <span className="font-semibold text-zinc-500 text-[11px]">Theme:</span>
-                {[
-                  { id: "gradient", label: "Vibrant Glow" },
-                  { id: "sunset", label: "Sunset Fire" },
-                  { id: "emerald", label: "Emerald Cyber" },
-                  { id: "neon", label: "Midnight" },
-                  { id: "dark", label: "Dark Tech" },
-                  { id: "minimal", label: "Clean White" },
-                  { id: "custom", label: "Custom 🎨" },
-                ].map((t) => (
+                {THEME_PRESETS.map((t) => (
                   <button
                     key={t.id}
+                    type="button"
                     onClick={() => setTheme(t.id as any)}
                     className={`rounded-lg px-2 py-0.5 text-[11px] font-semibold transition cursor-pointer ${theme === t.id
                       ? "bg-indigo-600 text-white shadow-xs"
@@ -614,44 +646,44 @@ export default function SocialCardModal({
                 ))}
               </div>
 
-              {/* Typography pairing & Custom gradient */}
-              <div className="flex items-center gap-2 flex-wrap">
-                <div className="flex items-center gap-1.5">
-                  <span className="font-semibold text-zinc-500 text-[11px]">Font:</span>
-                  <select
-                    value={fontFamily}
-                    onChange={(e) => setFontFamily(e.target.value)}
-                    className="rounded-lg border border-zinc-200 bg-white px-2 py-0.5 text-[11px] font-semibold text-zinc-800 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-200 cursor-pointer"
-                  >
-                    {TYPOGRAPHY_PRESETS.map((t) => (
-                      <option key={t.id} value={t.id}>{t.label}</option>
-                    ))}
-                  </select>
-                </div>
-
-                {theme === "custom" && (
-                  <div className="flex items-center gap-2 bg-zinc-100 dark:bg-zinc-800 px-2 py-0.5 rounded-lg">
-                    <div className="flex items-center gap-1">
-                      <span className="text-[10px] font-medium text-zinc-500">From:</span>
-                      <input
-                        type="color"
-                        value={colorStart}
-                        onChange={(e) => setColorStart(e.target.value)}
-                        className="h-4 w-5 cursor-pointer rounded border-0 bg-transparent p-0"
-                      />
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <span className="text-[10px] font-medium text-zinc-500">To:</span>
-                      <input
-                        type="color"
-                        value={colorEnd}
-                        onChange={(e) => setColorEnd(e.target.value)}
-                        className="h-4 w-5 cursor-pointer rounded border-0 bg-transparent p-0"
-                      />
-                    </div>
-                  </div>
-                )}
+              {/* Desktop Typography pairing (hidden sm:flex) */}
+              <div className="hidden sm:flex items-center gap-2">
+                <span className="font-semibold text-zinc-500 text-[11px]">Font:</span>
+                <select
+                  value={fontFamily}
+                  onChange={(e) => setFontFamily(e.target.value)}
+                  className="rounded-lg border border-zinc-200 bg-white px-2 py-0.5 text-[11px] font-semibold text-zinc-800 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-200 cursor-pointer"
+                >
+                  {TYPOGRAPHY_PRESETS.map((t) => (
+                    <option key={t.id} value={t.id}>{t.label}</option>
+                  ))}
+                </select>
               </div>
+
+              {/* Custom Gradient Pickers if selected (Both Mobile and Desktop) */}
+              {theme === "custom" && (
+                <div className="flex items-center gap-2 bg-zinc-100 dark:bg-zinc-800 px-2.5 py-1 rounded-lg shrink-0 w-full sm:w-auto justify-center sm:justify-start">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">Custom Gradient:</span>
+                  <div className="flex items-center gap-1">
+                    <span className="text-[10px] font-medium text-zinc-500">From:</span>
+                    <input
+                      type="color"
+                      value={colorStart}
+                      onChange={(e) => setColorStart(e.target.value)}
+                      className="h-4 w-5 cursor-pointer rounded border-0 bg-transparent p-0"
+                    />
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <span className="text-[10px] font-medium text-zinc-500">To:</span>
+                    <input
+                      type="color"
+                      value={colorEnd}
+                      onChange={(e) => setColorEnd(e.target.value)}
+                      className="h-4 w-5 cursor-pointer rounded border-0 bg-transparent p-0"
+                    />
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
