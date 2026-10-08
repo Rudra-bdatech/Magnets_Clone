@@ -555,7 +555,7 @@ export default function PagesPage() {
           <div className="max-w-7xl mx-auto w-full flex-1 px-3.5 sm:px-6 py-4 sm:py-6 lg:px-8 flex flex-col lg:flex-row gap-4 sm:gap-6 items-start min-w-0">
             <motion.div
               layout
-              transition={{ layout: { type: "spring", stiffness: 280, damping: 30, mass: 0.8 } }}
+              transition={{ layout: { type: "spring", stiffness: 450, damping: 32, mass: 0.6 } }}
               className={`flex flex-col space-y-4 min-w-0 max-w-full ${
                 activePage ? "w-full lg:w-[65%]" : "w-full"
               }`}
@@ -1230,26 +1230,37 @@ export default function PagesPage() {
             {activePage && (
               <motion.div
                 layout
-                initial={{ opacity: 0, x: 28, scale: 0.96, filter: "blur(6px)" }}
-                animate={{ opacity: 1, x: 0, scale: 1, filter: "blur(0px)" }}
-                exit={{ opacity: 0, x: 28, scale: 0.96, filter: "blur(6px)" }}
+                initial={{ opacity: 0, x: 20, scale: 0.98 }}
+                animate={{ opacity: 1, x: 0, scale: 1 }}
+                exit={{
+                  opacity: 0,
+                  x: 16,
+                  scale: 0.98,
+                  transition: { duration: 0.14, ease: [0.16, 1, 0.3, 1] }
+                }}
                 transition={{
-                  layout: { type: "spring", stiffness: 280, damping: 30, mass: 0.8 },
+                  layout: { type: "spring", stiffness: 450, damping: 32, mass: 0.6 },
                   type: "spring",
-                  stiffness: 280,
-                  damping: 30,
-                  mass: 0.8,
-                  opacity: { duration: 0.24, ease: [0.16, 1, 0.3, 1] },
-                  filter: { duration: 0.22 },
+                  stiffness: 450,
+                  damping: 32,
+                  mass: 0.6,
+                  opacity: { duration: 0.16, ease: [0.16, 1, 0.3, 1] },
                 }}
                 className="hidden lg:block lg:w-[35%] sticky top-6 z-20 space-y-4 shrink-0"
               >
                 <div className="rounded-2xl border border-zinc-200/80 dark:border-white/[0.08] bg-white/95 dark:bg-[#141417]/95 p-5 shadow-[0_16px_40px_rgba(0,0,0,0.08)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.4)] backdrop-blur-xl space-y-5">
-                  <div className="flex items-start justify-between">
-                    <div className="min-w-0 flex-1 mr-2">
-                      <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#0066B2] dark:text-[#38BDF8]">
-                        SELECTED INSPECTOR
-                      </span>
+                  <motion.div
+                    key={activePage.id}
+                    initial={{ opacity: 0, y: 3 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.14, ease: "easeOut" }}
+                    className="space-y-5"
+                  >
+                    <div className="flex items-start justify-between">
+                      <div className="min-w-0 flex-1 mr-2">
+                        <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#0066B2] dark:text-[#38BDF8]">
+                          SELECTED INSPECTOR
+                        </span>
                       <h3 className="text-lg font-black text-zinc-900 dark:text-white mt-0.5 line-clamp-1">
                         {activePage.name}
                       </h3>
@@ -1343,6 +1354,7 @@ export default function PagesPage() {
                       <Trash2 className="h-3.5 w-3.5" /> Delete Magnet
                     </button>
                   </div>
+                  </motion.div>
                 </div>
               </motion.div>
             )}

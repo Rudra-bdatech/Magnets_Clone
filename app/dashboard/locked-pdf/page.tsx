@@ -1023,7 +1023,7 @@ export default function LockedPdfPage() {
           <div className="max-w-7xl mx-auto w-full flex-1 px-3.5 sm:px-6 py-4 sm:py-6 lg:px-8 flex flex-col lg:flex-row gap-4 sm:gap-6 items-start min-w-0">
             <motion.div
               layout
-              transition={{ layout: { type: "spring", stiffness: 280, damping: 30, mass: 0.8 } }}
+              transition={{ layout: { type: "spring", stiffness: 450, damping: 32, mass: 0.6 } }}
               className={`flex flex-col space-y-4 min-w-0 max-w-full ${
                 activePage ? "w-full lg:w-[65%]" : "w-full"
               }`}
@@ -1894,114 +1894,126 @@ export default function LockedPdfPage() {
             {activePage && (
               <motion.div
                 layout
-                initial={{ opacity: 0, x: 28, scale: 0.96, filter: "blur(6px)" }}
-                animate={{ opacity: 1, x: 0, scale: 1, filter: "blur(0px)" }}
-                exit={{ opacity: 0, x: 28, scale: 0.96, filter: "blur(6px)" }}
+                initial={{ opacity: 0, x: 20, scale: 0.98 }}
+                animate={{ opacity: 1, x: 0, scale: 1 }}
+                exit={{
+                  opacity: 0,
+                  x: 16,
+                  scale: 0.98,
+                  transition: { duration: 0.14, ease: [0.16, 1, 0.3, 1] }
+                }}
                 transition={{
-                  layout: { type: "spring", stiffness: 280, damping: 30, mass: 0.8 },
+                  layout: { type: "spring", stiffness: 450, damping: 32, mass: 0.6 },
                   type: "spring",
-                  stiffness: 280,
-                  damping: 30,
-                  mass: 0.8,
-                  opacity: { duration: 0.24, ease: [0.16, 1, 0.3, 1] },
-                  filter: { duration: 0.22 },
+                  stiffness: 450,
+                  damping: 32,
+                  mass: 0.6,
+                  opacity: { duration: 0.16, ease: [0.16, 1, 0.3, 1] },
                 }}
                 className="hidden lg:block lg:w-[35%] sticky top-6 z-20 space-y-4 shrink-0"
               >
                 <div className="rounded-2xl border border-zinc-200/80 dark:border-white/[0.08] bg-white/95 dark:bg-[#141417]/95 p-5 shadow-[0_16px_40px_rgba(0,0,0,0.08)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.4)] backdrop-blur-xl space-y-5">
-                  <div className="flex items-start justify-between">
-                    <div className="min-w-0 flex-1 mr-2">
-                      <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#0066B2] dark:text-[#38BDF8]">
-                        SELECTED INSPECTOR
-                      </span>
-                      <h3 className="text-lg font-black text-zinc-900 dark:text-white mt-0.5 line-clamp-1">
-                        {activePage.name}
-                      </h3>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => setSelectedPageId(null)}
-                      className="rounded-lg p-1.5 text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white transition cursor-pointer shrink-0"
-                      title="Close inspector"
-                    >
-                      <X className="h-4 w-4" />
-                    </button>
-                  </div>
-
-                  <div className="rounded-xl bg-zinc-50 dark:bg-[#1A1A1E] p-3 border border-zinc-200/60 dark:border-zinc-800/60 space-y-2">
-                    <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Public Share URL</p>
-                    <div className="flex items-center justify-between gap-2">
-                      <span className="text-xs font-mono text-zinc-800 dark:text-zinc-200 truncate">
-                        /pdf-viewer/{activePage.id}
-                      </span>
+                  <motion.div
+                    key={activePage.id}
+                    initial={{ opacity: 0, y: 3 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.14, ease: "easeOut" }}
+                    className="space-y-5"
+                  >
+                    <div className="flex items-start justify-between">
+                      <div className="min-w-0 flex-1 mr-2">
+                        <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#0066B2] dark:text-[#38BDF8]">
+                          SELECTED INSPECTOR
+                        </span>
+                        <h3 className="text-lg font-black text-zinc-900 dark:text-white mt-0.5 line-clamp-1">
+                          {activePage.name}
+                        </h3>
+                      </div>
                       <button
-                        onClick={() => {
-                          const fullUrl = `${window.location.origin}/pdf-viewer/${activePage.id}`;
-                          navigator.clipboard.writeText(fullUrl);
-                          setCopiedId(activePage.id);
-                          addToast("Copied viewer link!");
-                          setTimeout(() => setCopiedId(null), 2000);
-                        }}
-                        className="flex items-center gap-1 rounded-lg bg-white dark:bg-[#25252A] px-2.5 py-1 text-xs font-bold text-zinc-700 dark:text-zinc-200 border border-zinc-200 dark:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition shrink-0 cursor-pointer"
+                        type="button"
+                        onClick={() => setSelectedPageId(null)}
+                        className="rounded-lg p-1.5 text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white transition cursor-pointer shrink-0"
+                        title="Close inspector"
                       >
-                        {copiedId === activePage.id ? <Check className="h-3 w-3 text-emerald-500" /> : <Copy className="h-3 w-3" />}
-                        <span>{copiedId === activePage.id ? "Copied" : "Copy"}</span>
+                        <X className="h-4 w-4" />
                       </button>
                     </div>
-                  </div>
 
-                  <div className="space-y-2">
-                    <p className="text-xs font-bold text-zinc-900 dark:text-white flex items-center gap-1.5">
-                      <TrendingUp className="h-3.5 w-3.5 text-[#0066B2] dark:text-[#38BDF8]" /> Magnet Conversion Metrics
-                    </p>
-                    <div className="grid grid-cols-2 gap-2">
-                      <div className="rounded-xl border border-zinc-100 dark:border-zinc-800 p-3 bg-zinc-50/50 dark:bg-[#1A1A1E]/50">
-                        <p className="text-[10px] text-zinc-400 font-semibold uppercase">Total Views</p>
-                        <p className="text-lg font-bold text-zinc-900 dark:text-white mt-1">{activePage.views || 0}</p>
-                      </div>
-                      <div className="rounded-xl border border-zinc-100 dark:border-zinc-800 p-3 bg-zinc-50/50 dark:bg-[#1A1A1E]/50">
-                        <p className="text-[10px] text-zinc-400 font-semibold uppercase">Leads Captured</p>
-                        <p className="text-lg font-bold text-[#0066B2] dark:text-[#38BDF8] mt-1">{activePage.signups || 0}</p>
+                    <div className="rounded-xl bg-zinc-50 dark:bg-[#1A1A1E] p-3 border border-zinc-200/60 dark:border-zinc-800/60 space-y-2">
+                      <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Public Share URL</p>
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-xs font-mono text-zinc-800 dark:text-zinc-200 truncate">
+                          /pdf-viewer/{activePage.id}
+                        </span>
+                        <button
+                          onClick={() => {
+                            const fullUrl = `${window.location.origin}/pdf-viewer/${activePage.id}`;
+                            navigator.clipboard.writeText(fullUrl);
+                            setCopiedId(activePage.id);
+                            addToast("Copied viewer link!");
+                            setTimeout(() => setCopiedId(null), 2000);
+                          }}
+                          className="flex items-center gap-1 rounded-lg bg-white dark:bg-[#25252A] px-2.5 py-1 text-xs font-bold text-zinc-700 dark:text-zinc-200 border border-zinc-200 dark:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition shrink-0 cursor-pointer"
+                        >
+                          {copiedId === activePage.id ? <Check className="h-3 w-3 text-emerald-500" /> : <Copy className="h-3 w-3" />}
+                          <span>{copiedId === activePage.id ? "Copied" : "Copy"}</span>
+                        </button>
                       </div>
                     </div>
-                  </div>
 
-                  <div className="space-y-2">
-                    <Link
-                      href={`/dashboard/leadmagnets/${activePage.id}?type=locked-pdf`}
-                      prefetch={true}
-                      className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#0066B2] px-4 py-2.5 text-xs font-bold text-white hover:bg-[#005799] transition shadow-sm cursor-pointer active:scale-95"
-                    >
-                      <Pencil className="h-4 w-4" /> Open Full Editor
-                    </Link>
+                    <div className="space-y-2">
+                      <p className="text-xs font-bold text-zinc-900 dark:text-white flex items-center gap-1.5">
+                        <TrendingUp className="h-3.5 w-3.5 text-[#0066B2] dark:text-[#38BDF8]" /> Magnet Conversion Metrics
+                      </p>
+                      <div className="grid grid-cols-2 gap-2">
+                        <div className="rounded-xl border border-zinc-100 dark:border-zinc-800 p-3 bg-zinc-50/50 dark:bg-[#1A1A1E]/50">
+                          <p className="text-[10px] text-zinc-400 font-semibold uppercase">Total Views</p>
+                          <p className="text-lg font-bold text-zinc-900 dark:text-white mt-1">{activePage.views || 0}</p>
+                        </div>
+                        <div className="rounded-xl border border-zinc-100 dark:border-zinc-800 p-3 bg-zinc-50/50 dark:bg-[#1A1A1E]/50">
+                          <p className="text-[10px] text-zinc-400 font-semibold uppercase">Leads Captured</p>
+                          <p className="text-lg font-bold text-[#0066B2] dark:text-[#38BDF8] mt-1">{activePage.signups || 0}</p>
+                        </div>
+                      </div>
+                    </div>
 
-                    <div className="grid grid-cols-2 gap-2">
+                    <div className="space-y-2">
                       <Link
-                        href={`/dashboard/leadmagnets/${activePage.id}/analytics`}
-                        className="flex items-center justify-center gap-1.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#1C1C20] px-3 py-2 text-xs font-bold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition"
+                        href={`/dashboard/leadmagnets/${activePage.id}?type=locked-pdf`}
+                        prefetch={true}
+                        className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#0066B2] px-4 py-2.5 text-xs font-bold text-white hover:bg-[#005799] transition shadow-sm cursor-pointer active:scale-95"
                       >
-                        <BarChart2 className="h-3.5 w-3.5 text-[#0066B2] dark:text-[#38BDF8]" /> Analytics
+                        <Pencil className="h-4 w-4" /> Open Full Editor
                       </Link>
 
-                      <a
-                        href={`/pdf-viewer/${activePage.id}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center justify-center gap-1.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#1C1C20] px-3 py-2 text-xs font-bold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition"
-                      >
-                        <ExternalLink className="h-3.5 w-3.5 text-zinc-400" /> Preview
-                      </a>
-                    </div>
-                  </div>
+                      <div className="grid grid-cols-2 gap-2">
+                        <Link
+                          href={`/dashboard/leadmagnets/${activePage.id}/analytics`}
+                          className="flex items-center justify-center gap-1.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#1C1C20] px-3 py-2 text-xs font-bold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition"
+                        >
+                          <BarChart2 className="h-3.5 w-3.5 text-[#0066B2] dark:text-[#38BDF8]" /> Analytics
+                        </Link>
 
-                  <div className="flex justify-end pt-1">
-                    <button
-                      onClick={() => setShowDeleteModal(true)}
-                      className="flex items-center gap-1 text-[11px] font-bold text-red-500 hover:text-red-600 dark:hover:text-red-400 transition cursor-pointer"
-                    >
-                      <Trash2 className="h-3.5 w-3.5" /> Delete Magnet
-                    </button>
-                  </div>
+                        <a
+                          href={`/pdf-viewer/${activePage.id}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center justify-center gap-1.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#1C1C20] px-3 py-2 text-xs font-bold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition"
+                        >
+                          <ExternalLink className="h-3.5 w-3.5 text-zinc-400" /> Preview
+                        </a>
+                      </div>
+                    </div>
+
+                    <div className="flex justify-end pt-1">
+                      <button
+                        onClick={() => setShowDeleteModal(true)}
+                        className="flex items-center gap-1 text-[11px] font-bold text-red-500 hover:text-red-600 dark:hover:text-red-400 transition cursor-pointer"
+                      >
+                        <Trash2 className="h-3.5 w-3.5" /> Delete Magnet
+                      </button>
+                    </div>
+                  </motion.div>
                 </div>
               </motion.div>
             )}
