@@ -895,7 +895,7 @@ function parseCsvLine(line: string): string[] {
 
   return (
     <div className="flex flex-col min-h-[calc(100vh-3.5rem)] bg-gradient-to-b from-[#EFF6FF]/40 via-[#F8FBFF] to-[#F8FBFF] dark:bg-none dark:bg-[#0B0B0D]">
-      <div className={`flex-1 px-3.5 py-6 sm:px-6 sm:py-7 lg:px-8 mx-auto w-full flex flex-col gap-4 transition-[max-width] duration-300 ease-out ${isCollapsed ? "max-w-[1440px]" : "max-w-7xl"}`}>
+      <div className={`flex-1 px-3.5 py-6 sm:px-6 sm:py-7 lg:px-8 mx-auto w-full flex flex-col gap-4 transition-[max-width] duration-[220ms] ease-[cubic-bezier(0.16,1,0.3,1)] will-change-[max-width] ${isCollapsed ? "max-w-[1440px]" : "max-w-7xl"}`}>
 
         {/* ========================================================================= */}
         {/* 1. DESKTOP Page Heading (hidden md:flex)                                 */}

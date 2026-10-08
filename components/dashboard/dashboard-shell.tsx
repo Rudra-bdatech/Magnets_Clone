@@ -437,7 +437,7 @@ export default function DashboardShell({
 
         <motion.aside
           animate={{ width: isCollapsed ? 68 : 232 }}
-          transition={{ type: "spring", stiffness: 360, damping: 30, mass: 0.8 }}
+          transition={{ type: "spring", stiffness: 520, damping: 38, mass: 0.5 }}
           className="shadow-sm hidden h-screen shrink-0 flex-col border-r border-[#E0EDFB] bg-[#F0F7FF] text-zinc-900 sticky top-0 md:flex z-50 dark:border-white/10 dark:bg-[#18181B] dark:text-[#9B9085] overflow-visible select-none"
         >
           {/* Header & Logo Area */}
@@ -451,7 +451,7 @@ export default function DashboardShell({
               {/* Seamless, pixel-perfect logo with smooth spring text masking */}
               <motion.div
                 animate={{ width: isCollapsed ? 36 : 144 }}
-                transition={{ type: "spring", stiffness: 360, damping: 30, mass: 0.8 }}
+                transition={{ type: "spring", stiffness: 520, damping: 38, mass: 0.5 }}
                 className="h-9 overflow-hidden flex items-center shrink-0"
               >
                 <div className="w-[144px] min-w-[144px] h-9 shrink-0 flex items-center">

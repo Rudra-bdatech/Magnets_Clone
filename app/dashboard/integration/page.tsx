@@ -208,7 +208,7 @@ export default function WorkspaceSetupPage() {
   return (
     <>
       <div className="flex flex-col min-h-[calc(100vh-3rem)] bg-[#F8FBFF] dark:bg-[#0E0E10]">
-        <div className={`flex-1 px-3.5 sm:px-6 py-4 sm:py-6 lg:px-8 mx-auto w-full transition-[max-width] duration-300 ease-out ${isCollapsed ? "max-w-[1440px]" : "max-w-7xl"}`}>
+        <div className={`flex-1 px-3.5 sm:px-6 py-4 sm:py-6 lg:px-8 mx-auto w-full transition-[max-width] duration-[220ms] ease-[cubic-bezier(0.16,1,0.3,1)] will-change-[max-width] ${isCollapsed ? "max-w-[1440px]" : "max-w-7xl"}`}>
 
           {/* Page heading & status */}
           <div className="mb-5 sm:mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">

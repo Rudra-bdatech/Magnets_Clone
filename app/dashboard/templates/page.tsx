@@ -348,7 +348,7 @@ export default function TemplatesPage() {
       )}
 
       <div className="flex flex-col min-h-[calc(100vh-3rem)] bg-gradient-to-b from-[#EFF6FF]/60 via-[#F8FBFF] to-[#F8FBFF] dark:bg-none dark:bg-[#0E0E10] text-zinc-900 dark:text-white transition-colors duration-200 animate-fade-in">
-        <div className={`flex-1 px-3.5 py-4 sm:px-6 sm:py-6 lg:px-8 w-full mx-auto transition-[max-width] duration-300 ease-out ${isCollapsed ? "max-w-[1440px]" : "max-w-7xl"}`}>
+        <div className={`flex-1 px-3.5 py-4 sm:px-6 sm:py-6 lg:px-8 w-full mx-auto transition-[max-width] duration-[220ms] ease-[cubic-bezier(0.16,1,0.3,1)] will-change-[max-width] ${isCollapsed ? "max-w-[1440px]" : "max-w-7xl"}`}>
 
           {/* Page Title */}
           <div className="mb-6 sm:mb-8">
