@@ -84,9 +84,13 @@ export default function ShowcaseTabs() {
     let targetProgress = 0;
     let isRunning = false;
     let animationFrameId: number;
-    // Smoothed parallax value for the showcase card (lerped each RAF tick)
+    // Smoothed values for the showcase card (lerped each RAF tick)
     let currentTranslateY = 0;
     let targetTranslateY = 0;
+    let currentScale = 0.86;
+    let targetScale = 0.86;
+    let currentRotateX = 0;
+    let targetRotateX = 0;
 
     const progressEl = lineRef.current;
 
@@ -101,19 +105,37 @@ export default function ShowcaseTabs() {
         if (progressEl) progressEl.style.height = `${currentProgress.toFixed(2)}%`;
       }
 
-      // Showcase card parallax lerp — runs continuously so mobile
-      // momentum/inertia scroll is smooth (iOS scroll events don't fire mid-inertia)
+      // Showcase card dynamic scale & parallax lerp
       const showcaseEl = showcaseRef.current;
       if (showcaseEl) {
         const rect = showcaseEl.getBoundingClientRect();
         const windowHeight = window.innerHeight;
-        const progress = (windowHeight - rect.top) / (windowHeight + rect.height);
-        const clampedProgress = Math.min(Math.max(progress, 0), 1);
-        targetTranslateY = (clampedProgress - 0.5) * -35;
+        const isMobile = window.innerWidth < 768;
 
-        // Lerp toward target each frame for buttery smoothness on all devices
-        currentTranslateY += (targetTranslateY - currentTranslateY) * 0.1;
-        showcaseEl.style.transform = `translate3d(0, ${currentTranslateY.toFixed(2)}px, 0)`;
+        // Progress calculates how close the card is to entering and centering in the viewport
+        // When card is below viewport or just peeking, clampedEntry is near 0
+        // When card reaches viewport focal area, clampedEntry reaches 1
+        const entryProgress = (windowHeight - rect.top) / (windowHeight * 0.7);
+        const clampedEntry = Math.min(Math.max(entryProgress, 0), 1);
+
+        if (isMobile) {
+          // On mobile: starts small (0.86), slightly tilted back with depth, and scales smoothly up to 1.0 as you scroll
+          targetScale = 0.86 + clampedEntry * 0.14; // 0.86 -> 1.00
+          targetTranslateY = (1 - clampedEntry) * 32 + (clampedEntry - 0.5) * -16;
+          targetRotateX = (1 - clampedEntry) * 4.5; // 4.5deg -> 0deg
+        } else {
+          // On desktop: subtle upscale and parallax
+          targetScale = 0.94 + clampedEntry * 0.06; // 0.94 -> 1.00
+          targetTranslateY = (clampedEntry - 0.5) * -30;
+          targetRotateX = 0;
+        }
+
+        // Smooth lerp interpolation for 60fps buttery feel on scroll & inertia
+        currentTranslateY += (targetTranslateY - currentTranslateY) * 0.12;
+        currentScale += (targetScale - currentScale) * 0.12;
+        currentRotateX += (targetRotateX - currentRotateX) * 0.12;
+
+        showcaseEl.style.transform = `perspective(1000px) translate3d(0, ${currentTranslateY.toFixed(2)}px, 0) scale(${currentScale.toFixed(4)}) rotateX(${currentRotateX.toFixed(2)}deg)`;
       }
 
       // Timeline progress bar sync
@@ -121,7 +143,7 @@ export default function ShowcaseTabs() {
         isRunning = true;
       }
 
-      // Keep the RAF loop alive continuously for mobile parallax
+      // Keep the RAF loop alive continuously for smooth mobile inertia
       animationFrameId = requestAnimationFrame(updateLoop);
     };
 
@@ -140,13 +162,14 @@ export default function ShowcaseTabs() {
       }
     };
 
-    // Start the continuous RAF loop immediately (works on desktop + mobile)
     animationFrameId = requestAnimationFrame(updateLoop);
     window.addEventListener("scroll", handleScroll, { passive: true });
+    window.addEventListener("resize", handleScroll, { passive: true });
     handleScroll();
 
     return () => {
       window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", handleScroll);
       if (animationFrameId) cancelAnimationFrame(animationFrameId);
     };
   }, []);
@@ -369,12 +392,10 @@ export default function ShowcaseTabs() {
       {/* SINGLE UNIFIED APPLICATION FRAME */}
       <div
         ref={showcaseRef}
-        className={`relative mt-12 sm:mt-16 w-full max-w-5xl mx-auto rounded-3xl border border-zinc-200/90 dark:border-white/10 bg-white/95 dark:bg-[#13141B] shadow-[0_22px_55px_-12px_rgba(9,30,66,0.18)] dark:shadow-[0_28px_60px_-12px_rgba(0,0,0,0.75)] p-4 sm:p-6 text-zinc-900 dark:text-zinc-100 overflow-hidden font-sans select-none ring-1 ring-black/5 dark:ring-white/5 transition-all duration-1000 ease-out h-[440px] sm:h-[460px] flex flex-col ${
-          hasEnteredViewport
-            ? "opacity-100 translate-y-0 scale-100"
-            : "opacity-0 translate-y-8 scale-[0.96]"
+        className={`relative mt-12 sm:mt-16 w-full max-w-5xl mx-auto rounded-3xl border border-zinc-200/90 dark:border-white/10 bg-white/95 dark:bg-[#13141B] shadow-[0_22px_55px_-12px_rgba(9,30,66,0.18)] dark:shadow-[0_28px_60px_-12px_rgba(0,0,0,0.75)] p-4 sm:p-6 text-zinc-900 dark:text-zinc-100 overflow-hidden font-sans select-none ring-1 ring-black/5 dark:ring-white/5 transition-opacity duration-700 ease-out h-[440px] sm:h-[460px] flex flex-col ${
+          hasEnteredViewport ? "opacity-100" : "opacity-0"
         }`}
-        style={{ willChange: "transform, opacity" }}
+        style={{ willChange: "transform, opacity", transformOrigin: "center 30%" }}
       >
         {/* Ambient Glow */}
         <div
