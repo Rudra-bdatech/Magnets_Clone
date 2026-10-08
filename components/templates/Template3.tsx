@@ -311,7 +311,7 @@ export default function Template3(props: TemplateProps) {
         {/* HERO SECTION (2-Column Grid) */}
         <main>
           <section
-            className="grid grid-cols-1 lg:grid-cols-[1.18fr_0.82fr] xl:grid-cols-[1.25fr_0.75fr] gap-10 sm:gap-14 lg:gap-20 py-12 sm:py-16 lg:py-24 items-center"
+            className="grid grid-cols-1 lg:grid-cols-[1.18fr_0.82fr] xl:grid-cols-[1.25fr_0.75fr] gap-10 sm:gap-14 lg:gap-20 py-12 sm:py-16 lg:py-24 items-start"
             style={{ borderBottom: `1px solid ${borderCol}` }}
           >
             {/* LEFT HERO COPY */}
