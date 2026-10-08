@@ -50,9 +50,9 @@ export default function SiteHeader() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <header className="relative z-30 mx-auto flex h-16 sm:h-22 max-w-7xl items-center justify-between px-4 sm:px-8 lg:px-10 pt-2 sm:pt-3.5">
+    <header className="relative z-30 mx-auto flex h-17 sm:h-22 max-w-7xl items-center justify-between px-4 sm:px-8 lg:px-10 pt-2 sm:pt-3.5">
       <a aria-label="LeadMagnets home" href="/" className="shrink-0 flex items-center">
-        <BrandLogo height="h-8 sm:h-11 lg:h-12" />
+        <BrandLogo height="h-10 sm:h-11 lg:h-12" />
       </a>
 
       {/* Desktop Navigation */}
@@ -62,8 +62,8 @@ export default function SiteHeader() {
         <NavLink href="#integrations">Integrations</NavLink>
       </nav>
 
-      <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-        <ThemeToggle />
+      <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+        <ThemeToggle variant="ghost" />
         <a
           className="hidden h-10 items-center px-3 text-sm font-semibold text-zinc-700 dark:text-zinc-300 transition hover:text-[#0066B2] dark:hover:text-white sm:inline-flex"
           href="/login"
@@ -83,14 +83,14 @@ export default function SiteHeader() {
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           aria-expanded={mobileMenuOpen}
           aria-label="Toggle navigation menu"
-          className="inline-flex md:hidden items-center justify-center p-1.5 sm:p-2 rounded-lg text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition shrink-0"
+          className="inline-flex md:hidden h-9 w-9 items-center justify-center rounded-xl text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100/80 dark:hover:bg-zinc-800/70 active:scale-95 transition-all shrink-0 cursor-pointer"
         >
           {mobileMenuOpen ? (
-            <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
           ) : (
-            <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
             </svg>
           )}
