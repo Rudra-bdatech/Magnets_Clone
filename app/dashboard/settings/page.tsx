@@ -16,6 +16,7 @@ import {
   AlertCircle,
   Info,
   Mail,
+  Sparkles,
 } from "lucide-react";
 import {
   saveAccount,
