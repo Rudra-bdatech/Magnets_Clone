@@ -133,7 +133,7 @@ export default function Home() {
             </div>
 
             {/* Main Headline — LCP Element, must be immediately visible */}
-            <h1 className="mx-auto mt-8 max-w-5xl text-5xl font-black leading-[1.02] text-zinc-900 dark:text-white sm:text-6xl lg:text-7xl tracking-tight">
+            <h1 className="mx-auto mt-6 sm:mt-8 max-w-5xl text-3xl min-[400px]:text-4xl sm:text-6xl lg:text-7xl font-black leading-[1.08] text-zinc-900 dark:text-white tracking-tight break-words">
               Turn Free Resources Into <span className="bg-gradient-to-r from-[#0066B2] via-[#38BDF8] to-[#60A5FA] bg-clip-text text-transparent drop-shadow-sm">High-Converting</span> Lead Engines
             </h1>
 
@@ -199,7 +199,7 @@ export default function Home() {
 
           {/* Full-Width Workspace Ecosystem Integration Card */}
           <Reveal delay={0.3} className="mt-14 sm:mt-16" id="integrations">
-            <div className="rounded-3xl border border-zinc-200/80 dark:border-white/10 bg-gradient-to-b from-zinc-50/90 via-white/70 to-zinc-50/90 dark:from-[#16161E]/80 dark:via-[#13131A]/80 dark:to-[#101014]/80 backdrop-blur-2xl p-8 sm:p-10 shadow-2xl relative overflow-hidden ring-1 ring-black/5 dark:ring-white/5">
+            <div className="rounded-3xl border border-zinc-200/80 dark:border-white/10 bg-gradient-to-b from-zinc-50/90 via-white/70 to-zinc-50/90 dark:from-[#16161E]/80 dark:via-[#13131A]/80 dark:to-[#101014]/80 backdrop-blur-2xl p-4 sm:p-8 lg:p-10 shadow-2xl relative overflow-hidden ring-1 ring-black/5 dark:ring-white/5">
               {/* Radial Ambient Glow Background - dark mode only */}
               <div aria-hidden="true" className="hidden dark:block absolute -top-24 left-1/2 -translate-x-1/2 -z-10 h-72 w-[600px] rounded-full bg-[#0066B2]/15 blur-3xl pointer-events-none" />
 

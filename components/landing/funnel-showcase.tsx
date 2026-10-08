@@ -290,23 +290,23 @@ export default function FunnelShowcase() {
         </div>
 
         {/* RIGHT COLUMN: Interactive Animated SaaS App Window */}
-        <div className="lg:col-span-7">
-          <div className="rounded-2xl bg-white dark:bg-[#141822] border border-zinc-200/80 dark:border-white/10 shadow-xl overflow-hidden">
+        <div className="lg:col-span-7 min-w-0 w-full">
+          <div className="rounded-2xl bg-white dark:bg-[#141822] border border-zinc-200/80 dark:border-white/10 shadow-xl overflow-hidden min-w-0">
             {/* Window Top Bar (Clean macOS style) */}
-            <div className="flex items-center justify-between px-6 py-3.5 border-b border-zinc-100 dark:border-white/5 bg-zinc-50/60 dark:bg-white/[0.02]">
+            <div className="flex items-center justify-between px-3.5 sm:px-6 py-2.5 sm:py-3.5 border-b border-zinc-100 dark:border-white/5 bg-zinc-50/60 dark:bg-white/[0.02]">
               <div className="flex items-center gap-1.5">
                 <span className="h-2.5 w-2.5 rounded-full bg-zinc-300 dark:bg-zinc-700 inline-block" />
                 <span className="h-2.5 w-2.5 rounded-full bg-zinc-300 dark:bg-zinc-700 inline-block" />
                 <span className="h-2.5 w-2.5 rounded-full bg-zinc-300 dark:bg-zinc-700 inline-block" />
               </div>
-              <span className="text-[11px] font-extrabold uppercase tracking-widest text-zinc-500 dark:text-zinc-400 font-mono">
+              <span className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-widest text-zinc-500 dark:text-zinc-400 font-mono">
                 {activeStep.windowLabel}
               </span>
             </div>
 
             {/* Dynamic Mockup Body - Edge-to-Edge Balanced Layout */}
             <div
-              className="p-6 min-h-[350px] flex flex-col justify-between transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]"
+              className="p-3.5 sm:p-6 min-h-[350px] flex flex-col justify-between transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] min-w-0"
               style={{
                 transform: isZooming ? "scale(1.08)" : "scale(1)",
                 transformOrigin: zoomOrigin,
@@ -314,22 +314,22 @@ export default function FunnelShowcase() {
             >
               {/* STAGE 01: AI Page Builder */}
               {activeIdx === 0 && (
-                <div className="space-y-4 animate-fadeIn">
+                <div className="space-y-3.5 sm:space-y-4 animate-fadeIn min-w-0">
                   {/* Top Bar with CNAME & Auto-SSL */}
-                  <div className="flex items-center justify-between px-3 py-1.5 rounded-lg bg-zinc-50 dark:bg-[#181D2A] border border-zinc-200/70 dark:border-white/5 text-[11px] font-mono text-zinc-500 dark:text-zinc-400">
-                    <div className="flex items-center gap-1.5">
-                      <Lock className="h-3 w-3 text-emerald-500" />
-                      <span className="text-zinc-900 dark:text-white font-semibold">playbook.acme.co</span>
-                      <span className="text-zinc-400">/free-guide</span>
+                  <div className="flex items-center justify-between px-2.5 sm:px-3 py-1.5 rounded-lg bg-zinc-50 dark:bg-[#181D2A] border border-zinc-200/70 dark:border-white/5 text-[11px] font-mono text-zinc-500 dark:text-zinc-400 min-w-0">
+                    <div className="flex items-center gap-1.5 truncate min-w-0">
+                      <Lock className="h-3 w-3 text-emerald-500 shrink-0" />
+                      <span className="text-zinc-900 dark:text-white font-semibold truncate">playbook.acme.co</span>
+                      <span className="text-zinc-400 truncate">/free-guide</span>
                     </div>
-                    <span className="text-[9px] text-emerald-600 dark:text-emerald-400 font-bold bg-emerald-500/10 px-1.5 py-0.5 rounded flex items-center gap-1">
+                    <span className="text-[9px] text-emerald-600 dark:text-emerald-400 font-bold bg-emerald-500/10 px-1.5 py-0.5 rounded flex items-center gap-1 shrink-0 ml-1">
                       <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
                       SSL Active
                     </span>
                   </div>
 
                   {/* AI Generation Box */}
-                  <div className="p-3 rounded-xl bg-zinc-50 dark:bg-[#181D2A] border border-zinc-200/70 dark:border-white/5 space-y-1.5">
+                  <div className="p-2.5 sm:p-3 rounded-xl bg-zinc-50 dark:bg-[#181D2A] border border-zinc-200/70 dark:border-white/5 space-y-1.5 min-w-0">
                     <div className="flex items-center justify-between text-xs">
                       <span className="font-bold text-zinc-800 dark:text-zinc-200 flex items-center gap-1.5">
                         <Wand2 className="h-3.5 w-3.5 text-[#0066B2] dark:text-[#38BDF8]" /> AI Magnet Generator
@@ -338,14 +338,14 @@ export default function FunnelShowcase() {
                         Ready in 1.4s
                       </span>
                     </div>
-                    <div className="p-2 rounded-lg bg-white dark:bg-[#12151E] border border-zinc-200/60 dark:border-white/5 text-xs text-zinc-700 dark:text-zinc-300 font-medium flex items-center justify-between">
-                      <span>&quot;The 2026 SaaS Growth Playbook: 14 Cold-to-Close Templates&quot;</span>
+                    <div className="p-2 rounded-lg bg-white dark:bg-[#12151E] border border-zinc-200/60 dark:border-white/5 text-xs text-zinc-700 dark:text-zinc-300 font-medium flex items-center justify-between min-w-0">
+                      <span className="truncate">&quot;The 2026 SaaS Growth Playbook: 14 Cold-to-Close Templates&quot;</span>
                       <Check className="h-3.5 w-3.5 text-emerald-500 shrink-0 ml-2" />
                     </div>
                   </div>
 
                   {/* Live Visitor Opt-in Simulation */}
-                  <div className="p-4 rounded-xl bg-zinc-50 dark:bg-[#181D2A] border border-zinc-200/70 dark:border-white/5 space-y-3 relative text-center">
+                  <div className="p-3 sm:p-4 rounded-xl bg-zinc-50 dark:bg-[#181D2A] border border-zinc-200/70 dark:border-white/5 space-y-3 relative text-center min-w-0">
                     <div className="space-y-0.5">
                       <h5 className="text-xs font-extrabold text-zinc-900 dark:text-white">
                         Download Your Free SaaS Playbook
@@ -355,9 +355,9 @@ export default function FunnelShowcase() {
                       </p>
                     </div>
 
-                    <div className="max-w-xs mx-auto flex items-center gap-1.5 relative">
+                    <div className="max-w-xs mx-auto flex items-center gap-1.5 relative min-w-0">
                       <div
-                        className={`flex-1 px-3 py-2 rounded-lg bg-white dark:bg-[#12151E] border text-xs font-mono text-left flex items-center min-h-[38px] transition-all duration-200 ${
+                        className={`flex-1 px-2.5 sm:px-3 py-2 rounded-lg bg-white dark:bg-[#12151E] border text-xs font-mono text-left flex items-center min-h-[38px] transition-all duration-200 min-w-0 ${
                           isInputFocused
                             ? "border-[#0066B2] dark:border-[#38BDF8] ring-2 ring-[#0066B2]/20 shadow-xs"
                             : "border-zinc-200 dark:border-zinc-700"
@@ -371,11 +371,11 @@ export default function FunnelShowcase() {
                           }`}
                         />
                         {progress < 12 ? (
-                          <span className="text-zinc-400 dark:text-zinc-500 select-none">
+                          <span className="text-zinc-400 dark:text-zinc-500 select-none truncate">
                             your@email.com
                           </span>
                         ) : (
-                          <span className="text-zinc-900 dark:text-zinc-100 font-medium tracking-tight flex items-center font-mono">
+                          <span className="text-zinc-900 dark:text-zinc-100 font-medium tracking-tight flex items-center font-mono truncate">
                             {typedEmail}
                             {isTyping && (
                               <span className="inline-block w-[2px] h-3.5 bg-[#0066B2] dark:bg-[#38BDF8] ml-0.5 animate-pulse align-middle" />
@@ -385,7 +385,7 @@ export default function FunnelShowcase() {
                       </div>
                       <button
                         type="button"
-                        className={`px-3.5 py-2 rounded-lg text-white font-bold text-xs transition-all duration-200 flex items-center gap-1 shrink-0 ${
+                        className={`px-3 sm:px-3.5 py-2 rounded-lg text-white font-bold text-xs transition-all duration-200 flex items-center gap-1 shrink-0 ${
                           isButtonClicked
                             ? "bg-emerald-600 scale-95 shadow-sm"
                             : progress >= 56 && progress < 62
@@ -421,9 +421,9 @@ export default function FunnelShowcase() {
 
               {/* STAGE 02: Secure Asset Vault */}
               {activeIdx === 1 && (
-                <div className="space-y-3.5 animate-fadeIn">
+                <div className="space-y-3.5 animate-fadeIn min-w-0">
                   {/* File Asset Card */}
-                  <div className="p-3.5 rounded-xl bg-zinc-50 dark:bg-[#181D2A] border border-zinc-200/70 dark:border-white/5 space-y-2.5">
+                  <div className="p-3 sm:p-3.5 rounded-xl bg-zinc-50 dark:bg-[#181D2A] border border-zinc-200/70 dark:border-white/5 space-y-2.5 min-w-0">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <HardDrive className="h-4 w-4 text-[#0066B2] dark:text-[#38BDF8]" />
@@ -436,31 +436,31 @@ export default function FunnelShowcase() {
                       </span>
                     </div>
 
-                    <div className="flex items-center justify-between p-2.5 rounded-lg bg-white dark:bg-[#12151E] border border-zinc-200/60 dark:border-white/5">
-                      <div className="flex items-center gap-2.5">
-                        <div className="h-8 w-8 rounded-lg bg-[#0066B2]/10 text-[#0066B2] dark:text-[#38BDF8] flex items-center justify-center font-bold text-xs">
+                    <div className="flex items-center justify-between p-2 sm:p-2.5 rounded-lg bg-white dark:bg-[#12151E] border border-zinc-200/60 dark:border-white/5 min-w-0">
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <div className="h-8 w-8 rounded-lg bg-[#0066B2]/10 text-[#0066B2] dark:text-[#38BDF8] flex items-center justify-center font-bold text-xs shrink-0">
                           PDF
                         </div>
-                        <div>
-                          <p className="text-xs font-bold text-zinc-900 dark:text-white">
+                        <div className="min-w-0">
+                          <p className="text-xs font-bold text-zinc-900 dark:text-white truncate">
                             saas-growth-playbook-2026.pdf
                           </p>
-                          <span className="text-[10px] text-zinc-400">4.8 MB · 256-bit Tokenized File</span>
+                          <span className="text-[10px] text-zinc-400 truncate block">4.8 MB · 256-bit Tokenized File</span>
                         </div>
                       </div>
-                      <span className="text-[10px] font-bold text-[#0066B2] dark:text-[#38BDF8] bg-[#0066B2]/10 px-2 py-0.5 rounded">
+                      <span className="text-[10px] font-bold text-[#0066B2] dark:text-[#38BDF8] bg-[#0066B2]/10 px-2 py-0.5 rounded shrink-0 ml-1">
                         Encrypted
                       </span>
                     </div>
                   </div>
 
                   {/* Instant Dispatch Timeline & Animation */}
-                  <div className="p-3.5 rounded-xl bg-zinc-50 dark:bg-[#181D2A] border border-zinc-200/70 dark:border-white/5 space-y-2.5">
+                  <div className="p-3 sm:p-3.5 rounded-xl bg-zinc-50 dark:bg-[#181D2A] border border-zinc-200/70 dark:border-white/5 space-y-2.5 min-w-0">
                     <div className="flex items-center justify-between text-xs">
                       <span className="text-zinc-700 dark:text-zinc-200 font-semibold flex items-center gap-1.5">
                         <Send className="h-3.5 w-3.5 text-[#0066B2] dark:text-[#38BDF8]" /> Instant Dispatch Engine
                       </span>
-                      <span className="text-[#0066B2] dark:text-[#38BDF8] font-bold font-mono text-[11px]">
+                      <span className="text-[#0066B2] dark:text-[#38BDF8] font-bold font-mono text-[10px] sm:text-[11px]">
                         {isDelivered ? "Fired in 0.18s ✓" : "Generating single-use link..."}
                       </span>
                     </div>
@@ -473,10 +473,10 @@ export default function FunnelShowcase() {
                       />
                     </div>
 
-                    <div className="flex items-center justify-between text-[11px] text-zinc-500 dark:text-zinc-400 pt-0.5">
-                      <span>Recipient: alex@company.com</span>
-                      <span className="text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1">
-                        <Check className="h-3 w-3" /> 99.4% Inbox Placement
+                    <div className="flex items-center justify-between text-[10px] sm:text-[11px] text-zinc-500 dark:text-zinc-400 pt-0.5">
+                      <span className="truncate">Recipient: alex@company.com</span>
+                      <span className="text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1 shrink-0 ml-1">
+                        <Check className="h-3 w-3" /> 99.4% Placement
                       </span>
                     </div>
                   </div>
@@ -485,38 +485,38 @@ export default function FunnelShowcase() {
 
               {/* STAGE 03: Conversion Telemetry & Live Event Stream */}
               {activeIdx === 2 && (
-                <div className="space-y-3.5 animate-fadeIn">
+                <div className="space-y-3 sm:space-y-3.5 animate-fadeIn min-w-0">
                   {/* Dynamic Counting Rate Cards */}
-                  <div className="grid grid-cols-2 gap-2.5">
-                    <div className="p-3.5 rounded-xl bg-zinc-50 dark:bg-[#181D2A] border border-zinc-200/70 dark:border-white/5 space-y-1">
-                      <span className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
+                  <div className="grid grid-cols-2 gap-2 sm:gap-2.5 min-w-0">
+                    <div className="p-2.5 sm:p-3.5 rounded-xl bg-zinc-50 dark:bg-[#181D2A] border border-zinc-200/70 dark:border-white/5 space-y-1 min-w-0">
+                      <span className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider block truncate">
                         Opt-in Rate
                       </span>
-                      <div className="text-xl font-black text-zinc-900 dark:text-white flex items-center gap-1.5">
+                      <div className="text-lg sm:text-xl font-black text-zinc-900 dark:text-white flex items-center gap-1.5">
                         {(48.2 + (progress / 100) * 3.4).toFixed(1)}%
-                        <TrendingUp className="h-4 w-4 text-[#0066B2] dark:text-[#38BDF8] animate-bounce" />
+                        <TrendingUp className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-[#0066B2] dark:text-[#38BDF8] animate-bounce" />
                       </div>
-                      <span className="text-[10px] text-[#0066B2] dark:text-[#38BDF8] font-bold">
+                      <span className="text-[10px] text-[#0066B2] dark:text-[#38BDF8] font-bold block truncate">
                         +14.8% vs benchmark
                       </span>
                     </div>
 
-                    <div className="p-3.5 rounded-xl bg-zinc-50 dark:bg-[#181D2A] border border-zinc-200/70 dark:border-white/5 space-y-1">
-                      <span className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
+                    <div className="p-2.5 sm:p-3.5 rounded-xl bg-zinc-50 dark:bg-[#181D2A] border border-zinc-200/70 dark:border-white/5 space-y-1 min-w-0">
+                      <span className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider block truncate">
                         Exit Recovery
                       </span>
-                      <div className="text-xl font-black text-zinc-900 dark:text-white">
+                      <div className="text-lg sm:text-xl font-black text-zinc-900 dark:text-white">
                         +{Math.round(150 + (progress / 100) * 34)} Leads
                       </div>
-                      <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold">
+                      <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold block truncate">
                         23.4% traffic saved
                       </span>
                     </div>
                   </div>
 
                   {/* Real-Time Telemetry Terminal Stream */}
-                  <div className="p-3 rounded-xl bg-zinc-50 dark:bg-[#181D2A] border border-zinc-200/70 dark:border-white/5 space-y-2 font-mono text-[11px]">
-                    <div className="flex items-center justify-between text-zinc-400 text-[10px] uppercase tracking-wider border-b border-zinc-200/60 dark:border-white/5 pb-1 font-sans font-bold">
+                  <div className="p-2.5 sm:p-3 rounded-xl bg-zinc-50 dark:bg-[#181D2A] border border-zinc-200/70 dark:border-white/5 space-y-2 font-mono text-[10px] sm:text-[11px] min-w-0">
+                    <div className="flex items-center justify-between text-zinc-400 text-[9px] uppercase tracking-wider border-b border-zinc-200/60 dark:border-white/5 pb-1 font-sans font-bold">
                       <span className="flex items-center gap-1.5">
                         <Activity className="h-3 w-3 text-[#0066B2] dark:text-[#38BDF8]" />
                         Signal Stream
@@ -526,18 +526,18 @@ export default function FunnelShowcase() {
                       </span>
                     </div>
                     <div className="flex items-center justify-between text-zinc-700 dark:text-zinc-300">
-                      <span className="flex items-center gap-1.5">
-                        <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                        [GA4 CAPI] event: &quot;lead_generated&quot;
+                      <span className="flex items-center gap-1.5 truncate">
+                        <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 shrink-0" />
+                        [GA4 CAPI] &quot;lead_generated&quot;
                       </span>
-                      <span className="text-emerald-600 dark:text-emerald-400 font-bold">200 OK</span>
+                      <span className="text-emerald-600 dark:text-emerald-400 font-bold shrink-0 ml-1">200 OK</span>
                     </div>
                     <div className="flex items-center justify-between text-zinc-700 dark:text-zinc-300">
-                      <span className="flex items-center gap-1.5">
-                        <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                        [Meta Conversions] event: &quot;Lead (9.4)&quot;
+                      <span className="flex items-center gap-1.5 truncate">
+                        <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 shrink-0" />
+                        [Meta Conversions] &quot;Lead (9.4)&quot;
                       </span>
-                      <span className="text-emerald-600 dark:text-emerald-400 font-bold">200 OK</span>
+                      <span className="text-emerald-600 dark:text-emerald-400 font-bold shrink-0 ml-1">200 OK</span>
                     </div>
                   </div>
                 </div>
@@ -545,76 +545,76 @@ export default function FunnelShowcase() {
 
               {/* STAGE 04: Drip Sequence Workflow */}
               {activeIdx === 3 && (
-                <div className="space-y-2.5 animate-fadeIn">
+                <div className="space-y-2 sm:space-y-2.5 animate-fadeIn min-w-0">
                   {/* Sequence Header Bar */}
-                  <div className="flex items-center justify-between px-3 py-1.5 rounded-lg bg-zinc-50 dark:bg-[#181D2A] border border-zinc-200/70 dark:border-white/5 text-xs">
+                  <div className="flex items-center justify-between px-2.5 sm:px-3 py-1.5 rounded-lg bg-zinc-50 dark:bg-[#181D2A] border border-zinc-200/70 dark:border-white/5 text-xs">
                     <div className="flex items-center gap-1.5">
                       <Workflow className="h-3.5 w-3.5 text-[#0066B2] dark:text-[#38BDF8]" />
-                      <span className="font-bold text-zinc-900 dark:text-white">SaaS Nurture Sequence</span>
+                      <span className="font-bold text-zinc-900 dark:text-white truncate">SaaS Nurture Sequence</span>
                     </div>
-                    <span className="text-[10px] font-bold text-[#0066B2] dark:text-[#38BDF8] bg-[#0066B2]/10 px-2 py-0.5 rounded">
+                    <span className="text-[10px] font-bold text-[#0066B2] dark:text-[#38BDF8] bg-[#0066B2]/10 px-2 py-0.5 rounded shrink-0">
                       3 Steps Active
                     </span>
                   </div>
 
                   {/* 3 Step Sequence Cards with Downward Flow */}
-                  <div className="space-y-1.5">
+                  <div className="space-y-1.5 min-w-0">
                     {/* Step 1 */}
-                    <div className="p-2.5 rounded-xl bg-zinc-50 dark:bg-[#181D2A] border border-zinc-200/70 dark:border-white/5 flex items-center justify-between text-xs">
-                      <div className="space-y-0.5">
-                        <p className="font-bold text-zinc-900 dark:text-white flex items-center gap-2">
-                          <span className="h-2 w-2 rounded-full bg-emerald-500" />
-                          Email 1: Welcome & Playbook PDF
+                    <div className="p-2 sm:p-2.5 rounded-xl bg-zinc-50 dark:bg-[#181D2A] border border-zinc-200/70 dark:border-white/5 flex items-center justify-between text-xs min-w-0">
+                      <div className="space-y-0.5 min-w-0">
+                        <p className="font-bold text-zinc-900 dark:text-white flex items-center gap-1.5 sm:gap-2 truncate">
+                          <span className="h-2 w-2 rounded-full bg-emerald-500 shrink-0" />
+                          Email 1: Welcome & PDF
                         </p>
-                        <p className="text-[10px] text-zinc-500 dark:text-zinc-400 pl-4">
+                        <p className="text-[10px] text-zinc-500 dark:text-zinc-400 pl-3.5 sm:pl-4 truncate">
                           Triggered on opt-in · <span className="font-semibold text-zinc-700 dark:text-zinc-300">88.4% Open</span>
                         </p>
                       </div>
-                      <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded flex items-center gap-1">
+                      <span className="text-[9px] sm:text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-1.5 sm:px-2 py-0.5 rounded flex items-center gap-1 shrink-0 ml-1">
                         <Check className="h-2.5 w-2.5" /> Delivered
                       </span>
                     </div>
 
                     {/* Step 2 */}
-                    <div className="p-2.5 rounded-xl bg-white dark:bg-[#12151E] border border-zinc-200/70 dark:border-white/5 flex items-center justify-between text-xs">
-                      <div className="space-y-0.5">
-                        <p className="font-bold text-zinc-900 dark:text-white flex items-center gap-2">
-                          <span className="h-2 w-2 rounded-full bg-[#0066B2] dark:bg-[#38BDF8]" />
-                          Email 2: 3 Common Funnel Mistakes
+                    <div className="p-2 sm:p-2.5 rounded-xl bg-white dark:bg-[#12151E] border border-zinc-200/70 dark:border-white/5 flex items-center justify-between text-xs min-w-0">
+                      <div className="space-y-0.5 min-w-0">
+                        <p className="font-bold text-zinc-900 dark:text-white flex items-center gap-1.5 sm:gap-2 truncate">
+                          <span className="h-2 w-2 rounded-full bg-[#0066B2] dark:bg-[#38BDF8] shrink-0" />
+                          Email 2: 3 Common Mistakes
                         </p>
-                        <p className="text-[10px] text-zinc-500 dark:text-zinc-400 pl-4">
+                        <p className="text-[10px] text-zinc-500 dark:text-zinc-400 pl-3.5 sm:pl-4 truncate">
                           Delay: 2 days · <span className="font-semibold text-zinc-700 dark:text-zinc-300">64.2% Est. Open</span>
                         </p>
                       </div>
-                      <span className="text-[10px] font-bold text-zinc-600 dark:text-zinc-400 bg-zinc-100 dark:bg-zinc-800 px-2 py-0.5 rounded">
+                      <span className="text-[9px] sm:text-[10px] font-bold text-zinc-600 dark:text-zinc-400 bg-zinc-100 dark:bg-zinc-800 px-1.5 sm:px-2 py-0.5 rounded shrink-0 ml-1">
                         Scheduled
                       </span>
                     </div>
 
                     {/* Step 3 */}
-                    <div className="p-2.5 rounded-xl bg-blue-50/60 dark:bg-blue-950/20 border border-[#0066B2]/30 dark:border-[#38BDF8]/20 flex items-center justify-between text-xs">
-                      <div className="space-y-0.5">
-                        <p className="font-bold text-[#0066B2] dark:text-[#38BDF8] flex items-center gap-2">
-                          <span className="h-2 w-2 rounded-full bg-amber-500 animate-pulse" />
-                          Email 3: Strategy Call Invitation
+                    <div className="p-2 sm:p-2.5 rounded-xl bg-blue-50/60 dark:bg-blue-950/20 border border-[#0066B2]/30 dark:border-[#38BDF8]/20 flex items-center justify-between text-xs min-w-0">
+                      <div className="space-y-0.5 min-w-0">
+                        <p className="font-bold text-[#0066B2] dark:text-[#38BDF8] flex items-center gap-1.5 sm:gap-2 truncate">
+                          <span className="h-2 w-2 rounded-full bg-amber-500 animate-pulse shrink-0" />
+                          Email 3: Strategy Call Offer
                         </p>
-                        <p className="text-[10px] text-zinc-500 dark:text-zinc-400 pl-4">
-                          Delay: 4 days · Stops automatically if booked
+                        <p className="text-[10px] text-zinc-500 dark:text-zinc-400 pl-3.5 sm:pl-4 truncate">
+                          Delay: 4 days · Auto-stops if booked
                         </p>
                       </div>
-                      <span className="text-[10px] font-bold text-[#0066B2] dark:text-[#38BDF8] bg-[#0066B2]/10 px-2 py-0.5 rounded">
+                      <span className="text-[9px] sm:text-[10px] font-bold text-[#0066B2] dark:text-[#38BDF8] bg-[#0066B2]/10 px-1.5 sm:px-2 py-0.5 rounded shrink-0 ml-1">
                         Auto-Halt
                       </span>
                     </div>
                   </div>
 
                   {/* Smart Stop Guard Rule */}
-                  <div className="px-3 py-1.5 rounded-lg bg-zinc-100/80 dark:bg-zinc-900/60 border border-zinc-200/60 dark:border-white/5 flex items-center justify-between text-[10px] text-zinc-600 dark:text-zinc-400">
-                    <span className="flex items-center gap-1.5 font-medium">
-                      <span className="h-1.5 w-1.5 rounded-full bg-[#0066B2] dark:bg-[#38BDF8]" />
-                      Smart Auto-Stop Guard Active
+                  <div className="px-2.5 sm:px-3 py-1.5 rounded-lg bg-zinc-100/80 dark:bg-zinc-900/60 border border-zinc-200/60 dark:border-white/5 flex items-center justify-between text-[10px] text-zinc-600 dark:text-zinc-400">
+                    <span className="flex items-center gap-1.5 font-medium truncate">
+                      <span className="h-1.5 w-1.5 rounded-full bg-[#0066B2] dark:bg-[#38BDF8] shrink-0" />
+                      Smart Auto-Stop Guard
                     </span>
-                    <span className="font-bold text-[#0066B2] dark:text-[#38BDF8]">
+                    <span className="font-bold text-[#0066B2] dark:text-[#38BDF8] shrink-0 ml-1">
                       Calendly Synced
                     </span>
                   </div>
@@ -623,65 +623,65 @@ export default function FunnelShowcase() {
 
               {/* STAGE 05: Ecosystem Sync */}
               {activeIdx === 4 && (
-                <div className="space-y-3 animate-fadeIn">
-                  <div className="flex items-center justify-between px-3 py-1.5 rounded-lg bg-zinc-50 dark:bg-[#181D2A] border border-zinc-200/70 dark:border-white/5 text-xs">
-                    <div className="flex items-center gap-1.5">
-                      <Share2 className="h-3.5 w-3.5 text-[#0066B2] dark:text-[#38BDF8]" />
-                      <span className="font-bold text-zinc-900 dark:text-white">Real-Time Stack Connectivity</span>
+                <div className="space-y-2.5 sm:space-y-3 animate-fadeIn min-w-0">
+                  <div className="flex items-center justify-between px-2.5 sm:px-3 py-1.5 rounded-lg bg-zinc-50 dark:bg-[#181D2A] border border-zinc-200/70 dark:border-white/5 text-xs min-w-0">
+                    <div className="flex items-center gap-1.5 min-w-0">
+                      <Share2 className="h-3.5 w-3.5 text-[#0066B2] dark:text-[#38BDF8] shrink-0" />
+                      <span className="font-bold text-zinc-900 dark:text-white truncate">Real-Time Stack Connectivity</span>
                     </div>
-                    <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded flex items-center gap-1">
+                    <span className="text-[9px] sm:text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-1.5 sm:px-2 py-0.5 rounded flex items-center gap-1 shrink-0 ml-1">
                       <Check className="h-2.5 w-2.5" /> 4/4 Connected
                     </span>
                   </div>
 
                   {/* 4 Connected Platform Nodes */}
-                  <div className="grid grid-cols-2 gap-2 text-xs">
-                    <div className="p-2.5 rounded-xl bg-zinc-50 dark:bg-[#181D2A] border border-[#0066B2]/30 space-y-1">
-                      <div className="flex items-center justify-between">
-                        <span className="font-bold text-zinc-900 dark:text-white">Kit (ConvertKit)</span>
-                        <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                  <div className="grid grid-cols-2 gap-1.5 sm:gap-2 text-xs min-w-0">
+                    <div className="p-2 sm:p-2.5 rounded-xl bg-zinc-50 dark:bg-[#181D2A] border border-[#0066B2]/30 space-y-0.5 sm:space-y-1 min-w-0">
+                      <div className="flex items-center justify-between gap-1">
+                        <span className="font-bold text-zinc-900 dark:text-white truncate text-[11px] sm:text-xs">Kit (ConvertKit)</span>
+                        <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />
                       </div>
-                      <p className="text-[10px] text-[#0066B2] dark:text-[#38BDF8] font-semibold">
+                      <p className="text-[9px] sm:text-[10px] text-[#0066B2] dark:text-[#38BDF8] font-semibold truncate">
                         Tag: #saas-playbook
                       </p>
                     </div>
 
-                    <div className="p-2.5 rounded-xl bg-zinc-50 dark:bg-[#181D2A] border border-[#0066B2]/30 space-y-1">
-                      <div className="flex items-center justify-between">
-                        <span className="font-bold text-zinc-900 dark:text-white">Substack</span>
-                        <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                    <div className="p-2 sm:p-2.5 rounded-xl bg-zinc-50 dark:bg-[#181D2A] border border-[#0066B2]/30 space-y-0.5 sm:space-y-1 min-w-0">
+                      <div className="flex items-center justify-between gap-1">
+                        <span className="font-bold text-zinc-900 dark:text-white truncate text-[11px] sm:text-xs">Substack</span>
+                        <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />
                       </div>
-                      <p className="text-[10px] text-[#0066B2] dark:text-[#38BDF8] font-semibold">
+                      <p className="text-[9px] sm:text-[10px] text-[#0066B2] dark:text-[#38BDF8] font-semibold truncate">
                         Publication synced
                       </p>
                     </div>
 
-                    <div className="p-2.5 rounded-xl bg-zinc-50 dark:bg-[#181D2A] border border-[#0066B2]/30 space-y-1">
-                      <div className="flex items-center justify-between">
-                        <span className="font-bold text-zinc-900 dark:text-white">Slack Alerts</span>
-                        <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                    <div className="p-2 sm:p-2.5 rounded-xl bg-zinc-50 dark:bg-[#181D2A] border border-[#0066B2]/30 space-y-0.5 sm:space-y-1 min-w-0">
+                      <div className="flex items-center justify-between gap-1">
+                        <span className="font-bold text-zinc-900 dark:text-white truncate text-[11px] sm:text-xs">Slack Alerts</span>
+                        <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />
                       </div>
-                      <p className="text-[10px] text-[#0066B2] dark:text-[#38BDF8] font-semibold">
+                      <p className="text-[9px] sm:text-[10px] text-[#0066B2] dark:text-[#38BDF8] font-semibold truncate">
                         #new-leads channel
                       </p>
                     </div>
 
-                    <div className="p-2.5 rounded-xl bg-zinc-50 dark:bg-[#181D2A] border border-[#0066B2]/30 space-y-1">
-                      <div className="flex items-center justify-between">
-                        <span className="font-bold text-zinc-900 dark:text-white">Zapier / Pipedrive</span>
-                        <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                    <div className="p-2 sm:p-2.5 rounded-xl bg-zinc-50 dark:bg-[#181D2A] border border-[#0066B2]/30 space-y-0.5 sm:space-y-1 min-w-0">
+                      <div className="flex items-center justify-between gap-1">
+                        <span className="font-bold text-zinc-900 dark:text-white truncate text-[11px] sm:text-xs">Zapier / CRM</span>
+                        <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />
                       </div>
-                      <p className="text-[10px] text-[#0066B2] dark:text-[#38BDF8] font-semibold">
+                      <p className="text-[9px] sm:text-[10px] text-[#0066B2] dark:text-[#38BDF8] font-semibold truncate">
                         CRM Pipeline OK
                       </p>
                     </div>
                   </div>
 
                   {/* Live Webhook JSON Payload Preview */}
-                  <div className="p-2.5 rounded-xl bg-zinc-950 text-zinc-200 font-mono text-[10px] space-y-1 border border-zinc-800">
-                    <div className="flex items-center justify-between text-zinc-400 text-[9px]">
-                      <span>POST /v1/webhook/lead-captured</span>
-                      <span className="text-[#38BDF8] flex items-center gap-1">
+                  <div className="p-2 sm:p-2.5 rounded-xl bg-zinc-950 text-zinc-200 font-mono text-[10px] space-y-1 border border-zinc-800 min-w-0 overflow-hidden">
+                    <div className="flex items-center justify-between text-zinc-400 text-[9px] gap-1">
+                      <span className="truncate">POST /v1/webhook/lead-captured</span>
+                      <span className="text-[#38BDF8] flex items-center gap-1 shrink-0">
                         <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-ping" />
                         200 OK (84ms)
                       </span>

@@ -682,24 +682,24 @@ export default function ShowcaseTabs() {
                 </span>
               </div>
 
-              <div className="grid grid-cols-3 gap-3.5 mb-4">
-                <div className="bg-zinc-50/80 dark:bg-[#1A1B26] p-3.5 rounded-2xl border border-zinc-200/70 dark:border-zinc-800">
-                  <span className="text-[10px] text-zinc-400 font-bold uppercase tracking-wider">Total Visitors</span>
-                  <p className="text-2xl font-black text-zinc-900 dark:text-white mt-1">2,840</p>
-                  <span className="text-xs font-bold text-emerald-500">↑ +18.4% this week</span>
+              <div className="grid grid-cols-3 gap-1.5 sm:gap-3.5 mb-4">
+                <div className="bg-zinc-50/80 dark:bg-[#1A1B26] p-2 sm:p-3.5 rounded-xl sm:rounded-2xl border border-zinc-200/70 dark:border-zinc-800">
+                  <span className="text-[9px] sm:text-[10px] text-zinc-400 font-bold uppercase tracking-wider block truncate">Total Visitors</span>
+                  <p className="text-base sm:text-2xl font-black text-zinc-900 dark:text-white mt-0.5 sm:mt-1">2,840</p>
+                  <span className="text-[10px] sm:text-xs font-bold text-emerald-500 block truncate">↑ +18.4%</span>
                 </div>
                 <div
                   ref={analyticsCardRef}
-                  className="bg-zinc-50/80 dark:bg-[#1A1B26] p-3.5 rounded-2xl border border-blue-500/40 ring-1 ring-blue-500/20"
+                  className="bg-zinc-50/80 dark:bg-[#1A1B26] p-2 sm:p-3.5 rounded-xl sm:rounded-2xl border border-blue-500/40 ring-1 ring-blue-500/20"
                 >
-                  <span className="text-[10px] text-zinc-400 font-bold uppercase tracking-wider">Opt-In Rate</span>
-                  <p className="text-2xl font-black text-[#0066B2] dark:text-[#38BDF8] mt-1">51.2%</p>
-                  <span className="text-xs font-semibold text-zinc-400">Top 5% Benchmark</span>
+                  <span className="text-[9px] sm:text-[10px] text-zinc-400 font-bold uppercase tracking-wider block truncate">Opt-In Rate</span>
+                  <p className="text-base sm:text-2xl font-black text-[#0066B2] dark:text-[#38BDF8] mt-0.5 sm:mt-1">51.2%</p>
+                  <span className="text-[10px] sm:text-xs font-semibold text-zinc-400 block truncate">Top 5%</span>
                 </div>
-                <div className="bg-zinc-50/80 dark:bg-[#1A1B26] p-3.5 rounded-2xl border border-zinc-200/70 dark:border-zinc-800">
-                  <span className="text-[10px] text-zinc-400 font-bold uppercase tracking-wider">Calls Booked</span>
-                  <p className="text-2xl font-black text-emerald-600 dark:text-emerald-400 mt-1">14</p>
-                  <span className="text-xs font-bold text-emerald-500">$35,000 Pipeline</span>
+                <div className="bg-zinc-50/80 dark:bg-[#1A1B26] p-2 sm:p-3.5 rounded-xl sm:rounded-2xl border border-zinc-200/70 dark:border-zinc-800">
+                  <span className="text-[9px] sm:text-[10px] text-zinc-400 font-bold uppercase tracking-wider block truncate">Calls Booked</span>
+                  <p className="text-base sm:text-2xl font-black text-emerald-600 dark:text-emerald-400 mt-0.5 sm:mt-1">14</p>
+                  <span className="text-[10px] sm:text-xs font-bold text-emerald-500 block truncate">$35k Pipeline</span>
                 </div>
               </div>
             </div>
