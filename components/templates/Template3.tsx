@@ -254,19 +254,19 @@ export default function Template3(props: TemplateProps) {
         fontFamily: "Arial, Helvetica, sans-serif",
       }}
     >
-      <div className="w-full max-w-[1480px] mx-auto px-4 sm:px-8 md:px-12 lg:px-16 xl:px-20 py-2">
+      <div className="w-full max-w-[1480px] mx-auto px-3.5 sm:px-8 md:px-12 lg:px-16 xl:px-20 py-2">
         {/* HEADER */}
         <header
-          className="h-20 sm:h-24 flex items-center justify-between"
+          className="h-16 sm:h-20 md:h-24 flex items-center justify-between gap-2"
           style={{ borderBottom: `1px solid ${borderCol}` }}
         >
           <a
             href="#"
-            className="inline-flex items-center gap-3 font-semibold text-base sm:text-lg"
+            className="inline-flex items-center gap-2 sm:gap-3 font-semibold text-sm sm:text-base min-w-0"
             style={{ color: foreground }}
           >
             <span
-              className="w-8 h-8 rounded-full flex items-center justify-center font-bold text-xl leading-none shrink-0 overflow-hidden shadow-xs"
+              className="w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center font-bold text-base sm:text-xl leading-none shrink-0 overflow-hidden shadow-xs"
               style={{
                 backgroundColor: accent,
                 color: accentInk,
@@ -279,15 +279,15 @@ export default function Template3(props: TemplateProps) {
                 brandInitial
               )}
             </span>
-            <span className="font-semibold tracking-tight">{businessName}</span>
-            <span style={{ color: accent }} className="text-xl -ml-2">.</span>
+            <span className="font-semibold tracking-tight truncate max-w-[120px] xs:max-w-[180px] sm:max-w-none">{businessName}</span>
+            <span style={{ color: accent }} className="text-lg sm:text-xl -ml-1 sm:-ml-2">.</span>
           </a>
 
-          <nav className="flex items-center gap-4 sm:gap-7 text-xs" style={{ color: muted }}>
+          <nav className="flex items-center gap-2 sm:gap-7 text-xs shrink-0" style={{ color: muted }}>
             {!isBulletsHidden && (
               <a
                 href="#what-you-get"
-                className="hidden sm:inline-block transition-colors hover:opacity-100"
+                className="hidden md:inline-block transition-colors hover:opacity-100"
                 style={{ color: muted }}
               >
                 Read a preview
@@ -295,7 +295,7 @@ export default function Template3(props: TemplateProps) {
             )}
             <a
               href="#newsletter"
-              className="px-4 py-2 rounded-full border transition-all hover:brightness-110 flex items-center gap-1.5"
+              className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-full border transition-all hover:brightness-110 flex items-center gap-1 text-[11px] sm:text-xs whitespace-nowrap"
               style={{
                 borderColor: borderCol,
                 color: foreground,
@@ -311,7 +311,7 @@ export default function Template3(props: TemplateProps) {
         {/* HERO SECTION (2-Column Grid) */}
         <main>
           <section
-            className="grid grid-cols-1 lg:grid-cols-[1.18fr_0.82fr] xl:grid-cols-[1.25fr_0.75fr] gap-10 sm:gap-14 lg:gap-20 py-12 sm:py-16 lg:py-24 items-start"
+            className="grid grid-cols-1 lg:grid-cols-[1.18fr_0.82fr] xl:grid-cols-[1.25fr_0.75fr] gap-8 sm:gap-14 lg:gap-20 py-8 sm:py-16 lg:py-24 items-start"
             style={{ borderBottom: `1px solid ${borderCol}` }}
           >
             {/* LEFT HERO COPY */}

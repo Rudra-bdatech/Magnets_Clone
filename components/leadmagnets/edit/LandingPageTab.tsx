@@ -191,7 +191,7 @@ export default function LandingPageTab({
         {/* Canvas Outer Container - Dynamically switches Light vs Dark depending on account.themeMode */}
         <div
           className={`transition-colors duration-300 relative ${
-            templateId === "template1" || templateId === "template2" || templateId === "template7" || templateId === "template8"
+            templateId === "template1" || templateId === "template2" || templateId === "template3" || templateId === "template7" || templateId === "template8"
               ? "rounded-2xl sm:rounded-3xl overflow-hidden p-0 border border-[#151515]/20 dark:border-white/10 shadow-2xl"
               : "rounded-3xl p-4 sm:p-8"
           }`}
