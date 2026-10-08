@@ -769,8 +769,8 @@ export default function LinkedInAutomationPage() {
   // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   return (
     <>
-      <div className="flex flex-col min-h-[calc(100vh-3rem)] bg-[#F8FBFF] dark:bg-[#0E0E10]">
-        <div className="flex-1 px-6 py-6 lg:px-8">
+      <div className="flex flex-col min-h-[calc(100vh-3rem)] bg-[#F8FBFF] dark:bg-[#0E0E10] w-full">
+        <div className="flex-1 px-3.5 py-6 sm:px-6 sm:py-7 lg:px-8 max-w-7xl mx-auto w-full">
 
           {/* â”€â”€ Page Heading â”€â”€ */}
           <div className="mb-6">

@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
-import { FileText, FolderOpen, Users, Sliders, Palette, User, CircleHelp, Menu, X, Search, ChevronRight, HelpCircle, Sun, Moon, Monitor, Bug, Lightbulb, LogOut, BookOpen, Gift, Compass, Send, GitFork, Calendar, Settings, Globe, Mail, Share2, Cpu, Slack, Zap, Link as LinkIcon, BarChart3, PlayCircle, CheckCircle2, ArrowLeft, Sparkles, Rocket, ExternalLink, ListChecks, Loader2, FileLock, Lock, LayoutDashboard, Linkedin } from "lucide-react";
+import { FileText, FolderOpen, Users, Sliders, Palette, User, CircleHelp, Menu, X, Search, ChevronRight, HelpCircle, Sun, Moon, Monitor, Bug, Lightbulb, LogOut, BookOpen, Gift, Compass, Send, GitFork, Calendar, Settings, Globe, Mail, Share2, Cpu, Slack, Zap, Link as LinkIcon, BarChart3, PlayCircle, CheckCircle2, ArrowLeft, Sparkles, Rocket, ExternalLink, ListChecks, Loader2, FileLock, Lock, LayoutDashboard, Linkedin, PanelLeftClose, PanelLeftOpen, PanelLeft } from "lucide-react";
 import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import ThemeToggle from "@/components/theme-toggle";
 import BrandLogo from "@/components/brand";
@@ -52,6 +53,43 @@ export default function DashboardShell({
   const [showDrawerProfileMenu, setShowDrawerProfileMenu] = useState(false);
   const profileMenuRef = useRef<HTMLDivElement>(null);
   const mobileDrawerProfileMenuRef = useRef<HTMLDivElement>(null);
+
+  const [isCollapsed, setIsCollapsed] = useState(false);
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("leadmagnets_sidebar_collapsed");
+      if (saved !== null) {
+        setIsCollapsed(saved === "true");
+      }
+    } catch (_) {}
+  }, []);
+
+  const toggleSidebar = useCallback(() => {
+    setIsCollapsed((prev) => {
+      const next = !prev;
+      try {
+        localStorage.setItem("leadmagnets_sidebar_collapsed", String(next));
+      } catch (_) {}
+      return next;
+    });
+  }, []);
+
+  // Keyboard shortcut: Cmd+B / Ctrl+B to toggle sidebar
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "b") {
+        const tag = (e.target as HTMLElement)?.tagName;
+        if (tag === "INPUT" || tag === "TEXTAREA" || (e.target as HTMLElement)?.isContentEditable) {
+          return;
+        }
+        e.preventDefault();
+        toggleSidebar();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [toggleSidebar]);
 
   useEffect(() => {
     const lenis = typeof window !== "undefined" ? (window as any).__lenis : null;
@@ -382,18 +420,89 @@ export default function DashboardShell({
     >
       <div className="dashboard-canvas flex min-h-screen relative w-full max-w-full">
 
-        <aside className="shadow-sm hidden h-screen w-[14.5rem] shrink-0 flex-col border-r border-[#E0EDFB] bg-[#F0F7FF] text-zinc-900 sticky top-0 md:flex z-50 dark:border-white/10 dark:bg-[#18181B] dark:text-[#9B9085]">
-          <div className="flex shrink-0 items-center px-3.5 pt-3 pb-1">
-            <Link href="/dashboard" aria-label="Dashboard" className="flex items-center">
-              <BrandLogo height="h-9" />
+        <motion.aside
+          animate={{ width: isCollapsed ? 68 : 232 }}
+          transition={{ type: "spring", stiffness: 360, damping: 30, mass: 0.8 }}
+          className="shadow-sm hidden h-screen shrink-0 flex-col border-r border-[#E0EDFB] bg-[#F0F7FF] text-zinc-900 sticky top-0 md:flex z-50 dark:border-white/10 dark:bg-[#18181B] dark:text-[#9B9085] overflow-visible select-none"
+        >
+          {/* Header & Logo Area */}
+          <div className="flex shrink-0 items-center justify-between px-3.5 pt-3 pb-1 h-14 relative">
+            <Link
+              href="/dashboard"
+              aria-label="Dashboard"
+              className="flex items-center group relative h-9 overflow-hidden rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0066B2]"
+              title={isCollapsed ? "Dashboard" : undefined}
+            >
+              {/* Seamless, pixel-perfect logo with smooth spring text masking */}
+              <motion.div
+                animate={{ width: isCollapsed ? 36 : 144 }}
+                transition={{ type: "spring", stiffness: 360, damping: 30, mass: 0.8 }}
+                className="h-9 overflow-hidden flex items-center shrink-0"
+              >
+                <div className="w-[144px] min-w-[144px] h-9 shrink-0 flex items-center">
+                  <Image
+                    alt="LeadMagnets"
+                    src="/brand/custom-logo-light.webp"
+                    width={144}
+                    height={36}
+                    priority
+                    className="h-9 w-[144px] min-w-[144px] max-w-none object-contain object-left dark:hidden"
+                  />
+                  <Image
+                    alt="LeadMagnets"
+                    src="/brand/custom-logo.webp"
+                    width={144}
+                    height={36}
+                    priority
+                    className="h-9 w-[144px] min-w-[144px] max-w-none object-contain object-left hidden dark:block"
+                  />
+                </div>
+              </motion.div>
             </Link>
+
+            {/* Toggle Collapse Button (Expanded State) */}
+            {!isCollapsed && (
+              <motion.button
+                type="button"
+                onClick={toggleSidebar}
+                title="Collapse sidebar (⌘B)"
+                whileTap={{ scale: 0.92 }}
+                whileHover={{ scale: 1.06 }}
+                className="flex h-8 w-8 items-center justify-center rounded-lg text-zinc-400 hover:text-zinc-800 hover:bg-[#E2F0FD] dark:text-zinc-400 dark:hover:text-white dark:hover:bg-zinc-800/80 transition-colors cursor-pointer"
+                aria-label="Collapse sidebar"
+              >
+                <PanelLeftClose className="h-4 w-4" />
+              </motion.button>
+            )}
+
+            {/* Floating Toggle Button on Outside Border Seam (Collapsed State) */}
+            {isCollapsed && (
+              <motion.button
+                type="button"
+                onClick={toggleSidebar}
+                title="Expand sidebar (⌘B)"
+                whileTap={{ scale: 0.92 }}
+                whileHover={{ scale: 1.12 }}
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ type: "spring", stiffness: 500, damping: 28 }}
+                className="absolute -right-3.5 top-3.5 z-[70] flex h-7 w-7 items-center justify-center rounded-full bg-white dark:bg-[#202024] border border-zinc-200/90 dark:border-white/20 shadow-[0_2px_8px_rgba(0,0,0,0.12)] dark:shadow-[0_2px_12px_rgba(0,0,0,0.5)] text-zinc-500 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-white hover:bg-[#E2F0FD] dark:hover:bg-zinc-700 transition-colors cursor-pointer"
+                aria-label="Expand sidebar"
+              >
+                <PanelLeftOpen className="h-3.5 w-3.5" />
+              </motion.button>
+            )}
           </div>
+
+          {/* Nav Items */}
           <nav
-            className="mt-1 flex-1 space-y-1 px-1.5"
+            className={`flex-1 space-y-1 overflow-y-auto overflow-x-visible scrollbar-none ${
+              isCollapsed ? "px-2 mt-1" : "px-2 mt-1"
+            }`}
             aria-label="Dashboard"
             onMouseLeave={() => setHoveredNavHref(null)}
           >
-            {computedNav.map((item, idx) => {
+            {computedNav.map((item) => {
               const active = activeNavHref
                 ? item.href === activeNavHref
                 : item.href === "/dashboard"
@@ -407,48 +516,92 @@ export default function DashboardShell({
 
               if (item.isModal) {
                 return (
-                  <div key={item.href} onMouseEnter={() => setHoveredNavHref(item.href)}>
+                  <div
+                    key={item.href}
+                    className="relative group"
+                    onMouseEnter={() => setHoveredNavHref(item.href)}
+                  >
                     <ExpandableScreenTrigger className="w-full">
                       <motion.button
                         type="button"
-                        whileTap={{ scale: 0.97 }}
+                        whileTap={{ scale: 0.95 }}
                         transition={{ type: "spring", stiffness: 600, damping: 28 }}
-                        className="relative group flex w-full items-center gap-2.5 rounded-lg px-2 py-2 text-sm font-medium transition-colors text-zinc-600 dark:text-[#9B9085] dark:hover:text-white cursor-pointer"
+                        className={`relative flex items-center rounded-xl font-medium transition-colors cursor-pointer text-zinc-600 dark:text-[#9B9085] dark:hover:text-white ${
+                          isCollapsed
+                            ? "h-10 w-10 mx-auto justify-center"
+                            : "w-full gap-2.5 px-2.5 py-2 text-sm"
+                        }`}
                       >
                         {isHovered && (
                           <motion.div
                             layoutId="leftPanelHoverPill"
                             transition={{ type: "spring", stiffness: 500, damping: 32 }}
-                            className="absolute inset-0 rounded-lg bg-[#E2F0FD] dark:bg-[#25252a]"
+                            className="absolute inset-0 rounded-xl bg-[#E2F0FD] dark:bg-[#25252a]"
                           />
                         )}
-                        <item.icon className="h-4 w-4 shrink-0 relative z-10 text-zinc-500 group-hover:text-zinc-900 dark:text-[#9B9085] dark:group-hover:text-white" aria-hidden="true" />
-                        <span className="flex-1 text-left relative z-10 flex items-center justify-between">
+                        <item.icon
+                          className={`shrink-0 relative z-10 text-zinc-500 group-hover:text-zinc-900 dark:text-[#9B9085] dark:group-hover:text-white ${
+                            isCollapsed ? "h-4.5 w-4.5" : "h-4 w-4"
+                          }`}
+                          aria-hidden="true"
+                        />
+                        {!isCollapsed && (
+                          <span className="flex-1 text-left relative z-10 flex items-center justify-between whitespace-nowrap overflow-hidden">
+                            <span className="truncate">{item.label}</span>
+                            {item.badge && (
+                              <span className="text-[10px] font-bold px-1.5 py-0.2 rounded-full bg-[#0066B2]/10 text-[#0066B2] dark:bg-[#38BDF8]/15 dark:text-[#38BDF8]">
+                                {item.badge}
+                              </span>
+                            )}
+                          </span>
+                        )}
+                      </motion.button>
+                    </ExpandableScreenTrigger>
+
+                    {/* Apple-grade Collapsed Floating Tooltip */}
+                    <AnimatePresence>
+                      {isCollapsed && isHovered && (
+                        <motion.div
+                          initial={{ opacity: 0, x: -6, scale: 0.96 }}
+                          animate={{ opacity: 1, x: 0, scale: 1 }}
+                          exit={{ opacity: 0, x: -6, scale: 0.96 }}
+                          transition={{ duration: 0.12, ease: [0.16, 1, 0.3, 1] }}
+                          className="absolute left-full ml-3 top-1/2 -translate-y-1/2 z-[100] pointer-events-none flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-zinc-900/95 text-white text-xs font-semibold shadow-2xl border border-white/10 dark:bg-zinc-800/95 dark:text-zinc-100 whitespace-nowrap backdrop-blur-md"
+                        >
                           <span>{item.label}</span>
                           {item.badge && (
-                            <span className="text-[10px] font-bold px-1.5 py-0.2 rounded-full bg-[#0066B2]/10 text-[#0066B2] dark:bg-[#38BDF8]/15 dark:text-[#38BDF8]">
+                            <span className="text-[10px] font-bold px-1.5 py-0.2 rounded-full bg-[#0066B2]/40 text-[#38BDF8] border border-[#38BDF8]/30">
                               {item.badge}
                             </span>
                           )}
-                        </span>
-                      </motion.button>
-                    </ExpandableScreenTrigger>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </div>
                 );
               }
 
               return (
-                <div key={item.href} onMouseEnter={() => setHoveredNavHref(item.href)}>
+                <div
+                  key={item.href}
+                  className="relative group"
+                  onMouseEnter={() => setHoveredNavHref(item.href)}
+                >
                   <motion.div
-                    whileTap={{ scale: 0.97 }}
+                    whileTap={{ scale: 0.95 }}
                     transition={{ type: "spring", stiffness: 600, damping: 28 }}
                   >
                     <Link
                       href={item.href}
-                      className={`relative group flex items-center gap-2.5 rounded-lg px-2 py-2 text-sm font-medium transition-colors cursor-pointer ${active
-                        ? "text-white font-bold dark:text-white"
-                        : "text-zinc-600 dark:text-[#9B9085] dark:hover:text-white"
-                        }`}
+                      className={`relative flex items-center rounded-xl font-medium transition-colors cursor-pointer ${
+                        isCollapsed
+                          ? "h-10 w-10 mx-auto justify-center"
+                          : "w-full gap-2.5 px-2.5 py-2 text-sm"
+                      } ${
+                        active
+                          ? "text-white font-bold dark:text-white"
+                          : "text-zinc-600 dark:text-[#9B9085] dark:hover:text-white"
+                      }`}
                       onClick={(e) => {
                         if (pathname !== item.href) {
                           e.preventDefault();
@@ -461,7 +614,7 @@ export default function DashboardShell({
                         <motion.div
                           layoutId="leftPanelActivePill"
                           transition={{ type: "spring", stiffness: 500, damping: 32 }}
-                          className="absolute inset-0 rounded-lg bg-[#0066B2] shadow-xs dark:bg-[#0066B2]/20 dark:border dark:border-[#0066B2]/40"
+                          className="absolute inset-0 rounded-xl bg-[#0066B2] shadow-xs dark:bg-[#0066B2]/20 dark:border dark:border-[#0066B2]/40"
                         />
                       )}
                       {/* Hover Morphing Pill */}
@@ -469,30 +622,67 @@ export default function DashboardShell({
                         <motion.div
                           layoutId="leftPanelHoverPill"
                           transition={{ type: "spring", stiffness: 500, damping: 32 }}
-                          className="absolute inset-0 rounded-lg bg-[#E2F0FD] dark:bg-[#25252a]"
+                          className="absolute inset-0 rounded-xl bg-[#E2F0FD] dark:bg-[#25252a]"
                         />
                       )}
-                      <item.icon className={`h-4 w-4 shrink-0 relative z-10 ${active ? "text-white" : "text-zinc-500 group-hover:text-zinc-900 dark:text-[#9B9085] dark:group-hover:text-white"}`} aria-hidden="true" />
-                      <span className="flex-1 relative z-10 flex items-center justify-between">
+                      <item.icon
+                        className={`shrink-0 relative z-10 ${
+                          active
+                            ? "text-white"
+                            : "text-zinc-500 group-hover:text-zinc-900 dark:text-[#9B9085] dark:group-hover:text-white"
+                        } ${isCollapsed ? "h-4.5 w-4.5" : "h-4 w-4"}`}
+                        aria-hidden="true"
+                      />
+                      {!isCollapsed && (
+                        <span className="flex-1 relative z-10 flex items-center justify-between whitespace-nowrap overflow-hidden">
+                          <span className="truncate">{item.label}</span>
+                          {item.badge && (
+                            <span
+                              className={`text-[10px] font-bold px-1.5 py-0.5 rounded-md ${
+                                active
+                                  ? "bg-white/20 text-white"
+                                  : "bg-[#0066B2]/10 text-[#0066B2] dark:bg-[#38BDF8]/15 dark:text-[#38BDF8]"
+                              }`}
+                            >
+                              {item.badge}
+                            </span>
+                          )}
+                        </span>
+                      )}
+                      {/* Collapsed badge dot */}
+                      {isCollapsed && item.badge && !active && (
+                        <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-[#0066B2] dark:bg-[#38BDF8] ring-2 ring-white dark:ring-[#18181B]" />
+                      )}
+                    </Link>
+                  </motion.div>
+
+                  {/* Apple-grade Collapsed Floating Tooltip */}
+                  <AnimatePresence>
+                    {isCollapsed && isHovered && (
+                      <motion.div
+                        initial={{ opacity: 0, x: -6, scale: 0.96 }}
+                        animate={{ opacity: 1, x: 0, scale: 1 }}
+                        exit={{ opacity: 0, x: -6, scale: 0.96 }}
+                        transition={{ duration: 0.12, ease: [0.16, 1, 0.3, 1] }}
+                        className="absolute left-full ml-3 top-1/2 -translate-y-1/2 z-[100] pointer-events-none flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-zinc-900/95 text-white text-xs font-semibold shadow-2xl border border-white/10 dark:bg-zinc-800/95 dark:text-zinc-100 whitespace-nowrap backdrop-blur-md"
+                      >
                         <span>{item.label}</span>
                         {item.badge && (
-                          <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-md ${
-                            active
-                              ? "bg-white/20 text-white"
-                              : "bg-[#0066B2]/10 text-[#0066B2] dark:bg-[#38BDF8]/15 dark:text-[#38BDF8]"
-                          }`}>
+                          <span className="text-[10px] font-bold px-1.5 py-0.2 rounded-full bg-[#0066B2]/40 text-[#38BDF8] border border-[#38BDF8]/30">
                             {item.badge}
                           </span>
                         )}
-                      </span>
-                    </Link>
-                  </motion.div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
               );
             })}
           </nav>
-          <div className="px-1.5 py-2.5">
-            <div ref={profileMenuRef} className="relative">
+
+          {/* Bottom Profile Section */}
+          <div className={`px-2 py-2.5 border-t border-[#E0EDFB]/60 dark:border-white/5 ${isCollapsed ? "flex justify-center" : ""}`}>
+            <div ref={profileMenuRef} className="relative w-full">
               {/* Profile Popover Menu */}
               <AnimatePresence>
                 {showProfileMenu && (
@@ -502,7 +692,9 @@ export default function DashboardShell({
                     exit={{ opacity: 0, scale: 0.95, y: 4 }}
                     transition={{ duration: 0.15, ease: [0.16, 1, 0.3, 1] }}
                     style={{ transformOrigin: "bottom left" }}
-                    className="absolute bottom-full mb-2 left-0 w-56 rounded-2xl border border-zinc-200/80 bg-white/95 p-1.5 shadow-2xl backdrop-blur-md z-[70] text-zinc-900 flex flex-col gap-0.5 dark:border-zinc-800/90 dark:bg-[#18181b]/95 dark:text-white dark:shadow-[0_12px_36px_-6px_rgba(0,0,0,0.6),0_0_0_1px_rgba(255,255,255,0.06)]"
+                    className={`absolute bottom-full mb-2 w-56 rounded-2xl border border-zinc-200/80 bg-white/95 p-1.5 shadow-2xl backdrop-blur-md z-[70] text-zinc-900 flex flex-col gap-0.5 dark:border-zinc-800/90 dark:bg-[#18181b]/95 dark:text-white dark:shadow-[0_12px_36px_-6px_rgba(0,0,0,0.6),0_0_0_1px_rgba(255,255,255,0.06)] ${
+                      isCollapsed ? "left-0" : "left-0"
+                    }`}
                     onClick={(e) => e.stopPropagation()}
                   >
                     {/* Theme Switcher Segmented Control */}
@@ -668,7 +860,12 @@ export default function DashboardShell({
 
               <button
                 onClick={() => setShowProfileMenu(!showProfileMenu)}
-                className="flex w-full items-center justify-between gap-2.5 rounded-xl p-2 text-left hover:bg-[#E2F0FD] transition dark:hover:bg-[#25252A]"
+                title={isCollapsed ? `${displayAccount.name}` : undefined}
+                className={`flex items-center rounded-xl transition cursor-pointer hover:bg-[#E2F0FD] dark:hover:bg-[#25252A] ${
+                  isCollapsed
+                    ? "h-10 w-10 mx-auto justify-center p-0"
+                    : "w-full justify-between gap-2.5 p-2 text-left"
+                }`}
               >
                 {displayAccount.avatar && !avatarError ? (
                   <img
@@ -685,14 +882,16 @@ export default function DashboardShell({
                       : (displayAccount.name.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase() || "RK")}
                   </span>
                 )}
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-xs font-bold text-zinc-900 leading-tight dark:text-white" suppressHydrationWarning>{displayAccount.name}</p>
-                  <p className="truncate text-[10px] text-zinc-500 leading-tight mt-0.5 dark:text-[#9B9085]" suppressHydrationWarning>{displayAccount.email}</p>
-                </div>
+                {!isCollapsed && (
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-xs font-bold text-zinc-900 leading-tight dark:text-white" suppressHydrationWarning>{displayAccount.name}</p>
+                    <p className="truncate text-[10px] text-zinc-500 leading-tight mt-0.5 dark:text-[#9B9085]" suppressHydrationWarning>{displayAccount.email}</p>
+                  </div>
+                )}
               </button>
             </div>
           </div>
-        </aside>
+        </motion.aside>
 
         <AnimatePresence>
           {menuOpen && (

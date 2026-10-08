@@ -676,8 +676,8 @@ export default function SequencesPage() {
         </div>
       )}
 
-      <div className="flex flex-col min-h-[calc(100vh-3rem)] bg-gradient-to-b from-[#EFF6FF]/60 via-[#F8FBFF] to-[#F8FBFF] dark:bg-none dark:bg-[#0E0E10] w-full max-w-full overflow-x-hidden">
-        <div className="flex-1 px-3 sm:px-6 py-3.5 sm:py-6 lg:px-8 max-w-7xl mx-auto w-full max-w-full space-y-3.5 sm:space-y-5 overflow-x-hidden">
+      <div className="flex flex-col min-h-[calc(100vh-3rem)] bg-gradient-to-b from-[#EFF6FF]/60 via-[#F8FBFF] to-[#F8FBFF] dark:bg-none dark:bg-[#0E0E10] w-full overflow-x-hidden">
+        <div className="flex-1 px-3 sm:px-6 py-3.5 sm:py-6 lg:px-8 max-w-7xl mx-auto w-full space-y-3.5 sm:space-y-5 overflow-x-hidden">
           
           {/* Header Section */}
           <div className="flex items-center justify-between gap-2.5 mb-1 sm:mb-4">
