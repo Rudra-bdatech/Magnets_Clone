@@ -2,6 +2,7 @@ import nodemailer from "nodemailer";
 import { dbConnect } from "@/lib/mongodb";
 import { AccountModel, EmailEventModel } from "@/lib/models";
 import { decrypt } from "@/lib/encryption";
+import { isCompanyAccount } from "@/lib/roles";
 import crypto from "crypto";
 
 export interface EmailTrackingOptions {
@@ -170,7 +171,7 @@ export async function sendMail(
     if (resolvedOwner) {
       account = await AccountModel.findOne(
         { email: resolvedOwner.toLowerCase().trim() },
-        { name: 1, gmailOAuth: 1, customSmtp: 1 }
+        { name: 1, gmailOAuth: 1, customSmtp: 1, role: 1 }
       ).lean();
     }
 
@@ -242,7 +243,18 @@ export async function sendMail(
       }
     }
 
-    // Priority 3: Platform Fallback (SocketLabs / default SMTP)
+    // Priority 3: Platform Fallback (Restricted to Internal Company Staff / Admins)
+    const isCompanyStaff = isCompanyAccount(resolvedOwner, account?.role);
+    if (!isCompanyStaff) {
+      const blockedMsg = "Sender email is not configured. Please connect your Gmail or custom SMTP in Settings to deliver emails to your leads.";
+      console.warn(`[email] Platform fallback blocked for external user: "${resolvedOwner || 'unknown'}". Prompting to connect Gmail.`);
+      return {
+        success: false,
+        error: blockedMsg,
+      };
+    }
+
+    // Platform Fallback (SocketLabs / default company SMTP for internal accounts)
     const platformTrans = getPlatformTransporter();
     const platformFrom = options.from || `LeadMagnets <${defaultFrom}>`;
 
@@ -254,7 +266,7 @@ export async function sendMail(
       replyTo: options.replyTo,
     });
 
-    console.log(`[PLATFORM] Email sent:`, info.messageId, "to:", options.to);
+    console.log(`[PLATFORM-ADMIN] Email sent:`, info.messageId, "to:", options.to, "for company staff:", resolvedOwner);
     logEmailEvent(options, recipientClean, info.messageId);
     return { success: true, messageId: info.messageId };
   } catch (error: any) {

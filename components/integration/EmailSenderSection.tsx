@@ -188,19 +188,33 @@ export const EmailSenderSection = memo(function EmailSenderSection({
 
   const gmailConnected = account?.gmailOAuth?.connected && !!account?.gmailOAuth?.gmailAddress;
   const smtpConnected = account?.customSmtp?.isVerified && account?.customSmtp?.enabled;
+  const isCompanyAdmin =
+    account?.role === "super_admin" ||
+    account?.role === "admin" ||
+    account?.email?.toLowerCase().endsWith("@bda.co.in") ||
+    account?.email?.toLowerCase().endsWith("@bdatech.in");
 
   return (
     <div className="space-y-3">
       {/* Section header */}
-      <div>
+      <div className="flex items-center justify-between">
         <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 dark:text-[#9B9085] flex items-center gap-1.5">
           EMAIL SENDER
           <InfoTooltip
-            content="Connect your own Gmail or SMTP to send emails from your domain. If not set, the platform default is used as fallback."
+            content="Connect your own Gmail or SMTP to send emails from your domain. For security and zero cost, each user sends through their connected account."
             title="Email Sender"
             align="start"
           />
         </p>
+        {isCompanyAdmin ? (
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-blue-50 dark:bg-blue-900/30 text-[#0066B2] dark:text-blue-400 border border-blue-200 dark:border-blue-800">
+            <ShieldCheck size={11} /> Company Admin (Platform Fallback Active)
+          </span>
+        ) : !gmailConnected && !smtpConnected ? (
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-800">
+            <AlertCircle size={11} /> Gmail Sync Required to Send Leads
+          </span>
+        ) : null}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">

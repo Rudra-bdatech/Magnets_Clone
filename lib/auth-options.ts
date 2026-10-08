@@ -3,6 +3,7 @@ import GoogleProvider from "next-auth/providers/google";
 import LinkedInProvider from "next-auth/providers/linkedin";
 import { dbConnect } from "@/lib/mongodb";
 import { AccountModel } from "@/lib/models";
+import { determineRoleForEmail } from "@/lib/roles";
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -89,6 +90,7 @@ export const authOptions: NextAuthOptions = {
             email: cleanEmail,
             username: generatedUsername,
             password: "",
+            role: determineRoleForEmail(cleanEmail),
             plan: "Free",
             brandColor: "#0066B2",
             logo: null,

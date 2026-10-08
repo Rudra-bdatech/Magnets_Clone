@@ -5,6 +5,7 @@ import { AUTH_COOKIE_NAME, verifySessionToken, setAuthCookie } from "@/lib/auth"
 import { dbConnect } from "@/lib/mongodb";
 import { AccountModel } from "@/lib/models";
 import { authOptions } from "@/lib/auth-options";
+import { determineRoleForEmail } from "@/lib/roles";
 
 export async function GET() {
   try {
@@ -78,6 +79,7 @@ export async function GET() {
           email: email,
           username: generatedUsername,
           password: "",
+          role: determineRoleForEmail(email),
           plan: "Free",
           brandColor: "#0066B2",
           logo: null,
@@ -100,6 +102,7 @@ export async function GET() {
         name: name || email.split("@")[0],
         email: email,
         username: email.split("@")[0],
+        role: determineRoleForEmail(email),
         plan: "Free",
         brandColor: "#0066B2",
         logo: null,

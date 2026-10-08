@@ -7,6 +7,7 @@ const AccountSchema = new Schema({
   email: { type: String, required: true, unique: true, lowercase: true, trim: true },
   username: { type: String, required: true, unique: true },
   password: { type: String, default: "" },
+  role: { type: String, enum: ["user", "admin", "super_admin"], default: "user" },
   plan: { type: String, default: "Free" },
   brandColor: { type: String, default: "#0066B2" },
   logo: { type: String, default: null },

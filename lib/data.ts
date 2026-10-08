@@ -145,6 +145,7 @@ export interface Account {
   email: string;
   username: string;
   password?: string;
+  role?: "user" | "admin" | "super_admin";
   plan: "Free";
   brandColor: string;
   logo: string | null;

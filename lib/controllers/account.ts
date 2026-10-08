@@ -5,6 +5,7 @@ import { clearAuthCookie, setAuthCookie } from "@/lib/auth";
 import { hashPassword, comparePassword } from "@/lib/auth-helpers";
 import { deleteCloudinaryAssets } from "@/lib/cloudinary";
 import { sendMail } from "@/lib/email";
+import { determineRoleForEmail } from "@/lib/roles";
 import { randomBytes } from "crypto";
 
 /** Generates a cryptographically random 64-char hex webhook secret. */
@@ -28,7 +29,8 @@ export function sanitizeAccount(accountDoc: any) {
   delete acc.resetPasswordToken;
   delete acc.resetPasswordExpires;
   delete acc.linkedinLiAt;
-  delete acc.linkedinJSessionId;
+  const computedRole = determineRoleForEmail(acc.email);
+  acc.role = computedRole === "super_admin" ? "super_admin" : (acc.role || computedRole);
   // Strip encrypted secrets — never send raw credentials to the client
   if (acc.customSmtp) {
     acc.customSmtp = {
@@ -152,6 +154,9 @@ export async function handleSaveAccount(data: any, authEmail: string | null) {
     // generate API keys at signup — no extra step needed from the user.
     if (!data.linkedinWebhookSecret) {
       data.linkedinWebhookSecret = generateWebhookSecret();
+    }
+    if (!data.role) {
+      data.role = determineRoleForEmail(data.email || normalizedEmail);
     }
     account = await AccountModel.create(data);
   }
