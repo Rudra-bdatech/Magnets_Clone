@@ -4,6 +4,7 @@ export interface PlanTierConfig {
   leadLimit: number;
   storageLimitMb: number;
   sequencesLimit: number;
+  customDomainAllowed: boolean;
 }
 
 export const PLAN_LIMITS: Record<string, PlanTierConfig> = {
@@ -13,6 +14,7 @@ export const PLAN_LIMITS: Record<string, PlanTierConfig> = {
     leadLimit: 500,
     storageLimitMb: 500,
     sequencesLimit: 2,
+    customDomainAllowed: false,
   },
   Pro: {
     name: "Pro Plan",
@@ -20,6 +22,7 @@ export const PLAN_LIMITS: Record<string, PlanTierConfig> = {
     leadLimit: 2500,
     storageLimitMb: 1024, // 1 GB
     sequencesLimit: 5,
+    customDomainAllowed: true,
   },
   Growth: {
     name: "Growth Plan",
@@ -27,6 +30,7 @@ export const PLAN_LIMITS: Record<string, PlanTierConfig> = {
     leadLimit: 10000,
     storageLimitMb: 5120, // 5 GB
     sequencesLimit: 20,
+    customDomainAllowed: true,
   },
   Unlimited: {
     name: "Unlimited Enterprise",
@@ -34,10 +38,11 @@ export const PLAN_LIMITS: Record<string, PlanTierConfig> = {
     leadLimit: 100000,
     storageLimitMb: 51200, // 50 GB
     sequencesLimit: 100,
+    customDomainAllowed: true,
   },
 };
 
 export function getPlanLimits(planName?: string): PlanTierConfig {
-  if (!planName) return PLAN_LIMITS.Pro;
-  return PLAN_LIMITS[planName] || PLAN_LIMITS.Pro;
+  if (!planName) return PLAN_LIMITS.Free;
+  return PLAN_LIMITS[planName] || PLAN_LIMITS.Free;
 }

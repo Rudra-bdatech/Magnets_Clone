@@ -5,11 +5,46 @@ import {
   getDomainVerificationToken,
   formatFullHost,
 } from "@/lib/domain-verify";
+import { getAuthenticatedUserEmail } from "@/lib/auth";
+import { dbConnect } from "@/lib/mongodb";
+import { AccountModel } from "@/lib/models";
+import { getPlanLimits } from "@/lib/plan-limits";
 
 export const dynamic = "force-dynamic";
 
 export async function POST(req: Request) {
   try {
+    // 1. Authenticate user session
+    const email = await getAuthenticatedUserEmail();
+    if (!email) {
+      return NextResponse.json(
+        { error: "Authentication required to verify custom domain", code: "UNAUTHENTICATED" },
+        { status: 401 }
+      );
+    }
+
+    // 2. Query user account and verify plan tier
+    await dbConnect();
+    const account = await AccountModel.findOne({ email }).lean();
+    if (!account) {
+      return NextResponse.json(
+        { error: "User account not found", code: "ACCOUNT_NOT_FOUND" },
+        { status: 404 }
+      );
+    }
+
+    const planLimits = getPlanLimits(account.plan);
+    if (!planLimits.customDomainAllowed) {
+      return NextResponse.json(
+        {
+          error: "Custom domains are a Pro feature. Please upgrade your plan to connect a custom domain.",
+          code: "PLAN_UPGRADE_REQUIRED",
+          plan: account.plan || "Free",
+        },
+        { status: 403 }
+      );
+    }
+
     const { domain, subdomain } = await req.json();
 
     const cleanDomain = sanitizeDomain(domain);

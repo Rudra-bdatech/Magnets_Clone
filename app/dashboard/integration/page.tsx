@@ -15,6 +15,7 @@ import { AutomationsSection } from "@/components/integration/AutomationsSection"
 import { AnalyticsSection } from "@/components/integration/AnalyticsSection";
 import { BrandingSection } from "@/components/integration/BrandingSection";
 import { HelpModal } from "@/components/integration/HelpModal";
+import { UpgradeModal } from "@/components/dashboard/UpgradeModal";
 import { useToast, IntegrationToastContainer } from "@/components/integration/IntegrationToast";
 import { InfoTooltip } from "@/components/ui/info-tooltip";
 
@@ -22,6 +23,7 @@ export default function WorkspaceSetupPage() {
   const [account, setAccount] = useState<Account | null>(null);
   const [loading, setLoading] = useState(true);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [username, setUsername] = useState("");
   const [privacyPolicy, setPrivacyPolicy] = useState("");
   const [termsOfService, setTermsOfService] = useState("");
@@ -272,6 +274,8 @@ export default function WorkspaceSetupPage() {
               markDirty={markDirty}
               handleSave={handleSave}
               addToast={addToast}
+              userPlan={account?.plan || "Free"}
+              onUpgradeClick={() => setShowUpgradeModal(true)}
             />
 
             {/* 2. Optional connections wrapper (Automations) */}
@@ -359,6 +363,14 @@ export default function WorkspaceSetupPage() {
 
         </div>
       </div>
+
+      {/* Upgrade to Pro Modal */}
+      <UpgradeModal
+        isOpen={showUpgradeModal}
+        onClose={() => setShowUpgradeModal(false)}
+        currentPlan={account?.plan || "Free"}
+        featureHighlight="Custom Domains & Subdomains"
+      />
 
       {/* Help Modal */}
       <HelpModal

@@ -146,7 +146,7 @@ export interface Account {
   username: string;
   password?: string;
   role?: "user" | "admin" | "super_admin";
-  plan: "Free";
+  plan?: "Free" | "Pro" | "Growth" | "Unlimited" | string;
   brandColor: string;
   logo: string | null;
   joinedAt: string;

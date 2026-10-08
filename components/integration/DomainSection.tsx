@@ -14,9 +14,13 @@ import {
   Server,
   Info,
   CheckCircle2,
-  AlertCircle
+  AlertCircle,
+  Lock,
+  Sparkles,
+  Zap,
 } from "lucide-react";
 import { type Account } from "@/lib/data";
+import { getPlanLimits } from "@/lib/plan-limits";
 import {
   cleanDomain as sanitizeDomain,
   formatSubdomain,
@@ -53,6 +57,8 @@ interface DomainSectionProps {
   markDirty: (field: string) => void;
   handleSave: (overrides?: Partial<Account>) => Promise<void>;
   addToast: (message: string, type?: "success" | "error" | "info") => void;
+  userPlan?: string;
+  onUpgradeClick?: () => void;
 }
 
 export const DomainSection = memo(function DomainSection({
@@ -82,8 +88,14 @@ export const DomainSection = memo(function DomainSection({
   markDirty,
   handleSave,
   addToast,
+  userPlan = "Free",
+  onUpgradeClick,
 }: DomainSectionProps) {
   const [copiedField, setCopiedField] = useState<string | null>(null);
+
+  // Plan limits & Custom domain lock check
+  const planLimits = useMemo(() => getPlanLimits(userPlan), [userPlan]);
+  const isCustomDomainLocked = !planLimits.customDomainAllowed;
 
   // Memoize derived computations
   const cleanDom = useMemo(() => sanitizeDomain(rootDomain), [rootDomain]);
@@ -248,11 +260,16 @@ export const DomainSection = memo(function DomainSection({
                       align="start"
                     />
                   </p>
-                  {cnameVerified && (
+                  {isCustomDomainLocked ? (
+                    <span className="rounded-full border border-amber-500/30 bg-amber-500/10 px-2.5 py-0.5 text-[10px] font-extrabold text-amber-600 dark:text-amber-400 flex items-center gap-1">
+                      <Lock className="h-3 w-3" />
+                      PRO FEATURE
+                    </span>
+                  ) : cnameVerified ? (
                     <span className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-bold text-emerald-600 dark:text-emerald-400">
                       Live
                     </span>
-                  )}
+                  ) : null}
                 </div>
               </div>
             </div>
@@ -265,23 +282,75 @@ export const DomainSection = memo(function DomainSection({
           {isCustomDomainOpen && (
             <div className="p-3.5 sm:p-5 border-t border-zinc-200 dark:border-zinc-700/80 bg-white dark:bg-[#121215] space-y-5">
               
+              {/* Paywall Banner for Free Plan */}
+              {isCustomDomainLocked && (
+                <div className="relative overflow-hidden rounded-2xl border-2 border-amber-500/30 bg-gradient-to-br from-amber-500/[0.08] via-[#0066B2]/[0.05] to-transparent dark:from-amber-500/15 dark:via-[#0066B2]/10 dark:to-transparent p-4 sm:p-6 shadow-sm">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div className="space-y-1.5 max-w-xl">
+                      <div className="flex items-center gap-2">
+                        <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/20 text-amber-700 dark:text-amber-300 px-2.5 py-0.5 text-[11px] font-extrabold uppercase tracking-wide">
+                          <Sparkles className="h-3 w-3 text-amber-500" />
+                          Pro Plan Feature
+                        </span>
+                        <span className="text-[11px] font-bold text-zinc-500 dark:text-zinc-400">
+                          White-Label & Custom Domain
+                        </span>
+                      </div>
+                      <h5 className="text-sm sm:text-base font-black text-zinc-900 dark:text-white">
+                        Connect your custom domain (e.g. get.yourbrand.com)
+                      </h5>
+                      <p className="text-xs text-zinc-600 dark:text-zinc-300 leading-relaxed">
+                        Upgrade to the Pro plan to publish lead magnets on your branded subdomain with automated SSL certificates, high-speed CNAME routing, and zero LeadMagnets branding.
+                      </p>
+                    </div>
+
+                    <div className="shrink-0 flex items-center">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (onUpgradeClick) {
+                            onUpgradeClick();
+                          } else {
+                            addToast("Please upgrade to Pro to unlock custom domains.", "info");
+                          }
+                        }}
+                        className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#0066B2] to-[#0284C7] hover:from-[#005291] hover:to-[#0066B2] px-5 py-3 text-xs sm:text-sm font-bold text-white shadow-md hover:shadow-lg transition-all duration-150 active:scale-95 cursor-pointer"
+                      >
+                        <Sparkles className="h-4 w-4 text-amber-300" />
+                        <span>Upgrade to Pro (₹1,999/mo)</span>
+                        <ArrowRight className="h-4 w-4" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               {/* Inputs Grid */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className={`grid grid-cols-1 sm:grid-cols-2 gap-4 ${isCustomDomainLocked ? "opacity-60 cursor-not-allowed" : ""}`}>
                 {/* Root domain */}
                 <div>
-                  <label className="block text-xs font-semibold text-zinc-700 dark:text-zinc-300 mb-1.5">
-                    Root Domain
+                  <label className="block text-xs font-semibold text-zinc-700 dark:text-zinc-300 mb-1.5 flex items-center justify-between">
+                    <span>Root Domain</span>
+                    {isCustomDomainLocked && (
+                      <span className="text-[10px] text-amber-600 dark:text-amber-400 font-bold flex items-center gap-1">
+                        <Lock className="h-3 w-3" /> Locked
+                      </span>
+                    )}
                   </label>
                   <input
                     type="text"
+                    disabled={isCustomDomainLocked}
                     value={rootDomain}
                     onChange={(e) => {
+                      if (isCustomDomainLocked) return;
                       markDirty("customDomain");
                       setRootDomain(e.target.value);
                     }}
-                    onBlur={() => handleSave()}
-                    placeholder="example.com"
-                    className="w-full rounded-xl border border-zinc-200 bg-zinc-50/50 px-3.5 py-2.5 text-xs sm:text-sm text-zinc-900 placeholder:text-zinc-400 outline-none focus:border-[#0066B2] focus:bg-white dark:border-zinc-700 dark:bg-[#18181C] dark:text-white dark:placeholder:text-zinc-500 transition-all font-mono shadow-2xs"
+                    onBlur={() => !isCustomDomainLocked && handleSave()}
+                    placeholder={isCustomDomainLocked ? "yourdomain.com (Requires Pro Plan)" : "example.com"}
+                    className={`w-full rounded-xl border border-zinc-200 bg-zinc-50/50 px-3.5 py-2.5 text-xs sm:text-sm text-zinc-900 placeholder:text-zinc-400 outline-none focus:border-[#0066B2] focus:bg-white dark:border-zinc-700 dark:bg-[#18181C] dark:text-white dark:placeholder:text-zinc-500 transition-all font-mono shadow-2xs ${
+                      isCustomDomainLocked ? "cursor-not-allowed bg-zinc-100 dark:bg-zinc-900/50" : ""
+                    }`}
                   />
                   <p className="mt-1 text-[11px] text-zinc-400 dark:text-zinc-500">
                     Your base domain without http:// or paths (e.g. coachassist.co.in)
@@ -290,19 +359,28 @@ export const DomainSection = memo(function DomainSection({
 
                 {/* Subdomain */}
                 <div>
-                  <label className="block text-xs font-semibold text-zinc-700 dark:text-zinc-300 mb-1.5">
-                    Subdomain / Prefix
+                  <label className="block text-xs font-semibold text-zinc-700 dark:text-zinc-300 mb-1.5 flex items-center justify-between">
+                    <span>Subdomain / Prefix</span>
+                    {isCustomDomainLocked && (
+                      <span className="text-[10px] text-amber-600 dark:text-amber-400 font-bold flex items-center gap-1">
+                        <Lock className="h-3 w-3" /> Locked
+                      </span>
+                    )}
                   </label>
                   <input
                     type="text"
+                    disabled={isCustomDomainLocked}
                     value={pageSubdomain}
                     onChange={(e) => {
+                      if (isCustomDomainLocked) return;
                       markDirty("customSubdomain");
                       setPageSubdomain(e.target.value);
                     }}
-                    onBlur={() => handleSave()}
+                    onBlur={() => !isCustomDomainLocked && handleSave()}
                     placeholder="get"
-                    className="w-full rounded-xl border border-zinc-200 bg-zinc-50/50 px-3.5 py-2.5 text-xs sm:text-sm text-zinc-900 placeholder:text-zinc-400 outline-none focus:border-[#0066B2] focus:bg-white dark:border-zinc-700 dark:bg-[#18181C] dark:text-white dark:placeholder:text-zinc-500 transition-all font-mono shadow-2xs"
+                    className={`w-full rounded-xl border border-zinc-200 bg-zinc-50/50 px-3.5 py-2.5 text-xs sm:text-sm text-zinc-900 placeholder:text-zinc-400 outline-none focus:border-[#0066B2] focus:bg-white dark:border-zinc-700 dark:bg-[#18181C] dark:text-white dark:placeholder:text-zinc-500 transition-all font-mono shadow-2xs ${
+                      isCustomDomainLocked ? "cursor-not-allowed bg-zinc-100 dark:bg-zinc-900/50" : ""
+                    }`}
                   />
                   <p className="mt-1 text-[11px] text-zinc-400 dark:text-zinc-500">
                     Subdomain prefix for lead magnet pages (e.g. "get", "access", "guide")
@@ -426,8 +504,13 @@ export const DomainSection = memo(function DomainSection({
                     <div className="mt-3.5 flex flex-col sm:flex-row sm:items-center gap-3">
                       <button
                         type="button"
-                        disabled={checkingDomain}
+                        disabled={checkingDomain || isCustomDomainLocked}
                         onClick={async () => {
+                          if (isCustomDomainLocked) {
+                            if (onUpgradeClick) onUpgradeClick();
+                            addToast("Custom domains are a Pro feature. Please upgrade your plan.", "error");
+                            return;
+                          }
                           setCheckingDomain(true);
                           setDomainError("");
                           try {
@@ -437,6 +520,12 @@ export const DomainSection = memo(function DomainSection({
                               body: JSON.stringify({ domain: cleanDom, subdomain: cleanSub }),
                             });
                             const data = await res.json();
+                            if (data.code === "PLAN_UPGRADE_REQUIRED") {
+                              if (onUpgradeClick) onUpgradeClick();
+                              setDomainError(data.error || "Custom domains require a Pro plan.");
+                              addToast(data.error || "Custom domains require a Pro plan.", "error");
+                              return;
+                            }
                             if (data.isVerified) {
                               setDomainVerified(true);
                               if (data.cnameVerified) setCnameVerified(true);
@@ -595,8 +684,13 @@ export const DomainSection = memo(function DomainSection({
                     <div className="mt-3.5 flex flex-col sm:flex-row sm:items-center gap-3">
                       <button
                         type="button"
-                        disabled={checkingCname}
+                        disabled={checkingCname || isCustomDomainLocked}
                         onClick={async () => {
+                          if (isCustomDomainLocked) {
+                            if (onUpgradeClick) onUpgradeClick();
+                            addToast("Custom domains are a Pro feature. Please upgrade your plan.", "error");
+                            return;
+                          }
                           setCheckingCname(true);
                           setCnameError("");
                           try {
@@ -606,6 +700,12 @@ export const DomainSection = memo(function DomainSection({
                               body: JSON.stringify({ domain: cleanDom, subdomain: cleanSub }),
                             });
                             const data = await res.json();
+                            if (data.code === "PLAN_UPGRADE_REQUIRED") {
+                              if (onUpgradeClick) onUpgradeClick();
+                              setCnameError(data.error || "Custom domains require a Pro plan.");
+                              addToast(data.error || "Custom domains require a Pro plan.", "error");
+                              return;
+                            }
                             if (data.cnameVerified) {
                               setCnameVerified(true);
                               setSslStatus("active");
