@@ -1694,36 +1694,39 @@ export default function EditLeadMagnetPage() {
                   </div>
                 </div>
 
-                {/* Toolbar / Actions Row (Desktop right-side, Mobile bottom row with horizontal scroll support) */}
-                <div className="flex items-center justify-between sm:justify-end gap-2 sm:gap-2.5 max-w-full overflow-x-auto scrollbar-none pt-2 sm:pt-0 border-t sm:border-t-0 border-zinc-100 dark:border-zinc-800/60 min-w-0">
+                {/* Toolbar / Actions Row (Desktop right-side, Mobile bottom row fitting seamlessly without scroll) */}
+                <div className="flex items-center justify-between sm:justify-end gap-1.5 sm:gap-2.5 w-full pt-2 sm:pt-0 border-t sm:border-t-0 border-zinc-100 dark:border-zinc-800/60 min-w-0">
                   {/* Autosave Status */}
                   <span className="text-[11px] sm:text-xs text-zinc-500 dark:text-zinc-400 font-medium flex items-center gap-1 shrink-0 select-none">
-                    <Check className="h-3.5 w-3.5 stroke-[3px] text-emerald-500 shrink-0" />
-                    <span>{saveStatus === "saving" ? "Saving..." : "Autosaved"}</span>
+                    <Check className="h-3 w-3 sm:h-3.5 sm:w-3.5 stroke-[3px] text-emerald-500 shrink-0" />
+                    <span className="hidden xs:inline">{saveStatus === "saving" ? "Saving..." : "Autosaved"}</span>
+                    <span className="xs:hidden text-[10px]">{saveStatus === "saving" ? "Saving..." : "Saved"}</span>
                   </span>
 
-                  <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+                  <div className="flex items-center gap-1 sm:gap-2 shrink-0">
                     {/* AI Autofill & Social Studio (Only on Landing Pages) */}
                     {!isLockedPdf && (
                       <>
                         <button
                           type="button"
                           onClick={() => setShowAIModal(true)}
-                          className="flex items-center gap-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 px-2.5 sm:px-3 py-1.5 text-xs font-bold text-white shadow-xs transition cursor-pointer shrink-0 active:scale-95"
+                          className="flex items-center gap-1 sm:gap-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 px-2 sm:px-3 py-1.5 text-[11px] sm:text-xs font-bold text-white shadow-xs transition cursor-pointer shrink-0 active:scale-95"
                           title="AI Autofill: Regenerate headlines & copy"
                         >
-                          <Sparkles className="h-3.5 w-3.5 shrink-0" />
-                          <span>AI Autofill</span>
+                          <Sparkles className="h-3 w-3 sm:h-3.5 sm:w-3.5 shrink-0" />
+                          <span className="hidden xs:inline">AI Autofill</span>
+                          <span className="xs:hidden">Autofill</span>
                         </button>
 
                         <button
                           type="button"
                           onClick={() => setShowSocialModal(true)}
-                          className="group flex items-center gap-1.5 rounded-lg border border-indigo-500/30 bg-indigo-500/10 px-2.5 sm:px-3 py-1.5 text-xs font-bold text-indigo-400 hover:bg-indigo-600 hover:text-white transition shadow-xs cursor-pointer shrink-0 active:scale-95"
+                          className="group flex items-center gap-1 sm:gap-1.5 rounded-lg border border-indigo-500/30 bg-indigo-500/10 px-2 sm:px-3 py-1.5 text-[11px] sm:text-xs font-bold text-indigo-400 hover:bg-indigo-600 hover:text-white transition shadow-xs cursor-pointer shrink-0 active:scale-95"
                           title="Generate Social Media Graphic Cards"
                         >
-                          <ImageIcon className="h-3.5 w-3.5 text-indigo-400 group-hover:text-white transition-colors shrink-0" />
-                          <span>Social Cards</span>
+                          <ImageIcon className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-indigo-400 group-hover:text-white transition-colors shrink-0" />
+                          <span className="hidden xs:inline">Social Cards</span>
+                          <span className="xs:hidden">Social</span>
                         </button>
 
                         <div className="hidden sm:block h-4 w-px bg-zinc-200 dark:bg-[#27272A] mx-0.5" />
@@ -1746,7 +1749,7 @@ export default function EditLeadMagnetPage() {
                           }`}
                         title={canUndo ? "Undo (Ctrl+Z)" : "Nothing to undo"}
                       >
-                        <Undo2 className="h-3.5 w-3.5" />
+                        <Undo2 className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
                       </button>
                       <button
                         type="button"
@@ -1762,7 +1765,7 @@ export default function EditLeadMagnetPage() {
                           }`}
                         title={canRedo ? "Redo (Ctrl+Y)" : "Nothing to redo"}
                       >
-                        <Redo2 className="h-3.5 w-3.5" />
+                        <Redo2 className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
                       </button>
                     </div>
 
