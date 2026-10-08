@@ -571,7 +571,7 @@ export default function DashboardShell({
                       </motion.button>
                     </ExpandableScreenTrigger>
 
-                    {/* Apple-grade Collapsed Floating Tooltip with Fluid Morphing */}
+                    {/* Apple-grade Collapsed Floating Tooltip with Translucent Frosted Glass */}
                     <AnimatePresence>
                       {isCollapsed && isHovered && (
                         <div className="absolute left-full ml-3.5 top-1/2 -translate-y-1/2 z-[100] pointer-events-none flex items-center">
@@ -581,10 +581,10 @@ export default function DashboardShell({
                             animate={{ opacity: 1, x: 0, scale: 1 }}
                             exit={{ opacity: 0, x: -4, scale: 0.95, transition: { duration: 0.06 } }}
                             transition={{ type: "spring", stiffness: 850, damping: 38, mass: 0.2 }}
-                            className="relative flex items-center gap-2 px-3 py-1.5 rounded-xl bg-zinc-900/95 text-white text-xs font-semibold shadow-[0_10px_30px_-4px_rgba(0,0,0,0.5),0_0_0_1px_rgba(255,255,255,0.12)] dark:bg-[#1C1C20]/95 dark:text-zinc-100 whitespace-nowrap backdrop-blur-xl"
+                            className="relative flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/80 text-zinc-900 text-xs font-semibold border border-zinc-200/90 shadow-[0_10px_25px_-4px_rgba(0,0,0,0.15)] dark:bg-[#18181B]/75 dark:text-zinc-100 dark:border-white/15 dark:shadow-[0_12px_32px_-4px_rgba(0,0,0,0.6)] whitespace-nowrap backdrop-blur-xl"
                           >
                             {/* Micro Arrow Pointer */}
-                            <div className="absolute -left-1 top-1/2 -translate-y-1/2 w-2 h-2 rotate-45 bg-zinc-900/95 dark:bg-[#1C1C20]/95 border-l border-b border-white/15" />
+                            <div className="absolute -left-1 top-1/2 -translate-y-1/2 w-2 h-2 rotate-45 bg-white/80 border-l border-b border-zinc-200/90 dark:bg-[#18181B]/75 dark:border-white/15" />
                             <motion.div
                               key={item.label}
                               initial={{ opacity: 0.5, y: 1 }}
@@ -595,7 +595,7 @@ export default function DashboardShell({
                             >
                               <span>{item.label}</span>
                               {item.badge && (
-                                <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-[#0066B2]/30 text-[#38BDF8] border border-[#38BDF8]/30">
+                                <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-[#0066B2]/20 text-[#0066B2] dark:bg-[#38BDF8]/20 dark:text-[#38BDF8] border border-[#0066B2]/30 dark:border-[#38BDF8]/30">
                                   {item.badge}
                                 </span>
                               )}
@@ -684,7 +684,7 @@ export default function DashboardShell({
                     </Link>
                   </motion.div>
 
-                  {/* Apple-grade Collapsed Floating Tooltip with Fluid Morphing */}
+                  {/* Apple-grade Collapsed Floating Tooltip with Translucent Frosted Glass */}
                   <AnimatePresence>
                     {isCollapsed && isHovered && (
                       <div className="absolute left-full ml-3.5 top-1/2 -translate-y-1/2 z-[100] pointer-events-none flex items-center">
@@ -694,10 +694,10 @@ export default function DashboardShell({
                           animate={{ opacity: 1, x: 0, scale: 1 }}
                           exit={{ opacity: 0, x: -4, scale: 0.95, transition: { duration: 0.06 } }}
                           transition={{ type: "spring", stiffness: 850, damping: 38, mass: 0.2 }}
-                          className="relative flex items-center gap-2 px-3 py-1.5 rounded-xl bg-zinc-900/95 text-white text-xs font-semibold shadow-[0_10px_30px_-4px_rgba(0,0,0,0.5),0_0_0_1px_rgba(255,255,255,0.12)] dark:bg-[#1C1C20]/95 dark:text-zinc-100 whitespace-nowrap backdrop-blur-xl"
+                          className="relative flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/80 text-zinc-900 text-xs font-semibold border border-zinc-200/90 shadow-[0_10px_25px_-4px_rgba(0,0,0,0.15)] dark:bg-[#18181B]/75 dark:text-zinc-100 dark:border-white/15 dark:shadow-[0_12px_32px_-4px_rgba(0,0,0,0.6)] whitespace-nowrap backdrop-blur-xl"
                         >
                           {/* Micro Arrow Pointer */}
-                          <div className="absolute -left-1 top-1/2 -translate-y-1/2 w-2 h-2 rotate-45 bg-zinc-900/95 dark:bg-[#1C1C20]/95 border-l border-b border-white/15" />
+                          <div className="absolute -left-1 top-1/2 -translate-y-1/2 w-2 h-2 rotate-45 bg-white/80 border-l border-b border-zinc-200/90 dark:bg-[#18181B]/75 dark:border-white/15" />
                           <motion.div
                             key={item.label}
                             initial={{ opacity: 0.5, y: 1 }}
@@ -708,7 +708,7 @@ export default function DashboardShell({
                           >
                             <span>{item.label}</span>
                             {item.badge && (
-                              <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-[#0066B2]/30 text-[#38BDF8] border border-[#38BDF8]/30">
+                              <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-[#0066B2]/20 text-[#0066B2] dark:bg-[#38BDF8]/20 dark:text-[#38BDF8] border border-[#0066B2]/30 dark:border-[#38BDF8]/30">
                                 {item.badge}
                               </span>
                             )}
