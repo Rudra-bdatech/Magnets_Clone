@@ -1495,7 +1495,6 @@ export default function LockedPdfPage() {
                               onClick={(e) => {
                                 e.stopPropagation();
                                 setPageToDeleteId(pdf.id);
-                                setSelectedPageId(pdf.id);
                                 setShowDeleteModal(true);
                               }}
                               className="flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-[10px] border border-rose-200/60 dark:border-rose-900/40 bg-rose-50/50 dark:bg-rose-950/20 text-rose-500 hover:bg-rose-100 dark:hover:bg-rose-950/50 transition-all cursor-pointer active:scale-95 shadow-2xs"
@@ -1546,7 +1545,6 @@ export default function LockedPdfPage() {
                               onClick={(e) => {
                                 e.stopPropagation();
                                 setPageToDeleteId(pdf.id);
-                                setSelectedPageId(pdf.id);
                                 setShowDeleteModal(true);
                               }}
                               className="p-1.5 rounded-lg text-zinc-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-all cursor-pointer"
@@ -1712,7 +1710,6 @@ export default function LockedPdfPage() {
                                     onClick={(e) => {
                                       e.stopPropagation();
                                       setPageToDeleteId(pdf.id);
-                                      setSelectedPageId(pdf.id);
                                       setShowDeleteModal(true);
                                     }}
                                     className="p-1.5 rounded-lg text-zinc-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition cursor-pointer"
@@ -2060,15 +2057,15 @@ export default function LockedPdfPage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-50 flex flex-col justify-end sm:items-center sm:justify-center"
+            transition={{ duration: 0.12 }}
+            className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4"
           >
             {/* Backdrop */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
+              transition={{ duration: 0.12 }}
               className="fixed inset-0 bg-black/60 backdrop-blur-[2px]"
               onClick={() => {
                 setShowDeleteModal(false);
@@ -2076,13 +2073,13 @@ export default function LockedPdfPage() {
               }}
             />
 
-            {/* Bottom Sheet Modal */}
+            {/* Modal Card */}
             <motion.div
-              initial={{ y: "100%" }}
-              animate={{ y: 0 }}
-              exit={{ y: "100%" }}
-              transition={{ type: "spring", damping: 30, stiffness: 320 }}
-              className="relative z-10 w-full sm:max-w-[440px] max-h-[85vh] overflow-y-auto rounded-t-[28px] sm:rounded-3xl border-t sm:border border-zinc-200 dark:border-white/10 bg-white/95 dark:bg-[#141417]/95 backdrop-blur-xl p-5 sm:p-6 text-zinc-900 dark:text-white shadow-2xl space-y-4"
+              initial={{ opacity: 0, scale: 0.94, y: 10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.94, y: 8, transition: { duration: 0.08 } }}
+              transition={{ type: "spring", stiffness: 650, damping: 36, mass: 0.3 }}
+              className="relative z-10 w-full sm:max-w-[440px] max-h-[85vh] overflow-y-auto rounded-t-[28px] sm:rounded-3xl border-t sm:border border-zinc-200 dark:border-white/10 bg-white/95 dark:bg-[#141417]/95 backdrop-blur-xl p-5 sm:p-6 text-zinc-900 dark:text-white shadow-2xl space-y-4 transform-gpu will-change-transform"
               onClick={(e) => e.stopPropagation()}
             >
               {/* Grab Handle */}
@@ -2422,26 +2419,26 @@ export default function LockedPdfPage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-50 flex flex-col justify-end sm:items-center sm:justify-center"
+            transition={{ duration: 0.12 }}
+            className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4"
           >
             {/* Backdrop */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
+              transition={{ duration: 0.12 }}
               className="fixed inset-0 bg-black/60 backdrop-blur-[2px]"
               onClick={() => setShowBulkDeleteModal(false)}
             />
 
-            {/* Bottom Sheet Modal */}
+            {/* Modal Card */}
             <motion.div
-              initial={{ y: "100%" }}
-              animate={{ y: 0 }}
-              exit={{ y: "100%" }}
-              transition={{ type: "spring", damping: 30, stiffness: 320 }}
-              className="relative z-10 w-full sm:max-w-[440px] max-h-[85vh] overflow-y-auto rounded-t-[28px] sm:rounded-3xl border-t sm:border border-zinc-200 dark:border-white/10 bg-white/95 dark:bg-[#141417]/95 backdrop-blur-xl p-5 sm:p-6 text-zinc-900 dark:text-white shadow-2xl space-y-4"
+              initial={{ opacity: 0, scale: 0.94, y: 10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.94, y: 8, transition: { duration: 0.08 } }}
+              transition={{ type: "spring", stiffness: 650, damping: 36, mass: 0.3 }}
+              className="relative z-10 w-full sm:max-w-[440px] max-h-[85vh] overflow-y-auto rounded-t-[28px] sm:rounded-3xl border-t sm:border border-zinc-200 dark:border-white/10 bg-white/95 dark:bg-[#141417]/95 backdrop-blur-xl p-5 sm:p-6 text-zinc-900 dark:text-white shadow-2xl space-y-4 transform-gpu will-change-transform"
               onClick={(e) => e.stopPropagation()}
             >
               {/* Grab Handle */}
@@ -2624,7 +2621,6 @@ export default function LockedPdfPage() {
                   onClick={(e) => {
                     setMobileInspectorOpen(false);
                     setPageToDeleteId(activePage.id);
-                    setSelectedPageId(activePage.id);
                     setShowDeleteModal(true);
                   }}
                   className="flex items-center gap-1 text-[11px] font-bold text-red-500 hover:text-red-600 dark:hover:text-red-400 transition cursor-pointer"
