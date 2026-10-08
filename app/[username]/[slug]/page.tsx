@@ -1,3 +1,4 @@
+import React from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { cookies } from "next/headers";
@@ -320,6 +321,8 @@ export default async function MagnetPageRoute({
           ? (themeMode === "dark" ? "#0d0e12" : "#eee9df")
           : isTemplate7
           ? (themeMode === "dark" ? "#0d0d0f" : "#f4ff3c")
+          : isTemplate3
+          ? (themeMode === "dark" ? "#0c120a" : "#f4f6f0")
           : isTemplate2
           ? (themeMode === "dark" ? "#141416" : "#f3f0e8")
           : isTemplate4
@@ -331,6 +334,8 @@ export default async function MagnetPageRoute({
           ? (themeMode === "dark" ? "#f4f4f5" : "#141414")
           : isTemplate7
           ? (themeMode === "dark" ? (brandColor || "#f4ff3c") : "#101010")
+          : isTemplate3
+          ? (themeMode === "dark" ? "#edf0e8" : "#141c10")
           : isTemplate2
           ? (themeMode === "dark" ? "#eae8e3" : "#151515")
           : isTemplate4
@@ -338,7 +343,7 @@ export default async function MagnetPageRoute({
           : isTemplate1
           ? (themeMode === "dark" ? "#f2f3f7" : "#111217")
           : (themeMode === "dark" ? "#ffffff" : "#18181b"),
-        backgroundImage: (isTemplate2 || isTemplate7 || isTemplate4 || isTemplate8 || isTemplate1)
+        backgroundImage: (isTemplate2 || isTemplate3 || isTemplate7 || isTemplate4 || isTemplate8 || isTemplate1)
           ? (isTemplate8
             ? (themeMode === "dark"
               ? "radial-gradient(rgba(255, 255, 255, 0.15) 1px, transparent 1px)"
@@ -392,7 +397,7 @@ export default async function MagnetPageRoute({
       )}
 
       {/* Main content area filling the screen properly with balanced vertical spacing */}
-      <div className={`flex-1 w-full flex flex-col justify-center ${(isTemplate1 || isTemplate2 || isTemplate7 || isTemplate8) ? "p-0" : "px-4 sm:px-6 md:px-8 lg:px-10 xl:px-14 pb-3 sm:pb-4"}`}>
+      <div className={`flex-1 w-full flex flex-col justify-center ${(isTemplate1 || isTemplate2 || isTemplate3 || isTemplate7 || isTemplate8) ? "p-0" : "px-4 sm:px-6 md:px-8 lg:px-10 xl:px-14 pb-3 sm:pb-4"}`}>
         {/* Dynamic Multi-Template View Renderer */}
         {isTemplate2 ? (
           /* TEMPLATE 2: Signal / Noise Editorial Edition (Full-Screen) */
@@ -710,129 +715,410 @@ export default async function MagnetPageRoute({
             </div>
           </div>
         ) : isTemplate3 ? (
-          /* TEMPLATE 3: Aurora Reveal */
-          <div className="w-full max-w-7xl mx-auto">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 items-center lg:items-stretch">
-              {/* LEFT: Aurora Image Tile */}
-              <div className="col-span-12 lg:col-span-5 flex flex-col items-center justify-center gap-3.5 min-h-[380px]">
-                {/* Brand Logo & Brand Name Centered above picture */}
-                {(logo || businessName) && (
-                  <div className="flex items-center justify-center gap-2.5">
-                    <div className={`h-8 w-8 sm:h-9 sm:w-9 rounded-xl flex items-center justify-center bg-transparent overflow-hidden shadow-xs ${logo ? "border-none" : "border-2 border-dashed border-[#a1a1aa]/50"}`}>
-                      {logo ? (
-                        <img src={logo} alt="Logo" className="h-full w-full object-cover" />
-                      ) : (
-                        <div className="h-4 w-4 rounded-md border-2 border-dashed border-[#a1a1aa]" />
+          /* TEMPLATE 3: AI with Ambesh Editorial Note (Full-Width Responsive Desktop) */
+          (() => {
+            const bg = isDark ? "#0c120a" : "#f4f6f0";
+            const surface = isDark ? "#171e12" : "#ffffff";
+            const surfaceBottom = isDark ? "#141b10" : "#eef2e7";
+            const foreground = isDark ? "#edf0e8" : "#141c10";
+            const muted = isDark ? "#a7ada0" : "#525c4c";
+            const faint = isDark ? "#8d9584" : "#788272";
+            const borderCol = isDark ? "#242d1e" : "#d8dfd2";
+            const inputBorder = isDark ? "#35402a" : "#c4cec0";
+            const accent = isDark ? (brandColor === "#0066B2" ? "#d0e797" : brandColor) : (brandColor === "#0066B2" ? "#4d6b1a" : brandColor);
+            const accentInk = isDark ? "#1d2a12" : "#ffffff";
+            const panelFill = isDark
+              ? "linear-gradient(135deg, #171e12, #141b10)"
+              : "linear-gradient(135deg, #ffffff, #f0f4ea)";
+
+            const displayBusinessName = businessName || "AI with Ambesh";
+            const displayAuthorName = authorName || "Ambesh Tiwari";
+            const brandInitial = (displayBusinessName ? displayBusinessName.charAt(0) : "a").toLowerCase();
+
+            const defaultBenefitCards = [
+              {
+                title: "AI Updates",
+                desc: "Important developments from OpenAI, Google, Anthropic, Microsoft and Meta, explained for business owners.",
+              },
+              {
+                title: "Real Business Examples",
+                desc: "See how companies are actually using AI. Understand the problem, the approach, and what you can learn from it.",
+              },
+              {
+                title: "Steal This",
+                desc: "Templates, prompts, workflows and checklists. One practical resource you can save and put to use right away.",
+              },
+              {
+                title: "What I'm Testing",
+                desc: "Things I'm personally trying inside BDA, the lessons along the way, and what I think is worth your time.",
+              },
+            ];
+
+            const isBulletsHidden = Array.isArray(page.bullets) && page.bullets.length === 1 && page.bullets[0] === "__hidden__";
+            const displayBullets = Array.isArray(page.bullets) && page.bullets.length > 0 && !isBulletsHidden
+              ? page.bullets
+              : defaultBenefitCards.map(c => `${c.title} ::: ${c.desc}`);
+
+            const parseCard = (item: string, idx: number) => {
+              if (!item) {
+                const def = defaultBenefitCards[idx % defaultBenefitCards.length];
+                return { title: def.title, desc: def.desc };
+              }
+              if (item.includes(":::")) {
+                const parts = item.split(":::");
+                return { title: parts[0]?.trim() || "", desc: parts.slice(1).join(":::").trim() };
+              }
+              if (item.includes(" — ")) {
+                const [title, ...rest] = item.split(" — ");
+                return { title: title.trim(), desc: rest.join(" — ").trim() };
+              }
+              return { title: item, desc: "" };
+            };
+
+            const renderHighlightedHeadline = (text: string) => {
+              if (!text) {
+                return (
+                  <>
+                    Use AI to run a <em style={{ color: accent, fontFamily: "Georgia, 'Times New Roman', serif", fontStyle: "italic", display: "inline" }}>smarter business.</em>
+                  </>
+                );
+              }
+              const parts = text.split(/(\*[^*]+\*|_[^_]+_|<em>.*?<\/em>)/g);
+              return (
+                <>
+                  {parts.map((part, i) => {
+                    if ((part.startsWith("*") && part.endsWith("*") && part.length > 2) ||
+                        (part.startsWith("_") && part.endsWith("_") && part.length > 2)) {
+                      return (
+                        <em key={i} style={{ color: accent, fontFamily: "Georgia, 'Times New Roman', serif", fontStyle: "italic", display: "inline" }}>
+                          {part.slice(1, -1)}
+                        </em>
+                      );
+                    }
+                    if (part.startsWith("<em>") && part.endsWith("</em>")) {
+                      return (
+                        <em key={i} style={{ color: accent, fontFamily: "Georgia, 'Times New Roman', serif", fontStyle: "italic", display: "inline" }}>
+                          {part.replace(/<\/?em>/g, "")}
+                        </em>
+                      );
+                    }
+                    return <React.Fragment key={i}>{part}</React.Fragment>;
+                  })}
+                </>
+              );
+            };
+
+            const isPitchHidden = page.pitch === "__hidden__" || page.pitch === "__none__";
+            const isEyebrowHidden = page.bulletsTitle === "__hidden__" || page.bulletsTitle === "__none__";
+            const isProofHidden = page.mastheadRight === "__hidden__" || page.mastheadRight === "__none__";
+            const isAuthorBioHidden = page.mastheadLeft === "__hidden__";
+            const isSubheadlineHidden = page.subheadline === "__hidden__";
+
+            const defaultAside1 = "Built for people running a business.";
+            const defaultAside2 = "Every idea comes back to the work.";
+            const parsePitch = (raw?: string) => {
+              if (!raw || !raw.trim() || isPitchHidden) {
+                return { line1: defaultAside1, line2: defaultAside2 };
+              }
+              if (raw.includes(":::")) {
+                const [l1, ...l2] = raw.split(":::");
+                return { line1: l1.trim(), line2: l2.join(":::").trim() };
+              }
+              if (raw.includes("\n")) {
+                const [l1, ...l2] = raw.split("\n");
+                return { line1: l1.trim(), line2: l2.join(" ").trim() };
+              }
+              return { line1: raw.trim(), line2: "" };
+            };
+
+            const { line1: aside1, line2: aside2 } = parsePitch(page.pitch);
+
+            const defaultProofPoints = ["3-minute read", "No technical jargon", "No AI noise"];
+            const proofPoints = !isProofHidden
+              ? (page.mastheadRight && page.mastheadRight.trim()
+                  ? page.mastheadRight.split(":::").map((p: string) => p.trim()).filter(Boolean)
+                  : defaultProofPoints)
+              : [];
+
+            return (
+              <div
+                className="w-full min-h-screen transition-colors duration-200"
+                style={{
+                  backgroundColor: bg,
+                  color: foreground,
+                  fontFamily: "Arial, Helvetica, sans-serif",
+                }}
+              >
+                <div className="w-full max-w-[1480px] mx-auto px-4 sm:px-8 md:px-12 lg:px-16 xl:px-20">
+                  {/* HEADER */}
+                  <header
+                    className="h-20 sm:h-24 flex items-center justify-between"
+                    style={{ borderBottom: `1px solid ${borderCol}` }}
+                  >
+                    <a
+                      href="#"
+                      className="inline-flex items-center gap-3 font-semibold text-base sm:text-lg"
+                      style={{ color: foreground }}
+                    >
+                      <span
+                        className="w-8 h-8 rounded-full flex items-center justify-center font-bold text-xl leading-none shrink-0 overflow-hidden shadow-xs"
+                        style={{
+                          backgroundColor: accent,
+                          color: accentInk,
+                          fontFamily: "Georgia, 'Times New Roman', serif",
+                        }}
+                      >
+                        {logo ? <img src={logo} alt="Logo" className="w-full h-full object-cover" /> : brandInitial}
+                      </span>
+                      <span className="font-semibold tracking-tight">{displayBusinessName}</span>
+                      <span style={{ color: accent }} className="text-xl -ml-2">.</span>
+                    </a>
+
+                    <nav className="flex items-center gap-4 sm:gap-7 text-xs" style={{ color: muted }}>
+                      {!isBulletsHidden && (
+                        <a href="#what-you-get" className="hidden sm:inline-block transition-colors hover:opacity-100">
+                          Read a preview
+                        </a>
                       )}
-                    </div>
-                    <span className={`text-base sm:text-lg font-black tracking-wider uppercase ${themeMode === "dark" ? "text-white" : "text-zinc-900"}`}>
-                      {businessName}
-                    </span>
-                  </div>
-                )}
+                      <a
+                        href="#newsletter"
+                        className="px-4 py-2 rounded-full border transition-all hover:brightness-110 flex items-center gap-1.5"
+                        style={{
+                          borderColor: borderCol,
+                          color: foreground,
+                          backgroundColor: isDark ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.02)",
+                        }}
+                      >
+                        <span>Join the newsletter</span>
+                        <span style={{ color: accent }}>↗</span>
+                      </a>
+                    </nav>
+                  </header>
 
-                <div className="rounded-3xl overflow-hidden relative shadow-2xl aspect-[4/5] max-h-[380px] w-full border border-black/5 dark:border-white/5">
-                  {activeImageUrl && activeImageUrl.trim() !== "" ? (
-                    <img
-                      src={activeImageUrl}
-                      alt={page.name || "Cover"}
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center p-4 text-center bg-zinc-900/60 border border-zinc-800">
-                      <div className="flex flex-col items-center gap-2 p-5 rounded-2xl border-2 border-dashed border-zinc-700 bg-zinc-900/80 text-white">
-                        <svg className="h-7 w-7 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <rect x="3" y="3" width="18" height="18" rx="2" ry="2" strokeWidth="2" />
-                          <circle cx="8.5" cy="8.5" r="1.5" />
-                          <polyline points="21 15 16 10 5 21" strokeWidth="2" />
-                        </svg>
-                        <span className="text-xs font-bold text-white">Cover Image</span>
-                      </div>
-                    </div>
-                  )}
-                  <div
-                    className="absolute inset-0 pointer-events-none"
-                    style={{ background: themeMode === "dark" ? "linear-gradient(to right, transparent 55%, #0c0c12 100%)" : "linear-gradient(to right, transparent 55%, #f7f8fc 100%)" }}
-                  />
-                  <div className="absolute inset-0 pointer-events-none" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 50%)" }} />
-                </div>
-              </div>
-
-              {/* RIGHT: Editorial Form Panel */}
-              <div className="col-span-12 lg:col-span-7 flex flex-col justify-center space-y-4">
-                {/* Eyebrow */}
-                <div className="flex items-center gap-2">
-                  <span className="h-1.5 w-1.5 rounded-full animate-pulse" style={{ backgroundColor: brandColor }} />
-                  <span className={`text-[10px] font-black uppercase tracking-[0.2em] ${themeMode === "dark" ? "text-zinc-400" : "text-zinc-500"}`}>
-                    {page.bulletsTitle || "Free Resource · Instant Access"}
-                  </span>
-                </div>
-
-                {/* Headline */}
-                <div className="space-y-1.5">
-                  <h1 className={`text-2xl sm:text-3xl lg:text-4xl font-black leading-[1.1] tracking-tight ${themeMode === "dark" ? "text-white" : "text-zinc-900"}`}>
-                    {activeHeadline}
-                  </h1>
-                  {page.subheadline && (
-                    <p className={`text-xs sm:text-sm leading-relaxed line-clamp-2 ${themeMode === "dark" ? "text-zinc-300" : "text-zinc-600"}`}>
-                      {page.subheadline}
-                    </p>
-                  )}
-                  {page.pitch && (
-                    <p className={`text-xs leading-relaxed line-clamp-2 ${themeMode === "dark" ? "text-zinc-400" : "text-zinc-500"}`}>
-                      {page.pitch}
-                    </p>
-                  )}
-                </div>
-
-                {/* Bullets */}
-                {page.bullets && page.bullets.length > 0 && (
-                  <div className="space-y-2 pt-1">
-                    {page.bullets.map((item: string, idx: number) => (
-                      <div key={idx} className="flex items-center gap-2.5">
-                        <div
-                          className="h-3.5 w-3.5 shrink-0 rounded-full flex items-center justify-center"
-                          style={{ background: `${brandColor}22`, border: `1px solid ${brandColor}44` }}
-                        >
-                          <svg width="6" height="6" viewBox="0 0 6 6" fill="none">
-                            <path d="M1 3.5l1.7 1.7L6 1.5" stroke={brandColor} strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
-                          </svg>
+                  {/* HERO SECTION (2-Column Grid) */}
+                  <section
+                    className="grid grid-cols-1 lg:grid-cols-[1.18fr_0.82fr] xl:grid-cols-[1.25fr_0.75fr] gap-10 sm:gap-14 lg:gap-20 py-12 sm:py-16 lg:py-24 items-center"
+                    style={{ borderBottom: `1px solid ${borderCol}` }}
+                  >
+                    {/* Left Copy */}
+                    <div className="space-y-6 sm:space-y-8">
+                      {!isEyebrowHidden && (
+                        <div className="flex items-center gap-2">
+                          <span className="inline-block w-1.5 h-1.5 rounded-full" style={{ backgroundColor: accent }} />
+                          <p className="text-[11px] font-bold tracking-[2px] uppercase m-0" style={{ color: accent }}>
+                            {page.bulletsTitle || "A weekly note for business minds"}
+                          </p>
                         </div>
-                        <span className={`text-xs sm:text-sm font-medium ${themeMode === "dark" ? "text-zinc-300" : "text-zinc-600"}`}>{item}</span>
-                      </div>
-                    ))}
-                  </div>
-                )}
+                      )}
 
-                {/* Form */}
-                <div className="pt-1">
-                  <MagnetSignupForm
-                    cta={page.cta}
-                    formTitle={page.formTitle}
-                    formSubtitle={page.formSubtitle}
-                    formButtonText={page.formButtonText}
-                    deliverable={page.deliverable}
-                    accent={page.accent}
-                    pageId={page.id}
-                    pageName={page.name}
-                    pageSlug={page.slug}
-                    pageOwnerEmail={(page as any).userEmail}
-                    brandColor={brandColor}
-                    highlightIntensity={highlightIntensity}
-                    themeMode={themeMode}
-                    customPromptQuestion={page.customPromptQuestion}
-                    customPromptPlaceholder={page.customPromptPlaceholder}
-                    enableAiPersonalizedDeliverable={page.enableAiPersonalizedDeliverable}
-                    customFormFields={page.customFormFields}
-                    username={params.username}
-                    isVariantB={isVariantB}
-                    afterSignupOption={page.afterSignupOption}
-                    destinationUrl={page.destinationUrl}
-                  />
+                      <h1
+                        className="text-4xl sm:text-5xl lg:text-[58px] xl:text-[66px] font-normal leading-[1.06] m-0 tracking-tight"
+                        style={{
+                          color: foreground,
+                          fontFamily: "Georgia, 'Times New Roman', serif",
+                        }}
+                      >
+                        {renderHighlightedHeadline(activeHeadline || page.headline || "Use AI to run a *smarter business.*")}
+                      </h1>
+
+                      {!isSubheadlineHidden && (
+                        <p className="text-base sm:text-lg leading-[1.8] max-w-[620px] m-0" style={{ color: muted }}>
+                          {page.subheadline || "Every week I filter the AI noise and send you what actually matters: important updates, real business use cases, and one resource you can steal and use."}
+                        </p>
+                      )}
+
+                      {proofPoints.length > 0 && (
+                        <div className="flex flex-wrap gap-4 text-xs sm:text-sm" style={{ color: muted }}>
+                          {proofPoints.map((pt: string, idx: number) => (
+                            <span key={idx} className="flex items-center gap-1.5">
+                              <span style={{ color: accent }}>✓</span> {pt}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+
+                      {/* Author Card */}
+                      <div className="pt-2 flex items-center gap-3.5">
+                        <div
+                          className="w-12 h-12 rounded-full border flex items-center justify-center text-lg shrink-0 overflow-hidden shadow-xs"
+                          style={{
+                            borderColor: inputBorder,
+                            color: accent,
+                            fontFamily: "Georgia, 'Times New Roman', serif",
+                            backgroundColor: isDark ? "#141b10" : "#eef2e7",
+                          }}
+                        >
+                          {activeImageUrl && activeImageUrl.trim() !== "" ? (
+                            <img src={activeImageUrl} alt={displayAuthorName} className="w-full h-full object-cover" />
+                          ) : (
+                            displayAuthorName ? displayAuthorName.charAt(0).toUpperCase() : "A"
+                          )}
+                        </div>
+                        <div className="space-y-0.5">
+                          <p className="text-sm sm:text-base font-semibold m-0" style={{ color: foreground }}>
+                            {displayAuthorName}
+                          </p>
+                          {!isAuthorBioHidden && (
+                            <p className="text-xs sm:text-sm leading-tight m-0" style={{ color: faint }}>
+                              {page.mastheadLeft || (businessName ? `Founder of ${businessName}` : "Founder of BDA Technologies")} · Author of <em>Accelerate with AI</em>
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Right Signup Panel */}
+                    <div
+                      id="newsletter"
+                      className="rounded-2xl border p-6 sm:p-8 md:p-10 shadow-2xl transition-all relative overflow-hidden"
+                      style={{
+                        background: panelFill,
+                        borderColor: borderCol,
+                      }}
+                    >
+                      <div className="space-y-1 mb-6">
+                        <p className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider m-0" style={{ color: accent }}>
+                          Less noise. More useful.
+                        </p>
+                        <h2
+                          className="text-2xl sm:text-3xl font-normal m-0"
+                          style={{
+                            color: foreground,
+                            fontFamily: "Georgia, 'Times New Roman', serif",
+                          }}
+                        >
+                          {page.formTitle || "Your next business advantage."}
+                        </h2>
+                        <p className="text-xs sm:text-sm leading-relaxed mt-1.5 mb-0" style={{ color: muted }}>
+                          {page.formSubtitle || "A little clarity on AI. One useful idea to put to work. In your inbox, every week."}
+                        </p>
+                      </div>
+
+                      <MagnetSignupForm
+                        cta={page.cta}
+                        formTitle={page.formTitle}
+                        formSubtitle={page.formSubtitle}
+                        formButtonText={page.formButtonText || "Get AI with Ambesh"}
+                        deliverable={page.deliverable}
+                        accent={page.accent}
+                        pageId={page.id}
+                        pageName={page.name}
+                        pageSlug={page.slug}
+                        pageOwnerEmail={(page as any).userEmail}
+                        brandColor={brandColor}
+                        highlightIntensity={highlightIntensity}
+                        themeMode={themeMode}
+                        customPromptQuestion={page.customPromptQuestion}
+                        customPromptPlaceholder={page.customPromptPlaceholder}
+                        enableAiPersonalizedDeliverable={page.enableAiPersonalizedDeliverable}
+                        customFormFields={page.customFormFields}
+                        username={params.username}
+                        isVariantB={isVariantB}
+                        layout="forest-newsletter"
+                        afterSignupOption={page.afterSignupOption}
+                        destinationUrl={page.destinationUrl}
+                      />
+                    </div>
+                  </section>
+
+                  {/* BENEFITS / "WHAT YOU'LL GET" SECTION */}
+                  {!isBulletsHidden && (
+                    <section id="what-you-get" className="py-16 sm:py-20">
+                      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10">
+                        <div>
+                          <p className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider mb-2" style={{ color: accent }}>
+                            A useful inbox habit
+                          </p>
+                          <h2
+                            className="text-2xl sm:text-4xl font-normal m-0"
+                            style={{
+                              color: foreground,
+                              fontFamily: "Georgia, 'Times New Roman', serif",
+                            }}
+                          >
+                            What you&apos;ll get.
+                          </h2>
+                        </div>
+                        {!isPitchHidden && (
+                          <p className="text-xs sm:text-sm leading-relaxed m-0 md:text-right" style={{ color: muted }}>
+                            {aside1}
+                            {aside2 && <><br />{aside2}</>}
+                          </p>
+                        )}
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                        {displayBullets.map((item, idx) => {
+                          const parsed = parseCard(item, idx);
+                          const def = defaultBenefitCards[idx % defaultBenefitCards.length];
+                          return (
+                            <div
+                              key={idx}
+                              className="rounded-xl border p-6 sm:p-7 flex flex-col justify-between min-h-[230px] shadow-sm"
+                              style={{
+                                background: panelFill,
+                                borderColor: borderCol,
+                              }}
+                            >
+                              <div>
+                                <div className="mb-6" style={{ color: accent }}>
+                                  {idx % 4 === 0 && (
+                                    <svg className="w-6 h-6 stroke-[1.5]" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                      <path d="m13 2-8 12h6l-1 8 9-13h-6l1-7Z" strokeLinecap="round" strokeLinejoin="round" />
+                                    </svg>
+                                  )}
+                                  {idx % 4 === 1 && (
+                                    <svg className="w-6 h-6 stroke-[1.5]" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                      <rect x="4" y="7" width="16" height="13" rx="2" />
+                                      <path d="M9 7V4h6v3M4 12c5 3 11 3 16 0M10 12h4v4h-4z" strokeLinecap="round" strokeLinejoin="round" />
+                                    </svg>
+                                  )}
+                                  {idx % 4 === 2 && (
+                                    <svg className="w-6 h-6 stroke-[1.5]" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                      <path d="M12 3v12m-5-5 5 5-5 5M4 16v5h16v-5" strokeLinecap="round" strokeLinejoin="round" />
+                                    </svg>
+                                  )}
+                                  {idx % 4 === 3 && (
+                                    <svg className="w-6 h-6 stroke-[1.5]" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                      <path d="M9 3h6M10 3v7L4.5 19a1.3 1.3 0 0 0 1.1 2h12.8a1.3 1.3 0 0 0 1.1-2L14 10V3M8 15h8" strokeLinecap="round" strokeLinejoin="round" />
+                                    </svg>
+                                  )}
+                                </div>
+                                <h3
+                                  className="text-base sm:text-lg font-normal mb-2.5"
+                                  style={{
+                                    color: foreground,
+                                    fontFamily: "Georgia, 'Times New Roman', serif",
+                                  }}
+                                >
+                                  {parsed.title || def.title}
+                                </h3>
+                                <p className="text-xs sm:text-sm leading-relaxed m-0" style={{ color: muted }}>
+                                  {parsed.desc || def.desc}
+                                </p>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </section>
+                  )}
+
+                  {/* FOOTER */}
+                  <footer
+                    className="py-8 sm:py-10 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs"
+                    style={{
+                      borderTop: `1px solid ${borderCol}`,
+                      color: faint,
+                    }}
+                  >
+                    <span>© {new Date().getFullYear()} {displayBusinessName} · All rights reserved.</span>
+                    <span>By {displayAuthorName}</span>
+                  </footer>
                 </div>
               </div>
-            </div>
-          </div>
+            );
+          })()
         ) : isTemplate4 ? (
           /* TEMPLATE 4: Night Poster / Day Poster Brutalist Edition */
           (() => {

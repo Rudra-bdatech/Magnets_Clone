@@ -597,165 +597,344 @@ const BrandTemplatePreview = memo(function BrandTemplatePreview({
         </div>
       )}
 
-      {/* TEMPLATE 3: Aurora Reveal */}
-      {templateId === "template3" && (
-        <div className="w-full py-1">
-          <div className="grid grid-cols-12 gap-5 items-stretch">
-            {/* LEFT: Aurora Image Tile */}
-            <div className="col-span-12 md:col-span-5 flex flex-col items-center justify-center gap-3.5 min-h-[360px]">
-              {/* Brand Logo & Brand Name Centered above picture */}
-              {(logo || businessName) && (
-                <div className="flex items-center justify-center gap-2.5">
-                  <div className={`h-8 w-8 sm:h-9 sm:w-9 rounded-xl flex items-center justify-center bg-transparent overflow-hidden ${logo ? "border-none" : "border border-dashed border-[#a1a1aa]/45"}`}>
-                    {logo ? (
-                      <img src={logo} alt="Logo" className="h-full w-full object-cover" />
-                    ) : (
-                      <div className="h-4 w-4 rounded-sm border border-dashed border-[#a1a1aa]" />
-                    )}
-                  </div>
-                  <span className={`text-sm sm:text-base font-black tracking-wider uppercase ${themeMode === "dark" ? "text-white" : "text-black"}`}>
-                    {businessName || "BDA"}
-                  </span>
-                </div>
-              )}
+      {/* TEMPLATE 3: AI with Ambesh Editorial Note */}
+      {templateId === "template3" && (() => {
+        const isDark = themeMode === "dark";
+        const bg = isDark ? "#0c120a" : "#f4f6f0";
+        const surface = isDark ? "#171e12" : "#ffffff";
+        const surfaceBottom = isDark ? "#141b10" : "#eef2e7";
+        const foreground = isDark ? "#edf0e8" : "#141c10";
+        const muted = isDark ? "#a7ada0" : "#525c4c";
+        const faint = isDark ? "#8d9584" : "#788272";
+        const borderCol = isDark ? "#242d1e" : "#d8dfd2";
+        const inputBorder = isDark ? "#35402a" : "#c4cec0";
+        const accent = isDark ? (brandColor === "#0066B2" ? "#d0e797" : brandColor) : (brandColor === "#0066B2" ? "#4d6b1a" : brandColor);
+        const accentInk = isDark ? "#1d2a12" : "#ffffff";
+        const panelFill = isDark
+          ? "linear-gradient(135deg, #171e12, #141b10)"
+          : "linear-gradient(135deg, #ffffff, #f0f4ea)";
 
-              <div className="rounded-2xl sm:rounded-3xl overflow-hidden relative shadow-xl aspect-[4/3] sm:aspect-[4/5] max-h-[260px] sm:max-h-[340px] w-full border border-black/5 dark:border-white/5">
-                {latestPage?.imageUrl && latestPage.imageUrl.trim() !== "" ? (
-                  <img
-                    src={latestPage.imageUrl}
-                    alt={latestPage?.name || "Cover"}
-                    className="absolute inset-0 w-full h-full object-cover"
-                  />
-                ) : (
-                  <div className="absolute inset-0 flex items-center justify-center p-6 text-center bg-[#121215]">
-                    <div className="flex flex-col items-center gap-2 p-5 rounded-2xl border-2 border-dashed border-zinc-700 bg-zinc-900/80 text-white">
-                      <svg className="h-8 w-8 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2" strokeWidth="2" />
-                        <circle cx="8.5" cy="8.5" r="1.5" />
-                        <polyline points="21 15 16 10 5 21" strokeWidth="2" />
-                      </svg>
-                      <span className="text-xs font-bold text-white">Add a cover image</span>
-                    </div>
-                  </div>
-                )}
-                <div
-                  className="absolute inset-0 pointer-events-none"
-                  style={{ background: themeMode === "dark" ? "linear-gradient(to right, transparent 55%, #0c0c12 100%)" : "linear-gradient(to right, transparent 55%, #f7f8fc 100%)" }}
-                />
-                <div className="absolute inset-0 pointer-events-none" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 50%)" }} />
+        const displayBusinessName = businessName || "AI with Ambesh";
+        const displayAuthorName = businessName || "Ambesh Tiwari";
+        const brandInitial = (displayBusinessName ? displayBusinessName.charAt(0) : "a").toLowerCase();
+
+        const defaultBenefitCards = [
+          {
+            title: "AI Updates",
+            desc: "Important developments from OpenAI, Google, Anthropic, Microsoft and Meta, explained for business owners.",
+          },
+          {
+            title: "Real Business Examples",
+            desc: "See how companies are actually using AI. Understand the problem, the approach, and what you can learn from it.",
+          },
+          {
+            title: "Steal This",
+            desc: "Templates, prompts, workflows and checklists. One practical resource you can save and put to use right away.",
+          },
+          {
+            title: "What I'm Testing",
+            desc: "Things I'm personally trying inside BDA, the lessons along the way, and what I think is worth your time.",
+          },
+        ];
+
+        const displayBullets = Array.isArray(latestPage?.bullets) && latestPage.bullets.length > 0
+          ? latestPage.bullets
+          : defaultBenefitCards.map(c => `${c.title} ::: ${c.desc}`);
+
+        const parseCard = (item: string, idx: number) => {
+          if (!item) {
+            const def = defaultBenefitCards[idx % defaultBenefitCards.length];
+            return { title: def.title, desc: def.desc };
+          }
+          if (item.includes(":::")) {
+            const parts = item.split(":::");
+            return { title: parts[0]?.trim() || "", desc: parts.slice(1).join(":::").trim() };
+          }
+          if (item.includes(" — ")) {
+            const [title, ...rest] = item.split(" — ");
+            return { title: title.trim(), desc: rest.join(" — ").trim() };
+          }
+          return { title: item, desc: "" };
+        };
+
+        const renderHighlightedHeadline = (text: string) => {
+          if (!text) {
+            return (
+              <>
+                Use AI to run a <em style={{ color: accent, fontFamily: "Georgia, 'Times New Roman', serif", fontStyle: "italic", display: "inline" }}>smarter business.</em>
+              </>
+            );
+          }
+          const parts = text.split(/(\*[^*]+\*|_[^_]+_|<em>.*?<\/em>)/g);
+          return (
+            <>
+              {parts.map((part, i) => {
+                if ((part.startsWith("*") && part.endsWith("*") && part.length > 2) ||
+                    (part.startsWith("_") && part.endsWith("_") && part.length > 2)) {
+                  return (
+                    <em key={i} style={{ color: accent, fontFamily: "Georgia, 'Times New Roman', serif", fontStyle: "italic", display: "inline" }}>
+                      {part.slice(1, -1)}
+                    </em>
+                  );
+                }
+                if (part.startsWith("<em>") && part.endsWith("</em>")) {
+                  return (
+                    <em key={i} style={{ color: accent, fontFamily: "Georgia, 'Times New Roman', serif", fontStyle: "italic", display: "inline" }}>
+                      {part.replace(/<\/?em>/g, "")}
+                    </em>
+                  );
+                }
+                return <React.Fragment key={i}>{part}</React.Fragment>;
+              })}
+            </>
+          );
+        };
+
+        const parsePitch = (raw?: string) => {
+          if (!raw || !raw.trim()) {
+            return { line1: "Built for people running a business.", line2: "Every idea comes back to the work." };
+          }
+          if (raw.includes(":::")) {
+            const [l1, ...l2] = raw.split(":::");
+            return { line1: l1.trim(), line2: l2.join(":::").trim() };
+          }
+          if (raw.includes("\n")) {
+            const [l1, ...l2] = raw.split("\n");
+            return { line1: l1.trim(), line2: l2.join(" ").trim() };
+          }
+          return { line1: raw.trim(), line2: "" };
+        };
+
+        const { line1: aside1, line2: aside2 } = parsePitch(latestPage?.pitch);
+
+        return (
+          <div
+            className="w-full py-2 px-2 sm:px-4 rounded-xl transition-colors duration-200"
+            style={{
+              backgroundColor: bg,
+              color: foreground,
+              fontFamily: "Arial, Helvetica, sans-serif",
+            }}
+          >
+            {/* Header */}
+            <header
+              className="h-16 flex items-center justify-between px-2"
+              style={{ borderBottom: `1px solid ${borderCol}` }}
+            >
+              <div className="inline-flex items-center gap-2.5 font-semibold text-sm sm:text-base">
+                <span
+                  className="w-7 h-7 rounded-full flex items-center justify-center font-bold text-base leading-none shrink-0 overflow-hidden"
+                  style={{
+                    backgroundColor: accent,
+                    color: accentInk,
+                    fontFamily: "Georgia, 'Times New Roman', serif",
+                  }}
+                >
+                  {logo ? <img src={logo} alt="Logo" className="w-full h-full object-cover" /> : brandInitial}
+                </span>
+                <span className="font-semibold tracking-tight">{displayBusinessName}</span>
+                <span style={{ color: accent }} className="text-lg -ml-1.5">.</span>
               </div>
-            </div>
-
-            {/* RIGHT: Editorial Form Panel */}
-            <div className="col-span-12 md:col-span-7 flex flex-col justify-center space-y-4">
-              <div className="flex items-center gap-2">
-                <span className="h-1.5 w-1.5 rounded-full animate-pulse" style={{ backgroundColor: brandColor }} />
-                <span className={`text-[9px] font-black uppercase tracking-[0.2em] ${themeMode === "dark" ? "text-zinc-500" : "text-zinc-400"}`}>
-                  {latestPage?.bulletsTitle || "Free Resource · Instant Access"}
+              <div className="flex items-center gap-3 text-xs" style={{ color: muted }}>
+                <span className="hidden sm:inline">Read a preview</span>
+                <span
+                  className="px-3 py-1 rounded-full border text-[11px]"
+                  style={{ borderColor: borderCol, color: foreground }}
+                >
+                  Join the newsletter <span style={{ color: accent }}>↗</span>
                 </span>
               </div>
+            </header>
 
-              <div className="space-y-1.5">
-                <h3 className={`text-xl md:text-2xl font-black leading-tight tracking-tight ${themeMode === "dark" ? "text-white" : "text-zinc-900"}`}>
-                  {latestPage?.headline || latestPage?.name || "101 Winning Viral Templates"}
-                </h3>
-                {latestPage ? (
-                  latestPage.subheadline && (
-                    <p className={`text-xs leading-relaxed ${themeMode === "dark" ? "text-zinc-400" : "text-zinc-500"}`}>
-                      {latestPage.subheadline}
+            {/* Hero Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-6 py-8 items-start px-2">
+              {/* Left Column (7 cols) */}
+              <div className="md:col-span-7 space-y-4">
+                <div className="flex items-center gap-1.5">
+                  <span className="inline-block w-1.5 h-1.5 rounded-full" style={{ backgroundColor: accent }} />
+                  <p className="text-[10px] font-bold tracking-[2px] uppercase m-0" style={{ color: accent }}>
+                    {latestPage?.bulletsTitle || "A weekly note for business minds"}
+                  </p>
+                </div>
+
+                <h2
+                  className="text-2xl sm:text-3xl lg:text-4xl font-normal leading-[1.1] m-0"
+                  style={{
+                    color: foreground,
+                    fontFamily: "Georgia, 'Times New Roman', serif",
+                  }}
+                >
+                  {renderHighlightedHeadline(latestPage?.headline || latestPage?.name || "Use AI to run a *smarter business.*")}
+                </h2>
+
+                <p className="text-xs sm:text-sm leading-[1.7] m-0" style={{ color: muted }}>
+                  {latestPage?.subheadline || "Every week I filter the AI noise and send you what actually matters: important updates, real business use cases, and one resource you can steal and use."}
+                </p>
+
+                <div className="flex flex-wrap gap-3 text-[11px]" style={{ color: muted }}>
+                  <span className="flex items-center gap-1"><span style={{ color: accent }}>✓</span> 3-minute read</span>
+                  <span className="flex items-center gap-1"><span style={{ color: accent }}>✓</span> No technical jargon</span>
+                  <span className="flex items-center gap-1"><span style={{ color: accent }}>✓</span> No AI noise</span>
+                </div>
+
+                {/* Author info */}
+                <div className="pt-2 flex items-center gap-3">
+                  <div
+                    className="w-10 h-10 rounded-full border flex items-center justify-center text-sm shrink-0 overflow-hidden"
+                    style={{
+                      borderColor: inputBorder,
+                      color: accent,
+                      fontFamily: "Georgia, 'Times New Roman', serif",
+                      backgroundColor: isDark ? "#141b10" : "#eef2e7",
+                    }}
+                  >
+                    {latestPage?.imageUrl ? (
+                      <img src={latestPage.imageUrl} alt={displayAuthorName} className="w-full h-full object-cover" />
+                    ) : (
+                      "AT"
+                    )}
+                  </div>
+                  <div>
+                    <p className="text-xs font-semibold m-0" style={{ color: foreground }}>
+                      {displayAuthorName}
                     </p>
-                  )
-                ) : (
-                  <p className={`text-xs leading-relaxed ${themeMode === "dark" ? "text-zinc-400" : "text-zinc-500"}`}>
-                    Stop staring at a blank page. Start creating content that actually connects.
-                  </p>
-                )}
-                {latestPage?.pitch && (
-                  <p className={`text-xs leading-relaxed ${themeMode === "dark" ? "text-zinc-400" : "text-zinc-600"}`}>
-                    {latestPage.pitch}
-                  </p>
-                )}
+                    <p className="text-[11px] m-0" style={{ color: faint }}>
+                      {businessName ? `Founder of ${businessName}` : "Founder of BDA Technologies"} · Author of <em>Accelerate with AI</em>
+                    </p>
+                  </div>
+                </div>
               </div>
 
-              {latestPage?.bullets && latestPage.bullets.length > 0 && (
-                <div className="space-y-1.5">
-                  {latestPage.bullets.map((item, idx) => (
-                    <div key={idx} className="flex items-center gap-2">
-                      <div
-                        className="h-4 w-4 shrink-0 rounded-full flex items-center justify-center"
-                        style={{ background: hexWithAlpha(brandColor, 0.13), border: `1px solid ${hexWithAlpha(brandColor, 0.27)}` }}
-                      >
-                        <svg width="7" height="7" viewBox="0 0 7 7" fill="none">
-                          <path d="M1 3.5l1.7 1.7L6 1.5" stroke={brandColor} strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
-                        </svg>
-                      </div>
-                      <span className={`text-[11px] font-medium ${themeMode === "dark" ? "text-zinc-300" : "text-zinc-600"}`}>{item}</span>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              {/* Form Card (Exact match with MagnetSignupForm) */}
+              {/* Right Column (5 cols) Form Card */}
               <div
-                className={`rounded-2xl sm:rounded-3xl border p-5 sm:p-6 transition-all duration-300 backdrop-blur-md relative overflow-hidden shadow-2xl ${
-                  themeMode === "dark" ? "text-white" : "text-zinc-900"
-                }`}
+                className="md:col-span-5 rounded-xl border p-5 shadow-lg space-y-3"
                 style={{
-                  borderColor: hexWithAlpha(brandColor, 0.25),
-                  boxShadow: `0 10px 30px -4px ${hexWithAlpha(brandColor, 0.2)}`,
-                  background:
-                    themeMode === "light"
-                      ? `linear-gradient(135deg, ${hexWithAlpha(brandColor, 0.08)} 0%, rgba(255, 255, 255, 0.95) 60%)`
-                      : `linear-gradient(135deg, ${hexWithAlpha(brandColor, 0.12)} 0%, rgba(22, 22, 25, 0.95) 60%)`
+                  background: panelFill,
+                  borderColor: borderCol,
                 }}
               >
-                <div className="space-y-1 text-center mb-3">
-                  <p className="text-lg sm:text-xl font-black tracking-tight">{latestPage?.formTitle || "Get instant access"}</p>
-                  <p className={`text-xs leading-normal ${themeMode === "dark" ? "text-zinc-400" : "text-[#9B9085]"}`}>
-                    {latestPage?.formSubtitle || "By opting in you consent to receive this resource by email."}
+                <div>
+                  <p className="text-[9px] font-bold uppercase tracking-wider m-0" style={{ color: accent }}>
+                    Less noise. More useful.
+                  </p>
+                  <h3
+                    className="text-lg font-normal m-0"
+                    style={{
+                      color: foreground,
+                      fontFamily: "Georgia, 'Times New Roman', serif",
+                    }}
+                  >
+                    {latestPage?.formTitle || "Your next business advantage."}
+                  </h3>
+                  <p className="text-[11px] leading-relaxed mt-1 m-0" style={{ color: muted }}>
+                    {latestPage?.formSubtitle || "A little clarity on AI. One useful idea to put to work. In your inbox, every week."}
                   </p>
                 </div>
 
-                <div className={latestPage?.customFormFields && latestPage.customFormFields.length > 0 ? "grid grid-cols-1 sm:grid-cols-2 gap-2.5" : "space-y-2.5"}>
+                <div className="space-y-2.5">
                   <input
                     type="text"
-                    placeholder={latestPage?.namePlaceholder || "Name"}
+                    placeholder="Your first name"
                     readOnly
-                    className="min-h-11 h-11 w-full rounded-xl border border-zinc-200 dark:border-[#252529] bg-white dark:bg-[#0E0E10] px-3.5 py-2.5 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 outline-none transition shadow-xs"
+                    className="w-full h-9 px-3 rounded-md text-xs border outline-none pointer-events-none"
+                    style={{ backgroundColor: bg, borderColor: inputBorder, color: foreground }}
                   />
                   <input
                     type="email"
-                    placeholder={latestPage?.emailPlaceholder || "Email"}
+                    placeholder="you@company.com"
                     readOnly
-                    className="min-h-11 h-11 w-full rounded-xl border border-zinc-200 dark:border-[#252529] bg-white dark:bg-[#0E0E10] px-3.5 py-2.5 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 outline-none transition shadow-xs"
+                    className="w-full h-9 px-3 rounded-md text-xs border outline-none pointer-events-none"
+                    style={{ backgroundColor: bg, borderColor: inputBorder, color: foreground }}
                   />
 
                   {latestPage?.customFormFields && latestPage.customFormFields.length > 0 && (
-                    latestPage.customFormFields.map((field) => (
-                      <div key={field.id} className={field.type === "textarea" ? "col-span-1 sm:col-span-2" : ""}>
-                        <input
-                          type="text"
-                          placeholder={`${field.label}${field.required ? " *" : ""}`}
-                          readOnly
-                          className="min-h-11 h-11 w-full rounded-xl border border-zinc-200 dark:border-[#252529] bg-white dark:bg-[#0E0E10] px-3.5 py-2.5 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 outline-none transition shadow-xs"
-                        />
-                      </div>
+                    latestPage.customFormFields.map((field: any) => (
+                      <input
+                        key={field.id}
+                        type="text"
+                        placeholder={`${field.label || "Custom field"}`}
+                        readOnly
+                        className="w-full h-9 px-3 rounded-md text-xs border outline-none pointer-events-none"
+                        style={{ backgroundColor: bg, borderColor: inputBorder, color: foreground }}
+                      />
                     ))
                   )}
-                </div>
 
-                <button
-                  type="button"
-                  className="w-full rounded-xl py-3 px-4 text-xs font-bold text-white shadow-md transition duration-200 hover:opacity-95 mt-3"
-                  style={{ backgroundColor: brandColor }}
-                >
-                  {latestPage?.formButtonText || latestPage?.cta || "Get instant access"}
-                </button>
+                  <button
+                    type="button"
+                    className="w-full h-10 px-4 rounded-md font-bold text-xs flex items-center justify-between shadow-sm pointer-events-none"
+                    style={{
+                      backgroundColor: accent,
+                      color: accentInk,
+                    }}
+                  >
+                    <span>{latestPage?.formButtonText || latestPage?.cta || "Get AI with Ambesh"}</span>
+                    <span>→</span>
+                  </button>
+                  <p className="text-center text-[9px] m-0" style={{ color: faint }}>
+                    Free. Unsubscribe anytime.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Benefits 4-card grid */}
+            <div className="py-6 border-t px-2" style={{ borderColor: borderCol }}>
+              <div className="flex items-end justify-between gap-4 mb-4">
+                <div>
+                  <p className="text-[9px] font-bold uppercase tracking-wider mb-1" style={{ color: accent }}>
+                    A useful inbox habit
+                  </p>
+                  <h4
+                    className="text-lg font-normal m-0"
+                    style={{
+                      color: foreground,
+                      fontFamily: "Georgia, 'Times New Roman', serif",
+                    }}
+                  >
+                    What you&apos;ll get.
+                  </h4>
+                </div>
+                <p className="text-[11px] leading-snug m-0 text-right" style={{ color: muted }}>
+                  {aside1}<br />{aside2}
+                </p>
+              </div>
+
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                {displayBullets.slice(0, 4).map((item, idx) => {
+                  const parsed = parseCard(item, idx);
+                  const def = defaultBenefitCards[idx % defaultBenefitCards.length];
+                  return (
+                    <div
+                      key={idx}
+                      className="rounded-lg border p-3.5 flex flex-col justify-between"
+                      style={{ background: panelFill, borderColor: borderCol }}
+                    >
+                      <div className="text-xs mb-2" style={{ color: accent }}>
+                        {idx === 0 ? "⚡" : idx === 1 ? "💼" : idx === 2 ? "📥" : "🧪"}
+                      </div>
+                      <div>
+                        <h5
+                          className="text-xs font-semibold mb-1"
+                          style={{
+                            color: foreground,
+                            fontFamily: "Georgia, 'Times New Roman', serif",
+                          }}
+                        >
+                          {parsed.title || def.title}
+                        </h5>
+                        <p className="text-[10px] leading-relaxed m-0" style={{ color: muted }}>
+                          {parsed.desc || def.desc}
+                        </p>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
 
       {/* TEMPLATE 4: Night Poster / Day Poster Edition */}
       {templateId === "template4" && (

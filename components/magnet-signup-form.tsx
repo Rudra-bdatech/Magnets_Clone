@@ -47,7 +47,7 @@ export default function MagnetSignupForm({
   customFormFields?: CustomFormField[];
   username?: string;
   isVariantB?: boolean;
-  layout?: "standard" | "horizontal-glass" | "split-panel" | "editorial" | "monograph" | "brutalist" | "poster" | "collage-zine" | "premium-night";
+  layout?: "standard" | "horizontal-glass" | "split-panel" | "editorial" | "monograph" | "brutalist" | "poster" | "collage-zine" | "premium-night" | "forest-newsletter";
   afterSignupOption?: "standard" | "elsewhere" | "custom";
   destinationUrl?: string;
 }) {
@@ -263,6 +263,171 @@ export default function MagnetSignupForm({
             <span>📥 Click Here to Download Resource Immediately</span>
           </a>
         </div>
+      ) : layout === "forest-newsletter" ? (
+        (() => {
+          const isDark = themeMode === "dark";
+          const bg = isDark ? "#0c120a" : "#f4f6f0";
+          const foreground = isDark ? "#edf0e8" : "#141c10";
+          const muted = isDark ? "#a7ada0" : "#525c4c";
+          const faint = isDark ? "#8d9584" : "#788272";
+          const borderCol = isDark ? "#242d1e" : "#d8dfd2";
+          const inputBorder = isDark ? "#35402a" : "#c4cec0";
+          const accent = isDark ? (brandColor === "#0066B2" ? "#d0e797" : brandColor) : (brandColor === "#0066B2" ? "#4d6b1a" : brandColor);
+          const accentInk = isDark ? "#1d2a12" : "#ffffff";
+
+          return (
+            <div className="w-full" suppressHydrationWarning style={{ fontFamily: "Arial, Helvetica, sans-serif" }}>
+              <form onSubmit={handleSubmit} className="space-y-3.5" suppressHydrationWarning>
+                <div>
+                  <label htmlFor="fn-name" className="block text-[11px] mb-1.5" style={{ color: muted }}>
+                    First name
+                  </label>
+                  <input
+                    id="fn-name"
+                    type="text"
+                    required
+                    disabled={loading}
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="Your first name"
+                    className="w-full h-11 px-3.5 rounded-md text-xs outline-none border transition"
+                    style={{
+                      backgroundColor: bg,
+                      borderColor: inputBorder,
+                      color: foreground,
+                    }}
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor="fn-email" className="block text-[11px] mb-1.5" style={{ color: muted }}>
+                    Work email
+                  </label>
+                  <input
+                    id="fn-email"
+                    type="email"
+                    required
+                    disabled={loading}
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="you@company.com"
+                    className="w-full h-11 px-3.5 rounded-md text-xs outline-none border transition"
+                    style={{
+                      backgroundColor: bg,
+                      borderColor: inputBorder,
+                      color: foreground,
+                    }}
+                  />
+                </div>
+
+                {/* Custom Form Fields */}
+                {customFormFields && customFormFields.length > 0 && (
+                  <div className="space-y-3">
+                    {customFormFields.map((field) => (
+                      <div key={field.id}>
+                        {field.type === "checkbox" ? (
+                          <label className="flex items-center gap-2 text-[11px] cursor-pointer" style={{ color: muted }}>
+                            <input
+                              type="checkbox"
+                              required={field.required}
+                              disabled={loading}
+                              checked={Boolean(customFieldValues[field.id])}
+                              onChange={(e) => handleCustomFieldChange(field.id, e.target.checked)}
+                              className="rounded border"
+                              style={{ borderColor: inputBorder }}
+                            />
+                            <span>{field.label}{field.required ? " *" : ""}</span>
+                          </label>
+                        ) : (
+                          <>
+                            <label className="block text-[11px] mb-1.5" style={{ color: muted }}>
+                              {field.label}{field.required ? " *" : ""}
+                            </label>
+                            <input
+                              type="text"
+                              required={field.required}
+                              disabled={loading}
+                              value={customFieldValues[field.id] || ""}
+                              onChange={(e) => handleCustomFieldChange(field.id, e.target.value)}
+                              placeholder={field.placeholder || `Enter ${field.label.toLowerCase()}...`}
+                              className="w-full h-11 px-3.5 rounded-md text-xs outline-none border transition"
+                              style={{
+                                backgroundColor: bg,
+                                borderColor: inputBorder,
+                                color: foreground,
+                              }}
+                            />
+                          </>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* AI Custom Prompt Question */}
+                {enableAiPersonalizedDeliverable && (
+                  <div>
+                    <label className="block text-[11px] mb-1.5" style={{ color: muted }}>
+                      {customPromptQuestion || "What is your main question or focus?"}
+                    </label>
+                    <input
+                      type="text"
+                      disabled={loading}
+                      value={customAnswer}
+                      onChange={(e) => setCustomAnswer(e.target.value)}
+                      placeholder={customPromptPlaceholder || "e.g. Scaling enterprise outbound..."}
+                      className="w-full h-11 px-3.5 rounded-md text-xs outline-none border transition"
+                      style={{
+                        backgroundColor: bg,
+                        borderColor: inputBorder,
+                        color: foreground,
+                      }}
+                    />
+                  </div>
+                )}
+
+                {errorMsg && (
+                  <div className="p-2.5 rounded-md bg-red-950/40 border border-red-800/60 text-red-300 text-xs">
+                    {errorMsg}
+                  </div>
+                )}
+
+                <div className="pt-2">
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="w-full h-12 px-4 rounded-md font-bold text-xs sm:text-sm flex items-center justify-between shadow-md transition hover:brightness-105 cursor-pointer disabled:opacity-50"
+                    style={{
+                      backgroundColor: accent,
+                      color: accentInk,
+                    }}
+                  >
+                    {loading ? (
+                      <span className="flex items-center justify-center gap-2 w-full">
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        <span>SENDING...</span>
+                      </span>
+                    ) : (
+                      <>
+                        <span>{formButtonText || cta || "Get AI with Ambesh"}</span>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M4 12h16m-5-5 5 5-5 5" />
+                        </svg>
+                      </>
+                    )}
+                  </button>
+                </div>
+
+                <p className="text-center text-[10px] m-0 pt-1" style={{ color: faint }}>
+                  Free. Unsubscribe anytime.
+                </p>
+                <p className="text-center text-[10px] m-0 pt-2 border-t" style={{ borderColor: borderCol, color: faint }}>
+                  Instant delivery · Direct to your inbox.
+                </p>
+              </form>
+            </div>
+          );
+        })()
       ) : layout === "premium-night" ? (
         (() => {
           const isDark = themeMode === "dark";

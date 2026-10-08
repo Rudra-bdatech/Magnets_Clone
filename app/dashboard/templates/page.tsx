@@ -456,6 +456,10 @@ export default function TemplatesPage() {
                       ? (themeMode === "dark"
                           ? "bg-[#0d0e12] border-[#2e303d] text-white"
                           : "bg-[#eee9df] border-[#141414] text-zinc-900")
+                      : templateId === "template3"
+                      ? (themeMode === "dark"
+                          ? "bg-[#0c120a] border-[#242d1e] text-white"
+                          : "bg-[#f4f6f0] border-[#d8dfd2] text-zinc-900")
                       : (themeMode === "dark"
                           ? "bg-[#0E0E10] border-[#2e2e38] text-white"
                           : "bg-[#FAFAFA] border-[#e4e4e7] text-zinc-900")
@@ -463,11 +467,15 @@ export default function TemplatesPage() {
                   style={{
                     backgroundColor: templateId === "template8"
                       ? (themeMode === "dark" ? "#0d0e12" : "#eee9df")
+                      : templateId === "template3"
+                      ? (themeMode === "dark" ? "#0c120a" : "#f4f6f0")
                       : undefined,
                     backgroundImage: templateId === "template8"
                       ? (themeMode === "dark"
                           ? "radial-gradient(rgba(255, 255, 255, 0.15) 1px, transparent 1px)"
                           : "radial-gradient(rgba(20, 20, 20, 0.18) 1px, transparent 1px)")
+                      : templateId === "template3"
+                      ? "none"
                       : (themeMode === "light"
                           ? `radial-gradient(circle at 0% 0%, ${hexWithAlpha(brandColor, 0.05 + (highlightIntensity / 100) * 0.4)} 0%, transparent 50%), radial-gradient(circle at 100% 100%, ${hexWithAlpha(brandColor, 0.03 + (highlightIntensity / 100) * 0.35)} 0%, transparent 50%)`
                           : `radial-gradient(circle at 0% 0%, ${hexWithAlpha(brandColor, 0.08 + (highlightIntensity / 100) * 0.45)} 0%, transparent 50%), radial-gradient(circle at 100% 100%, ${hexWithAlpha(brandColor, 0.05 + (highlightIntensity / 100) * 0.4)} 0%, transparent 50%)`),

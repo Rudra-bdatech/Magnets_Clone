@@ -200,13 +200,15 @@ export default function LandingPageTab({
               ? ((account?.themeMode || "light") === "dark" ? "#0d0e12" : "#eee9df")
               : templateId === "template7"
               ? ((account?.themeMode || "light") === "dark" ? "#0d0d0f" : "#f4ff3c")
+              : templateId === "template3"
+              ? ((account?.themeMode || "light") === "dark" ? "#0c120a" : "#f4f6f0")
               : templateId === "template2"
               ? ((account?.themeMode || "light") === "dark" ? "#141416" : "#f3f0e8")
               : templateId === "template1"
               ? ((account?.themeMode || "light") === "dark" ? "#0c0d11" : "#f8f9fa")
               : ((account?.themeMode || "light") === "dark" ? "#0E0E10" : "#FAFAFA"),
             color: (account?.themeMode || "light") === "dark" ? "#ffffff" : "#18181b",
-            backgroundImage: (templateId === "template1" || templateId === "template2" || templateId === "template7" || templateId === "template8")
+            backgroundImage: (templateId === "template1" || templateId === "template2" || templateId === "template3" || templateId === "template7" || templateId === "template8")
               ? (templateId === "template1"
                 ? `radial-gradient(620px 380px at 18% 0%, ${(account?.brandColor || "#fb4d6a")}1c, transparent 70%), radial-gradient(520px 320px at 88% 96%, ${(account?.brandColor || "#fb4d6a")}10, transparent 70%)`
                 : "none")
