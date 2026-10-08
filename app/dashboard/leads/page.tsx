@@ -42,11 +42,11 @@ import { LeadTableRow } from "@/components/leads/LeadTableRow";
 import { MobileLeadCard } from "@/components/leads/MobileLeadCard";
 import { AppleCheckbox } from "@/components/leads/AppleCheckbox";
 import { LeadToastContainer, type Toast } from "@/components/leads/LeadToastContainer";
+import { DeleteLeadModal } from "@/components/leads/DeleteLeadModal";
+import { BulkDeleteModal } from "@/components/leads/BulkDeleteModal";
 
 const AddLeadModal = dynamic(() => import("@/components/leads/AddLeadModal").then((mod) => mod.AddLeadModal), { ssr: false });
 const ImportCsvModal = dynamic(() => import("@/components/leads/ImportCsvModal").then((mod) => mod.ImportCsvModal), { ssr: false });
-const DeleteLeadModal = dynamic(() => import("@/components/leads/DeleteLeadModal").then((mod) => mod.DeleteLeadModal), { ssr: false });
-const BulkDeleteModal = dynamic(() => import("@/components/leads/BulkDeleteModal").then((mod) => mod.BulkDeleteModal), { ssr: false });
 const LeadDetailsModal = dynamic(() => import("@/components/leads/LeadDetailsModal").then((mod) => mod.LeadDetailsModal), { ssr: false });
 
 import { formatDateOnly, parseFlexibleDate } from "@/lib/utils";

@@ -35,6 +35,7 @@ import type { Account, MagnetPage, Lead } from "@/lib/data";
 import { MobileAssetCard } from "@/components/assets/MobileAssetCard";
 import { AppleCheckbox } from "@/components/leads/AppleCheckbox";
 import { useSidebar } from "@/components/dashboard/dashboard-shell";
+import { useIsMobile } from "@/lib/use-mobile";
 
 interface Resource {
   id: string;
@@ -62,6 +63,7 @@ interface UploadProgressState {
 
 export default function ResourcesPage() {
   const { isCollapsed } = useSidebar();
+  const isMobile = useIsMobile();
   const [account, setAccount] = useState<Account | null>(null);
   const [resources, setResources] = useState<Resource[]>([]);
   const [magnetPages, setMagnetPages] = useState<MagnetPage[]>([]);
@@ -1507,28 +1509,36 @@ export default function ResourcesPage() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50 backdrop-blur-sm p-0 sm:p-4"
+              transition={{ duration: 0.12 }}
+              className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm p-0 sm:p-4 transform-gpu"
               onClick={() => setShowBulkDeleteModal(false)}
             >
               <motion.div
-                initial={{ opacity: 0, scale: 0.94, y: 40 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.94, y: 40 }}
-                transition={{ type: "spring", damping: 25, stiffness: 350 }}
-                className="w-full max-w-md rounded-t-3xl sm:rounded-2xl bg-white p-6 dark:bg-[#18181B] shadow-2xl border-t sm:border border-zinc-200 dark:border-[#2e2e38]"
+                initial={isMobile ? { y: "100%", opacity: 0.9 } : { opacity: 0, scale: 0.94, y: 10 }}
+                animate={{ y: 0, opacity: 1, scale: 1 }}
+                exit={
+                  isMobile
+                    ? { y: "100%", opacity: 0, transition: { duration: 0.16, ease: [0.32, 0.72, 0, 1] } }
+                    : { opacity: 0, scale: 0.94, y: 8, transition: { duration: 0.08 } }
+                }
+                transition={
+                  isMobile
+                    ? { type: "spring", stiffness: 450, damping: 32, mass: 0.4 }
+                    : { type: "spring", stiffness: 650, damping: 36, mass: 0.3 }
+                }
+                className="w-full sm:max-w-md max-h-[85vh] overflow-y-auto rounded-t-[28px] sm:rounded-3xl bg-white p-5 sm:p-6 dark:bg-[#18181B] shadow-2xl border-t sm:border border-zinc-200 dark:border-white/10 transform-gpu will-change-transform"
                 onClick={(e) => e.stopPropagation()}
               >
-                {/* Mobile Drag Indicator */}
-                <div className="w-12 h-1 bg-zinc-300 dark:bg-zinc-700 rounded-full mx-auto mb-4 sm:hidden" />
+                {/* Mobile Grab Handle */}
+                <div className="w-10 h-1.5 rounded-full bg-zinc-300 dark:bg-zinc-700/80 mx-auto -mt-1 mb-3 cursor-grab active:scale-95 transition-transform sm:hidden" />
 
-                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-red-500/10 text-red-600 dark:text-red-400">
-                  <AlertCircle className="h-6 w-6" />
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-500">
+                  <AlertCircle className="h-5 w-5" />
                 </div>
-                <h3 className="mt-4 text-lg font-bold text-zinc-900 dark:text-white">
+                <h3 className="mt-4 text-base sm:text-lg font-bold text-zinc-900 dark:text-white tracking-tight">
                   Delete {selectedResourceIds.length} Selected Resources?
                 </h3>
-                <p className="mt-2 text-xs leading-relaxed text-zinc-500 dark:text-[#9B9085]">
+                <p className="mt-1.5 text-xs leading-relaxed text-zinc-500 dark:text-zinc-400">
                   Are you sure you want to delete <strong className="text-zinc-900 dark:text-white">{selectedResourceIds.length} hosted resources</strong>? Any active lead magnet forms or emails linking to these file links will no longer be able to access them.
                 </p>
 
@@ -1536,14 +1546,14 @@ export default function ResourcesPage() {
                   <button
                     disabled={isBulkDeleting}
                     onClick={() => setShowBulkDeleteModal(false)}
-                    className="flex-1 sm:flex-initial rounded-xl border border-zinc-200 bg-white px-4 py-2.5 sm:py-2 text-xs font-semibold text-zinc-700 hover:bg-zinc-50 dark:border-[#2e2e38] dark:bg-[#202026] dark:text-zinc-300 transition cursor-pointer text-center"
+                    className="flex-1 sm:flex-none rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-[#25252A] px-4 py-2.5 text-xs font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white transition-all cursor-pointer text-center"
                   >
                     Cancel
                   </button>
                   <button
                     disabled={isBulkDeleting}
                     onClick={confirmBulkDelete}
-                    className="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 rounded-xl bg-red-600 px-4 py-2.5 sm:py-2 text-xs font-bold text-white hover:bg-red-700 disabled:opacity-50 transition cursor-pointer shadow-sm text-center"
+                    className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 rounded-xl border border-rose-500/30 bg-rose-600 px-4 py-2.5 text-xs font-bold text-white hover:bg-rose-700 active:scale-95 transition-all cursor-pointer shadow-sm text-center disabled:opacity-50"
                   >
                     {isBulkDeleting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Trash2 className="h-3.5 w-3.5" />}
                     <span>Delete {selectedResourceIds.length} Files</span>
@@ -1561,26 +1571,34 @@ export default function ResourcesPage() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50 backdrop-blur-sm p-0 sm:p-4"
+              transition={{ duration: 0.12 }}
+              className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm p-0 sm:p-4 transform-gpu"
               onClick={() => setResourceToDelete(null)}
             >
               <motion.div
-                initial={{ opacity: 0, scale: 0.94, y: 40 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.94, y: 40 }}
-                transition={{ type: "spring", damping: 25, stiffness: 350 }}
-                className="w-full max-w-md rounded-t-3xl sm:rounded-2xl bg-white p-6 dark:bg-[#18181B] shadow-2xl border-t sm:border border-zinc-200 dark:border-[#2e2e38]"
+                initial={isMobile ? { y: "100%", opacity: 0.9 } : { opacity: 0, scale: 0.94, y: 10 }}
+                animate={{ y: 0, opacity: 1, scale: 1 }}
+                exit={
+                  isMobile
+                    ? { y: "100%", opacity: 0, transition: { duration: 0.16, ease: [0.32, 0.72, 0, 1] } }
+                    : { opacity: 0, scale: 0.94, y: 8, transition: { duration: 0.08 } }
+                }
+                transition={
+                  isMobile
+                    ? { type: "spring", stiffness: 450, damping: 32, mass: 0.4 }
+                    : { type: "spring", stiffness: 650, damping: 36, mass: 0.3 }
+                }
+                className="w-full sm:max-w-md max-h-[85vh] overflow-y-auto rounded-t-[28px] sm:rounded-3xl bg-white p-5 sm:p-6 dark:bg-[#18181B] shadow-2xl border-t sm:border border-zinc-200 dark:border-white/10 transform-gpu will-change-transform"
                 onClick={(e) => e.stopPropagation()}
               >
-                {/* Mobile Drag Indicator */}
-                <div className="w-12 h-1 bg-zinc-300 dark:bg-zinc-700 rounded-full mx-auto mb-4 sm:hidden" />
+                {/* Mobile Grab Handle */}
+                <div className="w-10 h-1.5 rounded-full bg-zinc-300 dark:bg-zinc-700/80 mx-auto -mt-1 mb-3 cursor-grab active:scale-95 transition-transform sm:hidden" />
 
-                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-red-500/10 text-red-600 dark:text-red-400">
-                  <AlertCircle className="h-6 w-6" />
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-500">
+                  <AlertCircle className="h-5 w-5" />
                 </div>
-                <h3 className="mt-4 text-lg font-bold text-zinc-900 dark:text-white">Delete Hosted Resource?</h3>
-                <p className="mt-2 text-xs leading-relaxed text-zinc-500 dark:text-[#9B9085]">
+                <h3 className="mt-4 text-base sm:text-lg font-bold text-zinc-900 dark:text-white tracking-tight">Delete Hosted Resource?</h3>
+                <p className="mt-1.5 text-xs leading-relaxed text-zinc-500 dark:text-zinc-400">
                   Are you sure you want to delete <strong className="text-zinc-900 dark:text-white">{resourceToDelete.name}</strong>? Any active lead magnet forms or emails linking to this file link will no longer be able to access it.
                 </p>
 
@@ -1588,14 +1606,14 @@ export default function ResourcesPage() {
                   <button
                     disabled={isDeleting}
                     onClick={() => setResourceToDelete(null)}
-                    className="flex-1 sm:flex-initial rounded-xl border border-zinc-200 bg-white px-4 py-2.5 sm:py-2 text-xs font-semibold text-zinc-700 hover:bg-zinc-100 dark:border-[#2e2e38] dark:bg-[#202026] dark:text-zinc-300 dark:hover:bg-[#282830] transition cursor-pointer text-center"
+                    className="flex-1 sm:flex-none rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-[#25252A] px-4 py-2.5 text-xs font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white transition-all cursor-pointer text-center"
                   >
                     Cancel
                   </button>
                   <button
                     disabled={isDeleting}
                     onClick={confirmDelete}
-                    className="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 rounded-xl bg-red-600 px-4 py-2.5 sm:py-2 text-xs font-bold text-white hover:bg-red-700 disabled:opacity-50 transition cursor-pointer shadow-sm text-center"
+                    className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 rounded-xl border border-rose-500/30 bg-rose-600 px-4 py-2.5 text-xs font-bold text-white hover:bg-rose-700 active:scale-95 transition-all cursor-pointer shadow-sm text-center disabled:opacity-50"
                   >
                     {isDeleting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Trash2 className="h-3.5 w-3.5" />}
                     <span>Delete Resource</span>

@@ -2072,12 +2072,14 @@ export default function EditLeadMagnetPage() {
       </div>
 
       {/* 'Delete this magnet?' Confirmation Modal Overlay */}
-      {showDeleteModal && (
-        <DeleteModal
-          onConfirm={handleConfirmDelete}
-          onClose={() => setShowDeleteModal(false)}
-        />
-      )}
+      <AnimatePresence>
+        {showDeleteModal && (
+          <DeleteModal
+            onConfirm={handleConfirmDelete}
+            onClose={() => setShowDeleteModal(false)}
+          />
+        )}
+      </AnimatePresence>
 
       {showAIModal && (
         <AIMagnetModal

@@ -3,6 +3,7 @@
 import React, { memo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { AlertTriangle, X, Loader2 } from "lucide-react";
+import { useIsMobile } from "@/lib/use-mobile";
 
 interface BulkDeleteModalProps {
   isOpen: boolean;
@@ -19,27 +20,37 @@ export const BulkDeleteModal = memo(function BulkDeleteModal({
   onClose,
   onConfirmBulkDelete,
 }: BulkDeleteModalProps) {
+  const isMobile = useIsMobile();
+
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex flex-col justify-end sm:items-center sm:justify-center">
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
           {/* Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="fixed inset-0 bg-black/60 backdrop-blur-[2px]"
+            transition={{ duration: 0.12 }}
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm transform-gpu"
             onClick={onClose}
           />
 
-          {/* Modal / Bottom Sheet */}
+          {/* Modal / Card */}
           <motion.div
-            initial={{ y: "100%" }}
-            animate={{ y: 0 }}
-            exit={{ y: "100%" }}
-            transition={{ type: "spring", damping: 30, stiffness: 320 }}
-            className="relative z-10 w-full sm:max-w-[440px] max-h-[85vh] overflow-y-auto rounded-t-[28px] sm:rounded-3xl border-t sm:border border-zinc-200 dark:border-white/10 bg-white/95 dark:bg-[#141417]/95 backdrop-blur-xl p-5 sm:p-6 text-zinc-900 dark:text-white shadow-2xl space-y-4"
+            initial={isMobile ? { y: "100%", opacity: 0.9 } : { opacity: 0, scale: 0.94, y: 10 }}
+            animate={{ y: 0, opacity: 1, scale: 1 }}
+            exit={
+              isMobile
+                ? { y: "100%", opacity: 0, transition: { duration: 0.16, ease: [0.32, 0.72, 0, 1] } }
+                : { opacity: 0, scale: 0.94, y: 8, transition: { duration: 0.08 } }
+            }
+            transition={
+              isMobile
+                ? { type: "spring", stiffness: 450, damping: 32, mass: 0.4 }
+                : { type: "spring", stiffness: 650, damping: 36, mass: 0.3 }
+            }
+            className="relative z-10 w-full sm:max-w-[440px] max-h-[85vh] overflow-y-auto rounded-t-[28px] sm:rounded-3xl border-t sm:border border-zinc-200 dark:border-white/10 bg-white/95 dark:bg-[#141417]/95 backdrop-blur-xl p-5 sm:p-6 text-zinc-900 dark:text-white shadow-2xl space-y-4 transform-gpu will-change-transform"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Mobile Grab Handle */}
