@@ -409,6 +409,11 @@ export default function DashboardShell({
     setAvatarError(false);
   }, [displayAccount.avatar]);
 
+  const sidebarContextValue = useMemo(
+    () => ({ isCollapsed, toggleSidebar, setIsCollapsed }),
+    [isCollapsed, toggleSidebar]
+  );
+
   if (mounted && isAuthenticated === false) {
     return null;
   }
@@ -422,7 +427,7 @@ export default function DashboardShell({
   }
 
   return (
-    <SidebarContext.Provider value={{ isCollapsed, toggleSidebar, setIsCollapsed }}>
+    <SidebarContext.Provider value={sidebarContextValue}>
       <ExpandableScreen
         isOpen={showHelp}
         onOpenChange={(open) => {
@@ -581,7 +586,7 @@ export default function DashboardShell({
                             animate={{ opacity: 1, x: 0, scale: 1 }}
                             exit={{ opacity: 0, x: -4, scale: 0.95, transition: { duration: 0.06 } }}
                             transition={{ type: "spring", stiffness: 850, damping: 38, mass: 0.2 }}
-                            className="relative flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/80 text-zinc-900 text-xs font-semibold border border-zinc-200/90 shadow-[0_10px_25px_-4px_rgba(0,0,0,0.15)] dark:bg-[#18181B]/75 dark:text-zinc-100 dark:border-white/15 dark:shadow-[0_12px_32px_-4px_rgba(0,0,0,0.6)] whitespace-nowrap backdrop-blur-xl"
+                            className="relative flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/80 text-zinc-900 text-xs font-semibold border border-zinc-200/90 shadow-[0_10px_25px_-4px_rgba(0,0,0,0.15)] dark:bg-[#18181B]/75 dark:text-zinc-100 dark:border-white/15 dark:shadow-[0_12px_32px_-4px_rgba(0,0,0,0.6)] whitespace-nowrap backdrop-blur-xl transform-gpu will-change-transform"
                           >
                             {/* Micro Arrow Pointer */}
                             <div className="absolute -left-1 top-1/2 -translate-y-1/2 w-2 h-2 rotate-45 bg-white/80 border-l border-b border-zinc-200/90 dark:bg-[#18181B]/75 dark:border-white/15" />
@@ -694,7 +699,7 @@ export default function DashboardShell({
                           animate={{ opacity: 1, x: 0, scale: 1 }}
                           exit={{ opacity: 0, x: -4, scale: 0.95, transition: { duration: 0.06 } }}
                           transition={{ type: "spring", stiffness: 850, damping: 38, mass: 0.2 }}
-                          className="relative flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/80 text-zinc-900 text-xs font-semibold border border-zinc-200/90 shadow-[0_10px_25px_-4px_rgba(0,0,0,0.15)] dark:bg-[#18181B]/75 dark:text-zinc-100 dark:border-white/15 dark:shadow-[0_12px_32px_-4px_rgba(0,0,0,0.6)] whitespace-nowrap backdrop-blur-xl"
+                          className="relative flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/80 text-zinc-900 text-xs font-semibold border border-zinc-200/90 shadow-[0_10px_25px_-4px_rgba(0,0,0,0.15)] dark:bg-[#18181B]/75 dark:text-zinc-100 dark:border-white/15 dark:shadow-[0_12px_32px_-4px_rgba(0,0,0,0.6)] whitespace-nowrap backdrop-blur-xl transform-gpu will-change-transform"
                         >
                           {/* Micro Arrow Pointer */}
                           <div className="absolute -left-1 top-1/2 -translate-y-1/2 w-2 h-2 rotate-45 bg-white/80 border-l border-b border-zinc-200/90 dark:bg-[#18181B]/75 dark:border-white/15" />
