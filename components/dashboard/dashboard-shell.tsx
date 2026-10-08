@@ -65,6 +65,7 @@ export default function DashboardShell({
   const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showDrawerProfileMenu, setShowDrawerProfileMenu] = useState(false);
+  const [hoveredNavHref, setHoveredNavHref] = useState<string | null>(null);
   const profileMenuRef = useRef<HTMLDivElement>(null);
   const mobileDrawerProfileMenuRef = useRef<HTMLDivElement>(null);
 
@@ -233,7 +234,6 @@ export default function DashboardShell({
   const [avatarError, setAvatarError] = useState(false);
   const [navigatingTarget, setNavigatingTarget] = useState<string | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
-  const [hoveredNavHref, setHoveredNavHref] = useState<string | null>(null);
   const [hoveredProfileMenuKey, setHoveredProfileMenuKey] = useState<string | null>(null);
 
   useEffect(() => {
@@ -511,8 +511,8 @@ export default function DashboardShell({
 
           {/* Nav Items */}
           <nav
-            className={`flex-1 space-y-1 overflow-y-auto overflow-x-visible scrollbar-none ${
-              isCollapsed ? "px-2 mt-1" : "px-2 mt-1"
+            className={`flex-1 space-y-1 px-2 mt-1 ${
+              isCollapsed ? "overflow-visible" : "overflow-y-auto overflow-x-hidden scrollbar-none"
             }`}
             aria-label="Dashboard"
             onMouseLeave={() => setHoveredNavHref(null)}
@@ -527,13 +527,11 @@ export default function DashboardShell({
                     : item.href === "/dashboard/landing-page"
                       ? (!isCurrentLockedPdf && (pathname === "/dashboard/landing-page" || pathname === "/dashboard/leadmagnets" || pathname.startsWith("/dashboard/leadmagnets/")))
                       : (pathname === item.href || (item.href !== "/dashboard" && item.href !== "/dashboard/landing-page" && item.href !== "/dashboard/locked-pdf" && pathname.startsWith(`${item.href}/`)));
-              const isHovered = hoveredNavHref === item.href;
-
-              if (item.isModal) {
+              const isHovered = hoveredNavHref === item.href;              if (item.isModal) {
                 return (
                   <div
                     key={item.href}
-                    className="relative group"
+                    className="relative group flex items-center justify-center"
                     onMouseEnter={() => setHoveredNavHref(item.href)}
                   >
                     <ExpandableScreenTrigger className="w-full">
@@ -550,7 +548,7 @@ export default function DashboardShell({
                         {isHovered && (
                           <motion.div
                             layoutId="leftPanelHoverPill"
-                            transition={{ type: "spring", stiffness: 500, damping: 32 }}
+                            transition={{ type: "spring", stiffness: 800, damping: 38, mass: 0.2 }}
                             className="absolute inset-0 rounded-xl bg-[#E2F0FD] dark:bg-[#25252a]"
                           />
                         )}
@@ -573,23 +571,37 @@ export default function DashboardShell({
                       </motion.button>
                     </ExpandableScreenTrigger>
 
-                    {/* Apple-grade Collapsed Floating Tooltip */}
+                    {/* Apple-grade Collapsed Floating Tooltip with Fluid Morphing */}
                     <AnimatePresence>
                       {isCollapsed && isHovered && (
-                        <motion.div
-                          initial={{ opacity: 0, x: -6, scale: 0.96 }}
-                          animate={{ opacity: 1, x: 0, scale: 1 }}
-                          exit={{ opacity: 0, x: -6, scale: 0.96 }}
-                          transition={{ duration: 0.12, ease: [0.16, 1, 0.3, 1] }}
-                          className="absolute left-full ml-3 top-1/2 -translate-y-1/2 z-[100] pointer-events-none flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-zinc-900/95 text-white text-xs font-semibold shadow-2xl border border-white/10 dark:bg-zinc-800/95 dark:text-zinc-100 whitespace-nowrap backdrop-blur-md"
-                        >
-                          <span>{item.label}</span>
-                          {item.badge && (
-                            <span className="text-[10px] font-bold px-1.5 py-0.2 rounded-full bg-[#0066B2]/40 text-[#38BDF8] border border-[#38BDF8]/30">
-                              {item.badge}
-                            </span>
-                          )}
-                        </motion.div>
+                        <div className="absolute left-full ml-3.5 top-1/2 -translate-y-1/2 z-[100] pointer-events-none flex items-center">
+                          <motion.div
+                            layoutId="collapsedNavFloatingTooltip"
+                            initial={{ opacity: 0, x: -6, scale: 0.95 }}
+                            animate={{ opacity: 1, x: 0, scale: 1 }}
+                            exit={{ opacity: 0, x: -4, scale: 0.95, transition: { duration: 0.06 } }}
+                            transition={{ type: "spring", stiffness: 850, damping: 38, mass: 0.2 }}
+                            className="relative flex items-center gap-2 px-3 py-1.5 rounded-xl bg-zinc-900/95 text-white text-xs font-semibold shadow-[0_10px_30px_-4px_rgba(0,0,0,0.5),0_0_0_1px_rgba(255,255,255,0.12)] dark:bg-[#1C1C20]/95 dark:text-zinc-100 whitespace-nowrap backdrop-blur-xl"
+                          >
+                            {/* Micro Arrow Pointer */}
+                            <div className="absolute -left-1 top-1/2 -translate-y-1/2 w-2 h-2 rotate-45 bg-zinc-900/95 dark:bg-[#1C1C20]/95 border-l border-b border-white/15" />
+                            <motion.div
+                              key={item.label}
+                              initial={{ opacity: 0.5, y: 1 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              exit={{ opacity: 0, y: -1 }}
+                              transition={{ duration: 0.06 }}
+                              className="relative z-10 flex items-center gap-2"
+                            >
+                              <span>{item.label}</span>
+                              {item.badge && (
+                                <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-[#0066B2]/30 text-[#38BDF8] border border-[#38BDF8]/30">
+                                  {item.badge}
+                                </span>
+                              )}
+                            </motion.div>
+                          </motion.div>
+                        </div>
                       )}
                     </AnimatePresence>
                   </div>
@@ -599,10 +611,11 @@ export default function DashboardShell({
               return (
                 <div
                   key={item.href}
-                  className="relative group"
+                  className="relative group flex items-center justify-center"
                   onMouseEnter={() => setHoveredNavHref(item.href)}
                 >
                   <motion.div
+                    className={isCollapsed ? "w-10 h-10 flex items-center justify-center" : "w-full"}
                     whileTap={{ scale: 0.95 }}
                     transition={{ type: "spring", stiffness: 600, damping: 28 }}
                   >
@@ -628,7 +641,7 @@ export default function DashboardShell({
                       {active && (
                         <motion.div
                           layoutId="leftPanelActivePill"
-                          transition={{ type: "spring", stiffness: 500, damping: 32 }}
+                          transition={{ type: "spring", stiffness: 600, damping: 34 }}
                           className="absolute inset-0 rounded-xl bg-[#0066B2] shadow-xs dark:bg-[#0066B2]/20 dark:border dark:border-[#0066B2]/40"
                         />
                       )}
@@ -636,7 +649,7 @@ export default function DashboardShell({
                       {!active && isHovered && (
                         <motion.div
                           layoutId="leftPanelHoverPill"
-                          transition={{ type: "spring", stiffness: 500, damping: 32 }}
+                          transition={{ type: "spring", stiffness: 800, damping: 38, mass: 0.2 }}
                           className="absolute inset-0 rounded-xl bg-[#E2F0FD] dark:bg-[#25252a]"
                         />
                       )}
@@ -671,23 +684,37 @@ export default function DashboardShell({
                     </Link>
                   </motion.div>
 
-                  {/* Apple-grade Collapsed Floating Tooltip */}
+                  {/* Apple-grade Collapsed Floating Tooltip with Fluid Morphing */}
                   <AnimatePresence>
                     {isCollapsed && isHovered && (
-                      <motion.div
-                        initial={{ opacity: 0, x: -6, scale: 0.96 }}
-                        animate={{ opacity: 1, x: 0, scale: 1 }}
-                        exit={{ opacity: 0, x: -6, scale: 0.96 }}
-                        transition={{ duration: 0.12, ease: [0.16, 1, 0.3, 1] }}
-                        className="absolute left-full ml-3 top-1/2 -translate-y-1/2 z-[100] pointer-events-none flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-zinc-900/95 text-white text-xs font-semibold shadow-2xl border border-white/10 dark:bg-zinc-800/95 dark:text-zinc-100 whitespace-nowrap backdrop-blur-md"
-                      >
-                        <span>{item.label}</span>
-                        {item.badge && (
-                          <span className="text-[10px] font-bold px-1.5 py-0.2 rounded-full bg-[#0066B2]/40 text-[#38BDF8] border border-[#38BDF8]/30">
-                            {item.badge}
-                          </span>
-                        )}
-                      </motion.div>
+                      <div className="absolute left-full ml-3.5 top-1/2 -translate-y-1/2 z-[100] pointer-events-none flex items-center">
+                        <motion.div
+                          layoutId="collapsedNavFloatingTooltip"
+                          initial={{ opacity: 0, x: -6, scale: 0.95 }}
+                          animate={{ opacity: 1, x: 0, scale: 1 }}
+                          exit={{ opacity: 0, x: -4, scale: 0.95, transition: { duration: 0.06 } }}
+                          transition={{ type: "spring", stiffness: 850, damping: 38, mass: 0.2 }}
+                          className="relative flex items-center gap-2 px-3 py-1.5 rounded-xl bg-zinc-900/95 text-white text-xs font-semibold shadow-[0_10px_30px_-4px_rgba(0,0,0,0.5),0_0_0_1px_rgba(255,255,255,0.12)] dark:bg-[#1C1C20]/95 dark:text-zinc-100 whitespace-nowrap backdrop-blur-xl"
+                        >
+                          {/* Micro Arrow Pointer */}
+                          <div className="absolute -left-1 top-1/2 -translate-y-1/2 w-2 h-2 rotate-45 bg-zinc-900/95 dark:bg-[#1C1C20]/95 border-l border-b border-white/15" />
+                          <motion.div
+                            key={item.label}
+                            initial={{ opacity: 0.5, y: 1 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -1 }}
+                            transition={{ duration: 0.06 }}
+                            className="relative z-10 flex items-center gap-2"
+                          >
+                            <span>{item.label}</span>
+                            {item.badge && (
+                              <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-[#0066B2]/30 text-[#38BDF8] border border-[#38BDF8]/30">
+                                {item.badge}
+                              </span>
+                            )}
+                          </motion.div>
+                        </motion.div>
+                      </div>
                     )}
                   </AnimatePresence>
                 </div>
