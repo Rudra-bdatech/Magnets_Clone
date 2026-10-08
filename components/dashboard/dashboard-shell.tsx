@@ -728,19 +728,19 @@ export default function DashboardShell({
           </nav>
 
           {/* Bottom Profile Section */}
-          <div className={`px-2 py-2.5 border-t border-[#E0EDFB]/60 dark:border-white/5 ${isCollapsed ? "flex justify-center" : ""}`}>
-            <div ref={profileMenuRef} className="relative w-full">
+          <div className={`px-2 pt-1.5 pb-2 border-t border-[#E0EDFB]/60 dark:border-white/5 overflow-visible ${isCollapsed ? "flex justify-center" : ""}`}>
+            <div ref={profileMenuRef} className="relative w-full overflow-visible">
               {/* Profile Popover Menu */}
               <AnimatePresence>
                 {showProfileMenu && (
                   <motion.div
-                    initial={{ opacity: 0, scale: 0.95, y: 4 }}
-                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                    exit={{ opacity: 0, scale: 0.95, y: 4 }}
+                    initial={isCollapsed ? { opacity: 0, scale: 0.95, x: -8 } : { opacity: 0, scale: 0.95, y: 4 }}
+                    animate={{ opacity: 1, scale: 1, x: 0, y: 0 }}
+                    exit={isCollapsed ? { opacity: 0, scale: 0.95, x: -8 } : { opacity: 0, scale: 0.95, y: 4 }}
                     transition={{ duration: 0.15, ease: [0.16, 1, 0.3, 1] }}
-                    style={{ transformOrigin: "bottom left" }}
-                    className={`absolute bottom-full mb-2 w-56 rounded-2xl border border-zinc-200/80 bg-white/95 p-1.5 shadow-2xl backdrop-blur-md z-[70] text-zinc-900 flex flex-col gap-0.5 dark:border-zinc-800/90 dark:bg-[#18181b]/95 dark:text-white dark:shadow-[0_12px_36px_-6px_rgba(0,0,0,0.6),0_0_0_1px_rgba(255,255,255,0.06)] ${
-                      isCollapsed ? "left-0" : "left-0"
+                    style={{ transformOrigin: isCollapsed ? "bottom left" : "bottom left" }}
+                    className={`absolute rounded-2xl border border-zinc-200/80 bg-white/95 p-1.5 shadow-2xl backdrop-blur-md z-[100] text-zinc-900 flex flex-col gap-0.5 dark:border-zinc-800/90 dark:bg-[#18181b]/95 dark:text-white dark:shadow-[0_12px_36px_-6px_rgba(0,0,0,0.6),0_0_0_1px_rgba(255,255,255,0.06)] ${
+                      isCollapsed ? "w-56 left-full bottom-0 ml-3.5" : "w-full bottom-full mb-2 left-0"
                     }`}
                     onClick={(e) => e.stopPropagation()}
                   >
