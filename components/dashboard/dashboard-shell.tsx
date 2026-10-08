@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { FileText, FolderOpen, Users, Sliders, Palette, User, CircleHelp, Menu, X, Search, ChevronRight, HelpCircle, Sun, Moon, Monitor, Bug, Lightbulb, LogOut, BookOpen, Gift, Compass, Send, GitFork, Calendar, Settings, Globe, Mail, Share2, Cpu, Slack, Zap, Link as LinkIcon, BarChart3, PlayCircle, CheckCircle2, ArrowLeft, Sparkles, Rocket, ExternalLink, ListChecks, Loader2, FileLock, Lock, LayoutDashboard, Linkedin, PanelLeftClose, PanelLeftOpen, PanelLeft } from "lucide-react";
-import { useState, useEffect, useRef, useMemo, useCallback } from "react";
+import { useState, useEffect, useRef, useMemo, useCallback, createContext, useContext } from "react";
 import ThemeToggle from "@/components/theme-toggle";
 import BrandLogo from "@/components/brand";
 import type { Account } from "@/lib/data";
@@ -14,6 +14,20 @@ import { ExpandableScreen, ExpandableScreenTrigger } from "@/components/ui/expan
 import { isSessionValid, loadAccount, setSessionExpiry, loadPages, loadSequences, loadIntegrations } from "@/lib/store";
 import { computeOnboardingStatus, type OnboardingStatus } from "@/lib/onboarding";
 import { signOut } from "next-auth/react";
+
+export interface SidebarContextType {
+  isCollapsed: boolean;
+  toggleSidebar: () => void;
+  setIsCollapsed: (collapsed: boolean | ((prev: boolean) => boolean)) => void;
+}
+
+export const SidebarContext = createContext<SidebarContextType>({
+  isCollapsed: false,
+  toggleSidebar: () => {},
+  setIsCollapsed: () => {},
+});
+
+export const useSidebar = () => useContext(SidebarContext);
 
 const HelpCenterContent = dynamic(() => import("./HelpCenterContent"), {
   ssr: false,
@@ -408,16 +422,17 @@ export default function DashboardShell({
   }
 
   return (
-    <ExpandableScreen
-      isOpen={showHelp}
-      onOpenChange={(open) => {
-        setShowHelp(open);
-        if (!open) setSelectedTopic(null);
-      }}
-      layoutId="sidebar-help-card"
-      triggerRadius="8px"
-      contentRadius="20px"
-    >
+    <SidebarContext.Provider value={{ isCollapsed, toggleSidebar, setIsCollapsed }}>
+      <ExpandableScreen
+        isOpen={showHelp}
+        onOpenChange={(open) => {
+          setShowHelp(open);
+          if (!open) setSelectedTopic(null);
+        }}
+        layoutId="sidebar-help-card"
+        triggerRadius="8px"
+        contentRadius="20px"
+      >
       <div className="dashboard-canvas flex min-h-screen relative w-full max-w-full">
 
         <motion.aside
@@ -1543,5 +1558,6 @@ export default function DashboardShell({
         )}
       </div>
     </ExpandableScreen>
+    </SidebarContext.Provider>
   );
 }

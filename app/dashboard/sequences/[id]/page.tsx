@@ -38,6 +38,7 @@ import {
 import { useEffect, useState, useMemo } from "react";
 import StatusBadge from "@/components/dashboard/status-badge";
 import { type Sequence, type SequenceEmail, type Account, type MagnetPage } from "@/lib/data";
+import { useSidebar } from "@/components/dashboard/dashboard-shell";
 import {
   loadPages,
   savePages,
@@ -72,6 +73,7 @@ interface ExtendedSequenceEmail extends SequenceEmail {
 }
 
 export default function SequenceEditor() {
+  const { isCollapsed } = useSidebar();
   const router = useRouter();
   const params = useParams<{ id: string }>();
   const [account, setAccount] = useState<Account | null>(null);
@@ -704,7 +706,7 @@ export default function SequenceEditor() {
       )}
 
       <div className="min-h-[calc(100vh-3.5rem)] bg-gradient-to-b from-[#F8FAFC] via-[#F1F5F9]/50 to-[#F8FAFC] dark:from-[#09090B] dark:via-[#121215] dark:to-[#09090B] pb-12">
-        <div className="flex-1 px-3 sm:px-6 py-3.5 sm:py-6 lg:px-8 max-w-7xl mx-auto w-full space-y-4 sm:space-y-6 lg:space-y-8">
+        <div className={`flex-1 px-3 sm:px-6 py-3.5 sm:py-6 lg:px-8 mx-auto w-full space-y-4 sm:space-y-6 lg:space-y-8 transition-[max-width] duration-300 ease-out ${isCollapsed ? "max-w-[1440px]" : "max-w-7xl"}`}>
           
           {/* Header Bar - Clean Borderless Hierarchy */}
           <div className="flex flex-col gap-3.5 sm:gap-5 lg:flex-row lg:items-center lg:justify-between pb-1 sm:pb-2">

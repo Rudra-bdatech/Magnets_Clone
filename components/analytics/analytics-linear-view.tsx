@@ -25,6 +25,7 @@ import {
 } from "lucide-react";
 import AnalyticsChart, { type TimeRange } from "./analytics-chart";
 import { type MagnetPage, type Account, type Lead } from "@/lib/data";
+import { useSidebar } from "@/components/dashboard/dashboard-shell";
 
 interface AnalyticsLinearViewProps {
   account: Account | null;
@@ -62,6 +63,7 @@ export default function AnalyticsLinearView({
   onOpenHelp,
   isPerMagnet = false,
 }: AnalyticsLinearViewProps) {
+  const { isCollapsed } = useSidebar();
   const router = useRouter();
   const params = useParams();
   const targetMagnetId = page?.id || (params?.id as string);
@@ -306,7 +308,7 @@ export default function AnalyticsLinearView({
       animate="visible"
       className="min-h-[calc(100vh-3.5rem)] bg-gradient-to-b from-[#EFF6FF]/40 via-[#F8FBFF] to-[#F8FBFF] dark:bg-none dark:bg-[#0B0B0D] text-zinc-900 dark:text-zinc-100 font-sans selection:bg-[#0066B2]/10 dark:selection:bg-white/10"
     >
-      <div className="flex-1 px-3.5 py-6 sm:px-6 sm:py-7 lg:px-8 max-w-7xl mx-auto w-full flex flex-col gap-4">
+      <div className={`flex-1 px-3.5 py-6 sm:px-6 sm:py-7 lg:px-8 mx-auto w-full flex flex-col gap-4 transition-[max-width] duration-300 ease-out ${isCollapsed ? "max-w-[1440px]" : "max-w-7xl"}`}>
 
         {/* 1. DESKTOP HEADER BAR */}
         <motion.header

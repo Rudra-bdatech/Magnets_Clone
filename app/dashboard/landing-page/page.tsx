@@ -41,6 +41,7 @@ import { type MagnetPage, type Account } from "@/lib/data";
 import { loadPages, savePages, loadAccount, syncWithDatabase, deletePage } from "@/lib/store";
 import { getMagnetSortTimestamp } from "@/lib/utils";
 import { AppleCheckbox } from "@/components/leads/AppleCheckbox";
+import { useSidebar } from "@/components/dashboard/dashboard-shell";
 
 interface MagnetCardProps {
   page: MagnetPage;
@@ -216,6 +217,7 @@ const sortOptions: { id: SortOption; label: string }[] = [
 ];
 
 export default function PagesPage() {
+  const { isCollapsed } = useSidebar();
   const router = useRouter();
   const [account, setAccount] = useState<Account | null>(null);
   const [pages, setPages] = useState<MagnetPage[]>([]);
@@ -454,7 +456,7 @@ export default function PagesPage() {
     <>
       <div className="flex flex-col min-h-[calc(100vh-3.5rem)] bg-zinc-50/50 dark:bg-[#0B0B0D] w-full">
         {/* Top Executive Header & Stat Cards */}
-        <div className="max-w-7xl mx-auto w-full px-3.5 sm:px-6 pt-4 sm:pt-6 lg:px-8 space-y-4">
+        <div className={`mx-auto w-full px-3.5 sm:px-6 pt-4 sm:pt-6 lg:px-8 space-y-4 transition-[max-width] duration-300 ease-out ${isCollapsed ? "max-w-[1440px]" : "max-w-7xl"}`}>
           <div className="flex items-center justify-between gap-3">
             <div className="min-w-0 flex-1">
               <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-zinc-900 dark:text-white truncate">
@@ -552,7 +554,7 @@ export default function PagesPage() {
 
         {/* Main Split-Pane Workspace (Dynamic 3-col full width, or 2-col 65% + 35% Sticky Inspector) */}
         <LayoutGroup id="landing-page-workspace">
-          <div className="max-w-7xl mx-auto w-full flex-1 px-3.5 sm:px-6 py-4 sm:py-6 lg:px-8 flex flex-col lg:flex-row gap-4 sm:gap-6 items-start min-w-0">
+          <div className={`mx-auto w-full flex-1 px-3.5 sm:px-6 py-4 sm:py-6 lg:px-8 flex flex-col lg:flex-row gap-4 sm:gap-6 items-start min-w-0 transition-[max-width] duration-300 ease-out ${isCollapsed ? "max-w-[1440px]" : "max-w-7xl"}`}>
             <motion.div
               layout
               transition={{ layout: { type: "spring", stiffness: 450, damping: 32, mass: 0.6 } }}

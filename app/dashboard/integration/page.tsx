@@ -19,8 +19,10 @@ import { HelpModal } from "@/components/integration/HelpModal";
 import { UpgradeModal } from "@/components/dashboard/UpgradeModal";
 import { useToast, IntegrationToastContainer } from "@/components/integration/IntegrationToast";
 import { InfoTooltip } from "@/components/ui/info-tooltip";
+import { useSidebar } from "@/components/dashboard/dashboard-shell";
 
 export default function WorkspaceSetupPage() {
+  const { isCollapsed } = useSidebar();
   const [account, setAccount] = useState<Account | null>(null);
   const [loading, setLoading] = useState(true);
   const [isLoaded, setIsLoaded] = useState(false);
@@ -206,7 +208,7 @@ export default function WorkspaceSetupPage() {
   return (
     <>
       <div className="flex flex-col min-h-[calc(100vh-3rem)] bg-[#F8FBFF] dark:bg-[#0E0E10]">
-        <div className="flex-1 px-3.5 sm:px-6 py-4 sm:py-6 lg:px-8 max-w-7xl mx-auto w-full">
+        <div className={`flex-1 px-3.5 sm:px-6 py-4 sm:py-6 lg:px-8 mx-auto w-full transition-[max-width] duration-300 ease-out ${isCollapsed ? "max-w-[1440px]" : "max-w-7xl"}`}>
 
           {/* Page heading & status */}
           <div className="mb-5 sm:mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">

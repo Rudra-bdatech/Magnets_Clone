@@ -35,6 +35,7 @@ import {
 import { getPlanLimits } from "@/lib/plan-limits";
 import type { Account, MagnetPage, Lead, Sequence } from "@/lib/data";
 import { parseFlexibleDate, formatRelativeTime } from "@/lib/utils";
+import { useSidebar } from "@/components/dashboard/dashboard-shell";
 
 // ─────────────────────────────────────────────
 // Sparkline helpers
@@ -278,6 +279,7 @@ export default function DashboardHome({
 }: {
   account: Account | null;
 }) {
+  const { isCollapsed } = useSidebar();
   const router = useRouter();
   const [account, setAccount] = useState<Account | null>(initialAccount);
   const [pages, setPages] = useState<MagnetPage[]>([]);
@@ -547,7 +549,7 @@ export default function DashboardHome({
 
   return (
     <div className="flex flex-col min-h-[calc(100vh-3.5rem)] bg-gradient-to-b from-[#EFF6FF]/40 via-[#F8FBFF] to-[#F8FBFF] dark:bg-none dark:bg-[#0B0B0D]">
-      <div className="flex-1 px-3.5 py-6 sm:px-6 sm:py-7 lg:px-8 max-w-7xl mx-auto w-full">
+      <div className={`flex-1 px-3.5 py-6 sm:px-6 sm:py-7 lg:px-8 mx-auto w-full transition-[max-width] duration-300 ease-out ${isCollapsed ? "max-w-[1440px]" : "max-w-7xl"}`}>
         <motion.div
           variants={container}
           initial="hidden"

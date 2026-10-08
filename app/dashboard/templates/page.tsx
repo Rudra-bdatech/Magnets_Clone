@@ -9,6 +9,7 @@ import BrandSettingsForm from "@/components/brand/BrandSettingsForm";
 import BrandTemplatePreview from "@/components/brand/BrandTemplatePreview";
 import BrandHelpModal from "@/components/brand/BrandHelpModal";
 import { PRESET_COLORS, compressLogoImage, hexWithAlpha } from "@/components/brand/brand-utils";
+import { useSidebar } from "@/components/dashboard/dashboard-shell";
 
 const TEMPLATE_TABS = [
   { id: "template1", label: "Template 1" },
@@ -22,6 +23,7 @@ const TEMPLATE_TABS = [
 ];
 
 export default function TemplatesPage() {
+  const { isCollapsed } = useSidebar();
   const [account, setAccount] = useState<Account | null>(null);
   const [loading, setLoading] = useState(true);
   const [businessName, setBusinessName] = useState("");
@@ -346,7 +348,7 @@ export default function TemplatesPage() {
       )}
 
       <div className="flex flex-col min-h-[calc(100vh-3rem)] bg-gradient-to-b from-[#EFF6FF]/60 via-[#F8FBFF] to-[#F8FBFF] dark:bg-none dark:bg-[#0E0E10] text-zinc-900 dark:text-white transition-colors duration-200 animate-fade-in">
-        <div className="flex-1 px-3.5 py-4 sm:px-6 sm:py-6 lg:px-8 w-full max-w-7xl mx-auto">
+        <div className={`flex-1 px-3.5 py-4 sm:px-6 sm:py-6 lg:px-8 w-full mx-auto transition-[max-width] duration-300 ease-out ${isCollapsed ? "max-w-[1440px]" : "max-w-7xl"}`}>
 
           {/* Page Title */}
           <div className="mb-6 sm:mb-8">

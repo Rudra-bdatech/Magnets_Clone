@@ -34,6 +34,7 @@ import { syncWithDatabase, loadResources, loadAccount, loadPages, loadLeads } fr
 import type { Account, MagnetPage, Lead } from "@/lib/data";
 import { MobileAssetCard } from "@/components/assets/MobileAssetCard";
 import { AppleCheckbox } from "@/components/leads/AppleCheckbox";
+import { useSidebar } from "@/components/dashboard/dashboard-shell";
 
 interface Resource {
   id: string;
@@ -60,6 +61,7 @@ interface UploadProgressState {
 }
 
 export default function ResourcesPage() {
+  const { isCollapsed } = useSidebar();
   const [account, setAccount] = useState<Account | null>(null);
   const [resources, setResources] = useState<Resource[]>([]);
   const [magnetPages, setMagnetPages] = useState<MagnetPage[]>([]);
@@ -685,7 +687,7 @@ export default function ResourcesPage() {
           </div>
         )}
 
-        <div className="flex-1 px-3.5 py-6 sm:px-6 sm:py-7 lg:px-8 max-w-7xl mx-auto w-full flex flex-col gap-4">
+        <div className={`flex-1 px-3.5 py-6 sm:px-6 sm:py-7 lg:px-8 mx-auto w-full flex flex-col gap-4 transition-[max-width] duration-300 ease-out ${isCollapsed ? "max-w-[1440px]" : "max-w-7xl"}`}>
 
           {/* ========================================================================= */}
           {/* 1. DESKTOP Page Heading (hidden md:flex)                                 */}

@@ -28,6 +28,7 @@ import { syncWithDatabase, loadAccount, loadPages, loadLeads } from "@/lib/store
 import { getAppUrl } from "@/lib/data";
 import type { Account, MagnetPage, Lead, LinkedInPostCampaign } from "@/lib/data";
 import { formatDateOnly } from "@/lib/utils";
+import { useSidebar } from "@/components/dashboard/dashboard-shell";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -41,6 +42,7 @@ function maskSecret(secret: string): string {
 // Page Component
 // ---------------------------------------------------------------------------
 export default function LinkedInAutomationPage() {
+  const { isCollapsed } = useSidebar();
   const [account, setAccount] = useState<Account | null>(null);
   const [pages, setPages] = useState<MagnetPage[]>([]);
   const [linkedinLeads, setLinkedinLeads] = useState<Lead[]>([]);
@@ -770,7 +772,7 @@ export default function LinkedInAutomationPage() {
   return (
     <>
       <div className="flex flex-col min-h-[calc(100vh-3rem)] bg-[#F8FBFF] dark:bg-[#0E0E10] w-full">
-        <div className="flex-1 px-3.5 py-6 sm:px-6 sm:py-7 lg:px-8 max-w-7xl mx-auto w-full">
+        <div className={`flex-1 px-3.5 py-6 sm:px-6 sm:py-7 lg:px-8 mx-auto w-full transition-[max-width] duration-300 ease-out ${isCollapsed ? "max-w-[1440px]" : "max-w-7xl"}`}>
 
           {/* â”€â”€ Page Heading â”€â”€ */}
           <div className="mb-6">
