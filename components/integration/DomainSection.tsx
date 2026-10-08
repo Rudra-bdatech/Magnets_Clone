@@ -58,6 +58,8 @@ interface DomainSectionProps {
   handleSave: (overrides?: Partial<Account>) => Promise<void>;
   addToast: (message: string, type?: "success" | "error" | "info") => void;
   userPlan?: string;
+  userEmail?: string;
+  userRole?: string;
   onUpgradeClick?: () => void;
 }
 
@@ -89,12 +91,14 @@ export const DomainSection = memo(function DomainSection({
   handleSave,
   addToast,
   userPlan = "Free",
+  userEmail,
+  userRole,
   onUpgradeClick,
 }: DomainSectionProps) {
   const [copiedField, setCopiedField] = useState<string | null>(null);
 
-  // Plan limits & Custom domain lock check
-  const planLimits = useMemo(() => getPlanLimits(userPlan), [userPlan]);
+  // Plan limits & Custom domain lock check (Staff/Admin accounts bypass automatically)
+  const planLimits = useMemo(() => getPlanLimits(userPlan, userEmail, userRole), [userPlan, userEmail, userRole]);
   const isCustomDomainLocked = !planLimits.customDomainAllowed;
 
   // Memoize derived computations
@@ -260,7 +264,12 @@ export const DomainSection = memo(function DomainSection({
                       align="start"
                     />
                   </p>
-                  {isCustomDomainLocked ? (
+                  {planLimits.badge === "Internal Staff Access" ? (
+                    <span className="rounded-full border border-purple-500/30 bg-purple-500/10 px-2.5 py-0.5 text-[10px] font-bold text-purple-600 dark:text-purple-400 flex items-center gap-1">
+                      <ShieldCheck className="h-3 w-3" />
+                      Internal Staff Access
+                    </span>
+                  ) : isCustomDomainLocked ? (
                     <span className="rounded-full border border-amber-500/30 bg-amber-500/10 px-2.5 py-0.5 text-[10px] font-extrabold text-amber-600 dark:text-amber-400 flex items-center gap-1">
                       <Lock className="h-3 w-3" />
                       PRO FEATURE

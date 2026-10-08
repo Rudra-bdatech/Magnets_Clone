@@ -450,7 +450,10 @@ export default function DashboardHome({
   }, [pages]);
 
   // Plan limits & usage
-  const planLimits = useMemo(() => getPlanLimits(account?.plan), [account]);
+  const planLimits = useMemo(
+    () => getPlanLimits(account?.plan, account?.email, account?.role),
+    [account]
+  );
   const storageUsedMb = useMemo(
     () => resources.reduce((acc: number, r: any) => acc + (r.size || 0), 0) / (1024 * 1024),
     [resources]

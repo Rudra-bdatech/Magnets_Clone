@@ -56,31 +56,31 @@ function AccountToastContainer({
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, scale: 0.92, transition: { duration: 0.2 } }}
             transition={{ type: "spring", stiffness: 450, damping: 30 }}
-            className={`pointer-events-auto flex items-center gap-3 rounded-2xl p-4 text-xs font-medium shadow-2xl backdrop-blur-md border transition-all ${
+            className={`pointer-events-auto flex items-center gap-3 rounded-2xl p-3.5 sm:p-4 text-xs font-medium shadow-xl backdrop-blur-xl border transition-all ${
               toast.type === "success"
-                ? "bg-[#062817]/95 border-emerald-500/40 text-emerald-100 shadow-emerald-950/30"
+                ? "bg-emerald-950/40 border-emerald-500/35 text-emerald-100 shadow-emerald-950/20"
                 : toast.type === "error"
-                ? "bg-[#330c0c]/95 border-rose-500/40 text-rose-100 shadow-rose-950/30"
-                : "bg-[#18181C]/95 border-zinc-700/50 text-zinc-100 shadow-black/40"
+                ? "bg-rose-950/40 border-rose-500/35 text-rose-100 shadow-rose-950/20"
+                : "bg-zinc-900/40 border-white/15 text-zinc-100 shadow-black/30"
             }`}
           >
             {toast.type === "success" && (
-              <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+              <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-emerald-500/25 text-emerald-300 border border-emerald-500/40 backdrop-blur-sm">
                 <Check className="h-3.5 w-3.5" />
               </div>
             )}
             {toast.type === "error" && (
-              <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-rose-500/20 text-rose-400 border border-rose-500/30">
+              <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-rose-500/25 text-rose-300 border border-rose-500/40 backdrop-blur-sm">
                 <AlertCircle className="h-3.5 w-3.5" />
               </div>
             )}
             {toast.type === "info" && (
-              <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-blue-500/20 text-blue-400 border border-blue-500/30">
-                <Info className="h-3.5 w-3.5" />
+              <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-amber-500/25 text-amber-300 border border-amber-500/40 backdrop-blur-sm">
+                <Sparkles className="h-3.5 w-3.5" />
               </div>
             )}
 
-            <div className="flex-1 text-[13px] leading-snug">{toast.message}</div>
+            <div className="flex-1 text-[13px] leading-snug text-white/95">{toast.message}</div>
 
             <button
               type="button"

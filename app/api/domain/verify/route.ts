@@ -33,7 +33,7 @@ export async function POST(req: Request) {
       );
     }
 
-    const planLimits = getPlanLimits(account.plan);
+    const planLimits = getPlanLimits(account.plan, account.email, account.role);
     if (!planLimits.customDomainAllowed) {
       return NextResponse.json(
         {

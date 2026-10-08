@@ -1,3 +1,5 @@
+import { isCompanyAccount } from "./roles";
+
 export interface PlanTierConfig {
   name: string;
   badge: string;
@@ -6,6 +8,15 @@ export interface PlanTierConfig {
   sequencesLimit: number;
   customDomainAllowed: boolean;
 }
+
+export const STAFF_ENTERPRISE_PLAN: PlanTierConfig = {
+  name: "Enterprise Admin",
+  badge: "Internal Staff Access",
+  leadLimit: 1000000,
+  storageLimitMb: 102400, // 100 GB
+  sequencesLimit: 1000,
+  customDomainAllowed: true,
+};
 
 export const PLAN_LIMITS: Record<string, PlanTierConfig> = {
   Free: {
@@ -34,7 +45,7 @@ export const PLAN_LIMITS: Record<string, PlanTierConfig> = {
   },
   Unlimited: {
     name: "Unlimited Enterprise",
-    badge: "Unlimited Active",
+    badge: "Enterprise Active",
     leadLimit: 100000,
     storageLimitMb: 51200, // 50 GB
     sequencesLimit: 100,
@@ -42,7 +53,14 @@ export const PLAN_LIMITS: Record<string, PlanTierConfig> = {
   },
 };
 
-export function getPlanLimits(planName?: string): PlanTierConfig {
+export function getPlanLimits(
+  planName?: string,
+  accountEmail?: string | null,
+  accountRole?: string | null
+): PlanTierConfig {
+  if (isCompanyAccount(accountEmail, accountRole)) {
+    return STAFF_ENTERPRISE_PLAN;
+  }
   if (!planName) return PLAN_LIMITS.Free;
   return PLAN_LIMITS[planName] || PLAN_LIMITS.Free;
 }
