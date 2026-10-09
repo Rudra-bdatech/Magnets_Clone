@@ -370,16 +370,85 @@ export async function handleSendResetEmail(data: any, reqHostOrigin?: string) {
     to: normEmail,
     subject: "Reset your LeadMagnets password",
     html: `
-      <div style="font-family: sans-serif; max-width: 500px; margin: 0 auto; padding: 20px; border: 1px solid #eee; border-radius: 8px;">
-        <h2 style="color: #0066B2; text-align: center;">Reset your password</h2>
-        <p>Hi ${account.name || "there"},</p>
-        <p>We received a request to reset your password. Click the button below to choose a new one:</p>
-        <div style="text-align: center; margin: 24px 0;">
-          <a href="${resetUrl}" style="background-color: #0066B2; color: white; padding: 10px 20px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">Reset Password</a>
-        </div>
-        <p style="font-size: 13px; color: #666;">This link will expire in 1 hour.</p>
-        <p style="font-size: 11px; color: #999;">If you didn't request this, you can safely ignore this email.</p>
-      </div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reset your password</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; color: #0f172a;">
+  <div style="background-color: #f8fafc; padding: 48px 16px;">
+    <table cellpadding="0" cellspacing="0" border="0" style="max-width: 500px; width: 100%; margin: 0 auto;">
+      
+      <!-- Brand Logo Header -->
+      <tr>
+        <td style="padding-bottom: 28px; text-align: center;">
+          <a href="${cleanOrigin}" target="_blank" style="text-decoration: none; display: inline-block;">
+            <img 
+              src="${cleanOrigin}/brand/custom-logo-light.png" 
+              alt="LeadMagnets" 
+              height="30" 
+              style="height: 30px; width: auto; max-height: 34px; display: inline-block; border: 0; outline: none;" 
+            />
+          </a>
+        </td>
+      </tr>
+
+      <!-- Main Card Container -->
+      <tr>
+        <td>
+          <div style="background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 36px 32px; box-shadow: 0 1px 3px 0 rgba(15, 23, 42, 0.04);">
+            
+            <h1 style="color: #0f172a; font-size: 20px; font-weight: 700; margin: 0 0 12px 0; line-height: 1.3; letter-spacing: -0.02em;">
+              Reset your password
+            </h1>
+            <p style="color: #334155; font-size: 14px; margin: 0 0 12px 0; line-height: 1.6;">
+              Hi ${account.name || "there"},
+            </p>
+            <p style="color: #64748b; font-size: 14px; margin: 0 0 28px 0; line-height: 1.6;">
+              We received a request to reset your LeadMagnets account password. Click the button below to choose a new password:
+            </p>
+
+            <!-- CTA Button -->
+            <table cellpadding="0" cellspacing="0" border="0" style="width: 100%; margin-bottom: 28px;">
+              <tr>
+                <td style="text-align: center;">
+                  <a href="${resetUrl}" style="background-color: #0066B2; color: #ffffff; padding: 12px 28px; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 14px; display: inline-block; letter-spacing: -0.01em;">
+                    Reset Password →
+                  </a>
+                </td>
+              </tr>
+            </table>
+
+            <div style="background-color: #f8fafc; border-radius: 6px; padding: 12px 16px; margin-bottom: 20px;">
+              <p style="font-size: 12px; color: #64748b; margin: 0; line-height: 1.5;">
+                ⏱ This link will expire in <strong>1 hour</strong>. If you didn't request a password reset, you can safely ignore this email.
+              </p>
+            </div>
+
+            <p style="font-size: 12px; color: #94a3b8; margin: 0; line-height: 1.5; word-break: break-all;">
+              Button not working? Copy and paste this URL into your browser:<br />
+              <a href="${resetUrl}" style="color: #0066B2; text-decoration: underline;">${resetUrl}</a>
+            </p>
+
+          </div>
+        </td>
+      </tr>
+
+      <!-- Minimal Footer -->
+      <tr>
+        <td style="padding-top: 24px; text-align: center;">
+          <div style="font-size: 12px; color: #94a3b8; line-height: 1.5;">
+            Sent by <strong style="color: #64748b; font-weight: 600;">LeadMagnets</strong> · Account Security
+          </div>
+        </td>
+      </tr>
+
+    </table>
+  </div>
+</body>
+</html>
     `,
   });
 
@@ -420,21 +489,82 @@ export async function handleResetPassword(data: any) {
 
 export async function handleSendVerificationEmail(data: any, reqHostOrigin: string) {
   const { email } = data;
+  const origin = (reqHostOrigin || process.env.NEXT_PUBLIC_APP_URL || "https://magnets.bdatech.in").replace(/\/$/, "");
+  const confirmUrl = `${origin}/register/confirm?email=${encodeURIComponent(email.trim())}`;
 
   const sendResult = await sendMail({
     to: email.trim(),
     subject: "Verify your LeadMagnets email",
     html: `
-      <div style="font-family: sans-serif; max-width: 500px; margin: 0 auto; padding: 30px; border: 1px solid #f0f0f0; border-radius: 12px; background-color: #fafafa;">
-        <div style="background-color: white; padding: 24px; border-radius: 8px; border: 1px solid #eaeaea; text-align: center;">
-          <h2 style="color: #0E0E10; margin-top: 0; font-size: 20px; font-weight: bold;">Verify your email</h2>
-          <p style="color: #4a4a4a; font-size: 13px; margin-bottom: 24px;">Confirm this email address to finish creating your LeadMagnets account.</p>
-          <div style="margin: 24px 0;">
-            <a href="${reqHostOrigin}/register/confirm?email=${encodeURIComponent(email.trim())}" style="background-color: #0E0E10; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 13px; display: inline-block;">Verify email address</a>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verify your email</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; color: #0f172a;">
+  <div style="background-color: #f8fafc; padding: 48px 16px;">
+    <table cellpadding="0" cellspacing="0" border="0" style="max-width: 500px; width: 100%; margin: 0 auto;">
+      
+      <!-- Brand Logo Header -->
+      <tr>
+        <td style="padding-bottom: 28px; text-align: center;">
+          <a href="${origin}" target="_blank" style="text-decoration: none; display: inline-block;">
+            <img 
+              src="${origin}/brand/custom-logo-light.png" 
+              alt="LeadMagnets" 
+              height="30" 
+              style="height: 30px; width: auto; max-height: 34px; display: inline-block; border: 0; outline: none;" 
+            />
+          </a>
+        </td>
+      </tr>
+
+      <!-- Main Card Container -->
+      <tr>
+        <td>
+          <div style="background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 36px 32px; box-shadow: 0 1px 3px 0 rgba(15, 23, 42, 0.04); text-align: center;">
+            
+            <h1 style="color: #0f172a; font-size: 20px; font-weight: 700; margin: 0 0 10px 0; line-height: 1.3; letter-spacing: -0.02em;">
+              Verify your email address
+            </h1>
+            <p style="color: #64748b; font-size: 14px; margin: 0 0 28px 0; line-height: 1.6;">
+              Please confirm your email address (<strong style="color: #0f172a;">${email.trim()}</strong>) to finish setting up your LeadMagnets account.
+            </p>
+
+            <!-- CTA Button -->
+            <table cellpadding="0" cellspacing="0" border="0" style="width: 100%; margin-bottom: 28px;">
+              <tr>
+                <td style="text-align: center;">
+                  <a href="${confirmUrl}" style="background-color: #0066B2; color: #ffffff; padding: 12px 28px; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 14px; display: inline-block; letter-spacing: -0.01em;">
+                    Verify Email Address →
+                  </a>
+                </td>
+              </tr>
+            </table>
+
+            <p style="font-size: 12px; color: #94a3b8; margin: 0; line-height: 1.5;">
+              This link will expire in 24 hours. If you did not create an account, no further action is required.
+            </p>
+
           </div>
-          <p style="font-size: 11px; color: #888; margin-top: 24px; line-height: 1.5;">This link expires in 24 hours. If you did not create a LeadMagnets account, you can ignore this email.</p>
-        </div>
-      </div>
+        </td>
+      </tr>
+
+      <!-- Minimal Footer -->
+      <tr>
+        <td style="padding-top: 24px; text-align: center;">
+          <div style="font-size: 12px; color: #94a3b8; line-height: 1.5;">
+            Sent by <strong style="color: #64748b; font-weight: 600;">LeadMagnets</strong> · Account Verification
+          </div>
+        </td>
+      </tr>
+
+    </table>
+  </div>
+</body>
+</html>
     `,
   });
 

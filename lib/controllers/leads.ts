@@ -385,58 +385,61 @@ export async function handleAddLead(data: any, req: Request, normEmail: string |
   <style>
     table { border-collapse: collapse; width: 100%; margin: 16px 0; }
     th, td { border: 1px solid #e2e8f0; padding: 10px 14px; text-align: left; vertical-align: top; font-size: 13px; line-height: 1.5; }
-    th { background-color: #f8fafc; font-weight: 700; color: #0f172a; }
+    th { background-color: #f8fafc; font-weight: 600; color: #0f172a; }
     td p, th p { margin: 0 !important; line-height: 1.5; }
-    hr { border: none; border-top: 1px solid #e2e8f0; margin: 20px 0; }
+    hr { border: none; border-top: 1px solid #f1f5f9; margin: 24px 0; }
   </style>
 </head>
-<body style="margin: 0; padding: 0; background-color: #f1f5f9; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;">
+<body style="margin: 0; padding: 0; background-color: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; color: #0f172a;">
   ${preheaderHtml}
-  <div style="background-color: #f1f5f9; padding: 36px 16px;">
-    <table cellpadding="0" cellspacing="0" border="0" style="max-width: 580px; width: 100%; margin: 0 auto;">
+  <div style="background-color: #f8fafc; padding: 48px 16px;">
+    <table cellpadding="0" cellspacing="0" border="0" style="max-width: 560px; width: 100%; margin: 0 auto;">
       
-      <!-- Top Brand Header with Official Logo -->
+      <!-- Brand Logo Header -->
       <tr>
-        <td style="padding-bottom: 22px; text-align: center;">
+        <td style="padding-bottom: 28px; text-align: center;">
           <a href="${appUrl}" target="_blank" style="text-decoration: none; display: inline-block;">
             <img 
               src="${logoUrl}" 
-              alt="LeadMagnets" 
-              height="34" 
-              style="height: 34px; width: auto; max-height: 38px; display: inline-block; border: 0; outline: none; vertical-align: middle;" 
+              alt="${senderName}" 
+              height="30" 
+              style="height: 30px; width: auto; max-height: 34px; display: inline-block; border: 0; outline: none; vertical-align: middle;" 
             />
           </a>
         </td>
       </tr>
 
-      <!-- Main Card Container -->
+      <!-- Main Content Card -->
       <tr>
         <td>
-          <div style="background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 36px 32px; box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.05), 0 8px 10px -6px rgba(15, 23, 42, 0.02);">
+          <div style="background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 36px 32px; box-shadow: 0 1px 3px 0 rgba(15, 23, 42, 0.04);">
             
-            <!-- Badge -->
-            <div style="display: inline-block; background-color: #eff6ff; border: 1px solid #bfdbfe; color: #1d4ed8; font-size: 11px; font-weight: 700; padding: 4px 12px; border-radius: 9999px; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 18px;">
-              🎁 Your Download Is Ready
-            </div>
-
-            <!-- Main Lead Body / Message -->
-            <div style="color: #334155; font-size: 15px; line-height: 1.65; margin-bottom: 24px;">
+            <!-- Main Content -->
+            <div style="color: #334155; font-size: 15px; line-height: 1.7;">
               ${formattedBodyHtml}
             </div>
 
-            <!-- Footer Details -->
-            <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 28px 0 16px 0;" />
-            <table cellpadding="0" cellspacing="0" border="0" style="width: 100%; text-align: center;">
-              <tr>
-                <td>
-                  <div style="font-size: 11px; color: #94a3b8; line-height: 1.5;">
-                    Delivered by <strong>${senderName}</strong> · Instant Resource Delivery<br />
-                    You received this email because you requested access to this resource.
-                  </div>
-                </td>
-              </tr>
-            </table>
+            <!-- Sleek Card Footer Divider -->
+            <div style="margin-top: 32px; padding-top: 20px; border-top: 1px solid #f1f5f9;">
+              <table cellpadding="0" cellspacing="0" border="0" style="width: 100%;">
+                <tr>
+                  <td style="font-size: 12px; color: #94a3b8; line-height: 1.5; border: none; padding: 0;">
+                    Delivered on behalf of <strong style="color: #64748b; font-weight: 600;">${senderName}</strong> · Instant Resource Delivery
+                  </td>
+                </tr>
+              </table>
+            </div>
 
+          </div>
+        </td>
+      </tr>
+
+      <!-- Minimal Outer Footer -->
+      <tr>
+        <td style="padding-top: 24px; text-align: center;">
+          <div style="font-size: 12px; color: #94a3b8; line-height: 1.5;">
+            You received this email because you requested access to this resource.<br />
+            Powered by <strong style="color: #64748b; font-weight: 600;">LeadMagnets</strong>
           </div>
         </td>
       </tr>

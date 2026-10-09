@@ -267,24 +267,24 @@ export async function GET(req: NextRequest) {
   <style>
     table { border-collapse: collapse; width: 100%; margin: 16px 0; }
     th, td { border: 1px solid #e2e8f0; padding: 10px 14px; text-align: left; vertical-align: top; font-size: 13px; line-height: 1.5; }
-    th { background-color: #f8fafc; font-weight: 700; color: #0f172a; }
+    th { background-color: #f8fafc; font-weight: 600; color: #0f172a; }
     td p, th p { margin: 0 !important; line-height: 1.5; }
-    hr { border: none; border-top: 1px solid #e2e8f0; margin: 20px 0; }
+    hr { border: none; border-top: 1px solid #f1f5f9; margin: 24px 0; }
   </style>
 </head>
-<body style="margin: 0; padding: 0; background-color: #f1f5f9; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;">
-  <div style="background-color: #f1f5f9; padding: 36px 16px;">
-    <table cellpadding="0" cellspacing="0" border="0" style="max-width: 580px; width: 100%; margin: 0 auto;">
+<body style="margin: 0; padding: 0; background-color: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; color: #0f172a;">
+  <div style="background-color: #f8fafc; padding: 48px 16px;">
+    <table cellpadding="0" cellspacing="0" border="0" style="max-width: 560px; width: 100%; margin: 0 auto;">
       
-      <!-- Top Brand Header with Official Logo -->
+      <!-- Brand Logo Header -->
       <tr>
-        <td style="padding-bottom: 22px; text-align: center;">
+        <td style="padding-bottom: 28px; text-align: center;">
           <a href="${appUrl}" target="_blank" style="text-decoration: none; display: inline-block;">
             <img 
               src="${logoUrl}" 
-              alt="LeadMagnets" 
-              height="34" 
-              style="height: 34px; width: auto; max-height: 38px; display: inline-block; border: 0; outline: none; vertical-align: middle;" 
+              alt="${senderName}" 
+              height="30" 
+              style="height: 30px; width: auto; max-height: 34px; display: inline-block; border: 0; outline: none; vertical-align: middle;" 
             />
           </a>
         </td>
@@ -293,27 +293,35 @@ export async function GET(req: NextRequest) {
       <!-- Main Card Container -->
       <tr>
         <td>
-          <div style="background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 36px 32px; box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.05), 0 8px 10px -6px rgba(15, 23, 42, 0.02);">
+          <div style="background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 36px 32px; box-shadow: 0 1px 3px 0 rgba(15, 23, 42, 0.04);">
             
-            <h2 style="color: #0f172a; font-size: 21px; font-weight: 800; margin: 0 0 16px 0; line-height: 1.3;">
+            <h1 style="color: #0f172a; font-size: 20px; font-weight: 700; margin: 0 0 20px 0; line-height: 1.3; letter-spacing: -0.02em;">
               ${formattedSubject}
-            </h2>
+            </h1>
 
-            <div style="color: #334155; font-size: 15px; line-height: 1.65; margin-bottom: 24px;">
+            <div style="color: #334155; font-size: 15px; line-height: 1.7; margin-bottom: 24px;">
               ${formattedBodyHtml}
             </div>
 
-            <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 28px 0 16px 0;" />
-            <table cellpadding="0" cellspacing="0" border="0" style="width: 100%; text-align: center;">
-              <tr>
-                <td>
-                  <div style="font-size: 11px; color: #94a3b8; line-height: 1.5;">
-                    Sent by <strong>${senderName}</strong> · Powered by LeadMagnets
-                  </div>
-                </td>
-              </tr>
-            </table>
+            <div style="margin-top: 32px; padding-top: 20px; border-top: 1px solid #f1f5f9;">
+              <table cellpadding="0" cellspacing="0" border="0" style="width: 100%;">
+                <tr>
+                  <td style="font-size: 12px; color: #94a3b8; line-height: 1.5; border: none; padding: 0;">
+                    Sent by <strong style="color: #64748b; font-weight: 600;">${senderName}</strong>
+                  </td>
+                </tr>
+              </table>
+            </div>
 
+          </div>
+        </td>
+      </tr>
+
+      <!-- Minimal Outer Footer -->
+      <tr>
+        <td style="padding-top: 24px; text-align: center;">
+          <div style="font-size: 12px; color: #94a3b8; line-height: 1.5;">
+            Powered by <strong style="color: #64748b; font-weight: 600;">LeadMagnets</strong> · Automated Follow-up
           </div>
         </td>
       </tr>

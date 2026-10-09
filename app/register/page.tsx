@@ -125,8 +125,11 @@ export default function RegisterPage() {
         </div>
       )}
 
-      {/* Continue with Google Button */}
-      <GoogleAuthButton callbackUrl="/register/onboarding" disabled={loading} />
+      {/* Social Auth Buttons */}
+      <div className="flex flex-col gap-2">
+        <GoogleAuthButton callbackUrl="/register/onboarding" disabled={loading} />
+      </div>
+
 
       <div className="relative my-3 flex items-center justify-center">
         <div className="absolute inset-0 flex items-center">

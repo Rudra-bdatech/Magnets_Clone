@@ -178,18 +178,47 @@ export async function handleSendTestSequenceEmail(data: any, normEmail: string |
     .replace(/\n/g, "<br/>");
 
   const formattedHtml = `
-    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; color: #18181B; line-height: 1.6;">
-      <div style="border-bottom: 2px solid #0066B2; padding-bottom: 12px; margin-bottom: 20px;">
-        <span style="font-size: 11px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.05em; color: #0066B2;">[Test Preview] Sequence Follow-up</span>
-      </div>
-      <div style="font-size: 15px; margin-bottom: 24px;">
-        ${bodyText}
-      </div>
-      <hr style="border: none; border-top: 1px solid #E4E4E7; margin: 24px 0;" />
-      <p style="font-size: 11px; color: #71717A;">
-        This test preview was sent from your LeadMagnets sequence editor.
-      </p>
-    </div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${subject}</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; color: #0f172a;">
+  <div style="background-color: #f8fafc; padding: 48px 16px;">
+    <table cellpadding="0" cellspacing="0" border="0" style="max-width: 560px; width: 100%; margin: 0 auto;">
+      
+      <!-- Main Card Container -->
+      <tr>
+        <td>
+          <div style="background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 36px 32px; box-shadow: 0 1px 3px 0 rgba(15, 23, 42, 0.04);">
+            
+            <!-- Minimal Preview Tag -->
+            <div style="margin-bottom: 16px;">
+              <span style="display: inline-block; background-color: #f1f5f9; color: #0066B2; font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 6px; letter-spacing: 0.04em; text-transform: uppercase;">
+                Test Sequence Preview
+              </span>
+            </div>
+
+            <div style="color: #334155; font-size: 15px; line-height: 1.7; margin-bottom: 24px;">
+              ${bodyText}
+            </div>
+
+            <div style="margin-top: 32px; padding-top: 20px; border-top: 1px solid #f1f5f9;">
+              <p style="font-size: 12px; color: #94a3b8; margin: 0; line-height: 1.5;">
+                This test preview was sent from your LeadMagnets sequence builder.
+              </p>
+            </div>
+
+          </div>
+        </td>
+      </tr>
+
+    </table>
+  </div>
+</body>
+</html>
   `;
 
   const result = await sendMail(

@@ -95,21 +95,21 @@ export async function POST(req: NextRequest) {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Your Access Code</title>
+  <title>Your Verification Code</title>
 </head>
-<body style="margin: 0; padding: 0; background-color: #f1f5f9; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;">
-  <div style="background-color: #f1f5f9; padding: 36px 16px;">
-    <table cellpadding="0" cellspacing="0" border="0" style="max-width: 500px; width: 100%; margin: 0 auto;">
+<body style="margin: 0; padding: 0; background-color: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; color: #0f172a;">
+  <div style="background-color: #f8fafc; padding: 48px 16px;">
+    <table cellpadding="0" cellspacing="0" border="0" style="max-width: 480px; width: 100%; margin: 0 auto;">
       
-      <!-- Top Brand Header -->
+      <!-- Brand Logo Header -->
       <tr>
-        <td style="padding-bottom: 20px; text-align: center;">
+        <td style="padding-bottom: 28px; text-align: center;">
           <a href="${appUrl}" target="_blank" style="text-decoration: none; display: inline-block;">
             <img 
               src="${logoUrl}" 
               alt="LeadMagnets" 
-              height="32" 
-              style="height: 32px; width: auto; max-height: 36px; display: inline-block; border: 0; outline: none;" 
+              height="30" 
+              style="height: 30px; width: auto; max-height: 34px; display: inline-block; border: 0; outline: none;" 
             />
           </a>
         </td>
@@ -118,37 +118,37 @@ export async function POST(req: NextRequest) {
       <!-- Main Card Container -->
       <tr>
         <td>
-          <div style="background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 32px 28px; box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.05), 0 8px 10px -6px rgba(15, 23, 42, 0.02); text-align: center;">
+          <div style="background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 36px 32px; box-shadow: 0 1px 3px 0 rgba(15, 23, 42, 0.04); text-align: center;">
             
-            <!-- Badge -->
-            <div style="display: inline-block; background-color: #eff6ff; border: 1px solid #bfdbfe; color: #1d4ed8; font-size: 11px; font-weight: 700; padding: 4px 12px; border-radius: 9999px; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 16px;">
-              🔐 Security Verification
-            </div>
-
-            <h1 style="color: #0f172a; font-size: 21px; font-weight: 800; margin: 0 0 8px 0; line-height: 1.3;">
-              Unlock Your Document
+            <h1 style="color: #0f172a; font-size: 20px; font-weight: 700; margin: 0 0 8px 0; line-height: 1.3; letter-spacing: -0.02em;">
+              Verification Code
             </h1>
             <p style="color: #64748b; font-size: 14px; margin: 0 0 24px 0; line-height: 1.5;">
-              Enter this 6-digit verification code to instantly access and read your document:
+              Use the single-use code below to verify your email and access your document:
             </p>
 
-            <!-- Code Box -->
-            <div style="background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%); border: 2px dashed #cbd5e1; border-radius: 14px; padding: 22px 16px; margin: 0 0 20px 0;">
-              <span style="font-size: 38px; font-weight: 900; letter-spacing: 0.25em; color: #0066B2; font-family: 'Courier New', Courier, monospace; display: block; margin-left: 0.25em;">
+            <!-- Code Display Box -->
+            <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 18px 16px; margin: 0 0 24px 0;">
+              <span style="font-size: 32px; font-weight: 700; letter-spacing: 0.28em; color: #0066B2; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; display: block; margin-left: 0.28em;">
                 ${code}
               </span>
             </div>
 
             <!-- Expiry Note -->
-            <p style="font-size: 12px; color: #94a3b8; margin: 0 0 24px 0; line-height: 1.5;">
-              ⏱ This code is valid for <strong>10 minutes</strong>. If you did not request this access code, you can safely ignore this email.
+            <p style="font-size: 12px; color: #94a3b8; margin: 0; line-height: 1.5;">
+              This code will expire in <strong>10 minutes</strong>.<br />
+              If you did not request this, please disregard this email.
             </p>
 
-            <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 0 0 16px 0;" />
-            <p style="font-size: 11px; color: #94a3b8; margin: 0;">
-              Sent by <strong>LeadMagnets Platform</strong> · Secure Document Verification
-            </p>
+          </div>
+        </td>
+      </tr>
 
+      <!-- Minimal Footer -->
+      <tr>
+        <td style="padding-top: 24px; text-align: center;">
+          <div style="font-size: 12px; color: #94a3b8; line-height: 1.5;">
+            Powered by <strong style="color: #64748b; font-weight: 600;">LeadMagnets</strong> · Secure Access
           </div>
         </td>
       </tr>
