@@ -25,6 +25,7 @@ import {
   SlidersHorizontal,
   CheckSquare,
   StopCircle,
+  Clock,
 } from "lucide-react";
 import {
   syncWithDatabase,
@@ -256,7 +257,7 @@ export default function LeadsPage() {
 
   const activeCount = useMemo(() => {
     return leads.filter(
-      (l) => (l.status === "delivered" || l.status === "opened" || l.status === "new") && Boolean(l.sequence || l.page)
+      (l) => ((l.status as string) === "delivered" || l.status === "opened" || l.status === "new") && Boolean(l.sequence || l.page)
     ).length;
   }, [leads]);
 
@@ -270,7 +271,7 @@ export default function LeadsPage() {
     const matched = leads.filter((l) => {
       // Status filter
       if (statusFilter === "active") {
-        const isActive = (l.status === "delivered" || l.status === "opened" || l.status === "new") && Boolean(l.sequence || l.page);
+        const isActive = ((l.status as string) === "delivered" || l.status === "opened" || l.status === "new") && Boolean(l.sequence || l.page);
         if (!isActive) return false;
       } else if (statusFilter === "replied") {
         const isReplied = l.status === "replied" || l.status === "converted";

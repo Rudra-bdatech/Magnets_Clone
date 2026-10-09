@@ -14,6 +14,7 @@ import { ExpandableScreen, ExpandableScreenTrigger } from "@/components/ui/expan
 import { isSessionValid, loadAccount, setSessionExpiry, loadPages, loadSequences, loadIntegrations } from "@/lib/store";
 import { computeOnboardingStatus, type OnboardingStatus } from "@/lib/onboarding";
 import { signOut } from "next-auth/react";
+import { CommandMenu } from "@/components/dashboard/command-menu";
 
 export interface SidebarContextType {
   isCollapsed: boolean;
@@ -70,6 +71,7 @@ export default function DashboardShell({
   const mobileDrawerProfileMenuRef = useRef<HTMLDivElement>(null);
 
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCommandMenuOpen, setIsCommandMenuOpen] = useState(false);
 
   useEffect(() => {
     try {
@@ -90,14 +92,20 @@ export default function DashboardShell({
     });
   }, []);
 
-  // Keyboard shortcut: Cmd+B / Ctrl+B to toggle sidebar
+  // Global Keyboard Shortcuts: Cmd+B (Sidebar) and Cmd+K (Command Center)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      const tag = (e.target as HTMLElement)?.tagName;
+      const isInput = tag === "INPUT" || tag === "TEXTAREA" || (e.target as HTMLElement)?.isContentEditable;
+
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        setIsCommandMenuOpen((prev) => !prev);
+        return;
+      }
+
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "b") {
-        const tag = (e.target as HTMLElement)?.tagName;
-        if (tag === "INPUT" || tag === "TEXTAREA" || (e.target as HTMLElement)?.isContentEditable) {
-          return;
-        }
+        if (isInput) return;
         e.preventDefault();
         toggleSidebar();
       }
@@ -1589,6 +1597,7 @@ export default function DashboardShell({
           </div>
         )}
       </div>
+      <CommandMenu isOpen={isCommandMenuOpen} onClose={() => setIsCommandMenuOpen(false)} />
     </ExpandableScreen>
     </SidebarContext.Provider>
   );

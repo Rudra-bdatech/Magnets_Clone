@@ -36,6 +36,10 @@ import {
   MoreVertical,
   Lock,
   Magnet,
+  LayoutGrid,
+  List,
+  Workflow,
+  GitFork,
 } from "lucide-react";
 import { useEffect, useState, useMemo } from "react";
 import StatusBadge from "@/components/dashboard/status-badge";
@@ -90,6 +94,8 @@ export default function SequenceEditor() {
   const [generatingAiBodyForId, setGeneratingAiBodyForId] = useState<string | null>(null);
   const [sendingTestForId, setSendingTestForId] = useState<string | null>(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [editorViewMode, setEditorViewMode] = useState<"flow" | "list">("flow");
+  const [selectedFlowNodeIndex, setSelectedFlowNodeIndex] = useState<number>(0);
 
   // Inline Sequence Title Editing
   const [isEditingTitle, setIsEditingTitle] = useState(false);
@@ -951,28 +957,261 @@ export default function SequenceEditor() {
             <div className="lg:col-span-8 space-y-4 sm:space-y-6">
               
               {/* Timeline Header */}
-              <div className="flex items-center justify-between gap-2">
-                <div className="min-w-0 flex-1">
-                  <h2 className="text-xs sm:text-sm font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 flex items-center gap-1.5 truncate">
-                    <Mail className="h-3.5 w-3.5 text-[#0066B2] dark:text-[#38BDF8] shrink-0" />
-                    <span>Drip Sequence Steps</span>
-                    <span className="ml-1 inline-flex items-center justify-center rounded-full bg-blue-100 dark:bg-blue-950/60 text-[#0066B2] dark:text-[#38BDF8] text-[10px] font-bold px-1.5 py-0.2">
-                      {attachedPage ? emailsWithBody.length + 1 : emailsWithBody.length}
-                    </span>
-                  </h2>
+              {/* Timeline Header with Flow Canvas / Step List Switcher */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center p-1 bg-zinc-200/70 dark:bg-white/[0.06] rounded-xl">
+                    <button
+                      type="button"
+                      onClick={() => setEditorViewMode("flow")}
+                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                        editorViewMode === "flow"
+                          ? "bg-white dark:bg-[#1E1E24] text-[#0066B2] dark:text-[#38BDF8] shadow-xs"
+                          : "text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white"
+                      }`}
+                    >
+                      <Workflow className="h-3.5 w-3.5" />
+                      <span>Flow Canvas</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setEditorViewMode("list")}
+                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                        editorViewMode === "list"
+                          ? "bg-white dark:bg-[#1E1E24] text-[#0066B2] dark:text-[#38BDF8] shadow-xs"
+                          : "text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white"
+                      }`}
+                    >
+                      <List className="h-3.5 w-3.5" />
+                      <span>Step List</span>
+                    </button>
+                  </div>
+
+                  <span className="text-xs font-bold text-zinc-400">
+                    {attachedPage ? emailsWithBody.length + 1 : emailsWithBody.length} total steps
+                  </span>
                 </div>
                 
                 <button
                   onClick={addEmail}
-                  className="inline-flex items-center gap-1.5 rounded-xl border border-blue-200 dark:border-blue-900/60 bg-blue-50/80 dark:bg-blue-950/40 px-2.5 sm:px-3 py-1.5 text-xs font-bold text-[#0066B2] dark:text-[#38BDF8] hover:bg-blue-100 dark:hover:bg-blue-900/60 active:scale-95 transition shadow-xs cursor-pointer shrink-0"
+                  className="inline-flex items-center gap-1.5 rounded-xl border border-blue-200 dark:border-blue-900/60 bg-blue-50/80 dark:bg-blue-950/40 px-3 py-1.5 text-xs font-bold text-[#0066B2] dark:text-[#38BDF8] hover:bg-blue-100 dark:hover:bg-blue-900/60 active:scale-95 transition shadow-xs cursor-pointer shrink-0 self-start sm:self-auto"
                 >
                   <Plus className="h-3.5 w-3.5" />
                   <span>Add Step</span>
                 </button>
               </div>
 
-              {/* Email Cards Container with Workflow Flow */}
-              <div className="space-y-0">
+              {/* ══════════════════════════════════════════════
+                  VIEW 1: SPATIAL WORKFLOW CANVAS (VISUAL PIPELINE)
+              ══════════════════════════════════════════════ */}
+              {editorViewMode === "flow" && (
+                <div className="rounded-2xl border border-zinc-200/90 dark:border-white/[0.08] bg-white dark:bg-[#141417] p-4 sm:p-6 shadow-sm space-y-6">
+                  {/* Canvas Pipeline Nodes */}
+                  <div className="space-y-4">
+                    {/* Node 0: Entry Trigger */}
+                    <div className="flex items-center gap-3 p-3.5 rounded-xl border border-blue-200/80 dark:border-blue-900/40 bg-blue-50/50 dark:bg-blue-950/20">
+                      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#0066B2] text-white">
+                        <Zap className="h-4 w-4" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-[#0066B2] dark:text-[#38BDF8]">
+                          Trigger Event
+                        </span>
+                        <p className="text-xs font-bold text-zinc-900 dark:text-white truncate">
+                          {attachedPage ? `Subscriber opts into "${attachedPage.name}"` : "User subscribed to sequence"}
+                        </p>
+                      </div>
+                      <div className="text-right shrink-0">
+                        <span className="text-xs font-mono font-bold text-zinc-800 dark:text-zinc-200">
+                          {signedUp.toLocaleString()}
+                        </span>
+                        <span className="block text-[9px] text-zinc-400">Enrolled</span>
+                      </div>
+                    </div>
+
+                    {/* Step 1 Instant Delivery Node (if attached) */}
+                    {attachedPage && (
+                      <>
+                        <div className="flex justify-center -my-2">
+                          <div className="flex flex-col items-center">
+                            <div className="h-4 w-0.5 bg-zinc-300 dark:bg-zinc-700" />
+                            <span className="text-[9px] font-bold px-1.5 py-0.2 rounded bg-zinc-100 dark:bg-white/10 text-zinc-500">
+                              Instant (0m)
+                            </span>
+                            <div className="h-2 w-0.5 bg-zinc-300 dark:bg-zinc-700" />
+                          </div>
+                        </div>
+
+                        <div className="p-3.5 rounded-xl border border-emerald-300/80 dark:border-emerald-800/40 bg-emerald-50/40 dark:bg-emerald-950/20 flex items-center justify-between gap-3">
+                          <div className="flex items-center gap-3 min-w-0">
+                            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-emerald-600 text-xs font-bold text-white">
+                              1
+                            </span>
+                            <div className="min-w-0">
+                              <span className="text-[10px] font-bold text-emerald-700 dark:text-emerald-400 uppercase">
+                                Immediate Resource Access
+                              </span>
+                              <p className="text-xs font-bold text-zinc-900 dark:text-white truncate">
+                                {attachedPage.deliveryEmail?.subject || "Your requested access is inside"}
+                              </p>
+                            </div>
+                          </div>
+
+                          <div className="flex items-center gap-2 shrink-0">
+                            <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400">
+                              {overallOpenRate}% Open
+                            </span>
+                          </div>
+                        </div>
+                      </>
+                    )}
+
+                    {/* Drip Follow-up Step Nodes */}
+                    {emailsWithBody.map((email, idx) => {
+                      const isSelected = selectedFlowNodeIndex === idx;
+                      const stepNum = attachedPage ? idx + 2 : idx + 1;
+                      const sentCount = email.sent || 0;
+                      const openedCount = email.opened || 0;
+                      const stepOpenRate = sentCount > 0 ? Math.round((openedCount / sentCount) * 100) : 0;
+
+                      return (
+                        <div key={email.id || idx} className="space-y-4">
+                          {/* Flow Delay Connector */}
+                          <div className="flex justify-center -my-2">
+                            <div className="flex flex-col items-center">
+                              <div className="h-4 w-0.5 bg-zinc-300 dark:bg-zinc-700" />
+                              <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950/50 text-[#0066B2] dark:text-[#38BDF8] border border-blue-200/60 dark:border-blue-800/40">
+                                ⏳ {email.delayLabel || "1d delay"}
+                              </span>
+                              <div className="h-2 w-0.5 bg-zinc-300 dark:bg-zinc-700" />
+                            </div>
+                          </div>
+
+                          {/* Step Node Card */}
+                          <div
+                            onClick={() => setSelectedFlowNodeIndex(idx)}
+                            className={`group flex items-center justify-between gap-3 p-3.5 rounded-xl border transition-all cursor-pointer ${
+                              isSelected
+                                ? "border-[#0066B2] bg-[#0066B2]/5 dark:border-[#38BDF8] dark:bg-[#38BDF8]/10 ring-2 ring-[#0066B2]/20"
+                                : "border-zinc-200 dark:border-white/10 bg-zinc-50/60 dark:bg-[#18181D] hover:border-[#0066B2]/40"
+                            }`}
+                          >
+                            <div className="flex items-center gap-3 min-w-0">
+                              <span
+                                className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-xs font-bold ${
+                                  isSelected
+                                    ? "bg-[#0066B2] text-white"
+                                    : "bg-zinc-200 dark:bg-white/10 text-zinc-700 dark:text-zinc-300"
+                                }`}
+                              >
+                                {stepNum}
+                              </span>
+                              <div className="min-w-0">
+                                <span className="text-[10px] font-bold text-zinc-400 uppercase">
+                                  Follow-up Step #{stepNum}
+                                </span>
+                                <p className="text-xs font-bold text-zinc-900 dark:text-white truncate">
+                                  {email.subject || `Untitled Step #${stepNum}`}
+                                </p>
+                              </div>
+                            </div>
+
+                            <div className="flex items-center gap-3 shrink-0">
+                              <span className="text-[11px] font-bold text-zinc-600 dark:text-zinc-400">
+                                {sentCount} sent
+                              </span>
+                              <span className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-md">
+                                {stepOpenRate}% open
+                              </span>
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setEditorViewMode("list");
+                                  setExpandedEmailId(email.id);
+                                }}
+                                className="text-xs font-bold text-[#0066B2] dark:text-[#38BDF8] hover:underline"
+                              >
+                                Edit →
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+
+                    {/* Final Node: Sequence Complete */}
+                    <div className="flex justify-center -my-2">
+                      <div className="h-4 w-0.5 bg-zinc-300 dark:bg-zinc-700" />
+                    </div>
+                    <div className="flex items-center justify-center gap-2 p-2.5 rounded-xl border border-dashed border-zinc-200 dark:border-white/10 text-xs font-bold text-zinc-400">
+                      <Check className="h-3.5 w-3.5 text-emerald-500" />
+                      <span>Subscriber Sequence Journey Complete</span>
+                    </div>
+                  </div>
+
+                  {/* Flow Canvas Step Inspector (Live Preview & In-place Subject edit) */}
+                  {emailsWithBody[selectedFlowNodeIndex] && (
+                    <div className="mt-6 pt-5 border-t border-zinc-200 dark:border-white/10 space-y-4">
+                      <div className="flex items-center justify-between">
+                        <h3 className="text-xs font-extrabold uppercase tracking-wider text-zinc-900 dark:text-white flex items-center gap-2">
+                          <Eye className="h-3.5 w-3.5 text-[#0066B2] dark:text-[#38BDF8]" />
+                          <span>Step #{selectedFlowNodeIndex + (attachedPage ? 2 : 1)} Live Inspector & Preview</span>
+                        </h3>
+                        <div className="flex items-center gap-2">
+                          <button
+                            type="button"
+                            onClick={() => generateAiSubject(emailsWithBody[selectedFlowNodeIndex].id)}
+                            className="flex items-center gap-1 text-[11px] font-bold text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-950/40 px-2 py-1 rounded-lg hover:bg-purple-100 transition"
+                          >
+                            <Sparkles className="h-3 w-3" />
+                            <span>AI Subject</span>
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => sendTestEmail(emailsWithBody[selectedFlowNodeIndex].id)}
+                            className="flex items-center gap-1 text-[11px] font-bold text-[#0066B2] dark:text-[#38BDF8] bg-blue-50 dark:bg-blue-950/40 px-2 py-1 rounded-lg hover:bg-blue-100 transition"
+                          >
+                            <Send className="h-3 w-3" />
+                            <span>Test Email</span>
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Subject input */}
+                      <div>
+                        <label className="block text-[10px] font-bold uppercase tracking-wider text-zinc-400 mb-1">
+                          Email Subject
+                        </label>
+                        <input
+                          type="text"
+                          value={emailsWithBody[selectedFlowNodeIndex].subject || ""}
+                          onChange={(e) => patchEmail(emailsWithBody[selectedFlowNodeIndex].id, { subject: e.target.value })}
+                          className="w-full rounded-xl border border-zinc-200 dark:border-white/10 bg-zinc-50 dark:bg-[#101013] p-2.5 text-xs font-semibold text-zinc-900 dark:text-white outline-none focus:border-[#0066B2]"
+                        />
+                      </div>
+
+                      {/* Live Rendered Email HTML Body Preview Card */}
+                      <div>
+                        <label className="block text-[10px] font-bold uppercase tracking-wider text-zinc-400 mb-1">
+                          Email Body Preview
+                        </label>
+                        <div className="rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#0E0E11] p-4 text-xs text-zinc-700 dark:text-zinc-300 space-y-2 whitespace-pre-wrap shadow-inner min-h-[100px]">
+                          {emailsWithBody[selectedFlowNodeIndex].body || (
+                            <span className="italic text-zinc-400">No body text yet. Switch to Step List or use AI to generate body copy.</span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* ══════════════════════════════════════════════
+                  VIEW 2: LINEAR ACCORDION STEP LIST
+              ══════════════════════════════════════════════ */}
+              {editorViewMode === "list" && (
+                <div className="space-y-0">
                 
                 {/* Step 1: Instant Resource Delivery Milestone Card (Only for Lead Magnet Attached Sequences) */}
                 {attachedPage && (
@@ -1365,7 +1604,8 @@ export default function SequenceEditor() {
                   </button>
                 </div>
               </div>
-            </div>
+            )}
+          </div>
 
             {/* Right Column: Performance & Settings (4 Cols on Desktop, Stacked on Mobile) */}
             <div className="lg:col-span-4 space-y-4 sm:space-y-6">

@@ -21,6 +21,10 @@ import {
   X,
   HardDrive,
   Rocket,
+  Smartphone,
+  Laptop,
+  Maximize2,
+  ExternalLink,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import {

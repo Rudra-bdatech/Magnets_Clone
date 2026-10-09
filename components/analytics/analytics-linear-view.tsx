@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter, useParams } from "next/navigation";
 import { motion } from "framer-motion";
@@ -70,6 +70,7 @@ export default function AnalyticsLinearView({
 
   const [timeRange, setTimeRange] = useState<TimeRange>("30d");
   const [statsInRange, setStatsInRange] = useState({ visitsInRange: 0, signupsInRange: 0 });
+  const chartCardRef = useRef<HTMLDivElement>(null);
 
   const handleDataCalculated = useCallback((stats: { visitsInRange: number; signupsInRange: number }) => {
     setStatsInRange((prev) => {
@@ -78,6 +79,62 @@ export default function AnalyticsLinearView({
       }
       return stats;
     });
+  }, []);
+
+  // Temporal Semantic Zoom (Pinch / Ctrl + Wheel when mouse is on the chart card & Keyboard 1..4)
+  useEffect(() => {
+    let lastWheel = 0;
+    const handleWheel = (e: WheelEvent) => {
+      if (e.ctrlKey) {
+        e.preventDefault();
+        e.stopPropagation();
+        const now = Date.now();
+        if (now - lastWheel < 300) return;
+        lastWheel = now;
+
+        if (e.deltaY > 0) {
+          // Zoom out: 7d -> 30d -> 90d -> all
+          setTimeRange((cur) => {
+            if (cur === "7d") return "30d";
+            if (cur === "30d") return "90d";
+            if (cur === "90d") return "all";
+            return cur;
+          });
+        } else if (e.deltaY < 0) {
+          // Zoom in: all -> 90d -> 30d -> 7d
+          setTimeRange((cur) => {
+            if (cur === "all") return "90d";
+            if (cur === "90d") return "30d";
+            if (cur === "30d") return "7d";
+            return cur;
+          });
+        }
+      }
+    };
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const tag = (e.target as HTMLElement)?.tagName;
+      const isInput = tag === "INPUT" || tag === "TEXTAREA" || (e.target as HTMLElement)?.isContentEditable;
+      if (isInput) return;
+
+      if (e.key === "1") setTimeRange("7d");
+      if (e.key === "2") setTimeRange("30d");
+      if (e.key === "3") setTimeRange("90d");
+      if (e.key === "4") setTimeRange("all");
+    };
+
+    const cardEl = chartCardRef.current;
+    if (cardEl) {
+      cardEl.addEventListener("wheel", handleWheel, { passive: false });
+    }
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      if (cardEl) {
+        cardEl.removeEventListener("wheel", handleWheel);
+      }
+      window.removeEventListener("keydown", handleKeyDown);
+    };
   }, []);
 
   // Calculated overall metrics
@@ -539,7 +596,7 @@ export default function AnalyticsLinearView({
         </motion.div>
 
         {/* 3. VISITS OVER TIME (CHART CONTAINER) */}
-        <motion.div variants={itemVariants}>
+        <motion.div ref={chartCardRef} variants={itemVariants}>
           <AnalyticsChart
             totalVisits={visitsCount}
             totalSignups={signupsCount}
