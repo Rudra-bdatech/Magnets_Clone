@@ -430,6 +430,13 @@ export default function WorkspaceSetupPage() {
       <UpgradeModal
         isOpen={showUpgradeModal}
         onClose={() => setShowUpgradeModal(false)}
+        onSuccess={() => {
+          setShowUpgradeModal(false);
+          addToast("🎉 Pro subscription activated! Custom domains unlocked.", "success");
+          syncWithDatabase().then((fresh) => {
+            if (fresh?.account) setAccount(fresh.account);
+          });
+        }}
         currentPlan={account?.plan || "Free"}
         featureHighlight="Custom Domains & Subdomains"
       />
