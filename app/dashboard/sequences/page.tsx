@@ -39,6 +39,13 @@ import {
   CheckSquare,
   Lock,
   Magnet,
+  Folder,
+  FolderOpen,
+  Layers,
+  ZoomOut,
+  FileText,
+  ChevronRight,
+  FolderPlus,
 } from "lucide-react";
 import StatusBadge from "@/components/dashboard/status-badge";
 import { AppleCheckbox } from "@/components/leads/AppleCheckbox";
@@ -59,7 +66,7 @@ import {
 
 type FilterStatus = "all" | "live" | "draft";
 type SortOption = "recent" | "name" | "subscribers" | "delivered" | "open_rate";
-type ViewMode = "grid" | "table";
+type ViewMode = "folders" | "grid" | "table";
 
 const sortOptions: { id: SortOption; label: string }[] = [
   { id: "recent", label: "Most Recent" },
@@ -91,7 +98,44 @@ export default function SequencesPage() {
   const [sortBy, setSortBy] = useState<SortOption>("recent");
   const [isSortOpen, setIsSortOpen] = useState(false);
   const [isStatusFilterOpen, setIsStatusFilterOpen] = useState(false);
+  
+  // 3-Stage Semantic Zoom State: "folders" (25% Macro) | "grid" (100% Cards) | "table" (150% Dense List)
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
+  const [activeFolderFilter, setActiveFolderFilter] = useState<string | null>(null);
+
+  // Trackpad / Wheel Gesture Zoom Listener
+  useEffect(() => {
+    let lastWheelTime = 0;
+    const handleWheel = (e: WheelEvent) => {
+      // Trigger zoom on Ctrl + Wheel or Trackpad Pinch
+      if (e.ctrlKey || Math.abs(e.deltaY) > 60) {
+        if (!e.ctrlKey) return; // Only Ctrl + Scroll or Pinch (browser sets ctrlKey on pinch)
+        e.preventDefault();
+        const now = Date.now();
+        if (now - lastWheelTime < 350) return; // Throttle gesture triggers
+        lastWheelTime = now;
+
+        if (e.deltaY > 0) {
+          // Zoom out: table -> grid -> folders
+          setViewMode((current) => {
+            if (current === "table") return "grid";
+            if (current === "grid") return "folders";
+            return current;
+          });
+        } else if (e.deltaY < 0) {
+          // Zoom in: folders -> grid -> table
+          setViewMode((current) => {
+            if (current === "folders") return "grid";
+            if (current === "grid") return "table";
+            return current;
+          });
+        }
+      }
+    };
+
+    window.addEventListener("wheel", handleWheel, { passive: false });
+    return () => window.removeEventListener("wheel", handleWheel);
+  }, []);
 
   // Selection & Bulk Actions State
   const [isSelectMode, setIsSelectMode] = useState(false);
@@ -627,9 +671,100 @@ export default function SequencesPage() {
     };
   }, [sequences]);
 
+  // Smart Folder Groups for Stage 1 (Macro / 25% Zoom)
+  const smartFolders = useMemo(() => {
+    const leadMagnetSeqs = sequences.filter((s) => {
+      const p = s.pageId ? pages.find((pg) => pg.id === s.pageId) : null;
+      return s.pageId && (!p || p.template !== "locked-pdf");
+    });
+    const lockedPdfSeqs = sequences.filter((s) => {
+      const p = s.pageId ? pages.find((pg) => pg.id === s.pageId) : null;
+      return s.pageId && p && p.template === "locked-pdf";
+    });
+    const standaloneSeqs = sequences.filter((s) => !s.pageId);
+    const draftSeqs = sequences.filter((s) => s.status === "draft");
+
+    const calculateFolderStats = (seqList: Sequence[]) => {
+      let totalSignedUp = 0;
+      let totalDelivered = 0;
+      let totalOpened = 0;
+      let totalCompleted = 0;
+      let liveCount = 0;
+      for (const s of seqList) {
+        if (s.status === "live") liveCount++;
+        totalSignedUp += s.stats?.signedUp || 0;
+        totalDelivered += s.stats?.delivered || 0;
+        totalOpened += s.stats?.opened || 0;
+        totalCompleted += s.stats?.completed || 0;
+      }
+      const openRate = totalDelivered > 0 ? Math.round((totalOpened / totalDelivered) * 100) : 0;
+      return { totalSignedUp, totalDelivered, totalOpened, totalCompleted, liveCount, openRate };
+    };
+
+    return [
+      {
+        id: "lead-magnets",
+        name: "Lead Magnet Series",
+        subtitle: "Opt-in page instant delivery & follow-ups",
+        icon: Magnet,
+        color: "emerald",
+        badge: "Lead Magnets",
+        sequences: leadMagnetSeqs,
+        stats: calculateFolderStats(leadMagnetSeqs),
+      },
+      {
+        id: "locked-pdf",
+        name: "Locked PDF Automations",
+        subtitle: "Reader follow-ups & conversion nurture",
+        icon: FileText,
+        color: "purple",
+        badge: "Locked PDFs",
+        sequences: lockedPdfSeqs,
+        stats: calculateFolderStats(lockedPdfSeqs),
+      },
+      {
+        id: "standalone",
+        name: "Standalone Workflows",
+        subtitle: "Direct drip funnels & custom triggers",
+        icon: Zap,
+        color: "blue",
+        badge: "Standalone",
+        sequences: standaloneSeqs,
+        stats: calculateFolderStats(standaloneSeqs),
+      },
+      {
+        id: "drafts",
+        name: "Staged & Draft Flows",
+        subtitle: "Paused sequences waiting for launch",
+        icon: Clock,
+        color: "amber",
+        badge: "Drafts",
+        sequences: draftSeqs,
+        stats: calculateFolderStats(draftSeqs),
+      },
+    ];
+  }, [sequences, pages]);
+
   // Filter & Sort Logic
   const filteredSequences = useMemo(() => {
     let list = [...sequences];
+
+    // Folder Filter
+    if (activeFolderFilter === "lead-magnets") {
+      list = list.filter((s) => {
+        const p = s.pageId ? pages.find((pg) => pg.id === s.pageId) : null;
+        return s.pageId && (!p || p.template !== "locked-pdf");
+      });
+    } else if (activeFolderFilter === "locked-pdf") {
+      list = list.filter((s) => {
+        const p = s.pageId ? pages.find((pg) => pg.id === s.pageId) : null;
+        return s.pageId && p && p.template === "locked-pdf";
+      });
+    } else if (activeFolderFilter === "standalone") {
+      list = list.filter((s) => !s.pageId);
+    } else if (activeFolderFilter === "drafts") {
+      list = list.filter((s) => s.status === "draft");
+    }
 
     // Status Tab Filter
     if (statusFilter === "live") {
@@ -976,105 +1111,267 @@ export default function SequencesPage() {
                   </AnimatePresence>
                 </div>
 
-                {/* View Mode & Selection Toggle Pod */}
-                <div className="flex items-center p-1 bg-zinc-100 dark:bg-[#1C1C20] rounded-xl shrink-0">
-                  <button
-                    onClick={() => setViewMode("grid")}
-                    title="Card Grid View"
-                    className={`relative p-1.5 rounded-lg transition-colors duration-150 cursor-pointer ${
-                      viewMode === "grid" ? "text-[#0066B2] dark:text-[#38BDF8]" : "text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200"
-                    }`}
-                  >
-                    {viewMode === "grid" && (
-                      <motion.div
-                        layoutId="activeViewModeTabSequences"
-                        className="absolute inset-0 bg-white dark:bg-[#2A2A30] rounded-lg shadow-xs"
-                        transition={{ type: "spring", stiffness: 500, damping: 32 }}
-                      />
-                    )}
-                    <LayoutGrid className="relative z-10 h-4 w-4" />
-                  </button>
-                  <button
-                    onClick={() => setViewMode("table")}
-                    title="Compact List View"
-                    className={`relative p-1.5 rounded-lg transition-colors duration-150 cursor-pointer ${
-                      viewMode === "table" ? "text-[#0066B2] dark:text-[#38BDF8]" : "text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200"
-                    }`}
-                  >
-                    {viewMode === "table" && (
-                      <motion.div
-                        layoutId="activeViewModeTabSequences"
-                        className="absolute inset-0 bg-white dark:bg-[#2A2A30] rounded-lg shadow-xs"
-                        transition={{ type: "spring", stiffness: 500, damping: 32 }}
-                      />
-                    )}
-                    <List className="relative z-10 h-4 w-4" />
-                  </button>
+                {/* Semantic Zoom Mode & Selection Toggle Pod */}
+                <div className="flex items-center gap-1.5 shrink-0">
+                  {/* Semantic Zoom Segmented Control (Icon Only) */}
+                  <div className="flex items-center p-1 bg-zinc-100 dark:bg-[#1C1C20] rounded-xl shrink-0">
+                    <button
+                      onClick={() => setViewMode("folders")}
+                      title="Stage 1: Campaign Folders (Macro 25% Zoom)"
+                      className={`relative p-1.5 rounded-lg transition-colors duration-150 cursor-pointer ${
+                        viewMode === "folders"
+                          ? "text-[#0066B2] dark:text-[#38BDF8]"
+                          : "text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200"
+                      }`}
+                    >
+                      {viewMode === "folders" && (
+                        <motion.div
+                          layoutId="activeViewModeTabSequences"
+                          className="absolute inset-0 bg-white dark:bg-[#2A2A30] rounded-lg shadow-xs"
+                          transition={{ type: "spring", stiffness: 500, damping: 32 }}
+                        />
+                      )}
+                      <Folder className="relative z-10 h-4 w-4" />
+                    </button>
 
-                  <div className="h-3.5 w-px bg-zinc-200 dark:bg-zinc-700 mx-0.5" />
+                    <button
+                      onClick={() => setViewMode("grid")}
+                      title="Stage 2: Bento Cards (Normal 100% Zoom)"
+                      className={`relative p-1.5 rounded-lg transition-colors duration-150 cursor-pointer ${
+                        viewMode === "grid"
+                          ? "text-[#0066B2] dark:text-[#38BDF8]"
+                          : "text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200"
+                      }`}
+                    >
+                      {viewMode === "grid" && (
+                        <motion.div
+                          layoutId="activeViewModeTabSequences"
+                          className="absolute inset-0 bg-white dark:bg-[#2A2A30] rounded-lg shadow-xs"
+                          transition={{ type: "spring", stiffness: 500, damping: 32 }}
+                        />
+                      )}
+                      <LayoutGrid className="relative z-10 h-4 w-4" />
+                    </button>
 
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setIsSelectMode((prev) => {
-                        const next = !prev;
-                        if (!next) setCheckedIds([]);
-                        return next;
-                      });
-                    }}
-                    className={`relative p-1.5 rounded-lg transition-colors duration-150 cursor-pointer ${
-                      isSelectMode || checkedIds.length > 0
-                        ? "bg-white dark:bg-[#2A2A30] text-[#0066B2] dark:text-[#38BDF8] shadow-xs"
-                        : "text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200"
-                    }`}
-                    title={isSelectMode || checkedIds.length > 0 ? "Exit Select Mode" : "Select Sequences"}
-                  >
-                    <CheckSquare className="relative z-10 h-4 w-4" />
-                  </button>
+                    <button
+                      onClick={() => setViewMode("table")}
+                      title="Stage 3: Compact Table (Dense 150% Zoom)"
+                      className={`relative p-1.5 rounded-lg transition-colors duration-150 cursor-pointer ${
+                        viewMode === "table"
+                          ? "text-[#0066B2] dark:text-[#38BDF8]"
+                          : "text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200"
+                      }`}
+                    >
+                      {viewMode === "table" && (
+                        <motion.div
+                          layoutId="activeViewModeTabSequences"
+                          className="absolute inset-0 bg-white dark:bg-[#2A2A30] rounded-lg shadow-xs"
+                          transition={{ type: "spring", stiffness: 500, damping: 32 }}
+                        />
+                      )}
+                      <List className="relative z-10 h-4 w-4" />
+                    </button>
+
+                    <div className="h-3.5 w-px bg-zinc-200 dark:bg-zinc-700 mx-0.5" />
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsSelectMode((prev) => {
+                          const next = !prev;
+                          if (!next) setCheckedIds([]);
+                          return next;
+                        });
+                      }}
+                      className={`relative p-1.5 rounded-lg transition-colors duration-150 cursor-pointer ${
+                        isSelectMode || checkedIds.length > 0
+                          ? "bg-white dark:bg-[#2A2A30] text-[#0066B2] dark:text-[#38BDF8] shadow-xs"
+                          : "text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200"
+                      }`}
+                      title={isSelectMode || checkedIds.length > 0 ? "Exit Select Mode" : "Select Sequences"}
+                    >
+                      <CheckSquare className="relative z-10 h-3.5 w-3.5" />
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
           )}
 
-          {/* Active Sequences List / Cards */}
-          {filteredSequences.length > 0 ? (
-            <>
-              {/* MOBILE STREAM (block md:hidden) - Supports both Card and Compact List views */}
-              <div className={`block md:hidden ${viewMode === "grid" ? "space-y-3" : "space-y-2"}`}>
-                {filteredSequences.map((seq) => {
-                  const attachedPage = seq.pageId ? pages.find((p) => p.id === seq.pageId) : null;
-                  return (
-                    <MobileSequenceCard
-                      key={seq.id}
-                      seq={seq}
-                      variant={viewMode === "grid" ? "card" : "list"}
-                      isChecked={checkedIds.includes(seq.id)}
-                      isSelectMode={isSelectMode || checkedIds.length > 0}
-                      onToggleCheck={handleToggleCheck}
-                      attachedPage={attachedPage}
-                      onOpenMobileActions={(s) => setMobileActionSeq(s)}
-                      onToggleStatus={handleToggleStatus}
-                    />
-                  );
-                })}
+          {/* Active Folder Filter Banner (if zoomed into a specific folder) */}
+          {activeFolderFilter && (
+            <div className="flex items-center justify-between rounded-xl border border-[#0066B2]/30 bg-blue-50/60 dark:border-[#38BDF8]/30 dark:bg-[#0066B2]/10 px-3.5 py-2 text-xs">
+              <div className="flex items-center gap-2">
+                <FolderOpen className="h-4 w-4 text-[#0066B2] dark:text-[#38BDF8]" />
+                <span className="text-zinc-600 dark:text-zinc-300">
+                  Viewing folder:{" "}
+                  <strong className="text-zinc-900 dark:text-white">
+                    {smartFolders.find((f) => f.id === activeFolderFilter)?.name || activeFolderFilter}
+                  </strong>
+                </span>
+                <span className="rounded-full bg-white dark:bg-white/10 px-2 py-0.5 text-[10px] font-bold text-zinc-700 dark:text-zinc-200">
+                  {filteredSequences.length} {filteredSequences.length === 1 ? "sequence" : "sequences"}
+                </span>
               </div>
 
-              {/* DESKTOP STREAM (hidden md:block) - Preserves Grid & Table Layouts */}
-              <div className="hidden md:block">
-                {viewMode === "grid" ? (
-                  /* GRID VIEW - Resend / Loops Bento Style */
-                  <div className="grid gap-4 lg:grid-cols-2 min-w-0 max-w-full">
+              <button
+                onClick={() => {
+                  setActiveFolderFilter(null);
+                  setViewMode("folders");
+                }}
+                className="flex items-center gap-1 font-bold text-[#0066B2] dark:text-[#38BDF8] hover:underline cursor-pointer text-xs"
+              >
+                <span>← Zoom out to all folders</span>
+              </button>
+            </div>
+          )}
+
+          {/* STAGE 1: MACRO LEVEL (Campaign Folders View) */}
+          {viewMode === "folders" && !activeFolderFilter ? (
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-2">
+              {smartFolders.map((folder) => {
+                const FolderIcon = folder.icon;
+                const hasSeqs = folder.sequences.length > 0;
+
+                return (
+                  <div
+                    key={folder.id}
+                    onClick={() => {
+                      setActiveFolderFilter(folder.id);
+                      setViewMode("grid");
+                    }}
+                    className="group relative flex flex-col justify-between rounded-2xl border border-zinc-200/80 dark:border-white/[0.08] bg-white dark:bg-[#141417] p-5 hover:border-[#0066B2]/50 dark:hover:border-[#38BDF8]/40 hover:shadow-xl dark:hover:bg-[#18181D] transition-all duration-200 cursor-pointer overflow-hidden"
+                  >
+                    <div>
+                      {/* Top Header with Folder Icon and Badge */}
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="flex items-center gap-3">
+                          <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-${folder.color}-500/10 text-${folder.color}-600 dark:text-${folder.color}-400 border border-${folder.color}-500/20 group-hover:scale-105 transition-transform duration-200`}>
+                            <FolderIcon className="h-6 w-6" />
+                          </div>
+                          <div>
+                            <h3 className="text-base font-bold text-zinc-900 dark:text-white group-hover:text-[#0066B2] dark:group-hover:text-[#38BDF8] transition-colors">
+                              {folder.name}
+                            </h3>
+                            <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
+                              {folder.subtitle}
+                            </p>
+                          </div>
+                        </div>
+
+                        <span className="rounded-lg bg-zinc-100 dark:bg-white/[0.06] px-2.5 py-1 text-xs font-bold text-zinc-700 dark:text-zinc-200 shrink-0">
+                          {folder.sequences.length} {folder.sequences.length === 1 ? "flow" : "flows"}
+                        </span>
+                      </div>
+
+                      {/* Mini Sequence Preview List inside Folder */}
+                      <div className="mt-4 space-y-1.5">
+                        {hasSeqs ? (
+                          folder.sequences.slice(0, 3).map((s) => (
+                            <div
+                              key={s.id}
+                              className="flex items-center justify-between rounded-lg bg-zinc-50/80 dark:bg-white/[0.02] border border-zinc-100 dark:border-white/[0.04] px-2.5 py-1.5 text-xs"
+                            >
+                              <div className="flex items-center gap-2 min-w-0">
+                                <Rocket className="h-3 w-3 text-zinc-400 shrink-0" />
+                                <span className="font-semibold text-zinc-800 dark:text-zinc-200 truncate">
+                                  {s.name}
+                                </span>
+                              </div>
+                              <span className="text-[11px] text-zinc-400 shrink-0 tabular-nums">
+                                {s.stats?.delivered || 0} sent
+                              </span>
+                            </div>
+                          ))
+                        ) : (
+                          <div className="rounded-lg border border-dashed border-zinc-200 dark:border-white/[0.06] p-2.5 text-center text-xs text-zinc-400 italic">
+                            No sequences in this category yet
+                          </div>
+                        )}
+                        {folder.sequences.length > 3 && (
+                          <p className="text-[11px] font-semibold text-zinc-400 dark:text-zinc-500 text-center pt-0.5">
+                            +{folder.sequences.length - 3} more workflows inside
+                          </p>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Footer Metrics & Zoom-In CTA */}
+                    <div className="mt-4 pt-3.5 border-t border-zinc-100 dark:border-white/[0.06] flex items-center justify-between text-xs">
+                      <div className="flex items-center gap-4">
+                        <div>
+                          <span className="text-[10px] uppercase font-bold text-zinc-400 block leading-none">Delivered</span>
+                          <span className="font-bold text-zinc-900 dark:text-white tabular-nums text-xs mt-0.5 inline-block">
+                            {folder.stats.totalDelivered.toLocaleString()}
+                          </span>
+                        </div>
+                        <div>
+                          <span className="text-[10px] uppercase font-bold text-zinc-400 block leading-none">Open Rate</span>
+                          <span className={`font-bold tabular-nums text-xs mt-0.5 inline-block ${
+                            folder.stats.openRate > 0 ? "text-indigo-600 dark:text-indigo-400" : "text-zinc-400"
+                          }`}>
+                            {folder.stats.openRate}%
+                          </span>
+                        </div>
+                        <div>
+                          <span className="text-[10px] uppercase font-bold text-zinc-400 block leading-none">Active</span>
+                          <span className="font-bold text-emerald-600 dark:text-emerald-400 tabular-nums text-xs mt-0.5 inline-block">
+                            {folder.stats.liveCount} / {folder.sequences.length}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-1 font-bold text-[#0066B2] dark:text-[#38BDF8] group-hover:translate-x-0.5 transition-transform">
+                        <span>Zoom in</span>
+                        <ChevronRight className="h-3.5 w-3.5" />
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            /* STAGES 2 & 3: CARDS & TABLE VIEWS */
+            <>
+              {/* Active Sequences List / Cards */}
+              {filteredSequences.length > 0 ? (
+                <>
+                  {/* MOBILE STREAM (block md:hidden) - Supports both Card and Compact List views */}
+                  <div className={`block md:hidden ${viewMode === "grid" ? "space-y-3" : "space-y-2"}`}>
                     {filteredSequences.map((seq) => {
-                      const { signedUp, delivered, opened, replied } = seq.stats;
-                      const completed = seq.stats.completed || (delivered > 0 ? delivered : 0);
-                      const openRate = delivered > 0 ? Math.round((opened / delivered) * 100) : 0;
-                      const linkHref = `/dashboard/sequences/${seq.id}`;
                       const attachedPage = seq.pageId ? pages.find((p) => p.id === seq.pageId) : null;
-                      const isStandalone = !seq.pageId || !attachedPage;
-                      const attachedName = attachedPage?.name || seq.name.replace(" Follow-up", "").replace(" (Copy)", "");
-                      const isMenuOpen = activeMenuId === seq.id;
-                      const isChecked = checkedIds.includes(seq.id);
-                      const totalStepsCount = isStandalone ? seq.emails.length : seq.emails.length + 1;
+                      return (
+                        <MobileSequenceCard
+                          key={seq.id}
+                          seq={seq}
+                          variant={viewMode === "grid" ? "card" : "list"}
+                          isChecked={checkedIds.includes(seq.id)}
+                          isSelectMode={isSelectMode || checkedIds.length > 0}
+                          onToggleCheck={handleToggleCheck}
+                          attachedPage={attachedPage}
+                          onOpenMobileActions={(s) => setMobileActionSeq(s)}
+                          onToggleStatus={handleToggleStatus}
+                        />
+                      );
+                    })}
+                  </div>
+
+                  {/* DESKTOP STREAM (hidden md:block) - Preserves Grid & Table Layouts */}
+                  <div className="hidden md:block">
+                    {viewMode === "grid" ? (
+                      /* GRID VIEW - Resend / Loops Bento Style */
+                      <div className="grid gap-4 lg:grid-cols-2 min-w-0 max-w-full">
+                        {filteredSequences.map((seq) => {
+                          const { signedUp, delivered, opened, replied } = seq.stats;
+                          const completed = seq.stats.completed || (delivered > 0 ? delivered : 0);
+                          const openRate = delivered > 0 ? Math.round((opened / delivered) * 100) : 0;
+                          const linkHref = `/dashboard/sequences/${seq.id}`;
+                          const attachedPage = seq.pageId ? pages.find((p) => p.id === seq.pageId) : null;
+                          const isStandalone = !seq.pageId || !attachedPage;
+                          const attachedName = attachedPage?.name || seq.name.replace(" Follow-up", "").replace(" (Copy)", "");
+                          const isMenuOpen = activeMenuId === seq.id;
+                          const isChecked = checkedIds.includes(seq.id);
+                          const totalStepsCount = isStandalone ? seq.emails.length : seq.emails.length + 1;
 
                       return (
                         <div
@@ -1700,6 +1997,8 @@ export default function SequencesPage() {
               </>
             )
           )}
+          </>
+        )}
         </div>
       </div>
 
