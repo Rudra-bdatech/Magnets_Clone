@@ -533,50 +533,7 @@ export default function ShowcaseTabs() {
           className="absolute -top-16 left-1/2 -translate-x-1/2 -z-10 h-72 w-[90%] rounded-full bg-gradient-to-r from-[#0066B2]/20 via-[#38BDF8]/20 to-purple-600/15 blur-3xl opacity-80 pointer-events-none"
         />
 
-        {/* Top Header & Segmented Apple-Style Nav Control */}
-        <div className="flex items-center justify-between gap-2 border-b border-zinc-200/80 dark:border-white/10 pb-3 mb-4 shrink-0 overflow-x-auto no-scrollbar">
-          {/* Segmented Pills */}
-          <div className="flex items-center gap-1 p-1 rounded-2xl bg-zinc-100/90 dark:bg-[#161722] border border-zinc-200/80 dark:border-white/5 shrink-0">
-            {platformTabs.map((tab) => {
-              const Icon = tab.icon;
-              const isActive = phase === tab.phaseIdx;
-              return (
-                <button
-                  key={tab.phaseIdx}
-                  type="button"
-                  onClick={() => {
-                    setPhase(tab.phaseIdx);
-                    setIsPlaying(false);
-                  }}
-                  className={`relative px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer whitespace-nowrap shrink-0 ${
-                    isActive
-                      ? "text-white shadow-sm"
-                      : "text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white"
-                  }`}
-                >
-                  {isActive && (
-                    <motion.div
-                      layoutId="activeTabPill"
-                      className="absolute inset-0 rounded-xl bg-[#0066B2] shadow-[0_2px_10px_rgba(0,102,178,0.4)]"
-                      transition={{ type: "spring", stiffness: 450, damping: 35 }}
-                    />
-                  )}
-                  <span className="relative z-10 flex items-center gap-1.5">
-                    <Icon className="h-3.5 w-3.5 shrink-0" />
-                    <span>{tab.label}</span>
-                  </span>
-                </button>
-              );
-            })}
-          </div>
 
-          <div className="hidden lg:flex items-center gap-2 shrink-0">
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-mono font-medium text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 whitespace-nowrap">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />
-              Live Workspace
-            </span>
-          </div>
-        </div>
 
         {/* Dynamic Zoom & Pan Camera Container Following Exact Mouse Pixel Coordinates */}
         <div
