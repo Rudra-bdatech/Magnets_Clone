@@ -6,9 +6,9 @@ import MagnetSignupForm from "@/components/magnet-signup-form";
 import AnalyticsAndExitIntent from "@/components/analytics-and-exit-intent";
 import { dbConnect } from "@/lib/mongodb";
 import { MagnetPageModel, AccountModel } from "@/lib/models";
-import { type MagnetPage } from "@/lib/data";
 import { verifySessionToken } from "@/lib/session-token";
-import { Check } from "lucide-react";
+import { type MagnetPage } from "@/lib/data";
+import { Check, Lock, Zap, ShieldCheck, Sparkles } from "lucide-react";
 
 
 export const dynamic = "force-dynamic";
@@ -375,7 +375,7 @@ export default async function MagnetPageRoute({
           <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
           </svg>
-          <span>⚠️ Draft Preview Mode — This magnet is not yet published. Only you can view this page.</span>
+          <span>Draft Preview Mode — This magnet is not yet published. Only you can view this page.</span>
         </div>
       )}
       {/* If template is not template1, template2, template3, template4, template5, template6, template7, or template8, show the standard top header */}
@@ -1698,11 +1698,11 @@ export default async function MagnetPageRoute({
             {/* 5. TRUST & SOCIAL PROOF FOOTER */}
             <footer className="mt-8 text-center space-y-4">
               <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-[11px] font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
-                <span>⚡ Instant Delivery</span>
+                <span className="flex items-center gap-1.5"><Zap className="h-3 w-3 text-emerald-500" /> Instant Delivery</span>
                 <span>•</span>
-                <span>🔒 100% Free Forever</span>
+                <span className="flex items-center gap-1.5"><ShieldCheck className="h-3 w-3 text-blue-500" /> 100% Free Forever</span>
                 <span>•</span>
-                <span>✨ Verified Content</span>
+                <span className="flex items-center gap-1.5"><Sparkles className="h-3 w-3 text-amber-500" /> Verified Content</span>
               </div>
               <p className="text-[11px] uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
                 © {new Date().getFullYear()} {businessName || "Author"} · All rights reserved
@@ -2403,7 +2403,7 @@ export default async function MagnetPageRoute({
 
                       {/* Anti-spam footer */}
                       <div className="pt-4 mt-4 border-t border-white/20 text-[9px] font-dm-sans font-bold uppercase tracking-wider text-white/80 flex justify-between items-center" style={{ color: "rgba(255, 255, 255, 0.8)" }}>
-                        <span>🔒 NO SPAM PROMISE</span>
+                        <span className="flex items-center gap-1"><Lock className="h-2.5 w-2.5" /> NO SPAM PROMISE</span>
                         <span>INSTANT DELIVERY</span>
                       </div>
                     </aside>
@@ -2840,7 +2840,7 @@ export default async function MagnetPageRoute({
                           themeMode === "dark" ? "border-zinc-800 text-zinc-400" : (contrastOnAccent === "#ffffff" ? "border-white/20 text-white/80" : "border-black/20 text-black/70")
                         }`}
                       >
-                        <span>🔒 ZERO SPAM PROMISE</span>
+                        <span className="flex items-center gap-1.5"><Lock className="h-3 w-3" /> ZERO SPAM PROMISE</span>
                         <span>INSTANT DISPATCH</span>
                       </div>
                     </div>

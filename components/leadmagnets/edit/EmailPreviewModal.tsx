@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { X, Mail } from "lucide-react";
+import { X, Mail, Gift, CheckCircle2, AlertCircle } from "lucide-react";
 import { type Account } from "@/lib/data";
 
 export interface EmailPreviewModalProps {
@@ -68,11 +68,11 @@ export default function EmailPreviewModal({
           }),
         });
         if (res.ok) {
-          setTestEmailSentMsg(`✅ Test deliverable sent to ${userEmail}!`);
+          setTestEmailSentMsg(`Test deliverable sent to ${userEmail}!`);
         }
       }
     } catch (e) {
-      setTestEmailSentMsg("❌ Failed to send test email.");
+      setTestEmailSentMsg("Failed to send test email.");
     } finally {
       setTestEmailSending(false);
     }
@@ -147,7 +147,8 @@ export default function EmailPreviewModal({
             <div className={`rounded-2xl border p-6 sm:p-8 shadow-sm space-y-5 ${isDark ? "border-zinc-800 bg-[#18181B] text-white" : "border-zinc-200 bg-white text-zinc-900"}`}>
               {/* Badge */}
               <div className="inline-flex items-center gap-1.5 rounded-full bg-blue-50 border border-blue-200/60 px-3 py-1 text-[11px] font-bold text-blue-700 uppercase tracking-wider dark:bg-blue-950/40 dark:border-blue-800/60 dark:text-blue-400">
-                <span>🎁 Your Download Is Ready</span>
+                <Gift className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
+                <span>Your Download Is Ready</span>
               </div>
 
               {/* Email Body Text */}
@@ -193,9 +194,10 @@ export default function EmailPreviewModal({
             <button
               disabled={testEmailSending}
               onClick={handleSendTestEmail}
-              className={`rounded-xl border px-4 py-2 text-xs font-bold transition cursor-pointer disabled:opacity-50 ${isDark ? "border-zinc-700 hover:bg-zinc-800 text-white" : "border-zinc-300 hover:bg-zinc-100 text-zinc-800"}`}
+              className={`flex items-center gap-2 rounded-xl border px-4 py-2 text-xs font-bold transition cursor-pointer disabled:opacity-50 ${isDark ? "border-zinc-700 hover:bg-zinc-800 text-white" : "border-zinc-300 hover:bg-zinc-100 text-zinc-800"}`}
             >
-              {testEmailSending ? "Sending test..." : "📧 Send Test Email to Me"}
+              <Mail className="h-3.5 w-3.5 text-zinc-400" />
+              <span>{testEmailSending ? "Sending test..." : "Send Test Email to Me"}</span>
             </button>
             <button
               onClick={onClose}

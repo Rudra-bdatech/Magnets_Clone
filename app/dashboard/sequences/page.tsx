@@ -1130,11 +1130,11 @@ export default function SequencesPage() {
                                   </p>
                                   {isStandalone ? (
                                     <span className="inline-flex items-center gap-1 rounded-md border border-blue-200/80 dark:border-blue-900/60 bg-blue-50/80 dark:bg-blue-950/40 px-1.5 py-0.5 text-[9px] sm:text-[9.5px] font-bold text-[#0066B2] dark:text-[#38BDF8] shrink-0">
-                                      ⚡ Standalone
+                                      <Zap className="w-2.5 h-2.5" /> Standalone
                                     </span>
                                   ) : (
                                     <span className="inline-flex items-center gap-1 rounded-md border border-emerald-200/80 dark:border-emerald-900/60 bg-emerald-50/80 dark:bg-emerald-950/40 px-1.5 py-0.5 text-[9px] sm:text-[9.5px] font-bold text-emerald-700 dark:text-emerald-400 shrink-0">
-                                      🎯 Lead Magnet
+                                      <Magnet className="w-2.5 h-2.5" /> Lead Magnet
                                     </span>
                                   )}
                                 </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { Monitor, Smartphone } from "lucide-react";
+import { Monitor, Smartphone, Magnet } from "lucide-react";
 import { type Account } from "@/lib/data";
 
 interface SequenceEmail {
@@ -174,7 +174,9 @@ export default function SequencePreviewModal({
                     {account?.logo || account?.avatar_url || account?.avatar ? (
                       <img src={account?.logo || account?.avatar_url || account?.avatar || ""} alt="Logo" className="h-5 w-5 rounded object-cover" />
                     ) : (
-                      <span className="flex h-5 w-5 items-center justify-center rounded bg-[#FE6F34] text-black font-extrabold text-[10px]">🧲</span>
+                      <span className="flex h-5 w-5 items-center justify-center rounded bg-[#0066B2] text-white">
+                        <Magnet className="h-3 w-3" />
+                      </span>
                     )}
                     <span>Build yours free with Magnets</span>
                   </button>

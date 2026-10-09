@@ -24,6 +24,7 @@ import {
   Zap,
   SlidersHorizontal,
   CheckSquare,
+  StopCircle,
 } from "lucide-react";
 import {
   syncWithDatabase,
@@ -840,7 +841,7 @@ function parseCsvLine(line: string): string[] {
       if (lead.status === "stopped") {
         return (
           <span className="inline-flex items-center gap-1 rounded-full bg-rose-500/10 px-2.5 py-0.5 text-rose-600 dark:text-rose-400 text-xs font-bold">
-            🛑 Stopped
+            <StopCircle className="h-3 w-3" /> Stopped
           </span>
         );
       }
@@ -882,7 +883,7 @@ function parseCsvLine(line: string): string[] {
         });
         const data = await res.json();
         if (res.ok && data.success) {
-          addToast("success", `📧 Resource delivery email resent to ${lead.email}!`);
+          addToast("success", `Resource delivery email resent to ${lead.email}!`);
         } else {
           addToast("error", data.error || "Failed to resend email.");
         }

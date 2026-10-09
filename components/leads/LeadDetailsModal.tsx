@@ -15,6 +15,9 @@ import {
   ExternalLink,
   Clock,
   CheckCircle2,
+  Flame,
+  Zap,
+  StopCircle,
 } from "lucide-react";
 import type { Lead, MagnetPage, Sequence, Account } from "@/lib/data";
 import { formatDateTime } from "@/lib/utils";
@@ -221,18 +224,25 @@ export const LeadDetailsModal = memo(function LeadDetailsModal({
                     {selectedLead.email}
                   </p>
                   <span
-                    className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold border shrink-0 ${
+                    className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold border shrink-0 ${
                       !selectedLead.email.endsWith("@gmail.com") &&
                       !selectedLead.email.endsWith("@yahoo.com")
                         ? "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20"
                         : "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20"
                     }`}
                   >
-                    <Sparkles className="h-2.5 w-2.5" />
                     {!selectedLead.email.endsWith("@gmail.com") &&
-                    !selectedLead.email.endsWith("@yahoo.com")
-                      ? "🔥 Hot Prospect (80 pts)"
-                      : "⚡ Warm Lead (60 pts)"}
+                    !selectedLead.email.endsWith("@yahoo.com") ? (
+                      <>
+                        <Flame className="h-3 w-3 text-amber-500" />
+                        <span>Hot Prospect (80 pts)</span>
+                      </>
+                    ) : (
+                      <>
+                        <Zap className="h-3 w-3 text-blue-500" />
+                        <span>Warm Lead (60 pts)</span>
+                      </>
+                    )}
                   </span>
                 </div>
               </div>
@@ -359,8 +369,8 @@ export const LeadDetailsModal = memo(function LeadDetailsModal({
             {/* Visitor Prompt Answer */}
             {selectedLead.customAnswer && (
               <div className="space-y-1.5">
-                <span className="text-[11px] font-bold text-amber-500 dark:text-amber-400 block">
-                  ✨ Visitor Prompt Answer
+                <span className="flex items-center gap-1.5 text-[11px] font-bold text-amber-500 dark:text-amber-400">
+                  <Sparkles className="h-3.5 w-3.5" /> Visitor Prompt Answer
                 </span>
                 <p className="text-xs italic text-zinc-800 dark:text-zinc-200 bg-amber-500/5 p-3 rounded-xl border border-amber-500/15 leading-relaxed">
                   "{selectedLead.customAnswer}"
@@ -380,8 +390,8 @@ export const LeadDetailsModal = memo(function LeadDetailsModal({
                     Sequence Ended
                   </span>
                 ) : selectedLead.status === "stopped" ? (
-                  <span className="text-[10px] font-bold text-rose-500 bg-rose-500/10 px-2 py-0.5 rounded-full">
-                    🛑 Stopped
+                  <span className="inline-flex items-center gap-1 text-[10px] font-bold text-rose-500 bg-rose-500/10 px-2 py-0.5 rounded-full">
+                    <StopCircle className="h-3 w-3" /> Stopped
                   </span>
                 ) : selectedLead.status === "completed" ||
                   selectedLead.status === "delivered" ? (

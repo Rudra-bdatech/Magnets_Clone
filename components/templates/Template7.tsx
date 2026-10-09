@@ -9,6 +9,7 @@ import {
   X,
   ArrowUpRight,
   UploadCloud,
+  Lock,
 } from "lucide-react";
 import { type TemplateProps } from "./types";
 import { ImageGeneration } from "@/components/agents/image-generation";
@@ -931,7 +932,7 @@ export default function Template7(props: TemplateProps) {
                 isDark ? "border-zinc-800 text-zinc-400" : (contrastOnAccent === "#ffffff" ? "border-white/20 text-white/80" : "border-black/20 text-black/70")
               }`}
             >
-              <span>🔒 ZERO SPAM PROMISE</span>
+              <span className="flex items-center gap-1.5"><Lock className="h-3 w-3" /> ZERO SPAM PROMISE</span>
               <span>INSTANT DISPATCH</span>
             </div>
           </div>

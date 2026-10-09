@@ -22,7 +22,7 @@ import { useRef, useState, useEffect, useMemo } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { Upload, Lock, Eye, Loader2, CheckCircle2, Trash2, HardDrive, FileText, Copy, ExternalLink, X, Plus } from "lucide-react";
+import { Upload, Lock, Eye, Loader2, CheckCircle2, Trash2, HardDrive, FileText, Copy, ExternalLink, X, Plus, AlertCircle } from "lucide-react";
 import { loadResources } from "@/lib/store";
 
 interface Props {
@@ -614,8 +614,9 @@ export default function LockedPdfSetup({
 
       {/* Error */}
       {error && (
-        <p className="text-xs text-red-500 dark:text-red-400 font-medium">
-          ⚠️ {error}
+        <p className="flex items-center gap-1.5 text-xs text-red-500 dark:text-red-400 font-medium">
+          <AlertCircle className="h-3.5 w-3.5 shrink-0" />
+          <span>{error}</span>
         </p>
       )}
 

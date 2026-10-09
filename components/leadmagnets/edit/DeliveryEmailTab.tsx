@@ -29,6 +29,8 @@ import {
   Minus,
   Lock,
   FileText,
+  Plus,
+  Trash2,
 } from "lucide-react";
 import { type Account } from "@/lib/data";
 
@@ -442,15 +444,15 @@ export default function DeliveryEmailTab({
                         {editor?.isActive("table") ? (
                           <>
                             <div className="px-2 py-1 text-[10px] font-bold text-zinc-400 uppercase tracking-wider">TABLE CONTROLS</div>
-                            <button type="button" onClick={() => { editor.chain().focus().addRowBefore().run(); setActiveMenu(null); }} className="text-left px-2.5 py-1.5 text-xs rounded hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer">➕ Add Row Above</button>
-                            <button type="button" onClick={() => { editor.chain().focus().addRowAfter().run(); setActiveMenu(null); }} className="text-left px-2.5 py-1.5 text-xs rounded hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer">➕ Add Row Below</button>
-                            <button type="button" onClick={() => { editor.chain().focus().deleteRow().run(); setActiveMenu(null); }} className="text-left px-2.5 py-1.5 text-xs text-rose-500 rounded hover:bg-rose-500/10 cursor-pointer">❌ Delete Row</button>
+                            <button type="button" onClick={() => { editor.chain().focus().addRowBefore().run(); setActiveMenu(null); }} className="flex items-center gap-2 text-left px-2.5 py-1.5 text-xs rounded hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer"><Plus className="h-3 w-3 text-zinc-400" /> Add Row Above</button>
+                            <button type="button" onClick={() => { editor.chain().focus().addRowAfter().run(); setActiveMenu(null); }} className="flex items-center gap-2 text-left px-2.5 py-1.5 text-xs rounded hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer"><Plus className="h-3 w-3 text-zinc-400" /> Add Row Below</button>
+                            <button type="button" onClick={() => { editor.chain().focus().deleteRow().run(); setActiveMenu(null); }} className="flex items-center gap-2 text-left px-2.5 py-1.5 text-xs text-rose-500 rounded hover:bg-rose-500/10 cursor-pointer"><Trash2 className="h-3 w-3" /> Delete Row</button>
                             <div className="h-px bg-zinc-200 dark:bg-zinc-700/50 my-1" />
-                            <button type="button" onClick={() => { editor.chain().focus().addColumnBefore().run(); setActiveMenu(null); }} className="text-left px-2.5 py-1.5 text-xs rounded hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer">➕ Add Column Left</button>
-                            <button type="button" onClick={() => { editor.chain().focus().addColumnAfter().run(); setActiveMenu(null); }} className="text-left px-2.5 py-1.5 text-xs rounded hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer">➕ Add Column Right</button>
-                            <button type="button" onClick={() => { editor.chain().focus().deleteColumn().run(); setActiveMenu(null); }} className="text-left px-2.5 py-1.5 text-xs text-rose-500 rounded hover:bg-rose-500/10 cursor-pointer">❌ Delete Column</button>
+                            <button type="button" onClick={() => { editor.chain().focus().addColumnBefore().run(); setActiveMenu(null); }} className="flex items-center gap-2 text-left px-2.5 py-1.5 text-xs rounded hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer"><Plus className="h-3 w-3 text-zinc-400" /> Add Column Left</button>
+                            <button type="button" onClick={() => { editor.chain().focus().addColumnAfter().run(); setActiveMenu(null); }} className="flex items-center gap-2 text-left px-2.5 py-1.5 text-xs rounded hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer"><Plus className="h-3 w-3 text-zinc-400" /> Add Column Right</button>
+                            <button type="button" onClick={() => { editor.chain().focus().deleteColumn().run(); setActiveMenu(null); }} className="flex items-center gap-2 text-left px-2.5 py-1.5 text-xs text-rose-500 rounded hover:bg-rose-500/10 cursor-pointer"><Trash2 className="h-3 w-3" /> Delete Column</button>
                             <div className="h-px bg-zinc-200 dark:bg-zinc-700/50 my-1" />
-                            <button type="button" onClick={() => { editor.chain().focus().deleteTable().run(); setActiveMenu(null); }} className="text-left px-2.5 py-1.5 text-xs text-rose-600 font-bold rounded hover:bg-rose-500/10 cursor-pointer">🗑️ Delete Table</button>
+                            <button type="button" onClick={() => { editor.chain().focus().deleteTable().run(); setActiveMenu(null); }} className="flex items-center gap-2 text-left px-2.5 py-1.5 text-xs text-rose-600 font-bold rounded hover:bg-rose-500/10 cursor-pointer"><Trash2 className="h-3.5 w-3.5" /> Delete Table</button>
                           </>
                         ) : (
                           <>

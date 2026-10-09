@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { cookies } from "next/headers";
+import { FileText } from "lucide-react";
 import { dbConnect } from "@/lib/mongodb";
 import { MagnetPageModel, AccountModel } from "@/lib/models";
 import { type MagnetPage } from "@/lib/data";
@@ -102,7 +103,9 @@ export default async function PdfViewerPage({ params, searchParams }: Props) {
           gap: "1rem",
         }}
       >
-        <div style={{ fontSize: "2.5rem" }}>📄</div>
+        <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-zinc-800/80 border border-zinc-700/60 text-zinc-400">
+          <FileText className="h-8 w-8" />
+        </div>
         <h1 style={{ fontSize: "1.2rem", fontWeight: 700, margin: 0 }}>
           PDF not uploaded yet
         </h1>

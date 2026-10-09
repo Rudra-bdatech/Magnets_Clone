@@ -263,8 +263,8 @@ export default function WorkspaceSetupPage() {
                   </p>
                   <p className="text-[11px] text-purple-700/80 dark:text-purple-300/70 mt-0.5">
                     {simulateCustomerView
-                      ? "⚠️ Currently simulating Customer View (Free Plan Locked & Paywall Active)"
-                      : "🛡️ Active in Full Staff/Admin Mode (All features & custom domains unlocked)"}
+                      ? "Currently simulating Customer View (Free Plan Locked & Paywall Active)"
+                      : "Active in Full Staff/Admin Mode (All features & custom domains unlocked)"}
                   </p>
                 </div>
               </div>

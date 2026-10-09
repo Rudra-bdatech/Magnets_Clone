@@ -9,6 +9,7 @@ import {
   X,
   ArrowUpRight,
   UploadCloud,
+  Lock,
 } from "lucide-react";
 import { type TemplateProps } from "./types";
 import { ImageGeneration } from "@/components/agents/image-generation";
@@ -971,7 +972,7 @@ export default function Template8(props: TemplateProps) {
 
             {/* Anti-spam footer */}
             <div className="pt-4 mt-4 border-t border-white/20 text-[9px] font-dm-sans font-bold uppercase tracking-wider text-white/70 flex justify-between items-center">
-              <span>🔒 NO SPAM PROMISE</span>
+              <span className="flex items-center gap-1"><Lock className="h-2.5 w-2.5" /> NO SPAM PROMISE</span>
               <span>INSTANT DELIVERY</span>
             </div>
           </aside>

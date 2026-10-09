@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowRight, Check, CheckCircle2, Loader2 } from "lucide-react";
+import { ArrowRight, Check, CheckCircle2, Loader2, Download, User, Mail, Sparkles } from "lucide-react";
 import { useState } from "react";
 import { type CustomFormField } from "@/lib/data";
 
@@ -259,8 +259,8 @@ export default function MagnetSignupForm({
             rel="noopener noreferrer"
             className="mt-4 flex items-center justify-center gap-2 rounded-xl bg-[#0066B2] hover:bg-[#005799] px-4 py-3 text-xs font-bold text-white shadow-md transition-all active:scale-98 cursor-pointer w-full text-center"
           >
-            <ArrowRight className="h-4 w-4" />
-            <span>📥 Click Here to Download Resource Immediately</span>
+            <Download className="h-4 w-4" />
+            <span>Click Here to Download Resource Immediately</span>
           </a>
         </div>
       ) : layout === "forest-newsletter" ? (
@@ -1054,13 +1054,13 @@ export default function MagnetSignupForm({
                   }`}
                 >
                   <label
-                    className="p-3.5 sm:p-4 font-ibm text-[9px] sm:text-[10px] font-bold tracking-wider uppercase border-r-3 flex items-center shrink-0"
+                    className="p-3.5 sm:p-4 font-ibm text-[9px] sm:text-[10px] font-bold tracking-wider uppercase border-r-3 flex items-center gap-1.5 shrink-0"
                     style={{
                       borderColor: themeMode === "dark" ? "#2a2a2e" : "#101010",
                       color: themeMode === "dark" ? darkAccent : contrastOnAccent,
                     }}
                   >
-                    ✨ FOCUS
+                    <Sparkles className="h-3 w-3 shrink-0" /> FOCUS
                   </label>
                   <input
                     type="text"
@@ -1230,10 +1230,10 @@ export default function MagnetSignupForm({
           {enableAiPersonalizedDeliverable && (
             <div className="space-y-1">
               <label
-                className="block text-[10px] font-bold tracking-[0.16em] uppercase mb-1.5"
+                className="block text-[10px] font-bold tracking-[0.16em] uppercase mb-1.5 flex items-center gap-1.5"
                 style={{ color: brandColor || "#c2410c" }}
               >
-                ✨ {customPromptQuestion || "What is your main goal or bottleneck?"}
+                <Sparkles className="h-3 w-3 shrink-0" /> {customPromptQuestion || "What is your main goal or bottleneck?"}
               </label>
               <input
                 type="text"
@@ -1373,7 +1373,7 @@ export default function MagnetSignupForm({
             <div className="rounded-2xl p-4 bg-black/50 border border-white/15 backdrop-blur-xl space-y-3">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
                 <div className="flex items-center gap-2 rounded-xl px-3.5 py-2.5 bg-black/40 border border-white/10">
-                  <span className="text-xs text-zinc-400">👤</span>
+                  <User className="h-3.5 w-3.5 text-zinc-400 shrink-0" />
                   <input
                     type="text"
                     required
@@ -1385,7 +1385,7 @@ export default function MagnetSignupForm({
                   />
                 </div>
                 <div className="flex items-center gap-2 rounded-xl px-3.5 py-2.5 bg-black/40 border border-white/10">
-                  <span className="text-xs text-zinc-400">✉️</span>
+                  <Mail className="h-3.5 w-3.5 text-zinc-400 shrink-0" />
                   <input
                     type="email"
                     required
@@ -1415,8 +1415,8 @@ export default function MagnetSignupForm({
               </div>
               {enableAiPersonalizedDeliverable && (
                 <div className="space-y-1">
-                  <label className="text-[11px] font-semibold text-[#0066B2] flex items-center gap-1">
-                    ✨ {customPromptQuestion || "What is your main goal or bottleneck?"}
+                  <label className="text-[11px] font-semibold text-[#0066B2] flex items-center gap-1.5">
+                    <Sparkles className="h-3 w-3 shrink-0" /> {customPromptQuestion || "What is your main goal or bottleneck?"}
                   </label>
                   <input
                     type="text"
@@ -1449,7 +1449,7 @@ export default function MagnetSignupForm({
           ) : (
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center rounded-2xl p-1.5 gap-2 bg-black/50 border border-white/15 backdrop-blur-xl">
               <div className="flex-1 flex items-center gap-2 px-3 py-1.5">
-                <span className="text-xs text-zinc-400">👤</span>
+                <User className="h-3.5 w-3.5 text-zinc-400 shrink-0" />
                 <input
                   type="text"
                   required
@@ -1462,7 +1462,7 @@ export default function MagnetSignupForm({
               </div>
               <div className="hidden sm:block w-px h-5 shrink-0 bg-white/20" />
               <div className="flex-1 flex items-center gap-2 px-3 py-1.5">
-                <span className="text-xs text-zinc-400">✉️</span>
+                <Mail className="h-3.5 w-3.5 text-zinc-400 shrink-0" />
                 <input
                   type="email"
                   required
@@ -1601,8 +1601,8 @@ export default function MagnetSignupForm({
 
             {enableAiPersonalizedDeliverable && (
               <div className="space-y-1">
-                <label className="text-[11px] font-semibold text-[#0066B2] flex items-center gap-1">
-                  ✨ {customPromptQuestion || "What is your main goal or bottleneck?"}
+                <label className="text-[11px] font-semibold text-[#0066B2] flex items-center gap-1.5">
+                  <Sparkles className="h-3 w-3 shrink-0" /> {customPromptQuestion || "What is your main goal or bottleneck?"}
                 </label>
                 <input
                   type="text"
@@ -1787,8 +1787,8 @@ export default function MagnetSignupForm({
 
             {enableAiPersonalizedDeliverable && (
               <div className="space-y-1">
-                <label className="text-[11px] font-semibold text-[#0066B2] flex items-center gap-1">
-                  ✨ {customPromptQuestion || "What is your main goal or bottleneck?"}
+                <label className="text-[11px] font-semibold text-[#0066B2] flex items-center gap-1.5">
+                  <Sparkles className="h-3 w-3 shrink-0" /> {customPromptQuestion || "What is your main goal or bottleneck?"}
                 </label>
                 <input
                   type="text"

@@ -29,6 +29,13 @@ import {
   ChevronDown,
   HelpCircle,
   MessageSquare,
+  Mail,
+  BookOpen,
+  Webhook,
+  Calendar,
+  TrendingUp,
+  Target,
+  Link2,
 } from "lucide-react";
 import SiteFooter from "@/layout/site-footer";
 import SiteHeader from "@/layout/site-header";
@@ -227,22 +234,24 @@ export default function Home() {
                   {/* Marquee Row 1 (Moving Left) */}
                   <div className="animate-marquee-left gap-3">
                     {[
-                      { name: "Kit (ConvertKit)", icon: "📧", category: "CRM & Email" },
-                      { name: "Substack", icon: "📑", category: "Publication" },
-                      { name: "Slack Alerts", icon: "💬", category: "Notifications" },
-                      { name: "Pipedrive", icon: "📊", category: "Sales Pipeline" },
-                      { name: "Custom Webhooks", icon: "⚡", category: "Developer API" },
-                      { name: "Kit (ConvertKit)", icon: "📧", category: "CRM & Email" },
-                      { name: "Substack", icon: "📑", category: "Publication" },
-                      { name: "Slack Alerts", icon: "💬", category: "Notifications" },
-                      { name: "Pipedrive", icon: "📊", category: "Sales Pipeline" },
-                      { name: "Custom Webhooks", icon: "⚡", category: "Developer API" },
+                      { name: "Kit (ConvertKit)", Icon: Mail, color: "text-rose-500 bg-rose-50 dark:bg-rose-950/40 border-rose-200/60 dark:border-rose-900/40", category: "CRM & Email" },
+                      { name: "Substack", Icon: BookOpen, color: "text-amber-500 bg-amber-50 dark:bg-amber-950/40 border-amber-200/60 dark:border-amber-900/40", category: "Publication" },
+                      { name: "Slack Alerts", Icon: MessageSquare, color: "text-emerald-500 bg-emerald-50 dark:bg-emerald-950/40 border-emerald-200/60 dark:border-emerald-900/40", category: "Notifications" },
+                      { name: "Pipedrive", Icon: BarChart3, color: "text-indigo-500 bg-indigo-50 dark:bg-indigo-950/40 border-indigo-200/60 dark:border-indigo-900/40", category: "Sales Pipeline" },
+                      { name: "Custom Webhooks", Icon: Webhook, color: "text-blue-500 bg-blue-50 dark:bg-blue-950/40 border-blue-200/60 dark:border-blue-900/40", category: "Developer API" },
+                      { name: "Kit (ConvertKit)", Icon: Mail, color: "text-rose-500 bg-rose-50 dark:bg-rose-950/40 border-rose-200/60 dark:border-rose-900/40", category: "CRM & Email" },
+                      { name: "Substack", Icon: BookOpen, color: "text-amber-500 bg-amber-50 dark:bg-amber-950/40 border-amber-200/60 dark:border-amber-900/40", category: "Publication" },
+                      { name: "Slack Alerts", Icon: MessageSquare, color: "text-emerald-500 bg-emerald-50 dark:bg-emerald-950/40 border-emerald-200/60 dark:border-emerald-900/40", category: "Notifications" },
+                      { name: "Pipedrive", Icon: BarChart3, color: "text-indigo-500 bg-indigo-50 dark:bg-indigo-950/40 border-indigo-200/60 dark:border-indigo-900/40", category: "Sales Pipeline" },
+                      { name: "Custom Webhooks", Icon: Webhook, color: "text-blue-500 bg-blue-50 dark:bg-blue-950/40 border-blue-200/60 dark:border-blue-900/40", category: "Developer API" },
                     ].map((item, idx) => (
                       <div
                         key={`row1-${idx}`}
                         className="flex items-center gap-3 px-4 py-2.5 rounded-2xl bg-white dark:bg-[#1C1C22] border border-zinc-200/80 dark:border-zinc-800/80 shadow-md hover:border-[#0066B2]/50 transition-all cursor-default shrink-0"
                       >
-                        <span className="text-lg">{item.icon}</span>
+                        <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border ${item.color}`}>
+                          <item.Icon className="h-4 w-4" />
+                        </div>
                         <div>
                           <p className="text-xs font-extrabold text-zinc-900 dark:text-white leading-none">{item.name}</p>
                           <span className="text-[9px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">{item.category}</span>
@@ -254,22 +263,24 @@ export default function Home() {
                   {/* Marquee Row 2 (Moving Right) */}
                   <div className="animate-marquee-right gap-3">
                     {[
-                      { name: "Zapier Automations", icon: "⚡", category: "Workflow" },
-                      { name: "Calendly Bookings", icon: "📅", category: "Smart Stop" },
-                      { name: "GA4 Telemetry", icon: "📈", category: "Analytics" },
-                      { name: "Meta Ads Pixel", icon: "🎯", category: "Retargeting" },
-                      { name: "Custom Webhooks", icon: "🔗", category: "API Payload" },
-                      { name: "Zapier Automations", icon: "⚡", category: "Workflow" },
-                      { name: "Calendly Bookings", icon: "📅", category: "Smart Stop" },
-                      { name: "GA4 Telemetry", icon: "📈", category: "Analytics" },
-                      { name: "Meta Ads Pixel", icon: "🎯", category: "Retargeting" },
-                      { name: "Custom Webhooks", icon: "🔗", category: "API Payload" },
+                      { name: "Zapier Automations", Icon: Zap, color: "text-amber-500 bg-amber-50 dark:bg-amber-950/40 border-amber-200/60 dark:border-amber-900/40", category: "Workflow" },
+                      { name: "Calendly Bookings", Icon: Calendar, color: "text-blue-500 bg-blue-50 dark:bg-blue-950/40 border-blue-200/60 dark:border-blue-900/40", category: "Smart Stop" },
+                      { name: "GA4 Telemetry", Icon: TrendingUp, color: "text-emerald-500 bg-emerald-50 dark:bg-emerald-950/40 border-emerald-200/60 dark:border-emerald-900/40", category: "Analytics" },
+                      { name: "Meta Ads Pixel", Icon: Target, color: "text-indigo-500 bg-indigo-50 dark:bg-indigo-950/40 border-indigo-200/60 dark:border-indigo-900/40", category: "Retargeting" },
+                      { name: "Custom Webhooks", Icon: Link2, color: "text-purple-500 bg-purple-50 dark:bg-purple-950/40 border-purple-200/60 dark:border-purple-900/40", category: "API Payload" },
+                      { name: "Zapier Automations", Icon: Zap, color: "text-amber-500 bg-amber-50 dark:bg-amber-950/40 border-amber-200/60 dark:border-amber-900/40", category: "Workflow" },
+                      { name: "Calendly Bookings", Icon: Calendar, color: "text-blue-500 bg-blue-50 dark:bg-blue-950/40 border-blue-200/60 dark:border-blue-900/40", category: "Smart Stop" },
+                      { name: "GA4 Telemetry", Icon: TrendingUp, color: "text-emerald-500 bg-emerald-50 dark:bg-emerald-950/40 border-emerald-200/60 dark:border-emerald-900/40", category: "Analytics" },
+                      { name: "Meta Ads Pixel", Icon: Target, color: "text-indigo-500 bg-indigo-50 dark:bg-indigo-950/40 border-indigo-200/60 dark:border-indigo-900/40", category: "Retargeting" },
+                      { name: "Custom Webhooks", Icon: Link2, color: "text-purple-500 bg-purple-50 dark:bg-purple-950/40 border-purple-200/60 dark:border-purple-900/40", category: "API Payload" },
                     ].map((item, idx) => (
                       <div
                         key={`row2-${idx}`}
                         className="flex items-center gap-3 px-4 py-2.5 rounded-2xl bg-white dark:bg-[#1C1C22] border border-zinc-200/80 dark:border-zinc-800/80 shadow-md hover:border-purple-500/50 transition-all cursor-default shrink-0"
                       >
-                        <span className="text-lg">{item.icon}</span>
+                        <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border ${item.color}`}>
+                          <item.Icon className="h-4 w-4" />
+                        </div>
                         <div>
                           <p className="text-xs font-extrabold text-zinc-900 dark:text-white leading-none">{item.name}</p>
                           <span className="text-[9px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">{item.category}</span>
