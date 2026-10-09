@@ -2,6 +2,7 @@
 
 import React, { memo } from "react";
 import { Palette, Check, Upload, Sun, Moon, Trash2, Loader2 } from "lucide-react";
+import { InfoTooltip } from "@/components/ui/info-tooltip";
 
 interface BrandSettingsFormProps {
   businessName: string;
@@ -45,24 +46,33 @@ function BrandSettingsForm({
   return (
     <div className="rounded-2xl border border-[#0066B2]/35 bg-white dark:border-[#0066B2]/30 dark:bg-[#18181B] p-4 sm:p-6 shadow-sm dark:shadow-xl h-full flex flex-col justify-between transition-colors">
       {/* Heading */}
-      <div className="flex items-start gap-3 mb-4">
+      <div className="flex items-center gap-3 mb-4">
         <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-[#0066B2]/30 bg-[#EFF6FF] dark:border-[#0066B2]/30 dark:bg-[#1a2638] text-[#0066B2]">
           <Palette className="h-4.5 w-4.5 text-[#0066B2]" />
         </div>
-        <div>
+        <div className="flex items-center gap-1.5">
           <h4 className="text-base font-bold text-zinc-900 dark:text-white">Brand settings</h4>
-          <p className="text-xs text-zinc-500 dark:text-[#9B9085] mt-0.5 sm:mt-1">
-            These apply to every live page and preview on this account.
-          </p>
+          <InfoTooltip
+            content="These apply to every live page and preview on this account."
+            title="Brand Settings"
+            size="sm"
+          />
         </div>
       </div>
 
       <div className="space-y-5 sm:space-y-6">
         {/* Business Name */}
         <div>
-          <label className="block text-xs sm:text-sm font-semibold text-zinc-700 dark:text-[#a1a1aa] mb-1.5 sm:mb-2">
-            Business name
-          </label>
+          <div className="flex items-center gap-1.5 mb-1.5 sm:mb-2">
+            <label className="block text-xs sm:text-sm font-semibold text-zinc-700 dark:text-[#a1a1aa]">
+              Business name
+            </label>
+            <InfoTooltip
+              content="Optional when your uploaded logo already includes your name."
+              title="Business Name"
+              size="sm"
+            />
+          </div>
           <input
             type="text"
             value={businessName}
@@ -70,16 +80,20 @@ function BrandSettingsForm({
             placeholder="Enter business name"
             className="w-full rounded-md border border-[#E2E8F0] bg-white dark:border-[#0066B2]/30 dark:bg-[#18181B] px-3.5 py-2.5 text-sm text-zinc-900 dark:text-white outline-none placeholder:text-zinc-400 dark:placeholder:text-[#5c5650] focus:border-[#0066B2] transition"
           />
-          <p className="text-[11px] sm:text-xs text-zinc-500 dark:text-[#71717a] mt-1.5 sm:mt-2 leading-relaxed">
-            Optional when your uploaded logo already includes your name.
-          </p>
         </div>
 
         {/* Logo Image */}
         <div>
-          <label className="block text-xs sm:text-sm font-semibold text-zinc-700 dark:text-[#a1a1aa] mb-1.5 sm:mb-2">
-            Logo image
-          </label>
+          <div className="flex items-center gap-1.5 mb-1.5 sm:mb-2">
+            <label className="block text-xs sm:text-sm font-semibold text-zinc-700 dark:text-[#a1a1aa]">
+              Logo image
+            </label>
+            <InfoTooltip
+              content="Optional when you use a business name. PNG, JPG, WebP, SVG, or GIF. 2 MB max."
+              title="Logo Image"
+              size="sm"
+            />
+          </div>
           <div className="flex flex-wrap items-center gap-2.5 sm:gap-3">
             <input
               type="file"
@@ -126,9 +140,6 @@ function BrandSettingsForm({
               <span className="text-xs text-zinc-500 dark:text-[#71717a]">No logo uploaded</span>
             )}
           </div>
-          <p className="text-[11px] sm:text-xs text-zinc-500 dark:text-[#71717a] mt-1.5 sm:mt-2 leading-relaxed">
-            Optional when you use a business name. PNG, JPG, WebP, SVG, or GIF. 2 MB max.
-          </p>
         </div>
 
         {/* Primary Color */}
@@ -175,9 +186,16 @@ function BrandSettingsForm({
 
         {/* Page Appearance */}
         <div>
-          <label className="block text-xs sm:text-sm font-semibold text-zinc-700 dark:text-[#a1a1aa] mb-1.5 sm:mb-2">
-            Page appearance
-          </label>
+          <div className="flex items-center gap-1.5 mb-1.5 sm:mb-2">
+            <label className="block text-xs sm:text-sm font-semibold text-zinc-700 dark:text-[#a1a1aa]">
+              Page appearance
+            </label>
+            <InfoTooltip
+              content="Applied to every public magnet and editor preview."
+              title="Page Appearance"
+              size="sm"
+            />
+          </div>
           <div className="grid grid-cols-2 gap-2">
             <button
               type="button"
@@ -204,9 +222,6 @@ function BrandSettingsForm({
               Dark
             </button>
           </div>
-          <p className="text-[11px] sm:text-xs text-zinc-500 dark:text-[#71717a] mt-1.5 sm:mt-2 leading-relaxed">
-            Applied to every public magnet and editor preview.
-          </p>
         </div>
 
         {/* Highlight Intensity */}
