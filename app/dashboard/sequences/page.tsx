@@ -1062,394 +1062,53 @@ export default function SequencesPage() {
               {/* DESKTOP STREAM (hidden md:block) - Preserves Grid & Table Layouts */}
               <div className="hidden md:block">
                 {viewMode === "grid" ? (
-                  /* GRID VIEW */
-                  <div className="grid gap-3.5 lg:grid-cols-2 min-w-0 max-w-full">
-                {filteredSequences.map((seq) => {
-                  const { signedUp, delivered, opened, replied } = seq.stats;
-                  const completed = seq.stats.completed || (delivered > 0 ? delivered : 0);
-                  const openRate = delivered > 0 ? Math.round((opened / delivered) * 100) : 0;
-                  const linkHref = `/dashboard/sequences/${seq.id}`;
-                  const attachedPage = seq.pageId ? pages.find((p) => p.id === seq.pageId) : null;
-                  const isStandalone = !seq.pageId || !attachedPage;
-                  const attachedName = attachedPage?.name || seq.name.replace(" Follow-up", "").replace(" (Copy)", "");
-                  const isMenuOpen = activeMenuId === seq.id;
-                  const isChecked = checkedIds.includes(seq.id);
-                  const totalStepsCount = isStandalone ? seq.emails.length : seq.emails.length + 1;
+                  /* GRID VIEW - Resend / Loops Bento Style */
+                  <div className="grid gap-4 lg:grid-cols-2 min-w-0 max-w-full">
+                    {filteredSequences.map((seq) => {
+                      const { signedUp, delivered, opened, replied } = seq.stats;
+                      const completed = seq.stats.completed || (delivered > 0 ? delivered : 0);
+                      const openRate = delivered > 0 ? Math.round((opened / delivered) * 100) : 0;
+                      const linkHref = `/dashboard/sequences/${seq.id}`;
+                      const attachedPage = seq.pageId ? pages.find((p) => p.id === seq.pageId) : null;
+                      const isStandalone = !seq.pageId || !attachedPage;
+                      const attachedName = attachedPage?.name || seq.name.replace(" Follow-up", "").replace(" (Copy)", "");
+                      const isMenuOpen = activeMenuId === seq.id;
+                      const isChecked = checkedIds.includes(seq.id);
+                      const totalStepsCount = isStandalone ? seq.emails.length : seq.emails.length + 1;
 
-                  return (
-                    <div
-                      key={seq.id}
-                      onClick={(e) => {
-                        if (isSelectMode || checkedIds.length > 0) {
-                          handleToggleCheck(seq.id, e);
-                        }
-                      }}
-                      className={`group relative flex flex-col justify-between rounded-2xl border p-3 sm:p-5 transition-all duration-200 hover:border-[#0066B2] dark:hover:border-[#38BDF8] shadow-2xs hover:shadow-sm min-w-0 w-full max-w-full cursor-pointer ${
-                        isMenuOpen ? "z-30" : "z-0"
-                      } ${
-                        isChecked
-                          ? "border-[#0066B2] dark:border-[#38BDF8] bg-blue-50/40 dark:bg-[#0066B2]/15 ring-2 ring-[#0066B2]/30 shadow-md"
-                          : "border-zinc-200/90 dark:border-white/10 bg-white dark:bg-[#18181B]"
-                      }`}
-                    >
-                      {/* Top Row: Icon, Title, Actions */}
-                      <div className="min-w-0 w-full max-w-full">
-                        <div className="flex items-start justify-between gap-2 sm:gap-3 min-w-0 max-w-full">
-                          <div className="flex items-start gap-2 sm:gap-3 flex-1 min-w-0">
-                            {/* Animated Checkbox on desktop grid card */}
-                            <AnimatePresence initial={false}>
-                              {(isSelectMode || isChecked) && (
-                                <motion.div
-                                  initial={{ opacity: 0, width: 0, marginRight: 0 }}
-                                  animate={{ opacity: 1, width: 24, marginRight: 8 }}
-                                  exit={{ opacity: 0, width: 0, marginRight: 0 }}
-                                  transition={{ type: "spring", stiffness: 450, damping: 35 }}
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleToggleCheck(seq.id, e);
-                                  }}
-                                  className="flex h-10 items-center justify-center shrink-0 overflow-hidden cursor-pointer"
-                                >
-                                  <AppleCheckbox
-                                    checked={isChecked}
-                                    onChange={() => handleToggleCheck(seq.id)}
-                                    title={isChecked ? "Deselect sequence" : "Select sequence"}
-                                  />
-                                </motion.div>
-                              )}
-                            </AnimatePresence>
-
-                            <Link href={linkHref} onClick={(e) => { if (isSelectMode || checkedIds.length > 0) { e.preventDefault(); } }} className="flex items-start gap-2 sm:gap-3 flex-1 min-w-0">
-                              <div className="flex h-8 w-8 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-lg sm:rounded-xl bg-[#EFF6FF] text-[#0066B2] dark:bg-[#0066B2]/20 dark:text-[#38BDF8] group-hover:scale-105 transition">
-                                <Rocket className="h-4 w-4 sm:h-4.5 sm:w-4.5" aria-hidden="true" />
-                              </div>
-                              <div className="min-w-0 flex-1">
-                                <div className="flex items-center gap-1 sm:gap-2 flex-wrap min-w-0">
-                                  <p className="truncate text-xs sm:text-base font-bold text-zinc-900 dark:text-white group-hover:text-[#0066B2] dark:group-hover:text-[#38BDF8] transition">
-                                    {seq.name}
-                                  </p>
-                                  {isStandalone ? (
-                                    <span className="inline-flex items-center gap-1 rounded-md border border-blue-200/80 dark:border-blue-900/60 bg-blue-50/80 dark:bg-blue-950/40 px-1.5 py-0.5 text-[9px] sm:text-[9.5px] font-bold text-[#0066B2] dark:text-[#38BDF8] shrink-0">
-                                      <Zap className="w-2.5 h-2.5" /> Standalone
-                                    </span>
-                                  ) : (
-                                    <span className="inline-flex items-center gap-1 rounded-md border border-emerald-200/80 dark:border-emerald-900/60 bg-emerald-50/80 dark:bg-emerald-950/40 px-1.5 py-0.5 text-[9px] sm:text-[9.5px] font-bold text-emerald-700 dark:text-emerald-400 shrink-0">
-                                      <Magnet className="w-2.5 h-2.5" /> Lead Magnet
-                                    </span>
-                                  )}
-                                </div>
-                              <p className="mt-0.5 truncate text-[10.5px] sm:text-xs text-zinc-500 dark:text-zinc-400">
-                                {isStandalone ? (
-                                  <span>Standalone automation flow</span>
-                                ) : (
-                                  <>
-                                    Attached to{" "}
-                                    <span className="font-semibold text-zinc-700 dark:text-zinc-200 hover:text-[#0066B2] dark:hover:text-[#38BDF8]">
-                                      "{attachedName}"
-                                    </span>
-                                  </>
-                                )}{" "}
-                                · {totalStepsCount} {totalStepsCount === 1 ? "step" : "steps"}
-                              </p>
-                            </div>
-                          </Link>
-                        </div>
-
-                          {/* Top Right Controls & Menu */}
-                          <div className="flex items-center gap-1 sm:gap-2 shrink-0">
-                            <StatusBadge status={seq.status} />
-
-                            {/* 3-Dot Dropdown Actions Menu */}
-                            <div className="relative">
-                              <button
-                                onClick={(e) => {
-                                  e.preventDefault();
-                                  e.stopPropagation();
-                                  if (typeof window !== "undefined" && window.innerWidth < 640) {
-                                    setMobileActionSeq(seq);
-                                  } else {
-                                    setActiveMenuId(isMenuOpen ? null : seq.id);
-                                  }
-                                }}
-                                className="rounded-lg p-1.5 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-700 dark:hover:bg-white/10 dark:hover:text-zinc-200 transition cursor-pointer"
-                                title="Sequence options"
-                              >
-                                <MoreVertical className="h-4 w-4" />
-                              </button>
-
-                              {/* Desktop-only dropdown popup */}
-                              {isMenuOpen && (
-                                <div
-                                  onClick={(e) => e.stopPropagation()}
-                                  className="hidden sm:block absolute right-0 top-8 z-50 w-52 rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#1C1C20] py-1 shadow-xl animate-in fade-in zoom-in-95"
-                                >
-                                  <Link
-                                    href={`/dashboard/sequences/${seq.id}`}
-                                    className="flex w-full items-center gap-2 px-3.5 py-2 text-xs font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-white/5"
-                                  >
-                                    <Eye className="h-3.5 w-3.5 text-zinc-400" />
-                                    Open Sequence Editor
-                                  </Link>
-
-                                  {seq.pageId && (
-                                    <Link
-                                      href={`/dashboard/leadmagnets/${seq.pageId}?tab=sequence`}
-                                      className="flex w-full items-center gap-2 px-3.5 py-2 text-xs font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-white/5"
-                                    >
-                                      <ExternalLink className="h-3.5 w-3.5 text-zinc-400" />
-                                      Edit in Lead Magnet Builder
-                                    </Link>
-                                  )}
-
-                                  <button
-                                    onClick={(e) => handleToggleStatus(seq, e)}
-                                    className="flex w-full items-center gap-2 px-3.5 py-2 text-xs font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-white/5 cursor-pointer text-left"
-                                  >
-                                    {seq.status === "live" ? (
-                                      <>
-                                        <Pause className="h-3.5 w-3.5 text-amber-500" />
-                                        Pause Sequence
-                                      </>
-                                    ) : (
-                                      <>
-                                        <Play className="h-3.5 w-3.5 text-emerald-500" />
-                                        Resume Sequence
-                                      </>
-                                    )}
-                                  </button>
-
-                                  <Link
-                                    href={`/dashboard/leads?search=${encodeURIComponent(attachedName)}`}
-                                    className="flex w-full items-center gap-2 px-3.5 py-2 text-xs font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-white/5"
-                                  >
-                                    <Users className="h-3.5 w-3.5 text-zinc-400" />
-                                    View Sequence Leads
-                                  </Link>
-
-                                  <button
-                                    onClick={(e) => handleDuplicate(seq, e)}
-                                    className="flex w-full items-center gap-2 px-3.5 py-2 text-xs font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-white/5 cursor-pointer text-left"
-                                  >
-                                    <Copy className="h-3.5 w-3.5 text-zinc-400" />
-                                    Duplicate Sequence
-                                  </button>
-
-                                  <div className="my-1 border-t border-zinc-100 dark:border-white/5" />
-
-                                  <button
-                                    onClick={(e) => handleDelete(seq, e)}
-                                    className="flex w-full items-center gap-2 px-3.5 py-2 text-xs font-semibold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 cursor-pointer text-left"
-                                  >
-                                    <Trash2 className="h-3.5 w-3.5" />
-                                    Delete Sequence
-                                  </button>
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Visual Step Timeline Node Preview */}
-                        <div className="mt-2.5 sm:mt-3 flex items-center gap-1.5 overflow-x-auto rounded-xl border border-zinc-100 dark:border-white/5 bg-zinc-50/80 dark:bg-white/[0.02] p-1.5 sm:p-2 scrollbar-none">
-                          {seq.pageId ? (
-                            <>
-                              {/* Attached Sequence: Step 1 Instant Lead Magnet Delivery Node */}
-                              <div className="flex items-center gap-1 shrink-0">
-                                <div className="flex items-center gap-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-300/80 dark:border-emerald-800/60 px-2 py-1 text-[10px] sm:text-[10.5px] shadow-2xs">
-                                  <Zap className="h-3 w-3 text-emerald-700 dark:text-emerald-400 shrink-0" />
-                                  <span className="truncate font-extrabold text-emerald-950 dark:text-emerald-200">
-                                    1. Instant Delivery
-                                  </span>
-                                </div>
-                              </div>
-
-                              {seq.emails && seq.emails.slice(0, 2).map((email, idx) => (
-                                <div key={email.id || idx} className="flex items-center gap-1 shrink-0">
-                                  <ArrowRight className="h-3 w-3 text-zinc-300 dark:text-zinc-600" />
-                                  <div className="flex items-center gap-1.5 rounded-lg bg-white dark:bg-[#18181B] border border-zinc-200/80 dark:border-white/10 px-2 py-1 text-[10px] sm:text-[10.5px] shadow-2xs max-w-[120px] sm:max-w-[140px]">
-                                    <Clock className="h-3 w-3 text-[#0066B2] dark:text-[#38BDF8] shrink-0" />
-                                    <span className="truncate font-medium text-zinc-700 dark:text-zinc-300">
-                                      {idx + 2}. {email.delayLabel || `Follow-up #${idx + 1}`}
-                                    </span>
-                                  </div>
-                                </div>
-                              ))}
-                              {seq.emails && seq.emails.length > 2 && (
-                                <span className="rounded-lg bg-zinc-200/70 dark:bg-white/10 px-1.5 py-0.5 text-[10px] font-bold text-zinc-600 dark:text-zinc-300 shrink-0">
-                                  +{seq.emails.length - 2} more
-                                </span>
-                              )}
-                            </>
-                          ) : (
-                            <>
-                              {/* Standalone Sequence: Direct sequence steps */}
-                              {seq.emails && seq.emails.length > 0 ? (
-                                <>
-                                  {seq.emails.slice(0, 3).map((email, idx) => (
-                                    <div key={email.id || idx} className="flex items-center gap-1 shrink-0">
-                                      {idx > 0 && <ArrowRight className="h-3 w-3 text-zinc-300 dark:text-zinc-600" />}
-                                      <div className={`flex items-center gap-1.5 rounded-lg px-2 py-1 text-[10px] sm:text-[10.5px] shadow-2xs max-w-[130px] sm:max-w-[150px] ${
-                                        idx === 0
-                                          ? "bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-300/80 dark:border-emerald-800/60"
-                                          : "bg-white dark:bg-[#18181B] border border-zinc-200/80 dark:border-white/10"
-                                      }`}>
-                                        {idx === 0 ? (
-                                          <Zap className="h-3 w-3 text-emerald-700 dark:text-emerald-400 shrink-0" />
-                                        ) : (
-                                          <Clock className="h-3 w-3 text-[#0066B2] dark:text-[#38BDF8] shrink-0" />
-                                        )}
-                                        <span className={`truncate font-medium ${idx === 0 ? "font-extrabold text-emerald-950 dark:text-emerald-200" : "text-zinc-700 dark:text-zinc-300"}`}>
-                                          {idx + 1}. {email.delayLabel || (idx === 0 ? "Instantly" : `Follow-up #${idx}`)}
-                                        </span>
-                                      </div>
-                                    </div>
-                                  ))}
-                                  {seq.emails.length > 3 && (
-                                    <span className="rounded-lg bg-zinc-200/70 dark:bg-white/10 px-1.5 py-0.5 text-[10px] font-bold text-zinc-600 dark:text-zinc-300 shrink-0">
-                                      +{seq.emails.length - 3} more
-                                    </span>
-                                  )}
-                                </>
-                              ) : (
-                                <span className="text-[10px] text-zinc-400 font-medium italic">No email steps added yet</span>
-                              )}
-                            </>
-                          )}
-                        </div>
-                      </div>
-
-                      {/* Bottom Performance Metrics Grid (Scales down seamlessly on small mobile) */}
-                      <div className="mt-2.5 sm:mt-3 grid grid-cols-5 divide-x divide-zinc-100 dark:divide-white/5 rounded-xl border border-zinc-100 dark:border-white/5 bg-[#F9F9FB] dark:bg-[#141417] text-center min-w-0 w-full max-w-full">
-                        <Link
-                          href={`/dashboard/leads?search=${encodeURIComponent(attachedName)}`}
-                          className="px-0.5 sm:px-1 py-1.5 sm:py-2.5 hover:bg-zinc-100/60 dark:hover:bg-white/5 transition rounded-l-xl"
-                          title="View signed up leads"
+                      return (
+                        <div
+                          key={seq.id}
+                          onClick={(e) => {
+                            if (isSelectMode || checkedIds.length > 0) {
+                              handleToggleCheck(seq.id, e);
+                            }
+                          }}
+                          className={`group relative flex flex-col justify-between rounded-2xl border transition-all duration-200 min-w-0 w-full max-w-full cursor-pointer overflow-hidden ${
+                            isMenuOpen ? "z-30" : "z-0"
+                          } ${
+                            isChecked
+                              ? "border-[#0066B2] dark:border-[#38BDF8] bg-blue-50/40 dark:bg-[#0066B2]/15 ring-2 ring-[#0066B2]/30 shadow-md"
+                              : "border-zinc-200/80 dark:border-white/[0.08] bg-white dark:bg-[#141417] hover:border-zinc-300 dark:hover:border-white/20 hover:shadow-md dark:hover:bg-[#18181D]"
+                          }`}
                         >
-                          <p className="text-[11px] sm:text-sm md:text-base font-bold text-zinc-900 dark:text-white leading-tight truncate">
-                            {signedUp.toLocaleString()}
-                          </p>
-                          <p className="text-[8.5px] sm:text-[10px] font-medium text-zinc-500 dark:text-zinc-400 truncate mt-0.5">Signups</p>
-                        </Link>
-
-                        <div className="px-0.5 sm:px-1 py-1.5 sm:py-2.5">
-                          <p className="text-[11px] sm:text-sm md:text-base font-bold text-zinc-900 dark:text-white leading-tight truncate">
-                            {delivered.toLocaleString()}
-                          </p>
-                          <p className="text-[8.5px] sm:text-[10px] font-medium text-zinc-500 dark:text-zinc-400 truncate mt-0.5">Delivered</p>
-                        </div>
-
-                        <div className="px-0.5 sm:px-1 py-1.5 sm:py-2.5">
-                          <p className="text-[11px] sm:text-sm md:text-base font-bold text-zinc-900 dark:text-white leading-tight truncate">
-                            {opened.toLocaleString()}
-                          </p>
-                          <p className="text-[8.5px] sm:text-[10px] font-medium text-indigo-600 dark:text-indigo-400 truncate mt-0.5">
-                            {openRate > 0 ? `${openRate}%` : "Opened"}
-                          </p>
-                        </div>
-
-                        <div className="px-0.5 sm:px-1 py-1.5 sm:py-2.5">
-                          <p className="text-[11px] sm:text-sm md:text-base font-bold text-zinc-900 dark:text-white leading-tight truncate">
-                            {completed.toLocaleString()}
-                          </p>
-                          <p className="text-[8.5px] sm:text-[10px] font-medium text-emerald-600 dark:text-emerald-400 truncate mt-0.5">Done</p>
-                        </div>
-
-                        <div className="px-0.5 sm:px-1 py-1.5 sm:py-2.5">
-                          <p className="text-[11px] sm:text-sm md:text-base font-bold text-zinc-900 dark:text-white leading-tight truncate">
-                            {replied.toLocaleString()}
-                          </p>
-                          <p className="text-[8.5px] sm:text-[10px] font-medium text-zinc-500 dark:text-zinc-400 truncate mt-0.5">Replied</p>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            ) : (
-              /* TABLE VIEW */
-              <div className="overflow-hidden rounded-2xl border border-zinc-200/90 dark:border-white/10 bg-white dark:bg-[#18181B] shadow-2xs">
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left border-collapse">
-                    <thead>
-                      <tr className="border-b border-zinc-200/80 dark:border-white/10 bg-zinc-50/70 dark:bg-white/[0.02] text-[11px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
-                        <th className="py-3 pl-5 pr-3">
-                          <div className="flex items-center">
-                            <AnimatePresence initial={false}>
-                              {(checkedIds.length > 0 || isSelectMode) && (
-                                <motion.div
-                                  initial={{ opacity: 0, width: 0, marginRight: 0 }}
-                                  animate={{ opacity: 1, width: 22, marginRight: 10 }}
-                                  exit={{ opacity: 0, width: 0, marginRight: 0 }}
-                                  transition={{ type: "spring", stiffness: 450, damping: 35 }}
-                                  className="flex items-center justify-center shrink-0 overflow-hidden"
-                                >
-                                  <AppleCheckbox
-                                    checked={filteredSequences.length > 0 && checkedIds.length === filteredSequences.length}
-                                    indeterminate={checkedIds.length > 0 && checkedIds.length < filteredSequences.length}
-                                    onChange={handleToggleSelectAll}
-                                    title={
-                                      checkedIds.length === filteredSequences.length && filteredSequences.length > 0
-                                        ? "Deselect all"
-                                        : "Select all"
-                                    }
-                                  />
-                                </motion.div>
-                              )}
-                            </AnimatePresence>
-                            <span>Sequence & Magnet</span>
-                          </div>
-                        </th>
-                        <th className="py-3 px-3">Status</th>
-                        <th className="py-3 px-3">Steps</th>
-                        <th className="py-3 px-3 text-right">Signed Up</th>
-                        <th className="py-3 px-3 text-right">Delivered</th>
-                        <th className="py-3 px-3 text-right">Open Rate</th>
-                        <th className="py-3 px-3 text-right">Completed</th>
-                        <th className="py-3 pl-3 pr-5 text-right">Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-zinc-100 dark:divide-white/5 text-xs">
-                      {filteredSequences.map((seq) => {
-                        const { signedUp, delivered, opened, replied } = seq.stats;
-                        const completed = seq.stats.completed || (delivered > 0 ? delivered : 0);
-                        const openRate = delivered > 0 ? Math.round((opened / delivered) * 100) : 0;
-                        const linkHref = `/dashboard/sequences/${seq.id}`;
-                        const attachedPage = seq.pageId ? pages.find((p) => p.id === seq.pageId) : null;
-                        const isStandalone = !seq.pageId || !attachedPage;
-                        const attachedName = attachedPage?.name || seq.name.replace(" Follow-up", "").replace(" (Copy)", "");
-                        const totalStepsCount = isStandalone ? seq.emails.length : seq.emails.length + 1;
-                        const isChecked = checkedIds.includes(seq.id);
-
-                        return (
-                          <tr
-                            key={seq.id}
-                            onClick={(e) => {
-                              if (isSelectMode || checkedIds.length > 0) {
-                                handleToggleCheck(seq.id, e);
-                              }
-                            }}
-                            className={`group transition-all duration-200 ${
-                              isSelectMode || checkedIds.length > 0 ? "cursor-pointer" : ""
-                            } ${
-                              isChecked
-                                ? "bg-gradient-to-r from-[#0066B2]/[0.08] via-[#0066B2]/[0.04] to-transparent dark:from-[#38BDF8]/15 dark:via-[#38BDF8]/[0.06] dark:to-transparent"
-                                : "hover:bg-zinc-50/70 dark:hover:bg-white/[0.02]"
-                            }`}
-                          >
-                            <td className="py-3 pl-5 pr-3">
-                              <div className="flex items-center min-w-0">
+                          {/* Top Section: Header & Step Pipeline */}
+                          <div className="p-4 sm:p-5 pb-3">
+                            <div className="flex items-start justify-between gap-3">
+                              <div className="flex items-start gap-3 flex-1 min-w-0">
+                                {/* Animated Checkbox */}
                                 <AnimatePresence initial={false}>
-                                  {(checkedIds.length > 0 || isChecked || isSelectMode) && (
+                                  {(isSelectMode || isChecked) && (
                                     <motion.div
                                       initial={{ opacity: 0, width: 0, marginRight: 0 }}
-                                      animate={{ opacity: 1, width: 22, marginRight: 12 }}
+                                      animate={{ opacity: 1, width: 24, marginRight: 8 }}
                                       exit={{ opacity: 0, width: 0, marginRight: 0 }}
                                       transition={{ type: "spring", stiffness: 450, damping: 35 }}
                                       onClick={(e) => {
                                         e.stopPropagation();
                                         handleToggleCheck(seq.id, e);
                                       }}
-                                      className="flex items-center justify-center shrink-0 overflow-hidden cursor-pointer"
+                                      className="flex h-10 items-center justify-center shrink-0 overflow-hidden cursor-pointer"
                                     >
                                       <AppleCheckbox
                                         checked={isChecked}
@@ -1463,94 +1122,450 @@ export default function SequencesPage() {
                                 <Link
                                   href={linkHref}
                                   onClick={(e) => {
-                                    if (isSelectMode || checkedIds.length > 0) {
-                                      e.preventDefault();
-                                      handleToggleCheck(seq.id);
-                                    }
+                                    if (isSelectMode || checkedIds.length > 0) e.preventDefault();
                                   }}
-                                  className="flex items-center gap-2.5 min-w-0 flex-1"
+                                  className="flex items-start gap-3 flex-1 min-w-0"
                                 >
-                                  <div className="flex h-7.5 w-7.5 shrink-0 items-center justify-center rounded-lg bg-[#EFF6FF] text-[#0066B2] dark:bg-[#0066B2]/20 dark:text-[#38BDF8]">
-                                    <Rocket className="h-3.5 w-3.5" />
+                                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#EFF6FF] to-blue-50 text-[#0066B2] dark:from-[#0066B2]/20 dark:to-blue-950/40 dark:text-[#38BDF8] border border-blue-100/60 dark:border-blue-900/40 group-hover:scale-105 transition-transform duration-200">
+                                    <Rocket className="h-4.5 w-4.5" aria-hidden="true" />
                                   </div>
-                                  <div className="min-w-0">
-                                    <div className="flex items-center gap-1.5 flex-wrap">
-                                      <p className="font-bold text-zinc-900 dark:text-white group-hover:text-[#0066B2] dark:group-hover:text-[#38BDF8] transition truncate">
+                                  <div className="min-w-0 flex-1">
+                                    <div className="flex items-center gap-2 flex-wrap min-w-0">
+                                      <p className="truncate text-sm sm:text-[15px] font-bold text-zinc-900 dark:text-white group-hover:text-[#0066B2] dark:group-hover:text-[#38BDF8] transition-colors">
                                         {seq.name}
                                       </p>
                                       {isStandalone ? (
-                                        <span className="rounded bg-blue-50 dark:bg-blue-950/50 text-[#0066B2] dark:text-[#38BDF8] border border-blue-200/60 dark:border-blue-900/40 text-[9px] font-bold px-1 py-0.2">
-                                          Standalone
+                                        <span className="inline-flex items-center gap-1 rounded-md border border-blue-200/70 dark:border-blue-900/50 bg-blue-50/70 dark:bg-blue-950/30 px-1.5 py-0.5 text-[9.5px] font-semibold text-[#0066B2] dark:text-[#38BDF8] shrink-0">
+                                          <Zap className="w-2.5 h-2.5" /> Standalone
                                         </span>
                                       ) : (
-                                        <span className="rounded bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400 border border-emerald-200/60 dark:border-emerald-900/40 text-[9px] font-bold px-1 py-0.2">
-                                          Lead Magnet
+                                        <span className="inline-flex items-center gap-1 rounded-md border border-emerald-200/70 dark:border-emerald-900/50 bg-emerald-50/70 dark:bg-emerald-950/30 px-1.5 py-0.5 text-[9.5px] font-semibold text-emerald-700 dark:text-emerald-400 shrink-0">
+                                          <Magnet className="w-2.5 h-2.5" /> Lead Magnet
                                         </span>
                                       )}
                                     </div>
-                                    <p className="text-[11px] text-zinc-500 dark:text-zinc-400 truncate">
-                                      {isStandalone ? "Standalone automation flow" : `Attached to "${attachedName}"`}
+                                    <p className="mt-0.5 truncate text-xs text-zinc-500 dark:text-zinc-400">
+                                      {isStandalone ? (
+                                        <span>Standalone workflow</span>
+                                      ) : (
+                                        <>
+                                          Attached to{" "}
+                                          <span className="font-semibold text-zinc-700 dark:text-zinc-200">
+                                            "{attachedName}"
+                                          </span>
+                                        </>
+                                      )}{" "}
+                                      · {totalStepsCount} {totalStepsCount === 1 ? "step" : "steps"}
                                     </p>
                                   </div>
                                 </Link>
                               </div>
-                            </td>
-                            <td className="py-3 px-3 whitespace-nowrap">
-                              <StatusBadge status={seq.status} />
-                            </td>
-                            <td className="py-3 px-3 whitespace-nowrap font-medium text-zinc-700 dark:text-zinc-300">
-                              {totalStepsCount} steps
-                            </td>
-                            <td className="py-3 px-3 text-right font-bold text-zinc-900 dark:text-white">
-                              {signedUp.toLocaleString()}
-                            </td>
-                            <td className="py-3 px-3 text-right font-bold text-zinc-900 dark:text-white">
-                              {delivered.toLocaleString()}
-                            </td>
-                            <td className="py-3 px-3 text-right">
-                              <span className="inline-flex items-center font-bold text-indigo-600 dark:text-indigo-400">
-                                {openRate}%
-                              </span>
-                            </td>
-                            <td className="py-3 px-3 text-right font-bold text-emerald-600 dark:text-emerald-400">
-                              {completed.toLocaleString()}
-                            </td>
-                            <td className="py-3 pl-3 pr-5 text-right whitespace-nowrap">
-                              <div className="flex items-center justify-end gap-1.5">
-                                <button
-                                  onClick={(e) => handleToggleStatus(seq, e)}
-                                  title={seq.status === "live" ? "Pause sequence" : "Resume sequence"}
-                                  className="rounded-lg p-1.5 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-700 dark:hover:bg-white/10 dark:hover:text-zinc-200 transition cursor-pointer"
-                                >
-                                  {seq.status === "live" ? <Pause className="h-3.5 w-3.5" /> : <Play className="h-3.5 w-3.5" />}
-                                </button>
-                                <Link
-                                  href={linkHref}
-                                  title="Edit sequence"
-                                  className="rounded-lg p-1.5 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-700 dark:hover:bg-white/10 dark:hover:text-zinc-200 transition"
-                                >
-                                  <Eye className="h-3.5 w-3.5" />
-                                </Link>
-                                <button
-                                  onClick={(e) => handleDelete(seq, e)}
-                                  title="Delete sequence"
-                                  className="rounded-lg p-1.5 text-zinc-400 hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-950/40 dark:hover:text-rose-400 transition cursor-pointer"
-                                >
-                                  <Trash2 className="h-3.5 w-3.5" />
-                                </button>
+
+                              {/* Top Right Controls */}
+                              <div className="flex items-center gap-1.5 shrink-0">
+                                <StatusBadge status={seq.status} />
+
+                                <div className="relative">
+                                  <button
+                                    onClick={(e) => {
+                                      e.preventDefault();
+                                      e.stopPropagation();
+                                      setActiveMenuId(isMenuOpen ? null : seq.id);
+                                    }}
+                                    className="rounded-lg p-1.5 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-700 dark:hover:bg-white/10 dark:hover:text-zinc-200 transition cursor-pointer"
+                                    title="Sequence options"
+                                  >
+                                    <MoreVertical className="h-4 w-4" />
+                                  </button>
+
+                                  {isMenuOpen && (
+                                    <div
+                                      onClick={(e) => e.stopPropagation()}
+                                      className="absolute right-0 top-8 z-50 w-52 rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#1C1C20] py-1 shadow-xl animate-in fade-in zoom-in-95"
+                                    >
+                                      <Link
+                                        href={`/dashboard/sequences/${seq.id}`}
+                                        className="flex w-full items-center gap-2 px-3.5 py-2 text-xs font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-white/5"
+                                      >
+                                        <Eye className="h-3.5 w-3.5 text-zinc-400" />
+                                        Open Sequence Editor
+                                      </Link>
+
+                                      {seq.pageId && (
+                                        <Link
+                                          href={`/dashboard/leadmagnets/${seq.pageId}?tab=sequence`}
+                                          className="flex w-full items-center gap-2 px-3.5 py-2 text-xs font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-white/5"
+                                        >
+                                          <ExternalLink className="h-3.5 w-3.5 text-zinc-400" />
+                                          Edit in Lead Magnet Builder
+                                        </Link>
+                                      )}
+
+                                      <button
+                                        onClick={(e) => handleToggleStatus(seq, e)}
+                                        className="flex w-full items-center gap-2 px-3.5 py-2 text-xs font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-white/5 cursor-pointer text-left"
+                                      >
+                                        {seq.status === "live" ? (
+                                          <>
+                                            <Pause className="h-3.5 w-3.5 text-amber-500" />
+                                            Pause Sequence
+                                          </>
+                                        ) : (
+                                          <>
+                                            <Play className="h-3.5 w-3.5 text-emerald-500" />
+                                            Resume Sequence
+                                          </>
+                                        )}
+                                      </button>
+
+                                      <Link
+                                        href={`/dashboard/leads?search=${encodeURIComponent(attachedName)}`}
+                                        className="flex w-full items-center gap-2 px-3.5 py-2 text-xs font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-white/5"
+                                      >
+                                        <Users className="h-3.5 w-3.5 text-zinc-400" />
+                                        View Sequence Leads
+                                      </Link>
+
+                                      <button
+                                        onClick={(e) => handleDuplicate(seq, e)}
+                                        className="flex w-full items-center gap-2 px-3.5 py-2 text-xs font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-white/5 cursor-pointer text-left"
+                                      >
+                                        <Copy className="h-3.5 w-3.5 text-zinc-400" />
+                                        Duplicate Sequence
+                                      </button>
+
+                                      <div className="my-1 border-t border-zinc-100 dark:border-white/5" />
+
+                                      <button
+                                        onClick={(e) => handleDelete(seq, e)}
+                                        className="flex w-full items-center gap-2 px-3.5 py-2 text-xs font-semibold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 cursor-pointer text-left"
+                                      >
+                                        <Trash2 className="h-3.5 w-3.5" />
+                                        Delete Sequence
+                                      </button>
+                                    </div>
+                                  )}
+                                </div>
                               </div>
-                            </td>
+                            </div>
+
+                            {/* Resend / Loops Minimalist Step Pipeline Flow */}
+                            <div className="mt-3.5 flex items-center gap-1.5 overflow-x-auto scrollbar-none py-0.5">
+                              {seq.pageId ? (
+                                <>
+                                  <div className="flex items-center gap-1 shrink-0 rounded-lg bg-emerald-500/10 border border-emerald-500/20 px-2 py-1 text-[10.5px] font-semibold text-emerald-700 dark:text-emerald-400">
+                                    <Zap className="h-3 w-3" />
+                                    <span>Instant</span>
+                                  </div>
+
+                                  {seq.emails && seq.emails.slice(0, 2).map((email, idx) => (
+                                    <div key={email.id || idx} className="flex items-center gap-1.5 shrink-0">
+                                      <ArrowRight className="h-3 w-3 text-zinc-300 dark:text-zinc-600" />
+                                      <div className="flex items-center gap-1 rounded-lg bg-zinc-100/80 dark:bg-white/[0.05] border border-zinc-200/50 dark:border-white/[0.06] px-2 py-1 text-[10.5px] font-medium text-zinc-700 dark:text-zinc-300">
+                                        <Clock className="h-3 w-3 text-[#0066B2] dark:text-[#38BDF8]" />
+                                        <span>{email.delayLabel || `Step ${idx + 2}`}</span>
+                                      </div>
+                                    </div>
+                                  ))}
+                                  {seq.emails && seq.emails.length > 2 && (
+                                    <span className="text-[10px] font-semibold text-zinc-400 dark:text-zinc-500 px-1">
+                                      +{seq.emails.length - 2} more
+                                    </span>
+                                  )}
+                                </>
+                              ) : (
+                                <>
+                                  {seq.emails && seq.emails.length > 0 ? (
+                                    <>
+                                      {seq.emails.slice(0, 3).map((email, idx) => (
+                                        <div key={email.id || idx} className="flex items-center gap-1.5 shrink-0">
+                                          {idx > 0 && <ArrowRight className="h-3 w-3 text-zinc-300 dark:text-zinc-600" />}
+                                          <div className={`flex items-center gap-1 rounded-lg px-2 py-1 text-[10.5px] font-medium ${
+                                            idx === 0
+                                              ? "bg-emerald-500/10 border border-emerald-500/20 text-emerald-700 dark:text-emerald-400 font-semibold"
+                                              : "bg-zinc-100/80 dark:bg-white/[0.05] border border-zinc-200/50 dark:border-white/[0.06] text-zinc-700 dark:text-zinc-300"
+                                          }`}>
+                                            {idx === 0 ? <Zap className="h-3 w-3" /> : <Clock className="h-3 w-3 text-[#0066B2] dark:text-[#38BDF8]" />}
+                                            <span>{email.delayLabel || (idx === 0 ? "Instant" : `Step ${idx + 1}`)}</span>
+                                          </div>
+                                        </div>
+                                      ))}
+                                      {seq.emails.length > 3 && (
+                                        <span className="text-[10px] font-semibold text-zinc-400 dark:text-zinc-500 px-1">
+                                          +{seq.emails.length - 3} more
+                                        </span>
+                                      )}
+                                    </>
+                                  ) : (
+                                    <span className="text-[11px] text-zinc-400 italic">No email steps added yet</span>
+                                  )}
+                                </>
+                              )}
+                            </div>
+                          </div>
+
+                          {/* High-Signal Metrics Footer (Clean & Airy) */}
+                          <div className="px-4 sm:px-5 py-3 border-t border-zinc-100 dark:border-white/[0.05] bg-zinc-50/50 dark:bg-white/[0.01] flex items-center justify-between text-xs">
+                            <div className="flex items-center gap-4 sm:gap-6">
+                              <div>
+                                <span className="text-[10px] font-medium uppercase tracking-wider text-zinc-400 dark:text-zinc-500 block leading-none">
+                                  Signups
+                                </span>
+                                <span className="font-bold text-zinc-900 dark:text-white tabular-nums text-sm mt-0.5 inline-block">
+                                  {signedUp.toLocaleString()}
+                                </span>
+                              </div>
+
+                              <div>
+                                <span className="text-[10px] font-medium uppercase tracking-wider text-zinc-400 dark:text-zinc-500 block leading-none">
+                                  Delivered
+                                </span>
+                                <span className="font-bold text-zinc-900 dark:text-white tabular-nums text-sm mt-0.5 inline-block">
+                                  {delivered.toLocaleString()}
+                                </span>
+                              </div>
+
+                              <div>
+                                <span className="text-[10px] font-medium uppercase tracking-wider text-zinc-400 dark:text-zinc-500 block leading-none">
+                                  Open Rate
+                                </span>
+                                <span className={`font-bold tabular-nums text-sm mt-0.5 inline-block ${
+                                  openRate > 0 ? "text-indigo-600 dark:text-indigo-400" : "text-zinc-500 dark:text-zinc-400"
+                                }`}>
+                                  {openRate}%
+                                </span>
+                              </div>
+
+                              <div>
+                                <span className="text-[10px] font-medium uppercase tracking-wider text-zinc-400 dark:text-zinc-500 block leading-none">
+                                  Completed
+                                </span>
+                                <span className={`font-bold tabular-nums text-sm mt-0.5 inline-block ${
+                                  completed > 0 ? "text-emerald-600 dark:text-emerald-400" : "text-zinc-500 dark:text-zinc-400"
+                                }`}>
+                                  {completed.toLocaleString()}
+                                </span>
+                              </div>
+                            </div>
+
+                            <Link
+                              href={linkHref}
+                              onClick={(e) => {
+                                if (isSelectMode || checkedIds.length > 0) e.preventDefault();
+                              }}
+                              className="text-xs font-semibold text-[#0066B2] dark:text-[#38BDF8] hover:underline flex items-center gap-1 shrink-0"
+                            >
+                              <span>View flow</span>
+                              <ArrowRight className="h-3 w-3" />
+                            </Link>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  /* TABLE VIEW - Resend / Loops Minimalist Rows */
+                  <div className="overflow-hidden rounded-2xl border border-zinc-200/80 dark:border-white/[0.08] bg-white dark:bg-[#141417] shadow-sm">
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-left border-collapse">
+                        <thead>
+                          <tr className="border-b border-zinc-200/80 dark:border-white/[0.06] bg-zinc-50/50 dark:bg-white/[0.02] text-[10.5px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">
+                            <th className="py-3 pl-5 pr-3">
+                              <div className="flex items-center">
+                                <AnimatePresence initial={false}>
+                                  {(checkedIds.length > 0 || isSelectMode) && (
+                                    <motion.div
+                                      initial={{ opacity: 0, width: 0, marginRight: 0 }}
+                                      animate={{ opacity: 1, width: 22, marginRight: 10 }}
+                                      exit={{ opacity: 0, width: 0, marginRight: 0 }}
+                                      transition={{ type: "spring", stiffness: 450, damping: 35 }}
+                                      className="flex items-center justify-center shrink-0 overflow-hidden"
+                                    >
+                                      <AppleCheckbox
+                                        checked={filteredSequences.length > 0 && checkedIds.length === filteredSequences.length}
+                                        indeterminate={checkedIds.length > 0 && checkedIds.length < filteredSequences.length}
+                                        onChange={handleToggleSelectAll}
+                                        title={
+                                          checkedIds.length === filteredSequences.length && filteredSequences.length > 0
+                                            ? "Deselect all"
+                                            : "Select all"
+                                        }
+                                      />
+                                    </motion.div>
+                                  )}
+                                </AnimatePresence>
+                                <span>Sequence Name</span>
+                              </div>
+                            </th>
+                            <th className="py-3 px-3">Trigger / Flow</th>
+                            <th className="py-3 px-3">Status</th>
+                            <th className="py-3 px-3 text-right">Signups</th>
+                            <th className="py-3 px-3 text-right">Delivered</th>
+                            <th className="py-3 px-3 text-right">Open Rate</th>
+                            <th className="py-3 px-3 text-right">Done</th>
+                            <th className="py-3 pl-3 pr-5 text-right">Actions</th>
                           </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                </div>
+                        </thead>
+                        <tbody className="divide-y divide-zinc-100 dark:divide-white/[0.04] text-xs">
+                          {filteredSequences.map((seq) => {
+                            const { signedUp, delivered, opened, replied } = seq.stats;
+                            const completed = seq.stats.completed || (delivered > 0 ? delivered : 0);
+                            const openRate = delivered > 0 ? Math.round((opened / delivered) * 100) : 0;
+                            const linkHref = `/dashboard/sequences/${seq.id}`;
+                            const attachedPage = seq.pageId ? pages.find((p) => p.id === seq.pageId) : null;
+                            const isStandalone = !seq.pageId || !attachedPage;
+                            const attachedName = attachedPage?.name || seq.name.replace(" Follow-up", "").replace(" (Copy)", "");
+                            const totalStepsCount = isStandalone ? seq.emails.length : seq.emails.length + 1;
+                            const isChecked = checkedIds.includes(seq.id);
+
+                            return (
+                              <tr
+                                key={seq.id}
+                                onClick={(e) => {
+                                  if (isSelectMode || checkedIds.length > 0) {
+                                    handleToggleCheck(seq.id, e);
+                                  }
+                                }}
+                                className={`group transition-all duration-150 ${
+                                  isSelectMode || checkedIds.length > 0 ? "cursor-pointer" : ""
+                                } ${
+                                  isChecked
+                                    ? "bg-blue-50/50 dark:bg-[#0066B2]/15"
+                                    : "hover:bg-zinc-50/80 dark:hover:bg-white/[0.02]"
+                                }`}
+                              >
+                                <td className="py-3.5 pl-5 pr-3">
+                                  <div className="flex items-center min-w-0">
+                                    <AnimatePresence initial={false}>
+                                      {(checkedIds.length > 0 || isChecked || isSelectMode) && (
+                                        <motion.div
+                                          initial={{ opacity: 0, width: 0, marginRight: 0 }}
+                                          animate={{ opacity: 1, width: 22, marginRight: 12 }}
+                                          exit={{ opacity: 0, width: 0, marginRight: 0 }}
+                                          transition={{ type: "spring", stiffness: 450, damping: 35 }}
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleToggleCheck(seq.id, e);
+                                          }}
+                                          className="flex items-center justify-center shrink-0 overflow-hidden cursor-pointer"
+                                        >
+                                          <AppleCheckbox
+                                            checked={isChecked}
+                                            onChange={() => handleToggleCheck(seq.id)}
+                                            title={isChecked ? "Deselect sequence" : "Select sequence"}
+                                          />
+                                        </motion.div>
+                                      )}
+                                    </AnimatePresence>
+
+                                    <Link
+                                      href={linkHref}
+                                      onClick={(e) => {
+                                        if (isSelectMode || checkedIds.length > 0) {
+                                          e.preventDefault();
+                                          handleToggleCheck(seq.id);
+                                        }
+                                      }}
+                                      className="flex items-center gap-3 min-w-0 flex-1"
+                                    >
+                                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-[#EFF6FF] to-blue-50 text-[#0066B2] dark:from-[#0066B2]/20 dark:to-blue-950/40 dark:text-[#38BDF8] border border-blue-100/60 dark:border-blue-900/40">
+                                        <Rocket className="h-4 w-4" />
+                                      </div>
+                                      <div className="min-w-0">
+                                        <div className="flex items-center gap-1.5 flex-wrap">
+                                          <p className="font-bold text-zinc-900 dark:text-white group-hover:text-[#0066B2] dark:group-hover:text-[#38BDF8] transition-colors truncate text-[13px]">
+                                            {seq.name}
+                                          </p>
+                                          {isStandalone ? (
+                                            <span className="rounded bg-blue-50/80 dark:bg-blue-950/40 text-[#0066B2] dark:text-[#38BDF8] border border-blue-200/50 dark:border-blue-900/40 text-[9px] font-semibold px-1.5 py-0.2">
+                                              Standalone
+                                            </span>
+                                          ) : (
+                                            <span className="rounded bg-emerald-50/80 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border border-emerald-200/50 dark:border-emerald-900/40 text-[9px] font-semibold px-1.5 py-0.2">
+                                              Lead Magnet
+                                            </span>
+                                          )}
+                                        </div>
+                                        <p className="text-[11px] text-zinc-500 dark:text-zinc-400 truncate mt-0.5">
+                                          {isStandalone ? "Standalone workflow" : `Attached to "${attachedName}"`}
+                                        </p>
+                                      </div>
+                                    </Link>
+                                  </div>
+                                </td>
+
+                                <td className="py-3.5 px-3 whitespace-nowrap">
+                                  <div className="flex items-center gap-1.5 text-xs text-zinc-600 dark:text-zinc-300">
+                                    <span className="font-semibold text-zinc-900 dark:text-zinc-100">
+                                      {totalStepsCount} {totalStepsCount === 1 ? "step" : "steps"}
+                                    </span>
+                                    <span className="text-zinc-300 dark:text-zinc-600">·</span>
+                                    <span className="text-[11px] text-zinc-500 dark:text-zinc-400">
+                                      {seq.pageId ? "Instant + follow-ups" : `${seq.emails.length} emails`}
+                                    </span>
+                                  </div>
+                                </td>
+
+                                <td className="py-3.5 px-3 whitespace-nowrap">
+                                  <StatusBadge status={seq.status} />
+                                </td>
+
+                                <td className="py-3.5 px-3 text-right font-semibold tabular-nums text-zinc-900 dark:text-zinc-200">
+                                  {signedUp.toLocaleString()}
+                                </td>
+
+                                <td className="py-3.5 px-3 text-right font-semibold tabular-nums text-zinc-900 dark:text-zinc-200">
+                                  {delivered.toLocaleString()}
+                                </td>
+
+                                <td className="py-3.5 px-3 text-right whitespace-nowrap">
+                                  <span className={`font-bold tabular-nums ${
+                                    openRate > 0 ? "text-indigo-600 dark:text-indigo-400" : "text-zinc-400"
+                                  }`}>
+                                    {openRate}%
+                                  </span>
+                                </td>
+
+                                <td className="py-3.5 px-3 text-right font-semibold tabular-nums text-emerald-600 dark:text-emerald-400">
+                                  {completed.toLocaleString()}
+                                </td>
+
+                                <td className="py-3.5 pl-3 pr-5 text-right whitespace-nowrap">
+                                  <div className="flex items-center justify-end gap-1">
+                                    <button
+                                      onClick={(e) => handleToggleStatus(seq, e)}
+                                      title={seq.status === "live" ? "Pause sequence" : "Resume sequence"}
+                                      className="rounded-lg p-1.5 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-700 dark:hover:bg-white/10 dark:hover:text-zinc-200 transition cursor-pointer"
+                                    >
+                                      {seq.status === "live" ? <Pause className="h-3.5 w-3.5" /> : <Play className="h-3.5 w-3.5 text-emerald-500" />}
+                                    </button>
+                                    <Link
+                                      href={linkHref}
+                                      title="Edit sequence"
+                                      className="rounded-lg p-1.5 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-700 dark:hover:bg-white/10 dark:hover:text-zinc-200 transition"
+                                    >
+                                      <Eye className="h-3.5 w-3.5" />
+                                    </Link>
+                                    <button
+                                      onClick={(e) => handleDelete(seq, e)}
+                                      title="Delete sequence"
+                                      className="rounded-lg p-1.5 text-zinc-400 hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-950/40 dark:hover:text-rose-400 transition cursor-pointer"
+                                    >
+                                      <Trash2 className="h-3.5 w-3.5" />
+                                    </button>
+                                  </div>
+                                </td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                )}
               </div>
-            )}
-          </div>
-        </>
-      ) : (
+            </>
+          ) : (
         /* Empty State for Search or 0 Sequences */
             sequences.length > 0 ? (
               <div className="rounded-2xl border border-dashed border-zinc-300 dark:border-white/10 bg-white/50 dark:bg-[#18181B]/50 p-5 sm:p-8 text-center">
