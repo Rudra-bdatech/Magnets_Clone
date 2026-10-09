@@ -14,7 +14,10 @@ import {
   Layers,
   Check,
   ChevronDown,
-  Search
+  Search,
+  Lock,
+  Magnet,
+  Zap
 } from "lucide-react";
 import { useEffect, useState, useMemo, useRef } from "react";
 import { type Sequence, type SequenceEmail, type MagnetPage, type Account } from "@/lib/data";
@@ -239,8 +242,16 @@ export default function NewSequence() {
               >
                 {selectedPage ? (
                   <div className="flex items-center gap-3 min-w-0 flex-1">
-                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-zinc-100 dark:bg-[#2a2a32] text-sm border border-zinc-200/50 dark:border-white/5">
-                      {selectedPage.template === "locked-pdf" ? "🔒" : "🎯"}
+                    <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border shadow-2xs ${
+                      selectedPage.template === "locked-pdf"
+                        ? "bg-amber-500/10 text-amber-600 dark:bg-amber-500/20 dark:text-amber-400 border-amber-500/20"
+                        : "bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400 border-emerald-500/20"
+                    }`}>
+                      {selectedPage.template === "locked-pdf" ? (
+                        <Lock className="h-4 w-4" />
+                      ) : (
+                        <Magnet className="h-4 w-4" />
+                      )}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
@@ -265,8 +276,8 @@ export default function NewSequence() {
                   </div>
                 ) : (
                   <div className="flex items-center gap-3 min-w-0 flex-1">
-                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-zinc-100 dark:bg-[#2a2a32] text-zinc-500 text-xs font-bold">
-                      ⚡
+                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-blue-500/10 text-blue-600 dark:bg-blue-500/20 dark:text-[#38BDF8] border border-blue-500/20 shadow-2xs">
+                      <Zap className="h-4 w-4" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <span className="text-xs font-semibold text-zinc-800 dark:text-zinc-200">
@@ -317,7 +328,10 @@ export default function NewSequence() {
                     {filteredLandingPages.length > 0 && (
                       <div>
                         <div className="px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 flex items-center justify-between">
-                          <span>Landing Pages</span>
+                          <span className="flex items-center gap-1.5">
+                            <Magnet className="h-3 w-3 text-emerald-500" />
+                            Landing Pages
+                          </span>
                           <span className="text-[9px] bg-zinc-100 dark:bg-zinc-800 px-1.5 py-0.5 rounded font-mono">
                             {filteredLandingPages.length}
                           </span>
@@ -341,8 +355,8 @@ export default function NewSequence() {
                                 }`}
                               >
                                 <div className="flex items-center gap-2.5 min-w-0 flex-1">
-                                  <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-zinc-100 dark:bg-[#282830] text-xs">
-                                    🎯
+                                  <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400 border border-emerald-500/15">
+                                    <Magnet className="h-3.5 w-3.5" />
                                   </div>
                                   <div className="min-w-0 flex-1">
                                     <div className="flex items-center gap-1.5 flex-wrap">
@@ -378,7 +392,10 @@ export default function NewSequence() {
                     {filteredLockedPdfPages.length > 0 && (
                       <div>
                         <div className="px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 flex items-center justify-between">
-                          <span>Saved Locked PDFs</span>
+                          <span className="flex items-center gap-1.5">
+                            <Lock className="h-3 w-3 text-amber-500" />
+                            Saved Locked PDFs
+                          </span>
                           <span className="text-[9px] bg-zinc-100 dark:bg-zinc-800 px-1.5 py-0.5 rounded font-mono">
                             {filteredLockedPdfPages.length}
                           </span>
@@ -402,8 +419,8 @@ export default function NewSequence() {
                                 }`}
                               >
                                 <div className="flex items-center gap-2.5 min-w-0 flex-1">
-                                  <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-zinc-100 dark:bg-[#282830] text-xs">
-                                    🔒
+                                  <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-amber-500/10 text-amber-600 dark:bg-amber-500/20 dark:text-amber-400 border border-amber-500/15">
+                                    <Lock className="h-3.5 w-3.5" />
                                   </div>
                                   <div className="min-w-0 flex-1">
                                     <div className="flex items-center gap-1.5 flex-wrap">
@@ -451,8 +468,8 @@ export default function NewSequence() {
                         }`}
                       >
                         <div className="flex items-center gap-2.5">
-                          <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-zinc-100 dark:bg-[#282830] text-xs font-bold text-zinc-500">
-                            ⚡
+                          <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-blue-500/10 text-blue-600 dark:bg-blue-500/20 dark:text-[#38BDF8] border border-blue-500/15">
+                            <Zap className="h-3.5 w-3.5" />
                           </div>
                           <div>
                             <span className="text-xs font-semibold text-zinc-800 dark:text-zinc-200">

@@ -34,6 +34,8 @@ import {
   Pencil,
   Code2,
   MoreVertical,
+  Lock,
+  Magnet,
 } from "lucide-react";
 import { useEffect, useState, useMemo } from "react";
 import StatusBadge from "@/components/dashboard/status-badge";
@@ -775,10 +777,15 @@ export default function SequenceEditor() {
                       <span className="text-[11px] sm:text-xs text-zinc-500 shrink-0">Linked Lead Magnet:</span>
                       <Link
                         href={`/dashboard/leadmagnets/${attachedPage.id}?tab=sequence`}
-                        className="font-semibold text-[#0066B2] dark:text-[#38BDF8] hover:underline inline-flex items-center gap-1 truncate text-[11px] sm:text-xs bg-blue-50/60 dark:bg-blue-950/30 px-1.5 py-0.5 rounded-md border border-blue-200/50 dark:border-blue-900/40"
+                        className="font-semibold text-[#0066B2] dark:text-[#38BDF8] hover:underline inline-flex items-center gap-1.5 truncate text-[11px] sm:text-xs bg-blue-50/60 dark:bg-blue-950/30 px-2 py-0.5 rounded-md border border-blue-200/50 dark:border-blue-900/40"
                       >
-                        <span className="truncate">🎯 {attachedPage.name}</span>
-                        <ExternalLink className="h-2.5 w-2.5 sm:h-3 sm:w-3 shrink-0 opacity-70" />
+                        {attachedPage.template === "locked-pdf" ? (
+                          <Lock className="h-3 w-3 text-amber-500 shrink-0" />
+                        ) : (
+                          <Magnet className="h-3 w-3 text-emerald-500 shrink-0" />
+                        )}
+                        <span className="truncate">{attachedPage.name}</span>
+                        <ExternalLink className="h-2.5 w-2.5 sm:h-3 sm:w-3 shrink-0 opacity-70 ml-0.5" />
                       </Link>
                     </div>
                   ) : (

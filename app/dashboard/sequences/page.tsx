@@ -37,6 +37,8 @@ import {
   Info,
   AlertTriangle,
   CheckSquare,
+  Lock,
+  Magnet,
 } from "lucide-react";
 import StatusBadge from "@/components/dashboard/status-badge";
 import { AppleCheckbox } from "@/components/leads/AppleCheckbox";
@@ -1786,8 +1788,16 @@ export default function SequencesPage() {
                   >
                     {selectedPage ? (
                       <div className="flex items-center gap-2.5 min-w-0 flex-1">
-                        <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-zinc-100 dark:bg-[#2a2a32] text-xs border border-zinc-200/50 dark:border-white/5">
-                          {selectedPage.template === "locked-pdf" ? "🔒" : "🎯"}
+                        <div className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border shadow-2xs ${
+                          selectedPage.template === "locked-pdf"
+                            ? "bg-amber-500/10 text-amber-600 dark:bg-amber-500/20 dark:text-amber-400 border-amber-500/20"
+                            : "bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400 border-emerald-500/20"
+                        }`}>
+                          {selectedPage.template === "locked-pdf" ? (
+                            <Lock className="h-3.5 w-3.5" />
+                          ) : (
+                            <Magnet className="h-3.5 w-3.5" />
+                          )}
                         </div>
                         <div className="flex-1 min-w-0">
                           <span className="text-xs font-bold text-zinc-900 dark:text-white truncate block">
@@ -1800,8 +1810,8 @@ export default function SequencesPage() {
                       </div>
                     ) : (
                       <div className="flex items-center gap-2.5 min-w-0 flex-1">
-                        <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-zinc-100 dark:bg-[#2a2a32] text-xs font-bold text-zinc-500">
-                          ⚡
+                        <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-blue-500/10 text-blue-600 dark:bg-blue-500/20 dark:text-[#38BDF8] border border-blue-500/20 shadow-2xs">
+                          <Zap className="h-3.5 w-3.5" />
                         </div>
                         <div className="flex-1 min-w-0">
                           <span className="text-xs font-semibold text-zinc-800 dark:text-zinc-200 block">
@@ -1840,7 +1850,8 @@ export default function SequencesPage() {
                       <div className="overflow-y-auto overscroll-contain flex-1 p-1 space-y-2 max-h-44" style={{ scrollbarWidth: "thin" }}>
                         {filteredLandingPages.length > 0 && (
                           <div>
-                            <div className="px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
+                            <div className="px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 flex items-center gap-1.5">
+                              <Magnet className="h-3 w-3 text-emerald-500" />
                               Landing Pages
                             </div>
                             <div className="mt-1 space-y-1">
@@ -1862,7 +1873,9 @@ export default function SequencesPage() {
                                     }`}
                                   >
                                     <div className="flex items-center gap-2 min-w-0 flex-1">
-                                      <span className="text-xs">🎯</span>
+                                      <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400 border border-emerald-500/15">
+                                        <Magnet className="h-3 w-3" />
+                                      </div>
                                       <span className="text-xs font-semibold text-zinc-900 dark:text-white truncate">
                                         {p.name || "Untitled Page"}
                                       </span>
@@ -1877,7 +1890,8 @@ export default function SequencesPage() {
 
                         {filteredLockedPdfPages.length > 0 && (
                           <div>
-                            <div className="px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
+                            <div className="px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 flex items-center gap-1.5">
+                              <Lock className="h-3 w-3 text-amber-500" />
                               Locked PDFs
                             </div>
                             <div className="mt-1 space-y-1">
@@ -1899,7 +1913,9 @@ export default function SequencesPage() {
                                     }`}
                                   >
                                     <div className="flex items-center gap-2 min-w-0 flex-1">
-                                      <span className="text-xs">🔒</span>
+                                      <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-amber-500/10 text-amber-600 dark:bg-amber-500/20 dark:text-amber-400 border border-amber-500/15">
+                                        <Lock className="h-3 w-3" />
+                                      </div>
                                       <span className="text-xs font-semibold text-zinc-900 dark:text-white truncate">
                                         {p.name || p.pdfTitle || "Locked PDF"}
                                       </span>
@@ -1927,7 +1943,9 @@ export default function SequencesPage() {
                             }`}
                           >
                             <div className="flex items-center gap-2">
-                              <span className="text-xs">⚡</span>
+                              <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-blue-500/10 text-blue-600 dark:bg-blue-500/20 dark:text-[#38BDF8] border border-blue-500/15">
+                                <Zap className="h-3 w-3" />
+                              </div>
                               <span className="text-xs font-semibold text-zinc-800 dark:text-zinc-200">
                                 Standalone Sequence
                               </span>
