@@ -26,6 +26,7 @@ import {
 import AnalyticsChart, { type TimeRange } from "./analytics-chart";
 import { type MagnetPage, type Account, type Lead } from "@/lib/data";
 import { useSidebar } from "@/components/dashboard/dashboard-shell";
+import { InfoTooltip } from "@/components/ui/info-tooltip";
 
 interface AnalyticsLinearViewProps {
   account: Account | null;
@@ -703,12 +704,12 @@ export default function AnalyticsLinearView({
           {/* Device Breakdown Card */}
           <div className="rounded-2xl bg-white/80 dark:bg-[#0E0E11] border border-zinc-200/80 dark:border-white/[0.08] p-4 sm:p-5 space-y-3.5 sm:space-y-4 shadow-sm backdrop-blur-sm">
             <div className="flex items-center justify-between border-b border-zinc-200/80 dark:border-white/[0.08] pb-3">
-              <div>
+              <div className="flex items-center gap-2">
                 <h3 className="text-sm font-bold text-zinc-900 dark:text-white flex items-center gap-2">
                   <Laptop className="h-4 w-4 text-[#0066B2] dark:text-cyan-400" />
                   <span>Device Breakdown</span>
                 </h3>
-                <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">Desktop vs Mobile Visitors</p>
+                <InfoTooltip content="Desktop vs Mobile Visitors" title="Device Breakdown" />
               </div>
               <span className="text-xs font-mono px-2.5 py-0.5 rounded-md bg-zinc-100 dark:bg-white/[0.05] border border-zinc-200 dark:border-white/[0.08] text-zinc-700 dark:text-zinc-300">
                 {desktopPct}% / {mobilePct}%
@@ -747,12 +748,12 @@ export default function AnalyticsLinearView({
           {/* Top Traffic Referrers Card */}
           <div className="rounded-2xl bg-white/80 dark:bg-[#0E0E11] border border-zinc-200/80 dark:border-white/[0.08] p-4 sm:p-5 space-y-3.5 sm:space-y-4 shadow-sm backdrop-blur-sm">
             <div className="flex items-center justify-between border-b border-zinc-200/80 dark:border-white/[0.08] pb-3">
-              <div>
+              <div className="flex items-center gap-2">
                 <h3 className="text-sm font-bold text-zinc-900 dark:text-white flex items-center gap-2">
                   <Globe className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
                   <span>Top Traffic Referrers</span>
                 </h3>
-                <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">Source Domain Breakdown</p>
+                <InfoTooltip content="Source Domain Breakdown" title="Traffic Referrers" />
               </div>
               <span className="text-xs font-mono px-2.5 py-0.5 rounded-md bg-zinc-100 dark:bg-white/[0.05] border border-zinc-200 dark:border-white/[0.08] text-zinc-700 dark:text-zinc-300">
                 Sources

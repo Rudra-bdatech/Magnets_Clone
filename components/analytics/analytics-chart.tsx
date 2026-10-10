@@ -3,6 +3,7 @@
 import React, { useState, useMemo } from "react";
 import { BarChart2, TrendingUp } from "lucide-react";
 import { type Lead } from "@/lib/data";
+import { InfoTooltip } from "@/components/ui/info-tooltip";
 
 interface DayData {
   isoDate: string;
@@ -198,8 +199,11 @@ export default function AnalyticsChart({
             <span className="text-[10px] font-semibold px-2 py-0.5 rounded-md bg-zinc-100 dark:bg-white/[0.08] text-zinc-600 dark:text-zinc-400 uppercase">
               {range}
             </span>
+            <InfoTooltip
+              content={subtitle || "Each bar is one day. Orange shows conversions."}
+              title="Chart Information"
+            />
           </h3>
-          <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">{subtitle}</p>
         </div>
 
         <div className="flex items-center justify-between sm:justify-end gap-3 sm:gap-4">
