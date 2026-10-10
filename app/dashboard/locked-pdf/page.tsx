@@ -917,9 +917,9 @@ export default function LockedPdfPage() {
         </AnimatePresence>
       </div>
 
-      <div className="flex flex-col min-h-[calc(100vh-3.5rem)] bg-gradient-to-b from-[#EFF6FF]/40 via-[#F8FBFF] to-[#F8FBFF] dark:bg-none dark:bg-[#0B0B0D] w-full">
-        <div className={`flex-1 px-3.5 py-6 sm:px-6 sm:py-7 lg:px-8 mx-auto w-full flex flex-col gap-4 transition-[max-width] duration-[220ms] ease-[cubic-bezier(0.16,1,0.3,1)] will-change-[max-width] ${isCollapsed ? "max-w-[1440px]" : "max-w-7xl"}`}>
-          {/* Top Executive Header */}
+      <div className="flex flex-col min-h-[calc(100vh-3.5rem)] bg-zinc-50/50 dark:bg-[#0B0B0D] w-full">
+        {/* Top Executive Header & Stat Cards */}
+        <div className={`mx-auto w-full px-3.5 sm:px-6 pt-4 sm:pt-6 lg:px-8 space-y-4 transition-[max-width] duration-[220ms] ease-[cubic-bezier(0.16,1,0.3,1)] will-change-[max-width] ${isCollapsed ? "max-w-[1440px]" : "max-w-7xl"}`}>
           <div className="flex items-center justify-between gap-3">
             <div className="min-w-0 flex-1">
               <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-zinc-900 dark:text-white truncate">
@@ -948,7 +948,7 @@ export default function LockedPdfPage() {
           {/* Quick Metrics 4 Stat Cards */}
           <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
             {/* Active Pages */}
-            <div className="relative h-full rounded-2xl border border-[#0066B2]/30 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
+            <div className="relative h-full rounded-2xl border border-[#0066B2]/35 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
               <div className="flex items-center justify-between sm:justify-start w-full sm:w-auto">
                 <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl border border-[#0066B2]/30 bg-[#EFF6FF] text-[#0066B2] dark:border-[#0066B2]/30 dark:bg-[#0066B2]/20 dark:text-[#38BDF8]">
                   <Globe className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
@@ -962,11 +962,11 @@ export default function LockedPdfPage() {
                   {liveCount} <span className="text-xs font-normal text-zinc-400">/ {total}</span>
                 </p>
               </div>
-              <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0066B2]/[0.05] to-transparent opacity-100" />
+              <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0066B2]/[0.04] to-transparent" />
             </div>
 
             {/* Total Traffic */}
-            <div className="relative h-full rounded-2xl border border-[#0066B2]/30 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
+            <div className="relative h-full rounded-2xl border border-[#0066B2]/35 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
               <div className="flex items-center justify-between sm:justify-start w-full sm:w-auto">
                 <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl border border-emerald-500/30 bg-emerald-50 text-emerald-600 dark:border-emerald-500/30 dark:bg-emerald-500/20 dark:text-emerald-400">
                   <Eye className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
@@ -980,11 +980,11 @@ export default function LockedPdfPage() {
                   {totalViews.toLocaleString()}
                 </p>
               </div>
-              <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0066B2]/[0.05] to-transparent opacity-100" />
+              <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0066B2]/[0.04] to-transparent" />
             </div>
 
             {/* Leads Collected */}
-            <div className="relative h-full rounded-2xl border border-[#0066B2]/30 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
+            <div className="relative h-full rounded-2xl border border-[#0066B2]/35 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
               <div className="flex items-center justify-between sm:justify-start w-full sm:w-auto">
                 <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl border border-purple-500/30 bg-purple-50 text-purple-600 dark:border-purple-500/30 dark:bg-purple-500/20 dark:text-purple-400">
                   <MousePointer className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
@@ -998,11 +998,11 @@ export default function LockedPdfPage() {
                   {totalSignups.toLocaleString()}
                 </p>
               </div>
-              <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0066B2]/[0.05] to-transparent opacity-100" />
+              <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0066B2]/[0.04] to-transparent" />
             </div>
 
             {/* Avg Conv. Rate */}
-            <div className="relative h-full rounded-2xl border border-[#0066B2]/30 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
+            <div className="relative h-full rounded-2xl border border-[#0066B2]/35 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
               <div className="flex items-center justify-between sm:justify-start w-full sm:w-auto">
                 <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl border border-amber-500/30 bg-amber-50 text-amber-600 dark:border-amber-500/30 dark:bg-amber-500/20 dark:text-amber-400">
                   <TrendingUp className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
@@ -1016,23 +1016,24 @@ export default function LockedPdfPage() {
                   {avgConversion}%
                 </p>
               </div>
-              <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0066B2]/[0.05] to-transparent opacity-100" />
+              <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0066B2]/[0.04] to-transparent" />
             </div>
           </div>
+        </div>
 
-          {/* Main Split-Pane Workspace (Dynamic 3-col full width, or 2-col 65% + 35% Sticky Inspector) */}
-          <LayoutGroup id="locked-pdf-workspace">
-            <div className="w-full flex flex-col lg:flex-row gap-4 sm:gap-6 items-start min-w-0">
-              <motion.div
-                layout
-                transition={{ layout: { type: "spring", stiffness: 450, damping: 32, mass: 0.6 } }}
-                className={`flex flex-col gap-4 min-w-0 max-w-full ${
-                  activePage ? "w-full lg:w-[65%]" : "w-full"
-                }`}
-              >
+        {/* Main Split-Pane Workspace (Dynamic 3-col full width, or 2-col 65% + 35% Sticky Inspector) */}
+        <LayoutGroup id="locked-pdf-workspace">
+          <div className={`mx-auto w-full flex-1 px-3.5 sm:px-6 py-4 sm:py-6 lg:px-8 flex flex-col lg:flex-row gap-4 sm:gap-6 items-start min-w-0 transition-[max-width] duration-[220ms] ease-[cubic-bezier(0.16,1,0.3,1)] will-change-[max-width] ${isCollapsed ? "max-w-[1440px]" : "max-w-7xl"}`}>
+            <motion.div
+              layout
+              transition={{ layout: { type: "spring", stiffness: 450, damping: 32, mass: 0.6 } }}
+              className={`flex flex-col space-y-4 min-w-0 max-w-full ${
+                activePage ? "w-full lg:w-[65%]" : "w-full"
+              }`}
+            >
               {/* Search & Filter Bar */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3 w-full max-w-full min-w-0">
-              <div className="flex items-center gap-2 flex-1 rounded-xl bg-white dark:bg-[#1C1C20] px-3.5 py-2 border border-zinc-200/90 dark:border-zinc-800 focus-within:border-[#0066B2] dark:focus-within:border-[#0066B2] shadow-2xs min-w-0">
+              <div className="flex items-center gap-2 flex-1 rounded-xl bg-zinc-50 dark:bg-[#1C1C20] px-3.5 py-2 border border-zinc-200/60 dark:border-zinc-800 focus-within:border-[#0066B2] dark:focus-within:border-[#0066B2] min-w-0">
                 <Search className="h-4 w-4 text-zinc-400 shrink-0" />
                 <input
                   type="text"
@@ -1050,7 +1051,7 @@ export default function LockedPdfPage() {
 
               <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 justify-between sm:justify-end w-full sm:w-auto min-w-0">
                 {/* Desktop Status Tabs Pod (Preserved untouched) */}
-                <div className="hidden sm:flex items-center p-1 bg-zinc-100/90 dark:bg-[#1C1C20] border border-zinc-200/80 dark:border-zinc-800/80 rounded-xl text-xs min-w-0 shadow-2xs">
+                <div className="hidden sm:flex items-center p-1 bg-zinc-100 dark:bg-[#1C1C20] rounded-xl text-xs min-w-0">
                   {[
                     { id: "all", label: `All (${total})` },
                     { id: "live", label: `Live (${liveCount})` },
@@ -1326,21 +1327,22 @@ export default function LockedPdfPage() {
                           key={pdf.id}
                           layout
                           transition={{ layout: { type: "spring", stiffness: 280, damping: 30, mass: 0.8 } }}
+                          whileTap={{ scale: 0.985 }}
                           onClick={() => {
                             setSelectedPageId((prev) => (prev === pdf.id ? null : pdf.id));
                           }}
-                          className={`group relative rounded-2xl border cursor-pointer overflow-hidden flex flex-col justify-between transition-all duration-200 ${
+                          className={`group relative rounded-2xl border cursor-pointer overflow-hidden flex flex-col justify-between will-change-transform transition-colors duration-200 ${
                             isChecked
                               ? "border-[#0066B2] dark:border-[#38BDF8] bg-white dark:bg-[#18181C] ring-2 ring-[#0066B2]/40 dark:ring-[#38BDF8]/40 shadow-[0_8px_30px_rgba(0,102,178,0.12)]"
                               : isSelected
                                 ? "border-[#0066B2] dark:border-[#38BDF8]/80 bg-gradient-to-b from-[#0066B2]/[0.08] via-[#0066B2]/[0.02] to-transparent ring-1 ring-[#0066B2]/30 dark:ring-[#38BDF8]/30 shadow-[0_8px_30px_rgba(0,102,178,0.15)]"
-                                : "border-zinc-200/80 dark:border-white/[0.08] bg-white dark:bg-[#151518] hover:border-[#0066B2]/50 dark:hover:border-[#38BDF8]/40 hover:shadow-xl dark:hover:bg-[#18181D]"
+                                : "border-zinc-200/80 dark:border-[#1F1F24] bg-white/95 dark:bg-[#151518]/95 hover:border-zinc-300 dark:hover:border-[#27272A] shadow-xs hover:shadow-[0_12px_28px_rgba(0,0,0,0.06)] dark:hover:shadow-[0_12px_28px_rgba(0,0,0,0.3)] backdrop-blur-sm"
                           }`}
                         >
 
 
                         {/* PDF Canvas Preview Box */}
-                        <div className="relative h-[136px] sm:h-[142px] w-full bg-gradient-to-b from-zinc-100 via-zinc-100/80 to-zinc-200/50 dark:from-[#18181D] dark:via-[#141418] dark:to-[#0D0D10] border-b border-zinc-200 dark:border-[#1F1F24] overflow-hidden flex flex-col items-center justify-center select-none">
+                        <div className="relative h-[136px] sm:h-[142px] w-full bg-gradient-to-b from-zinc-100 via-zinc-100/80 to-zinc-200/50 dark:from-[#18181D] dark:via-[#141418] dark:to-[#0D0D10] border-b border-zinc-200/70 dark:border-[#1F1F24] overflow-hidden flex flex-col items-center justify-center select-none">
                           {/* Selection Checkbox */}
                           <button
                             type="button"
@@ -1995,8 +1997,7 @@ export default function LockedPdfPage() {
           </AnimatePresence>
         </div>
       </LayoutGroup>
-    </div>
-  </div>
+      </div>
 
       {/* Email Preview Modal */}
       {showEmailPreviewModal && (
