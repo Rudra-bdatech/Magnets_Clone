@@ -190,9 +190,10 @@ export default function AnalyticsChart({
   const activeDay = hoveredIndex !== null ? days[hoveredIndex] : null;
 
   return (
-    <div className="rounded-2xl border border-zinc-200/80 dark:border-white/[0.08] bg-white/80 dark:bg-[#0E0E11] p-4 sm:p-6 space-y-4 sm:space-y-5 shadow-xs backdrop-blur-sm">
+    <div className="relative rounded-2xl border border-[#0066B2]/30 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 p-4 sm:p-6 space-y-4 sm:space-y-5 shadow-md backdrop-blur-sm overflow-hidden">
+      <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0066B2]/[0.03] to-transparent opacity-100" />
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <h3 className="text-sm font-bold text-zinc-900 dark:text-white flex items-center gap-2">
             {title}

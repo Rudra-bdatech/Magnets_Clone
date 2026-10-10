@@ -566,7 +566,7 @@ export default function AnalyticsLinearView({
           {analyticsKpiCards.map((card) => (
             <div
               key={card.id}
-              className="group relative h-full rounded-2xl border border-zinc-200/80 bg-white/90 dark:border-[#2e2e38] dark:bg-[#18181B]/90 p-3.5 sm:p-4 shadow-sm backdrop-blur-sm hover:border-[#0066B2]/40 dark:hover:border-[#38BDF8]/25 hover:shadow-md transition-all duration-200 overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5"
+              className="relative h-full rounded-2xl border border-[#0066B2]/30 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5"
             >
               {/* Left on desktop / Top on mobile: Icon Badge */}
               <div className="flex items-center justify-between sm:justify-start w-full sm:w-auto">
@@ -590,8 +590,8 @@ export default function AnalyticsLinearView({
                 </p>
               </div>
 
-              {/* Hover gradient overlay */}
-              <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0066B2]/[0.04] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              {/* Ambient gradient overlay */}
+              <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0066B2]/[0.05] to-transparent opacity-100" />
             </div>
           ))}
         </motion.div>
@@ -613,9 +613,10 @@ export default function AnalyticsLinearView({
         {isPerMagnet && (page?.hasVariantB || page?.testStarted) && (
           <motion.div
             variants={itemVariants}
-            className="rounded-2xl bg-white/80 dark:bg-[#0E0E11] border border-zinc-200/80 dark:border-white/[0.08] p-4 sm:p-6 space-y-4 shadow-sm backdrop-blur-sm"
+            className="relative rounded-2xl bg-white/90 dark:bg-[#18181B]/90 border border-[#0066B2]/30 dark:border-[#38BDF8]/25 p-4 sm:p-6 space-y-4 shadow-md backdrop-blur-sm overflow-hidden"
           >
-            <div className="flex items-center justify-between border-b border-zinc-200/80 dark:border-white/[0.08] pb-3">
+            <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0066B2]/[0.03] to-transparent opacity-100" />
+            <div className="relative z-10 flex items-center justify-between border-b border-zinc-200/80 dark:border-white/[0.08] pb-3">
               <div className="flex items-center gap-2">
                 <Trophy className="h-4 w-4 text-amber-500 dark:text-amber-400" />
                 <h3 className="text-sm font-bold text-zinc-900 dark:text-white">
@@ -627,7 +628,7 @@ export default function AnalyticsLinearView({
               </span>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
+            <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
               {/* Variant A */}
               <div
                 className={`p-4 rounded-xl border space-y-2 transition-all ${!isBWinning
@@ -702,8 +703,9 @@ export default function AnalyticsLinearView({
         {/* 5. BREAKDOWN CARDS (DESKTOP & MOBILE) */}
         <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
           {/* Device Breakdown Card */}
-          <div className="rounded-2xl bg-white/80 dark:bg-[#0E0E11] border border-zinc-200/80 dark:border-white/[0.08] p-4 sm:p-5 space-y-3.5 sm:space-y-4 shadow-sm backdrop-blur-sm">
-            <div className="flex items-center justify-between border-b border-zinc-200/80 dark:border-white/[0.08] pb-3">
+          <div className="relative rounded-2xl bg-white/90 dark:bg-[#18181B]/90 border border-[#0066B2]/30 dark:border-[#38BDF8]/25 p-4 sm:p-5 space-y-3.5 sm:space-y-4 shadow-md backdrop-blur-sm overflow-hidden">
+            <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0066B2]/[0.03] to-transparent opacity-100" />
+            <div className="relative z-10 flex items-center justify-between border-b border-zinc-200/80 dark:border-white/[0.08] pb-3">
               <div className="flex items-center gap-2">
                 <h3 className="text-sm font-bold text-zinc-900 dark:text-white flex items-center gap-2">
                   <Laptop className="h-4 w-4 text-[#0066B2] dark:text-cyan-400" />
@@ -716,7 +718,7 @@ export default function AnalyticsLinearView({
               </span>
             </div>
 
-            <div className="space-y-3 pt-1">
+            <div className="relative z-10 space-y-3 pt-1">
               <div>
                 <div className="flex justify-between text-xs font-semibold text-zinc-700 dark:text-zinc-300 mb-1.5">
                   <span className="flex items-center gap-2">
@@ -746,8 +748,9 @@ export default function AnalyticsLinearView({
           </div>
 
           {/* Top Traffic Referrers Card */}
-          <div className="rounded-2xl bg-white/80 dark:bg-[#0E0E11] border border-zinc-200/80 dark:border-white/[0.08] p-4 sm:p-5 space-y-3.5 sm:space-y-4 shadow-sm backdrop-blur-sm">
-            <div className="flex items-center justify-between border-b border-zinc-200/80 dark:border-white/[0.08] pb-3">
+          <div className="relative rounded-2xl bg-white/90 dark:bg-[#18181B]/90 border border-[#0066B2]/30 dark:border-[#38BDF8]/25 p-4 sm:p-5 space-y-3.5 sm:space-y-4 shadow-md backdrop-blur-sm overflow-hidden">
+            <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0066B2]/[0.03] to-transparent opacity-100" />
+            <div className="relative z-10 flex items-center justify-between border-b border-zinc-200/80 dark:border-white/[0.08] pb-3">
               <div className="flex items-center gap-2">
                 <h3 className="text-sm font-bold text-zinc-900 dark:text-white flex items-center gap-2">
                   <Globe className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
@@ -760,7 +763,7 @@ export default function AnalyticsLinearView({
               </span>
             </div>
 
-            <div className="space-y-2 pt-1 text-xs">
+            <div className="relative z-10 space-y-2 pt-1 text-xs">
               <div className="flex items-center justify-between p-2.5 rounded-xl bg-zinc-50/80 dark:bg-[#131316] border border-zinc-200/60 dark:border-white/[0.06]">
                 <span className="text-zinc-800 dark:text-zinc-200 font-semibold flex items-center gap-2">
                   <Share2 className="h-3.5 w-3.5 text-[#0066B2] dark:text-cyan-400" />
