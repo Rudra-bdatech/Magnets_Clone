@@ -148,7 +148,7 @@ export const LeadTableRow = memo(function LeadTableRow({
           <button
             type="button"
             onClick={() => onViewDetails(lead)}
-            className="flex items-center gap-1 rounded-lg border border-zinc-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-zinc-700 hover:bg-zinc-50 dark:border-[#2e2e38] dark:bg-[#202026] dark:text-zinc-200 dark:hover:bg-[#282830] transition cursor-pointer shadow-xs"
+            className="flex items-center gap-1.5 rounded-lg border border-zinc-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-zinc-700 hover:bg-zinc-50 dark:border-[#2e2e38] dark:bg-[#202026] dark:text-zinc-200 dark:hover:bg-[#282830] transition-all duration-150 cursor-pointer shadow-xs active:scale-[0.97]"
           >
             <Eye className="h-3.5 w-3.5 text-[#0066B2] dark:text-[#38BDF8]" />{" "}
             View Details

@@ -47,9 +47,9 @@ import { LeadToastContainer, type Toast } from "@/components/leads/LeadToastCont
 import { DeleteLeadModal } from "@/components/leads/DeleteLeadModal";
 import { BulkDeleteModal } from "@/components/leads/BulkDeleteModal";
 
-const AddLeadModal = dynamic(() => import("@/components/leads/AddLeadModal").then((mod) => mod.AddLeadModal), { ssr: false });
-const ImportCsvModal = dynamic(() => import("@/components/leads/ImportCsvModal").then((mod) => mod.ImportCsvModal), { ssr: false });
-const LeadDetailsModal = dynamic(() => import("@/components/leads/LeadDetailsModal").then((mod) => mod.LeadDetailsModal), { ssr: false });
+import { AddLeadModal } from "@/components/leads/AddLeadModal";
+import { ImportCsvModal } from "@/components/leads/ImportCsvModal";
+import { LeadDetailsModal } from "@/components/leads/LeadDetailsModal";
 
 import { formatDateOnly, parseFlexibleDate } from "@/lib/utils";
 

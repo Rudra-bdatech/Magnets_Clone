@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import type { Lead, MagnetPage, Sequence, Account } from "@/lib/data";
 import { formatDateTime } from "@/lib/utils";
+import { useIsMobile } from "@/lib/use-mobile";
 
 interface LeadDetailsModalProps {
   selectedLead: Lead | null;
@@ -183,25 +184,52 @@ export const LeadDetailsModal = memo(function LeadDetailsModal({
     },
   ];
 
+  const isMobile = useIsMobile();
+
+  // Escape key handler for desktop
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [onClose]);
+
   return (
     <motion.div
       key="lead-details-backdrop"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      transition={{ duration: 0.22, ease: "easeOut" }}
-      className="fixed inset-0 z-50 flex flex-col justify-end sm:justify-center sm:items-center bg-black/60 backdrop-blur-sm p-0 sm:p-4 overflow-hidden"
+      transition={{ duration: isMobile ? 0.22 : 0.16, ease: "easeOut" }}
+      className="fixed inset-0 z-50 flex flex-col justify-end sm:justify-center sm:items-center bg-black/55 backdrop-blur-sm p-0 sm:p-4 overflow-hidden"
       onWheel={(e) => e.stopPropagation()}
       onTouchMove={(e) => e.stopPropagation()}
       onClick={onClose}
     >
       <motion.div
         key="lead-details-sheet"
-        initial={{ opacity: 0, y: 120 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: 120 }}
-        transition={{ type: "spring", damping: 30, stiffness: 360, mass: 0.8 }}
-        className="w-full max-w-xl sm:max-w-2xl rounded-t-3xl sm:rounded-2xl border-t sm:border border-zinc-200/80 bg-white dark:border-[#2e2e38] dark:bg-[#18181B] p-5 sm:p-6 shadow-2xl relative space-y-4 max-h-[88vh] overflow-y-auto scrollbar-thin pb-8 sm:pb-6 mt-auto sm:mt-0"
+        initial={
+          isMobile
+            ? { opacity: 0, y: "100%" }
+            : { opacity: 0, scale: 0.96, y: 10 }
+        }
+        animate={
+          isMobile
+            ? { opacity: 1, y: 0 }
+            : { opacity: 1, scale: 1, y: 0 }
+        }
+        exit={
+          isMobile
+            ? { opacity: 0, y: "100%" }
+            : { opacity: 0, scale: 0.97, y: 8 }
+        }
+        transition={
+          isMobile
+            ? { type: "spring", damping: 30, stiffness: 360, mass: 0.8 }
+            : { type: "spring", stiffness: 440, damping: 32, mass: 0.7 }
+        }
+        className="w-full max-w-xl sm:max-w-2xl rounded-t-3xl sm:rounded-2xl border-t sm:border border-zinc-200/80 bg-white dark:border-[#2e2e38] dark:bg-[#18181B] p-5 sm:p-6 shadow-2xl relative space-y-4 max-h-[88vh] overflow-y-auto scrollbar-thin pb-8 sm:pb-6 mt-auto sm:mt-0 transform-gpu will-change-[transform,opacity]"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Mobile Bottom Sheet Grab Handle */}
@@ -209,55 +237,60 @@ export const LeadDetailsModal = memo(function LeadDetailsModal({
           <div className="h-1.5 w-12 rounded-full bg-zinc-300 dark:bg-zinc-700/80" />
         </div>
 
-          {/* Header */}
-          <div className="flex items-start justify-between pb-1 gap-3">
-            <div className="flex items-center gap-3 min-w-0">
-              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#0066B2]/10 text-[#0066B2] dark:bg-[#38BDF8]/20 dark:text-[#38BDF8] text-sm font-bold uppercase border border-[#0066B2]/20 dark:border-[#38BDF8]/30">
-                {(selectedLead.name || selectedLead.email || "U").slice(0, 2)}
-              </div>
-              <div className="min-w-0">
-                <h3 className="text-base font-bold text-zinc-900 dark:text-white truncate">
-                  {selectedLead.name || "Subscriber Details"}
-                </h3>
-                <div className="flex items-center gap-2 mt-0.5 flex-wrap">
-                  <p className="text-xs text-zinc-500 dark:text-[#9B9085] truncate max-w-[200px] sm:max-w-[280px]">
-                    {selectedLead.email}
-                  </p>
-                  <span
-                    className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold border shrink-0 ${
-                      !selectedLead.email.endsWith("@gmail.com") &&
-                      !selectedLead.email.endsWith("@yahoo.com")
-                        ? "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20"
-                        : "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20"
-                    }`}
-                  >
-                    {!selectedLead.email.endsWith("@gmail.com") &&
-                    !selectedLead.email.endsWith("@yahoo.com") ? (
-                      <>
-                        <Flame className="h-3 w-3 text-amber-500" />
-                        <span>Hot Prospect (80 pts)</span>
-                      </>
-                    ) : (
-                      <>
-                        <Zap className="h-3 w-3 text-blue-500" />
-                        <span>Warm Lead (60 pts)</span>
-                      </>
-                    )}
-                  </span>
-                </div>
+        {/* Header */}
+        <div className="flex items-start justify-between pb-1 gap-3">
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#0066B2]/10 text-[#0066B2] dark:bg-[#38BDF8]/20 dark:text-[#38BDF8] text-sm font-bold uppercase border border-[#0066B2]/20 dark:border-[#38BDF8]/30">
+              {(selectedLead.name || selectedLead.email || "U").slice(0, 2)}
+            </div>
+            <div className="min-w-0">
+              <h3 className="text-base font-bold text-zinc-900 dark:text-white truncate">
+                {selectedLead.name || "Subscriber Details"}
+              </h3>
+              <div className="flex items-center gap-2 mt-0.5 flex-wrap">
+                <p className="text-xs text-zinc-500 dark:text-[#9B9085] truncate max-w-[200px] sm:max-w-[280px]">
+                  {selectedLead.email}
+                </p>
+                <span
+                  className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold border shrink-0 ${
+                    !selectedLead.email.endsWith("@gmail.com") &&
+                    !selectedLead.email.endsWith("@yahoo.com")
+                      ? "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20"
+                      : "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20"
+                  }`}
+                >
+                  {!selectedLead.email.endsWith("@gmail.com") &&
+                  !selectedLead.email.endsWith("@yahoo.com") ? (
+                    <>
+                      <Flame className="h-3 w-3 text-amber-500" />
+                      <span>Hot Prospect (80 pts)</span>
+                    </>
+                  ) : (
+                    <>
+                      <Zap className="h-3 w-3 text-blue-500" />
+                      <span>Warm Lead (60 pts)</span>
+                    </>
+                  )}
+                </span>
               </div>
             </div>
-            <button
-              type="button"
-              onClick={onClose}
-              className="rounded-lg p-1.5 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-700 dark:hover:bg-[#25252A] dark:hover:text-white transition cursor-pointer shrink-0"
-              title="Close modal"
-            >
-              <X className="h-5 w-5" />
-            </button>
           </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="rounded-lg p-1.5 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-700 dark:hover:bg-[#25252A] dark:hover:text-white transition cursor-pointer shrink-0"
+            title="Close modal"
+          >
+            <X className="h-5 w-5" />
+          </button>
+        </div>
 
-          <div className="space-y-4 text-xs">
+        <motion.div
+          initial={{ opacity: 0, y: 6 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+          className="space-y-4 text-xs"
+        >
             {/* Top Grid Info */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3.5 py-1">
               <div>
@@ -455,7 +488,7 @@ export const LeadDetailsModal = memo(function LeadDetailsModal({
                 })}
               </div>
             </div>
-          </div>
+          </motion.div>
 
           {/* Bottom Actions */}
           <div className="pt-2 flex flex-col-reverse sm:flex-row gap-2.5 sm:justify-between sm:items-center mt-2">
