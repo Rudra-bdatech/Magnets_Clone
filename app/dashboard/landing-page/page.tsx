@@ -77,10 +77,6 @@ const MagnetCard = React.memo(
     const showCheckbox = isChecked || isSelectMode || anyChecked;
     return (
       <motion.div
-        layout
-        transition={{
-          layout: { type: "spring", stiffness: 280, damping: 30, mass: 0.8 },
-        }}
         whileTap={{ scale: 0.985 }}
         onClick={() => onSelect(page.id)}
         className={`group relative rounded-2xl border cursor-pointer overflow-hidden flex flex-col will-change-transform transition-all duration-200 ${isChecked
@@ -830,9 +826,7 @@ export default function PagesPage() {
                   transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
                   className="flex flex-col space-y-4"
                 >
-                  <motion.div
-                    layout
-                    transition={{ layout: { type: "spring", stiffness: 280, damping: 30, mass: 0.8 } }}
+                  <div
                     className={`grid gap-4 w-full ${
                       activePage
                         ? "grid-cols-1 md:grid-cols-2"
@@ -856,7 +850,7 @@ export default function PagesPage() {
                         onCopyLink={handleCopyLink}
                       />
                     ))}
-                  </motion.div>
+                  </div>
                 </motion.div>
               ) : (
                 <motion.div

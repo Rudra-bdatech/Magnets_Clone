@@ -1306,9 +1306,7 @@ export default function LockedPdfPage() {
                   transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
                   className="flex flex-col space-y-4"
                 >
-                  <motion.div
-                    layout
-                    transition={{ layout: { type: "spring", stiffness: 280, damping: 30, mass: 0.8 } }}
+                  <div
                     className={`grid gap-4 w-full ${
                       activePage
                         ? "grid-cols-1 md:grid-cols-2"
@@ -1325,8 +1323,6 @@ export default function LockedPdfPage() {
                       return (
                         <motion.div
                           key={pdf.id}
-                          layout
-                          transition={{ layout: { type: "spring", stiffness: 280, damping: 30, mass: 0.8 } }}
                           whileTap={{ scale: 0.985 }}
                           onClick={() => {
                             setSelectedPageId((prev) => (prev === pdf.id ? null : pdf.id));
@@ -1536,7 +1532,7 @@ export default function LockedPdfPage() {
                       </motion.div>
                     );
                   })}
-                  </motion.div>
+                  </div>
                 </motion.div>
               ) : (
                 /* Table View */
