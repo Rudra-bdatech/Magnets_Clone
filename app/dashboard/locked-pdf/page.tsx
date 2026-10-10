@@ -1343,7 +1343,7 @@ export default function LockedPdfPage() {
 
 
                         {/* PDF Canvas Preview Box */}
-                        <div className="relative pt-4 px-3 pb-3 bg-gradient-to-b from-zinc-100 via-zinc-100/80 to-zinc-200/50 dark:from-[#18181D] dark:via-[#141418] dark:to-[#0D0D10] border-b border-zinc-200/70 dark:border-[#1F1F24] overflow-hidden flex flex-col items-center justify-center min-h-[145px] sm:min-h-[135px]">
+                        <div className="relative h-[136px] sm:h-[142px] w-full bg-gradient-to-b from-zinc-100 via-zinc-100/80 to-zinc-200/50 dark:from-[#18181D] dark:via-[#141418] dark:to-[#0D0D10] border-b border-zinc-200/70 dark:border-[#1F1F24] overflow-hidden flex flex-col items-center justify-center select-none">
                           {/* Selection Checkbox */}
                           <button
                             type="button"
@@ -1361,18 +1361,18 @@ export default function LockedPdfPage() {
                           </button>
 
                           {/* Stacked Paper Pages Background (depth effect) */}
-                          <div className="absolute inset-x-9 top-3 h-[110px] bg-zinc-200/70 dark:bg-zinc-800/50 rounded-t-lg transform scale-95 border border-zinc-300/40 dark:border-zinc-700/40 shadow-xs" />
-                          <div className="absolute inset-x-7 top-3.5 h-[112px] bg-zinc-100/90 dark:bg-zinc-800/80 rounded-t-lg transform scale-[0.98] border border-zinc-300/60 dark:border-zinc-700/60 shadow-xs" />
+                          <div className="absolute inset-x-10 top-2.5 h-[102px] bg-zinc-200/70 dark:bg-zinc-800/50 rounded-t-lg transform scale-95 border border-zinc-300/40 dark:border-zinc-700/40 shadow-xs pointer-events-none" />
+                          <div className="absolute inset-x-8 top-3 h-[104px] bg-zinc-100/90 dark:bg-zinc-800/80 rounded-t-lg transform scale-[0.98] border border-zinc-300/60 dark:border-zinc-700/60 shadow-xs pointer-events-none" />
 
                           {/* Main PDF Paper Document Sheet */}
-                          <div className="relative w-full max-w-[125px] sm:max-w-[120px] aspect-[1/1.26] sm:aspect-[1/1.22] bg-white dark:bg-[#1A1A20] rounded-t-lg rounded-b-sm border border-zinc-300/80 dark:border-zinc-700/80 shadow-[0_8px_20px_rgba(0,0,0,0.14)] dark:shadow-[0_10px_24px_rgba(0,0,0,0.6)] group-hover:scale-[1.03] transition-transform duration-300 overflow-hidden flex flex-col">
+                          <div className="relative z-0 w-full max-w-[94px] sm:max-w-[100px] aspect-[1/1.24] bg-white dark:bg-[#1A1A20] rounded-t-lg rounded-b-sm border border-zinc-300/80 dark:border-zinc-700/80 shadow-[0_8px_18px_rgba(0,0,0,0.13)] dark:shadow-[0_10px_22px_rgba(0,0,0,0.58)] group-hover:scale-[1.03] transition-transform duration-300 overflow-hidden flex flex-col pointer-events-none">
                             {pdf.pdfPages && pdf.pdfPages.length > 0 ? (
                               <div className="relative flex-1 w-full h-full bg-white dark:bg-[#1A1A20]">
                                 <Image
                                   src={pdf.pdfPages[0]}
                                   alt={pdf.name}
                                   fill
-                                  sizes="(max-width: 768px) 130px, 120px"
+                                  sizes="(max-width: 768px) 105px, 100px"
                                   unoptimized
                                   className="object-cover object-top"
                                 />
@@ -1384,7 +1384,7 @@ export default function LockedPdfPage() {
                                     <div className="w-3.5 h-3.5 rounded bg-[#0066B2]/10 text-[#0066B2] dark:text-[#38BDF8] flex items-center justify-center">
                                       <FileText className="h-2 w-2" />
                                     </div>
-                                    <span className="text-[7.5px] font-black uppercase tracking-wider text-[#0066B2] dark:text-[#38BDF8] font-mono">
+                                    <span className="text-[7px] font-black uppercase tracking-wider text-[#0066B2] dark:text-[#38BDF8] font-mono">
                                       PDF
                                     </span>
                                   </div>
@@ -1398,7 +1398,7 @@ export default function LockedPdfPage() {
                                   <div className="h-1 w-2/3 bg-zinc-200 dark:bg-zinc-800 rounded-full" />
                                 </div>
 
-                                <div className="text-[8px] font-mono font-bold text-zinc-400 dark:text-zinc-500 text-center pt-1 border-t border-zinc-200/50 dark:border-zinc-800/50">
+                                <div className="text-[7.5px] font-mono font-bold text-zinc-400 dark:text-zinc-500 text-center pt-1 border-t border-zinc-200/50 dark:border-zinc-800/50">
                                   {pdf.pdfPageCount || 1} {pdf.pdfPageCount === 1 ? "Page" : "Pages"}
                                 </div>
                               </div>
@@ -1415,8 +1415,8 @@ export default function LockedPdfPage() {
                         </div>
 
                         {/* PDF Info & Actions Footer */}
-                        <div className="p-3.5 sm:p-3 flex-1 flex flex-col justify-between gap-3 sm:space-y-2">
-                          <div className="space-y-2 sm:space-y-1.5">
+                        <div className="p-3 sm:p-3.5 flex-1 flex flex-col justify-between gap-2.5 sm:space-y-2">
+                          <div className="space-y-1.5">
                             {/* Header: Title + Lock Badge */}
                             <div className="flex items-center gap-2 min-w-0">
                               <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-lg bg-[#0066B2]/10 text-[#0066B2] dark:text-[#38BDF8] border border-[#0066B2]/20">
@@ -1428,7 +1428,7 @@ export default function LockedPdfPage() {
                             </div>
                           </div>
 
-                          {/* Mobile Action Bar (< lg) - Sleek 30px Height */}
+                          {/* Mobile Action Bar (< lg) */}
                           <div className="flex lg:hidden items-center justify-between gap-1.5 pt-0.5">
                             {/* Details Inspector Button */}
                             <button
