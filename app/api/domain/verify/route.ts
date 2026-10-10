@@ -12,6 +12,31 @@ import { getPlanLimits } from "@/lib/plan-limits";
 
 export const dynamic = "force-dynamic";
 
+// Helper to query multiple DNS over HTTPS resolvers (Google & Cloudflare) in parallel
+async function queryDns(name: string, type: "TXT" | "CNAME"): Promise<any[]> {
+  const urls = [
+    `https://dns.google/resolve?name=${encodeURIComponent(name)}&type=${type}`,
+    `https://cloudflare-dns.com/dns-query?name=${encodeURIComponent(name)}&type=${type}`,
+  ];
+
+  const results = await Promise.allSettled(
+    urls.map((url) =>
+      fetch(url, {
+        headers: { Accept: "application/dns-json" },
+        cache: "no-store",
+      }).then((r) => r.json())
+    )
+  );
+
+  const records: any[] = [];
+  for (const res of results) {
+    if (res.status === "fulfilled" && res.value?.Answer && Array.isArray(res.value.Answer)) {
+      records.push(...res.value.Answer);
+    }
+  }
+  return records;
+}
+
 export async function POST(req: Request) {
   try {
     // 1. Authenticate user session
@@ -56,31 +81,6 @@ export async function POST(req: Request) {
     const expectedValue = getDomainVerificationToken(cleanDomain);
     const verificationHost = "leadmagnets-verify";
     const fullVerificationHost = `${verificationHost}.${cleanDomain}`;
-
-    // Helper to query multiple DNS over HTTPS resolvers (Google & Cloudflare) in parallel
-    async function queryDns(name: string, type: "TXT" | "CNAME"): Promise<any[]> {
-      const urls = [
-        `https://dns.google/resolve?name=${encodeURIComponent(name)}&type=${type}`,
-        `https://cloudflare-dns.com/dns-query?name=${encodeURIComponent(name)}&type=${type}`,
-      ];
-
-      const results = await Promise.allSettled(
-        urls.map((url) =>
-          fetch(url, {
-            headers: { Accept: "application/dns-json" },
-            cache: "no-store",
-          }).then((r) => r.json())
-        )
-      );
-
-      const records: any[] = [];
-      for (const res of results) {
-        if (res.status === "fulfilled" && res.value?.Answer && Array.isArray(res.value.Answer)) {
-          records.push(...res.value.Answer);
-        }
-      }
-      return records;
-    }
 
     // 1. Perform live DNS TXT lookup
     let isVerified = false;
