@@ -82,7 +82,7 @@ export default function LeadsPage() {
   // Filtering & Search (React 18 Concurrent Search)
   const [search, setSearch] = useState("");
   const deferredSearch = useDeferredValue(search);
-  const [statusFilter, setStatusFilter] = useState<"all" | "active" | "replied">("all");
+  const [statusFilter, setStatusFilter] = useState<"all" | "in_progress" | "completed" | "recent">("all");
   const [isStatusFilterOpen, setIsStatusFilterOpen] = useState(false);
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
   const [filterMagnet, setFilterMagnet] = useState("All lead magnets");
@@ -255,27 +255,62 @@ export default function LeadsPage() {
     };
   }, [leads, checkIsLockedPdfLead, checkIsLinkedInLead]);
 
-  const activeCount = useMemo(() => {
-    return leads.filter(
-      (l) => ((l.status as string) === "delivered" || l.status === "opened" || l.status === "new") && Boolean(l.sequence || l.page)
-    ).length;
-  }, [leads]);
+  // Check if lead is actively in sequence (In Progress)
+  const isLeadInProgress = useCallback(
+    (l: Lead): boolean => {
+      const page = magnetPages.find((p) => p.id === l.pageId || p.name === l.page);
+      const foundSeq = sequences.find(
+        (s) => s.id === page?.id || s.pageId === page?.id || (page && s.name.includes(page.name))
+      );
+      const isEnabled = page ? page.sequenceEnabled || (page.sequenceEmails && page.sequenceEmails.length > 0) : false;
+      const isSeqLive = foundSeq ? foundSeq.status === "live" : isEnabled;
+      if (!isSeqLive) return false;
+      if (l.status === "stopped" || l.status === "completed" || l.status === "delivered") {
+        return false;
+      }
+      return true;
+    },
+    [magnetPages, sequences]
+  );
 
-  const repliedCount = useMemo(() => {
-    return leads.filter((l) => l.status === "replied" || l.status === "converted").length;
-  }, [leads]);
+  // Check if lead completed sequence
+  const isLeadCompleted = useCallback((l: Lead): boolean => {
+    return l.status === "completed" || l.status === "delivered";
+  }, []);
+
+  // Check if lead signed up recently (last 30 days)
+  const isLeadRecent = useCallback((l: Lead): boolean => {
+    if (!l.signedUpAt) return true;
+    const d = parseFlexibleDate(l.signedUpAt);
+    if (!d) return true;
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    return d >= thirtyDaysAgo;
+  }, []);
+
+  const inProgressCount = useMemo(() => {
+    return leads.filter(isLeadInProgress).length;
+  }, [leads, isLeadInProgress]);
+
+  const completedCount = useMemo(() => {
+    return leads.filter(isLeadCompleted).length;
+  }, [leads, isLeadCompleted]);
+
+  const recentCount = useMemo(() => {
+    return leads.filter(isLeadRecent).length;
+  }, [leads, isLeadRecent]);
 
   // Filtered leads using React 18 Deferred Search Value
   const filtered = useMemo(() => {
     const q = deferredSearch.trim().toLowerCase();
     const matched = leads.filter((l) => {
       // Status filter
-      if (statusFilter === "active") {
-        const isActive = ((l.status as string) === "delivered" || l.status === "opened" || l.status === "new") && Boolean(l.sequence || l.page);
-        if (!isActive) return false;
-      } else if (statusFilter === "replied") {
-        const isReplied = l.status === "replied" || l.status === "converted";
-        if (!isReplied) return false;
+      if (statusFilter === "in_progress") {
+        if (!isLeadInProgress(l)) return false;
+      } else if (statusFilter === "completed") {
+        if (!isLeadCompleted(l)) return false;
+      } else if (statusFilter === "recent") {
+        if (!isLeadRecent(l)) return false;
       }
 
       let matchMagnet = false;
@@ -1090,8 +1125,9 @@ function parseCsvLine(line: string): string[] {
               <div className="hidden sm:flex items-center p-1 bg-zinc-100 dark:bg-[#1C1C20] rounded-xl text-xs font-semibold min-w-0">
                 {[
                   { id: "all", label: `All (${leads.length})` },
-                  { id: "active", label: `Active (${activeCount})` },
-                  { id: "replied", label: `Replied (${repliedCount})` },
+                  { id: "in_progress", label: `In Progress (${inProgressCount})` },
+                  { id: "completed", label: `Completed (${completedCount})` },
+                  { id: "recent", label: `Most Recent (${recentCount})` },
                 ].map((tab) => (
                   <button
                     key={tab.id}
@@ -1102,8 +1138,12 @@ function parseCsvLine(line: string): string[] {
                     }}
                     className={`relative px-3 py-1 rounded-lg transition-colors duration-200 cursor-pointer ${
                       statusFilter === tab.id
-                        ? tab.id === "replied"
+                        ? tab.id === "in_progress"
                           ? "text-emerald-600 dark:text-emerald-400 font-bold"
+                          : tab.id === "completed"
+                          ? "text-purple-600 dark:text-purple-400 font-bold"
+                          : tab.id === "recent"
+                          ? "text-[#0066B2] dark:text-[#38BDF8] font-bold"
                           : "text-zinc-900 dark:text-white font-bold"
                         : "text-zinc-500 hover:text-zinc-900 dark:hover:text-white"
                     }`}
@@ -1149,11 +1189,13 @@ function parseCsvLine(line: string): string[] {
                         : filterMagnet === "All Form Magnets"
                         ? "Forms"
                         : filterMagnet
-                      : statusFilter === "active"
-                      ? `Active (${activeCount})`
-                      : statusFilter === "replied"
-                      ? `Replied (${repliedCount})`
-                      : `Filter (${filtered.length})`}
+                      : statusFilter === "in_progress"
+                      ? `In Progress (${inProgressCount})`
+                      : statusFilter === "completed"
+                      ? `Completed (${completedCount})`
+                      : statusFilter === "recent"
+                      ? `Recent (${recentCount})`
+                      : `All (${leads.length})`}
                   </span>
                   <ChevronDown
                     className={`h-3.5 w-3.5 text-zinc-400 shrink-0 transition-transform duration-200 ${
@@ -1176,9 +1218,10 @@ function parseCsvLine(line: string): string[] {
                         Filter Status
                       </div>
                       {[
-                        { id: "all", label: "All Leads", count: leads.length },
-                        { id: "active", label: "Active in Sequence", count: activeCount },
-                        { id: "replied", label: "Replied / Converted", count: repliedCount },
+                        { id: "all", label: "All Subscribers", count: leads.length },
+                        { id: "in_progress", label: "In Progress", count: inProgressCount },
+                        { id: "completed", label: "Completed", count: completedCount },
+                        { id: "recent", label: "Most Recent", count: recentCount },
                       ].map((item) => {
                         const isSelected = statusFilter === item.id;
                         return (
@@ -1406,7 +1449,7 @@ function parseCsvLine(line: string): string[] {
                 </AnimatePresence>
               </div>
 
-              {/* Custom Animated Sort Dropdown */}
+              {/* Custom Animated Status Filter & Sort Dropdown */}
               <div className="relative shrink-0" ref={sortRef}>
                 <button
                   type="button"
@@ -1419,8 +1462,20 @@ function parseCsvLine(line: string): string[] {
                   className="flex h-8 items-center gap-1 sm:gap-2 rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#18181B] px-2 sm:px-3 text-[11px] sm:text-xs font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-[#222226] transition shadow-2xs cursor-pointer select-none"
                 >
                   <SlidersHorizontal className="h-3 w-3 text-zinc-400 shrink-0" />
-                  <span className="truncate max-w-[76px] sm:max-w-none">
-                    {sortOptions.find((o) => o.id === sortBy)?.label || "Sort"}
+                  <span className="truncate max-w-[85px] sm:max-w-none">
+                    {statusFilter === "in_progress"
+                      ? "In Progress"
+                      : statusFilter === "completed"
+                      ? "Completed"
+                      : statusFilter === "recent"
+                      ? "Most Recent"
+                      : sortBy === "oldest"
+                      ? "Oldest First"
+                      : sortBy === "name"
+                      ? "Name (A-Z)"
+                      : sortBy === "email"
+                      ? "Email (A-Z)"
+                      : "Most Recent"}
                   </span>
                   <ChevronDown
                     className={`h-3.5 w-3.5 text-zinc-400 shrink-0 transition-transform duration-200 ${
@@ -1437,13 +1492,52 @@ function parseCsvLine(line: string): string[] {
                       exit={{ opacity: 0, scale: 0.96, y: -4 }}
                       transition={{ type: "spring", damping: 28, stiffness: 400 }}
                       onClick={(e) => e.stopPropagation()}
-                      className="absolute right-0 top-full z-40 mt-1.5 w-48 rounded-xl border border-zinc-200/90 dark:border-white/10 bg-white/95 dark:bg-[#1C1C20]/95 p-1.5 shadow-xl backdrop-blur-xl dark:text-white"
+                      className="absolute right-0 top-full z-40 mt-1.5 w-56 rounded-xl border border-zinc-200/90 dark:border-white/10 bg-white/95 dark:bg-[#1C1C20]/95 p-1.5 shadow-xl backdrop-blur-xl dark:text-white"
                     >
+                      <div className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
+                        Filter by Status
+                      </div>
+                      {[
+                        { id: "all", label: "All Subscribers", count: leads.length },
+                        { id: "in_progress", label: "In Progress", count: inProgressCount },
+                        { id: "completed", label: "Completed", count: completedCount },
+                        { id: "recent", label: "Most Recent", count: recentCount },
+                      ].map((item) => {
+                        const isSelected = statusFilter === item.id;
+                        return (
+                          <button
+                            key={item.id}
+                            type="button"
+                            onClick={() => {
+                              setStatusFilter(item.id as any);
+                              if (item.id === "recent") {
+                                setSortBy("newest");
+                              }
+                              setIsSortOpen(false);
+                              setCurrentPage(1);
+                            }}
+                            className={`flex w-full items-center justify-between rounded-lg px-2.5 py-1.5 text-xs transition cursor-pointer text-left ${
+                              isSelected
+                                ? "bg-[#0066B2]/10 text-[#0066B2] font-bold dark:bg-[#38BDF8]/20 dark:text-[#38BDF8]"
+                                : "text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-white/5 font-medium"
+                            }`}
+                          >
+                            <span>{item.label}</span>
+                            <div className="flex items-center gap-1.5">
+                              <span className="text-[10px] text-zinc-400">({item.count})</span>
+                              {isSelected && <Check className="h-3.5 w-3.5 text-[#0066B2] dark:text-[#38BDF8]" />}
+                            </div>
+                          </button>
+                        );
+                      })}
+
+                      <div className="my-1 border-t border-zinc-100 dark:border-white/10" />
+
                       <div className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
                         Sort by
                       </div>
                       {sortOptions.map((opt) => {
-                        const isSelected = sortBy === opt.id;
+                        const isSelected = sortBy === opt.id && statusFilter === "all";
                         return (
                           <button
                             key={opt.id}
