@@ -292,6 +292,7 @@ export default function DashboardHome({
   const [resources, setResources] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [modalMode, setModalMode] = useState<"all" | "classic" | "locked-pdf">("all");
   const [selectedMagnetType, setSelectedMagnetType] = useState<"classic" | "locked-pdf">("locked-pdf");
   const [createMagnetName, setCreateMagnetName] = useState("");
 
@@ -581,6 +582,7 @@ export default function DashboardHome({
                 type="button"
                 onClick={() => {
                   setCreateMagnetName("");
+                  setModalMode("all");
                   setSelectedMagnetType("locked-pdf");
                   setShowCreateModal(true);
                 }}
@@ -713,6 +715,7 @@ export default function DashboardHome({
                   type="button"
                   onClick={() => {
                     setCreateMagnetName("");
+                    setModalMode("classic");
                     setSelectedMagnetType("classic");
                     setShowCreateModal(true);
                   }}
@@ -789,6 +792,7 @@ export default function DashboardHome({
                   type="button"
                   onClick={() => {
                     setCreateMagnetName("");
+                    setModalMode("locked-pdf");
                     setSelectedMagnetType("locked-pdf");
                     setShowCreateModal(true);
                   }}
@@ -1037,13 +1041,48 @@ export default function DashboardHome({
 
               {/* Modal Header */}
               <div className="flex items-center justify-between">
-                <h3 className="text-base font-bold text-zinc-900 dark:text-white">
-                  Create a magnet
-                </h3>
+                {modalMode === "all" ? (
+                  <div>
+                    <h3 className="text-base font-bold text-zinc-900 dark:text-white">
+                      Create a magnet
+                    </h3>
+                    <p className="text-[11px] text-zinc-500 dark:text-[#9B9085] mt-0.5">
+                      Choose the type of lead magnet you want to build.
+                    </p>
+                  </div>
+                ) : modalMode === "classic" ? (
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 shrink-0">
+                      <FileText className="h-4.5 w-4.5" />
+                    </div>
+                    <div>
+                      <h3 className="text-base font-bold text-zinc-900 dark:text-white leading-tight">
+                        Create Landing Page
+                      </h3>
+                      <p className="text-[11px] text-zinc-500 dark:text-[#9B9085] mt-0.5">
+                        Opt-in landing page with automated lead delivery.
+                      </p>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 shrink-0">
+                      <Lock className="h-4.5 w-4.5" />
+                    </div>
+                    <div>
+                      <h3 className="text-base font-bold text-zinc-900 dark:text-white leading-tight">
+                        Create Locked PDF
+                      </h3>
+                      <p className="text-[11px] text-zinc-500 dark:text-[#9B9085] mt-0.5">
+                        OTP verification gate with live interactive preview.
+                      </p>
+                    </div>
+                  </div>
+                )}
                 <button
                   type="button"
                   onClick={() => setShowCreateModal(false)}
-                  className="rounded-lg p-1.5 text-zinc-400 hover:bg-zinc-100 dark:hover:bg-[#25252b] dark:hover:text-white transition-colors cursor-pointer"
+                  className="rounded-lg p-1.5 text-zinc-400 hover:bg-zinc-100 dark:hover:bg-[#25252b] dark:hover:text-white transition-colors cursor-pointer self-start"
                 >
                   <X className="h-4 w-4" />
                 </button>
@@ -1051,22 +1090,23 @@ export default function DashboardHome({
 
               {/* Form Content */}
               <div className="space-y-4">
-                {/* Format Selection Cards */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                {/* Format Selection Cards (Only visible when triggered from generic '+ New Lead Magnet') */}
+                {modalMode === "all" && (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                     {/* Locked PDF Card */}
                     <button
                       type="button"
                       onClick={() => setSelectedMagnetType("locked-pdf")}
                       className={`relative flex items-start gap-3 p-3 rounded-xl border text-left transition-all cursor-pointer ${
                         selectedMagnetType === "locked-pdf"
-                          ? "border-[#0066B2] bg-[#0066B2]/10 dark:bg-[#0066B2]/15 ring-2 ring-[#0066B2] shadow-sm"
+                          ? "border-amber-500 bg-amber-500/10 dark:bg-amber-500/15 ring-2 ring-amber-500 shadow-sm"
                           : "border-zinc-200 dark:border-[#2e2e38] bg-zinc-50/70 dark:bg-[#121214] hover:border-zinc-300 dark:hover:border-[#3e3e4a]"
                       }`}
                     >
                       <div
                         className={`p-2 rounded-lg shrink-0 transition-colors ${
                           selectedMagnetType === "locked-pdf"
-                            ? "bg-[#0066B2] text-white"
+                            ? "bg-amber-600 text-white"
                             : "bg-zinc-200 dark:bg-[#25252b] text-zinc-600 dark:text-zinc-400"
                         }`}
                       >
@@ -1111,6 +1151,7 @@ export default function DashboardHome({
                       </div>
                     </button>
                   </div>
+                )}
 
                 {/* Page Name */}
                 <div className="space-y-1.5">
@@ -1133,7 +1174,11 @@ export default function DashboardHome({
                         ? "e.g. AI Pipeline Playbook"
                         : "e.g. 2026 Growth Checklist"
                     }
-                    className="w-full rounded-xl border border-zinc-200 dark:border-[#2e2e38] bg-zinc-50 dark:bg-[#121214] px-3.5 py-2.5 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-[#52525b] outline-none focus:ring-2 focus:ring-[#0066B2] focus:border-[#0066B2] transition-all"
+                    className={`w-full rounded-xl border border-zinc-200 dark:border-[#2e2e38] bg-zinc-50 dark:bg-[#121214] px-3.5 py-2.5 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-[#52525b] outline-none transition-all ${
+                      selectedMagnetType === "locked-pdf"
+                        ? "focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                        : "focus:ring-2 focus:ring-emerald-600 focus:border-emerald-600"
+                    }`}
                   />
                 </div>
 
@@ -1175,7 +1220,7 @@ export default function DashboardHome({
                     onClick={() => handleCreateMagnet(selectedMagnetType)}
                     className={`flex-[1.5] sm:flex-initial inline-flex items-center justify-center gap-1.5 rounded-xl px-5 py-2.5 text-xs font-bold text-white shadow-md active:scale-95 transition-all cursor-pointer ${
                       selectedMagnetType === "locked-pdf"
-                        ? "bg-[#0066B2] hover:bg-[#005291] shadow-[0_4px_14px_rgba(0,102,178,0.3)]"
+                        ? "bg-amber-600 hover:bg-amber-700 shadow-[0_4px_14px_rgba(217,119,6,0.3)]"
                         : "bg-[#059669] hover:bg-[#047857] shadow-[0_4px_14px_rgba(5,150,105,0.3)]"
                     }`}
                   >
