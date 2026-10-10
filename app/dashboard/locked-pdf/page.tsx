@@ -918,8 +918,8 @@ export default function LockedPdfPage() {
       </div>
 
       <div className="flex flex-col min-h-[calc(100vh-3.5rem)] bg-zinc-50/50 dark:bg-[#0B0B0D] w-full">
-        {/* Top Executive Header & Stat Cards */}
-        <div className={`mx-auto w-full px-3.5 sm:px-6 pt-4 sm:pt-6 lg:px-8 space-y-4 transition-[max-width] duration-[220ms] ease-[cubic-bezier(0.16,1,0.3,1)] will-change-[max-width] ${isCollapsed ? "max-w-[1440px]" : "max-w-7xl"}`}>
+        <div className={`flex-1 px-3.5 py-6 sm:px-6 sm:py-7 lg:px-8 mx-auto w-full flex flex-col gap-4 transition-[max-width] duration-[220ms] ease-[cubic-bezier(0.16,1,0.3,1)] will-change-[max-width] ${isCollapsed ? "max-w-[1440px]" : "max-w-7xl"}`}>
+          {/* Top Executive Header */}
           <div className="flex items-center justify-between gap-3">
             <div className="min-w-0 flex-1">
               <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-zinc-900 dark:text-white truncate">
@@ -1019,18 +1019,17 @@ export default function LockedPdfPage() {
               <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0066B2]/[0.04] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             </div>
           </div>
-        </div>
 
-        {/* Main Split-Pane Workspace (Dynamic 3-col full width, or 2-col 65% + 35% Sticky Inspector) */}
-        <LayoutGroup id="locked-pdf-workspace">
-          <div className={`mx-auto w-full flex-1 px-3.5 sm:px-6 py-4 sm:py-6 lg:px-8 flex flex-col lg:flex-row gap-4 sm:gap-6 items-start min-w-0 transition-[max-width] duration-[220ms] ease-[cubic-bezier(0.16,1,0.3,1)] will-change-[max-width] ${isCollapsed ? "max-w-[1440px]" : "max-w-7xl"}`}>
-            <motion.div
-              layout
-              transition={{ layout: { type: "spring", stiffness: 450, damping: 32, mass: 0.6 } }}
-              className={`flex flex-col space-y-4 min-w-0 max-w-full ${
-                activePage ? "w-full lg:w-[65%]" : "w-full"
-              }`}
-            >
+          {/* Main Split-Pane Workspace (Dynamic 3-col full width, or 2-col 65% + 35% Sticky Inspector) */}
+          <LayoutGroup id="locked-pdf-workspace">
+            <div className="w-full flex flex-col lg:flex-row gap-4 sm:gap-6 items-start min-w-0">
+              <motion.div
+                layout
+                transition={{ layout: { type: "spring", stiffness: 450, damping: 32, mass: 0.6 } }}
+                className={`flex flex-col gap-4 min-w-0 max-w-full ${
+                  activePage ? "w-full lg:w-[65%]" : "w-full"
+                }`}
+              >
               {/* Search & Filter Bar */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3 w-full max-w-full min-w-0">
               <div className="flex items-center gap-2 flex-1 rounded-xl bg-zinc-50 dark:bg-[#1C1C20] px-3.5 py-2 border border-zinc-200/60 dark:border-zinc-800 focus-within:border-[#0066B2] dark:focus-within:border-[#0066B2] min-w-0">
@@ -1998,7 +1997,8 @@ export default function LockedPdfPage() {
           </AnimatePresence>
         </div>
       </LayoutGroup>
-      </div>
+    </div>
+  </div>
 
       {/* Email Preview Modal */}
       {showEmailPreviewModal && (
