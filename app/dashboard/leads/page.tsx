@@ -1590,7 +1590,7 @@ function parseCsvLine(line: string): string[] {
         {/* ========================================================================= */}
         {/* 4. Table & Cards Data Container (Standalone Separated Card)               */}
         {/* ========================================================================= */}
-        <div className="rounded-2xl border border-zinc-200/80 bg-white/90 dark:border-[#2e2e38] dark:bg-[#18181B]/90 shadow-sm backdrop-blur-sm relative overflow-hidden">
+        <div className="rounded-2xl border border-[#0066B2]/30 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 shadow-md backdrop-blur-sm relative overflow-hidden">
           {/* Mobile Select All Strip when in selection mode */}
             <AnimatePresence>
               {isMobileSelectionMode && (
@@ -1599,7 +1599,7 @@ function parseCsvLine(line: string): string[] {
                   animate={{ height: "auto", opacity: 1 }}
                   exit={{ height: 0, opacity: 0 }}
                   transition={{ type: "spring", stiffness: 450, damping: 35 }}
-                  className="md:hidden overflow-hidden border-b border-zinc-200/80 bg-zinc-50/90 dark:border-[#2e2e38] dark:bg-white/[0.03]"
+                  className="md:hidden overflow-hidden border-b border-[#0066B2]/20 bg-zinc-50/90 dark:border-[#38BDF8]/20 dark:bg-white/[0.03]"
                 >
                   <div className="px-3.5 py-2.5 flex items-center justify-between">
                     <div
@@ -1627,8 +1627,8 @@ function parseCsvLine(line: string): string[] {
             {/* 4. DESKTOP Table View (hidden md:block) - Preserved 100% Unchanged        */}
             {/* ========================================================================= */}
             <div className="hidden md:block overflow-x-auto">
-              <table className="w-full text-left divide-y divide-zinc-200/80 dark:divide-[#2e2e38]">
-                <thead className="bg-[#F8FBFF] dark:bg-[#151518]">
+              <table className="w-full text-left divide-y divide-[#0066B2]/15 dark:divide-[#38BDF8]/15">
+                <thead className="bg-[#F8FBFF] dark:bg-[#151518] border-b border-[#0066B2]/20 dark:border-[#38BDF8]/20">
                   <tr>
                     <th className="px-3 lg:px-4 py-3.5 text-left text-[11px] font-semibold uppercase tracking-wider text-zinc-500 dark:text-[#9B9085]">
                       <div className="flex items-center">
@@ -1793,7 +1793,7 @@ function parseCsvLine(line: string): string[] {
             {/* 5. DESKTOP Pagination (hidden md:flex) - Preserved 100% Unchanged         */}
             {/* ========================================================================= */}
             {filtered.length > 0 && (
-              <div className="hidden md:flex flex-col sm:flex-row items-center justify-between gap-3 px-4 sm:px-6 py-2.5 border-t border-zinc-200/80 dark:border-[#2e2e38] bg-[#F8FBFF]/50 dark:bg-[#151518]/50 text-xs text-zinc-600 dark:text-[#9B9085]">
+              <div className="hidden md:flex flex-col sm:flex-row items-center justify-between gap-3 px-4 sm:px-6 py-2.5 border-t border-[#0066B2]/20 dark:border-[#38BDF8]/20 bg-[#F8FBFF]/50 dark:bg-[#151518]/50 text-xs text-zinc-600 dark:text-[#9B9085]">
                 <div>
                   {filtered.length <= pageSize ? (
                     <>
