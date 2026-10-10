@@ -1426,28 +1426,6 @@ export default function LockedPdfPage() {
                                 {pdf.name}
                               </h3>
                             </div>
-
-                            {/* Interactive Copyable URL Strip */}
-                            <div
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                navigator.clipboard.writeText(shareUrl);
-                                addToast(`Copied viewer URL!`);
-                              }}
-                              className="group/code flex items-center justify-between gap-2 h-[34px] px-2.5 rounded-xl bg-zinc-100/90 dark:bg-[#101013] border border-zinc-200/80 dark:border-[#27272A] hover:border-[#0066B2]/50 dark:hover:border-[#38BDF8]/50 hover:bg-white dark:hover:bg-[#15151A] transition-all cursor-pointer shadow-2xs"
-                              title="Click to copy Viewer URL"
-                            >
-                              <div className="flex items-center gap-1.5 min-w-0">
-                                <Globe className="h-3.5 w-3.5 text-[#0066B2] dark:text-[#38BDF8] shrink-0" />
-                                <span className="text-[10.5px] sm:text-[10px] font-mono text-zinc-600 dark:text-zinc-400 truncate">
-                                  /pdf-viewer/{pdf.id}
-                                </span>
-                              </div>
-                              <div className="flex items-center gap-1 shrink-0 px-1.5 py-0.5 rounded-md bg-white dark:bg-zinc-800 text-[9.5px] font-bold text-zinc-500 dark:text-zinc-300 border border-zinc-200/60 dark:border-zinc-700/60 group-hover/code:text-[#0066B2] dark:group-hover/code:text-[#38BDF8] group-hover/code:border-[#0066B2]/30 transition-colors">
-                                <Copy className="h-2.5 w-2.5" />
-                                <span>Copy</span>
-                              </div>
-                            </div>
                           </div>
 
                           {/* Mobile Action Bar (< lg) - Sleek 30px Height */}
