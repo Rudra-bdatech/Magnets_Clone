@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { MagnetPageModel, SequenceModel } from "@/lib/models";
+import { MagnetPageModel, SequenceModel, AccountModel } from "@/lib/models";
 import { type MagnetPage, type Sequence } from "@/lib/data";
 import { deleteCloudinaryAssets } from "@/lib/cloudinary";
 
@@ -177,46 +177,146 @@ export async function handleSendTestSequenceEmail(data: any, normEmail: string |
   const bodyText = (data.bodyText || "This is a test preview of your sequence email.")
     .replace(/\n/g, "<br/>");
 
+  const appUrl = (process.env.NEXTAUTH_URL || "https://leadmagnets.app").replace(/\/+$/, "");
+  const logoUrl = `${appUrl}/brand/custom-logo-light.png`;
+
+  let senderName = "LeadMagnets";
+  if (normEmail) {
+    try {
+      const acc = await AccountModel.findOne({ email: normEmail }).lean();
+      if (acc && acc.name) senderName = acc.name;
+    } catch {
+      // ignore
+    }
+  }
+
+  const senderInitials = (senderName || "LM")
+    .split(" ")
+    .filter(Boolean)
+    .map((w: string) => w[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase() || "LM";
+
   const formattedHtml = `
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>${subject}</title>
+  <style type="text/css">
+    body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+    table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; border-collapse: collapse; }
+    img { -ms-interpolation-mode: bicubic; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; }
+    body { margin: 0 !important; padding: 0 !important; width: 100% !important; }
+    a[x-apple-data-detectors] { color: inherit !important; text-decoration: none !important; }
+    @media screen and (max-width: 600px) {
+      .email-container { width: 100% !important; }
+      .card-padding { padding: 28px 22px 22px 22px !important; }
+      .heading-text { font-size: 24px !important; }
+      .hide-mobile { display: none !important; }
+    }
+  </style>
 </head>
-<body style="margin: 0; padding: 0; background-color: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; color: #0f172a;">
-  <div style="background-color: #f8fafc; padding: 48px 16px;">
-    <table cellpadding="0" cellspacing="0" border="0" style="max-width: 560px; width: 100%; margin: 0 auto;">
-      
-      <!-- Main Card Container -->
-      <tr>
-        <td>
-          <div style="background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 36px 32px; box-shadow: 0 1px 3px 0 rgba(15, 23, 42, 0.04);">
-            
-            <!-- Minimal Preview Tag -->
-            <div style="margin-bottom: 16px;">
-              <span style="display: inline-block; background-color: #f1f5f9; color: #0066B2; font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 6px; letter-spacing: 0.04em; text-transform: uppercase;">
-                Test Sequence Preview
-              </span>
-            </div>
+<body style="margin:0; padding:0; background-color:#f6f8f9; font-family:'DM Sans','Helvetica Neue',Helvetica,Arial,sans-serif;">
 
-            <div style="color: #334155; font-size: 15px; line-height: 1.7; margin-bottom: 24px;">
-              ${bodyText}
-            </div>
+  <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color:#f6f8f9;">
+    <tr>
+      <td align="center" style="padding:40px 16px;">
+        <table role="presentation" class="email-container" border="0" cellpadding="0" cellspacing="0" width="568" style="width:568px; max-width:568px;">
+          
+          <!-- Brand header -->
+          <tr>
+            <td style="padding:0 4px 20px 4px;">
+              <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
+                <tr>
+                  <td align="left" style="font-family:'DM Sans','Helvetica Neue',Helvetica,Arial,sans-serif; font-size:19px; font-weight:700; color:#2a3138;">
+                    <a href="${appUrl}" target="_blank" style="text-decoration:none; display:inline-block;">
+                      <img src="${logoUrl}" alt="LeadMagnets" height="26" style="height:26px; width:auto; max-height:30px; display:block; border:0; outline:none;" />
+                    </a>
+                  </td>
+                  <td align="right" class="hide-mobile" style="font-family:'DM Sans','Helvetica Neue',Helvetica,Arial,sans-serif; font-size:10px; font-weight:600; letter-spacing:1px; color:#0066cc;">
+                    [TEST PREVIEW]
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
 
-            <div style="margin-top: 32px; padding-top: 20px; border-top: 1px solid #f1f5f9;">
-              <p style="font-size: 12px; color: #94a3b8; margin: 0; line-height: 1.5;">
-                This test preview was sent from your LeadMagnets sequence builder.
-              </p>
-            </div>
+          <!-- Main Card -->
+          <tr>
+            <td style="background-color:#ffffff; border:1px solid #e2e7ea; border-radius:8px;">
+              <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
+                <tr>
+                  <td class="card-padding" style="padding:40px 40px 30px 40px;">
+                    
+                    <h1 class="heading-text" style="margin:0 0 20px 0; font-family:'DM Sans','Helvetica Neue',Helvetica,Arial,sans-serif; font-size:24px; line-height:1.3; font-weight:600; color:#2a3138;">
+                      ${subject}
+                    </h1>
 
-          </div>
-        </td>
-      </tr>
+                    <div style="font-family:'DM Sans','Helvetica Neue',Helvetica,Arial,sans-serif; color:#334155; font-size:15px; line-height:1.7;">
+                      ${bodyText}
+                    </div>
 
-    </table>
-  </div>
+                  </td>
+                </tr>
+
+                <!-- Sender footer inside card -->
+                <tr>
+                  <td style="padding:20px 40px; border-top:1px solid #e2e7ea;">
+                    <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
+                      <tr>
+                        <td width="36" valign="middle" style="width:36px;">
+                          <table role="presentation" border="0" cellpadding="0" cellspacing="0">
+                            <tr>
+                              <td width="36" height="36" align="center" valign="middle" style="width:36px; height:36px; background-color:#f6f8f9; border:1px solid #e2e7ea; border-radius:18px; font-family:'DM Sans','Helvetica Neue',Helvetica,Arial,sans-serif; font-size:11px; font-weight:600; color:#7b858c;">
+                                ${senderInitials}
+                              </td>
+                            </tr>
+                          </table>
+                        </td>
+                        <td valign="middle" style="padding-left:12px; font-family:'DM Sans','Helvetica Neue',Helvetica,Arial,sans-serif;">
+                          <p style="margin:0 0 3px 0; font-size:10px; color:#7b858c;">Sent by</p>
+                          <p style="margin:0; font-size:12px; font-weight:600; color:#2a3138;">${senderName}</p>
+                        </td>
+                        <td class="hide-mobile" align="right" valign="middle">
+                          <table role="presentation" border="0" cellpadding="0" cellspacing="0">
+                            <tr>
+                              <td width="19" height="19" align="center" valign="middle" style="width:19px; height:19px; background-color:#eff6ff; border-radius:10px; font-family:'DM Sans','Helvetica Neue',Helvetica,Arial,sans-serif; font-size:10px; color:#0066cc;">
+                                &#10003;
+                              </td>
+                            </tr>
+                          </table>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+
+              </table>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="padding:24px 4px 0 4px;">
+              <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
+                <tr>
+                  <td style="font-family:'DM Sans','Helvetica Neue',Helvetica,Arial,sans-serif; font-size:11px; color:#7b858c; line-height:1.5;">
+                    <p style="margin:0 0 6px 0;">This test preview was sent from your LeadMagnets sequence builder.</p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+
 </body>
 </html>
   `;
