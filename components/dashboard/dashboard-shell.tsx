@@ -1378,16 +1378,16 @@ export default function DashboardShell({
                     <button
                       type="button"
                       onClick={() => setSelectedMagnetType("locked-pdf")}
-                      className={`relative flex items-start gap-3 p-3 rounded-xl border text-left transition-all cursor-pointer ${
+                      className={`relative flex items-start gap-3 p-3 rounded-xl border text-left cursor-pointer transition-colors duration-75 ${
                         selectedMagnetType === "locked-pdf"
-                          ? "border-[#0066B2] bg-[#0066B2]/10 dark:bg-[#0066B2]/15 ring-2 ring-[#0066B2] shadow-sm"
+                          ? "border-amber-500/90 bg-amber-500/10 dark:bg-amber-500/10 dark:border-amber-500/70"
                           : "border-zinc-200 dark:border-[#2e2e38] bg-zinc-50/70 dark:bg-[#121214] hover:border-zinc-300 dark:hover:border-[#3e3e4a]"
                       }`}
                     >
                       <div
-                        className={`p-2 rounded-lg shrink-0 transition-colors ${
+                        className={`p-2 rounded-lg shrink-0 ${
                           selectedMagnetType === "locked-pdf"
-                            ? "bg-[#0066B2] text-white"
+                            ? "bg-amber-600 text-white"
                             : "bg-zinc-200 dark:bg-[#25252b] text-zinc-600 dark:text-zinc-400"
                         }`}
                       >
@@ -1407,14 +1407,14 @@ export default function DashboardShell({
                     <button
                       type="button"
                       onClick={() => setSelectedMagnetType("classic")}
-                      className={`relative flex items-start gap-3 p-3 rounded-xl border text-left transition-all cursor-pointer ${
+                      className={`relative flex items-start gap-3 p-3 rounded-xl border text-left cursor-pointer transition-colors duration-75 ${
                         selectedMagnetType === "classic"
-                          ? "border-[#059669] bg-[#059669]/10 dark:bg-[#059669]/15 ring-2 ring-[#059669] shadow-sm"
+                          ? "border-emerald-600/90 bg-emerald-500/10 dark:bg-emerald-500/10 dark:border-emerald-500/70"
                           : "border-zinc-200 dark:border-[#2e2e38] bg-zinc-50/70 dark:bg-[#121214] hover:border-zinc-300 dark:hover:border-[#3e3e4a]"
                       }`}
                     >
                       <div
-                        className={`p-2 rounded-lg shrink-0 transition-colors ${
+                        className={`p-2 rounded-lg shrink-0 ${
                           selectedMagnetType === "classic"
                             ? "bg-[#059669] text-white"
                             : "bg-zinc-200 dark:bg-[#25252b] text-zinc-600 dark:text-zinc-400"

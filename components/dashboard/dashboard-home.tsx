@@ -1097,14 +1097,14 @@ export default function DashboardHome({
                     <button
                       type="button"
                       onClick={() => setSelectedMagnetType("locked-pdf")}
-                      className={`relative flex items-start gap-3 p-3 rounded-xl border text-left transition-all cursor-pointer ${
+                      className={`relative flex items-start gap-3 p-3 rounded-xl border text-left cursor-pointer transition-colors duration-75 ${
                         selectedMagnetType === "locked-pdf"
-                          ? "border-amber-500 bg-amber-500/10 dark:bg-amber-500/15 ring-2 ring-amber-500 shadow-sm"
+                          ? "border-amber-500/90 bg-amber-500/10 dark:bg-amber-500/10 dark:border-amber-500/70"
                           : "border-zinc-200 dark:border-[#2e2e38] bg-zinc-50/70 dark:bg-[#121214] hover:border-zinc-300 dark:hover:border-[#3e3e4a]"
                       }`}
                     >
                       <div
-                        className={`p-2 rounded-lg shrink-0 transition-colors ${
+                        className={`p-2 rounded-lg shrink-0 ${
                           selectedMagnetType === "locked-pdf"
                             ? "bg-amber-600 text-white"
                             : "bg-zinc-200 dark:bg-[#25252b] text-zinc-600 dark:text-zinc-400"
@@ -1126,14 +1126,14 @@ export default function DashboardHome({
                     <button
                       type="button"
                       onClick={() => setSelectedMagnetType("classic")}
-                      className={`relative flex items-start gap-3 p-3 rounded-xl border text-left transition-all cursor-pointer ${
+                      className={`relative flex items-start gap-3 p-3 rounded-xl border text-left cursor-pointer transition-colors duration-75 ${
                         selectedMagnetType === "classic"
-                          ? "border-[#059669] bg-[#059669]/10 dark:bg-[#059669]/15 ring-2 ring-[#059669] shadow-sm"
+                          ? "border-emerald-600/90 bg-emerald-500/10 dark:bg-emerald-500/10 dark:border-emerald-500/70"
                           : "border-zinc-200 dark:border-[#2e2e38] bg-zinc-50/70 dark:bg-[#121214] hover:border-zinc-300 dark:hover:border-[#3e3e4a]"
                       }`}
                     >
                       <div
-                        className={`p-2 rounded-lg shrink-0 transition-colors ${
+                        className={`p-2 rounded-lg shrink-0 ${
                           selectedMagnetType === "classic"
                             ? "bg-[#059669] text-white"
                             : "bg-zinc-200 dark:bg-[#25252b] text-zinc-600 dark:text-zinc-400"
@@ -1174,7 +1174,7 @@ export default function DashboardHome({
                         ? "e.g. AI Pipeline Playbook"
                         : "e.g. 2026 Growth Checklist"
                     }
-                    className={`w-full rounded-xl border border-zinc-200 dark:border-[#2e2e38] bg-zinc-50 dark:bg-[#121214] px-3.5 py-2.5 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-[#52525b] outline-none transition-all ${
+                    className={`w-full rounded-xl border border-zinc-200 dark:border-[#2e2e38] bg-zinc-50 dark:bg-[#121214] px-3.5 py-2.5 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-[#52525b] outline-none transition-colors duration-75 ${
                       selectedMagnetType === "locked-pdf"
                         ? "focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
                         : "focus:ring-2 focus:ring-emerald-600 focus:border-emerald-600"
@@ -1210,7 +1210,7 @@ export default function DashboardHome({
                   <button
                     type="button"
                     onClick={() => setShowCreateModal(false)}
-                    className="flex-1 sm:flex-initial rounded-xl border border-zinc-200 dark:border-[#2e2e38] bg-white dark:bg-[#222228] px-4 py-2.5 text-xs font-semibold text-zinc-700 dark:text-white hover:bg-zinc-100 dark:hover:bg-[#2c2c34] transition-all cursor-pointer text-center"
+                    className="flex-1 sm:flex-initial rounded-xl border border-zinc-200 dark:border-[#2e2e38] bg-white dark:bg-[#222228] px-4 py-2.5 text-xs font-semibold text-zinc-700 dark:text-white hover:bg-zinc-100 dark:hover:bg-[#2c2c34] transition-colors duration-75 cursor-pointer text-center"
                   >
                     Cancel
                   </button>
@@ -1218,7 +1218,7 @@ export default function DashboardHome({
                   <button
                     type="button"
                     onClick={() => handleCreateMagnet(selectedMagnetType)}
-                    className={`flex-[1.5] sm:flex-initial inline-flex items-center justify-center gap-1.5 rounded-xl px-5 py-2.5 text-xs font-bold text-white shadow-md active:scale-95 transition-all cursor-pointer ${
+                    className={`flex-[1.5] sm:flex-initial inline-flex items-center justify-center gap-1.5 rounded-xl px-5 py-2.5 text-xs font-bold text-white shadow-md active:scale-95 transition-colors duration-75 cursor-pointer ${
                       selectedMagnetType === "locked-pdf"
                         ? "bg-amber-600 hover:bg-amber-700 shadow-[0_4px_14px_rgba(217,119,6,0.3)]"
                         : "bg-[#059669] hover:bg-[#047857] shadow-[0_4px_14px_rgba(5,150,105,0.3)]"
