@@ -7,8 +7,6 @@ import crypto from "crypto";
 
 export const dynamic = "force-dynamic";
 
-// This route is kept for backward compatibility.
-// The primary checkout flow now uses /api/billing/chargebee/create-checkout
 export async function POST(req: Request) {
   try {
     // 1. Authenticate user
@@ -26,42 +24,43 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "User account not found" }, { status: 404 });
     }
 
-    // 2. Get Chargebee client (replaces Razorpay)
+    // 2. Get Chargebee client
     const cb = getChargebeeClient();
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
 
-    // 3. Graceful simulation if keys are not yet configured
+    // 3. Graceful sandbox simulation if keys are not yet configured
     if (!cb) {
-      const mockOrderId = `order_sim_${crypto.randomBytes(8).toString("hex")}`;
       return NextResponse.json({
         success: true,
-        orderId: mockOrderId,
-        amount: PLAN_PRICING.PRO_INR.amountPaise,
-        currency: PLAN_PRICING.PRO_INR.currency,
-        keyId: "cb_test_mock_key",
         isSimulated: true,
+        checkoutUrl: null, // signals the UI to open the sandbox modal
         planName: "Pro Plan Monthly",
+        amount: PLAN_PRICING.PRO_INR.amount,
+        currency: PLAN_PRICING.PRO_INR.currency,
+        displayPrice: PLAN_PRICING.PRO_INR.displayPrice,
         user: {
           name: account.name || account.username || "Subscriber",
           email: account.email,
         },
         message:
-          "Chargebee simulated order generated (Configure CHARGEBEE_SITE & CHARGEBEE_API_KEY for production).",
+          "Chargebee keys not yet configured. Add CHARGEBEE_SITE & CHARGEBEE_API_KEY to .env.local for live checkout.",
       });
     }
 
-    // 4. Create Chargebee hosted page checkout
-    const result = await cb.hostedPage
+    // 4. Create a real Chargebee Hosted Payment Page
+    const result = await (cb as any).hostedPage
       .checkoutOneTime({
         charges: [
           {
-            amount: PLAN_PRICING.PRO_INR.amountPaise,
+            amount: PLAN_PRICING.PRO_INR.amount * 100, // Chargebee uses cents/paise
             description: "Magnets Pro Plan – Monthly (INR)",
           },
         ],
         currency_code: PLAN_PRICING.PRO_INR.currency,
         customer: {
           email: account.email,
+          first_name: (account.name || account.username || "").split(" ")[0] || "",
+          last_name: (account.name || account.username || "").split(" ").slice(1).join(" ") || "",
         },
         redirect_url: `${appUrl}/api/billing/chargebee/success`,
         cancel_url: `${appUrl}/dashboard`,
@@ -77,22 +76,22 @@ export async function POST(req: Request) {
 
     return NextResponse.json({
       success: true,
-      orderId: page.id,
-      checkoutUrl: page.url,
-      amount: PLAN_PRICING.PRO_INR.amountPaise,
-      currency: PLAN_PRICING.PRO_INR.currency,
-      keyId: process.env.CHARGEBEE_SITE,
       isSimulated: false,
+      checkoutUrl: page.url,
+      hostedPageId: page.id,
       planName: "Pro Plan Monthly",
+      amount: PLAN_PRICING.PRO_INR.amount,
+      currency: PLAN_PRICING.PRO_INR.currency,
+      displayPrice: PLAN_PRICING.PRO_INR.displayPrice,
       user: {
         name: account.name || account.username || "Subscriber",
         email: account.email,
       },
     });
   } catch (error: any) {
-    console.error("[Billing Order Error]:", error);
+    console.error("[Chargebee Checkout Error]:", error);
     return NextResponse.json(
-      { error: error?.message || "Failed to initialize payment order" },
+      { error: error?.message || "Failed to initialize Chargebee checkout" },
       { status: 500 }
     );
   }

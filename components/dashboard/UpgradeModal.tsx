@@ -29,12 +29,6 @@ interface UpgradeModalProps {
   currentPlan?: string;
 }
 
-declare global {
-  interface Window {
-    Razorpay?: any;
-  }
-}
-
 export function UpgradeModal({
   isOpen,
   onClose,
@@ -42,11 +36,11 @@ export function UpgradeModal({
   featureHighlight = "Custom Domains & White-Labeling",
   currentPlan = "Free",
 }: UpgradeModalProps) {
-  const [selectedGateway, setSelectedGateway] = useState<"razorpay" | "stripe">("razorpay");
+  const [selectedGateway, setSelectedGateway] = useState<"chargebee" | "stripe">("chargebee");
   const [isLoading, setIsLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [paymentSuccess, setPaymentSuccess] = useState(false);
-  
+
   // Interactive Sandbox Simulator State (Active when .env API keys are not yet configured)
   const [showSandboxModal, setShowSandboxModal] = useState(false);
   const [sandboxOrder, setSandboxOrder] = useState<any>(null);
@@ -55,129 +49,52 @@ export function UpgradeModal({
 
   if (!isOpen) return null;
 
-  // Dynamically load Razorpay standard checkout script
-  const loadRazorpayScript = (): Promise<boolean> => {
-    return new Promise((resolve) => {
-      if (typeof window !== "undefined" && window.Razorpay) {
-        return resolve(true);
-      }
-      const script = document.createElement("script");
-      script.src = "https://checkout.razorpay.com/v1/checkout.js";
-      script.async = true;
-      script.onload = () => resolve(true);
-      script.onerror = () => resolve(false);
-      document.body.appendChild(script);
-    });
-  };
-
-  // 1. Handle Razorpay Checkout (INR ₹1,999)
-  const handleRazorpayCheckout = async () => {
+  // ── 1. Handle Chargebee Hosted Checkout (INR ₹1,999) ─────────────────────
+  const handleChargebeeCheckout = async () => {
     setIsLoading(true);
     setErrorMsg(null);
 
     try {
-      const isScriptLoaded = await loadRazorpayScript();
-      if (!isScriptLoaded) {
-        throw new Error("Razorpay SDK failed to load. Please check your internet connection.");
-      }
-
-      // 1. Create order on backend
-      const res = await fetch("/api/billing/razorpay/create-order", {
+      const res = await fetch("/api/billing/chargebee/create-checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
       });
 
-      const orderData = await res.json();
-      if (!res.ok || !orderData.success) {
-        throw new Error(orderData.error || "Failed to initialize Razorpay checkout");
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || "Failed to initialize Chargebee checkout");
       }
 
-      // If in mock/simulation mode (API keys not yet in .env), show the interactive Razorpay Simulator modal
-      if (orderData.isSimulated || orderData.keyId === "rzp_test_mock_key" || !process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID) {
-        setSandboxOrder(orderData);
+      // Chargebee keys not yet in .env → show interactive sandbox simulator
+      if (data.isSimulated || !data.checkoutUrl) {
+        setSandboxOrder(data);
         setShowSandboxModal(true);
         setIsLoading(false);
         return;
       }
 
-      // 2. Open standard official Razorpay popup (When live/test key is provided in .env)
-      const options = {
-        key: orderData.keyId,
-        amount: orderData.amount,
-        currency: orderData.currency,
-        name: "Magnets Pro",
-        description: "Pro Plan Monthly - Custom Domains & Unlimited Leads",
-        order_id: orderData.orderId,
-        prefill: {
-          name: orderData.user?.name || "",
-          email: orderData.user?.email || "",
-        },
-        theme: {
-          color: "#0066B2",
-        },
-        handler: async function (response: any) {
-          try {
-            setIsLoading(true);
-            const verifyRes = await fetch("/api/billing/razorpay/verify", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                razorpay_order_id: response.razorpay_order_id,
-                razorpay_payment_id: response.razorpay_payment_id,
-                razorpay_signature: response.razorpay_signature,
-              }),
-            });
-
-            const verifyData = await verifyRes.json();
-            if (verifyData.success) {
-              setPaymentSuccess(true);
-              setTimeout(() => {
-                if (onSuccess) onSuccess();
-                window.location.reload();
-              }, 1500);
-            } else {
-              setErrorMsg(verifyData.error || "Signature verification failed.");
-            }
-          } catch (err: any) {
-            setErrorMsg(err.message || "Failed to verify transaction.");
-          } finally {
-            setIsLoading(false);
-          }
-        },
-        modal: {
-          ondismiss: function () {
-            setIsLoading(false);
-          },
-        },
-      };
-
-      const razorpayInstance = new window.Razorpay(options);
-      razorpayInstance.open();
+      // Redirect to Chargebee Hosted Payment Page
+      window.location.href = data.checkoutUrl;
     } catch (err: any) {
-      console.error("Razorpay Error:", err);
+      console.error("Chargebee Error:", err);
       setErrorMsg(err.message || "Something went wrong initiating payment.");
-    } finally {
       setIsLoading(false);
     }
   };
 
-  // Complete simulated sandbox payment
+  // ── Complete simulated sandbox payment ────────────────────────────────────
   const handleCompleteSandboxPayment = async () => {
     setIsLoading(true);
     try {
-      const verifyRes = await fetch("/api/billing/razorpay/verify", {
+      // Simulate a successful payment by calling a lightweight upgrade endpoint
+      const res = await fetch("/api/billing/chargebee/simulate-success", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          razorpay_order_id: sandboxOrder?.orderId || `order_sim_${Date.now()}`,
-          razorpay_payment_id: `pay_sim_${Date.now()}`,
-          razorpay_signature: "simulated_signature",
-          isSimulated: true,
-        }),
+        body: JSON.stringify({ isSimulated: true }),
       });
 
-      const verifyData = await verifyRes.json();
-      if (verifyData.success) {
+      const data = await res.json();
+      if (data.success) {
         setShowSandboxModal(false);
         setPaymentSuccess(true);
         setTimeout(() => {
@@ -185,7 +102,7 @@ export function UpgradeModal({
           window.location.reload();
         }, 1500);
       } else {
-        setErrorMsg(verifyData.error || "Failed to complete simulation.");
+        setErrorMsg(data.error || "Failed to complete simulation.");
       }
     } catch (err: any) {
       setErrorMsg(err.message || "Simulation error");
@@ -194,7 +111,7 @@ export function UpgradeModal({
     }
   };
 
-  // 2. Handle Stripe Checkout ($29 USD)
+  // ── 2. Handle Stripe Checkout ($29 USD) ───────────────────────────────────
   const handleStripeCheckout = async () => {
     setIsLoading(true);
     setErrorMsg(null);
@@ -222,8 +139,8 @@ export function UpgradeModal({
   };
 
   const handleCheckout = () => {
-    if (selectedGateway === "razorpay") {
-      handleRazorpayCheckout();
+    if (selectedGateway === "chargebee") {
+      handleChargebeeCheckout();
     } else {
       handleStripeCheckout();
     }
@@ -246,7 +163,7 @@ export function UpgradeModal({
           className="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
         />
 
-        {/* Interactive Razorpay Sandbox Modal (When keys are not yet configured) */}
+        {/* Interactive Chargebee Sandbox Modal (When keys are not yet configured) */}
         {showSandboxModal ? (
           <motion.div
             initial={{ opacity: 0, scale: 0.95, y: 10 }}
@@ -260,7 +177,7 @@ export function UpgradeModal({
                   <Shield className="h-4 w-4" />
                 </div>
                 <div>
-                  <h4 className="text-sm font-bold text-white">Razorpay Checkout Sandbox</h4>
+                  <h4 className="text-sm font-bold text-white">Chargebee Checkout Sandbox</h4>
                   <p className="text-[11px] text-blue-300">Test Payment Simulation (₹1,999)</p>
                 </div>
               </div>
@@ -277,9 +194,14 @@ export function UpgradeModal({
             <div className="mt-4 p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-300 text-xs flex items-start gap-2">
               <Sparkles className="h-4 w-4 shrink-0 text-amber-400 mt-0.5" />
               <div>
-                <p className="font-semibold">Razorpay Test Mode Active</p>
+                <p className="font-semibold">Chargebee Test Mode Active</p>
                 <p className="text-[11px] text-amber-200/80 mt-0.5">
-                  To open the live official Razorpay popup, add <code className="bg-amber-950/60 px-1 py-0.5 rounded text-[10px] font-mono text-amber-300">RAZORPAY_KEY_ID</code> in your <code className="bg-amber-950/60 px-1 py-0.5 rounded text-[10px] font-mono text-amber-300">.env.local</code>.
+                  To open the live Chargebee checkout, add{" "}
+                  <code className="bg-amber-950/60 px-1 py-0.5 rounded text-[10px] font-mono text-amber-300">CHARGEBEE_SITE</code>{" "}
+                  &amp;{" "}
+                  <code className="bg-amber-950/60 px-1 py-0.5 rounded text-[10px] font-mono text-amber-300">CHARGEBEE_API_KEY</code>{" "}
+                  in your{" "}
+                  <code className="bg-amber-950/60 px-1 py-0.5 rounded text-[10px] font-mono text-amber-300">.env.local</code>.
                 </p>
               </div>
             </div>
@@ -575,9 +497,9 @@ export function UpgradeModal({
                         <div className="mt-3.5 mb-2 flex items-center p-1 bg-zinc-100 dark:bg-zinc-800/80 rounded-xl border border-zinc-200 dark:border-zinc-700/60">
                           <button
                             type="button"
-                            onClick={() => setSelectedGateway("razorpay")}
+                            onClick={() => setSelectedGateway("chargebee")}
                             className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-lg text-xs font-bold transition ${
-                              selectedGateway === "razorpay"
+                              selectedGateway === "chargebee"
                                 ? "bg-white dark:bg-zinc-900 text-[#0066B2] dark:text-[#38BDF8] shadow-sm"
                                 : "text-zinc-500 hover:text-zinc-700 dark:text-zinc-400"
                             }`}
@@ -601,12 +523,12 @@ export function UpgradeModal({
 
                         {/* Pricing Display */}
                         <div className="mt-2 mb-4">
-                          {selectedGateway === "razorpay" ? (
+                          {selectedGateway === "chargebee" ? (
                             <>
                               <span className="text-3xl font-black text-zinc-900 dark:text-white">₹1,999</span>
                               <span className="text-xs text-zinc-500 dark:text-zinc-400"> / month</span>
                               <span className="block text-[11px] font-medium text-emerald-600 dark:text-emerald-400 mt-0.5">
-                                ⚡ UPI (GPay/PhonePe), RuPay, Indian Cards (2% flat fee)
+                                ⚡ UPI (GPay/PhonePe), RuPay, Indian Cards via Chargebee
                               </span>
                             </>
                           ) : (
@@ -668,7 +590,7 @@ export function UpgradeModal({
                               <Loader2 className="h-4 w-4 animate-spin" />
                               <span>Processing Checkout...</span>
                             </>
-                          ) : selectedGateway === "razorpay" ? (
+                          ) : selectedGateway === "chargebee" ? (
                             <>
                               <span>Pay with UPI / Indian Cards (₹1,999)</span>
                               <ArrowRight className="h-4 w-4" />

@@ -57,18 +57,39 @@ export async function POST(req: Request) {
     const verificationHost = "leadmagnets-verify";
     const fullVerificationHost = `${verificationHost}.${cleanDomain}`;
 
-    // Perform live DNS TXT lookup using Google Public DNS API
-    const txtDnsUrl = `https://dns.google/resolve?name=${encodeURIComponent(fullVerificationHost)}&type=TXT`;
-    
+    // Helper to query multiple DNS over HTTPS resolvers (Google & Cloudflare) in parallel
+    async function queryDns(name: string, type: "TXT" | "CNAME"): Promise<any[]> {
+      const urls = [
+        `https://dns.google/resolve?name=${encodeURIComponent(name)}&type=${type}`,
+        `https://cloudflare-dns.com/dns-query?name=${encodeURIComponent(name)}&type=${type}`,
+      ];
+
+      const results = await Promise.allSettled(
+        urls.map((url) =>
+          fetch(url, {
+            headers: { Accept: "application/dns-json" },
+            cache: "no-store",
+          }).then((r) => r.json())
+        )
+      );
+
+      const records: any[] = [];
+      for (const res of results) {
+        if (res.status === "fulfilled" && res.value?.Answer && Array.isArray(res.value.Answer)) {
+          records.push(...res.value.Answer);
+        }
+      }
+      return records;
+    }
+
+    // 1. Perform live DNS TXT lookup
     let isVerified = false;
     let dnsMessage = "";
 
     try {
-      const dnsRes = await fetch(txtDnsUrl, { cache: "no-store" });
-      const dnsData = await dnsRes.json();
-
-      if (dnsData.Answer && Array.isArray(dnsData.Answer)) {
-        const txtRecords = dnsData.Answer.map((ans: any) => (ans.data || "").replace(/^"|"$/g, "").trim());
+      const txtAnswers = await queryDns(fullVerificationHost, "TXT");
+      if (txtAnswers.length > 0) {
+        const txtRecords = txtAnswers.map((ans: any) => (ans.data || "").replace(/^"|"$/g, "").trim());
         if (txtRecords.some((txt: string) => txt === expectedValue || txt.includes(expectedValue))) {
           isVerified = true;
           dnsMessage = "Domain ownership successfully verified!";
@@ -83,19 +104,16 @@ export async function POST(req: Request) {
       dnsMessage = `Unable to reach DNS resolution server for ${fullVerificationHost}. Please try again shortly.`;
     }
 
-    // Perform live DNS CNAME lookup for the subdomain
+    // 2. Perform live DNS CNAME lookup for the subdomain
     const fullSubdomainHost = formatFullHost(cleanDomain, cleanSubdomain);
-    const cnameDnsUrl = `https://dns.google/resolve?name=${encodeURIComponent(fullSubdomainHost)}&type=CNAME`;
-    const targetCname = "cname.leadmagnets.so";
+    const targetCname = "magnets.bdatech.in";
     let cnameVerified = false;
     let cnameMessage = "";
 
     try {
-      const cnameRes = await fetch(cnameDnsUrl, { cache: "no-store" });
-      const cnameData = await cnameRes.json();
-
-      if (cnameData.Answer && Array.isArray(cnameData.Answer)) {
-        const cnameRecords = cnameData.Answer.map((ans: any) => (ans.data || "").replace(/\.$/, "").toLowerCase().trim());
+      const cnameAnswers = await queryDns(fullSubdomainHost, "CNAME");
+      if (cnameAnswers.length > 0) {
+        const cnameRecords = cnameAnswers.map((ans: any) => (ans.data || "").replace(/\.$/, "").toLowerCase().trim());
         if (cnameRecords.some((rec: string) => rec.includes("leadmagnets") || rec.includes("bdatech") || rec.includes("vercel") || rec.includes(targetCname))) {
           cnameVerified = true;
           cnameMessage = `Traffic successfully routed! ${fullSubdomainHost} points to ${cnameRecords[0] || targetCname}.`;
@@ -103,7 +121,7 @@ export async function POST(req: Request) {
       }
 
       if (!cnameVerified) {
-        cnameMessage = `No CNAME record found pointing ${fullSubdomainHost} to magnets.bdatech.in. Check your DNS settings.`;
+        cnameMessage = `No CNAME record found pointing ${fullSubdomainHost} to ${targetCname}. Check your DNS settings.`;
       }
     } catch (cnameErr) {
       console.warn("DNS CNAME check failed:", cnameErr);
