@@ -22,10 +22,10 @@ export function getCompanyDomains(): string[] {
 
 /**
  * Returns the list of designated super admin emails with full platform bypass privileges.
- * Configured via process.env.SUPER_ADMIN_EMAILS (comma-separated, e.g. "rudranath@bda.co.in").
+ * Configured via process.env.SUPER_ADMIN_EMAILS (comma-separated, e.g. "hello@ambesh.com").
  */
 export function getSuperAdminEmails(): string[] {
-  const envSuperAdmins = process.env.SUPER_ADMIN_EMAILS || "rudranath@bda.co.in,kabirajrudanath@gmail.com,kabirajrnkrudra@gmail.com,hello@ambesh.com";
+  const envSuperAdmins = process.env.SUPER_ADMIN_EMAILS || "hello@ambesh.com,rudranath@bda.co.in";
   return envSuperAdmins
     .split(",")
     .map((e) => e.trim().toLowerCase())
