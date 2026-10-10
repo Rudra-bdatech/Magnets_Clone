@@ -7,10 +7,12 @@ export interface LeadAlertPayload {
   pageTitle: string;
   signedUpAt: string;
   customAnswer?: string;
+  hasSequence?: boolean;
+  sequenceName?: string;
 }
 
 export async function sendInstantLeadAlert(payload: LeadAlertPayload): Promise<{ success: boolean; error?: string }> {
-  const { ownerEmail, leadEmail, leadName, pageTitle, signedUpAt, customAnswer } = payload;
+  const { ownerEmail, leadEmail, leadName, pageTitle, signedUpAt, customAnswer, hasSequence, sequenceName } = payload;
 
   if (!ownerEmail || !ownerEmail.includes("@")) {
     return { success: false, error: "Invalid target owner email address" };
@@ -20,6 +22,22 @@ export async function sendInstantLeadAlert(payload: LeadAlertPayload): Promise<{
   const appUrl = (process.env.NEXT_PUBLIC_APP_URL || "https://magnets.bdatech.in").replace(/\/$/, "");
   const logoUrl = `${appUrl}/brand/custom-logo-light.png`;
   const leadDisplayName = leadName?.trim() || "New Subscriber";
+
+  const isSequenceActive = Boolean(hasSequence || sequenceName);
+  const automationStatusHtml = isSequenceActive
+    ? `
+            <tr><td class="content-pad" style="text-align:left;padding:20px 40px 0;">
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="width:100%;background-color:#f0f7ff;border-radius:4px;">
+                <tr>
+                  <td width="4" style="text-align:left;width:4px;background-color:#0066cc;font-size:0;">&nbsp;</td>
+                  <td style="text-align:left;padding:14px 16px;">
+                    <p style="margin:0 0 3px;font-size:12px;line-height:18px;font-weight:bold;color:#1e40af;">Automation status</p>
+                    <p style="margin:0;font-size:12px;line-height:19px;color:#3b6998;">Lead saved successfully. Automated follow-up sequence is active and Step 1 is scheduled.</p>
+                  </td>
+                </tr>
+              </table>
+            </td></tr>`
+    : "";
 
   const htmlContent = `
 <!DOCTYPE html>
@@ -115,17 +133,7 @@ export async function sendInstantLeadAlert(payload: LeadAlertPayload): Promise<{
                 </td></tr>
               </table>
             </td></tr>
-            <tr><td class="content-pad" style="text-align:left;padding:20px 40px 0;">
-              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="width:100%;background-color:#f0f7ff;border-radius:4px;">
-                <tr>
-                  <td width="4" style="text-align:left;width:4px;background-color:#0066cc;font-size:0;">&nbsp;</td>
-                  <td style="text-align:left;padding:14px 16px;">
-                    <p style="margin:0 0 3px;font-size:12px;line-height:18px;font-weight:bold;color:#1e40af;">Automation status</p>
-                    <p style="margin:0;font-size:12px;line-height:19px;color:#3b6998;">Lead saved successfully. Your automated email sequence is scheduled.</p>
-                  </td>
-                </tr>
-              </table>
-            </td></tr>
+            ${automationStatusHtml}
             <tr><td class="content-pad" style="text-align:left;padding:28px 40px 24px;">
               <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="width:100%;">
                 <tr><td style="text-align:left;border-top:1px solid #e2e7ee;padding-top:20px;font-size:11px;line-height:18px;color:#7c8798;text-align:center;">You’re receiving this email because new lead notifications<br>are enabled for your LeadMagnets account.<br><a href="${appUrl}/dashboard/settings" style="display:inline-block;margin-top:8px;color:#647185;text-decoration:underline;">Manage notifications</a><span style="color:#b3bdca;"> &nbsp;&middot;&nbsp; </span><a href="${appUrl}/dashboard/settings" style="color:#647185;text-decoration:underline;">Unsubscribe</a></td></tr>

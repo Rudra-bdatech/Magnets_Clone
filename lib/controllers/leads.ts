@@ -49,10 +49,13 @@ export async function handleAddLead(data: any, req: Request, normEmail: string |
       if (foundPageDoc.name) pageTitle = foundPageDoc.name;
       data.pageId = foundPageDoc.id;
       data.page = foundPageDoc.name || pageTitle;
-      const seqList = (foundPageDoc.sequenceEmails && foundPageDoc.sequenceEmails.length > 0) ? foundPageDoc.sequenceEmails : [];
-      if (foundPageDoc.sequenceEnabled || seqList.length > 0) {
+      const seqList = (foundPageDoc.sequenceEmails && Array.isArray(foundPageDoc.sequenceEmails)) ? foundPageDoc.sequenceEmails : [];
+      if (Boolean(foundPageDoc.sequenceEnabled) && seqList.length > 0) {
         data.sequence = `${pageTitle} Follow-up`;
-        data.sequenceStep = `Step 1 of ${Math.max(1, seqList.length)} (In Progress)`;
+        data.sequenceStep = `Step 1 of ${seqList.length} (In Progress)`;
+      } else {
+        data.sequence = "";
+        data.sequenceStep = "";
       }
     }
   }
@@ -253,6 +256,8 @@ export async function handleAddLead(data: any, req: Request, normEmail: string |
 
         if (alertsEnabled && !isPendingLead) {
           try {
+            const pageSeqList = (foundPageDoc?.sequenceEmails && Array.isArray(foundPageDoc.sequenceEmails)) ? foundPageDoc.sequenceEmails : [];
+            const hasRealSequence = Boolean(foundPageDoc?.sequenceEnabled && pageSeqList.length > 0);
             await sendInstantLeadAlert({
               ownerEmail: targetInbox,
               leadEmail: data.email,
@@ -260,6 +265,8 @@ export async function handleAddLead(data: any, req: Request, normEmail: string |
               pageTitle: pageTitle,
               signedUpAt: data.signedUpAt || new Date().toLocaleString(),
               customAnswer: data.customAnswer,
+              hasSequence: hasRealSequence,
+              sequenceName: hasRealSequence ? (data.sequence || `${pageTitle} Follow-up`) : undefined,
             });
           } catch (err) {
             console.error("Lead Alert Background Error:", err);
@@ -630,6 +637,8 @@ export async function handleSendTestLeadAlert(data: any, normEmail: string | nul
     pageTitle: "Test Lead Magnet Guide",
     signedUpAt: `${new Date().toLocaleDateString()} at ${new Date().toLocaleTimeString()}`,
     customAnswer: "Looking to scale leads and email conversions!",
+    hasSequence: true,
+    sequenceName: "Test Email Sequence",
   });
 
   return NextResponse.json(result);

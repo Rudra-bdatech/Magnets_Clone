@@ -255,6 +255,8 @@ export async function POST(req: NextRequest) {
           const notifyInbox = fullOwnerAccount?.notifyEmail || ownerEmail;
 
           if (alertsEnabled && notifyInbox) {
+            const seqList = (magnetPage.sequenceEmails && Array.isArray(magnetPage.sequenceEmails)) ? magnetPage.sequenceEmails : [];
+            const hasSeq = Boolean(magnetPage.sequenceEnabled && seqList.length > 0);
             await sendInstantLeadAlert({
               ownerEmail: notifyInbox,
               leadEmail: commenterEmail || "LinkedIn Prospect (DM Sent)",
@@ -262,6 +264,8 @@ export async function POST(req: NextRequest) {
               pageTitle: magnetPage.name,
               signedUpAt,
               customAnswer: commentText ? `LinkedIn comment: "${commentText}"` : undefined,
+              hasSequence: hasSeq,
+              sequenceName: hasSeq ? `${magnetPage.name} Follow-up` : undefined,
             }).catch((err) =>
               console.error("[LinkedIn Webhook] Creator alert email failed:", err)
             );
