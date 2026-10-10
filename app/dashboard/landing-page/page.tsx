@@ -83,14 +83,14 @@ const MagnetCard = React.memo(
         }}
         whileTap={{ scale: 0.985 }}
         onClick={() => onSelect(page.id)}
-        className={`group relative rounded-2xl border cursor-pointer overflow-hidden flex flex-col will-change-transform transition-colors duration-200 ${isChecked
+        className={`group relative rounded-2xl border cursor-pointer overflow-hidden flex flex-col will-change-transform transition-all duration-200 ${isChecked
             ? "border-[#0066B2] dark:border-[#38BDF8] bg-white dark:bg-[#18181C] ring-2 ring-[#0066B2]/40 dark:ring-[#38BDF8]/40 shadow-[0_8px_30px_rgba(0,102,178,0.12)]"
             : isSelected
               ? "border-[#0066B2] dark:border-[#38BDF8] bg-white dark:bg-[#18181C] shadow-[0_8px_30px_rgba(0,102,178,0.15)] ring-1 ring-[#0066B2]/30"
-              : "border-zinc-200/80 dark:border-zinc-800/80 bg-white/95 dark:bg-[#141417]/95 hover:border-zinc-300 dark:hover:border-zinc-700 shadow-xs hover:shadow-[0_12px_28px_rgba(0,0,0,0.06)] dark:hover:shadow-[0_12px_28px_rgba(0,0,0,0.3)] backdrop-blur-sm"
+              : "border-zinc-200 dark:border-zinc-800/80 bg-white dark:bg-[#141417] hover:border-zinc-300 dark:hover:border-zinc-700 shadow-[0_2px_8px_rgba(0,0,0,0.06),0_1px_2px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.09)] dark:shadow-[0_4px_16px_rgba(0,0,0,0.3)] dark:hover:shadow-[0_8px_24px_rgba(0,0,0,0.4)]"
           }`}
       >
-        <div className="relative h-32 w-full bg-zinc-100 dark:bg-[#0F0F12] border-b border-zinc-100 dark:border-zinc-800/60 overflow-hidden">
+        <div className="relative h-32 w-full bg-zinc-100 dark:bg-[#0F0F12] border-b border-zinc-200/80 dark:border-zinc-800/60 overflow-hidden">
           {page.imageUrl && page.imageUrl.trim() !== "" ? (
             <Image
               src={page.imageUrl}
