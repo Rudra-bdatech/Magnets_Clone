@@ -88,10 +88,10 @@ const MagnetCard = React.memo(
             ? "border-[#0066B2] dark:border-[#38BDF8] bg-white dark:bg-[#18181C] ring-2 ring-[#0066B2]/40 dark:ring-[#38BDF8]/40 shadow-[0_8px_30px_rgba(0,102,178,0.12)]"
             : isSelected
               ? "border-[#0066B2] dark:border-[#38BDF8] bg-white dark:bg-[#18181C] shadow-[0_8px_30px_rgba(0,102,178,0.15)] ring-1 ring-[#0066B2]/30"
-              : "border-zinc-200/80 dark:border-zinc-800/80 bg-white/95 dark:bg-[#141417]/95 hover:border-zinc-300 dark:hover:border-zinc-700 shadow-xs hover:shadow-[0_12px_28px_rgba(0,0,0,0.06)] dark:hover:shadow-[0_12px_28px_rgba(0,0,0,0.3)] backdrop-blur-sm"
+              : "border-zinc-200/90 dark:border-[#1F1F24] bg-white dark:bg-[#141417] hover:border-zinc-300 dark:hover:border-zinc-700 shadow-xs hover:shadow-[0_12px_28px_rgba(0,0,0,0.06)] dark:hover:shadow-[0_12px_28px_rgba(0,0,0,0.3)] backdrop-blur-sm"
           }`}
       >
-        <div className="relative h-32 w-full bg-zinc-100 dark:bg-[#0F0F12] border-b border-zinc-100 dark:border-zinc-800/60 overflow-hidden">
+        <div className="relative h-32 w-full bg-zinc-100 dark:bg-[#0F0F12] border-b border-zinc-200 dark:border-zinc-800/60 overflow-hidden">
           {page.imageUrl && page.imageUrl.trim() !== "" ? (
             <Image
               src={page.imageUrl}
@@ -481,7 +481,7 @@ export default function PagesPage() {
           {/* Quick Metrics 4 Stat Cards */}
           <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
             {/* Active Pages */}
-            <div className="group relative h-full rounded-2xl border border-zinc-200/80 bg-white/90 dark:border-[#2e2e38] dark:bg-[#18181B]/90 p-3.5 sm:p-4 shadow-sm backdrop-blur-sm hover:border-[#0066B2]/40 dark:hover:border-[#38BDF8]/25 hover:shadow-md transition-all duration-200 overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
+            <div className="group relative h-full rounded-2xl border border-zinc-200/90 bg-white dark:border-[#2e2e38] dark:bg-[#18181B]/90 p-3.5 sm:p-4 shadow-xs hover:border-[#0066B2]/40 dark:hover:border-[#38BDF8]/25 hover:shadow-md transition-all duration-200 overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
               <div className="flex items-center justify-between sm:justify-start w-full sm:w-auto">
                 <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl border border-[#0066B2]/30 bg-[#EFF6FF] text-[#0066B2] dark:border-[#0066B2]/30 dark:bg-[#0066B2]/20 dark:text-[#38BDF8]">
                   <Globe className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
@@ -499,7 +499,7 @@ export default function PagesPage() {
             </div>
 
             {/* Total Traffic */}
-            <div className="group relative h-full rounded-2xl border border-zinc-200/80 bg-white/90 dark:border-[#2e2e38] dark:bg-[#18181B]/90 p-3.5 sm:p-4 shadow-sm backdrop-blur-sm hover:border-[#0066B2]/40 dark:hover:border-[#38BDF8]/25 hover:shadow-md transition-all duration-200 overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
+            <div className="group relative h-full rounded-2xl border border-zinc-200/90 bg-white dark:border-[#2e2e38] dark:bg-[#18181B]/90 p-3.5 sm:p-4 shadow-xs hover:border-[#0066B2]/40 dark:hover:border-[#38BDF8]/25 hover:shadow-md transition-all duration-200 overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
               <div className="flex items-center justify-between sm:justify-start w-full sm:w-auto">
                 <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl border border-emerald-500/30 bg-emerald-50 text-emerald-600 dark:border-emerald-500/30 dark:bg-emerald-500/20 dark:text-emerald-400">
                   <Eye className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
@@ -517,7 +517,7 @@ export default function PagesPage() {
             </div>
 
             {/* Leads Collected */}
-            <div className="group relative h-full rounded-2xl border border-zinc-200/80 bg-white/90 dark:border-[#2e2e38] dark:bg-[#18181B]/90 p-3.5 sm:p-4 shadow-sm backdrop-blur-sm hover:border-[#0066B2]/40 dark:hover:border-[#38BDF8]/25 hover:shadow-md transition-all duration-200 overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
+            <div className="group relative h-full rounded-2xl border border-zinc-200/90 bg-white dark:border-[#2e2e38] dark:bg-[#18181B]/90 p-3.5 sm:p-4 shadow-xs hover:border-[#0066B2]/40 dark:hover:border-[#38BDF8]/25 hover:shadow-md transition-all duration-200 overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
               <div className="flex items-center justify-between sm:justify-start w-full sm:w-auto">
                 <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl border border-purple-500/30 bg-purple-50 text-purple-600 dark:border-purple-500/30 dark:bg-purple-500/20 dark:text-purple-400">
                   <MousePointerClick className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
@@ -535,7 +535,7 @@ export default function PagesPage() {
             </div>
 
             {/* Avg Conv. Rate */}
-            <div className="group relative h-full rounded-2xl border border-zinc-200/80 bg-white/90 dark:border-[#2e2e38] dark:bg-[#18181B]/90 p-3.5 sm:p-4 shadow-sm backdrop-blur-sm hover:border-[#0066B2]/40 dark:hover:border-[#38BDF8]/25 hover:shadow-md transition-all duration-200 overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
+            <div className="group relative h-full rounded-2xl border border-zinc-200/90 bg-white dark:border-[#2e2e38] dark:bg-[#18181B]/90 p-3.5 sm:p-4 shadow-xs hover:border-[#0066B2]/40 dark:hover:border-[#38BDF8]/25 hover:shadow-md transition-all duration-200 overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
               <div className="flex items-center justify-between sm:justify-start w-full sm:w-auto">
                 <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl border border-amber-500/30 bg-amber-50 text-amber-600 dark:border-amber-500/30 dark:bg-amber-500/20 dark:text-amber-400">
                   <TrendingUp className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
@@ -564,7 +564,7 @@ export default function PagesPage() {
                 }`}
               >
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3 w-full max-w-full min-w-0">
-              <div className="flex items-center gap-2 flex-1 rounded-xl bg-zinc-50 dark:bg-[#1C1C20] px-3.5 py-2 border border-zinc-200/60 dark:border-zinc-800 focus-within:border-[#0066B2] dark:focus-within:border-[#0066B2] min-w-0">
+              <div className="flex items-center gap-2 flex-1 rounded-xl bg-white dark:bg-[#1C1C20] px-3.5 py-2 border border-zinc-200/90 dark:border-zinc-800 focus-within:border-[#0066B2] dark:focus-within:border-[#0066B2] shadow-2xs min-w-0">
                 <Search className="h-4 w-4 text-zinc-400 shrink-0" />
                 <input
                   type="text"
@@ -582,7 +582,7 @@ export default function PagesPage() {
 
               <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 justify-between sm:justify-end w-full sm:w-auto min-w-0">
                 {/* Desktop Status Tabs Pod (Preserved untouched) */}
-                <div className="hidden sm:flex items-center p-1 bg-zinc-100 dark:bg-[#1C1C20] rounded-xl text-xs font-semibold min-w-0">
+                <div className="hidden sm:flex items-center p-1 bg-zinc-100/90 dark:bg-[#1C1C20] border border-zinc-200/80 dark:border-zinc-800/80 rounded-xl text-xs font-semibold min-w-0 shadow-2xs">
                   {[
                     { id: "all", label: `All (${total})` },
                     { id: "live", label: `Live (${liveCount})` },
