@@ -18,6 +18,7 @@ import {
   Lock,
   Sparkles,
   Zap,
+  Trash2,
 } from "lucide-react";
 import { type Account } from "@/lib/data";
 import { getPlanLimits } from "@/lib/plan-limits";
@@ -29,6 +30,7 @@ import {
   formatFullHost,
 } from "@/lib/domain-verify";
 import { InfoTooltip } from "@/components/ui/info-tooltip";
+import { DisconnectDomainModal } from "./DisconnectDomainModal";
 
 interface DomainSectionProps {
   appBaseUrl: string;
@@ -96,6 +98,31 @@ export const DomainSection = memo(function DomainSection({
   onUpgradeClick,
 }: DomainSectionProps) {
   const [copiedField, setCopiedField] = useState<string | null>(null);
+  const [showDisconnectModal, setShowDisconnectModal] = useState(false);
+
+  const handleDisconnectConfirm = async () => {
+    setRootDomain("");
+    setPageSubdomain("");
+    setDomainVerified(false);
+    setCnameVerified(false);
+    setSslStatus("pending");
+    setDomainError("");
+    setCnameError("");
+
+    try {
+      await handleSave({
+        customDomain: "",
+        customSubdomain: "",
+        domainVerified: false,
+        cnameVerified: false,
+        sslStatus: "pending",
+      });
+      addToast("Custom domain disconnected successfully.", "info");
+      setShowDisconnectModal(false);
+    } catch {
+      addToast("Failed to disconnect domain. Please try again.", "error");
+    }
+  };
 
   // Plan limits & Custom domain lock check (Staff/Admin accounts bypass automatically)
   const planLimits = useMemo(() => getPlanLimits(userPlan, userEmail, userRole), [userPlan, userEmail, userRole]);
@@ -244,19 +271,19 @@ export const DomainSection = memo(function DomainSection({
         {/* SECTION 2: Custom Domain Accordion Box */}
         <div className="rounded-xl border border-zinc-200 dark:border-zinc-700/80 bg-[#FAFCFF] dark:bg-[#141418] overflow-hidden transition-all shadow-2xs">
           
-          {/* Accordion Toggle Header */}
-          <button
-            type="button"
-            onClick={onToggleCustomDomain}
-            className="flex w-full items-center justify-between p-3.5 sm:p-4 text-left hover:bg-zinc-50 dark:hover:bg-white/[0.02] transition-colors cursor-pointer"
-          >
-            <div className="flex items-center gap-3 min-w-0">
-              <div className="flex h-8 w-8 sm:h-9 sm:w-9 shrink-0 items-center justify-center rounded-lg bg-[#E0F2FE] text-[#0066B2] dark:bg-[#0066B2]/20 dark:text-[#38BDF8] border border-[#BAE6FD] dark:border-[#0066B2]/40">
+          {/* Accordion Header */}
+          <div className="flex w-full items-center justify-between p-3.5 sm:p-4 text-left transition-colors">
+            <button
+              type="button"
+              onClick={onToggleCustomDomain}
+              className="flex items-center gap-3 min-w-0 flex-1 text-left cursor-pointer group"
+            >
+              <div className="flex h-8 w-8 sm:h-9 sm:w-9 shrink-0 items-center justify-center rounded-lg bg-[#E0F2FE] text-[#0066B2] dark:bg-[#0066B2]/20 dark:text-[#38BDF8] border border-[#BAE6FD] dark:border-[#0066B2]/40 group-hover:scale-105 transition-transform">
                 <Globe className="h-4 w-4 sm:h-4.5 sm:w-4.5" />
               </div>
               <div className="min-w-0">
                 <div className="flex items-center gap-2 flex-wrap">
-                  <p className="text-xs sm:text-sm font-bold text-zinc-900 dark:text-white flex items-center gap-1.5">
+                  <p className="text-xs sm:text-sm font-bold text-zinc-900 dark:text-white flex items-center gap-1.5 group-hover:text-[#0066B2] dark:group-hover:text-[#38BDF8] transition-colors">
                     Custom Domain Configuration
                     <InfoTooltip
                       content="Connect your custom brand domain (e.g. get.yourdomain.com) to your lead magnets."
@@ -281,11 +308,31 @@ export const DomainSection = memo(function DomainSection({
                   ) : null}
                 </div>
               </div>
+            </button>
+
+            {/* Right actions: Disconnect & Accordion Toggle */}
+            <div className="flex items-center gap-2 shrink-0 ml-2">
+              {rootDomain.trim() && (
+                <button
+                  type="button"
+                  onClick={() => setShowDisconnectModal(true)}
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-rose-500/30 bg-rose-500/10 hover:bg-rose-500/20 px-2.5 py-1 text-[11px] font-bold text-rose-600 dark:text-rose-400 transition cursor-pointer"
+                  title="Disconnect and remove custom domain"
+                >
+                  <Trash2 className="h-3 w-3" />
+                  <span className="hidden sm:inline">Disconnect Domain</span>
+                </button>
+              )}
+              <button
+                type="button"
+                onClick={onToggleCustomDomain}
+                className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-zinc-200 bg-white text-zinc-500 shadow-2xs dark:border-zinc-700 dark:bg-[#1E1E24] dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white transition cursor-pointer"
+                title={isCustomDomainOpen ? "Collapse section" : "Expand section"}
+              >
+                <ChevronDown className={`h-3.5 w-3.5 transition-transform duration-200 ${isCustomDomainOpen ? "rotate-180" : ""}`} />
+              </button>
             </div>
-            <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-zinc-200 bg-white text-zinc-500 shadow-2xs dark:border-zinc-700 dark:bg-[#1E1E24] dark:text-zinc-300 ml-2">
-              <ChevronDown className={`h-3.5 w-3.5 transition-transform duration-200 ${isCustomDomainOpen ? "rotate-180" : ""}`} />
-            </div>
-          </button>
+          </div>
 
           {/* Accordion Body */}
           {isCustomDomainOpen && (
@@ -757,6 +804,27 @@ export const DomainSection = memo(function DomainSection({
 
                   </div>
 
+                  {/* Danger Zone: Disconnect Domain Action Box */}
+                  <div className="rounded-2xl border border-rose-500/20 bg-rose-500/[0.03] dark:bg-rose-950/15 p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs">
+                    <div className="space-y-0.5 min-w-0">
+                      <p className="text-xs sm:text-sm font-bold text-zinc-900 dark:text-white flex items-center gap-2">
+                        <span className="flex h-2 w-2 rounded-full bg-rose-500 animate-pulse shrink-0" />
+                        <span>Disconnect or Remove Custom Domain</span>
+                      </p>
+                      <p className="text-[11px] sm:text-xs text-zinc-500 dark:text-zinc-400">
+                        Stop routing <code className="font-mono text-zinc-700 dark:text-zinc-300 font-semibold">{fullCustomHost}</code> and reset all TXT & CNAME verification records.
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setShowDisconnectModal(true)}
+                      className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 rounded-xl border border-rose-500/30 bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/30 dark:hover:bg-rose-900/40 px-4 py-2.5 text-xs font-bold text-rose-600 dark:text-rose-400 transition cursor-pointer shrink-0 shadow-2xs"
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                      <span>Disconnect Domain</span>
+                    </button>
+                  </div>
+
                 </div>
               ) : (
                 <div className="rounded-xl border border-zinc-200/80 bg-zinc-50/70 p-4 dark:border-white/10 dark:bg-[#18181C] flex items-start gap-3">
@@ -779,6 +847,16 @@ export const DomainSection = memo(function DomainSection({
         </div>
 
       </div>
+
+      {/* Destructive Disconnect Domain Modal */}
+      <DisconnectDomainModal
+        isOpen={showDisconnectModal}
+        onClose={() => setShowDisconnectModal(false)}
+        onConfirm={handleDisconnectConfirm}
+        domainName={cleanDom}
+        fullHost={fullCustomHost}
+        isVerified={domainVerified || cnameVerified}
+      />
 
     </div>
   );
