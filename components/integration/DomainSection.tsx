@@ -100,12 +100,10 @@ export const DomainSection = memo(function DomainSection({
   const [showDisconnectModal, setShowDisconnectModal] = useState(false);
   const [hostingChallenge, setHostingChallenge] = useState<{ type: string; name: string; value: string } | null>(null);
   // UI-only state: domain editor visibility and DNS panel visibility
-  const [isEditing, setIsEditing] = useState(() => !rootDomain.trim());
+  const [isEditing, setIsEditing] = useState(false);
   const [showDns, setShowDns] = useState(() => !(domainVerified && cnameVerified && sslStatus === "active"));
-
-  useEffect(() => {
-    if (!rootDomain.trim()) setIsEditing(true);
-  }, [rootDomain]);
+  // If user has a saved domain, default to collapsed; if no domain yet, show input form
+  const showEditPanel = isEditing || !rootDomain.trim();
 
   const handleDisconnectConfirm = async () => {
     try {
@@ -512,7 +510,7 @@ export const DomainSection = memo(function DomainSection({
           )}
 
           {/* Domain card (Vercel-style) */}
-          {(rootDomain.trim() || isEditing) && (
+          {(rootDomain.trim() || showEditPanel) && (
             <div className="rounded-lg border border-zinc-200 dark:border-white/10 overflow-hidden">
               {rootDomain.trim() ? (
               <div className="flex flex-col md:flex-row md:items-center gap-3 md:gap-6 p-4">
@@ -586,14 +584,14 @@ export const DomainSection = memo(function DomainSection({
                     {isRefreshing ? "Checking" : "Refresh"}
                   </button>
                   <button type="button" onClick={() => setIsEditing((v) => !v)} className={btnSecondary}>
-                    Edit
+                    {showEditPanel && rootDomain.trim() ? "Close" : "Edit"}
                   </button>
                 </div>
               </div>
               ) : null}
 
               {/* Edit panel */}
-              {isEditing ? (
+              {showEditPanel ? (
                 <div className={`p-4 space-y-4 ${rootDomain.trim() ? "border-t border-zinc-200 dark:border-white/10" : ""} ${isCustomDomainLocked ? "opacity-60" : ""}`}>
                   <div>
                     <span className="flex items-center gap-1.5 text-[13px] font-medium text-zinc-600 dark:text-zinc-400 mb-1.5">
