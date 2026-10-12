@@ -188,11 +188,6 @@ export const EmailSenderSection = memo(function EmailSenderSection({
 
   const gmailConnected = account?.gmailOAuth?.connected && !!account?.gmailOAuth?.gmailAddress;
   const smtpConnected = account?.customSmtp?.isVerified && account?.customSmtp?.enabled;
-  const isCompanyAdmin =
-    account?.role === "super_admin" ||
-    account?.role === "admin" ||
-    account?.email?.toLowerCase().endsWith("@bda.co.in") ||
-    account?.email?.toLowerCase().endsWith("@bdatech.in");
 
   return (
     <div className="space-y-3">
@@ -206,15 +201,11 @@ export const EmailSenderSection = memo(function EmailSenderSection({
             align="start"
           />
         </p>
-        {isCompanyAdmin ? (
-          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-blue-50 dark:bg-blue-900/30 text-[#0066B2] dark:text-blue-400 border border-blue-200 dark:border-blue-800">
-            <ShieldCheck size={11} /> Company Admin (Platform Fallback Active)
-          </span>
-        ) : !gmailConnected && !smtpConnected ? (
+        {!gmailConnected && !smtpConnected && (
           <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-800">
             <AlertCircle size={11} /> Gmail Sync Required to Send Leads
           </span>
-        ) : null}
+        )}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3 items-stretch">
