@@ -500,17 +500,6 @@ export const EmailSenderSection = memo(function EmailSenderSection({
 
       </div>
 
-      {/* Priority indicator */}
-      <div className="rounded-xl bg-zinc-50 dark:bg-zinc-900/40 border border-zinc-200/60 dark:border-zinc-800/60 px-4 py-3">
-        <p className="text-[11px] text-zinc-500 dark:text-zinc-400 leading-relaxed">
-          <span className="font-bold text-zinc-600 dark:text-zinc-300">Sender priority:</span>{" "}
-          <span className={gmailConnected ? "text-emerald-600 dark:text-emerald-400 font-semibold" : ""}>① Gmail OAuth</span>
-          {" → "}
-          <span className={smtpConnected && !gmailConnected ? "text-emerald-600 dark:text-emerald-400 font-semibold" : ""}>② Custom SMTP</span>
-          {" → "}
-          <span className={!gmailConnected && !smtpConnected ? "text-zinc-700 dark:text-zinc-200 font-semibold" : ""}>③ Platform fallback</span>
-        </p>
-      </div>
     </div>
   );
 });
