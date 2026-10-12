@@ -1338,7 +1338,7 @@ export default function LockedPdfPage() {
 
 
                         {/* PDF Canvas Preview Box */}
-                        <div className="relative h-[136px] sm:h-[142px] w-full bg-gradient-to-b from-zinc-100 via-zinc-100/80 to-zinc-200/50 dark:from-[#18181D] dark:via-[#141418] dark:to-[#0D0D10] border-b border-zinc-200/70 dark:border-[#1F1F24] overflow-hidden flex flex-col items-center justify-center select-none">
+                        <div className="relative h-[136px] sm:h-[142px] w-full bg-gradient-to-b from-zinc-100 via-zinc-100/80 to-zinc-200/50 dark:from-[#18181D] dark:via-[#141418] dark:to-[#0D0D10] rounded-b-2xl border-b border-zinc-200/70 dark:border-[#1F1F24] overflow-hidden flex flex-col items-center justify-center select-none">
                           {/* Selection Checkbox */}
                           <button
                             type="button"
