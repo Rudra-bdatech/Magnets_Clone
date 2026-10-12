@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { checkRateLimit } from "@/lib/rate-limit";
+import { getToken } from "next-auth/jwt";
+import { isPlatformHost } from "@/lib/domain-verify";
 
 /**
  * Edge-compatible HMAC-SHA256 JWT Verification using Web Crypto API (crypto.subtle)
@@ -61,7 +63,7 @@ export async function middleware(request: NextRequest) {
   const secret = process.env.JWT_SECRET || "";
 
   const sessionToken = request.cookies.get("session_token")?.value;
-  const nextAuthToken =
+  const rawNextAuthToken =
     request.cookies.get("next-auth.session-token")?.value ||
     request.cookies.get("__Secure-next-auth.session-token")?.value;
 
@@ -70,7 +72,22 @@ export async function middleware(request: NextRequest) {
     ? await verifySessionTokenEdge(sessionToken, secret)
     : false;
 
-  const isValidSession = Boolean(isValidCustomSession || nextAuthToken);
+  let isValidNextAuthSession = false;
+  if (rawNextAuthToken && process.env.NEXTAUTH_SECRET) {
+    try {
+      const nextAuthPayload = await getToken({
+        req: request,
+        secret: process.env.NEXTAUTH_SECRET,
+      });
+      if (nextAuthPayload && nextAuthPayload.email) {
+        isValidNextAuthSession = true;
+      }
+    } catch {
+      isValidNextAuthSession = false;
+    }
+  }
+
+  const isValidSession = Boolean(isValidCustomSession || isValidNextAuthSession);
 
   // Rate Limiting Protection for Auth & Domain Verification API Endpoints
   if (
@@ -97,14 +114,16 @@ export async function middleware(request: NextRequest) {
     ? process.env.NEXT_PUBLIC_APP_URL.replace(/^https?:\/\//i, "").split("/")[0].split(":")[0].toLowerCase()
     : "";
 
-  // Custom domain detection (non-primary domains)
+  // Custom domain detection (non-primary domains).
+  // Match the apex or a real subdomain. A lookalike such as "evilleadmagnets.so"
+  // must stay on the custom-domain path.
   const isPrimaryDomain =
-    host.includes("localhost") ||
-    host.includes("127.0.0.1") ||
-    host.endsWith("vercel.app") ||
-    host.endsWith("leadmagnets.so") ||
-    host.endsWith("magnets.bdatech.in") ||
-    (configuredHost && (host === configuredHost || host.endsWith(`.${configuredHost}`)));
+    isPlatformHost(host, "localhost") ||
+    host === "127.0.0.1" ||
+    isPlatformHost(host, "vercel.app") ||
+    isPlatformHost(host, "leadmagnets.so") ||
+    isPlatformHost(host, "magnets.bdatech.in") ||
+    (configuredHost ? isPlatformHost(host, configuredHost) : false);
 
   // Block direct access to internal /custom-domain route on primary domain
   if (isPrimaryDomain && (pathname === "/custom-domain" || pathname.startsWith("/custom-domain/"))) {
@@ -171,13 +190,35 @@ export async function middleware(request: NextRequest) {
     if (!isValidSession) {
       const loginUrl = new URL("/login", request.url);
       loginUrl.searchParams.set("from", pathname);
-      return NextResponse.redirect(loginUrl);
+      const res = NextResponse.redirect(loginUrl);
+      if (sessionToken && !isValidCustomSession) {
+        res.cookies.delete("session_token");
+      }
+      if (rawNextAuthToken && !isValidNextAuthSession) {
+        res.cookies.delete("next-auth.session-token");
+        res.cookies.delete("__Secure-next-auth.session-token");
+      }
+      return res;
     }
   }
 
   // Redirect authenticated users away from /login and /register if they already have a valid session
-  if ((pathname === "/login" || pathname === "/register") && isValidSession) {
-    return NextResponse.redirect(new URL("/dashboard", request.url));
+  if (pathname === "/login" || pathname === "/register") {
+    if (isValidSession) {
+      return NextResponse.redirect(new URL("/dashboard", request.url));
+    }
+    // Clean up stale or invalid cookies when visiting login/register so the client starts in a clean state
+    if ((sessionToken && !isValidCustomSession) || (rawNextAuthToken && !isValidNextAuthSession)) {
+      const response = NextResponse.next();
+      if (sessionToken && !isValidCustomSession) {
+        response.cookies.delete("session_token");
+      }
+      if (rawNextAuthToken && !isValidNextAuthSession) {
+        response.cookies.delete("next-auth.session-token");
+        response.cookies.delete("__Secure-next-auth.session-token");
+      }
+      return response;
+    }
   }
 
   return NextResponse.next();

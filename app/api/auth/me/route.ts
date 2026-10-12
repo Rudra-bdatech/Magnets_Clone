@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { getServerSession } from "next-auth";
-import { AUTH_COOKIE_NAME, verifySessionToken, setAuthCookie } from "@/lib/auth";
+import { AUTH_COOKIE_NAME, verifySessionToken, setAuthCookie, clearAuthCookie } from "@/lib/auth";
 import { dbConnect } from "@/lib/mongodb";
 import { AccountModel } from "@/lib/models";
 import { authOptions } from "@/lib/auth-options";
@@ -40,7 +40,9 @@ export async function GET() {
     }
 
     if (!email) {
-      return NextResponse.json({ authenticated: false, user: null }, { status: 401 });
+      const response = NextResponse.json({ authenticated: false, user: null }, { status: 401 });
+      clearAuthCookie(response);
+      return response;
     }
 
     let account: any = null;

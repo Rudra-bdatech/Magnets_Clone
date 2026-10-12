@@ -305,11 +305,17 @@ export default function DashboardShell({
               setIsAuthenticated(true);
             } else {
               setIsAuthenticated(false);
+              localStorage.removeItem("currentUserEmail");
+              localStorage.removeItem("currentUserAccount");
+              localStorage.removeItem("sessionExpiry");
               window.location.href = "/login";
             }
           })
           .catch(() => {
             setIsAuthenticated(false);
+            localStorage.removeItem("currentUserEmail");
+            localStorage.removeItem("currentUserAccount");
+            localStorage.removeItem("sessionExpiry");
             window.location.href = "/login";
           });
         return;

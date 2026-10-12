@@ -4,7 +4,7 @@ import { headers } from "next/headers";
 import Link from "next/link";
 import { dbConnect } from "@/lib/mongodb";
 import { AccountModel } from "@/lib/models";
-import { getPlanLimits } from "@/lib/plan-limits";
+import { formatFullHost } from "@/lib/domain-verify";
 import UserProfileRoute from "@/app/[username]/page";
 import MagnetPageRoute, { generateMetadata as generateMagnetMetadata } from "@/app/[username]/[slug]/page";
 
@@ -18,7 +18,8 @@ interface DomainPageProps {
 }
 
 /**
- * Normalizes host by removing ports, protocol, www, and trailing slashes.
+ * Normalizes host by removing protocol, port, and path.
+ * Keeps a www label so www.brand.com only matches a www subdomain.
  */
 function normalizeHost(rawHost: string): string {
   if (!rawHost) return "";
@@ -27,67 +28,56 @@ function normalizeHost(rawHost: string): string {
     .replace(/^https?:\/\//, "")
     .split("/")[0]
     .split(":")[0]
-    .replace(/^www\./, "")
     .trim();
 }
 
 /**
- * Finds an account matching a custom domain host in MongoDB.
- * Generates all possible subdomain / root domain splits to support
- * multi-part TLDs (e.g. get.yourbrand.co.uk -> sub: "get", root: "yourbrand.co.uk").
- * Enforces that the domain is verified and the account holds an active plan.
+ * Finds the workspace whose verified host is exactly this request host.
+ * Supports multi-part TLDs (get.yourbrand.co.uk -> sub "get", root "yourbrand.co.uk").
+ * TXT-only or stale verification flags do not publish the site.
  */
 async function resolveAccountForHost(rawHost: string) {
   const cleanHost = normalizeHost(rawHost);
-  if (!cleanHost) return null;
+  if (!cleanHost || !cleanHost.includes(".")) return null;
 
   await dbConnect();
 
   const parts = cleanHost.split(".");
-  const splits: Array<{ sub: string; root: string }> = [];
-  for (let i = 1; i < parts.length; i++) {
-    splits.push({
-      sub: parts.slice(0, i).join("."),
-      root: parts.slice(i).join("."),
-    });
-  }
-
   const escapeRegex = (s: string) => s.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+  const orConditions: Record<string, unknown>[] = [];
 
-  const orConditions: any[] = [
-    { customDomain: { $regex: new RegExp(`^${escapeRegex(cleanHost)}$`, "i") } },
-    ...splits.map((s) => ({
-      customDomain: { $regex: new RegExp(`^${escapeRegex(s.root)}$`, "i") },
+  // Root must keep a dot (brand.com, brand.co.uk), so the left label is the subdomain.
+  for (let i = 1; i < parts.length - 1; i++) {
+    const sub = parts.slice(0, i).join(".");
+    const root = parts.slice(i).join(".");
+    orConditions.push({
+      customDomain: { $regex: new RegExp(`^${escapeRegex(root)}$`, "i") },
       $or: [
-        { customSubdomain: { $regex: new RegExp(`^${escapeRegex(s.sub)}$`, "i") } },
-        ...(s.sub === "get" || s.sub === "www"
+        { customSubdomain: { $regex: new RegExp(`^${escapeRegex(sub)}$`, "i") } },
+        ...(sub === "get"
           ? [
               { customSubdomain: { $in: ["", null] } },
               { customSubdomain: { $exists: false } },
             ]
           : []),
       ],
-    })),
-  ];
+    });
+  }
+
+  if (orConditions.length === 0) return null;
 
   const account = await AccountModel.findOne({
+    cnameVerified: true,
     $or: orConditions,
-    $and: [
-      {
-        $or: [
-          { cnameVerified: true },
-          { domainVerified: true },
-        ],
-      },
-    ],
   }).lean();
 
   if (!account) return null;
 
-  const planLimits = getPlanLimits((account as any).plan, (account as any).email, (account as any).role);
-  if (!planLimits.customDomainAllowed) {
-    return null;
-  }
+  const expectedHost = formatFullHost(
+    (account as any).customDomain,
+    (account as any).customSubdomain || "get"
+  );
+  if (!expectedHost || cleanHost !== expectedHost) return null;
 
   return account;
 }

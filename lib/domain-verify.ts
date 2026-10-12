@@ -85,3 +85,43 @@ export function formatFullHost(domain: string, subdomain?: string): string {
   const sub = formatSubdomain(subdomain);
   return `${sub}.${clean}`;
 }
+
+/** Vercel's documented CNAME target for project domains. */
+export const VERCEL_CNAME_TARGET = "cname.vercel-dns.com";
+
+/**
+ * Host customers should point their subdomain CNAME at.
+ * Shared by the dashboard and the verifier so the two cannot drift.
+ */
+export function getCnameTarget(appUrl?: string): string {
+  const raw =
+    process.env.NEXT_PUBLIC_CNAME_TARGET ||
+    appUrl ||
+    process.env.NEXT_PUBLIC_APP_URL ||
+    process.env.CNAME_TARGET ||
+    "magnets.bdatech.in";
+  const cleaned = cleanDomain(raw);
+  if (!cleaned || cleaned === "localhost" || cleaned === "127.0.0.1") {
+    return "magnets.bdatech.in";
+  }
+  return cleaned;
+}
+
+/**
+ * True only when the CNAME target is this app, or Vercel's exact edge hostname.
+ * A record that merely contains "vercel" or "leadmagnets" does not match.
+ */
+export function cnameRecordMatchesTarget(record: string, target: string): boolean {
+  const rec = record.toLowerCase().trim().replace(/\.$/, "").replace(/^"+|"+$/g, "");
+  const expected = cleanDomain(target);
+  if (!rec || !expected) return false;
+  return rec === expected || rec === VERCEL_CNAME_TARGET;
+}
+
+/** True when host is the apex or a real subdomain of apex, not a lookalike suffix. */
+export function isPlatformHost(host: string, apex: string): boolean {
+  const normalizedHost = cleanDomain(host);
+  const normalizedApex = cleanDomain(apex);
+  if (!normalizedHost || !normalizedApex) return false;
+  return normalizedHost === normalizedApex || normalizedHost.endsWith(`.${normalizedApex}`);
+}

@@ -45,14 +45,6 @@ export default async function UserProfileRoute({
           redirect(`/${ownerAccount.username}/${matchedPage.slug || matchedPage.id}`);
         }
       }
-
-      // Fallback 2: Check if rawUser matches a custom domain
-      accountDoc = await AccountModel.findOne({
-        $or: [
-          { customDomain: rawUser.toLowerCase() },
-          { customDomain: { $regex: new RegExp(escapedUsername, "i") } }
-        ]
-      }).lean();
     }
 
     if (accountDoc && accountDoc.email) {

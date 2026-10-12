@@ -25,6 +25,7 @@ import {
   getDomainVerificationToken,
   formatCustomDomainUrl,
   formatFullHost,
+  getCnameTarget,
 } from "@/lib/domain-verify";
 import { InfoTooltip } from "@/components/ui/info-tooltip";
 import { DisconnectDomainModal } from "./DisconnectDomainModal";
@@ -141,13 +142,7 @@ export const DomainSection = memo(function DomainSection({
   const liveCustomUrl = useMemo(() => formatCustomDomainUrl(rootDomain, pageSubdomain), [rootDomain, pageSubdomain]);
   const fullCustomHost = useMemo(() => formatFullHost(rootDomain, pageSubdomain), [rootDomain, pageSubdomain]);
   const defaultShareUrl = useMemo(() => `${appBaseUrl}/${username}`, [appBaseUrl, username]);
-  const cnamePointsTo = useMemo(() => {
-    const clean = sanitizeDomain(appBaseUrl);
-    if (!clean || clean === "localhost" || clean === "127.0.0.1") {
-      return "magnets.bdatech.in";
-    }
-    return clean;
-  }, [appBaseUrl]);
+  const cnamePointsTo = useMemo(() => getCnameTarget(appBaseUrl), [appBaseUrl]);
 
   const copyToClipboard = (text: string, fieldKey: string, toastMessage?: string) => {
     if (!navigator?.clipboard) {
@@ -633,19 +628,25 @@ export const DomainSection = memo(function DomainSection({
                               addToast(data.error || "Custom domains require a Pro plan.", "error");
                               return;
                             }
+                            if (typeof data.isVerified === "boolean") setDomainVerified(data.isVerified);
+                            if (typeof data.cnameVerified === "boolean") setCnameVerified(data.cnameVerified);
+                            if (data.sslStatus === "pending" || data.sslStatus === "active" || data.sslStatus === "failed") {
+                              setSslStatus(data.sslStatus);
+                            }
                             if (data.isVerified) {
-                              setDomainVerified(true);
-                              if (data.cnameVerified) setCnameVerified(true);
-                              if (data.sslStatus) setSslStatus(data.sslStatus);
-                              // BUG FIX #7: do NOT set domainError to a success string — it is an error field.
                               // The "Ownership Verified" badge handles the success state.
                               setDomainError("");
                               await handleSave({
                                 domainVerified: true,
-                                cnameVerified: data.cnameVerified,
-                                sslStatus: data.sslStatus || "active"
+                                cnameVerified: Boolean(data.cnameVerified),
+                                sslStatus: data.sslStatus || "pending",
                               });
-                              addToast("🎉 Domain ownership verified successfully!", "success");
+                              addToast(
+                                String(data.message || "").includes("unavailable")
+                                  ? data.message
+                                  : "🎉 Domain ownership verified successfully!",
+                                "success"
+                              );
                             } else {
                               const errMsg = data.error || data.message || `No TXT record found at leadmagnets-verify.${cleanDom}. DNS updates can take a few minutes.`;
                               setDomainError(errMsg);
@@ -854,14 +855,23 @@ export const DomainSection = memo(function DomainSection({
                               addToast(data.error || "Custom domains require a Pro plan.", "error");
                               return;
                             }
+                            if (typeof data.isVerified === "boolean") setDomainVerified(data.isVerified);
+                            if (typeof data.cnameVerified === "boolean") setCnameVerified(data.cnameVerified);
+                            if (data.sslStatus === "pending" || data.sslStatus === "active" || data.sslStatus === "failed") {
+                              setSslStatus(data.sslStatus);
+                            }
                             if (data.cnameVerified) {
-                              setCnameVerified(true);
-                              setSslStatus("active");
-                              // Fix #4: Success is shown by the "All steps complete" banner above.
-                              // Do NOT reuse cnameError (an error field) to store a success message.
                               setCnameError("");
-                              await handleSave({ cnameVerified: true, sslStatus: "active" });
-                              addToast("🎉 CNAME routing verified and SSL is active!", "success");
+                              await handleSave({
+                                cnameVerified: true,
+                                sslStatus: data.sslStatus || "pending",
+                              });
+                              addToast(
+                                data.sslStatus === "active"
+                                  ? "🎉 CNAME routing verified and SSL is active!"
+                                  : data.cnameMessage || "CNAME routing verified. SSL is still provisioning.",
+                                "success"
+                              );
                             } else {
                               const errMsg = data.error || data.cnameMessage || `No CNAME record detected pointing ${cleanSub}.${cleanDom} to ${cnamePointsTo}.`;
                               setCnameError(errMsg);
@@ -930,7 +940,9 @@ export const DomainSection = memo(function DomainSection({
                       <div className="min-w-0">
                         <p className="text-xs font-bold text-emerald-700 dark:text-emerald-300">All steps complete — your domain is live!</p>
                         <p className="text-[11px] text-emerald-600/80 dark:text-emerald-400/70 truncate">
-                          {liveCustomUrl} is fully configured with SSL.
+                          {sslStatus === "active"
+                            ? `${liveCustomUrl} is fully configured with SSL.`
+                            : `${liveCustomUrl} is routed. SSL is still provisioning.`}
                         </p>
                       </div>
                     </div>

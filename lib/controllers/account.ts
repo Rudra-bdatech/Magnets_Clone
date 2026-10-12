@@ -6,8 +6,7 @@ import { hashPassword, comparePassword } from "@/lib/auth-helpers";
 import { deleteCloudinaryAssets } from "@/lib/cloudinary";
 import { sendMail } from "@/lib/email";
 import { determineRoleForEmail } from "@/lib/roles";
-import { getPlanLimits } from "@/lib/plan-limits";
-import { cleanDomain as sanitizeDomain } from "@/lib/domain-verify";
+import { cleanDomain as sanitizeDomain, formatSubdomain } from "@/lib/domain-verify";
 import { randomBytes } from "crypto";
 
 /** Generates a cryptographically random 64-char hex webhook secret. */
@@ -118,20 +117,18 @@ export async function handleSaveAccount(data: any, authEmail: string | null) {
     existing.calendarProvider = data.calendarProvider || existing.calendarProvider;
     existing.calendarToken = data.calendarToken !== undefined ? data.calendarToken : existing.calendarToken;
     existing.calendarConnected = data.calendarConnected !== undefined ? data.calendarConnected : existing.calendarConnected;
-    // Hardened custom domain persistence with plan guard and verification protection
+    // Domain verification flags are owned by /api/domain/verify.
+    // This save may change the requested host, and clears proof when the host changes.
+    // It never copies domainVerified / cnameVerified from the client.
     if (data.customDomain !== undefined) {
       const sanitizedDom = sanitizeDomain(data.customDomain);
       const prevDom = sanitizeDomain(existing.customDomain);
-      const planLimits = getPlanLimits(existing.plan, existing.email, existing.role);
+      const nextSub = formatSubdomain(
+        data.customSubdomain !== undefined ? data.customSubdomain : (existing.customSubdomain || "get")
+      );
+      const prevSub = formatSubdomain(existing.customSubdomain || "get");
 
       if (sanitizedDom && sanitizedDom !== prevDom) {
-        if (!planLimits.customDomainAllowed) {
-          return NextResponse.json(
-            { error: "Custom domains require a Pro plan subscription.", code: "PLAN_UPGRADE_REQUIRED" },
-            { status: 403 }
-          );
-        }
-        // Conflict check: ensure no other account has this domain verified
         const domainInUse = await AccountModel.findOne({
           email: { $ne: existing.email },
           customDomain: sanitizedDom,
@@ -143,25 +140,61 @@ export async function handleSaveAccount(data: any, authEmail: string | null) {
             { status: 409 }
           );
         }
-        existing.customDomain = sanitizedDom;
-        existing.customSubdomain = data.customSubdomain !== undefined ? data.customSubdomain : (existing.customSubdomain || "get");
-        existing.domainVerified = false;
-        existing.cnameVerified = false;
-        existing.sslStatus = "pending";
+        // Only clear proof if this save still owns the previous host.
+        // A verify request that already moved the host must keep its result.
+        await AccountModel.updateOne(
+          {
+            _id: existing._id,
+            $or: [
+              { customDomain: prevDom },
+              { customDomain: "" },
+              { customDomain: null },
+              { customDomain: { $exists: false } },
+            ],
+          },
+          {
+            $set: {
+              customDomain: sanitizedDom,
+              customSubdomain: nextSub,
+              domainVerified: false,
+              cnameVerified: false,
+              sslStatus: "pending",
+            },
+          }
+        );
       } else if (!sanitizedDom) {
-        // Disconnecting / clearing domain
-        existing.customDomain = "";
-        existing.customSubdomain = "get";
-        existing.domainVerified = false;
-        existing.cnameVerified = false;
-        existing.sslStatus = "pending";
-      } else {
-        // Same domain: update subdomain if provided
-        if (data.customSubdomain !== undefined && data.customSubdomain !== existing.customSubdomain) {
-          existing.customSubdomain = data.customSubdomain;
-          existing.cnameVerified = false;
-          existing.sslStatus = "pending";
-        }
+        await AccountModel.updateOne(
+          { _id: existing._id },
+          {
+            $set: {
+              customDomain: "",
+              customSubdomain: "get",
+              domainVerified: false,
+              cnameVerified: false,
+              sslStatus: "pending",
+            },
+          }
+        );
+      } else if (data.customSubdomain !== undefined && nextSub !== prevSub) {
+        await AccountModel.updateOne(
+          {
+            _id: existing._id,
+            customDomain: sanitizedDom,
+            $or: [
+              { customSubdomain: existing.customSubdomain },
+              { customSubdomain: prevSub },
+              { customSubdomain: { $in: ["", null] } },
+              { customSubdomain: { $exists: false } },
+            ],
+          },
+          {
+            $set: {
+              customSubdomain: nextSub,
+              cnameVerified: false,
+              sslStatus: "pending",
+            },
+          }
+        );
       }
     }
     existing.ga4MeasurementId = data.ga4MeasurementId !== undefined ? data.ga4MeasurementId : existing.ga4MeasurementId;
@@ -201,6 +234,11 @@ export async function handleSaveAccount(data: any, authEmail: string | null) {
     if (!data.role) {
       data.role = determineRoleForEmail(data.email || normalizedEmail);
     }
+    data.customDomain = sanitizeDomain(data.customDomain);
+    data.customSubdomain = formatSubdomain(data.customSubdomain);
+    data.domainVerified = false;
+    data.cnameVerified = false;
+    data.sslStatus = "pending";
     account = await AccountModel.create(data);
   }
 
