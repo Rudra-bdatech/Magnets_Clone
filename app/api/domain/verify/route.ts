@@ -65,23 +65,46 @@ function readCnameValues(records: any[]): string[] {
     .map((ans) => String(ans.data || "").replace(/\.$/, "").toLowerCase().trim());
 }
 
-/**
- * Attaches the hostname to the Vercel project when credentials exist.
- * A missing token means this deployment is not using the Vercel domain API,
- * so DNS proof alone is enough. A failed attach must not be reported as live.
- */
-async function attachDomainToVercel(fullHost: string): Promise<{
+type HostingChallenge = { type: string; name: string; value: string };
+
+type AttachResult = {
   attached: boolean;
+  aliased: boolean;
   sslReady: boolean;
   skipped: boolean;
+  certPending?: boolean;
+  challenge?: HostingChallenge | null;
   error?: string;
-}> {
+};
+
+function readHostingChallenge(body: any): HostingChallenge | null {
+  const list = body?.verification || body?.domain?.verification;
+  if (!Array.isArray(list)) return null;
+  const first = list.find((item) => item?.type && (item?.value || item?.domain));
+  if (!first?.value) return null;
+  return {
+    type: String(first.type || "TXT"),
+    name: String(first.domain || first.name || "").replace(/\.$/, ""),
+    value: String(first.value).replace(/^"|"$/g, ""),
+  };
+}
+
+function vercelErrorMessage(body: any, fallback: string): string {
+  return body?.error?.message || body?.message || fallback;
+}
+
+/**
+ * Adds the hostname to the Vercel project and aliases it to the current
+ * production deployment. Adding the domain alone leaves Vercel answering
+ * DEPLOYMENT_NOT_FOUND until the next production deploy.
+ */
+async function attachDomainToVercel(fullHost: string): Promise<AttachResult> {
   const vercelToken = process.env.VERCEL_AUTH_TOKEN || process.env.VERCEL_TOKEN;
   const vercelProjectId = process.env.VERCEL_PROJECT_ID || process.env.PROJECT_ID_VERCEL;
   const vercelTeamId = process.env.VERCEL_TEAM_ID;
 
   if (!vercelToken || !vercelProjectId) {
-    return { attached: true, sslReady: true, skipped: true };
+    return { attached: true, aliased: true, sslReady: true, skipped: true };
   }
 
   const teamParam = vercelTeamId ? `?teamId=${encodeURIComponent(vercelTeamId)}` : "";
@@ -98,14 +121,16 @@ async function attachDomainToVercel(fullHost: string): Promise<{
       body: JSON.stringify({ name: fullHost }),
       signal: AbortSignal.timeout(10000),
     });
+    const addBody = await addRes.json().catch(() => ({}));
 
     if (!addRes.ok && addRes.status !== 409) {
-      const addErr = await addRes.json().catch(() => ({}));
-      const message =
-        addErr?.error?.message ||
-        addErr?.message ||
-        "DNS is correct, but the domain could not be attached to the site.";
-      return { attached: false, sslReady: false, skipped: false, error: message };
+      return {
+        attached: false,
+        aliased: false,
+        sslReady: false,
+        skipped: false,
+        error: vercelErrorMessage(addBody, "DNS is correct, but the domain could not be attached to the site."),
+      };
     }
 
     const verifyRes = await fetch(
@@ -117,12 +142,76 @@ async function attachDomainToVercel(fullHost: string): Promise<{
       }
     );
     const verifyBody = await verifyRes.json().catch(() => ({}));
-    const sslReady = Boolean(verifyRes.ok && (verifyBody?.verified ?? verifyBody?.domain?.verified));
-    return { attached: true, sslReady, skipped: false };
+    const challenge = readHostingChallenge(verifyBody) || readHostingChallenge(addBody);
+    const domainVerified = Boolean(verifyRes.ok && (verifyBody?.verified ?? verifyBody?.domain?.verified));
+
+    const deploymentQuery = new URLSearchParams({
+      projectId: vercelProjectId,
+      target: "production",
+      state: "READY",
+      limit: "1",
+    });
+    if (vercelTeamId) deploymentQuery.set("teamId", vercelTeamId);
+
+    const deploymentRes = await fetch(`https://api.vercel.com/v6/deployments?${deploymentQuery.toString()}`, {
+      headers: { Authorization: `Bearer ${vercelToken}` },
+      signal: AbortSignal.timeout(10000),
+    });
+    const deploymentBody = await deploymentRes.json().catch(() => ({}));
+    const deploymentId = deploymentBody?.deployments?.[0]?.uid;
+
+    if (!deploymentRes.ok || !deploymentId) {
+      return {
+        attached: true,
+        aliased: false,
+        sslReady: false,
+        skipped: false,
+        challenge,
+        error: "The domain was added, but this project has no production deployment to serve it.",
+      };
+    }
+
+    const aliasRes = await fetch(`https://api.vercel.com/v2/deployments/${deploymentId}/aliases${teamParam}`, {
+      method: "POST",
+      headers,
+      body: JSON.stringify({ alias: fullHost }),
+      signal: AbortSignal.timeout(10000),
+    });
+    const aliasBody = await aliasRes.json().catch(() => ({}));
+    const aliasMessage = vercelErrorMessage(aliasBody, "");
+    const alreadyAssigned = aliasRes.status === 409 && /already assigned/i.test(aliasMessage);
+
+    if (aliasRes.ok || alreadyAssigned) {
+      return {
+        attached: true,
+        aliased: true,
+        sslReady: domainVerified || aliasRes.ok || alreadyAssigned,
+        skipped: false,
+        challenge: domainVerified ? null : challenge,
+      };
+    }
+
+    const certPending = /cert/i.test(aliasMessage) && /not ready|pending|issu/i.test(aliasMessage);
+    const ownershipMessage = challenge
+      ? `Vercel still needs a ${challenge.type} record at ${challenge.name} with value ${challenge.value}. Add it, wait a minute, then click Verify CNAME again. Until then the host shows DEPLOYMENT_NOT_FOUND.`
+      : certPending
+        ? `Vercel is still issuing the certificate for ${fullHost}. Wait about a minute, then click Verify CNAME again. Until the domain is linked to the live deployment, the host shows DEPLOYMENT_NOT_FOUND.`
+        : aliasMessage || `The domain could not be linked to the live deployment.`;
+
+    return {
+      attached: true,
+      aliased: false,
+      sslReady: false,
+      skipped: false,
+      certPending,
+      challenge,
+      error: ownershipMessage,
+    };
   } catch (vercelErr) {
     console.warn("Automated Vercel domain provisioning notice:", vercelErr);
     return {
       attached: false,
+      aliased: false,
       sslReady: false,
       skipped: false,
       error: "DNS is correct, but the hosting provider could not be reached to attach this domain.",
@@ -263,6 +352,7 @@ export async function POST(req: Request) {
 
     const provedThisRequest = Boolean(cnameMatched && isVerified && !cnameLookupFailed);
     let sslStatus: "pending" | "active" | "failed" = "pending";
+    let vercelChallenge: HostingChallenge | null = null;
 
     if (!cnameVerified) {
       sslStatus = "pending";
@@ -270,16 +360,17 @@ export async function POST(req: Request) {
       sslStatus = account.sslStatus === "active" || account.sslStatus === "failed" ? account.sslStatus : "pending";
     } else {
       const attach = await attachDomainToVercel(fullSubdomainHost);
-      if (!attach.attached) {
+      vercelChallenge = attach.challenge || null;
+      if (!attach.attached || (!attach.skipped && !attach.aliased)) {
         cnameVerified = false;
-        sslStatus = "failed";
-        cnameMessage = attach.error || "DNS is correct, but this domain could not be attached to the site.";
+        sslStatus = attach.certPending ? "pending" : "failed";
+        cnameMessage = attach.error || "DNS is correct, but this domain could not be linked to the live deployment.";
       } else if (attach.skipped || attach.sslReady) {
         sslStatus = "active";
-        cnameMessage = `Traffic successfully routed! ${fullSubdomainHost} points to ${targetCname}.`;
+        cnameMessage = `Traffic successfully routed! ${fullSubdomainHost} is linked to the live deployment.`;
       } else {
         sslStatus = "pending";
-        cnameMessage = `CNAME is correct and ${fullSubdomainHost} is attached. The SSL certificate is still provisioning.`;
+        cnameMessage = `${fullSubdomainHost} is linked to the live deployment. HTTPS may take another minute. If the host still shows DEPLOYMENT_NOT_FOUND, click Verify CNAME again.`;
       }
     }
 
@@ -312,6 +403,7 @@ export async function POST(req: Request) {
       sslStatus,
       message: dnsMessage,
       cnameMessage,
+      vercelChallenge,
     });
   } catch (error: any) {
     console.error("Domain verification API error:", error);

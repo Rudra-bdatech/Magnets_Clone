@@ -97,6 +97,7 @@ export const DomainSection = memo(function DomainSection({
 }: DomainSectionProps) {
   const [copiedField, setCopiedField] = useState<string | null>(null);
   const [showDisconnectModal, setShowDisconnectModal] = useState(false);
+  const [hostingChallenge, setHostingChallenge] = useState<{ type: string; name: string; value: string } | null>(null);
 
   const handleDisconnectConfirm = async () => {
     try {
@@ -115,6 +116,7 @@ export const DomainSection = memo(function DomainSection({
       setSslStatus("pending");
       setDomainError("");
       setCnameError("");
+      setHostingChallenge(null);
 
       await handleSave({
         customDomain: "",
@@ -633,6 +635,7 @@ export const DomainSection = memo(function DomainSection({
                             if (data.sslStatus === "pending" || data.sslStatus === "active" || data.sslStatus === "failed") {
                               setSslStatus(data.sslStatus);
                             }
+                            setHostingChallenge(data.vercelChallenge?.value ? data.vercelChallenge : null);
                             if (data.isVerified) {
                               // The "Ownership Verified" badge handles the success state.
                               setDomainError("");
@@ -860,6 +863,7 @@ export const DomainSection = memo(function DomainSection({
                             if (data.sslStatus === "pending" || data.sslStatus === "active" || data.sslStatus === "failed") {
                               setSslStatus(data.sslStatus);
                             }
+                            setHostingChallenge(data.vercelChallenge?.value ? data.vercelChallenge : null);
                             if (data.cnameVerified) {
                               setCnameError("");
                               await handleSave({
@@ -927,6 +931,35 @@ export const DomainSection = memo(function DomainSection({
                       )}
                     </div>
 
+                    {hostingChallenge && (
+                      <div className="mt-3 rounded-xl border border-amber-500/30 bg-amber-500/[0.06] p-3.5 space-y-2">
+                        <p className="text-xs font-bold text-amber-800 dark:text-amber-200">
+                          One more DNS record, from the host
+                        </p>
+                        <p className="text-[11px] text-amber-700/90 dark:text-amber-300/90">
+                          Add this {hostingChallenge.type} record, wait a minute, then click Verify CNAME again. Without it the host returns DEPLOYMENT_NOT_FOUND.
+                        </p>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                          <button
+                            type="button"
+                            onClick={() => copyToClipboard(hostingChallenge.name, "vercelHost", "Host name copied")}
+                            className="rounded-lg border border-amber-500/20 bg-white dark:bg-[#141418] px-3 py-2 text-left"
+                          >
+                            <span className="block text-[10px] font-bold uppercase tracking-wider text-zinc-400">Host</span>
+                            <span className="block truncate font-mono text-xs text-zinc-900 dark:text-zinc-100">{hostingChallenge.name}</span>
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => copyToClipboard(hostingChallenge.value, "vercelValue", "Record value copied")}
+                            className="rounded-lg border border-amber-500/20 bg-white dark:bg-[#141418] px-3 py-2 text-left"
+                          >
+                            <span className="block text-[10px] font-bold uppercase tracking-wider text-zinc-400">Value</span>
+                            <span className="block truncate font-mono text-xs text-zinc-900 dark:text-zinc-100">{hostingChallenge.value}</span>
+                          </button>
+                        </div>
+                      </div>
+                    )}
+
                   </div>
 
                   {/* Both-steps complete summary banner */}
@@ -938,11 +971,13 @@ export const DomainSection = memo(function DomainSection({
                     >
                       <CheckCircle2 className="h-5 w-5 text-emerald-600 dark:text-emerald-400 shrink-0" />
                       <div className="min-w-0">
-                        <p className="text-xs font-bold text-emerald-700 dark:text-emerald-300">All steps complete — your domain is live!</p>
+                        <p className="text-xs font-bold text-emerald-700 dark:text-emerald-300">
+                          {sslStatus === "active" ? "All steps complete — your domain is live!" : "Domain linked. HTTPS is still being issued."}
+                        </p>
                         <p className="text-[11px] text-emerald-600/80 dark:text-emerald-400/70 truncate">
                           {sslStatus === "active"
                             ? `${liveCustomUrl} is fully configured with SSL.`
-                            : `${liveCustomUrl} is routed. SSL is still provisioning.`}
+                            : `${liveCustomUrl} is linked to the live deployment. Refresh again in a minute.`}
                         </p>
                       </div>
                     </div>
