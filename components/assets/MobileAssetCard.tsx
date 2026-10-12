@@ -31,7 +31,9 @@ interface MobileAssetCardProps {
     icon: React.ReactNode;
     bg: string;
     tagBg?: string;
-    ext: string;
+    ext?: string;
+    watermarkIcon?: React.ReactNode;
+    watermarkColor?: string;
   };
   linkedPages: MagnetPage[];
   isSelected: boolean;
@@ -89,14 +91,23 @@ export const MobileAssetCard = memo(function MobileAssetCard({
   return (
     <div
       onClick={handleCardClick}
-      className={`group relative rounded-2xl border p-3.5 transition-all duration-200 cursor-pointer select-none ${
+      className={`group relative rounded-2xl border p-3.5 transition-all duration-200 cursor-pointer select-none overflow-hidden ${
         isSelected
           ? "border-[#0066B2] bg-[#EFF6FF] dark:border-[#38BDF8] dark:bg-[#0066B2]/15 shadow-sm"
           : "border-zinc-200/80 bg-white dark:border-[#282832] dark:bg-[#18181C] hover:border-zinc-300 dark:hover:border-zinc-700 shadow-2xs"
       }`}
     >
-      {/* Top Header Row: Checkbox, Badge Icon, Name & Ext */}
-      <div className="flex items-start justify-between gap-2.5">
+      {/* Background Watermark Icon */}
+      {badge.watermarkIcon && (
+        <div
+          className={`pointer-events-none absolute -bottom-3 -right-3 ${badge.watermarkColor || "text-zinc-400/10"} transition-all duration-500 group-hover:scale-110 group-hover:-rotate-6 select-none`}
+        >
+          {badge.watermarkIcon}
+        </div>
+      )}
+
+      {/* Top Header Row: Checkbox, Badge Icon, Name */}
+      <div className="relative z-10 flex items-start justify-between gap-2.5">
         <div className="flex items-start min-w-0 flex-1">
           {/* Animated Checkbox in Selection Mode */}
           <AnimatePresence initial={false}>
@@ -205,11 +216,6 @@ export const MobileAssetCard = memo(function MobileAssetCard({
             )}
           </div>
         </div>
-
-        {/* Extension Badge */}
-        <span className={`shrink-0 px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider border ${badge.tagBg || "bg-zinc-100 text-zinc-600 dark:bg-white/10 dark:text-zinc-300 border-zinc-200 dark:border-white/10"}`}>
-          {badge.ext}
-        </span>
       </div>
 
       {/* Middle Attached Magnet Status */}

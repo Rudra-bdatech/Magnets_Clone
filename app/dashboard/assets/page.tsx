@@ -532,6 +532,8 @@ export default function ResourcesPage() {
           bg: "bg-emerald-500/[0.08] dark:bg-emerald-500/10 border-emerald-500/20 dark:border-emerald-500/20 shadow-2xs backdrop-blur-md",
           tagBg: "bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-300 border-emerald-500/20",
           ext: ext.toUpperCase(),
+          watermarkIcon: <ImageIcon className="h-20 w-20 sm:h-24 sm:w-24 -rotate-12 stroke-[1.25]" />,
+          watermarkColor: "text-emerald-500/[0.07] dark:text-emerald-400/[0.08] group-hover:text-emerald-500/20 dark:group-hover:text-emerald-400/25",
         };
       case "media":
         return {
@@ -539,6 +541,8 @@ export default function ResourcesPage() {
           bg: "bg-purple-500/[0.08] dark:bg-purple-500/10 border-purple-500/20 dark:border-purple-500/20 shadow-2xs backdrop-blur-md",
           tagBg: "bg-purple-500/10 text-purple-600 dark:bg-purple-500/20 dark:text-purple-300 border-purple-500/20",
           ext: ext.toUpperCase(),
+          watermarkIcon: <Film className="h-20 w-20 sm:h-24 sm:w-24 -rotate-12 stroke-[1.25]" />,
+          watermarkColor: "text-purple-500/[0.07] dark:text-purple-400/[0.08] group-hover:text-purple-500/20 dark:group-hover:text-purple-400/25",
         };
       case "archives":
         return {
@@ -546,6 +550,8 @@ export default function ResourcesPage() {
           bg: "bg-amber-500/[0.08] dark:bg-amber-500/10 border-amber-500/20 dark:border-amber-500/20 shadow-2xs backdrop-blur-md",
           tagBg: "bg-amber-500/10 text-amber-600 dark:bg-amber-500/20 dark:text-amber-300 border-amber-500/20",
           ext: ext.toUpperCase(),
+          watermarkIcon: <Archive className="h-20 w-20 sm:h-24 sm:w-24 -rotate-12 stroke-[1.25]" />,
+          watermarkColor: "text-amber-500/[0.07] dark:text-amber-400/[0.08] group-hover:text-amber-500/20 dark:group-hover:text-amber-400/25",
         };
       default:
         if (ext === "pdf") {
@@ -554,6 +560,8 @@ export default function ResourcesPage() {
             bg: brandBg,
             tagBg: brandTag,
             ext: "PDF",
+            watermarkIcon: <FileText className="h-20 w-20 sm:h-24 sm:w-24 -rotate-12 stroke-[1.25]" />,
+            watermarkColor: "text-[#0066B2]/[0.07] dark:text-[#38BDF8]/[0.08] group-hover:text-[#0066B2]/20 dark:group-hover:text-[#38BDF8]/25",
           };
         }
         return {
@@ -561,6 +569,8 @@ export default function ResourcesPage() {
           bg: brandBg,
           tagBg: brandTag,
           ext: ext.toUpperCase(),
+          watermarkIcon: <FileCode className="h-20 w-20 sm:h-24 sm:w-24 -rotate-12 stroke-[1.25]" />,
+          watermarkColor: "text-[#0066B2]/[0.07] dark:text-[#38BDF8]/[0.08] group-hover:text-[#0066B2]/20 dark:group-hover:text-[#38BDF8]/25",
         };
     }
   }, [getFileCategory]);
@@ -673,38 +683,79 @@ export default function ResourcesPage() {
   return (
     <div
       onDrop={handleDrop}
-        onDragOver={handleDragOver}
-        onDragLeave={handleDragLeave}
-        className="relative flex flex-col min-h-[calc(100vh-3.5rem)] bg-gradient-to-b from-[#EFF6FF]/40 via-[#F8FBFF] to-[#F8FBFF] dark:bg-none dark:bg-[#0B0B0D]"
-      >
+      onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
+      className="relative flex flex-col min-h-[calc(100vh-3.5rem)] bg-gradient-to-b from-[#EFF6FF]/40 via-[#F8FBFF] to-[#F8FBFF] dark:bg-none dark:bg-[#0B0B0D]"
+    >
 
-        {/* Global Drag Overlay when dragging files anywhere onto the page */}
-        {isDragOver && (
-          <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#0066B2]/85 backdrop-blur-md text-white p-6 animate-in fade-in duration-200">
-            <div className="flex h-20 w-20 items-center justify-center rounded-3xl bg-white/20 shadow-2xl animate-bounce">
-              <UploadCloud className="h-10 w-10 text-white" />
-            </div>
-            <h3 className="mt-4 text-2xl font-bold">Drop your file(s) to upload instantly</h3>
-            <p className="mt-1 text-sm text-blue-100">Supports multi-file upload · PDF, DOCX, ZIP, MP4, Images up to 15 MB</p>
+      {/* Global Drag Overlay when dragging files anywhere onto the page */}
+      {isDragOver && (
+        <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#0066B2]/85 backdrop-blur-md text-white p-6 animate-in fade-in duration-200">
+          <div className="flex h-20 w-20 items-center justify-center rounded-3xl bg-white/20 shadow-2xl animate-bounce">
+            <UploadCloud className="h-10 w-10 text-white" />
           </div>
-        )}
+          <h3 className="mt-4 text-2xl font-bold">Drop your file(s) to upload instantly</h3>
+          <p className="mt-1 text-sm text-blue-100">Supports multi-file upload · PDF, DOCX, ZIP, MP4, Images up to 15 MB</p>
+        </div>
+      )}
 
-        <div className={`flex-1 px-3.5 py-6 sm:px-6 sm:py-7 lg:px-8 mx-auto w-full flex flex-col gap-4 transition-[max-width] duration-[220ms] ease-[cubic-bezier(0.16,1,0.3,1)] will-change-[max-width] ${isCollapsed ? "max-w-[1440px]" : "max-w-7xl"}`}>
+      <div className={`flex-1 px-3.5 py-6 sm:px-6 sm:py-7 lg:px-8 mx-auto w-full flex flex-col gap-4 transition-[max-width] duration-[220ms] ease-[cubic-bezier(0.16,1,0.3,1)] will-change-[max-width] ${isCollapsed ? "max-w-[1440px]" : "max-w-7xl"}`}>
 
-          {/* ========================================================================= */}
-          {/* 1. DESKTOP Page Heading (hidden md:flex)                                 */}
-          {/* ========================================================================= */}
-          <div className="hidden md:flex flex-col justify-between gap-4 md:flex-row md:items-center">
-            <div>
-              <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-zinc-900 dark:text-white">
-                Assets
-              </h2>
-            </div>
+        {/* ========================================================================= */}
+        {/* 1. DESKTOP Page Heading (hidden md:flex)                                 */}
+        {/* ========================================================================= */}
+        <div className="hidden md:flex flex-col justify-between gap-4 md:flex-row md:items-center">
+          <div>
+            <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-zinc-900 dark:text-white">
+              Assets
+            </h2>
+          </div>
 
-            <div className="relative group shrink-0">
+          <div className="relative group shrink-0">
+            <input
+              type="file"
+              id="resource-upload-header"
+              multiple
+              className="absolute inset-0 w-full h-full cursor-pointer opacity-0 z-20"
+              onChange={handleSimulatedUpload}
+              disabled={uploading}
+            />
+            <button
+              disabled={uploading}
+              className="inline-flex items-center gap-2 rounded-xl bg-[#0066B2] group-hover:bg-[#004A85] px-4 py-2.5 text-xs font-semibold text-white shadow-sm group-hover:shadow-md group-hover:shadow-[#0066B2]/30 disabled:opacity-60 transition-colors duration-200 cursor-pointer border border-white/20 group-hover:border-white/40 dark:border-white/10"
+            >
+              {uploading ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin text-white" />
+                  <span>
+                    {uploadProgress
+                      ? `Uploading (${uploadProgress.current}/${uploadProgress.total})...`
+                      : "Uploading files..."}
+                  </span>
+                </>
+              ) : (
+                <>
+                  <Plus className="h-4 w-4 stroke-[2.25] transition-transform duration-300 group-hover:rotate-90" />
+                  <span className="tracking-tight">Upload Resources</span>
+                </>
+              )}
+            </button>
+          </div>
+        </div>
+
+        {/* ========================================================================= */}
+        {/* 1. MOBILE Page Heading (flex md:hidden)                                   */}
+        {/* ========================================================================= */}
+        <div className="flex md:hidden flex-col gap-3">
+          <div className="flex items-center justify-between">
+            <h2 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-white">
+              Assets
+            </h2>
+
+            <div className="relative shrink-0">
               <input
                 type="file"
-                id="resource-upload-header"
+                id="resource-upload-mobile-header"
                 multiple
                 className="absolute inset-0 w-full h-full cursor-pointer opacity-0 z-20"
                 onChange={handleSimulatedUpload}
@@ -712,445 +763,398 @@ export default function ResourcesPage() {
               />
               <button
                 disabled={uploading}
-                className="inline-flex items-center gap-2 rounded-xl bg-[#0066B2] group-hover:bg-[#004A85] px-4 py-2.5 text-xs font-semibold text-white shadow-sm group-hover:shadow-md group-hover:shadow-[#0066B2]/30 disabled:opacity-60 transition-colors duration-200 cursor-pointer border border-white/20 group-hover:border-white/40 dark:border-white/10"
+                className="flex items-center gap-1.5 rounded-xl bg-[#0066B2] hover:bg-[#005291] px-3.5 py-2 text-xs font-bold text-white shadow-sm active:scale-95 transition cursor-pointer disabled:opacity-60"
               >
                 {uploading ? (
                   <>
-                    <Loader2 className="h-4 w-4 animate-spin text-white" />
-                    <span>
-                      {uploadProgress
-                        ? `Uploading (${uploadProgress.current}/${uploadProgress.total})...`
-                        : "Uploading files..."}
-                    </span>
+                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    <span>Uploading...</span>
                   </>
                 ) : (
                   <>
-                    <Plus className="h-4 w-4 stroke-[2.25] transition-transform duration-300 group-hover:rotate-90" />
-                    <span className="tracking-tight">Upload Resources</span>
+                    <Plus className="h-3.5 w-3.5 stroke-[2.5]" />
+                    <span>Upload</span>
                   </>
                 )}
               </button>
             </div>
           </div>
+        </div>
 
-          {/* ========================================================================= */}
-          {/* 1. MOBILE Page Heading (flex md:hidden)                                   */}
-          {/* ========================================================================= */}
-          <div className="flex md:hidden flex-col gap-3">
-            <div className="flex items-center justify-between">
-              <h2 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-white">
-                Assets
-              </h2>
+        {/* ========================================================================= */}
+        {/* 2. Stat Cards (Unified Responsive Compact Horizontal Row)                */}
+        {/* ========================================================================= */}
+        <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
+          {/* Total Resources */}
+          <div className="relative h-full rounded-2xl border border-[#0066B2]/30 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
+            <div className="flex items-center justify-between sm:justify-start w-full sm:w-auto">
+              <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl border border-indigo-500/30 bg-indigo-50 text-indigo-600 dark:border-indigo-500/30 dark:bg-indigo-500/20 dark:text-indigo-400">
+                <Layers className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
+              </div>
+            </div>
+            <div className="flex-1 min-w-0 w-full">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-[#9B9085] leading-none truncate">
+                Total Resources
+              </p>
+              <p className="text-xl font-extrabold tabular-nums text-zinc-900 dark:text-white mt-1 leading-none tracking-tight">
+                {resources.length}
+              </p>
+            </div>
+            <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0066B2]/[0.05] to-transparent opacity-100" />
+          </div>
 
-              <div className="relative shrink-0">
+          {/* Storage Used */}
+          <div className="relative h-full rounded-2xl border border-[#0066B2]/30 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
+            <div className="flex items-center justify-between sm:justify-start w-full sm:w-auto">
+              <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl border border-[#0066B2]/30 bg-[#EFF6FF] text-[#0066B2] dark:border-[#0066B2]/30 dark:bg-[#0066B2]/20 dark:text-[#38BDF8]">
+                <HardDrive className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
+              </div>
+            </div>
+            <div className="flex-1 min-w-0 w-full">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-[#9B9085] leading-none truncate">
+                Storage Used
+              </p>
+              <p className="text-xl font-extrabold tabular-nums text-zinc-900 dark:text-white mt-1 leading-none tracking-tight truncate">
+                {formatBytes(totalSizeBytes)}
+              </p>
+            </div>
+            <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0066B2]/[0.05] to-transparent opacity-100" />
+          </div>
+
+          {/* Active in Magnets */}
+          <div className="relative h-full rounded-2xl border border-[#0066B2]/30 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
+            <div className="flex items-center justify-between sm:justify-start w-full sm:w-auto">
+              <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl border border-sky-500/30 bg-sky-50 text-sky-600 dark:border-sky-500/30 dark:bg-sky-500/20 dark:text-sky-400">
+                <Link2 className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
+              </div>
+            </div>
+            <div className="flex-1 min-w-0 w-full">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-[#9B9085] leading-none truncate">
+                Active in Magnets
+              </p>
+              <p className="text-xl font-extrabold tabular-nums text-zinc-900 dark:text-white mt-1 leading-none tracking-tight">
+                {linkedStats.linkedCount}
+              </p>
+            </div>
+            <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0066B2]/[0.05] to-transparent opacity-100" />
+          </div>
+
+          {/* Total Deliveries */}
+          <div className="relative h-full rounded-2xl border border-[#0066B2]/30 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
+            <div className="flex items-center justify-between sm:justify-start w-full sm:w-auto">
+              <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl border border-emerald-500/30 bg-emerald-50 text-emerald-600 dark:border-emerald-500/30 dark:bg-emerald-500/20 dark:text-emerald-400">
+                <Send className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
+              </div>
+            </div>
+            <div className="flex-1 min-w-0 w-full">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-[#9B9085] leading-none truncate">
+                Total Deliveries
+              </p>
+              <p className="text-xl font-extrabold tabular-nums text-zinc-900 dark:text-white mt-1 leading-none tracking-tight">
+                {totalDeliveries}
+              </p>
+            </div>
+            <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0066B2]/[0.05] to-transparent opacity-100" />
+          </div>
+        </div>
+
+        {/* Option 1: SMART EMPTY STATE DROPZONE (Only rendered when user has NO files) */}
+        {resources.length === 0 && (
+          <div className="relative rounded-2xl border-2 border-dashed border-[#0066B2]/40 bg-white/90 p-12 text-center backdrop-blur-sm hover:border-[#0066B2] dark:border-[#0066B2]/40 dark:bg-[#18181B]/90 shadow-sm transition-all">
+            <input
+              type="file"
+              multiple
+              className="absolute inset-0 cursor-pointer opacity-0 z-10"
+              onChange={handleSimulatedUpload}
+              disabled={uploading}
+            />
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-[#EFF6FF] text-[#0066B2] dark:bg-[#0066B2]/20 dark:text-[#38BDF8]">
+              {uploading ? <Loader2 className="h-7 w-7 animate-spin" /> : <UploadCloud className="h-7 w-7" />}
+            </div>
+            <h3 className="mt-4 text-base font-bold text-zinc-900 dark:text-white">
+              {uploading
+                ? uploadProgress
+                  ? `Uploading (${uploadProgress.current} of ${uploadProgress.total}): ${uploadProgress.currentFileName}`
+                  : "Uploading documents..."
+                : "Drag & Drop lead magnet files here"}
+            </h3>
+            <button className="mt-5 inline-flex items-center gap-2 rounded-xl bg-[#0066B2] px-5 py-2.5 text-xs font-bold text-white shadow-sm hover:bg-[#005291] transition cursor-pointer">
+              <UploadCloud className="h-4 w-4" /> Browse Files from Device
+            </button>
+          </div>
+        )}
+
+        {/* ========================================================================= */}
+        {/* Main Table & Filter Container (Standardized 16px gap to match Dashboard)   */}
+        {/* ========================================================================= */}
+        {resources.length > 0 && (
+          <>
+            {/* ===================================================================== */}
+            {/* 3. Search, Filter & Sort Toolbar (Floating Controls Row)              */}
+            {/* ===================================================================== */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3 w-full max-w-full min-w-0">
+              {/* Search Bar */}
+              <div className="flex items-center gap-2 flex-1 rounded-xl bg-zinc-50 dark:bg-[#1C1C20] px-3.5 py-2 border border-zinc-200/60 dark:border-zinc-800 focus-within:border-[#0066B2] dark:focus-within:border-[#0066B2] min-w-0">
+                <Search className="h-4 w-4 text-zinc-400 shrink-0" />
                 <input
-                  type="file"
-                  id="resource-upload-mobile-header"
-                  multiple
-                  className="absolute inset-0 w-full h-full cursor-pointer opacity-0 z-20"
-                  onChange={handleSimulatedUpload}
-                  disabled={uploading}
+                  type="text"
+                  placeholder="Search files by name or type..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="bg-transparent text-xs text-zinc-900 dark:text-white outline-none placeholder:text-zinc-400 w-full min-w-0"
                 />
-                <button
-                  disabled={uploading}
-                  className="flex items-center gap-1.5 rounded-xl bg-[#0066B2] hover:bg-[#005291] px-3.5 py-2 text-xs font-bold text-white shadow-sm active:scale-95 transition cursor-pointer disabled:opacity-60"
-                >
-                  {uploading ? (
-                    <>
-                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                      <span>Uploading...</span>
-                    </>
-                  ) : (
-                    <>
-                      <Plus className="h-3.5 w-3.5 stroke-[2.5]" />
-                      <span>Upload</span>
-                    </>
-                  )}
-                </button>
+                {searchQuery && (
+                  <button
+                    type="button"
+                    onClick={() => setSearchQuery("")}
+                    className="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 shrink-0 cursor-pointer"
+                  >
+                    <X className="h-3.5 w-3.5" />
+                  </button>
+                )}
               </div>
-            </div>
-          </div>
 
-          {/* ========================================================================= */}
-          {/* 2. Stat Cards (Unified Responsive Compact Horizontal Row)                */}
-          {/* ========================================================================= */}
-          <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
-            {/* Total Resources */}
-            <div className="relative h-full rounded-2xl border border-[#0066B2]/30 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
-              <div className="flex items-center justify-between sm:justify-start w-full sm:w-auto">
-                <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl border border-indigo-500/30 bg-indigo-50 text-indigo-600 dark:border-indigo-500/30 dark:bg-indigo-500/20 dark:text-indigo-400">
-                  <Layers className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
+              <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 justify-between sm:justify-end w-full sm:w-auto min-w-0">
+                {/* Desktop Category Tabs Pod */}
+                <div className="hidden sm:flex items-center p-1 bg-zinc-100 dark:bg-[#1C1C20] rounded-xl text-xs font-semibold min-w-0">
+                  {[
+                    { id: "all", label: `All (${categoryCounts.all})` },
+                    { id: "docs", label: `Docs (${categoryCounts.docs})` },
+                    { id: "images", label: `Images (${categoryCounts.images})` },
+                    { id: "media", label: `Media (${categoryCounts.media})` },
+                    { id: "archives", label: `Archives (${categoryCounts.archives})` },
+                  ].map((tab) => (
+                    <button
+                      key={tab.id}
+                      type="button"
+                      onClick={() => setActiveCategory(tab.id as any)}
+                      className={`relative px-3 py-1 rounded-lg transition-colors duration-200 cursor-pointer ${activeCategory === tab.id
+                          ? "text-zinc-900 dark:text-white font-bold"
+                          : "text-zinc-500 hover:text-zinc-900 dark:hover:text-white"
+                        }`}
+                    >
+                      {activeCategory === tab.id && (
+                        <motion.div
+                          layoutId="activeAssetCategoryTab"
+                          className="absolute inset-0 bg-white dark:bg-[#2A2A30] rounded-lg shadow-xs"
+                          transition={{ type: "spring", stiffness: 500, damping: 32 }}
+                        />
+                      )}
+                      <span className="relative z-10">{tab.label}</span>
+                    </button>
+                  ))}
                 </div>
-              </div>
-              <div className="flex-1 min-w-0 w-full">
-                <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-[#9B9085] leading-none truncate">
-                  Total Resources
-                </p>
-                <p className="text-xl font-extrabold tabular-nums text-zinc-900 dark:text-white mt-1 leading-none tracking-tight">
-                  {resources.length}
-                </p>
-              </div>
-              <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0066B2]/[0.05] to-transparent opacity-100" />
-            </div>
 
-            {/* Storage Used */}
-            <div className="relative h-full rounded-2xl border border-[#0066B2]/30 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
-              <div className="flex items-center justify-between sm:justify-start w-full sm:w-auto">
-                <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl border border-[#0066B2]/30 bg-[#EFF6FF] text-[#0066B2] dark:border-[#0066B2]/30 dark:bg-[#0066B2]/20 dark:text-[#38BDF8]">
-                  <HardDrive className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
-                </div>
-              </div>
-              <div className="flex-1 min-w-0 w-full">
-                <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-[#9B9085] leading-none truncate">
-                  Storage Used
-                </p>
-                <p className="text-xl font-extrabold tabular-nums text-zinc-900 dark:text-white mt-1 leading-none tracking-tight truncate">
-                  {formatBytes(totalSizeBytes)}
-                </p>
-              </div>
-              <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0066B2]/[0.05] to-transparent opacity-100" />
-            </div>
-
-            {/* Active in Magnets */}
-            <div className="relative h-full rounded-2xl border border-[#0066B2]/30 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
-              <div className="flex items-center justify-between sm:justify-start w-full sm:w-auto">
-                <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl border border-sky-500/30 bg-sky-50 text-sky-600 dark:border-sky-500/30 dark:bg-sky-500/20 dark:text-sky-400">
-                  <Link2 className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
-                </div>
-              </div>
-              <div className="flex-1 min-w-0 w-full">
-                <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-[#9B9085] leading-none truncate">
-                  Active in Magnets
-                </p>
-                <p className="text-xl font-extrabold tabular-nums text-zinc-900 dark:text-white mt-1 leading-none tracking-tight">
-                  {linkedStats.linkedCount}
-                </p>
-              </div>
-              <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0066B2]/[0.05] to-transparent opacity-100" />
-            </div>
-
-            {/* Total Deliveries */}
-            <div className="relative h-full rounded-2xl border border-[#0066B2]/30 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
-              <div className="flex items-center justify-between sm:justify-start w-full sm:w-auto">
-                <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl border border-emerald-500/30 bg-emerald-50 text-emerald-600 dark:border-emerald-500/30 dark:bg-emerald-500/20 dark:text-emerald-400">
-                  <Send className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
-                </div>
-              </div>
-              <div className="flex-1 min-w-0 w-full">
-                <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-[#9B9085] leading-none truncate">
-                  Total Deliveries
-                </p>
-                <p className="text-xl font-extrabold tabular-nums text-zinc-900 dark:text-white mt-1 leading-none tracking-tight">
-                  {totalDeliveries}
-                </p>
-              </div>
-              <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0066B2]/[0.05] to-transparent opacity-100" />
-            </div>
-          </div>
-
-          {/* Option 1: SMART EMPTY STATE DROPZONE (Only rendered when user has NO files) */}
-          {resources.length === 0 && (
-            <div className="relative rounded-2xl border-2 border-dashed border-[#0066B2]/40 bg-white/90 p-12 text-center backdrop-blur-sm hover:border-[#0066B2] dark:border-[#0066B2]/40 dark:bg-[#18181B]/90 shadow-sm transition-all">
-              <input
-                type="file"
-                multiple
-                className="absolute inset-0 cursor-pointer opacity-0 z-10"
-                onChange={handleSimulatedUpload}
-                disabled={uploading}
-              />
-              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-[#EFF6FF] text-[#0066B2] dark:bg-[#0066B2]/20 dark:text-[#38BDF8]">
-                {uploading ? <Loader2 className="h-7 w-7 animate-spin" /> : <UploadCloud className="h-7 w-7" />}
-              </div>
-              <h3 className="mt-4 text-base font-bold text-zinc-900 dark:text-white">
-                {uploading
-                  ? uploadProgress
-                    ? `Uploading (${uploadProgress.current} of ${uploadProgress.total}): ${uploadProgress.currentFileName}`
-                    : "Uploading documents..."
-                  : "Drag & Drop lead magnet files here"}
-              </h3>
-              <button className="mt-5 inline-flex items-center gap-2 rounded-xl bg-[#0066B2] px-5 py-2.5 text-xs font-bold text-white shadow-sm hover:bg-[#005291] transition cursor-pointer">
-                <UploadCloud className="h-4 w-4" /> Browse Files from Device
-              </button>
-            </div>
-          )}
-
-          {/* ========================================================================= */}
-          {/* Main Table & Filter Container (Standardized 16px gap to match Dashboard)   */}
-          {/* ========================================================================= */}
-          {resources.length > 0 && (
-            <>
-              {/* ===================================================================== */}
-              {/* 3. Search, Filter & Sort Toolbar (Floating Controls Row)              */}
-              {/* ===================================================================== */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3 w-full max-w-full min-w-0">
-                  {/* Search Bar */}
-                  <div className="flex items-center gap-2 flex-1 rounded-xl bg-zinc-50 dark:bg-[#1C1C20] px-3.5 py-2 border border-zinc-200/60 dark:border-zinc-800 focus-within:border-[#0066B2] dark:focus-within:border-[#0066B2] min-w-0">
-                    <Search className="h-4 w-4 text-zinc-400 shrink-0" />
-                    <input
-                      type="text"
-                      placeholder="Search files by name or type..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="bg-transparent text-xs text-zinc-900 dark:text-white outline-none placeholder:text-zinc-400 w-full min-w-0"
-                    />
-                    {searchQuery && (
-                      <button
-                        type="button"
-                        onClick={() => setSearchQuery("")}
-                        className="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 shrink-0 cursor-pointer"
-                      >
-                        <X className="h-3.5 w-3.5" />
-                      </button>
-                    )}
-                  </div>
-
-                  <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 justify-between sm:justify-end w-full sm:w-auto min-w-0">
-                    {/* Desktop Category Tabs Pod */}
-                    <div className="hidden sm:flex items-center p-1 bg-zinc-100 dark:bg-[#1C1C20] rounded-xl text-xs font-semibold min-w-0">
-                      {[
-                        { id: "all", label: `All (${categoryCounts.all})` },
-                        { id: "docs", label: `Docs (${categoryCounts.docs})` },
-                        { id: "images", label: `Images (${categoryCounts.images})` },
-                        { id: "media", label: `Media (${categoryCounts.media})` },
-                        { id: "archives", label: `Archives (${categoryCounts.archives})` },
-                      ].map((tab) => (
-                        <button
-                          key={tab.id}
-                          type="button"
-                          onClick={() => setActiveCategory(tab.id as any)}
-                          className={`relative px-3 py-1 rounded-lg transition-colors duration-200 cursor-pointer ${
-                            activeCategory === tab.id
-                              ? "text-zinc-900 dark:text-white font-bold"
-                              : "text-zinc-500 hover:text-zinc-900 dark:hover:text-white"
-                          }`}
-                        >
-                          {activeCategory === tab.id && (
-                            <motion.div
-                              layoutId="activeAssetCategoryTab"
-                              className="absolute inset-0 bg-white dark:bg-[#2A2A30] rounded-lg shadow-xs"
-                              transition={{ type: "spring", stiffness: 500, damping: 32 }}
-                            />
-                          )}
-                          <span className="relative z-10">{tab.label}</span>
-                        </button>
-                      ))}
-                    </div>
-
-                    {/* Mobile Filter Dropdown Button */}
-                    <div className="sm:hidden relative shrink-0" ref={mobileFilterRef}>
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setIsSortOpen(false);
-                          setIsMobileFilterOpen((v) => !v);
-                        }}
-                        className="flex h-8 items-center gap-1.5 rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#18181B] px-2.5 text-[11px] font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-[#222226] transition shadow-2xs cursor-pointer select-none"
-                      >
-                        <Filter className="h-3 w-3 text-zinc-400 shrink-0" />
-                        <span className="truncate">
-                          {activeCategory === "all"
-                            ? `All (${categoryCounts.all})`
-                            : activeCategory === "docs"
-                            ? `Docs (${categoryCounts.docs})`
-                            : activeCategory === "images"
+                {/* Mobile Filter Dropdown Button */}
+                <div className="sm:hidden relative shrink-0" ref={mobileFilterRef}>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setIsSortOpen(false);
+                      setIsMobileFilterOpen((v) => !v);
+                    }}
+                    className="flex h-8 items-center gap-1.5 rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#18181B] px-2.5 text-[11px] font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-[#222226] transition shadow-2xs cursor-pointer select-none"
+                  >
+                    <Filter className="h-3 w-3 text-zinc-400 shrink-0" />
+                    <span className="truncate">
+                      {activeCategory === "all"
+                        ? `All (${categoryCounts.all})`
+                        : activeCategory === "docs"
+                          ? `Docs (${categoryCounts.docs})`
+                          : activeCategory === "images"
                             ? `Images (${categoryCounts.images})`
                             : activeCategory === "media"
-                            ? `Media (${categoryCounts.media})`
-                            : `Archives (${categoryCounts.archives})`}
-                        </span>
-                        <ChevronDown
-                          className={`h-3.5 w-3.5 text-zinc-400 shrink-0 transition-transform duration-200 ${
-                            isMobileFilterOpen ? "rotate-180" : ""
-                          }`}
-                        />
-                      </button>
-
-                      <AnimatePresence>
-                        {isMobileFilterOpen && (
-                          <motion.div
-                            initial={{ opacity: 0, scale: 0.96, y: -6 }}
-                            animate={{ opacity: 1, scale: 1, y: 0 }}
-                            exit={{ opacity: 0, scale: 0.96, y: -4 }}
-                            transition={{ type: "spring", damping: 28, stiffness: 400 }}
-                            onClick={(e) => e.stopPropagation()}
-                            className="absolute left-0 top-full z-40 mt-1.5 w-48 rounded-xl border border-zinc-200/90 dark:border-white/10 bg-white/95 dark:bg-[#1C1C20]/95 p-1.5 shadow-xl backdrop-blur-xl dark:text-white"
-                          >
-                            <div className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
-                              Filter Category
-                            </div>
-                            {[
-                              { id: "all", label: "All Files", count: categoryCounts.all },
-                              { id: "docs", label: "Documents", count: categoryCounts.docs },
-                              { id: "images", label: "Images", count: categoryCounts.images },
-                              { id: "media", label: "Audio & Video", count: categoryCounts.media },
-                              { id: "archives", label: "Archives", count: categoryCounts.archives },
-                            ].map((item) => {
-                              const isSelected = activeCategory === item.id;
-                              return (
-                                <button
-                                  key={item.id}
-                                  type="button"
-                                  onClick={() => {
-                                    setActiveCategory(item.id as any);
-                                    setIsMobileFilterOpen(false);
-                                  }}
-                                  className={`flex w-full items-center justify-between rounded-lg px-2.5 py-1.5 text-xs transition cursor-pointer text-left ${
-                                    isSelected
-                                      ? "bg-[#0066B2]/10 text-[#0066B2] font-bold dark:bg-[#38BDF8]/20 dark:text-[#38BDF8]"
-                                      : "text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-white/5 font-medium"
-                                  }`}
-                                >
-                                  <span>{item.label}</span>
-                                  <div className="flex items-center gap-1.5">
-                                    <span className="text-[10px] text-zinc-400">({item.count})</span>
-                                    {isSelected && <Check className="h-3.5 w-3.5" />}
-                                  </div>
-                                </button>
-                              );
-                            })}
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
-                    </div>
-
-                    {/* Custom Animated Sort Dropdown */}
-                    <div className="relative shrink-0" ref={sortRef}>
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setIsMobileFilterOpen(false);
-                          setIsSortOpen((v) => !v);
-                        }}
-                        className="flex h-8 items-center gap-1 sm:gap-2 rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#18181B] px-2 sm:px-3 text-[11px] sm:text-xs font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-[#222226] transition shadow-2xs cursor-pointer select-none"
-                      >
-                        <SlidersHorizontal className="h-3 w-3 text-zinc-400 shrink-0" />
-                        <span className="truncate max-w-[76px] sm:max-w-none">
-                          {sortBy === "newest"
-                            ? "Newest"
-                            : sortBy === "oldest"
-                            ? "Oldest"
-                            : sortBy === "size"
-                            ? "File Size"
-                            : "Name (A-Z)"}
-                        </span>
-                        <ChevronDown
-                          className={`h-3.5 w-3.5 text-zinc-400 shrink-0 transition-transform duration-200 ${
-                            isSortOpen ? "rotate-180" : ""
-                          }`}
-                        />
-                      </button>
-
-                      <AnimatePresence>
-                        {isSortOpen && (
-                          <motion.div
-                            initial={{ opacity: 0, scale: 0.96, y: -6 }}
-                            animate={{ opacity: 1, scale: 1, y: 0 }}
-                            exit={{ opacity: 0, scale: 0.96, y: -4 }}
-                            transition={{ type: "spring", damping: 28, stiffness: 400 }}
-                            onClick={(e) => e.stopPropagation()}
-                            className="absolute right-0 top-full z-40 mt-1.5 w-48 rounded-xl border border-zinc-200/90 dark:border-white/10 bg-white/95 dark:bg-[#1C1C20]/95 p-1.5 shadow-xl backdrop-blur-xl dark:text-white"
-                          >
-                            <div className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
-                              Sort by
-                            </div>
-                            {[
-                              { id: "newest", label: "Newest First" },
-                              { id: "oldest", label: "Oldest First" },
-                              { id: "size", label: "File Size" },
-                              { id: "name", label: "Name (A-Z)" },
-                            ].map((opt) => {
-                              const isSelected = sortBy === opt.id;
-                              return (
-                                <button
-                                  key={opt.id}
-                                  type="button"
-                                  onClick={() => {
-                                    setSortBy(opt.id as any);
-                                    setIsSortOpen(false);
-                                  }}
-                                  className={`flex w-full items-center justify-between rounded-lg px-2.5 py-1.5 text-xs transition cursor-pointer text-left ${
-                                    isSelected
-                                      ? "bg-[#0066B2]/10 text-[#0066B2] font-bold dark:bg-[#38BDF8]/20 dark:text-[#38BDF8]"
-                                      : "text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-white/5 font-medium"
-                                  }`}
-                                >
-                                  <span>{opt.label}</span>
-                                  {isSelected && <Check className="h-3.5 w-3.5 text-[#0066B2] dark:text-[#38BDF8]" />}
-                                </button>
-                              );
-                            })}
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
-                    </div>
-
-                    {/* Select Mode Toggle Pod with CheckSquare icon */}
-                    <div className="flex items-center p-1 bg-zinc-100 dark:bg-[#1C1C20] rounded-xl shrink-0">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setIsMobileSelectionMode((prev) => {
-                            const next = !prev;
-                            if (!next) setSelectedResourceIds([]);
-                            return next;
-                          });
-                        }}
-                        className={`relative p-1.5 rounded-lg transition-colors duration-150 cursor-pointer ${
-                          isMobileSelectionMode || selectedResourceIds.length > 0
-                            ? "bg-white dark:bg-[#2A2A30] text-[#0066B2] dark:text-[#38BDF8] shadow-xs"
-                            : "text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200"
+                              ? `Media (${categoryCounts.media})`
+                              : `Archives (${categoryCounts.archives})`}
+                    </span>
+                    <ChevronDown
+                      className={`h-3.5 w-3.5 text-zinc-400 shrink-0 transition-transform duration-200 ${isMobileFilterOpen ? "rotate-180" : ""
                         }`}
-                        title={isMobileSelectionMode || selectedResourceIds.length > 0 ? "Exit Select Mode" : "Select Files"}
+                    />
+                  </button>
+
+                  <AnimatePresence>
+                    {isMobileFilterOpen && (
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0.96, y: -6 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.96, y: -4 }}
+                        transition={{ type: "spring", damping: 28, stiffness: 400 }}
+                        onClick={(e) => e.stopPropagation()}
+                        className="absolute left-0 top-full z-40 mt-1.5 w-48 rounded-xl border border-zinc-200/90 dark:border-white/10 bg-white/95 dark:bg-[#1C1C20]/95 p-1.5 shadow-xl backdrop-blur-xl dark:text-white"
                       >
-                        <CheckSquare className="relative z-10 h-4 w-4" />
-                      </button>
-                    </div>
-                  </div>
+                        <div className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
+                          Filter Category
+                        </div>
+                        {[
+                          { id: "all", label: "All Files", count: categoryCounts.all },
+                          { id: "docs", label: "Documents", count: categoryCounts.docs },
+                          { id: "images", label: "Images", count: categoryCounts.images },
+                          { id: "media", label: "Audio & Video", count: categoryCounts.media },
+                          { id: "archives", label: "Archives", count: categoryCounts.archives },
+                        ].map((item) => {
+                          const isSelected = activeCategory === item.id;
+                          return (
+                            <button
+                              key={item.id}
+                              type="button"
+                              onClick={() => {
+                                setActiveCategory(item.id as any);
+                                setIsMobileFilterOpen(false);
+                              }}
+                              className={`flex w-full items-center justify-between rounded-lg px-2.5 py-1.5 text-xs transition cursor-pointer text-left ${isSelected
+                                  ? "bg-[#0066B2]/10 text-[#0066B2] font-bold dark:bg-[#38BDF8]/20 dark:text-[#38BDF8]"
+                                  : "text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-white/5 font-medium"
+                                }`}
+                            >
+                              <span>{item.label}</span>
+                              <div className="flex items-center gap-1.5">
+                                <span className="text-[10px] text-zinc-400">({item.count})</span>
+                                {isSelected && <Check className="h-3.5 w-3.5" />}
+                              </div>
+                            </button>
+                          );
+                        })}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
 
-              {/* ========================================================================= */}
-              {/* 4. Table & Cards Data Container (Standalone Separated Card)               */}
-              {/* ========================================================================= */}
-              <div className="rounded-2xl border border-zinc-200/80 bg-white/90 dark:border-[#2e2e38] dark:bg-[#18181B]/90 shadow-sm backdrop-blur-sm relative overflow-hidden">
-                {/* Mobile Select All Strip when in selection mode */}
-                <AnimatePresence>
-                  {isMobileSelectionMode && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: "auto", opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ type: "spring", stiffness: 450, damping: 35 }}
-                      className="md:hidden overflow-hidden border-b border-zinc-200/80 bg-zinc-50/90 dark:border-[#2e2e38] dark:bg-white/[0.03]"
-                    >
-                      <div className="px-3.5 py-2.5 flex items-center justify-between">
-                        <div
-                          onClick={toggleSelectAll}
-                          className="flex items-center gap-2.5 cursor-pointer select-none"
-                        >
-                          <AppleCheckbox
-                            checked={filteredResources.length > 0 && selectedResourceIds.length === filteredResources.length}
-                            onChange={toggleSelectAll}
-                            title="Select All"
-                          />
-                          <span className="font-bold text-xs text-zinc-900 dark:text-white">
-                            Select All ({filteredResources.length})
-                          </span>
+                {/* Custom Animated Sort Dropdown */}
+                <div className="relative shrink-0" ref={sortRef}>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setIsMobileFilterOpen(false);
+                      setIsSortOpen((v) => !v);
+                    }}
+                    className="flex h-8 items-center gap-1 sm:gap-2 rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#18181B] px-2 sm:px-3 text-[11px] sm:text-xs font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-[#222226] transition shadow-2xs cursor-pointer select-none"
+                  >
+                    <SlidersHorizontal className="h-3 w-3 text-zinc-400 shrink-0" />
+                    <span className="truncate max-w-[76px] sm:max-w-none">
+                      {sortBy === "newest"
+                        ? "Newest"
+                        : sortBy === "oldest"
+                          ? "Oldest"
+                          : sortBy === "size"
+                            ? "File Size"
+                            : "Name (A-Z)"}
+                    </span>
+                    <ChevronDown
+                      className={`h-3.5 w-3.5 text-zinc-400 shrink-0 transition-transform duration-200 ${isSortOpen ? "rotate-180" : ""
+                        }`}
+                    />
+                  </button>
+
+                  <AnimatePresence>
+                    {isSortOpen && (
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0.96, y: -6 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.96, y: -4 }}
+                        transition={{ type: "spring", damping: 28, stiffness: 400 }}
+                        onClick={(e) => e.stopPropagation()}
+                        className="absolute right-0 top-full z-40 mt-1.5 w-48 rounded-xl border border-zinc-200/90 dark:border-white/10 bg-white/95 dark:bg-[#1C1C20]/95 p-1.5 shadow-xl backdrop-blur-xl dark:text-white"
+                      >
+                        <div className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
+                          Sort by
                         </div>
-                        <span className="text-xs text-zinc-500 font-medium">
-                          {selectedResourceIds.length} selected
+                        {[
+                          { id: "newest", label: "Newest First" },
+                          { id: "oldest", label: "Oldest First" },
+                          { id: "size", label: "File Size" },
+                          { id: "name", label: "Name (A-Z)" },
+                        ].map((opt) => {
+                          const isSelected = sortBy === opt.id;
+                          return (
+                            <button
+                              key={opt.id}
+                              type="button"
+                              onClick={() => {
+                                setSortBy(opt.id as any);
+                                setIsSortOpen(false);
+                              }}
+                              className={`flex w-full items-center justify-between rounded-lg px-2.5 py-1.5 text-xs transition cursor-pointer text-left ${isSelected
+                                  ? "bg-[#0066B2]/10 text-[#0066B2] font-bold dark:bg-[#38BDF8]/20 dark:text-[#38BDF8]"
+                                  : "text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-white/5 font-medium"
+                                }`}
+                            >
+                              <span>{opt.label}</span>
+                              {isSelected && <Check className="h-3.5 w-3.5 text-[#0066B2] dark:text-[#38BDF8]" />}
+                            </button>
+                          );
+                        })}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+
+                {/* Select Mode Toggle Pod with CheckSquare icon */}
+                <div className="flex items-center p-1 bg-zinc-100 dark:bg-[#1C1C20] rounded-xl shrink-0">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsMobileSelectionMode((prev) => {
+                        const next = !prev;
+                        if (!next) setSelectedResourceIds([]);
+                        return next;
+                      });
+                    }}
+                    className={`relative p-1.5 rounded-lg transition-colors duration-150 cursor-pointer ${isMobileSelectionMode || selectedResourceIds.length > 0
+                        ? "bg-white dark:bg-[#2A2A30] text-[#0066B2] dark:text-[#38BDF8] shadow-xs"
+                        : "text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200"
+                      }`}
+                    title={isMobileSelectionMode || selectedResourceIds.length > 0 ? "Exit Select Mode" : "Select Files"}
+                  >
+                    <CheckSquare className="relative z-10 h-4 w-4" />
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* ========================================================================= */}
+            {/* 4. Table & Cards Data Container (Standalone Separated Card)               */}
+            {/* ========================================================================= */}
+            <div className="rounded-2xl border border-zinc-200/80 bg-white/90 dark:border-[#2e2e38] dark:bg-[#18181B]/90 shadow-sm backdrop-blur-sm relative overflow-hidden">
+              {/* Mobile Select All Strip when in selection mode */}
+              <AnimatePresence>
+                {isMobileSelectionMode && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ type: "spring", stiffness: 450, damping: 35 }}
+                    className="md:hidden overflow-hidden border-b border-zinc-200/80 bg-zinc-50/90 dark:border-[#2e2e38] dark:bg-white/[0.03]"
+                  >
+                    <div className="px-3.5 py-2.5 flex items-center justify-between">
+                      <div
+                        onClick={toggleSelectAll}
+                        className="flex items-center gap-2.5 cursor-pointer select-none"
+                      >
+                        <AppleCheckbox
+                          checked={filteredResources.length > 0 && selectedResourceIds.length === filteredResources.length}
+                          onChange={toggleSelectAll}
+                          title="Select All"
+                        />
+                        <span className="font-bold text-xs text-zinc-900 dark:text-white">
+                          Select All ({filteredResources.length})
                         </span>
                       </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+                      <span className="text-xs text-zinc-500 font-medium">
+                        {selectedResourceIds.length} selected
+                      </span>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
 
-                {/* ========================================================================= */}
-                {/* Table / List Body                                                         */}
-                {/* ========================================================================= */}
-                <div>
-              {filteredResources.length === 0 ? (
+              {/* ========================================================================= */}
+              {/* Table / List Body                                                         */}
+              {/* ========================================================================= */}
+              <div>
+                {filteredResources.length === 0 ? (
                   <div className="py-12 text-center">
                     <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-xl bg-[#EFF6FF] text-[#0066B2] dark:bg-[#0066B2]/20 dark:text-[#38BDF8]">
                       <FileText className="h-5 w-5" />
@@ -1219,11 +1223,10 @@ export default function ResourcesPage() {
                             return (
                               <tr
                                 key={resource.id}
-                                className={`group transition-all duration-200 ${
-                                  isSelected
+                                className={`group transition-all duration-200 ${isSelected
                                     ? "bg-gradient-to-r from-[#0066B2]/[0.08] via-[#0066B2]/[0.04] to-transparent dark:from-[#38BDF8]/15 dark:via-[#38BDF8]/[0.06] dark:to-transparent"
                                     : "hover:bg-zinc-50/80 dark:hover:bg-[#1F1F24]/70"
-                                }`}
+                                  }`}
                               >
                                 <td className="whitespace-nowrap px-6 py-4">
                                   <div className="flex items-center min-w-0">
@@ -1275,77 +1278,74 @@ export default function ResourcesPage() {
                                       >
                                         {badge.icon}
                                       </div>
-                                    <div className="flex-1 min-w-0">
-                                      {editingResourceId === resource.id ? (
-                                        <div className="flex items-center gap-1.5" onClick={(e) => e.stopPropagation()}>
-                                          <input
-                                            type="text"
-                                            value={editingName}
-                                            onChange={(e) => setEditingName(e.target.value)}
-                                            onKeyDown={(e) => {
-                                              if (e.key === "Enter") handleSaveRename(resource);
-                                              if (e.key === "Escape") setEditingResourceId(null);
-                                            }}
-                                            autoFocus
-                                            disabled={isSavingName}
-                                            className="w-full min-w-[200px] max-w-sm rounded-lg border border-[#0066B2] bg-white px-2.5 py-1 text-xs font-semibold text-zinc-900 focus:outline-none focus:ring-2 focus:ring-[#0066B2]/20 dark:border-[#38BDF8] dark:bg-[#202026] dark:text-white"
-                                          />
-                                          <button
-                                            onClick={() => handleSaveRename(resource)}
-                                            disabled={isSavingName}
-                                            className="rounded-lg bg-[#0066B2] p-1.5 text-white hover:bg-[#005291] transition cursor-pointer"
-                                            title="Save Name"
-                                          >
-                                            {isSavingName ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Check className="h-3.5 w-3.5" />}
-                                          </button>
-                                          <button
-                                            onClick={() => setEditingResourceId(null)}
-                                            disabled={isSavingName}
-                                            className="rounded-lg border border-zinc-200 bg-white p-1.5 text-zinc-500 hover:bg-zinc-100 dark:border-zinc-700 dark:bg-[#202026] dark:text-zinc-400 transition cursor-pointer"
-                                            title="Cancel"
-                                          >
-                                            <X className="h-3.5 w-3.5" />
-                                          </button>
-                                        </div>
-                                      ) : (
-                                        <div>
-                                          <div className="group/title flex items-center gap-2">
-                                            <p
-                                              onDoubleClick={() => startRenaming(resource)}
-                                              className="text-sm font-semibold text-zinc-900 dark:text-white truncate max-w-xs md:max-w-md cursor-pointer hover:text-[#0066B2] dark:hover:text-[#38BDF8] transition-colors"
-                                              title="Double-click or click pencil to rename"
-                                            >
-                                              {resource.name}
-                                            </p>
+                                      <div className="flex-1 min-w-0">
+                                        {editingResourceId === resource.id ? (
+                                          <div className="flex items-center gap-1.5" onClick={(e) => e.stopPropagation()}>
+                                            <input
+                                              type="text"
+                                              value={editingName}
+                                              onChange={(e) => setEditingName(e.target.value)}
+                                              onKeyDown={(e) => {
+                                                if (e.key === "Enter") handleSaveRename(resource);
+                                                if (e.key === "Escape") setEditingResourceId(null);
+                                              }}
+                                              autoFocus
+                                              disabled={isSavingName}
+                                              className="w-full min-w-[200px] max-w-sm rounded-lg border border-[#0066B2] bg-white px-2.5 py-1 text-xs font-semibold text-zinc-900 focus:outline-none focus:ring-2 focus:ring-[#0066B2]/20 dark:border-[#38BDF8] dark:bg-[#202026] dark:text-white"
+                                            />
                                             <button
-                                              onClick={() => startRenaming(resource)}
-                                              className="opacity-0 group-hover/title:opacity-100 p-1 text-zinc-400 hover:text-[#0066B2] dark:hover:text-[#38BDF8] transition cursor-pointer rounded-md hover:bg-zinc-100 dark:hover:bg-zinc-800 shrink-0"
-                                              title="Rename asset"
+                                              onClick={() => handleSaveRename(resource)}
+                                              disabled={isSavingName}
+                                              className="rounded-lg bg-[#0066B2] p-1.5 text-white hover:bg-[#005291] transition cursor-pointer"
+                                              title="Save Name"
                                             >
-                                              <Pencil className="h-3 w-3" />
+                                              {isSavingName ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Check className="h-3.5 w-3.5" />}
                                             </button>
-                                            <span className={`inline-flex items-center px-1.5 py-0.5 rounded-md text-[9px] font-extrabold tracking-wider border uppercase shrink-0 ${badge.tagBg || "bg-zinc-100 text-zinc-600 dark:bg-white/10 dark:text-zinc-300 border-zinc-200 dark:border-white/10"}`}>
-                                                {badge.ext}
-                                              </span>
+                                            <button
+                                              onClick={() => setEditingResourceId(null)}
+                                              disabled={isSavingName}
+                                              className="rounded-lg border border-zinc-200 bg-white p-1.5 text-zinc-500 hover:bg-zinc-100 dark:border-zinc-700 dark:bg-[#202026] dark:text-zinc-400 transition cursor-pointer"
+                                              title="Cancel"
+                                            >
+                                              <X className="h-3.5 w-3.5" />
+                                            </button>
                                           </div>
-                                          <div className="flex items-center gap-1.5 mt-0.5">
-                                            {linkedPages.length > 0 ? (
-                                              <span className="inline-flex items-center gap-1 text-[11px] font-medium text-sky-600 dark:text-sky-400 truncate max-w-xs">
-                                                <Link2 className="h-3 w-3 shrink-0" />
-                                                <span>{linkedPages.length === 1 ? `Attached to "${linkedPages[0].name}"` : `Attached to ${linkedPages.length} magnets`}</span>
-                                              </span>
-                                            ) : (
-                                              <span className="inline-flex items-center gap-1 text-[11px] font-normal text-zinc-400 dark:text-zinc-500">
-                                                Unlinked
-                                              </span>
-                                            )}
+                                        ) : (
+                                          <div>
+                                            <div className="group/title flex items-center gap-2">
+                                              <p
+                                                onDoubleClick={() => startRenaming(resource)}
+                                                className="text-sm font-semibold text-zinc-900 dark:text-white truncate max-w-xs md:max-w-md cursor-pointer hover:text-[#0066B2] dark:hover:text-[#38BDF8] transition-colors"
+                                                title="Double-click or click pencil to rename"
+                                              >
+                                                {resource.name}
+                                              </p>
+                                              <button
+                                                onClick={() => startRenaming(resource)}
+                                                className="opacity-0 group-hover/title:opacity-100 p-1 text-zinc-400 hover:text-[#0066B2] dark:hover:text-[#38BDF8] transition cursor-pointer rounded-md hover:bg-zinc-100 dark:hover:bg-zinc-800 shrink-0"
+                                                title="Rename asset"
+                                              >
+                                                <Pencil className="h-3 w-3" />
+                                              </button>
+                                            </div>
+                                            <div className="flex items-center gap-1.5 mt-0.5">
+                                              {linkedPages.length > 0 ? (
+                                                <span className="inline-flex items-center gap-1 text-[11px] font-medium text-sky-600 dark:text-sky-400 truncate max-w-xs">
+                                                  <Link2 className="h-3 w-3 shrink-0" />
+                                                  <span>{linkedPages.length === 1 ? `Attached to "${linkedPages[0].name}"` : `Attached to ${linkedPages.length} magnets`}</span>
+                                                </span>
+                                              ) : (
+                                                <span className="inline-flex items-center gap-1 text-[11px] font-normal text-zinc-400 dark:text-zinc-500">
+                                                  Unlinked
+                                                </span>
+                                              )}
+                                            </div>
                                           </div>
-                                        </div>
-                                      )}
+                                        )}
+                                      </div>
                                     </div>
                                   </div>
-                                </div>
-                              </td>
+                                </td>
 
                                 <td className="whitespace-nowrap px-6 py-4 text-xs font-medium text-zinc-600 dark:text-zinc-400">
                                   {formatBytes(resource.size)}
@@ -1355,8 +1355,17 @@ export default function ResourcesPage() {
                                   {resource.uploadedAt}
                                 </td>
 
-                                <td className="whitespace-nowrap px-6 py-4 text-right">
-                                  <div className="flex items-center justify-end gap-1.5">
+                                <td className="relative overflow-hidden whitespace-nowrap px-6 py-4 text-right">
+                                  {/* Background Watermark Icon at the end of the row */}
+                                  {badge.watermarkIcon && (
+                                    <div
+                                      className={`pointer-events-none absolute -right-2.5 -bottom-4 ${badge.watermarkColor} transition-all duration-500 group-hover:scale-110 group-hover:-rotate-6 select-none`}
+                                    >
+                                      {badge.watermarkIcon}
+                                    </div>
+                                  )}
+
+                                  <div className="relative z-10 flex items-center justify-end gap-1.5">
                                     {/* Direct Download / Test File */}
                                     <a
                                       href={resource.url}
@@ -1373,11 +1382,10 @@ export default function ResourcesPage() {
                                       type="button"
                                       onClick={() => copyToClipboard(resource.url, resource.id)}
                                       title={isCopied ? "Link copied!" : "Copy shareable link"}
-                                      className={`inline-flex h-8 w-8 items-center justify-center rounded-xl border transition-all duration-150 cursor-pointer shadow-2xs active:scale-95 ${
-                                        isCopied
+                                      className={`inline-flex h-8 w-8 items-center justify-center rounded-xl border transition-all duration-150 cursor-pointer shadow-2xs active:scale-95 ${isCopied
                                           ? "border-emerald-500/40 bg-emerald-500/15 text-emerald-600 dark:text-emerald-400"
                                           : "border-zinc-200/90 bg-white dark:border-[#2e2e38] dark:bg-[#202026] text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-[#282830] hover:text-[#0066B2] dark:hover:text-[#38BDF8]"
-                                      }`}
+                                        }`}
                                     >
                                       {isCopied ? <Check className="h-4 w-4 text-emerald-500" /> : <Link2 className="h-4 w-4" />}
                                     </button>
@@ -1446,282 +1454,282 @@ export default function ResourcesPage() {
             </div>
           </>
         )}
-        </div>
+      </div>
 
-        {/* ========================================================================= */}
-        {/* Floating Bottom Multi-Select Bar - 100% Consistent with Landing Page      */}
-        {/* ========================================================================= */}
-        {mounted && typeof document !== "undefined" && createPortal(
-          <AnimatePresence>
-            {selectedResourceIds.length > 0 && (
-              <motion.div
-                initial={{ opacity: 0, y: 40, x: "-50%" }}
-                animate={{ opacity: 1, y: 0, x: "-50%" }}
-                exit={{ opacity: 0, y: 40, x: "-50%" }}
-                transition={{ type: "spring", stiffness: 450, damping: 30 }}
-                className="fixed bottom-6 left-1/2 z-[100] flex items-center gap-2.5 sm:gap-3 rounded-2xl bg-white/90 dark:bg-[#18181B]/95 border border-zinc-200/90 dark:border-white/10 text-zinc-900 dark:text-white px-3.5 sm:px-5 py-2.5 shadow-[0_16px_40px_rgba(0,0,0,0.2)] dark:shadow-[0_16px_40px_rgba(0,0,0,0.6)] backdrop-blur-xl ring-1 ring-black/5 dark:ring-white/10 max-w-[calc(100vw-24px)] overflow-x-auto scrollbar-none"
-              >
-                <span className="text-xs font-bold whitespace-nowrap text-zinc-900 dark:text-white">
-                  <span className="text-[#0066B2] dark:text-[#38BDF8] font-black">{selectedResourceIds.length}</span> selected
-                </span>
-                <div className="h-4 w-px bg-zinc-200 dark:bg-zinc-700 shrink-0" />
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (selectedResourceIds.length === filteredResources.length && filteredResources.length > 0) {
-                      setSelectedResourceIds([]);
-                    } else {
-                      setSelectedResourceIds(filteredResources.map((r) => r.id));
-                    }
-                  }}
-                  className="text-xs font-semibold text-zinc-600 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-white transition cursor-pointer whitespace-nowrap"
-                >
-                  {selectedResourceIds.length === filteredResources.length && filteredResources.length > 0 ? "Deselect All" : "Select All"}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
+      {/* ========================================================================= */}
+      {/* Floating Bottom Multi-Select Bar - 100% Consistent with Landing Page      */}
+      {/* ========================================================================= */}
+      {mounted && typeof document !== "undefined" && createPortal(
+        <AnimatePresence>
+          {selectedResourceIds.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: 40, x: "-50%" }}
+              animate={{ opacity: 1, y: 0, x: "-50%" }}
+              exit={{ opacity: 0, y: 40, x: "-50%" }}
+              transition={{ type: "spring", stiffness: 450, damping: 30 }}
+              className="fixed bottom-6 left-1/2 z-[100] flex items-center gap-2.5 sm:gap-3 rounded-2xl bg-white/90 dark:bg-[#18181B]/95 border border-zinc-200/90 dark:border-white/10 text-zinc-900 dark:text-white px-3.5 sm:px-5 py-2.5 shadow-[0_16px_40px_rgba(0,0,0,0.2)] dark:shadow-[0_16px_40px_rgba(0,0,0,0.6)] backdrop-blur-xl ring-1 ring-black/5 dark:ring-white/10 max-w-[calc(100vw-24px)] overflow-x-auto scrollbar-none"
+            >
+              <span className="text-xs font-bold whitespace-nowrap text-zinc-900 dark:text-white">
+                <span className="text-[#0066B2] dark:text-[#38BDF8] font-black">{selectedResourceIds.length}</span> selected
+              </span>
+              <div className="h-4 w-px bg-zinc-200 dark:bg-zinc-700 shrink-0" />
+              <button
+                type="button"
+                onClick={() => {
+                  if (selectedResourceIds.length === filteredResources.length && filteredResources.length > 0) {
                     setSelectedResourceIds([]);
-                    setIsMobileSelectionMode(false);
-                  }}
-                  className="text-xs font-semibold text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200 transition cursor-pointer whitespace-nowrap"
-                >
-                  Clear
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setShowBulkDeleteModal(true)}
-                  className="flex items-center gap-1.5 rounded-xl bg-rose-600 hover:bg-rose-700 px-3.5 py-1.5 text-xs font-bold text-white transition shadow-xs cursor-pointer whitespace-nowrap active:scale-95"
-                >
-                  <Trash2 className="h-3.5 w-3.5" />
-                  <span>Delete ({selectedResourceIds.length})</span>
-                </button>
-              </motion.div>
-            )}
-          </AnimatePresence>,
-          document.body
-        )}
-
-        {/* Bulk Delete Confirmation Modal */}
-        <AnimatePresence>
-          {showBulkDeleteModal && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.12 }}
-              className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm p-0 sm:p-4 transform-gpu"
-              onClick={() => setShowBulkDeleteModal(false)}
-            >
-              <motion.div
-                initial={isMobile ? { y: "100%", opacity: 0.9 } : { opacity: 0, scale: 0.94, y: 10 }}
-                animate={{ y: 0, opacity: 1, scale: 1 }}
-                exit={
-                  isMobile
-                    ? { y: "100%", opacity: 0, transition: { duration: 0.16, ease: [0.32, 0.72, 0, 1] } }
-                    : { opacity: 0, scale: 0.94, y: 8, transition: { duration: 0.08 } }
-                }
-                transition={
-                  isMobile
-                    ? { type: "spring", stiffness: 450, damping: 32, mass: 0.4 }
-                    : { type: "spring", stiffness: 650, damping: 36, mass: 0.3 }
-                }
-                className="w-full sm:max-w-md max-h-[85vh] overflow-y-auto rounded-t-[28px] sm:rounded-3xl bg-white p-5 sm:p-6 dark:bg-[#18181B] shadow-2xl border-t sm:border border-zinc-200 dark:border-white/10 transform-gpu will-change-transform"
-                onClick={(e) => e.stopPropagation()}
-              >
-                {/* Mobile Grab Handle */}
-                <div className="w-10 h-1.5 rounded-full bg-zinc-300 dark:bg-zinc-700/80 mx-auto -mt-1 mb-3 cursor-grab active:scale-95 transition-transform sm:hidden" />
-
-                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-500">
-                  <AlertCircle className="h-5 w-5" />
-                </div>
-                <h3 className="mt-4 text-base sm:text-lg font-bold text-zinc-900 dark:text-white tracking-tight">
-                  Delete {selectedResourceIds.length} Selected Resources?
-                </h3>
-                <p className="mt-1.5 text-xs leading-relaxed text-zinc-500 dark:text-zinc-400">
-                  Are you sure you want to delete <strong className="text-zinc-900 dark:text-white">{selectedResourceIds.length} hosted resources</strong>? Any active lead magnet forms or emails linking to these file links will no longer be able to access them.
-                </p>
-
-                <div className="mt-6 flex items-center justify-end gap-3">
-                  <button
-                    disabled={isBulkDeleting}
-                    onClick={() => setShowBulkDeleteModal(false)}
-                    className="flex-1 sm:flex-none rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-[#25252A] px-4 py-2.5 text-xs font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white transition-all cursor-pointer text-center"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    disabled={isBulkDeleting}
-                    onClick={confirmBulkDelete}
-                    className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 rounded-xl border border-rose-500/30 bg-rose-600 px-4 py-2.5 text-xs font-bold text-white hover:bg-rose-700 active:scale-95 transition-all cursor-pointer shadow-sm text-center disabled:opacity-50"
-                  >
-                    {isBulkDeleting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Trash2 className="h-3.5 w-3.5" />}
-                    <span>Delete {selectedResourceIds.length} Files</span>
-                  </button>
-                </div>
-              </motion.div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* Delete Confirmation Modal */}
-        <AnimatePresence>
-          {resourceToDelete && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.12 }}
-              className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm p-0 sm:p-4 transform-gpu"
-              onClick={() => setResourceToDelete(null)}
-            >
-              <motion.div
-                initial={isMobile ? { y: "100%", opacity: 0.9 } : { opacity: 0, scale: 0.94, y: 10 }}
-                animate={{ y: 0, opacity: 1, scale: 1 }}
-                exit={
-                  isMobile
-                    ? { y: "100%", opacity: 0, transition: { duration: 0.16, ease: [0.32, 0.72, 0, 1] } }
-                    : { opacity: 0, scale: 0.94, y: 8, transition: { duration: 0.08 } }
-                }
-                transition={
-                  isMobile
-                    ? { type: "spring", stiffness: 450, damping: 32, mass: 0.4 }
-                    : { type: "spring", stiffness: 650, damping: 36, mass: 0.3 }
-                }
-                className="w-full sm:max-w-md max-h-[85vh] overflow-y-auto rounded-t-[28px] sm:rounded-3xl bg-white p-5 sm:p-6 dark:bg-[#18181B] shadow-2xl border-t sm:border border-zinc-200 dark:border-white/10 transform-gpu will-change-transform"
-                onClick={(e) => e.stopPropagation()}
-              >
-                {/* Mobile Grab Handle */}
-                <div className="w-10 h-1.5 rounded-full bg-zinc-300 dark:bg-zinc-700/80 mx-auto -mt-1 mb-3 cursor-grab active:scale-95 transition-transform sm:hidden" />
-
-                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-500">
-                  <AlertCircle className="h-5 w-5" />
-                </div>
-                <h3 className="mt-4 text-base sm:text-lg font-bold text-zinc-900 dark:text-white tracking-tight">Delete Hosted Resource?</h3>
-                <p className="mt-1.5 text-xs leading-relaxed text-zinc-500 dark:text-zinc-400">
-                  Are you sure you want to delete <strong className="text-zinc-900 dark:text-white">{resourceToDelete.name}</strong>? Any active lead magnet forms or emails linking to this file link will no longer be able to access it.
-                </p>
-
-                <div className="mt-6 flex items-center justify-end gap-3">
-                  <button
-                    disabled={isDeleting}
-                    onClick={() => setResourceToDelete(null)}
-                    className="flex-1 sm:flex-none rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-[#25252A] px-4 py-2.5 text-xs font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white transition-all cursor-pointer text-center"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    disabled={isDeleting}
-                    onClick={confirmDelete}
-                    className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 rounded-xl border border-rose-500/30 bg-rose-600 px-4 py-2.5 text-xs font-bold text-white hover:bg-rose-700 active:scale-95 transition-all cursor-pointer shadow-sm text-center disabled:opacity-50"
-                  >
-                    {isDeleting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Trash2 className="h-3.5 w-3.5" />}
-                    <span>Delete Resource</span>
-                  </button>
-                </div>
-              </motion.div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* Active Upload Live Progress Card */}
-        <AnimatePresence>
-          {uploading && uploadProgress && (
-            <motion.div
-              initial={{ opacity: 0, y: 30, scale: 0.95 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 20, scale: 0.95 }}
-              transition={{ type: "spring", stiffness: 350, damping: 25 }}
-              className="fixed bottom-20 inset-x-3 sm:inset-x-auto sm:bottom-24 sm:right-5 z-50 w-auto sm:w-full sm:max-w-sm rounded-2xl border border-zinc-200/80 bg-white/95 p-4 shadow-2xl backdrop-blur-xl dark:border-zinc-800 dark:bg-[#18181B]/95 text-zinc-900 dark:text-white ring-1 ring-black/5 dark:ring-white/10"
-            >
-              <div className="flex items-center justify-between gap-3">
-                <div className="flex items-center gap-2.5">
-                  <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#0066B2]/10 text-[#0066B2] dark:bg-[#0066B2]/20 dark:text-[#38BDF8]">
-                    <UploadCloud className="h-4 w-4 animate-pulse" />
-                  </div>
-                  <div className="overflow-hidden">
-                    <h4 className="text-xs font-bold text-zinc-900 dark:text-white truncate">
-                      Uploading {uploadProgress.current} of {uploadProgress.total}
-                    </h4>
-                    <p className="text-[10px] font-medium text-zinc-500 dark:text-zinc-400 truncate max-w-[170px]">
-                      {uploadProgress.currentFileName}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-1.5 shrink-0">
-                  <span className="rounded-full bg-[#0066B2]/10 px-2 py-0.5 text-[10px] font-bold text-[#0066B2] dark:bg-[#0066B2]/20 dark:text-[#38BDF8]">
-                    {uploadProgress.stage === "saving" ? "Finalizing" : `${uploadProgress.percent}%`}
-                  </span>
-                  <button
-                    onClick={cancelUpload}
-                    title="Cancel upload"
-                    className="rounded-lg p-1 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-700 dark:hover:bg-zinc-800 dark:hover:text-zinc-200 transition cursor-pointer"
-                  >
-                    <X className="h-3.5 w-3.5" />
-                  </button>
-                </div>
-              </div>
-
-              {/* Progress Track */}
-              <div className="mt-3">
-                <div className="h-2 w-full overflow-hidden rounded-full bg-zinc-100 dark:bg-zinc-800">
-                  <div
-                    className="h-full rounded-full bg-gradient-to-r from-[#0066B2] via-[#38BDF8] to-emerald-400 transition-all duration-150"
-                    style={{ width: `${Math.max(uploadProgress.percent, 4)}%` }}
-                  />
-                </div>
-              </div>
-
-              <div className="mt-2 flex items-center justify-between text-[10px] font-medium text-zinc-500 dark:text-zinc-400">
-                <span>
-                  {formatBytes(uploadProgress.loadedBytes)} of {formatBytes(uploadProgress.totalBytes)}
-                </span>
-                <span>
-                  {uploadProgress.stage === "saving" ? "Optimizing & saving..." : "Uploading data..."}
-                </span>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* Floating Toast Notification Container — Mobile Responsive & Glassmorphic */}
-        <div className="fixed bottom-4 inset-x-3 sm:inset-x-auto sm:bottom-5 sm:right-5 sm:max-w-sm z-50 pointer-events-none flex flex-col-reverse gap-2 items-center sm:items-end">
-          {toasts.map((toast, idx) => {
-            const reverseIdx = toasts.length - 1 - idx;
-            const translateY = -reverseIdx * 6;
-            const scale = Math.max(0.88, 1 - reverseIdx * 0.04);
-
-            return (
-              <div
-                key={toast.id}
-                style={{
-                  transform: `translate3d(0, ${translateY}px, 0) scale(${scale})`,
-                  transformOrigin: "bottom center",
-                  zIndex: 100 - reverseIdx,
+                  } else {
+                    setSelectedResourceIds(filteredResources.map((r) => r.id));
+                  }
                 }}
-                className={`w-full pointer-events-auto flex items-center gap-2.5 sm:gap-3 rounded-2xl p-3.5 sm:p-4 text-xs font-bold shadow-xl backdrop-blur-xl border transition-all duration-300 ease-out animate-in fade-in slide-in-from-bottom-4 ring-1 ring-white/10 ${toast.type === "success"
-                  ? "bg-emerald-950/30 dark:bg-emerald-950/40 border-emerald-500/35 text-emerald-100"
-                  : toast.type === "error"
-                    ? "bg-rose-950/30 dark:bg-rose-950/40 border-rose-500/35 text-rose-100"
-                    : "bg-zinc-900/35 dark:bg-black/40 border-white/15 text-white"
-                  }`}
+                className="text-xs font-semibold text-zinc-600 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-white transition cursor-pointer whitespace-nowrap"
               >
-                {toast.type === "success" && <Check className="h-4 w-4 shrink-0 text-emerald-400" />}
-                {toast.type === "error" && <AlertCircle className="h-4 w-4 shrink-0 text-rose-400" />}
-                {toast.type === "info" && <Sparkles className="h-4 w-4 shrink-0 text-amber-400" />}
-                <span className="flex-1 leading-snug">{toast.message}</span>
+                {selectedResourceIds.length === filteredResources.length && filteredResources.length > 0 ? "Deselect All" : "Select All"}
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setSelectedResourceIds([]);
+                  setIsMobileSelectionMode(false);
+                }}
+                className="text-xs font-semibold text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200 transition cursor-pointer whitespace-nowrap"
+              >
+                Clear
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowBulkDeleteModal(true)}
+                className="flex items-center gap-1.5 rounded-xl bg-rose-600 hover:bg-rose-700 px-3.5 py-1.5 text-xs font-bold text-white transition shadow-xs cursor-pointer whitespace-nowrap active:scale-95"
+              >
+                <Trash2 className="h-3.5 w-3.5" />
+                <span>Delete ({selectedResourceIds.length})</span>
+              </button>
+            </motion.div>
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
+
+      {/* Bulk Delete Confirmation Modal */}
+      <AnimatePresence>
+        {showBulkDeleteModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.12 }}
+            className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm p-0 sm:p-4 transform-gpu"
+            onClick={() => setShowBulkDeleteModal(false)}
+          >
+            <motion.div
+              initial={isMobile ? { y: "100%", opacity: 0.9 } : { opacity: 0, scale: 0.94, y: 10 }}
+              animate={{ y: 0, opacity: 1, scale: 1 }}
+              exit={
+                isMobile
+                  ? { y: "100%", opacity: 0, transition: { duration: 0.16, ease: [0.32, 0.72, 0, 1] } }
+                  : { opacity: 0, scale: 0.94, y: 8, transition: { duration: 0.08 } }
+              }
+              transition={
+                isMobile
+                  ? { type: "spring", stiffness: 450, damping: 32, mass: 0.4 }
+                  : { type: "spring", stiffness: 650, damping: 36, mass: 0.3 }
+              }
+              className="w-full sm:max-w-md max-h-[85vh] overflow-y-auto rounded-t-[28px] sm:rounded-3xl bg-white p-5 sm:p-6 dark:bg-[#18181B] shadow-2xl border-t sm:border border-zinc-200 dark:border-white/10 transform-gpu will-change-transform"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Mobile Grab Handle */}
+              <div className="w-10 h-1.5 rounded-full bg-zinc-300 dark:bg-zinc-700/80 mx-auto -mt-1 mb-3 cursor-grab active:scale-95 transition-transform sm:hidden" />
+
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-500">
+                <AlertCircle className="h-5 w-5" />
+              </div>
+              <h3 className="mt-4 text-base sm:text-lg font-bold text-zinc-900 dark:text-white tracking-tight">
+                Delete {selectedResourceIds.length} Selected Resources?
+              </h3>
+              <p className="mt-1.5 text-xs leading-relaxed text-zinc-500 dark:text-zinc-400">
+                Are you sure you want to delete <strong className="text-zinc-900 dark:text-white">{selectedResourceIds.length} hosted resources</strong>? Any active lead magnet forms or emails linking to these file links will no longer be able to access them.
+              </p>
+
+              <div className="mt-6 flex items-center justify-end gap-3">
                 <button
-                  type="button"
-                  onClick={() => removeToast(toast.id)}
-                  className="text-zinc-400 hover:text-white transition cursor-pointer p-0.5 rounded-md hover:bg-white/10 shrink-0"
+                  disabled={isBulkDeleting}
+                  onClick={() => setShowBulkDeleteModal(false)}
+                  className="flex-1 sm:flex-none rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-[#25252A] px-4 py-2.5 text-xs font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white transition-all cursor-pointer text-center"
+                >
+                  Cancel
+                </button>
+                <button
+                  disabled={isBulkDeleting}
+                  onClick={confirmBulkDelete}
+                  className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 rounded-xl border border-rose-500/30 bg-rose-600 px-4 py-2.5 text-xs font-bold text-white hover:bg-rose-700 active:scale-95 transition-all cursor-pointer shadow-sm text-center disabled:opacity-50"
+                >
+                  {isBulkDeleting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Trash2 className="h-3.5 w-3.5" />}
+                  <span>Delete {selectedResourceIds.length} Files</span>
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Delete Confirmation Modal */}
+      <AnimatePresence>
+        {resourceToDelete && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.12 }}
+            className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm p-0 sm:p-4 transform-gpu"
+            onClick={() => setResourceToDelete(null)}
+          >
+            <motion.div
+              initial={isMobile ? { y: "100%", opacity: 0.9 } : { opacity: 0, scale: 0.94, y: 10 }}
+              animate={{ y: 0, opacity: 1, scale: 1 }}
+              exit={
+                isMobile
+                  ? { y: "100%", opacity: 0, transition: { duration: 0.16, ease: [0.32, 0.72, 0, 1] } }
+                  : { opacity: 0, scale: 0.94, y: 8, transition: { duration: 0.08 } }
+              }
+              transition={
+                isMobile
+                  ? { type: "spring", stiffness: 450, damping: 32, mass: 0.4 }
+                  : { type: "spring", stiffness: 650, damping: 36, mass: 0.3 }
+              }
+              className="w-full sm:max-w-md max-h-[85vh] overflow-y-auto rounded-t-[28px] sm:rounded-3xl bg-white p-5 sm:p-6 dark:bg-[#18181B] shadow-2xl border-t sm:border border-zinc-200 dark:border-white/10 transform-gpu will-change-transform"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Mobile Grab Handle */}
+              <div className="w-10 h-1.5 rounded-full bg-zinc-300 dark:bg-zinc-700/80 mx-auto -mt-1 mb-3 cursor-grab active:scale-95 transition-transform sm:hidden" />
+
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-500">
+                <AlertCircle className="h-5 w-5" />
+              </div>
+              <h3 className="mt-4 text-base sm:text-lg font-bold text-zinc-900 dark:text-white tracking-tight">Delete Hosted Resource?</h3>
+              <p className="mt-1.5 text-xs leading-relaxed text-zinc-500 dark:text-zinc-400">
+                Are you sure you want to delete <strong className="text-zinc-900 dark:text-white">{resourceToDelete.name}</strong>? Any active lead magnet forms or emails linking to this file link will no longer be able to access it.
+              </p>
+
+              <div className="mt-6 flex items-center justify-end gap-3">
+                <button
+                  disabled={isDeleting}
+                  onClick={() => setResourceToDelete(null)}
+                  className="flex-1 sm:flex-none rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-[#25252A] px-4 py-2.5 text-xs font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white transition-all cursor-pointer text-center"
+                >
+                  Cancel
+                </button>
+                <button
+                  disabled={isDeleting}
+                  onClick={confirmDelete}
+                  className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 rounded-xl border border-rose-500/30 bg-rose-600 px-4 py-2.5 text-xs font-bold text-white hover:bg-rose-700 active:scale-95 transition-all cursor-pointer shadow-sm text-center disabled:opacity-50"
+                >
+                  {isDeleting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Trash2 className="h-3.5 w-3.5" />}
+                  <span>Delete Resource</span>
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Active Upload Live Progress Card */}
+      <AnimatePresence>
+        {uploading && uploadProgress && (
+          <motion.div
+            initial={{ opacity: 0, y: 30, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 20, scale: 0.95 }}
+            transition={{ type: "spring", stiffness: 350, damping: 25 }}
+            className="fixed bottom-20 inset-x-3 sm:inset-x-auto sm:bottom-24 sm:right-5 z-50 w-auto sm:w-full sm:max-w-sm rounded-2xl border border-zinc-200/80 bg-white/95 p-4 shadow-2xl backdrop-blur-xl dark:border-zinc-800 dark:bg-[#18181B]/95 text-zinc-900 dark:text-white ring-1 ring-black/5 dark:ring-white/10"
+          >
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex items-center gap-2.5">
+                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#0066B2]/10 text-[#0066B2] dark:bg-[#0066B2]/20 dark:text-[#38BDF8]">
+                  <UploadCloud className="h-4 w-4 animate-pulse" />
+                </div>
+                <div className="overflow-hidden">
+                  <h4 className="text-xs font-bold text-zinc-900 dark:text-white truncate">
+                    Uploading {uploadProgress.current} of {uploadProgress.total}
+                  </h4>
+                  <p className="text-[10px] font-medium text-zinc-500 dark:text-zinc-400 truncate max-w-[170px]">
+                    {uploadProgress.currentFileName}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-1.5 shrink-0">
+                <span className="rounded-full bg-[#0066B2]/10 px-2 py-0.5 text-[10px] font-bold text-[#0066B2] dark:bg-[#0066B2]/20 dark:text-[#38BDF8]">
+                  {uploadProgress.stage === "saving" ? "Finalizing" : `${uploadProgress.percent}%`}
+                </span>
+                <button
+                  onClick={cancelUpload}
+                  title="Cancel upload"
+                  className="rounded-lg p-1 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-700 dark:hover:bg-zinc-800 dark:hover:text-zinc-200 transition cursor-pointer"
                 >
                   <X className="h-3.5 w-3.5" />
                 </button>
               </div>
-            );
-          })}
-        </div>
+            </div>
+
+            {/* Progress Track */}
+            <div className="mt-3">
+              <div className="h-2 w-full overflow-hidden rounded-full bg-zinc-100 dark:bg-zinc-800">
+                <div
+                  className="h-full rounded-full bg-gradient-to-r from-[#0066B2] via-[#38BDF8] to-emerald-400 transition-all duration-150"
+                  style={{ width: `${Math.max(uploadProgress.percent, 4)}%` }}
+                />
+              </div>
+            </div>
+
+            <div className="mt-2 flex items-center justify-between text-[10px] font-medium text-zinc-500 dark:text-zinc-400">
+              <span>
+                {formatBytes(uploadProgress.loadedBytes)} of {formatBytes(uploadProgress.totalBytes)}
+              </span>
+              <span>
+                {uploadProgress.stage === "saving" ? "Optimizing & saving..." : "Uploading data..."}
+              </span>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Floating Toast Notification Container — Mobile Responsive & Glassmorphic */}
+      <div className="fixed bottom-4 inset-x-3 sm:inset-x-auto sm:bottom-5 sm:right-5 sm:max-w-sm z-50 pointer-events-none flex flex-col-reverse gap-2 items-center sm:items-end">
+        {toasts.map((toast, idx) => {
+          const reverseIdx = toasts.length - 1 - idx;
+          const translateY = -reverseIdx * 6;
+          const scale = Math.max(0.88, 1 - reverseIdx * 0.04);
+
+          return (
+            <div
+              key={toast.id}
+              style={{
+                transform: `translate3d(0, ${translateY}px, 0) scale(${scale})`,
+                transformOrigin: "bottom center",
+                zIndex: 100 - reverseIdx,
+              }}
+              className={`w-full pointer-events-auto flex items-center gap-2.5 sm:gap-3 rounded-2xl p-3.5 sm:p-4 text-xs font-bold shadow-xl backdrop-blur-xl border transition-all duration-300 ease-out animate-in fade-in slide-in-from-bottom-4 ring-1 ring-white/10 ${toast.type === "success"
+                ? "bg-emerald-950/30 dark:bg-emerald-950/40 border-emerald-500/35 text-emerald-100"
+                : toast.type === "error"
+                  ? "bg-rose-950/30 dark:bg-rose-950/40 border-rose-500/35 text-rose-100"
+                  : "bg-zinc-900/35 dark:bg-black/40 border-white/15 text-white"
+                }`}
+            >
+              {toast.type === "success" && <Check className="h-4 w-4 shrink-0 text-emerald-400" />}
+              {toast.type === "error" && <AlertCircle className="h-4 w-4 shrink-0 text-rose-400" />}
+              {toast.type === "info" && <Sparkles className="h-4 w-4 shrink-0 text-amber-400" />}
+              <span className="flex-1 leading-snug">{toast.message}</span>
+              <button
+                type="button"
+                onClick={() => removeToast(toast.id)}
+                className="text-zinc-400 hover:text-white transition cursor-pointer p-0.5 rounded-md hover:bg-white/10 shrink-0"
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
+            </div>
+          );
+        })}
       </div>
-    );
+    </div>
+  );
 }
