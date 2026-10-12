@@ -217,11 +217,11 @@ export const EmailSenderSection = memo(function EmailSenderSection({
         ) : null}
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 items-stretch">
 
         {/* ─── Gmail OAuth2 Card ─────────────────────────────────────────────── */}
-        <div className="rounded-2xl border border-[#0066B2]/30 bg-white dark:border-[#0066B2]/35 dark:bg-[#121214] overflow-hidden shadow-sm">
-          <div className="p-4">
+        <div className="rounded-2xl border border-[#0066B2]/30 bg-white dark:border-[#0066B2]/35 dark:bg-[#121214] overflow-hidden shadow-sm flex flex-col justify-between h-full">
+          <div className="p-4 flex flex-col justify-between h-full">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200/90 dark:border-zinc-800 shadow-xs overflow-hidden p-2">
@@ -271,7 +271,8 @@ export const EmailSenderSection = memo(function EmailSenderSection({
                     <button
                       onClick={handleDisconnectGmail}
                       disabled={disconnectingGmail}
-                      className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-[11px] font-semibold text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition border border-red-200 dark:border-red-700"
+                      className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-medium text-zinc-400 hover:text-rose-400 border border-transparent hover:border-rose-500/20 hover:bg-rose-500/10 transition-all cursor-pointer active:scale-95 disabled:opacity-50"
+                      title="Disconnect Gmail"
                     >
                       {disconnectingGmail ? <Loader2 size={11} className="animate-spin" /> : <Unlink size={11} />}
                       Disconnect
@@ -289,9 +290,15 @@ export const EmailSenderSection = memo(function EmailSenderSection({
               </div>
             </div>
             {gmailConnected && (
-              <div className="mt-3 rounded-xl bg-emerald-50 dark:bg-emerald-900/15 border border-emerald-100 dark:border-emerald-800/40 px-3 py-2.5">
-                <p className="text-[11px] text-emerald-700 dark:text-emerald-300 leading-relaxed">
-                  <span className="font-bold">✓ Active:</span> All emails will be sent from <strong>{account?.gmailOAuth?.gmailAddress}</strong> and will appear in your Gmail Sent folder.
+              <div className="mt-3.5 rounded-xl bg-emerald-500/[0.06] dark:bg-emerald-500/[0.08] border border-emerald-500/20 dark:border-emerald-500/25 px-3 py-2.5 shadow-[0_0_15px_rgba(16,185,129,0.05)]">
+                <p className="text-[11px] text-emerald-700 dark:text-emerald-300 leading-relaxed flex items-center gap-2">
+                  <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 font-bold text-[10px] tracking-wide uppercase shrink-0">
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                    Active
+                  </span>
+                  <span>
+                    All emails will be sent from <strong className="text-zinc-800 dark:text-zinc-100 font-semibold">{account?.gmailOAuth?.gmailAddress}</strong> and sync with your Sent folder.
+                  </span>
                 </p>
               </div>
             )}
@@ -306,14 +313,25 @@ export const EmailSenderSection = memo(function EmailSenderSection({
         </div>
 
         {/* ─── Custom SMTP Card ─────────────────────────────────────────────── */}
-        <div className={`rounded-2xl border border-[#0066B2]/30 bg-white dark:border-[#0066B2]/35 dark:bg-[#121214] overflow-hidden shadow-sm transition-all duration-300 ease-in-out ${showSmtp ? "md:col-span-2" : ""}`}>
+        <div className={`rounded-2xl border border-[#0066B2]/30 bg-white dark:border-[#0066B2]/35 dark:bg-[#121214] overflow-hidden shadow-sm transition-all duration-300 ease-in-out flex flex-col justify-between ${showSmtp ? "md:col-span-2" : "h-full"}`}>
           <div
             onClick={() => setShowSmtp((v) => !v)}
             className="p-4 flex items-center justify-between hover:bg-[#EFF6FF] dark:hover:bg-[#18181c] transition-colors cursor-pointer"
           >
             <div className="flex items-center gap-3">
-              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#EFF6FF] border border-[#BFDBFE] dark:bg-[#0f1a2c] overflow-hidden p-1.5">
-                <Mail size={16} className="text-[#0066B2]" />
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200/90 dark:border-zinc-800 shadow-xs overflow-hidden p-1.5">
+                <svg className="h-full w-full object-contain" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <defs>
+                    <linearGradient id="smtpGrad1" x1="2" y1="4" x2="22" y2="20" gradientUnits="userSpaceOnUse">
+                      <stop stopColor="#38BDF8" />
+                      <stop offset="1" stopColor="#2563EB" />
+                    </linearGradient>
+                  </defs>
+                  <rect x="2" y="4" width="20" height="16" rx="3.5" fill="url(#smtpGrad1)" />
+                  <path d="M2.5 6.5L10.7 13.06C11.47 13.68 12.53 13.68 13.3 13.06L21.5 6.5" stroke="#FFFFFF" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M2.5 17.5L8.5 12" stroke="#FFFFFF" strokeOpacity="0.4" strokeWidth="1.3" strokeLinecap="round" />
+                  <path d="M21.5 17.5L15.5 12" stroke="#FFFFFF" strokeOpacity="0.4" strokeWidth="1.3" strokeLinecap="round" />
+                </svg>
               </div>
               <div>
                 <h5 className="text-xs font-bold text-zinc-900 dark:text-white flex items-center gap-1.5">
@@ -345,6 +363,18 @@ export const EmailSenderSection = memo(function EmailSenderSection({
               />
             </div>
           </div>
+
+          {!showSmtp && (
+            <div
+              onClick={() => setShowSmtp(true)}
+              className="px-4 pb-4 pt-0 mt-auto cursor-pointer"
+            >
+              <div className="rounded-xl bg-zinc-50 dark:bg-zinc-900/40 border border-zinc-200/60 dark:border-zinc-800/60 px-3 py-2 flex items-center justify-between text-[11px] text-zinc-500 dark:text-zinc-400 hover:border-[#0066B2]/40 transition-colors">
+                <span>{smtpConnected ? "Verified custom SMTP configured" : "Optional alternative: connect custom host & port"}</span>
+                <span className="text-[10px] font-semibold text-[#0066B2] dark:text-[#38BDF8]">Configure →</span>
+              </div>
+            </div>
+          )}
 
           {showSmtp && (
             <div className="px-4 pb-4 border-t border-zinc-100 dark:border-zinc-800/50 space-y-4 pt-4">
