@@ -80,13 +80,13 @@ const MagnetCard = React.memo(
         whileTap={{ scale: 0.985 }}
         onClick={() => onSelect(page.id)}
         className={`group relative rounded-2xl border cursor-pointer overflow-hidden flex flex-col will-change-transform transition-all duration-200 ${isChecked
-            ? "border-[#0066B2] dark:border-[#38BDF8] bg-white dark:bg-[#18181C] ring-2 ring-[#0066B2]/40 dark:ring-[#38BDF8]/40 shadow-[0_8px_30px_rgba(0,102,178,0.12)]"
-            : isSelected
-              ? "border-[#0066B2] dark:border-[#38BDF8] bg-white dark:bg-[#18181C] shadow-[0_8px_30px_rgba(0,102,178,0.15)] ring-1 ring-[#0066B2]/30"
-              : "border-zinc-200 dark:border-zinc-800/80 bg-white dark:bg-[#141417] hover:border-zinc-300 dark:hover:border-zinc-700 shadow-[0_2px_8px_rgba(0,0,0,0.06),0_1px_2px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.09)] dark:shadow-[0_4px_16px_rgba(0,0,0,0.3)] dark:hover:shadow-[0_8px_24px_rgba(0,0,0,0.4)]"
+          ? "border-[#0066B2] dark:border-[#38BDF8] bg-white dark:bg-[#18181C] ring-2 ring-[#0066B2]/40 dark:ring-[#38BDF8]/40 shadow-[0_8px_30px_rgba(0,102,178,0.12)]"
+          : isSelected
+            ? "border-[#0066B2] dark:border-[#38BDF8] bg-white dark:bg-[#18181C] shadow-[0_8px_30px_rgba(0,102,178,0.15)] ring-1 ring-[#0066B2]/30"
+            : "border-zinc-200 dark:border-zinc-800/80 bg-white dark:bg-[#141417] hover:border-zinc-300 dark:hover:border-zinc-700 shadow-[0_2px_8px_rgba(0,0,0,0.06),0_1px_2px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.09)] dark:shadow-[0_4px_16px_rgba(0,0,0,0.3)] dark:hover:shadow-[0_8px_24px_rgba(0,0,0,0.4)]"
           }`}
       >
-        <div className="relative h-32 w-full bg-zinc-100 dark:bg-[#0F0F12] border-b border-zinc-200/80 dark:border-zinc-800/60 overflow-hidden">
+        <div className="relative h-[124px] sm:h-[134px] w-full bg-zinc-100 dark:bg-[#0F0F12] rounded-b-2xl border-b border-zinc-200/80 dark:border-zinc-800/60 overflow-hidden">
           {page.imageUrl && page.imageUrl.trim() !== "" ? (
             <Image
               src={page.imageUrl}
@@ -125,8 +125,8 @@ const MagnetCard = React.memo(
           <div className="absolute top-3 left-3 flex items-center z-10">
             <span
               className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider border backdrop-blur-xs ${page.status === "live"
-                  ? "bg-emerald-500 text-white border-emerald-400/30 shadow-xs"
-                  : "bg-white/95 text-zinc-600 border-zinc-200/90 dark:bg-zinc-900/80 dark:text-zinc-300 dark:border-zinc-700/50 shadow-2xs"
+                ? "bg-emerald-500 text-white border-emerald-400/30 shadow-xs"
+                : "bg-white/95 text-zinc-600 border-zinc-200/90 dark:bg-zinc-900/80 dark:text-zinc-300 dark:border-zinc-700/50 shadow-2xs"
                 }`}
             >
               <span className={`h-1.5 w-1.5 rounded-full ${page.status === "live" ? "bg-white animate-pulse" : "bg-zinc-400"}`} />
@@ -138,10 +138,10 @@ const MagnetCard = React.memo(
             type="button"
             onClick={(e) => onToggleCheck(page.id, e)}
             className={`absolute top-3 right-3 flex h-6 w-6 items-center justify-center rounded-lg border transition-all z-10 cursor-pointer ${isChecked
-                ? "bg-[#0066B2] border-[#0066B2] text-white shadow-md scale-105 opacity-100"
-                : showCheckbox
-                  ? "bg-white/90 dark:bg-black/70 border-zinc-300 dark:border-zinc-700 text-transparent hover:border-[#0066B2] dark:hover:border-[#38BDF8] opacity-100 shadow-xs active:scale-95"
-                  : "bg-white/90 dark:bg-black/70 border-zinc-300 dark:border-zinc-700 text-transparent hover:border-[#0066B2] dark:hover:border-[#38BDF8] opacity-0 md:group-hover:opacity-100 shadow-xs"
+              ? "bg-[#0066B2] border-[#0066B2] text-white shadow-md scale-105 opacity-100"
+              : showCheckbox
+                ? "bg-white/90 dark:bg-black/70 border-zinc-300 dark:border-zinc-700 text-transparent hover:border-[#0066B2] dark:hover:border-[#38BDF8] opacity-100 shadow-xs active:scale-95"
+                : "bg-white/90 dark:bg-black/70 border-zinc-300 dark:border-zinc-700 text-transparent hover:border-[#0066B2] dark:hover:border-[#38BDF8] opacity-0 md:group-hover:opacity-100 shadow-xs"
               }`}
             title={isChecked ? "Deselect magnet" : "Select magnet"}
           >
@@ -149,7 +149,7 @@ const MagnetCard = React.memo(
           </button>
         </div>
 
-        <div className="p-3.5 sm:p-4 flex-1 flex flex-col justify-between space-y-2.5 sm:space-y-3">
+        <div className="p-3 sm:p-3.5 flex-1 flex flex-col justify-between space-y-2">
           <div>
             <h3 className="text-xs sm:text-sm font-bold text-zinc-900 dark:text-white line-clamp-1 group-hover:text-[#0066B2] dark:group-hover:text-[#38BDF8] transition">
               {page.headline || page.name}
@@ -555,809 +555,796 @@ export default function PagesPage() {
             <motion.div
               layout
               transition={{ layout: { type: "spring", stiffness: 450, damping: 32, mass: 0.6 } }}
-              className={`flex flex-col space-y-4 min-w-0 max-w-full ${
-                activePage ? "w-full lg:w-[65%]" : "w-full"
-              }`}
+              className={`flex flex-col space-y-4 min-w-0 max-w-full ${activePage ? "w-full lg:w-[65%]" : "w-full"
+                }`}
             >
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3 w-full max-w-full min-w-0">
-              <div className="flex items-center gap-2 flex-1 rounded-xl bg-zinc-50 dark:bg-[#1C1C20] px-3.5 py-2 border border-zinc-200/60 dark:border-zinc-800 focus-within:border-[#0066B2] dark:focus-within:border-[#0066B2] min-w-0">
-                <Search className="h-4 w-4 text-zinc-400 shrink-0" />
-                <input
-                  type="text"
-                  placeholder="Filter lead magnets by title or slug..."
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  className="bg-transparent text-xs text-zinc-900 dark:text-white outline-none placeholder:text-zinc-400 w-full min-w-0"
-                />
-                {search && (
-                  <button onClick={() => setSearch("")} className="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 shrink-0">
-                    <X className="h-3.5 w-3.5" />
-                  </button>
-                )}
-              </div>
+                <div className="flex items-center gap-2 flex-1 rounded-xl bg-zinc-50 dark:bg-[#1C1C20] px-3.5 py-2 border border-zinc-200/60 dark:border-zinc-800 focus-within:border-[#0066B2] dark:focus-within:border-[#0066B2] min-w-0">
+                  <Search className="h-4 w-4 text-zinc-400 shrink-0" />
+                  <input
+                    type="text"
+                    placeholder="Filter lead magnets by title or slug..."
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    className="bg-transparent text-xs text-zinc-900 dark:text-white outline-none placeholder:text-zinc-400 w-full min-w-0"
+                  />
+                  {search && (
+                    <button onClick={() => setSearch("")} className="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 shrink-0">
+                      <X className="h-3.5 w-3.5" />
+                    </button>
+                  )}
+                </div>
 
-              <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 justify-between sm:justify-end w-full sm:w-auto min-w-0">
-                {/* Desktop Status Tabs Pod (Preserved untouched) */}
-                <div className="hidden sm:flex items-center p-1 bg-zinc-100 dark:bg-[#1C1C20] rounded-xl text-xs font-semibold min-w-0">
-                  {[
-                    { id: "all", label: `All (${total})` },
-                    { id: "live", label: `Live (${liveCount})` },
-                    { id: "draft", label: `Draft (${draftCount})` },
-                  ].map((tab) => (
+                <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 justify-between sm:justify-end w-full sm:w-auto min-w-0">
+                  {/* Desktop Status Tabs Pod (Preserved untouched) */}
+                  <div className="hidden sm:flex items-center p-1 bg-zinc-100 dark:bg-[#1C1C20] rounded-xl text-xs font-semibold min-w-0">
+                    {[
+                      { id: "all", label: `All (${total})` },
+                      { id: "live", label: `Live (${liveCount})` },
+                      { id: "draft", label: `Draft (${draftCount})` },
+                    ].map((tab) => (
+                      <button
+                        key={tab.id}
+                        onClick={() => setStatusFilter(tab.id as any)}
+                        className={`relative px-3 py-1 rounded-lg transition-colors duration-200 cursor-pointer ${statusFilter === tab.id
+                          ? tab.id === "live"
+                            ? "text-emerald-600 dark:text-emerald-400 font-bold"
+                            : "text-zinc-900 dark:text-white font-bold"
+                          : "text-zinc-500 hover:text-zinc-900 dark:hover:text-white"
+                          }`}
+                      >
+                        {statusFilter === tab.id && (
+                          <motion.div
+                            layoutId="activeStatusFilterTab"
+                            className="absolute inset-0 bg-white dark:bg-[#2A2A30] rounded-lg shadow-xs"
+                            transition={{ type: "spring", stiffness: 500, damping: 32 }}
+                          />
+                        )}
+                        <span className="relative z-10">{tab.label}</span>
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Mobile Filter Dropdown Button */}
+                  <div className="sm:hidden relative shrink-0">
                     <button
-                      key={tab.id}
-                      onClick={() => setStatusFilter(tab.id as any)}
-                      className={`relative px-3 py-1 rounded-lg transition-colors duration-200 cursor-pointer ${statusFilter === tab.id
-                        ? tab.id === "live"
-                          ? "text-emerald-600 dark:text-emerald-400 font-bold"
-                          : "text-zinc-900 dark:text-white font-bold"
-                        : "text-zinc-500 hover:text-zinc-900 dark:hover:text-white"
-                        }`}
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setIsSortOpen(false);
+                        setIsStatusFilterOpen((v) => !v);
+                      }}
+                      className="flex h-8 items-center gap-1.5 rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#18181B] px-2.5 text-[11px] font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-[#222226] transition shadow-2xs cursor-pointer select-none"
                     >
-                      {statusFilter === tab.id && (
+                      <Filter className="h-3 w-3 text-zinc-400 shrink-0" />
+                      <span className="truncate">
+                        {statusFilter === "all"
+                          ? `Filter (${total})`
+                          : statusFilter === "live"
+                            ? `Live (${liveCount})`
+                            : `Draft (${draftCount})`}
+                      </span>
+                      <ChevronDown
+                        className={`h-3.5 w-3.5 text-zinc-400 shrink-0 transition-transform duration-200 ${isStatusFilterOpen ? "rotate-180" : ""
+                          }`}
+                      />
+                    </button>
+
+                    <AnimatePresence>
+                      {isStatusFilterOpen && (
                         <motion.div
-                          layoutId="activeStatusFilterTab"
+                          initial={{ opacity: 0, scale: 0.96, y: -6 }}
+                          animate={{ opacity: 1, scale: 1, y: 0 }}
+                          exit={{ opacity: 0, scale: 0.96, y: -4 }}
+                          transition={{ type: "spring", damping: 28, stiffness: 400 }}
+                          onClick={(e) => e.stopPropagation()}
+                          className="absolute left-0 top-full z-40 mt-1.5 w-48 rounded-xl border border-zinc-200/90 dark:border-white/10 bg-white/95 dark:bg-[#1C1C20]/95 p-1.5 shadow-xl backdrop-blur-xl dark:text-white"
+                        >
+                          <div className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
+                            Filter Status
+                          </div>
+                          {[
+                            { id: "all", label: "All Pages", count: total },
+                            { id: "live", label: "Live", count: liveCount },
+                            { id: "draft", label: "Draft", count: draftCount },
+                          ].map((item) => {
+                            const isSelected = statusFilter === item.id;
+                            return (
+                              <button
+                                key={item.id}
+                                type="button"
+                                onClick={() => {
+                                  setStatusFilter(item.id as any);
+                                  setIsStatusFilterOpen(false);
+                                }}
+                                className={`flex w-full items-center justify-between rounded-lg px-2.5 py-1.5 text-xs transition cursor-pointer text-left ${isSelected
+                                  ? "bg-[#0066B2]/10 text-[#0066B2] font-bold dark:bg-[#38BDF8]/20 dark:text-[#38BDF8]"
+                                  : "text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-white/5 font-medium"
+                                  }`}
+                              >
+                                <span>{item.label}</span>
+                                <div className="flex items-center gap-1.5">
+                                  <span className="text-[10px] text-zinc-400">({item.count})</span>
+                                  {isSelected && <Check className="h-3.5 w-3.5" />}
+                                </div>
+                              </button>
+                            );
+                          })}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+
+                  {/* Custom Animated Sort Dropdown */}
+                  <div className="relative shrink-0">
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setIsSortOpen((v) => !v);
+                      }}
+                      className="flex h-8 items-center gap-1 sm:gap-2 rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#18181B] px-2 sm:px-3 text-[11px] sm:text-xs font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-[#222226] transition shadow-2xs cursor-pointer select-none"
+                    >
+                      <SlidersHorizontal className="h-3 w-3 text-zinc-400 shrink-0" />
+                      <span className="truncate max-w-[76px] sm:max-w-none">{sortOptions.find((o) => o.id === sortBy)?.label || "Sort"}</span>
+                      <ChevronDown
+                        className={`h-3.5 w-3.5 text-zinc-400 shrink-0 transition-transform duration-200 ${isSortOpen ? "rotate-180" : ""
+                          }`}
+                      />
+                    </button>
+
+                    <AnimatePresence>
+                      {isSortOpen && (
+                        <motion.div
+                          initial={{ opacity: 0, scale: 0.96, y: -6 }}
+                          animate={{ opacity: 1, scale: 1, y: 0 }}
+                          exit={{ opacity: 0, scale: 0.96, y: -4 }}
+                          transition={{ type: "spring", damping: 28, stiffness: 400 }}
+                          onClick={(e) => e.stopPropagation()}
+                          className="absolute right-0 top-full z-40 mt-1.5 w-48 rounded-xl border border-zinc-200/90 dark:border-white/10 bg-white/95 dark:bg-[#1C1C20]/95 p-1.5 shadow-xl backdrop-blur-xl dark:text-white"
+                        >
+                          <div className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
+                            Sort by
+                          </div>
+                          {sortOptions.map((opt) => {
+                            const isSelected = sortBy === opt.id;
+                            return (
+                              <button
+                                key={opt.id}
+                                type="button"
+                                onClick={() => {
+                                  setSortBy(opt.id);
+                                  setIsSortOpen(false);
+                                }}
+                                className={`flex w-full items-center justify-between rounded-lg px-2.5 py-1.5 text-xs transition cursor-pointer text-left ${isSelected
+                                  ? "bg-[#0066B2]/10 text-[#0066B2] font-bold dark:bg-[#38BDF8]/20 dark:text-[#38BDF8]"
+                                  : "text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-white/5 font-medium"
+                                  }`}
+                              >
+                                <span>{opt.label}</span>
+                                {isSelected && <Check className="h-3.5 w-3.5" />}
+                              </button>
+                            );
+                          })}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+
+                  <div className="flex items-center p-1 bg-zinc-100 dark:bg-[#1C1C20] rounded-xl">
+                    <button
+                      onClick={() => setViewMode("grid")}
+                      className={`relative p-1.5 rounded-lg transition-colors duration-150 cursor-pointer ${viewMode === "grid" ? "text-[#0066B2] dark:text-[#38BDF8]" : "text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200"
+                        }`}
+                      title="Grid View"
+                    >
+                      {viewMode === "grid" && (
+                        <motion.div
+                          layoutId="activeViewModeTab"
                           className="absolute inset-0 bg-white dark:bg-[#2A2A30] rounded-lg shadow-xs"
                           transition={{ type: "spring", stiffness: 500, damping: 32 }}
                         />
                       )}
-                      <span className="relative z-10">{tab.label}</span>
+                      <LayoutGrid className="relative z-10 h-4 w-4" />
                     </button>
-                  ))}
-                </div>
 
-                {/* Mobile Filter Dropdown Button */}
-                <div className="sm:hidden relative shrink-0">
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setIsSortOpen(false);
-                      setIsStatusFilterOpen((v) => !v);
-                    }}
-                    className="flex h-8 items-center gap-1.5 rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#18181B] px-2.5 text-[11px] font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-[#222226] transition shadow-2xs cursor-pointer select-none"
-                  >
-                    <Filter className="h-3 w-3 text-zinc-400 shrink-0" />
-                    <span className="truncate">
-                      {statusFilter === "all"
-                        ? `Filter (${total})`
-                        : statusFilter === "live"
-                        ? `Live (${liveCount})`
-                        : `Draft (${draftCount})`}
-                    </span>
-                    <ChevronDown
-                      className={`h-3.5 w-3.5 text-zinc-400 shrink-0 transition-transform duration-200 ${
-                        isStatusFilterOpen ? "rotate-180" : ""
-                      }`}
-                    />
-                  </button>
+                    <button
+                      onClick={() => setViewMode("table")}
+                      className={`relative p-1.5 rounded-lg transition-colors duration-150 cursor-pointer ${viewMode === "table" ? "text-[#0066B2] dark:text-[#38BDF8]" : "text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200"
+                        }`}
+                      title="Table View"
+                    >
+                      {viewMode === "table" && (
+                        <motion.div
+                          layoutId="activeViewModeTab"
+                          className="absolute inset-0 bg-white dark:bg-[#2A2A30] rounded-lg shadow-xs"
+                          transition={{ type: "spring", stiffness: 500, damping: 32 }}
+                        />
+                      )}
+                      <List className="relative z-10 h-4 w-4" />
+                    </button>
 
-                  <AnimatePresence>
-                    {isStatusFilterOpen && (
-                      <motion.div
-                        initial={{ opacity: 0, scale: 0.96, y: -6 }}
-                        animate={{ opacity: 1, scale: 1, y: 0 }}
-                        exit={{ opacity: 0, scale: 0.96, y: -4 }}
-                        transition={{ type: "spring", damping: 28, stiffness: 400 }}
-                        onClick={(e) => e.stopPropagation()}
-                        className="absolute left-0 top-full z-40 mt-1.5 w-48 rounded-xl border border-zinc-200/90 dark:border-white/10 bg-white/95 dark:bg-[#1C1C20]/95 p-1.5 shadow-xl backdrop-blur-xl dark:text-white"
-                      >
-                        <div className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
-                          Filter Status
-                        </div>
-                        {[
-                          { id: "all", label: "All Pages", count: total },
-                          { id: "live", label: "Live", count: liveCount },
-                          { id: "draft", label: "Draft", count: draftCount },
-                        ].map((item) => {
-                          const isSelected = statusFilter === item.id;
-                          return (
-                            <button
-                              key={item.id}
-                              type="button"
-                              onClick={() => {
-                                setStatusFilter(item.id as any);
-                                setIsStatusFilterOpen(false);
-                              }}
-                              className={`flex w-full items-center justify-between rounded-lg px-2.5 py-1.5 text-xs transition cursor-pointer text-left ${
-                                isSelected
-                                  ? "bg-[#0066B2]/10 text-[#0066B2] font-bold dark:bg-[#38BDF8]/20 dark:text-[#38BDF8]"
-                                  : "text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-white/5 font-medium"
-                              }`}
-                            >
-                              <span>{item.label}</span>
-                              <div className="flex items-center gap-1.5">
-                                <span className="text-[10px] text-zinc-400">({item.count})</span>
-                                {isSelected && <Check className="h-3.5 w-3.5" />}
-                              </div>
-                            </button>
-                          );
-                        })}
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
+                    <div className="h-3.5 w-px bg-zinc-200 dark:bg-zinc-700 mx-0.5" />
 
-                {/* Custom Animated Sort Dropdown */}
-                <div className="relative shrink-0">
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setIsSortOpen((v) => !v);
-                    }}
-                    className="flex h-8 items-center gap-1 sm:gap-2 rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#18181B] px-2 sm:px-3 text-[11px] sm:text-xs font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-[#222226] transition shadow-2xs cursor-pointer select-none"
-                  >
-                    <SlidersHorizontal className="h-3 w-3 text-zinc-400 shrink-0" />
-                    <span className="truncate max-w-[76px] sm:max-w-none">{sortOptions.find((o) => o.id === sortBy)?.label || "Sort"}</span>
-                    <ChevronDown
-                      className={`h-3.5 w-3.5 text-zinc-400 shrink-0 transition-transform duration-200 ${
-                        isSortOpen ? "rotate-180" : ""
-                      }`}
-                    />
-                  </button>
-
-                  <AnimatePresence>
-                    {isSortOpen && (
-                      <motion.div
-                        initial={{ opacity: 0, scale: 0.96, y: -6 }}
-                        animate={{ opacity: 1, scale: 1, y: 0 }}
-                        exit={{ opacity: 0, scale: 0.96, y: -4 }}
-                        transition={{ type: "spring", damping: 28, stiffness: 400 }}
-                        onClick={(e) => e.stopPropagation()}
-                        className="absolute right-0 top-full z-40 mt-1.5 w-48 rounded-xl border border-zinc-200/90 dark:border-white/10 bg-white/95 dark:bg-[#1C1C20]/95 p-1.5 shadow-xl backdrop-blur-xl dark:text-white"
-                      >
-                        <div className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
-                          Sort by
-                        </div>
-                        {sortOptions.map((opt) => {
-                          const isSelected = sortBy === opt.id;
-                          return (
-                            <button
-                              key={opt.id}
-                              type="button"
-                              onClick={() => {
-                                setSortBy(opt.id);
-                                setIsSortOpen(false);
-                              }}
-                              className={`flex w-full items-center justify-between rounded-lg px-2.5 py-1.5 text-xs transition cursor-pointer text-left ${
-                                isSelected
-                                  ? "bg-[#0066B2]/10 text-[#0066B2] font-bold dark:bg-[#38BDF8]/20 dark:text-[#38BDF8]"
-                                  : "text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-white/5 font-medium"
-                              }`}
-                            >
-                              <span>{opt.label}</span>
-                              {isSelected && <Check className="h-3.5 w-3.5" />}
-                            </button>
-                          );
-                        })}
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-
-                <div className="flex items-center p-1 bg-zinc-100 dark:bg-[#1C1C20] rounded-xl">
-                  <button
-                    onClick={() => setViewMode("grid")}
-                    className={`relative p-1.5 rounded-lg transition-colors duration-150 cursor-pointer ${viewMode === "grid" ? "text-[#0066B2] dark:text-[#38BDF8]" : "text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200"
-                      }`}
-                    title="Grid View"
-                  >
-                    {viewMode === "grid" && (
-                      <motion.div
-                        layoutId="activeViewModeTab"
-                        className="absolute inset-0 bg-white dark:bg-[#2A2A30] rounded-lg shadow-xs"
-                        transition={{ type: "spring", stiffness: 500, damping: 32 }}
-                      />
-                    )}
-                    <LayoutGrid className="relative z-10 h-4 w-4" />
-                  </button>
-
-                  <button
-                    onClick={() => setViewMode("table")}
-                    className={`relative p-1.5 rounded-lg transition-colors duration-150 cursor-pointer ${viewMode === "table" ? "text-[#0066B2] dark:text-[#38BDF8]" : "text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200"
-                      }`}
-                    title="Table View"
-                  >
-                    {viewMode === "table" && (
-                      <motion.div
-                        layoutId="activeViewModeTab"
-                        className="absolute inset-0 bg-white dark:bg-[#2A2A30] rounded-lg shadow-xs"
-                        transition={{ type: "spring", stiffness: 500, damping: 32 }}
-                      />
-                    )}
-                    <List className="relative z-10 h-4 w-4" />
-                  </button>
-
-                  <div className="h-3.5 w-px bg-zinc-200 dark:bg-zinc-700 mx-0.5" />
-
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setIsSelectMode((prev) => {
-                        const next = !prev;
-                        if (!next) setCheckedIds([]);
-                        return next;
-                      });
-                    }}
-                    className={`relative p-1.5 rounded-lg transition-colors duration-150 cursor-pointer ${
-                      isSelectMode || checkedIds.length > 0
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsSelectMode((prev) => {
+                          const next = !prev;
+                          if (!next) setCheckedIds([]);
+                          return next;
+                        });
+                      }}
+                      className={`relative p-1.5 rounded-lg transition-colors duration-150 cursor-pointer ${isSelectMode || checkedIds.length > 0
                         ? "bg-white dark:bg-[#2A2A30] text-[#0066B2] dark:text-[#38BDF8] shadow-xs"
                         : "text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200"
-                    }`}
-                    title={isSelectMode || checkedIds.length > 0 ? "Exit Select Mode" : "Select Lead Magnets"}
-                  >
-                    <CheckSquare className="relative z-10 h-4 w-4" />
-                  </button>
+                        }`}
+                      title={isSelectMode || checkedIds.length > 0 ? "Exit Select Mode" : "Select Lead Magnets"}
+                    >
+                      <CheckSquare className="relative z-10 h-4 w-4" />
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <AnimatePresence mode="wait">
-              {filtered.length === 0 ? (
-                <motion.div
-                  key="empty-state"
-                  initial={{ opacity: 0, y: 8, scale: 0.99 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.98 }}
-                  transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
-                  className="rounded-2xl border border-dashed border-zinc-300 dark:border-zinc-800 bg-white dark:bg-[#141417] p-12 text-center flex flex-col items-center justify-center"
-                >
-                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#EFF6FF] dark:bg-[#0066B2]/20 text-[#0066B2] dark:text-[#38BDF8] mb-3">
-                    <Sparkles className="h-6 w-6" />
-                  </div>
-                  <h3 className="text-base font-bold text-zinc-900 dark:text-white">No lead magnets found</h3>
-                  <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1 max-w-xs">
-                    {search ? "Try adjusting your search query or clear filters." : "Create your first lead magnet to start collecting emails."}
-                  </p>
-                  <button
-                    onClick={() => setShowCreateModal(true)}
-                    className="mt-4 flex items-center gap-1.5 rounded-xl bg-[#0066B2] px-4 py-2 text-xs font-bold text-white hover:bg-[#005799] transition cursor-pointer"
+              <AnimatePresence mode="wait">
+                {filtered.length === 0 ? (
+                  <motion.div
+                    key="empty-state"
+                    initial={{ opacity: 0, y: 8, scale: 0.99 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.98 }}
+                    transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
+                    className="rounded-2xl border border-dashed border-zinc-300 dark:border-zinc-800 bg-white dark:bg-[#141417] p-12 text-center flex flex-col items-center justify-center"
                   >
-                    <Plus className="h-4 w-4" /> Create Lead Magnet
-                  </button>
-                </motion.div>
-              ) : viewMode === "grid" ? (
-                <motion.div
-                  key="grid-view"
-                  initial={{ opacity: 0, y: 6, scale: 0.995 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: -6, scale: 0.995 }}
-                  transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-                  className="flex flex-col space-y-4"
-                >
-                  <div
-                    className={`grid gap-4 w-full ${
-                      activePage
+                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#EFF6FF] dark:bg-[#0066B2]/20 text-[#0066B2] dark:text-[#38BDF8] mb-3">
+                      <Sparkles className="h-6 w-6" />
+                    </div>
+                    <h3 className="text-base font-bold text-zinc-900 dark:text-white">No lead magnets found</h3>
+                    <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1 max-w-xs">
+                      {search ? "Try adjusting your search query or clear filters." : "Create your first lead magnet to start collecting emails."}
+                    </p>
+                    <button
+                      onClick={() => setShowCreateModal(true)}
+                      className="mt-4 flex items-center gap-1.5 rounded-xl bg-[#0066B2] px-4 py-2 text-xs font-bold text-white hover:bg-[#005799] transition cursor-pointer"
+                    >
+                      <Plus className="h-4 w-4" /> Create Lead Magnet
+                    </button>
+                  </motion.div>
+                ) : viewMode === "grid" ? (
+                  <motion.div
+                    key="grid-view"
+                    initial={{ opacity: 0, y: 6, scale: 0.995 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -6, scale: 0.995 }}
+                    transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+                    className="flex flex-col space-y-4"
+                  >
+                    <div
+                      className={`grid gap-4 w-full ${activePage
                         ? "grid-cols-1 md:grid-cols-2"
                         : "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
-                    }`}
+                        }`}
+                    >
+                      {paginatedItems.map((page, index) => (
+                        <MagnetCard
+                          key={page.id}
+                          page={page}
+                          index={index}
+                          isSelected={selectedPageId === page.id}
+                          isChecked={checkedIds.includes(page.id)}
+                          isSelectMode={isSelectMode}
+                          anyChecked={checkedIds.length > 0}
+                          onSelect={handleSelectPage}
+                          onOpenMobileDetails={handleOpenMobileDetails}
+                          onToggleCheck={handleToggleCheck}
+                          account={account}
+                          copiedId={copiedId}
+                          onCopyLink={handleCopyLink}
+                        />
+                      ))}
+                    </div>
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="table-view"
+                    initial={{ opacity: 0, y: 6, scale: 0.995 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -6, scale: 0.995 }}
+                    transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+                    className="rounded-2xl border border-zinc-200/80 dark:border-[#2e2e38] bg-white dark:bg-[#18181B] overflow-hidden shadow-xs"
                   >
-                    {paginatedItems.map((page, index) => (
-                      <MagnetCard
-                        key={page.id}
-                        page={page}
-                        index={index}
-                        isSelected={selectedPageId === page.id}
-                        isChecked={checkedIds.includes(page.id)}
-                        isSelectMode={isSelectMode}
-                        anyChecked={checkedIds.length > 0}
-                        onSelect={handleSelectPage}
-                        onOpenMobileDetails={handleOpenMobileDetails}
-                        onToggleCheck={handleToggleCheck}
-                        account={account}
-                        copiedId={copiedId}
-                        onCopyLink={handleCopyLink}
-                      />
-                    ))}
-                  </div>
-                </motion.div>
-              ) : (
-                <motion.div
-                  key="table-view"
-                  initial={{ opacity: 0, y: 6, scale: 0.995 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: -6, scale: 0.995 }}
-                  transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-                  className="rounded-2xl border border-zinc-200/80 dark:border-[#2e2e38] bg-white dark:bg-[#18181B] overflow-hidden shadow-xs"
-                >
-                  {/* DESKTOP Table View (hidden md:block) - Preserved exactly as original */}
-                  <div className="hidden md:block overflow-x-auto">
-                    <table className="w-full text-left text-xs">
-                      <thead className="bg-[#F8FBFF] dark:bg-[#151518] text-zinc-500 dark:text-[#9B9085] uppercase text-[11px] font-semibold tracking-wider border-b border-zinc-200/80 dark:border-[#2e2e38]">
-                        <tr>
-                          <th className="px-6 py-3.5 text-left">
-                            <div className="flex items-center">
-                              <AnimatePresence initial={false}>
-                                {(checkedIds.length > 0 || isSelectMode) && (
-                                  <motion.div
-                                    initial={{ opacity: 0, width: 0, marginRight: 0 }}
-                                    animate={{ opacity: 1, width: 22, marginRight: 10 }}
-                                    exit={{ opacity: 0, width: 0, marginRight: 0 }}
-                                    transition={{ type: "spring", stiffness: 450, damping: 35 }}
-                                    className="flex items-center justify-center shrink-0 overflow-hidden"
-                                  >
-                                    <AppleCheckbox
-                                      checked={filtered.length > 0 && checkedIds.length === filtered.length}
-                                      indeterminate={checkedIds.length > 0 && checkedIds.length < filtered.length}
-                                      onChange={handleToggleSelectAll}
-                                      title={
-                                        checkedIds.length === filtered.length && filtered.length > 0
-                                          ? "Deselect all"
-                                          : "Select all"
-                                      }
-                                    />
-                                  </motion.div>
-                                )}
-                              </AnimatePresence>
-                              <span>Lead Magnet</span>
-                            </div>
-                          </th>
-                          <th className="px-6 py-3.5">Status</th>
-                          <th className="px-6 py-3.5 text-right">Views</th>
-                          <th className="px-6 py-3.5 text-right">Leads</th>
-                          <th className="px-6 py-3.5 text-right">Actions</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-zinc-100 bg-white dark:divide-[#222228] dark:bg-[#18181B]">
-                        {paginatedItems.map((page) => {
-                          const isSelected = activePage?.id === page.id;
-                          const isChecked = checkedIds.includes(page.id);
-                          return (
-                            <tr
-                              key={page.id}
-                              onClick={() => setSelectedPageId(page.id)}
-                              className={`group transition-all duration-200 ${
-                                isChecked
+                    {/* DESKTOP Table View (hidden md:block) - Preserved exactly as original */}
+                    <div className="hidden md:block overflow-x-auto">
+                      <table className="w-full text-left text-xs">
+                        <thead className="bg-[#F8FBFF] dark:bg-[#151518] text-zinc-500 dark:text-[#9B9085] uppercase text-[11px] font-semibold tracking-wider border-b border-zinc-200/80 dark:border-[#2e2e38]">
+                          <tr>
+                            <th className="px-6 py-3.5 text-left">
+                              <div className="flex items-center">
+                                <AnimatePresence initial={false}>
+                                  {(checkedIds.length > 0 || isSelectMode) && (
+                                    <motion.div
+                                      initial={{ opacity: 0, width: 0, marginRight: 0 }}
+                                      animate={{ opacity: 1, width: 22, marginRight: 10 }}
+                                      exit={{ opacity: 0, width: 0, marginRight: 0 }}
+                                      transition={{ type: "spring", stiffness: 450, damping: 35 }}
+                                      className="flex items-center justify-center shrink-0 overflow-hidden"
+                                    >
+                                      <AppleCheckbox
+                                        checked={filtered.length > 0 && checkedIds.length === filtered.length}
+                                        indeterminate={checkedIds.length > 0 && checkedIds.length < filtered.length}
+                                        onChange={handleToggleSelectAll}
+                                        title={
+                                          checkedIds.length === filtered.length && filtered.length > 0
+                                            ? "Deselect all"
+                                            : "Select all"
+                                        }
+                                      />
+                                    </motion.div>
+                                  )}
+                                </AnimatePresence>
+                                <span>Lead Magnet</span>
+                              </div>
+                            </th>
+                            <th className="px-6 py-3.5">Status</th>
+                            <th className="px-6 py-3.5 text-right">Views</th>
+                            <th className="px-6 py-3.5 text-right">Leads</th>
+                            <th className="px-6 py-3.5 text-right">Actions</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-zinc-100 bg-white dark:divide-[#222228] dark:bg-[#18181B]">
+                          {paginatedItems.map((page) => {
+                            const isSelected = activePage?.id === page.id;
+                            const isChecked = checkedIds.includes(page.id);
+                            return (
+                              <tr
+                                key={page.id}
+                                onClick={() => setSelectedPageId(page.id)}
+                                className={`group transition-all duration-200 ${isChecked
                                   ? "bg-gradient-to-r from-[#0066B2]/[0.08] via-[#0066B2]/[0.04] to-transparent dark:from-[#38BDF8]/15 dark:via-[#38BDF8]/[0.06] dark:to-transparent"
                                   : isSelected
                                     ? "bg-gradient-to-r from-[#0066B2]/[0.06] via-[#0066B2]/[0.02] to-transparent dark:from-[#38BDF8]/10 dark:via-[#38BDF8]/[0.04] dark:to-transparent"
                                     : "hover:bg-zinc-50/80 dark:hover:bg-[#1F1F24]/70"
-                              }`}
-                            >
-                              <td className="px-6 py-4 font-semibold text-zinc-900 dark:text-white">
-                                <div className="flex items-center min-w-0">
-                                  <AnimatePresence initial={false}>
-                                    {(checkedIds.length > 0 || isChecked || isSelectMode) && (
-                                      <motion.div
-                                        initial={{ opacity: 0, width: 0, marginRight: 0 }}
-                                        animate={{ opacity: 1, width: 22, marginRight: 12 }}
-                                        exit={{ opacity: 0, width: 0, marginRight: 0 }}
-                                        transition={{ type: "spring", stiffness: 450, damping: 35 }}
-                                        onClick={(e) => {
-                                          e.stopPropagation();
-                                          handleToggleCheck(page.id, e);
-                                        }}
-                                        className="flex items-center justify-center shrink-0 overflow-hidden cursor-pointer"
-                                      >
-                                        <AppleCheckbox
-                                          checked={isChecked}
-                                          onChange={() => handleToggleCheck(page.id)}
-                                          title={isChecked ? "Deselect magnet" : "Select magnet"}
-                                        />
-                                      </motion.div>
-                                    )}
-                                  </AnimatePresence>
-
-                                  <div className="flex items-center gap-3 min-w-0 flex-1">
-                                    <div className="relative h-9 w-9 rounded-lg bg-zinc-100 dark:bg-zinc-800 shrink-0 overflow-hidden flex items-center justify-center">
-                                      {page.imageUrl ? (
-                                        <Image
-                                          src={page.imageUrl}
-                                          alt=""
-                                          fill
-                                          sizes="36px"
-                                          unoptimized={page.imageUrl.startsWith("data:") || page.imageUrl.startsWith("blob:")}
-                                          className="object-cover"
-                                        />
-                                      ) : (
-                                        <ImageIcon className="h-4 w-4 text-zinc-400" />
+                                  }`}
+                              >
+                                <td className="px-6 py-4 font-semibold text-zinc-900 dark:text-white">
+                                  <div className="flex items-center min-w-0">
+                                    <AnimatePresence initial={false}>
+                                      {(checkedIds.length > 0 || isChecked || isSelectMode) && (
+                                        <motion.div
+                                          initial={{ opacity: 0, width: 0, marginRight: 0 }}
+                                          animate={{ opacity: 1, width: 22, marginRight: 12 }}
+                                          exit={{ opacity: 0, width: 0, marginRight: 0 }}
+                                          transition={{ type: "spring", stiffness: 450, damping: 35 }}
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleToggleCheck(page.id, e);
+                                          }}
+                                          className="flex items-center justify-center shrink-0 overflow-hidden cursor-pointer"
+                                        >
+                                          <AppleCheckbox
+                                            checked={isChecked}
+                                            onChange={() => handleToggleCheck(page.id)}
+                                            title={isChecked ? "Deselect magnet" : "Select magnet"}
+                                          />
+                                        </motion.div>
                                       )}
-                                    </div>
-                                    <div className="min-w-0 flex-1">
-                                      <p className="font-bold text-zinc-900 dark:text-white line-clamp-1 truncate">{page.name}</p>
-                                      <p className="text-[11px] font-mono text-zinc-400 truncate">/{page.slug}</p>
+                                    </AnimatePresence>
+
+                                    <div className="flex items-center gap-3 min-w-0 flex-1">
+                                      <div className="relative h-9 w-9 rounded-lg bg-zinc-100 dark:bg-zinc-800 shrink-0 overflow-hidden flex items-center justify-center">
+                                        {page.imageUrl ? (
+                                          <Image
+                                            src={page.imageUrl}
+                                            alt=""
+                                            fill
+                                            sizes="36px"
+                                            unoptimized={page.imageUrl.startsWith("data:") || page.imageUrl.startsWith("blob:")}
+                                            className="object-cover"
+                                          />
+                                        ) : (
+                                          <ImageIcon className="h-4 w-4 text-zinc-400" />
+                                        )}
+                                      </div>
+                                      <div className="min-w-0 flex-1">
+                                        <p className="font-bold text-zinc-900 dark:text-white line-clamp-1 truncate">{page.name}</p>
+                                        <p className="text-[11px] font-mono text-zinc-400 truncate">/{page.slug}</p>
+                                      </div>
                                     </div>
                                   </div>
-                                </div>
-                              </td>
-                              <td className="px-6 py-4">
-                                <span
-                                  className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase ${page.status === "live"
-                                    ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400"
-                                    : "bg-zinc-100 dark:bg-zinc-800 text-zinc-500"
-                                    }`}
-                                >
-                                  {page.status === "live" ? "Published" : "Draft"}
-                                </span>
-                              </td>
-                              <td className="px-6 py-4 text-right font-mono text-zinc-700 dark:text-zinc-300">
-                                {page.views || 0}
-                              </td>
-                              <td className="px-6 py-4 text-right font-mono font-bold text-zinc-900 dark:text-white">
-                                {page.signups || 0}
-                              </td>
-                              <td className="px-6 py-4 text-right" onClick={(e) => e.stopPropagation()}>
-                                <div className="flex items-center justify-end gap-1">
-                                  <button
-                                    onClick={(e) => handleCopyLink(page, e)}
-                                    className="p-1.5 rounded-lg text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition cursor-pointer"
-                                    title="Copy link"
+                                </td>
+                                <td className="px-6 py-4">
+                                  <span
+                                    className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase ${page.status === "live"
+                                      ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400"
+                                      : "bg-zinc-100 dark:bg-zinc-800 text-zinc-500"
+                                      }`}
                                   >
-                                    {copiedId === page.id ? <Check className="h-3.5 w-3.5 text-emerald-500" /> : <Copy className="h-3.5 w-3.5" />}
-                                  </button>
-                                  <Link
-                                    href={`/dashboard/leadmagnets/${page.id}`}
-                                    prefetch={true}
-                                    className="p-1.5 rounded-lg text-zinc-400 hover:text-[#0066B2] dark:hover:text-[#38BDF8] hover:bg-zinc-100 dark:hover:bg-zinc-800 transition cursor-pointer"
-                                    title="Edit"
-                                  >
-                                    <Pencil className="h-3.5 w-3.5" />
-                                  </Link>
-                                </div>
-                              </td>
-                            </tr>
-                          );
-                        })}
-                      </tbody>
-                    </table>
-                  </div>
+                                    {page.status === "live" ? "Published" : "Draft"}
+                                  </span>
+                                </td>
+                                <td className="px-6 py-4 text-right font-mono text-zinc-700 dark:text-zinc-300">
+                                  {page.views || 0}
+                                </td>
+                                <td className="px-6 py-4 text-right font-mono font-bold text-zinc-900 dark:text-white">
+                                  {page.signups || 0}
+                                </td>
+                                <td className="px-6 py-4 text-right" onClick={(e) => e.stopPropagation()}>
+                                  <div className="flex items-center justify-end gap-1">
+                                    <button
+                                      onClick={(e) => handleCopyLink(page, e)}
+                                      className="p-1.5 rounded-lg text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition cursor-pointer"
+                                      title="Copy link"
+                                    >
+                                      {copiedId === page.id ? <Check className="h-3.5 w-3.5 text-emerald-500" /> : <Copy className="h-3.5 w-3.5" />}
+                                    </button>
+                                    <Link
+                                      href={`/dashboard/leadmagnets/${page.id}`}
+                                      prefetch={true}
+                                      className="p-1.5 rounded-lg text-zinc-400 hover:text-[#0066B2] dark:hover:text-[#38BDF8] hover:bg-zinc-100 dark:hover:bg-zinc-800 transition cursor-pointer"
+                                      title="Edit"
+                                    >
+                                      <Pencil className="h-3.5 w-3.5" />
+                                    </Link>
+                                  </div>
+                                </td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
 
-                  {/* MOBILE Stream List View (block md:hidden) - Senior Responsive Architecture */}
-                  <div className="block md:hidden p-3 space-y-2.5">
-                    {paginatedItems.map((page) => {
-                      const isSelected = activePage?.id === page.id;
-                      const isChecked = checkedIds.includes(page.id);
-                      return (
-                        <div
-                          key={page.id}
-                          onClick={() => {
-                            if (isSelectMode || checkedIds.length > 0) {
-                              handleToggleCheck(page.id);
-                            } else {
-                              setSelectedPageId(page.id);
-                              handleOpenMobileDetails(page.id);
-                            }
-                          }}
-                          className={`group relative rounded-2xl border p-3.5 transition-all duration-200 cursor-pointer active:scale-[0.99] select-none ${
-                            isChecked
+                    {/* MOBILE Stream List View (block md:hidden) - Senior Responsive Architecture */}
+                    <div className="block md:hidden p-3 space-y-2.5">
+                      {paginatedItems.map((page) => {
+                        const isSelected = activePage?.id === page.id;
+                        const isChecked = checkedIds.includes(page.id);
+                        return (
+                          <div
+                            key={page.id}
+                            onClick={() => {
+                              if (isSelectMode || checkedIds.length > 0) {
+                                handleToggleCheck(page.id);
+                              } else {
+                                setSelectedPageId(page.id);
+                                handleOpenMobileDetails(page.id);
+                              }
+                            }}
+                            className={`group relative rounded-2xl border p-3.5 transition-all duration-200 cursor-pointer active:scale-[0.99] select-none ${isChecked
                               ? "border-[#0066B2] dark:border-[#38BDF8] bg-blue-50/50 dark:bg-[#0066B2]/15 ring-2 ring-[#0066B2]/30 shadow-sm"
                               : isSelected
-                              ? "border-[#0066B2] dark:border-[#38BDF8] bg-white dark:bg-[#18181C] ring-1 ring-[#0066B2]/30 shadow-xs"
-                              : "border-zinc-200/80 bg-white dark:border-[#282832] dark:bg-[#18181C] hover:border-zinc-300 dark:hover:border-zinc-700 shadow-2xs"
-                          }`}
-                        >
-                          {/* Top Row: Checkbox, Thumbnail, Title/Slug & Status Badge */}
-                          <div className="flex items-start justify-between gap-2.5">
-                            <div className="flex items-start min-w-0 flex-1">
-                              {/* Animated Checkbox */}
-                              <AnimatePresence initial={false}>
-                                {(checkedIds.length > 0 || isChecked || isSelectMode) && (
-                                  <motion.div
-                                    initial={{ opacity: 0, width: 0, marginRight: 0 }}
-                                    animate={{ opacity: 1, width: 22, marginRight: 10 }}
-                                    exit={{ opacity: 0, width: 0, marginRight: 0 }}
-                                    transition={{ type: "spring", stiffness: 450, damping: 35 }}
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      handleToggleCheck(page.id, e);
-                                    }}
-                                    className="flex h-9 items-center justify-center shrink-0 overflow-hidden cursor-pointer"
-                                  >
-                                    <AppleCheckbox
-                                      checked={isChecked}
-                                      onChange={() => handleToggleCheck(page.id)}
-                                      title={isChecked ? "Deselect magnet" : "Select magnet"}
+                                ? "border-[#0066B2] dark:border-[#38BDF8] bg-white dark:bg-[#18181C] ring-1 ring-[#0066B2]/30 shadow-xs"
+                                : "border-zinc-200/80 bg-white dark:border-[#282832] dark:bg-[#18181C] hover:border-zinc-300 dark:hover:border-zinc-700 shadow-2xs"
+                              }`}
+                          >
+                            {/* Top Row: Checkbox, Thumbnail, Title/Slug & Status Badge */}
+                            <div className="flex items-start justify-between gap-2.5">
+                              <div className="flex items-start min-w-0 flex-1">
+                                {/* Animated Checkbox */}
+                                <AnimatePresence initial={false}>
+                                  {(checkedIds.length > 0 || isChecked || isSelectMode) && (
+                                    <motion.div
+                                      initial={{ opacity: 0, width: 0, marginRight: 0 }}
+                                      animate={{ opacity: 1, width: 22, marginRight: 10 }}
+                                      exit={{ opacity: 0, width: 0, marginRight: 0 }}
+                                      transition={{ type: "spring", stiffness: 450, damping: 35 }}
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleToggleCheck(page.id, e);
+                                      }}
+                                      className="flex h-9 items-center justify-center shrink-0 overflow-hidden cursor-pointer"
+                                    >
+                                      <AppleCheckbox
+                                        checked={isChecked}
+                                        onChange={() => handleToggleCheck(page.id)}
+                                        title={isChecked ? "Deselect magnet" : "Select magnet"}
+                                      />
+                                    </motion.div>
+                                  )}
+                                </AnimatePresence>
+
+                                {/* Thumbnail */}
+                                <div className="relative h-9 w-9 rounded-xl bg-zinc-100 dark:bg-zinc-800 shrink-0 overflow-hidden flex items-center justify-center border border-zinc-200/70 dark:border-zinc-700/60">
+                                  {page.imageUrl ? (
+                                    <Image
+                                      src={page.imageUrl}
+                                      alt=""
+                                      fill
+                                      sizes="36px"
+                                      unoptimized={page.imageUrl.startsWith("data:") || page.imageUrl.startsWith("blob:")}
+                                      className="object-cover"
                                     />
-                                  </motion.div>
-                                )}
-                              </AnimatePresence>
+                                  ) : (
+                                    <ImageIcon className="h-4 w-4 text-zinc-400" />
+                                  )}
+                                </div>
 
-                              {/* Thumbnail */}
-                              <div className="relative h-9 w-9 rounded-xl bg-zinc-100 dark:bg-zinc-800 shrink-0 overflow-hidden flex items-center justify-center border border-zinc-200/70 dark:border-zinc-700/60">
-                                {page.imageUrl ? (
-                                  <Image
-                                    src={page.imageUrl}
-                                    alt=""
-                                    fill
-                                    sizes="36px"
-                                    unoptimized={page.imageUrl.startsWith("data:") || page.imageUrl.startsWith("blob:")}
-                                    className="object-cover"
-                                  />
-                                ) : (
-                                  <ImageIcon className="h-4 w-4 text-zinc-400" />
-                                )}
+                                {/* Name and Slug */}
+                                <div className="min-w-0 flex-1 ml-2.5">
+                                  <h3 className="font-bold text-xs text-zinc-900 dark:text-white truncate">
+                                    {page.name}
+                                  </h3>
+                                  <p className="text-[11px] font-mono text-zinc-400 truncate mt-0.5">
+                                    /{page.slug}
+                                  </p>
+                                </div>
                               </div>
 
-                              {/* Name and Slug */}
-                              <div className="min-w-0 flex-1 ml-2.5">
-                                <h3 className="font-bold text-xs text-zinc-900 dark:text-white truncate">
-                                  {page.name}
-                                </h3>
-                                <p className="text-[11px] font-mono text-zinc-400 truncate mt-0.5">
-                                  /{page.slug}
-                                </p>
-                              </div>
-                            </div>
-
-                            {/* Status Badge */}
-                            <div className="shrink-0">
-                              <span
-                                className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase ${
-                                  page.status === "live"
+                              {/* Status Badge */}
+                              <div className="shrink-0">
+                                <span
+                                  className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase ${page.status === "live"
                                     ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 border border-emerald-200/60 dark:border-emerald-900/40"
                                     : "bg-zinc-100 dark:bg-zinc-800 text-zinc-500 border border-zinc-200/60 dark:border-zinc-700/40"
-                                }`}
-                              >
-                                <span className={`h-1.5 w-1.5 rounded-full ${page.status === "live" ? "bg-emerald-500 animate-pulse" : "bg-zinc-400"}`} />
-                                {page.status === "live" ? "Published" : "Draft"}
-                              </span>
-                            </div>
-                          </div>
-
-                          {/* Bottom Row: Stats & Action Buttons */}
-                          <div className="mt-3 flex items-center justify-between text-xs">
-                            {/* Stats: Views & Leads */}
-                            <div className="flex items-center gap-2 text-[11px] text-zinc-500 dark:text-zinc-400">
-                              <span className="flex items-center gap-1 font-mono">
-                                <strong className="font-bold text-zinc-800 dark:text-zinc-200">{page.views || 0}</strong> views
-                              </span>
-                              <span>·</span>
-                              <span className="flex items-center gap-1 font-mono">
-                                <strong className="font-bold text-[#0066B2] dark:text-[#38BDF8]">{page.signups || 0}</strong> leads
-                              </span>
+                                    }`}
+                                >
+                                  <span className={`h-1.5 w-1.5 rounded-full ${page.status === "live" ? "bg-emerald-500 animate-pulse" : "bg-zinc-400"}`} />
+                                  {page.status === "live" ? "Published" : "Draft"}
+                                </span>
+                              </div>
                             </div>
 
-                            {/* Quick Actions (Icon-only on mobile: Details, Copy, Edit) */}
-                            <div className="flex items-center gap-1.5 shrink-0" onClick={(e) => e.stopPropagation()}>
-                              <button
-                                type="button"
-                                onClick={(e) => handleOpenMobileDetails(page.id, e)}
-                                className="inline-flex h-8 w-8 items-center justify-center rounded-xl border border-zinc-200/90 bg-white dark:border-[#2e2e38] dark:bg-[#202026] text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-[#282830] hover:text-[#0066B2] dark:hover:text-[#38BDF8] transition-all duration-150 cursor-pointer shadow-2xs active:scale-95"
-                                title="Open details"
-                              >
-                                <Eye className="h-3.5 w-3.5" />
-                              </button>
+                            {/* Bottom Row: Stats & Action Buttons */}
+                            <div className="mt-3 flex items-center justify-between text-xs">
+                              {/* Stats: Views & Leads */}
+                              <div className="flex items-center gap-2 text-[11px] text-zinc-500 dark:text-zinc-400">
+                                <span className="flex items-center gap-1 font-mono">
+                                  <strong className="font-bold text-zinc-800 dark:text-zinc-200">{page.views || 0}</strong> views
+                                </span>
+                                <span>·</span>
+                                <span className="flex items-center gap-1 font-mono">
+                                  <strong className="font-bold text-[#0066B2] dark:text-[#38BDF8]">{page.signups || 0}</strong> leads
+                                </span>
+                              </div>
 
-                              <button
-                                type="button"
-                                onClick={(e) => handleCopyLink(page, e)}
-                                className={`inline-flex h-8 w-8 items-center justify-center rounded-xl border transition-all duration-150 cursor-pointer shadow-2xs active:scale-95 ${
-                                  copiedId === page.id
+                              {/* Quick Actions (Icon-only on mobile: Details, Copy, Edit) */}
+                              <div className="flex items-center gap-1.5 shrink-0" onClick={(e) => e.stopPropagation()}>
+                                <button
+                                  type="button"
+                                  onClick={(e) => handleOpenMobileDetails(page.id, e)}
+                                  className="inline-flex h-8 w-8 items-center justify-center rounded-xl border border-zinc-200/90 bg-white dark:border-[#2e2e38] dark:bg-[#202026] text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-[#282830] hover:text-[#0066B2] dark:hover:text-[#38BDF8] transition-all duration-150 cursor-pointer shadow-2xs active:scale-95"
+                                  title="Open details"
+                                >
+                                  <Eye className="h-3.5 w-3.5" />
+                                </button>
+
+                                <button
+                                  type="button"
+                                  onClick={(e) => handleCopyLink(page, e)}
+                                  className={`inline-flex h-8 w-8 items-center justify-center rounded-xl border transition-all duration-150 cursor-pointer shadow-2xs active:scale-95 ${copiedId === page.id
                                     ? "border-emerald-500/40 bg-emerald-500/15 text-emerald-600 dark:text-emerald-400"
                                     : "border-zinc-200/90 bg-white dark:border-[#2e2e38] dark:bg-[#202026] text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-[#282830] hover:text-[#0066B2] dark:hover:text-[#38BDF8]"
-                                }`}
-                                title="Copy link"
-                              >
-                                {copiedId === page.id ? (
-                                  <Check className="h-3.5 w-3.5 text-emerald-500" />
-                                ) : (
-                                  <Copy className="h-3.5 w-3.5" />
-                                )}
-                              </button>
+                                    }`}
+                                  title="Copy link"
+                                >
+                                  {copiedId === page.id ? (
+                                    <Check className="h-3.5 w-3.5 text-emerald-500" />
+                                  ) : (
+                                    <Copy className="h-3.5 w-3.5" />
+                                  )}
+                                </button>
 
-                              <Link
-                                href={`/dashboard/leadmagnets/${page.id}`}
-                                prefetch={true}
-                                className="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-[#0066B2]/10 hover:bg-[#0066B2] text-[#0066B2] hover:text-white dark:bg-[#0066B2]/20 dark:text-[#38BDF8] dark:hover:bg-[#0066B2] dark:hover:text-white transition-all duration-150 shadow-2xs active:scale-95"
-                                title="Edit"
-                              >
-                                <Pencil className="h-3.5 w-3.5" />
-                              </Link>
+                                <Link
+                                  href={`/dashboard/leadmagnets/${page.id}`}
+                                  prefetch={true}
+                                  className="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-[#0066B2]/10 hover:bg-[#0066B2] text-[#0066B2] hover:text-white dark:bg-[#0066B2]/20 dark:text-[#38BDF8] dark:hover:bg-[#0066B2] dark:hover:text-white transition-all duration-150 shadow-2xs active:scale-95"
+                                  title="Edit"
+                                >
+                                  <Pencil className="h-3.5 w-3.5" />
+                                </Link>
+                              </div>
                             </div>
                           </div>
+                        );
+                      })}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              {filtered.length > 0 && (
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-3 sm:bg-white sm:dark:bg-[#141417] px-2 sm:px-4 py-2 sm:py-3 rounded-2xl sm:border sm:border-zinc-200/80 sm:dark:border-zinc-800/80 text-xs sm:shadow-xs">
+                  <p className="text-zinc-500 dark:text-zinc-400 text-[11px] font-medium text-center sm:text-left">
+                    {itemsPerPage === "all" || filtered.length <= (itemsPerPage as number) ? (
+                      <>
+                        Showing <span className="font-bold text-zinc-900 dark:text-white">{filtered.length}</span> {filtered.length === 1 ? "lead magnet" : "lead magnets"}
+                      </>
+                    ) : (
+                      <>
+                        Showing{" "}
+                        <span className="font-bold text-zinc-900 dark:text-white">
+                          {(currentPage - 1) * (itemsPerPage as number) + 1}
+                        </span>{" "}
+                        to{" "}
+                        <span className="font-bold text-zinc-900 dark:text-white">
+                          {Math.min(currentPage * (itemsPerPage as number), filtered.length)}
+                        </span>{" "}
+                        of <span className="font-bold text-zinc-900 dark:text-white">{filtered.length}</span> lead magnets
+                      </>
+                    )}
+                  </p>
+
+                  {filtered.length > 10 && (
+                    <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-1 bg-zinc-100 dark:bg-zinc-800/60 p-0.5 rounded-xl text-[11px]">
+                        <span className="text-[10px] text-zinc-500 px-1.5 font-medium">Show:</span>
+                        {([10, 25, 50, "all"] as const).map((size) => (
+                          <button
+                            key={size}
+                            onClick={() => setItemsPerPage(size)}
+                            className={`px-2 py-0.5 rounded-lg font-semibold transition ${itemsPerPage === size
+                              ? "bg-white dark:bg-[#1C1C20] text-[#0066B2] dark:text-[#38BDF8] shadow-xs"
+                              : "text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200"
+                              }`}
+                          >
+                            {size === "all" ? "All" : size}
+                          </button>
+                        ))}
+                      </div>
+
+                      {itemsPerPage !== "all" && totalPagesCount > 1 && (
+                        <div className="flex items-center gap-1.5 ml-2">
+                          <button
+                            disabled={currentPage === 1}
+                            onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
+                            className="px-2.5 py-1 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-[#1C1C20] text-zinc-700 dark:text-zinc-300 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-zinc-100 dark:hover:bg-zinc-800 font-semibold transition text-[11px]"
+                          >
+                            Previous
+                          </button>
+                          <span className="text-[11px] font-bold text-zinc-700 dark:text-zinc-300 px-1">
+                            {currentPage} / {totalPagesCount}
+                          </span>
+                          <button
+                            disabled={currentPage === totalPagesCount}
+                            onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPagesCount))}
+                            className="px-2.5 py-1 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-[#1C1C20] text-zinc-700 dark:text-zinc-300 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-zinc-100 dark:hover:bg-zinc-800 font-semibold transition text-[11px]"
+                          >
+                            Next
+                          </button>
                         </div>
-                      );
-                    })}
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
+            </motion.div>
+
+            {/* Right Fixed Sticky Inspector Card (Only rendered when a page is selected) */}
+            <AnimatePresence mode="popLayout">
+              {activePage && (
+                <motion.div
+                  layout
+                  initial={{ opacity: 0, x: 20, scale: 0.98 }}
+                  animate={{ opacity: 1, x: 0, scale: 1 }}
+                  exit={{
+                    opacity: 0,
+                    x: 16,
+                    scale: 0.98,
+                    transition: { duration: 0.14, ease: [0.16, 1, 0.3, 1] }
+                  }}
+                  transition={{
+                    layout: { type: "spring", stiffness: 450, damping: 32, mass: 0.6 },
+                    type: "spring",
+                    stiffness: 450,
+                    damping: 32,
+                    mass: 0.6,
+                    opacity: { duration: 0.16, ease: [0.16, 1, 0.3, 1] },
+                  }}
+                  className="hidden lg:block lg:w-[35%] sticky top-6 z-20 space-y-4 shrink-0"
+                >
+                  <div className="rounded-2xl border border-zinc-200/80 dark:border-white/[0.08] bg-white/95 dark:bg-[#141417]/95 p-5 shadow-[0_16px_40px_rgba(0,0,0,0.08)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.4)] backdrop-blur-xl space-y-5">
+                    <motion.div
+                      key={activePage.id}
+                      initial={{ opacity: 0, y: 3 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.14, ease: "easeOut" }}
+                      className="space-y-5"
+                    >
+                      <div className="flex items-start justify-between">
+                        <div className="min-w-0 flex-1 mr-2">
+                          <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#0066B2] dark:text-[#38BDF8]">
+                            SELECTED INSPECTOR
+                          </span>
+                          <h3 className="text-lg font-black text-zinc-900 dark:text-white mt-0.5 line-clamp-1">
+                            {activePage.name}
+                          </h3>
+                        </div>
+                        <div className="flex items-center gap-1.5 shrink-0">
+                          <span
+                            className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide ${activePage.status === "live"
+                              ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/50"
+                              : "bg-zinc-100 dark:bg-zinc-800 text-zinc-500"
+                              }`}
+                          >
+                            {activePage.status === "live" ? "Published" : "Draft"}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => setSelectedPageId(null)}
+                            className="rounded-lg p-1 text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white transition cursor-pointer"
+                            title="Close inspector"
+                          >
+                            <X className="h-4 w-4" />
+                          </button>
+                        </div>
+                      </div>
+
+                      <div className="rounded-xl bg-zinc-50 dark:bg-[#1A1A1E] p-3 border border-zinc-200/60 dark:border-zinc-800/60 space-y-2">
+                        <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Public Share URL</p>
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="text-xs font-mono text-zinc-800 dark:text-zinc-200 truncate">
+                            /{account?.username || "demo"}/{activePage.slug}
+                          </span>
+                          <button
+                            onClick={() => handleCopyLink(activePage)}
+                            className="flex items-center gap-1 rounded-lg bg-white dark:bg-[#25252A] px-2.5 py-1 text-xs font-bold text-zinc-700 dark:text-zinc-200 border border-zinc-200 dark:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition shrink-0"
+                          >
+                            {copiedId === activePage.id ? <Check className="h-3 w-3 text-emerald-500" /> : <Copy className="h-3 w-3" />}
+                            <span>{copiedId === activePage.id ? "Copied" : "Copy"}</span>
+                          </button>
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <p className="text-xs font-bold text-zinc-900 dark:text-white flex items-center gap-1.5">
+                          <TrendingUp className="h-3.5 w-3.5 text-[#0066B2] dark:text-[#38BDF8]" /> Magnet Conversion Metrics
+                        </p>
+                        <div className="grid grid-cols-2 gap-2">
+                          <div className="rounded-xl border border-zinc-100 dark:border-zinc-800 p-3 bg-zinc-50/50 dark:bg-[#1A1A1E]/50">
+                            <p className="text-[10px] text-zinc-400 font-semibold uppercase">Total Views</p>
+                            <p className="text-lg font-bold text-zinc-900 dark:text-white mt-1">{activePage.views || 0}</p>
+                          </div>
+                          <div className="rounded-xl border border-zinc-100 dark:border-zinc-800 p-3 bg-zinc-50/50 dark:bg-[#1A1A1E]/50">
+                            <p className="text-[10px] text-zinc-400 font-semibold uppercase">Leads Captured</p>
+                            <p className="text-lg font-bold text-[#0066B2] dark:text-[#38BDF8] mt-1">{activePage.signups || 0}</p>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Link
+                          href={`/dashboard/leadmagnets/${activePage.id}`}
+                          prefetch={true}
+                          className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#0066B2] px-4 py-2.5 text-xs font-bold text-white hover:bg-[#005799] transition shadow-sm"
+                        >
+                          <Pencil className="h-4 w-4" /> Open Full Editor
+                        </Link>
+
+                        <div className="grid grid-cols-2 gap-2">
+                          <Link
+                            href={`/dashboard/leadmagnets/${activePage.id}/analytics`}
+                            className="flex items-center justify-center gap-1.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#1C1C20] px-3 py-2 text-xs font-bold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition"
+                          >
+                            <BarChart2 className="h-3.5 w-3.5 text-[#0066B2] dark:text-[#38BDF8]" /> Analytics
+                          </Link>
+
+                          <a
+                            href={`/${account?.username || "demo"}/${activePage.slug}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center justify-center gap-1.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#1C1C20] px-3 py-2 text-xs font-bold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition"
+                          >
+                            <ExternalLink className="h-3.5 w-3.5 text-zinc-400" /> Preview
+                          </a>
+                        </div>
+                      </div>
+
+                      <div className="flex justify-end pt-1">
+                        <button
+                          onClick={(e) => removePage(activePage.id, e)}
+                          className="flex items-center gap-1 text-[11px] font-bold text-red-500 hover:text-red-600 dark:hover:text-red-400 transition cursor-pointer"
+                        >
+                          <Trash2 className="h-3.5 w-3.5" /> Delete Magnet
+                        </button>
+                      </div>
+                    </motion.div>
                   </div>
                 </motion.div>
               )}
             </AnimatePresence>
-
-            {filtered.length > 0 && (
-              <div className="flex flex-col sm:flex-row items-center justify-between gap-3 sm:bg-white sm:dark:bg-[#141417] px-2 sm:px-4 py-2 sm:py-3 rounded-2xl sm:border sm:border-zinc-200/80 sm:dark:border-zinc-800/80 text-xs sm:shadow-xs">
-                <p className="text-zinc-500 dark:text-zinc-400 text-[11px] font-medium text-center sm:text-left">
-                  {itemsPerPage === "all" || filtered.length <= (itemsPerPage as number) ? (
-                    <>
-                      Showing <span className="font-bold text-zinc-900 dark:text-white">{filtered.length}</span> {filtered.length === 1 ? "lead magnet" : "lead magnets"}
-                    </>
-                  ) : (
-                    <>
-                      Showing{" "}
-                      <span className="font-bold text-zinc-900 dark:text-white">
-                        {(currentPage - 1) * (itemsPerPage as number) + 1}
-                      </span>{" "}
-                      to{" "}
-                      <span className="font-bold text-zinc-900 dark:text-white">
-                        {Math.min(currentPage * (itemsPerPage as number), filtered.length)}
-                      </span>{" "}
-                      of <span className="font-bold text-zinc-900 dark:text-white">{filtered.length}</span> lead magnets
-                    </>
-                  )}
-                </p>
-
-                {filtered.length > 10 && (
-                  <div className="flex items-center gap-2">
-                    <div className="flex items-center gap-1 bg-zinc-100 dark:bg-zinc-800/60 p-0.5 rounded-xl text-[11px]">
-                      <span className="text-[10px] text-zinc-500 px-1.5 font-medium">Show:</span>
-                      {([10, 25, 50, "all"] as const).map((size) => (
-                        <button
-                          key={size}
-                          onClick={() => setItemsPerPage(size)}
-                          className={`px-2 py-0.5 rounded-lg font-semibold transition ${
-                            itemsPerPage === size
-                              ? "bg-white dark:bg-[#1C1C20] text-[#0066B2] dark:text-[#38BDF8] shadow-xs"
-                              : "text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200"
-                          }`}
-                        >
-                          {size === "all" ? "All" : size}
-                        </button>
-                      ))}
-                    </div>
-
-                    {itemsPerPage !== "all" && totalPagesCount > 1 && (
-                      <div className="flex items-center gap-1.5 ml-2">
-                        <button
-                          disabled={currentPage === 1}
-                          onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
-                          className="px-2.5 py-1 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-[#1C1C20] text-zinc-700 dark:text-zinc-300 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-zinc-100 dark:hover:bg-zinc-800 font-semibold transition text-[11px]"
-                        >
-                          Previous
-                        </button>
-                        <span className="text-[11px] font-bold text-zinc-700 dark:text-zinc-300 px-1">
-                          {currentPage} / {totalPagesCount}
-                        </span>
-                        <button
-                          disabled={currentPage === totalPagesCount}
-                          onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPagesCount))}
-                          className="px-2.5 py-1 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-[#1C1C20] text-zinc-700 dark:text-zinc-300 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-zinc-100 dark:hover:bg-zinc-800 font-semibold transition text-[11px]"
-                        >
-                          Next
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-            )}
-          </motion.div>
-
-          {/* Right Fixed Sticky Inspector Card (Only rendered when a page is selected) */}
-          <AnimatePresence mode="popLayout">
-            {activePage && (
-              <motion.div
-                layout
-                initial={{ opacity: 0, x: 20, scale: 0.98 }}
-                animate={{ opacity: 1, x: 0, scale: 1 }}
-                exit={{
-                  opacity: 0,
-                  x: 16,
-                  scale: 0.98,
-                  transition: { duration: 0.14, ease: [0.16, 1, 0.3, 1] }
-                }}
-                transition={{
-                  layout: { type: "spring", stiffness: 450, damping: 32, mass: 0.6 },
-                  type: "spring",
-                  stiffness: 450,
-                  damping: 32,
-                  mass: 0.6,
-                  opacity: { duration: 0.16, ease: [0.16, 1, 0.3, 1] },
-                }}
-                className="hidden lg:block lg:w-[35%] sticky top-6 z-20 space-y-4 shrink-0"
-              >
-                <div className="rounded-2xl border border-zinc-200/80 dark:border-white/[0.08] bg-white/95 dark:bg-[#141417]/95 p-5 shadow-[0_16px_40px_rgba(0,0,0,0.08)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.4)] backdrop-blur-xl space-y-5">
-                  <motion.div
-                    key={activePage.id}
-                    initial={{ opacity: 0, y: 3 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.14, ease: "easeOut" }}
-                    className="space-y-5"
-                  >
-                    <div className="flex items-start justify-between">
-                      <div className="min-w-0 flex-1 mr-2">
-                        <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#0066B2] dark:text-[#38BDF8]">
-                          SELECTED INSPECTOR
-                        </span>
-                      <h3 className="text-lg font-black text-zinc-900 dark:text-white mt-0.5 line-clamp-1">
-                        {activePage.name}
-                      </h3>
-                    </div>
-                    <div className="flex items-center gap-1.5 shrink-0">
-                      <span
-                        className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide ${
-                          activePage.status === "live"
-                            ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/50"
-                            : "bg-zinc-100 dark:bg-zinc-800 text-zinc-500"
-                        }`}
-                      >
-                        {activePage.status === "live" ? "Published" : "Draft"}
-                      </span>
-                      <button
-                        type="button"
-                        onClick={() => setSelectedPageId(null)}
-                        className="rounded-lg p-1 text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white transition cursor-pointer"
-                        title="Close inspector"
-                      >
-                        <X className="h-4 w-4" />
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="rounded-xl bg-zinc-50 dark:bg-[#1A1A1E] p-3 border border-zinc-200/60 dark:border-zinc-800/60 space-y-2">
-                    <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Public Share URL</p>
-                    <div className="flex items-center justify-between gap-2">
-                      <span className="text-xs font-mono text-zinc-800 dark:text-zinc-200 truncate">
-                        /{account?.username || "demo"}/{activePage.slug}
-                      </span>
-                      <button
-                        onClick={() => handleCopyLink(activePage)}
-                        className="flex items-center gap-1 rounded-lg bg-white dark:bg-[#25252A] px-2.5 py-1 text-xs font-bold text-zinc-700 dark:text-zinc-200 border border-zinc-200 dark:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition shrink-0"
-                      >
-                        {copiedId === activePage.id ? <Check className="h-3 w-3 text-emerald-500" /> : <Copy className="h-3 w-3" />}
-                        <span>{copiedId === activePage.id ? "Copied" : "Copy"}</span>
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <p className="text-xs font-bold text-zinc-900 dark:text-white flex items-center gap-1.5">
-                      <TrendingUp className="h-3.5 w-3.5 text-[#0066B2] dark:text-[#38BDF8]" /> Magnet Conversion Metrics
-                    </p>
-                    <div className="grid grid-cols-2 gap-2">
-                      <div className="rounded-xl border border-zinc-100 dark:border-zinc-800 p-3 bg-zinc-50/50 dark:bg-[#1A1A1E]/50">
-                        <p className="text-[10px] text-zinc-400 font-semibold uppercase">Total Views</p>
-                        <p className="text-lg font-bold text-zinc-900 dark:text-white mt-1">{activePage.views || 0}</p>
-                      </div>
-                      <div className="rounded-xl border border-zinc-100 dark:border-zinc-800 p-3 bg-zinc-50/50 dark:bg-[#1A1A1E]/50">
-                        <p className="text-[10px] text-zinc-400 font-semibold uppercase">Leads Captured</p>
-                        <p className="text-lg font-bold text-[#0066B2] dark:text-[#38BDF8] mt-1">{activePage.signups || 0}</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Link
-                      href={`/dashboard/leadmagnets/${activePage.id}`}
-                      prefetch={true}
-                      className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#0066B2] px-4 py-2.5 text-xs font-bold text-white hover:bg-[#005799] transition shadow-sm"
-                    >
-                      <Pencil className="h-4 w-4" /> Open Full Editor
-                    </Link>
-
-                    <div className="grid grid-cols-2 gap-2">
-                      <Link
-                        href={`/dashboard/leadmagnets/${activePage.id}/analytics`}
-                        className="flex items-center justify-center gap-1.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#1C1C20] px-3 py-2 text-xs font-bold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition"
-                      >
-                        <BarChart2 className="h-3.5 w-3.5 text-[#0066B2] dark:text-[#38BDF8]" /> Analytics
-                      </Link>
-
-                      <a
-                        href={`/${account?.username || "demo"}/${activePage.slug}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center justify-center gap-1.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#1C1C20] px-3 py-2 text-xs font-bold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition"
-                      >
-                        <ExternalLink className="h-3.5 w-3.5 text-zinc-400" /> Preview
-                      </a>
-                    </div>
-                  </div>
-
-                  <div className="flex justify-end pt-1">
-                    <button
-                      onClick={(e) => removePage(activePage.id, e)}
-                      className="flex items-center gap-1 text-[11px] font-bold text-red-500 hover:text-red-600 dark:hover:text-red-400 transition cursor-pointer"
-                    >
-                      <Trash2 className="h-3.5 w-3.5" /> Delete Magnet
-                    </button>
-                  </div>
-                  </motion.div>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-      </LayoutGroup>
+          </div>
+        </LayoutGroup>
       </div>
 
       <AnimatePresence>
@@ -1719,11 +1706,10 @@ export default function PagesPage() {
                 </div>
                 <div className="flex items-center shrink-0">
                   <span
-                    className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide ${
-                      activePage.status === "live"
-                        ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/50"
-                        : "bg-zinc-100 dark:bg-zinc-800 text-zinc-500"
-                    }`}
+                    className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide ${activePage.status === "live"
+                      ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/50"
+                      : "bg-zinc-100 dark:bg-zinc-800 text-zinc-500"
+                      }`}
                   >
                     {activePage.status === "live" ? "Published" : "Draft"}
                   </span>
