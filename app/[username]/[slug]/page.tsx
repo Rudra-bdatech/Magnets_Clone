@@ -164,7 +164,7 @@ export default async function MagnetPageRoute({
   let pageDoc: any = null;
 
   const rawUser = params.username || "";
-  if (rawUser.includes(".") || rawUser.startsWith("_") || rawUser === "favicon.ico") {
+  if (rawUser.includes(".") || rawUser.startsWith("_") || rawUser === "favicon.ico" || rawUser === "custom-domain" || rawUser === "domain-resolver") {
     notFound();
   }
 

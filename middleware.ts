@@ -106,6 +106,11 @@ export async function middleware(request: NextRequest) {
     host.endsWith("magnets.bdatech.in") ||
     (configuredHost && (host === configuredHost || host.endsWith(`.${configuredHost}`)));
 
+  // Block direct access to internal /custom-domain route on primary domain
+  if (isPrimaryDomain && (pathname === "/custom-domain" || pathname.startsWith("/custom-domain/"))) {
+    return NextResponse.redirect(new URL("/", request.url));
+  }
+
   // Custom domain routing: when traffic arrives on a non-primary domain (e.g. get.yourbrand.com)
   if (!isPrimaryDomain) {
     // If internal platform routes (dashboard, login, register, password reset) are accessed on a custom domain, redirect to main platform
@@ -138,12 +143,13 @@ export async function middleware(request: NextRequest) {
       pathname.startsWith("/r") ||
       pathname.startsWith("/privacy") ||
       pathname.startsWith("/terms") ||
+      pathname.startsWith("/custom-domain") ||
       isStaticAsset;
 
     // Rewrite public pages to our dedicated server-side domain resolver route.
     if (!isExcludedPath) {
       const url = request.nextUrl.clone();
-      url.pathname = "/_domain";
+      url.pathname = "/custom-domain";
       url.searchParams.set("host", host);
       url.searchParams.set("path", pathname || "/");
 

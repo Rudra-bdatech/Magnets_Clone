@@ -52,18 +52,34 @@ async function resolveAccountForHost(rawHost: string) {
     });
   }
 
+  const escapeRegex = (s: string) => s.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+
   const orConditions: any[] = [
-    { customDomain: cleanHost },
+    { customDomain: { $regex: new RegExp(`^${escapeRegex(cleanHost)}$`, "i") } },
     ...splits.map((s) => ({
-      customDomain: s.root,
-      customSubdomain: s.sub,
+      customDomain: { $regex: new RegExp(`^${escapeRegex(s.root)}$`, "i") },
+      $or: [
+        { customSubdomain: { $regex: new RegExp(`^${escapeRegex(s.sub)}$`, "i") } },
+        ...(s.sub === "get" || s.sub === "www"
+          ? [
+              { customSubdomain: { $in: ["", null] } },
+              { customSubdomain: { $exists: false } },
+            ]
+          : []),
+      ],
     })),
   ];
 
   const account = await AccountModel.findOne({
     $or: orConditions,
-    domainVerified: true,
-    cnameVerified: true,
+    $and: [
+      {
+        $or: [
+          { cnameVerified: true },
+          { domainVerified: true },
+        ],
+      },
+    ],
   }).lean();
 
   if (!account) return null;
