@@ -99,26 +99,8 @@ function isMissingCertMessage(message: string): boolean {
   return /ssl certificate|certificate/i.test(message) && /missing|not ready|pending|issu/i.test(message);
 }
 
-function sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-async function issueVercelCertificate(
-  fullHost: string,
-  teamParam: string,
-  headers: Record<string, string>
-): Promise<{ ready: boolean; error?: string }> {
-  const res = await fetch(`https://api.vercel.com/v8/certs${teamParam}`, {
-    method: "POST",
-    headers,
-    body: JSON.stringify({ cns: [fullHost] }),
-    signal: AbortSignal.timeout(20000),
-  });
-  const body = await res.json().catch(() => ({}));
-  if (res.ok) return { ready: true };
-  const message = vercelErrorMessage(body, "Vercel could not create an SSL certificate for this domain.");
-  if (res.status === 409 || /already/i.test(message)) return { ready: true };
-  return { ready: false, error: message };
+function isCertificatePermissionMessage(message: string): boolean {
+  return /permission/i.test(message) && /cert/i.test(message);
 }
 
 /**
@@ -170,8 +152,37 @@ async function attachDomainToVercel(fullHost: string, matchedCname?: string): Pr
       }
     );
     const verifyBody = await verifyRes.json().catch(() => ({}));
-    const challenge = readHostingChallenge(verifyBody) || readHostingChallenge(addBody);
-    const domainVerified = Boolean(verifyRes.ok && (verifyBody?.verified ?? verifyBody?.domain?.verified));
+
+    const domainRes = await fetch(
+      `https://api.vercel.com/v9/projects/${vercelProjectId}/domains/${domainPath}${teamParam}`,
+      {
+        headers: { Authorization: `Bearer ${vercelToken}` },
+        signal: AbortSignal.timeout(10000),
+      }
+    );
+    const domainBody = await domainRes.json().catch(() => ({}));
+
+    const challenge =
+      readHostingChallenge(domainBody) ||
+      readHostingChallenge(verifyBody) ||
+      readHostingChallenge(addBody);
+    const domainVerified = Boolean(domainBody?.verified || verifyBody?.verified || verifyBody?.domain?.verified);
+
+    // Vercel only issues the certificate after this project verifies the host.
+    // A limited token cannot call the certificates API, so do not try that.
+    if (!domainVerified) {
+      const recordHint = challenge
+        ? ` Add a new ${challenge.type} record at ${challenge.name} with value ${challenge.value}. Keep the existing _vercel TXT records and add this as another one.`
+        : " Open the Vercel project, go to Settings, then Domains, and copy the TXT record shown for this host.";
+      return {
+        attached: true,
+        aliased: false,
+        sslReady: false,
+        skipped: false,
+        challenge,
+        error: `${fullHost} is not verified on the Vercel project, so no SSL certificate will be created.${recordHint} Then click Verify CNAME again.`,
+      };
+    }
 
     const deploymentQuery = new URLSearchParams({
       projectId: vercelProjectId,
@@ -186,7 +197,8 @@ async function attachDomainToVercel(fullHost: string, matchedCname?: string): Pr
       signal: AbortSignal.timeout(10000),
     });
     const deploymentBody = await deploymentRes.json().catch(() => ({}));
-    const deploymentId = deploymentBody?.deployments?.[0]?.uid;
+    const deployment = deploymentBody?.deployments?.[0];
+    const deploymentId = deployment?.uid;
 
     if (!deploymentRes.ok || !deploymentId) {
       return {
@@ -199,55 +211,66 @@ async function attachDomainToVercel(fullHost: string, matchedCname?: string): Pr
       };
     }
 
-    const pointsAtVercelEdge = matchedCname === VERCEL_CNAME_TARGET;
-    const cert = await issueVercelCertificate(fullHost, teamParam, headers);
+    const aliasRes = await fetch(`https://api.vercel.com/v2/deployments/${deploymentId}/aliases${teamParam}`, {
+      method: "POST",
+      headers,
+      body: JSON.stringify({ alias: fullHost }),
+      signal: AbortSignal.timeout(10000),
+    });
+    const aliasBody = await aliasRes.json().catch(() => ({}));
+    const aliasMessage = vercelErrorMessage(aliasBody, "");
+    const alreadyAssigned = aliasRes.status === 409 && /already assigned/i.test(aliasMessage);
 
-    const assignAlias = async () => {
-      const aliasRes = await fetch(`https://api.vercel.com/v2/deployments/${deploymentId}/aliases${teamParam}`, {
-        method: "POST",
-        headers,
-        body: JSON.stringify({ alias: fullHost }),
-        signal: AbortSignal.timeout(10000),
-      });
-      const aliasBody = await aliasRes.json().catch(() => ({}));
-      const aliasMessage = vercelErrorMessage(aliasBody, "");
-      const alreadyAssigned = aliasRes.status === 409 && /already assigned/i.test(aliasMessage);
-      return { ok: aliasRes.ok || alreadyAssigned, message: aliasMessage };
-    };
-
-    let alias = await assignAlias();
-    if (!alias.ok && pointsAtVercelEdge && isMissingCertMessage(alias.message)) {
-      await sleep(5000);
-      await issueVercelCertificate(fullHost, teamParam, headers);
-      alias = await assignAlias();
-    }
-
-    if (alias.ok) {
+    if (aliasRes.ok || alreadyAssigned) {
       return {
         attached: true,
         aliased: true,
         sslReady: true,
         skipped: false,
-        challenge: domainVerified ? null : challenge,
+        challenge: null,
       };
     }
 
-    const certPending = isMissingCertMessage(alias.message) || !cert.ready;
-    const certDetail = !cert.ready && cert.error && !isMissingCertMessage(cert.error) ? ` ${cert.error}` : "";
-    const ownershipMessage = challenge
-      ? `Vercel still needs a ${challenge.type} record at ${challenge.name} with value ${challenge.value}. Add it, wait a minute, then click Verify CNAME again.`
-      : !pointsAtVercelEdge
-        ? `SSL cannot be created yet. Change the CNAME for ${fullHost} to ${VERCEL_CNAME_TARGET}, set Cloudflare proxy to DNS only, wait one minute, then click Verify CNAME again.`
-        : `Vercel is still creating the SSL certificate for ${fullHost}.${certDetail} Wait 1 to 2 minutes, then click Verify CNAME again. The domain cannot go live until that certificate exists.`;
+    if (isMissingCertMessage(aliasMessage)) {
+      if (matchedCname && matchedCname !== VERCEL_CNAME_TARGET) {
+        return {
+          attached: true,
+          aliased: false,
+          sslReady: false,
+          skipped: false,
+          challenge,
+          error: `The CNAME for ${fullHost} points at ${matchedCname}. Change it to ${VERCEL_CNAME_TARGET}, set Cloudflare proxy to DNS only, then click Verify CNAME again.`,
+        };
+      }
+      return {
+        attached: true,
+        aliased: false,
+        sslReady: false,
+        skipped: false,
+        certPending: true,
+        challenge,
+        error: `DNS for ${fullHost} already points at ${VERCEL_CNAME_TARGET}, but Vercel has not issued the SSL certificate. The server token is not allowed to create that certificate, so clicking again will not finish it. In Vercel, open the project, go to Settings, then Domains, and check ${fullHost}. If it asks for a TXT record, add that record without deleting the existing _vercel records, then click Verify CNAME again.`,
+      };
+    }
+
+    if (isCertificatePermissionMessage(aliasMessage)) {
+      return {
+        attached: true,
+        aliased: false,
+        sslReady: false,
+        skipped: false,
+        challenge,
+        error: `The Vercel token on this server cannot create a certificate for ${fullHost}. Replace VERCEL_TOKEN with a full-access token for the same team, then click Verify CNAME again.`,
+      };
+    }
 
     return {
       attached: true,
       aliased: false,
       sslReady: false,
       skipped: false,
-      certPending,
       challenge,
-      error: ownershipMessage,
+      error: aliasMessage || `The domain could not be linked to the live deployment.`,
     };
   } catch (vercelErr) {
     console.warn("Automated Vercel domain provisioning notice:", vercelErr);
