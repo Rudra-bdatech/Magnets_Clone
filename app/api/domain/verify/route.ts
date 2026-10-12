@@ -24,6 +24,7 @@ async function queryDns(name: string, type: "TXT" | "CNAME"): Promise<any[]> {
       fetch(url, {
         headers: { Accept: "application/dns-json" },
         cache: "no-store",
+        signal: AbortSignal.timeout(8000),
       }).then((r) => r.json())
     )
   );
@@ -78,11 +79,31 @@ export async function POST(req: Request) {
     }
 
     const cleanSubdomain = formatSubdomain(subdomain);
-    const expectedValue = getDomainVerificationToken(cleanDomain);
+
+    // Conflict Guard: Ensure domain is not already verified and active on another workspace
+    const existingConflict = await AccountModel.findOne({
+      email: { $ne: email },
+      customDomain: cleanDomain,
+      cnameVerified: true,
+    }).lean();
+
+    if (existingConflict) {
+      return NextResponse.json(
+        {
+          error: "This custom domain is already verified and active on another workspace.",
+          code: "DOMAIN_ALREADY_CLAIMED",
+        },
+        { status: 409 }
+      );
+    }
+
+    // Per-user token: use the authenticated account's email so tokens are unique per user
+    const expectedValue = getDomainVerificationToken(cleanDomain, account.email);
     const verificationHost = "leadmagnets-verify";
     const fullVerificationHost = `${verificationHost}.${cleanDomain}`;
 
-    // 1. Perform live DNS TXT lookup
+    // CNAME target: driven from env variable so it never drifts from what the UI shows
+    const targetCname = process.env.CNAME_TARGET || process.env.NEXT_PUBLIC_APP_URL?.replace(/^https?:\/\//, "") || "magnets.bdatech.in";
     let isVerified = false;
     let dnsMessage = "";
 
@@ -106,60 +127,92 @@ export async function POST(req: Request) {
 
     // 2. Perform live DNS CNAME lookup for the subdomain
     const fullSubdomainHost = formatFullHost(cleanDomain, cleanSubdomain);
-    const targetCname = "magnets.bdatech.in";
     let cnameVerified = false;
     let cnameMessage = "";
 
     try {
       const cnameAnswers = await queryDns(fullSubdomainHost, "CNAME");
       if (cnameAnswers.length > 0) {
-        const cnameRecords = cnameAnswers.map((ans: any) => (ans.data || "").replace(/\.$/, "").toLowerCase().trim());
-        if (cnameRecords.some((rec: string) => rec.includes("leadmagnets") || rec.includes("bdatech") || rec.includes("vercel") || rec.includes(targetCname))) {
+        // Filter specifically for CNAME records (DNS type 5) to avoid resolved A/AAAA IP records
+        const cnameTypeAnswers = cnameAnswers.filter((ans: any) => ans.type === 5);
+        const recordsToInspect = cnameTypeAnswers.length > 0 ? cnameTypeAnswers : cnameAnswers;
+        const cnameRecords = recordsToInspect.map((ans: any) => (ans.data || "").replace(/\.$/, "").toLowerCase().trim());
+        if (cnameRecords.some((rec: string) => rec.includes("leadmagnets") || rec.includes("bdatech") || rec.includes("vercel") || rec === targetCname || rec.includes(targetCname))) {
           cnameVerified = true;
           cnameMessage = `Traffic successfully routed! ${fullSubdomainHost} points to ${cnameRecords[0] || targetCname}.`;
         }
       }
 
       if (!cnameVerified) {
-        cnameMessage = `No CNAME record found pointing ${fullSubdomainHost} to ${targetCname}. Check your DNS settings.`;
+        cnameMessage = `No CNAME record found pointing ${fullSubdomainHost} to ${targetCname}. If using Cloudflare, ensure Proxy is set to DNS Only.`;
       }
     } catch (cnameErr) {
       console.warn("DNS CNAME check failed:", cnameErr);
       cnameMessage = `Unable to reach CNAME resolution server for ${fullSubdomainHost}.`;
     }
 
+    // Strict Server-Side Ownership Enforcement:
+    // CNAME routing can ONLY be granted if ownership has been proven (via current TXT check or prior verified state on this account)
+    const isOwnershipProven = isVerified || Boolean(account.domainVerified && account.customDomain === cleanDomain);
+    if (cnameVerified && !isOwnershipProven) {
+      cnameVerified = false;
+      cnameMessage = "You must prove domain ownership (Step 1 TXT record) before verifying CNAME routing.";
+    }
+
     // Auto-provision domain on Vercel programmatically if VERCEL API credentials are provided
+    // Only trigger when both ownership and CNAME routing are verified
     const vercelToken = process.env.VERCEL_AUTH_TOKEN || process.env.VERCEL_TOKEN;
     const vercelProjectId = process.env.VERCEL_PROJECT_ID || process.env.PROJECT_ID_VERCEL;
     const vercelTeamId = process.env.VERCEL_TEAM_ID;
 
-    if (vercelToken && vercelProjectId && (isVerified || cnameVerified)) {
+    if (vercelToken && vercelProjectId && cnameVerified && isOwnershipProven) {
       try {
         const teamParam = vercelTeamId ? `?teamId=${vercelTeamId}` : "";
         // 1. Add domain to project
-        await fetch(`https://api.vercel.com/v10/projects/${vercelProjectId}/domains${teamParam}`, {
+        const addRes = await fetch(`https://api.vercel.com/v10/projects/${vercelProjectId}/domains${teamParam}`, {
           method: "POST",
           headers: {
             Authorization: `Bearer ${vercelToken}`,
             "Content-Type": "application/json",
           },
           body: JSON.stringify({ name: fullSubdomainHost }),
+          signal: AbortSignal.timeout(10000),
         });
 
         // 2. Trigger instant SSL/DNS verification on Vercel's edge network
-        await fetch(`https://api.vercel.com/v9/projects/${vercelProjectId}/domains/${fullSubdomainHost}/verify${teamParam}`, {
+        const verifyRes = await fetch(`https://api.vercel.com/v9/projects/${vercelProjectId}/domains/${fullSubdomainHost}/verify${teamParam}`, {
           method: "POST",
           headers: {
             Authorization: `Bearer ${vercelToken}`,
           },
+          signal: AbortSignal.timeout(10000),
         });
+
+        if (!addRes.ok && addRes.status !== 409) {
+          const addErr = await addRes.json().catch(() => ({}));
+          console.warn("Vercel domain addition warning (non-fatal):", addErr);
+        }
       } catch (vercelErr) {
         console.warn("Automated Vercel domain provisioning notice:", vercelErr);
       }
     }
 
-    // Determine SSL certificate status
-    const sslStatus = (isVerified || cnameVerified) ? "active" : "pending";
+    // SSL is active once CNAME points to our server and ownership is proven
+    const sslStatus = cnameVerified ? "active" : "pending";
+
+    // Secure Server-Side Persistence: Directly write verified status to DB
+    const updateFields: any = {
+      customDomain: cleanDomain,
+      customSubdomain: cleanSubdomain,
+    };
+    if (isVerified) {
+      updateFields.domainVerified = true;
+    }
+    if (cnameVerified) {
+      updateFields.cnameVerified = true;
+      updateFields.sslStatus = "active";
+    }
+    await AccountModel.updateOne({ email }, { $set: updateFields });
 
     return NextResponse.json({
       success: true,
@@ -179,5 +232,63 @@ export async function POST(req: Request) {
   } catch (error: any) {
     console.error("Domain verification API error:", error);
     return NextResponse.json({ error: "Failed to verify domain" }, { status: 500 });
+  }
+}
+
+/**
+ * DELETE: Disconnects custom domain and removes it from Vercel edge routing
+ */
+export async function DELETE() {
+  try {
+    const email = await getAuthenticatedUserEmail();
+    if (!email) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    await dbConnect();
+    const account = await AccountModel.findOne({ email });
+    if (!account) {
+      return NextResponse.json({ error: "Account not found" }, { status: 404 });
+    }
+
+    const previousDomain = account.customDomain;
+    const previousSubdomain = account.customSubdomain || "get";
+
+    // Clean up domain from Vercel project if credentials exist
+    const vercelToken = process.env.VERCEL_AUTH_TOKEN || process.env.VERCEL_TOKEN;
+    const vercelProjectId = process.env.VERCEL_PROJECT_ID || process.env.PROJECT_ID_VERCEL;
+    const vercelTeamId = process.env.VERCEL_TEAM_ID;
+
+    if (vercelToken && vercelProjectId && previousDomain) {
+      try {
+        const fullHost = formatFullHost(previousDomain, previousSubdomain);
+        const teamParam = vercelTeamId ? `?teamId=${vercelTeamId}` : "";
+        await fetch(`https://api.vercel.com/v9/projects/${vercelProjectId}/domains/${fullHost}${teamParam}`, {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${vercelToken}`,
+          },
+          signal: AbortSignal.timeout(10000),
+        });
+      } catch (vercelErr) {
+        console.warn("Failed to delete domain from Vercel:", vercelErr);
+      }
+    }
+
+    // Reset domain fields in MongoDB
+    account.customDomain = "";
+    account.customSubdomain = "get";
+    account.domainVerified = false;
+    account.cnameVerified = false;
+    account.sslStatus = "pending";
+    await account.save();
+
+    return NextResponse.json({
+      success: true,
+      message: "Custom domain disconnected and removed from Vercel successfully.",
+    });
+  } catch (error: any) {
+    console.error("Delete domain error:", error);
+    return NextResponse.json({ error: "Failed to disconnect domain" }, { status: 500 });
   }
 }

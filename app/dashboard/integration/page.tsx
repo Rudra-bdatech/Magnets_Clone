@@ -117,7 +117,7 @@ export default function WorkspaceSetupPage() {
       const srv = data.account;
 
       setAccount((prev) => {
-        const merged = { ...srv, ...(prev || {}) };
+        const merged = { ...(prev || {}), ...srv };
         accountRef.current = merged;
         return merged;
       });
@@ -181,7 +181,9 @@ export default function WorkspaceSetupPage() {
       faviconUrl: (overrides?.faviconUrl !== undefined ? overrides.faviconUrl : faviconUrl).trim(),
       ogImageUrl: (overrides?.ogImageUrl !== undefined ? overrides.ogImageUrl : ogImageUrl).trim(),
       substackPublication: (overrides?.substackPublication !== undefined ? overrides.substackPublication : substackPublication).trim(),
-      ...overrides,
+      // NOTE: do NOT spread overrides here again — each field above already applies overrides
+      // Spreading overrides at the end would bypass sanitizeDomain() / formatSubdomain() and
+      // write raw, unsanitized values (e.g. "https://example.com") straight to the database.
     };
 
     try {
@@ -198,6 +200,7 @@ export default function WorkspaceSetupPage() {
       }
     } catch (err) {
       console.error("Save account error:", err);
+      addToast("Failed to save changes. Please check your connection and try again.", "error");
       setAccount(updatedAccount);
       accountRef.current = updatedAccount;
     } finally {

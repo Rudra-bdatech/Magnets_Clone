@@ -95,6 +95,8 @@ const AccountSchema = new Schema({
 
 AccountSchema.index({ resetPasswordToken: 1 });
 AccountSchema.index({ linkedinWebhookSecret: 1 });
+AccountSchema.index({ customDomain: 1, domainVerified: 1, cnameVerified: 1 });
+AccountSchema.index({ customDomain: 1, customSubdomain: 1, domainVerified: 1, cnameVerified: 1 });
 
 // MagnetPage Schema
 const MagnetPageSchema = new Schema({

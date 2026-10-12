@@ -13,6 +13,7 @@ import {
   getSpinDMText,
   checkDailySafetyQuota,
 } from "@/lib/linkedin-safety";
+import { formatFullHost } from "@/lib/domain-verify";
 
 /**
  * Production-Ready In-House LinkedIn Post & Comment Automation Engine.
@@ -220,8 +221,9 @@ export async function syncUserLinkedInComments(account: any) {
         const username = account.username || "u";
         const pageSlug = targetMagnet.slug || targetMagnet.id;
         let baseResourceUrl = `${appUrl}/${encodeURIComponent(username)}/${encodeURIComponent(pageSlug)}`;
-        if (account.customDomain && account.domainVerified) {
-          baseResourceUrl = `https://${account.customDomain}/${encodeURIComponent(pageSlug)}`;
+        if (account.customDomain && account.cnameVerified) {
+          const fullHost = formatFullHost(account.customDomain, account.customSubdomain || "get");
+          baseResourceUrl = `https://${fullHost}/${encodeURIComponent(pageSlug)}`;
         }
 
         const signedUpAt = new Date().toISOString();

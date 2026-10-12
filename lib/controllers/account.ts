@@ -6,6 +6,8 @@ import { hashPassword, comparePassword } from "@/lib/auth-helpers";
 import { deleteCloudinaryAssets } from "@/lib/cloudinary";
 import { sendMail } from "@/lib/email";
 import { determineRoleForEmail } from "@/lib/roles";
+import { getPlanLimits } from "@/lib/plan-limits";
+import { cleanDomain as sanitizeDomain } from "@/lib/domain-verify";
 import { randomBytes } from "crypto";
 
 /** Generates a cryptographically random 64-char hex webhook secret. */
@@ -116,11 +118,52 @@ export async function handleSaveAccount(data: any, authEmail: string | null) {
     existing.calendarProvider = data.calendarProvider || existing.calendarProvider;
     existing.calendarToken = data.calendarToken !== undefined ? data.calendarToken : existing.calendarToken;
     existing.calendarConnected = data.calendarConnected !== undefined ? data.calendarConnected : existing.calendarConnected;
-    existing.customDomain = data.customDomain !== undefined ? data.customDomain : existing.customDomain;
-    existing.customSubdomain = data.customSubdomain !== undefined ? data.customSubdomain : existing.customSubdomain;
-    existing.domainVerified = data.domainVerified !== undefined ? data.domainVerified : existing.domainVerified;
-    existing.cnameVerified = data.cnameVerified !== undefined ? data.cnameVerified : existing.cnameVerified;
-    existing.sslStatus = data.sslStatus || existing.sslStatus;
+    // Hardened custom domain persistence with plan guard and verification protection
+    if (data.customDomain !== undefined) {
+      const sanitizedDom = sanitizeDomain(data.customDomain);
+      const prevDom = sanitizeDomain(existing.customDomain);
+      const planLimits = getPlanLimits(existing.plan, existing.email, existing.role);
+
+      if (sanitizedDom && sanitizedDom !== prevDom) {
+        if (!planLimits.customDomainAllowed) {
+          return NextResponse.json(
+            { error: "Custom domains require a Pro plan subscription.", code: "PLAN_UPGRADE_REQUIRED" },
+            { status: 403 }
+          );
+        }
+        // Conflict check: ensure no other account has this domain verified
+        const domainInUse = await AccountModel.findOne({
+          email: { $ne: existing.email },
+          customDomain: sanitizedDom,
+          cnameVerified: true,
+        }).lean();
+        if (domainInUse) {
+          return NextResponse.json(
+            { error: "This custom domain is already verified on another workspace.", code: "DOMAIN_ALREADY_CLAIMED" },
+            { status: 409 }
+          );
+        }
+        existing.customDomain = sanitizedDom;
+        existing.customSubdomain = data.customSubdomain !== undefined ? data.customSubdomain : (existing.customSubdomain || "get");
+        existing.domainVerified = false;
+        existing.cnameVerified = false;
+        existing.sslStatus = "pending";
+      } else if (!sanitizedDom) {
+        // Disconnecting / clearing domain
+        existing.customDomain = "";
+        existing.customSubdomain = "get";
+        existing.domainVerified = false;
+        existing.cnameVerified = false;
+        existing.sslStatus = "pending";
+      } else {
+        // Same domain: update subdomain if provided
+        if (data.customSubdomain !== undefined && data.customSubdomain !== existing.customSubdomain) {
+          existing.customSubdomain = data.customSubdomain;
+          existing.cnameVerified = false;
+          existing.sslStatus = "pending";
+        }
+      }
+    }
     existing.ga4MeasurementId = data.ga4MeasurementId !== undefined ? data.ga4MeasurementId : existing.ga4MeasurementId;
     existing.metaPixelId = data.metaPixelId !== undefined ? data.metaPixelId : existing.metaPixelId;
     existing.faviconUrl = data.faviconUrl !== undefined ? data.faviconUrl : existing.faviconUrl;

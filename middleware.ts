@@ -55,7 +55,8 @@ async function verifySessionTokenEdge(token: string, secret: string): Promise<bo
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  const host = request.headers.get("host") || "";
+  const rawHost = request.headers.get("host") || "";
+  const host = rawHost.split(":")[0].toLowerCase();
   const ip = request.ip || request.headers.get("x-forwarded-for")?.split(",")[0] || "127.0.0.1";
   const secret = process.env.JWT_SECRET || "";
 
@@ -71,8 +72,15 @@ export async function middleware(request: NextRequest) {
 
   const isValidSession = Boolean(isValidCustomSession || nextAuthToken);
 
-  // Rate Limiting Protection for Auth & API Endpoints
-  if (pathname.startsWith("/api/auth") || pathname.startsWith("/login") || pathname.startsWith("/register") || pathname.startsWith("/reset-password")) {
+  // Rate Limiting Protection for Auth & Domain Verification API Endpoints
+  if (
+    pathname.startsWith("/api/auth") ||
+    pathname.startsWith("/api/domain") ||
+    pathname.startsWith("/login") ||
+    pathname.startsWith("/register") ||
+    pathname.startsWith("/reset-password") ||
+    pathname.startsWith("/forgot-password")
+  ) {
     const { success, reset } = await checkRateLimit(ip, "auth_limit", 30, 60 * 1000);
     if (!success) {
       if (pathname.startsWith("/api")) {
@@ -84,16 +92,75 @@ export async function middleware(request: NextRequest) {
     }
   }
 
+  // Configured app domain from environment
+  const configuredHost = process.env.NEXT_PUBLIC_APP_URL
+    ? process.env.NEXT_PUBLIC_APP_URL.replace(/^https?:\/\//i, "").split("/")[0].split(":")[0].toLowerCase()
+    : "";
+
   // Custom domain detection (non-primary domains)
   const isPrimaryDomain =
     host.includes("localhost") ||
     host.includes("127.0.0.1") ||
     host.endsWith("vercel.app") ||
     host.endsWith("leadmagnets.so") ||
-    host.endsWith("magnets.bdatech.in");
+    host.endsWith("magnets.bdatech.in") ||
+    (configuredHost && (host === configuredHost || host.endsWith(`.${configuredHost}`)));
 
+  // Custom domain routing: when traffic arrives on a non-primary domain (e.g. get.yourbrand.com)
+  if (!isPrimaryDomain) {
+    // If internal platform routes (dashboard, login, register, password reset) are accessed on a custom domain, redirect to main platform
+    if (
+      pathname.startsWith("/dashboard") ||
+      pathname.startsWith("/login") ||
+      pathname.startsWith("/register") ||
+      pathname.startsWith("/reset-password") ||
+      pathname.startsWith("/forgot-password")
+    ) {
+      const mainAppUrl = process.env.NEXT_PUBLIC_APP_URL || "https://magnets.bdatech.in";
+      return NextResponse.redirect(new URL(pathname, mainAppUrl));
+    }
 
-  // Protect /dashboard routes — require cryptographically signed session
+    // Exclude API routes, Next.js static internals, and static assets with file extensions (.png, .svg, .mjs, .ico, etc.)
+    const isStaticAsset =
+      pathname.includes(".") ||
+      pathname.startsWith("/brand/") ||
+      pathname.startsWith("/public/") ||
+      pathname.startsWith("/icons/") ||
+      pathname === "/robots.txt" ||
+      pathname === "/sitemap.xml";
+
+    // Exclude standalone platform utility routes that must render on their own
+    const isExcludedPath =
+      pathname.startsWith("/api") ||
+      pathname.startsWith("/_next") ||
+      pathname.startsWith("/pdf-viewer") ||
+      pathname.startsWith("/stop") ||
+      pathname.startsWith("/r") ||
+      pathname.startsWith("/privacy") ||
+      pathname.startsWith("/terms") ||
+      isStaticAsset;
+
+    // Rewrite public pages to our dedicated server-side domain resolver route.
+    if (!isExcludedPath) {
+      const url = request.nextUrl.clone();
+      url.pathname = "/_domain";
+      url.searchParams.set("host", host);
+      url.searchParams.set("path", pathname || "/");
+
+      // Pass x-custom-domain as incoming REQUEST headers so Server Components can read them via headers()
+      const requestHeaders = new Headers(request.headers);
+      requestHeaders.set("x-custom-domain", host);
+      requestHeaders.set("x-original-path", pathname || "/");
+
+      return NextResponse.rewrite(url, {
+        request: {
+          headers: requestHeaders,
+        },
+      });
+    }
+  }
+
+  // Protect /dashboard routes on primary domain — require cryptographically signed session
   if (pathname.startsWith("/dashboard")) {
     if (!isValidSession) {
       const loginUrl = new URL("/login", request.url);
@@ -105,13 +172,6 @@ export async function middleware(request: NextRequest) {
   // Redirect authenticated users away from /login and /register if they already have a valid session
   if ((pathname === "/login" || pathname === "/register") && isValidSession) {
     return NextResponse.redirect(new URL("/dashboard", request.url));
-  }
-
-  // Rewrite custom domain requests seamlessly if needed
-  if (!isPrimaryDomain && !pathname.startsWith("/api") && !pathname.startsWith("/_next")) {
-    const url = request.nextUrl.clone();
-    url.searchParams.set("__customDomain", host);
-    return NextResponse.rewrite(url);
   }
 
   return NextResponse.next();

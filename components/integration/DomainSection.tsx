@@ -98,15 +98,23 @@ export const DomainSection = memo(function DomainSection({
   const [showDisconnectModal, setShowDisconnectModal] = useState(false);
 
   const handleDisconnectConfirm = async () => {
-    setRootDomain("");
-    setPageSubdomain("");
-    setDomainVerified(false);
-    setCnameVerified(false);
-    setSslStatus("pending");
-    setDomainError("");
-    setCnameError("");
-
     try {
+      const res = await fetch("/api/domain/verify", {
+        method: "DELETE",
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || "Failed to disconnect domain");
+      }
+
+      setRootDomain("");
+      setPageSubdomain("get");
+      setDomainVerified(false);
+      setCnameVerified(false);
+      setSslStatus("pending");
+      setDomainError("");
+      setCnameError("");
+
       await handleSave({
         customDomain: "",
         customSubdomain: "",
@@ -114,10 +122,10 @@ export const DomainSection = memo(function DomainSection({
         cnameVerified: false,
         sslStatus: "pending",
       });
-      addToast("Custom domain disconnected successfully.", "info");
+      addToast("Custom domain disconnected and removed from edge routing successfully.", "info");
       setShowDisconnectModal(false);
-    } catch {
-      addToast("Failed to disconnect domain. Please try again.", "error");
+    } catch (err: any) {
+      addToast(err?.message || "Failed to disconnect domain. Please try again.", "error");
     }
   };
 
@@ -128,10 +136,18 @@ export const DomainSection = memo(function DomainSection({
   // Memoize derived computations
   const cleanDom = useMemo(() => sanitizeDomain(rootDomain), [rootDomain]);
   const cleanSub = useMemo(() => formatSubdomain(pageSubdomain), [pageSubdomain]);
-  const tokenValue = useMemo(() => getDomainVerificationToken(cleanDom), [cleanDom]);
+  // BUG FIX #1: token is now per-user (includes userEmail) to prevent domain squatting
+  const tokenValue = useMemo(() => getDomainVerificationToken(cleanDom, userEmail || ""), [cleanDom, userEmail]);
   const liveCustomUrl = useMemo(() => formatCustomDomainUrl(rootDomain, pageSubdomain), [rootDomain, pageSubdomain]);
   const fullCustomHost = useMemo(() => formatFullHost(rootDomain, pageSubdomain), [rootDomain, pageSubdomain]);
   const defaultShareUrl = useMemo(() => `${appBaseUrl}/${username}`, [appBaseUrl, username]);
+  const cnamePointsTo = useMemo(() => {
+    const clean = sanitizeDomain(appBaseUrl);
+    if (!clean || clean === "localhost" || clean === "127.0.0.1") {
+      return "magnets.bdatech.in";
+    }
+    return clean;
+  }, [appBaseUrl]);
 
   const copyToClipboard = (text: string, fieldKey: string, toastMessage?: string) => {
     if (!navigator?.clipboard) {
@@ -396,8 +412,17 @@ export const DomainSection = memo(function DomainSection({
                     value={rootDomain}
                     onChange={(e) => {
                       if (isCustomDomainLocked) return;
+                      const val = e.target.value;
                       markDirty("customDomain");
-                      setRootDomain(e.target.value);
+                      setRootDomain(val);
+                      // Invalidate previous verification state if domain string changed
+                      if (sanitizeDomain(val) !== cleanDom) {
+                        setDomainVerified(false);
+                        setCnameVerified(false);
+                        setSslStatus("pending");
+                        setDomainError("");
+                        setCnameError("");
+                      }
                     }}
                     onBlur={() => !isCustomDomainLocked && handleSave()}
                     placeholder={isCustomDomainLocked ? "yourdomain.com (Requires Pro Plan)" : "example.com"}
@@ -426,8 +451,15 @@ export const DomainSection = memo(function DomainSection({
                     value={pageSubdomain}
                     onChange={(e) => {
                       if (isCustomDomainLocked) return;
+                      const val = e.target.value;
                       markDirty("customSubdomain");
-                      setPageSubdomain(e.target.value);
+                      setPageSubdomain(val);
+                      // Invalidate CNAME routing state if subdomain prefix changed
+                      if (formatSubdomain(val) !== cleanSub) {
+                        setCnameVerified(false);
+                        setSslStatus("pending");
+                        setCnameError("");
+                      }
                     }}
                     onBlur={() => !isCustomDomainLocked && handleSave()}
                     placeholder="get"
@@ -576,6 +608,12 @@ export const DomainSection = memo(function DomainSection({
                             addToast("Custom domains are a Pro feature. Please upgrade your plan.", "error");
                             return;
                           }
+                          // BUG FIX #10: validate domain format before hitting DNS
+                          if (!cleanDom || !cleanDom.includes(".")) {
+                            setDomainError("Please enter a valid domain (e.g. example.com or yourbrand.co.in)");
+                            addToast("Please enter a valid domain before checking ownership.", "error");
+                            return;
+                          }
                           setCheckingDomain(true);
                           setDomainError("");
                           // Fix #5: AbortController gives a 15s hard timeout — no infinite loading
@@ -599,7 +637,9 @@ export const DomainSection = memo(function DomainSection({
                               setDomainVerified(true);
                               if (data.cnameVerified) setCnameVerified(true);
                               if (data.sslStatus) setSslStatus(data.sslStatus);
-                              setDomainError("Domain ownership verified successfully!");
+                              // BUG FIX #7: do NOT set domainError to a success string — it is an error field.
+                              // The "Ownership Verified" badge handles the success state.
+                              setDomainError("");
                               await handleSave({
                                 domainVerified: true,
                                 cnameVerified: data.cnameVerified,
@@ -607,7 +647,7 @@ export const DomainSection = memo(function DomainSection({
                               });
                               addToast("🎉 Domain ownership verified successfully!", "success");
                             } else {
-                              const errMsg = data.message || `No TXT record found at leadmagnets-verify.${cleanDom}. DNS updates can take a few minutes.`;
+                              const errMsg = data.error || data.message || `No TXT record found at leadmagnets-verify.${cleanDom}. DNS updates can take a few minutes.`;
                               setDomainError(errMsg);
                               addToast(errMsg, "error");
                             }
@@ -752,11 +792,11 @@ export const DomainSection = memo(function DomainSection({
                             className="flex items-center justify-between rounded-lg border border-zinc-200 dark:border-zinc-700/80 bg-zinc-100/70 dark:bg-[#141418] px-3 py-2 text-xs font-mono text-zinc-900 dark:text-zinc-100 gap-2"
                           >
                             <span className="truncate select-all min-w-0" aria-label="CNAME target points-to value">
-                              {sanitizeDomain(appBaseUrl) || "magnets.bdatech.in"}
+                              {cnamePointsTo}
                             </span>
                             <button
                               type="button"
-                              onClick={() => copyToClipboard(sanitizeDomain(appBaseUrl) || "magnets.bdatech.in", "cnameValue", "CNAME target value copied!")}
+                              onClick={() => copyToClipboard(cnamePointsTo, "cnameValue", "CNAME target value copied!")}
                               aria-label="Copy CNAME target value to clipboard"
                               className="inline-flex items-center gap-1 text-[11px] font-medium text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white transition cursor-pointer shrink-0 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0066B2] focus-visible:ring-offset-1"
                             >
@@ -780,13 +820,19 @@ export const DomainSection = memo(function DomainSection({
                     <div className="mt-3.5 flex flex-col sm:flex-row sm:items-center gap-3">
                       <button
                         type="button"
-                        disabled={checkingCname || isCustomDomainLocked}
+                        disabled={checkingCname || isCustomDomainLocked || !domainVerified}
                         aria-busy={checkingCname}
-                        aria-disabled={checkingCname || isCustomDomainLocked}
+                        // BUG FIX #4: CNAME check requires TXT ownership to be proven first
+                        aria-disabled={checkingCname || isCustomDomainLocked || !domainVerified}
                         onClick={async () => {
                           if (isCustomDomainLocked) {
                             if (onUpgradeClick) onUpgradeClick();
                             addToast("Custom domains are a Pro feature. Please upgrade your plan.", "error");
+                            return;
+                          }
+                          // Guard: Step 1 (TXT) must pass before Step 2 (CNAME) — prevents routing bypass
+                          if (!domainVerified) {
+                            addToast("Please complete Step 1 (TXT ownership check) before verifying CNAME routing.", "error");
                             return;
                           }
                           setCheckingCname(true);
@@ -817,7 +863,7 @@ export const DomainSection = memo(function DomainSection({
                               await handleSave({ cnameVerified: true, sslStatus: "active" });
                               addToast("🎉 CNAME routing verified and SSL is active!", "success");
                             } else {
-                              const errMsg = data.cnameMessage || `No CNAME record detected pointing ${cleanSub}.${cleanDom} to ${sanitizeDomain(appBaseUrl)}.`;
+                              const errMsg = data.error || data.cnameMessage || `No CNAME record detected pointing ${cleanSub}.${cleanDom} to ${cnamePointsTo}.`;
                               setCnameError(errMsg);
                               addToast(errMsg, "error");
                             }
@@ -859,10 +905,15 @@ export const DomainSection = memo(function DomainSection({
                           <span className="break-all">{cnameError}</span>
                         </p>
                       ) : !cnameVerified && (
-                        <p className="text-[11px] text-zinc-400 dark:text-zinc-500 flex items-center gap-1">
-                          <Info className="h-3 w-3 shrink-0" />
-                          DNS changes can take a few minutes to propagate.
-                        </p>
+                        <div className="space-y-0.5">
+                          <p className="text-[11px] text-zinc-400 dark:text-zinc-500 flex items-center gap-1">
+                            <Info className="h-3 w-3 shrink-0" />
+                            DNS changes can take a few minutes to propagate.
+                          </p>
+                          <p className="text-[10px] text-zinc-400/90 dark:text-zinc-500/90">
+                            Using Cloudflare? Set proxy to <strong className="text-zinc-600 dark:text-zinc-300">DNS only (Grey Cloud)</strong> so CNAME verification succeeds.
+                          </p>
+                        </div>
                       )}
                     </div>
 
@@ -886,29 +937,30 @@ export const DomainSection = memo(function DomainSection({
                   )}
 
                   {/* Danger Zone: Disconnect Domain Action Box */}
-                  <div className="rounded-2xl border border-rose-500/20 bg-rose-500/[0.03] dark:bg-rose-950/15 p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs">
-                    <div className="space-y-0.5 min-w-0">
-                      <p className="text-xs sm:text-sm font-bold text-zinc-900 dark:text-white flex items-center gap-2">
-                        <span className="flex h-2 w-2 rounded-full bg-rose-500 animate-pulse shrink-0" />
-                        <span>Disconnect or Remove Custom Domain</span>
-                      </p>
-                      <p className="text-[11px] sm:text-xs text-zinc-500 dark:text-zinc-400">
-                        Stop routing <code className="font-mono text-zinc-700 dark:text-zinc-300 font-semibold">{fullCustomHost}</code> and reset all TXT & CNAME verification records.
-                      </p>
+                  {Boolean(rootDomain.trim()) && (
+                    <div className="rounded-2xl border border-rose-500/20 bg-rose-500/[0.03] dark:bg-rose-950/15 p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs">
+                      <div className="space-y-0.5 min-w-0">
+                        <p className="text-xs sm:text-sm font-bold text-zinc-900 dark:text-white flex items-center gap-2">
+                          <span className="flex h-2 w-2 rounded-full bg-rose-500 animate-pulse shrink-0" />
+                          <span>Disconnect or Remove Custom Domain</span>
+                        </p>
+                        <p className="text-[11px] sm:text-xs text-zinc-500 dark:text-zinc-400">
+                          Stop routing <code className="font-mono text-zinc-700 dark:text-zinc-300 font-semibold">{fullCustomHost}</code> and reset all TXT &amp; CNAME verification records.
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setShowDisconnectModal(true)}
+                        aria-label={`Disconnect custom domain ${fullCustomHost}`}
+                        className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 rounded-xl border border-rose-500/30 bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/30 dark:hover:bg-rose-900/40 px-4 py-2.5 text-xs font-bold text-rose-600 dark:text-rose-400 transition cursor-pointer shrink-0 shadow-2xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:ring-offset-2"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                          <path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="11" x2="11" y1="11" y2="17"/><line x1="13" x2="13" y1="11" y2="17"/>
+                        </svg>
+                        <span>Disconnect Domain</span>
+                      </button>
                     </div>
-                    <button
-                      type="button"
-                      onClick={() => setShowDisconnectModal(true)}
-                      aria-label={`Disconnect custom domain ${fullCustomHost}`}
-                      className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 rounded-xl border border-rose-500/30 bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/30 dark:hover:bg-rose-900/40 px-4 py-2.5 text-xs font-bold text-rose-600 dark:text-rose-400 transition cursor-pointer shrink-0 shadow-2xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:ring-offset-2"
-                    >
-                      {/* Inline trash icon — Trash2 import was removed as part of cleanup */}
-                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                        <path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="11" x2="11" y1="11" y2="17"/><line x1="13" x2="13" y1="11" y2="17"/>
-                      </svg>
-                      <span>Disconnect Domain</span>
-                    </button>
-                  </div>
+                  )}
 
                 </div>
               ) : (

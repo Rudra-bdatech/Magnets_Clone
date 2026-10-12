@@ -1,7 +1,7 @@
 import React from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import MagnetSignupForm from "@/components/magnet-signup-form";
 import AnalyticsAndExitIntent from "@/components/analytics-and-exit-intent";
 import { dbConnect } from "@/lib/mongodb";
@@ -61,7 +61,13 @@ export async function generateMetadata({
   const rawDescription = pageDoc.subheadline || pageDoc.pitch || `Download ${title} instantly.`;
   const description = rawDescription.replace(/<[^>]*>/g, "").trim().slice(0, 200);
   const authorName = accountDoc?.name || username;
-  const canonicalUrl = `${appUrl}/${encodeURIComponent(username)}/${encodeURIComponent(slug)}`;
+  let customHost = "";
+  try {
+    customHost = headers().get("x-custom-domain") || "";
+  } catch {}
+  const canonicalUrl = customHost
+    ? `https://${customHost}/${encodeURIComponent(slug)}`
+    : `${appUrl}/${encodeURIComponent(username)}/${encodeURIComponent(slug)}`;
   const dynamicOgUrl = `${appUrl}/api/og?title=${encodeURIComponent(title)}&subtitle=${encodeURIComponent(description)}&author=${encodeURIComponent(authorName)}&username=${encodeURIComponent(username)}`;
   const ogImageUrl = pageDoc.imageUrl || accountDoc?.ogImageUrl || dynamicOgUrl;
 
@@ -3235,14 +3241,25 @@ export default async function MagnetPageRoute({
             )}
           </div>
         )}
-        {(accountDoc?.privacyPolicy || accountDoc?.termsOfService) && (
-          <span className="hidden sm:inline opacity-30">|</span>
-        )}
-        <div className="flex items-center gap-1">
-          <a href="/" className="inline-flex items-center gap-1 font-medium hover:text-[#FE6F34] transition">
-            Powered by LeadMagnets <MoveRightIcon className="h-2 w-2" />
-          </a>
-        </div>
+        {(() => {
+          let onCustomDomain = false;
+          try {
+            onCustomDomain = Boolean(headers().get("x-custom-domain"));
+          } catch {}
+          if (onCustomDomain) return null;
+          return (
+            <>
+              {(accountDoc?.privacyPolicy || accountDoc?.termsOfService) && (
+                <span className="hidden sm:inline opacity-30">|</span>
+              )}
+              <div className="flex items-center gap-1">
+                <a href="https://magnets.bdatech.in" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 font-medium hover:text-[#FE6F34] transition">
+                  Powered by LeadMagnets <MoveRightIcon className="h-2 w-2" />
+                </a>
+              </div>
+            </>
+          );
+        })()}
       </footer>
     </main>
   );

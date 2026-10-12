@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { headers } from "next/headers";
 import Link from "next/link";
 import { dbConnect } from "@/lib/mongodb";
 import { MagnetPageModel, AccountModel } from "@/lib/models";
@@ -120,7 +121,13 @@ export default async function UserProfileRoute({
             <div className="grid gap-4 sm:grid-cols-2">
               {pages.map((page: any) => {
                 const slug = page.slug || page.id;
-                const pageUrl = `/${accountDoc.username}/${slug}`;
+                let isCustomDomain = false;
+                try {
+                  isCustomDomain = Boolean(headers().get("x-custom-domain"));
+                } catch {
+                  // Ignore if headers() unavailable
+                }
+                const pageUrl = isCustomDomain ? `/${slug}` : `/${accountDoc.username}/${slug}`;
                 return (
                   <Link
                     key={page._id?.toString() || page.id}

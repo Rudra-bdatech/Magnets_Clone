@@ -13,6 +13,7 @@ export function cleanDomain(domain?: string): string {
     .toLowerCase()
     .trim()
     .replace(/^https?:\/\//i, "")
+    .replace(/^www\./i, "")
     .replace(/\/.*$/, "")
     .replace(/:\d+$/, "");
 }
@@ -35,17 +36,22 @@ export function formatSubdomain(subdomain?: string): string {
 }
 
 /**
- * Generates a deterministic, collision-resistant verification token for TXT DNS verification.
+ * Generates a deterministic, per-user verification token for TXT DNS verification.
+ * Includes the user's email in the hash salt to prevent domain squatting:
+ * two different users claiming the same domain get different tokens.
  * Works consistently across both Client (browser) and Server (Node/Edge).
  * Format: lm_verify_<clean_prefix>_<deterministic_hex_hash>
  */
-export function getDomainVerificationToken(domain: string): string {
+export function getDomainVerificationToken(domain: string, userEmail?: string): string {
   const clean = cleanDomain(domain);
   if (!clean) return "";
 
+  // Include userEmail in the salt to make tokens per-user (prevents domain squatting)
+  const normalizedEmail = (userEmail || "").trim().toLowerCase();
+
   // 32-bit FNV-1a hash algorithm (deterministic across all JS runtimes)
   let hash = 0x811c9dc5;
-  const str = `leadmagnets_verification_salt_${clean}`;
+  const str = `leadmagnets_verification_salt_${clean}_${normalizedEmail}`;
   for (let i = 0; i < str.length; i++) {
     hash ^= str.charCodeAt(i);
     hash += (hash << 1) + (hash << 4) + (hash << 7) + (hash << 8) + (hash << 24);
