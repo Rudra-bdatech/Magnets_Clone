@@ -6,12 +6,14 @@ import {
   formatFullHost,
   getCnameTarget,
   cnameRecordMatchesTarget,
+  VERCEL_CNAME_TARGET,
 } from "@/lib/domain-verify";
 import { getAuthenticatedUserEmail } from "@/lib/auth";
 import { dbConnect } from "@/lib/mongodb";
 import { AccountModel } from "@/lib/models";
 
 export const dynamic = "force-dynamic";
+export const maxDuration = 60;
 
 type DnsLookup = { records: any[]; lookupFailed: boolean };
 
@@ -93,12 +95,38 @@ function vercelErrorMessage(body: any, fallback: string): string {
   return body?.error?.message || body?.message || fallback;
 }
 
+function isMissingCertMessage(message: string): boolean {
+  return /ssl certificate|certificate/i.test(message) && /missing|not ready|pending|issu/i.test(message);
+}
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function issueVercelCertificate(
+  fullHost: string,
+  teamParam: string,
+  headers: Record<string, string>
+): Promise<{ ready: boolean; error?: string }> {
+  const res = await fetch(`https://api.vercel.com/v8/certs${teamParam}`, {
+    method: "POST",
+    headers,
+    body: JSON.stringify({ cns: [fullHost] }),
+    signal: AbortSignal.timeout(20000),
+  });
+  const body = await res.json().catch(() => ({}));
+  if (res.ok) return { ready: true };
+  const message = vercelErrorMessage(body, "Vercel could not create an SSL certificate for this domain.");
+  if (res.status === 409 || /already/i.test(message)) return { ready: true };
+  return { ready: false, error: message };
+}
+
 /**
  * Adds the hostname to the Vercel project and aliases it to the current
  * production deployment. Adding the domain alone leaves Vercel answering
  * DEPLOYMENT_NOT_FOUND until the next production deploy.
  */
-async function attachDomainToVercel(fullHost: string): Promise<AttachResult> {
+async function attachDomainToVercel(fullHost: string, matchedCname?: string): Promise<AttachResult> {
   const vercelToken = process.env.VERCEL_AUTH_TOKEN || process.env.VERCEL_TOKEN;
   const vercelProjectId = process.env.VERCEL_PROJECT_ID || process.env.PROJECT_ID_VERCEL;
   const vercelTeamId = process.env.VERCEL_TEAM_ID;
@@ -171,32 +199,46 @@ async function attachDomainToVercel(fullHost: string): Promise<AttachResult> {
       };
     }
 
-    const aliasRes = await fetch(`https://api.vercel.com/v2/deployments/${deploymentId}/aliases${teamParam}`, {
-      method: "POST",
-      headers,
-      body: JSON.stringify({ alias: fullHost }),
-      signal: AbortSignal.timeout(10000),
-    });
-    const aliasBody = await aliasRes.json().catch(() => ({}));
-    const aliasMessage = vercelErrorMessage(aliasBody, "");
-    const alreadyAssigned = aliasRes.status === 409 && /already assigned/i.test(aliasMessage);
+    const pointsAtVercelEdge = matchedCname === VERCEL_CNAME_TARGET;
+    const cert = await issueVercelCertificate(fullHost, teamParam, headers);
 
-    if (aliasRes.ok || alreadyAssigned) {
+    const assignAlias = async () => {
+      const aliasRes = await fetch(`https://api.vercel.com/v2/deployments/${deploymentId}/aliases${teamParam}`, {
+        method: "POST",
+        headers,
+        body: JSON.stringify({ alias: fullHost }),
+        signal: AbortSignal.timeout(10000),
+      });
+      const aliasBody = await aliasRes.json().catch(() => ({}));
+      const aliasMessage = vercelErrorMessage(aliasBody, "");
+      const alreadyAssigned = aliasRes.status === 409 && /already assigned/i.test(aliasMessage);
+      return { ok: aliasRes.ok || alreadyAssigned, message: aliasMessage };
+    };
+
+    let alias = await assignAlias();
+    if (!alias.ok && pointsAtVercelEdge && isMissingCertMessage(alias.message)) {
+      await sleep(5000);
+      await issueVercelCertificate(fullHost, teamParam, headers);
+      alias = await assignAlias();
+    }
+
+    if (alias.ok) {
       return {
         attached: true,
         aliased: true,
-        sslReady: domainVerified || aliasRes.ok || alreadyAssigned,
+        sslReady: true,
         skipped: false,
         challenge: domainVerified ? null : challenge,
       };
     }
 
-    const certPending = /cert/i.test(aliasMessage) && /not ready|pending|issu/i.test(aliasMessage);
+    const certPending = isMissingCertMessage(alias.message) || !cert.ready;
+    const certDetail = !cert.ready && cert.error && !isMissingCertMessage(cert.error) ? ` ${cert.error}` : "";
     const ownershipMessage = challenge
-      ? `Vercel still needs a ${challenge.type} record at ${challenge.name} with value ${challenge.value}. Add it, wait a minute, then click Verify CNAME again. Until then the host shows DEPLOYMENT_NOT_FOUND.`
-      : certPending
-        ? `Vercel is still issuing the certificate for ${fullHost}. Wait about a minute, then click Verify CNAME again. Until the domain is linked to the live deployment, the host shows DEPLOYMENT_NOT_FOUND.`
-        : aliasMessage || `The domain could not be linked to the live deployment.`;
+      ? `Vercel still needs a ${challenge.type} record at ${challenge.name} with value ${challenge.value}. Add it, wait a minute, then click Verify CNAME again.`
+      : !pointsAtVercelEdge
+        ? `SSL cannot be created yet. Change the CNAME for ${fullHost} to ${VERCEL_CNAME_TARGET}, set Cloudflare proxy to DNS only, wait one minute, then click Verify CNAME again.`
+        : `Vercel is still creating the SSL certificate for ${fullHost}.${certDetail} Wait 1 to 2 minutes, then click Verify CNAME again. The domain cannot go live until that certificate exists.`;
 
     return {
       attached: true,
@@ -275,7 +317,7 @@ export async function POST(req: Request) {
     const expectedValue = getDomainVerificationToken(cleanDomain, account.email);
     const verificationHost = "leadmagnets-verify";
     const fullVerificationHost = `${verificationHost}.${cleanDomain}`;
-    const targetCname = getCnameTarget(process.env.NEXT_PUBLIC_APP_URL);
+    const targetCname = VERCEL_CNAME_TARGET;
     const fullSubdomainHost = formatFullHost(cleanDomain, cleanSubdomain);
 
     let isVerified = false;
@@ -310,6 +352,7 @@ export async function POST(req: Request) {
     let cnameVerified = false;
     let cnameLookupFailed = false;
     let cnameMatched = false;
+    let matchedCname = "";
     let cnameMessage = "";
 
     try {
@@ -317,9 +360,14 @@ export async function POST(req: Request) {
       cnameLookupFailed = cnameLookup.lookupFailed;
       if (!cnameLookupFailed) {
         const cnameRecords = readCnameValues(cnameLookup.records);
-        cnameMatched = cnameRecords.some((rec) => cnameRecordMatchesTarget(rec, targetCname));
+        const appTarget = getCnameTarget(process.env.NEXT_PUBLIC_APP_URL);
+        matchedCname =
+          cnameRecords.find((rec) => rec === VERCEL_CNAME_TARGET) ||
+          cnameRecords.find((rec) => cnameRecordMatchesTarget(rec, appTarget)) ||
+          "";
+        cnameMatched = Boolean(matchedCname);
         if (cnameMatched) {
-          cnameMessage = `Traffic successfully routed! ${fullSubdomainHost} points to ${targetCname}.`;
+          cnameMessage = `Traffic successfully routed! ${fullSubdomainHost} points to ${matchedCname}.`;
         }
       }
     } catch (cnameErr) {
@@ -346,7 +394,7 @@ export async function POST(req: Request) {
       if (!cnameMessage) {
         cnameMessage = cnameLookupFailed
           ? `Unable to reach CNAME resolution server for ${fullSubdomainHost}.`
-          : `No CNAME record found pointing ${fullSubdomainHost} to ${targetCname}. If using Cloudflare, ensure Proxy is set to DNS Only. You can also point the CNAME at cname.vercel-dns.com.`;
+          : `No CNAME record found pointing ${fullSubdomainHost} to ${VERCEL_CNAME_TARGET}. If using Cloudflare, set the proxy to DNS only.`;
       }
     }
 
@@ -359,7 +407,7 @@ export async function POST(req: Request) {
     } else if (!provedThisRequest) {
       sslStatus = account.sslStatus === "active" || account.sslStatus === "failed" ? account.sslStatus : "pending";
     } else {
-      const attach = await attachDomainToVercel(fullSubdomainHost);
+      const attach = await attachDomainToVercel(fullSubdomainHost, matchedCname);
       vercelChallenge = attach.challenge || null;
       if (!attach.attached || (!attach.skipped && !attach.aliased)) {
         cnameVerified = false;

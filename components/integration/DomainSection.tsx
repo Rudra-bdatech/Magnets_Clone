@@ -25,7 +25,7 @@ import {
   getDomainVerificationToken,
   formatCustomDomainUrl,
   formatFullHost,
-  getCnameTarget,
+  VERCEL_CNAME_TARGET,
 } from "@/lib/domain-verify";
 import { InfoTooltip } from "@/components/ui/info-tooltip";
 import { DisconnectDomainModal } from "./DisconnectDomainModal";
@@ -144,7 +144,7 @@ export const DomainSection = memo(function DomainSection({
   const liveCustomUrl = useMemo(() => formatCustomDomainUrl(rootDomain, pageSubdomain), [rootDomain, pageSubdomain]);
   const fullCustomHost = useMemo(() => formatFullHost(rootDomain, pageSubdomain), [rootDomain, pageSubdomain]);
   const defaultShareUrl = useMemo(() => `${appBaseUrl}/${username}`, [appBaseUrl, username]);
-  const cnamePointsTo = useMemo(() => getCnameTarget(appBaseUrl), [appBaseUrl]);
+  const cnamePointsTo = VERCEL_CNAME_TARGET;
 
   const copyToClipboard = (text: string, fieldKey: string, toastMessage?: string) => {
     if (!navigator?.clipboard) {
@@ -841,9 +841,8 @@ export const DomainSection = memo(function DomainSection({
                           }
                           setCheckingCname(true);
                           setCnameError("");
-                          // Fix #5: AbortController gives a 15s hard timeout — no infinite loading
                           const controller = new AbortController();
-                          const timeoutId = setTimeout(() => controller.abort(), 15_000);
+                          const timeoutId = setTimeout(() => controller.abort(), 55_000);
                           try {
                             const res = await fetch("/api/domain/verify", {
                               method: "POST",
@@ -884,7 +883,7 @@ export const DomainSection = memo(function DomainSection({
                           } catch (e: unknown) {
                             const isTimeout = e instanceof Error && e.name === "AbortError";
                             const errMsg = isTimeout
-                              ? "CNAME check timed out (15s). Please try again."
+                              ? "CNAME check timed out. Wait a minute and click Verify CNAME again."
                               : `Unable to verify CNAME routing for ${cleanSub}.${cleanDom}`;
                             setCnameError(errMsg);
                             addToast(errMsg, "error");
