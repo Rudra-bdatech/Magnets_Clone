@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo, memo } from "react";
+import React, { useState, useMemo, useEffect, memo } from "react";
 import {
   Globe,
   Check,
@@ -8,12 +8,13 @@ import {
   RefreshCw,
   Loader2,
   ChevronDown,
+  ChevronUp,
   ExternalLink,
   ShieldCheck,
   ArrowRight,
   Info,
   CheckCircle2,
-  AlertCircle,
+  AlertTriangle,
   Lock,
   Sparkles,
 } from "lucide-react";
@@ -98,6 +99,13 @@ export const DomainSection = memo(function DomainSection({
   const [copiedField, setCopiedField] = useState<string | null>(null);
   const [showDisconnectModal, setShowDisconnectModal] = useState(false);
   const [hostingChallenge, setHostingChallenge] = useState<{ type: string; name: string; value: string } | null>(null);
+  // UI-only state: domain editor visibility and DNS panel visibility
+  const [isEditing, setIsEditing] = useState(() => !rootDomain.trim());
+  const [showDns, setShowDns] = useState(() => !(domainVerified && cnameVerified && sslStatus === "active"));
+
+  useEffect(() => {
+    if (!rootDomain.trim()) setIsEditing(true);
+  }, [rootDomain]);
 
   const handleDisconnectConfirm = async () => {
     try {
@@ -161,248 +169,462 @@ export const DomainSection = memo(function DomainSection({
     });
   };
 
-  const labelClass = "block text-xs sm:text-[13px] font-semibold text-zinc-700 dark:text-zinc-300 mb-1.5";
+  // Step 1: TXT ownership check
+  const handleCheckOwnership = async () => {
+    if (isCustomDomainLocked) {
+      if (onUpgradeClick) onUpgradeClick();
+      addToast("Custom domains are a Pro feature. Please upgrade your plan.", "error");
+      return;
+    }
+    // BUG FIX #10: validate domain format before hitting DNS
+    if (!cleanDom || !cleanDom.includes(".")) {
+      setDomainError("Please enter a valid domain (e.g. example.com or yourbrand.co.in)");
+      addToast("Please enter a valid domain before checking ownership.", "error");
+      return;
+    }
+    setCheckingDomain(true);
+    setDomainError("");
+    // Fix #5: AbortController gives a 15s hard timeout — no infinite loading
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 15_000);
+    try {
+      const res = await fetch("/api/domain/verify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ domain: cleanDom, subdomain: cleanSub }),
+        signal: controller.signal,
+      });
+      const data = await res.json();
+      if (data.code === "PLAN_UPGRADE_REQUIRED") {
+        if (onUpgradeClick) onUpgradeClick();
+        setDomainError(data.error || "Custom domains require a Pro plan.");
+        addToast(data.error || "Custom domains require a Pro plan.", "error");
+        return;
+      }
+      if (typeof data.isVerified === "boolean") setDomainVerified(data.isVerified);
+      if (typeof data.cnameVerified === "boolean") setCnameVerified(data.cnameVerified);
+      if (data.sslStatus === "pending" || data.sslStatus === "active" || data.sslStatus === "failed") {
+        setSslStatus(data.sslStatus);
+      }
+      setHostingChallenge(data.vercelChallenge?.value ? data.vercelChallenge : null);
+      if (data.isVerified) {
+        // The "Ownership Verified" badge handles the success state.
+        setDomainError("");
+        await handleSave({
+          domainVerified: true,
+          cnameVerified: Boolean(data.cnameVerified),
+          sslStatus: data.sslStatus || "pending",
+        });
+        addToast(
+          String(data.message || "").includes("unavailable")
+            ? data.message
+            : "🎉 Domain ownership verified successfully!",
+          "success"
+        );
+      } else {
+        const errMsg = data.error || data.message || `No TXT record found at leadmagnets-verify.${cleanDom}. DNS updates can take a few minutes.`;
+        setDomainError(errMsg);
+        addToast(errMsg, "error");
+      }
+    } catch (e: unknown) {
+      const isTimeout = e instanceof Error && e.name === "AbortError";
+      const errMsg = isTimeout
+        ? "DNS check timed out (15s). Please try again."
+        : `No TXT record found at leadmagnets-verify.${cleanDom}. Check your DNS provider.`;
+      setDomainError(errMsg);
+      addToast(errMsg, "error");
+    } finally {
+      clearTimeout(timeoutId);
+      setCheckingDomain(false);
+    }
+  };
+
+  // Step 2: CNAME routing check
+  const handleVerifyCname = async () => {
+    if (isCustomDomainLocked) {
+      if (onUpgradeClick) onUpgradeClick();
+      addToast("Custom domains are a Pro feature. Please upgrade your plan.", "error");
+      return;
+    }
+    // Guard: Step 1 (TXT) must pass before Step 2 (CNAME) — prevents routing bypass
+    if (!domainVerified) {
+      addToast("Please complete Step 1 (TXT ownership check) before verifying CNAME routing.", "error");
+      return;
+    }
+    setCheckingCname(true);
+    setCnameError("");
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 55_000);
+    try {
+      const res = await fetch("/api/domain/verify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ domain: cleanDom, subdomain: cleanSub }),
+        signal: controller.signal,
+      });
+      const data = await res.json();
+      if (data.code === "PLAN_UPGRADE_REQUIRED") {
+        if (onUpgradeClick) onUpgradeClick();
+        setCnameError(data.error || "Custom domains require a Pro plan.");
+        addToast(data.error || "Custom domains require a Pro plan.", "error");
+        return;
+      }
+      if (typeof data.isVerified === "boolean") setDomainVerified(data.isVerified);
+      if (typeof data.cnameVerified === "boolean") setCnameVerified(data.cnameVerified);
+      if (data.sslStatus === "pending" || data.sslStatus === "active" || data.sslStatus === "failed") {
+        setSslStatus(data.sslStatus);
+      }
+      setHostingChallenge(data.vercelChallenge?.value ? data.vercelChallenge : null);
+      if (data.cnameVerified) {
+        setCnameError("");
+        await handleSave({
+          cnameVerified: true,
+          sslStatus: data.sslStatus || "pending",
+        });
+        addToast(
+          data.sslStatus === "active"
+            ? "🎉 CNAME routing verified and SSL is active!"
+            : data.cnameMessage || "CNAME routing verified. SSL is still provisioning.",
+          "success"
+        );
+      } else {
+        const errMsg = data.error || data.cnameMessage || `No CNAME record detected pointing ${cleanSub}.${cleanDom} to ${cnamePointsTo}.`;
+        setCnameError(errMsg);
+        addToast(errMsg, "error");
+      }
+    } catch (e: unknown) {
+      const isTimeout = e instanceof Error && e.name === "AbortError";
+      const errMsg = isTimeout
+        ? "CNAME check timed out. Wait a minute and click Verify CNAME again."
+        : `Unable to verify CNAME routing for ${cleanSub}.${cleanDom}`;
+      setCnameError(errMsg);
+      addToast(errMsg, "error");
+    } finally {
+      clearTimeout(timeoutId);
+      setCheckingCname(false);
+    }
+  };
+
+  // Refresh runs whichever step is next: TXT ownership first, then CNAME routing
+  const isRefreshing = checkingDomain || checkingCname;
+  const handleRefresh = () => (domainVerified ? handleVerifyCname() : handleCheckOwnership());
+
+  const isLive = domainVerified && cnameVerified && sslStatus === "active";
+
+  // Once fully live, collapse the DNS records (still viewable via the toggle)
+  useEffect(() => {
+    setShowDns(!isLive);
+  }, [isLive]);
+  const status = !domainVerified
+    ? { label: "Verification Required", tone: "error" as const }
+    : !cnameVerified
+      ? { label: "Invalid Configuration", tone: "error" as const }
+      : sslStatus !== "active"
+        ? { label: sslStatus === "failed" ? "SSL Failed" : "Generating SSL Certificate", tone: sslStatus === "failed" ? ("error" as const) : ("warning" as const) }
+        : { label: "Valid Configuration", tone: "success" as const };
+
+  const badgeTone = {
+    error: "bg-rose-500/10 text-rose-600 dark:bg-rose-500/15 dark:text-rose-400",
+    warning: "bg-amber-500/10 text-amber-700 dark:bg-amber-500/15 dark:text-amber-400",
+    success: "bg-emerald-500/10 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-400",
+    brand: "bg-[#0066B2]/10 text-[#0066B2] dark:bg-[#0066B2]/20 dark:text-[#38BDF8]",
+    purple: "bg-purple-500/10 text-purple-700 dark:bg-purple-500/15 dark:text-purple-400",
+  };
+  const badgeBase = "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium whitespace-nowrap";
+
+  const btnSecondary =
+    "inline-flex items-center justify-center gap-1.5 rounded-md border border-zinc-200 bg-white px-3 h-8 text-[13px] font-medium text-zinc-900 hover:bg-zinc-50 dark:border-white/10 dark:bg-[#0E0E10] dark:text-white dark:hover:bg-white/5 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0066B2] focus-visible:ring-offset-1";
+  const inputClass =
+    "w-full rounded-md border border-zinc-200 bg-white px-3 h-9 text-[13px] font-mono text-zinc-900 placeholder:text-zinc-400 outline-none focus:border-[#0066B2] focus:ring-2 focus:ring-[#0066B2]/15 dark:border-white/10 dark:bg-[#0E0E10] dark:text-white dark:placeholder:text-zinc-600 transition";
+
+  const copyIcon = (text: string, fieldKey: string, toastMessage: string, label: string) => (
+    <button
+      type="button"
+      onClick={() => copyToClipboard(text, fieldKey, toastMessage)}
+      aria-label={label}
+      title="Copy"
+      className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded text-zinc-400 hover:text-zinc-900 hover:bg-zinc-100 dark:text-zinc-500 dark:hover:text-white dark:hover:bg-white/10 transition cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0066B2]"
+    >
+      {copiedField === fieldKey ? <Check className="h-3.5 w-3.5 text-emerald-500" /> : <Copy className="h-3.5 w-3.5" />}
+    </button>
+  );
+
+  const dnsRows: { key: string; type: string; name: string; value: string; nameKey: string; valueKey: string; nameToast: string; valueToast: string; done?: boolean }[] = [
+    { key: "txt", type: "TXT", name: "leadmagnets-verify", value: tokenValue, nameKey: "host", valueKey: "value", nameToast: "TXT host copied!", valueToast: "TXT token value copied!", done: domainVerified },
+    { key: "cname", type: "CNAME", name: cleanSub, value: cnamePointsTo, nameKey: "cnameHost", valueKey: "cnameValue", nameToast: "CNAME host copied!", valueToast: "CNAME target value copied!", done: cnameVerified },
+  ];
+  if (hostingChallenge) {
+    dnsRows.push({
+      key: "vercel",
+      type: hostingChallenge.type,
+      name: hostingChallenge.name,
+      value: hostingChallenge.value,
+      nameKey: "vercelHost",
+      valueKey: "vercelValue",
+      nameToast: "Host name copied",
+      valueToast: "Record value copied",
+    });
+  }
+
+  const activeError = !domainVerified ? domainError : cnameError;
 
   return (
-    <div className="rounded-2xl border border-[#0066B2]/25 bg-white dark:border-[#0066B2]/30 dark:bg-[#16161A] shadow-sm transition-all overflow-hidden">
-      
-      {/* Header Bar */}
-      <div className="p-4 sm:p-5 border-b border-zinc-100 dark:border-white/5">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div className="flex items-start sm:items-center gap-3">
-            <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl border border-[#0066B2]/20 bg-[#EFF6FF] text-[#0066B2] shadow-2xs dark:border-[#0066B2]/30 dark:bg-[#0066B2]/20 dark:text-[#38BDF8]">
-              <Globe className="h-5 w-5" />
-            </div>
-            <div>
-              <h4 className="text-sm sm:text-base font-bold text-zinc-900 dark:text-white flex items-center gap-1.5">
-                Public URL & Custom Domain
-                <InfoTooltip
-                  content="Share your lead magnets directly or connect a white-label custom domain."
-                  title="Public URL & Custom Domain"
-                  align="start"
-                />
-              </h4>
-            </div>
-          </div>
+    <div className="rounded-xl border border-zinc-200 bg-white dark:border-white/10 dark:bg-[#0A0A0B] overflow-hidden">
 
-          {/* Status Badges */}
-          <div className="flex items-center gap-1.5 flex-wrap sm:justify-end">
-            {domainVerified && (
-              <span className="inline-flex items-center gap-1 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-600 dark:text-emerald-400">
-                <CheckCircle2 className="h-3 w-3" />
-                TXT Verified
-              </span>
-            )}
-            {cnameVerified && (
-              <span className="inline-flex items-center gap-1 rounded-full border border-blue-500/30 bg-blue-500/10 px-2.5 py-0.5 text-[11px] font-semibold text-blue-600 dark:text-blue-400">
-                <CheckCircle2 className="h-3 w-3" />
-                CNAME Routed
-              </span>
-            )}
-            {sslStatus === "active" && (
-              <span className="inline-flex items-center gap-1 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-600 dark:text-emerald-400">
-                <ShieldCheck className="h-3 w-3" />
-                SSL Active
-              </span>
-            )}
-            {cnameVerified && rootDomain && (
-              <a
-                href={liveCustomUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1 rounded-full border border-emerald-500/40 bg-emerald-500/15 px-3 py-1 text-[11px] font-bold text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/25 transition cursor-pointer shadow-2xs"
-              >
-                <span>Visit Live Domain</span>
-                <ExternalLink className="h-3 w-3" />
-              </a>
-            )}
-          </div>
-        </div>
+      {/* Header */}
+      <div className="px-4 sm:px-6 py-4 sm:py-5 border-b border-zinc-200 dark:border-white/10">
+        <h4 className="text-base font-semibold text-zinc-900 dark:text-white flex items-center gap-1.5">
+          Domains
+          <InfoTooltip
+            content="Share your lead magnets directly or connect a white-label custom domain."
+            title="Public URL & Custom Domain"
+            align="start"
+          />
+        </h4>
+        <p className="mt-1 text-[13px] text-zinc-500 dark:text-zinc-400">
+          Your public workspace URL and custom domains for your lead magnets.
+        </p>
       </div>
 
-      <div className="p-4 sm:p-5 space-y-5">
-        {/* SECTION 1: LeadMagnets Default URL & Fast Share Card */}
-        <div>
-          {/* Fix #1: htmlFor links label to input by matching id */}
-          <label htmlFor="domain-username-input" className={labelClass}>LeadMagnets Default Workspace URL</label>
-          <div className="flex flex-col lg:flex-row gap-3 items-stretch lg:items-start">
-            
-            {/* Username input with prefix */}
-            <div className="flex-1 min-w-0">
-              <div className="flex rounded-xl border border-zinc-200 dark:border-zinc-700/80 bg-white dark:bg-[#0E0E10] focus-within:border-[#0066B2] dark:focus-within:border-[#0066B2] transition shadow-2xs overflow-hidden">
-                <span className="flex items-center select-none border-r border-zinc-200 bg-zinc-50 px-3 py-2.5 text-xs font-mono text-[#0066B2] dark:border-zinc-700/80 dark:bg-[#18181C] dark:text-[#38BDF8] shrink-0">
-                  {appBaseUrl}/
-                </span>
-                {/* Fix #2: id for label association, focus-visible ring replaces bare outline-none */}
-                <input
-                  id="domain-username-input"
-                  type="text"
-                  value={username}
-                  autoComplete="off"
-                  onChange={(e) => {
-                    markDirty("username");
-                    setUsername(e.target.value);
-                  }}
-                  onBlur={() => handleSave()}
-                  className="w-full bg-transparent px-3 py-2.5 text-xs sm:text-sm font-mono text-zinc-900 outline-none focus-visible:outline-none dark:text-white placeholder:text-zinc-400 min-w-0"
-                  placeholder="your-workspace"
-                />
-              </div>
-              <p className="mt-1.5 text-[11px] sm:text-xs text-zinc-400 dark:text-zinc-500">
-                Lowercase letters, numbers, and hyphens only.
-              </p>
-            </div>
-
-            {/* Share link card */}
-            <div className="rounded-xl border border-[#0066B2]/20 bg-[#F8FBFF] dark:border-[#0066B2]/30 dark:bg-[#121216] p-3.5 shrink-0 w-full lg:w-auto lg:min-w-[320px] flex flex-col justify-between shadow-2xs">
-              <div className="flex items-center justify-between gap-2 mb-1.5">
-                <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#0066B2] dark:text-[#38BDF8] flex items-center gap-1.5">
-                  <span className="h-1.5 w-1.5 rounded-full bg-[#0066B2] dark:bg-[#38BDF8] animate-pulse" />
-                  SHARE THIS LINK
-                </span>
-                <button
-                  type="button"
-                  onClick={() => copyToClipboard(defaultShareUrl, "shareUrl", "Default workspace URL copied!")}
-                  className="inline-flex items-center gap-1 text-xs font-semibold text-[#0066B2] hover:underline dark:text-[#38BDF8] cursor-pointer"
-                >
-                  {copiedField === "shareUrl" ? (
-                    <>
-                      <Check className="h-3.5 w-3.5 text-emerald-500" />
-                      <span className="text-emerald-600 dark:text-emerald-400 font-bold">Copied!</span>
-                    </>
-                  ) : (
-                    <>
-                      <Copy className="h-3.5 w-3.5" />
-                      <span>Copy Link</span>
-                    </>
-                  )}
-                </button>
-              </div>
-              <p className="text-xs font-mono font-semibold text-zinc-800 dark:text-zinc-200 select-all break-all">
-                {defaultShareUrl}
-              </p>
-            </div>
-
+      {/* Default workspace URL */}
+      <div className="px-4 sm:px-6 py-4 sm:py-5 border-b border-zinc-200 dark:border-white/10">
+        <label htmlFor="domain-username-input" className="block text-[13px] font-medium text-zinc-900 dark:text-white mb-2">
+          Workspace URL
+        </label>
+        <div className="flex flex-col sm:flex-row gap-2">
+          <div className="flex flex-1 min-w-0 h-9 rounded-md border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#0E0E10] focus-within:border-[#0066B2] focus-within:ring-2 focus-within:ring-[#0066B2]/15 transition overflow-hidden">
+            <span className="flex items-center select-none border-r border-zinc-200 bg-zinc-50 px-3 text-[13px] font-mono text-zinc-500 dark:border-white/10 dark:bg-white/[0.03] dark:text-zinc-400 shrink-0 max-w-[55%] truncate">
+              {appBaseUrl}/
+            </span>
+            <input
+              id="domain-username-input"
+              type="text"
+              value={username}
+              autoComplete="off"
+              onChange={(e) => {
+                markDirty("username");
+                setUsername(e.target.value);
+              }}
+              onBlur={() => handleSave()}
+              className="w-full bg-transparent px-3 text-[13px] font-mono text-zinc-900 outline-none focus-visible:outline-none dark:text-white placeholder:text-zinc-400 min-w-0"
+              placeholder="your-workspace"
+            />
           </div>
+          <button
+            type="button"
+            onClick={() => copyToClipboard(defaultShareUrl, "shareUrl", "Default workspace URL copied!")}
+            className={`${btnSecondary} h-9 shrink-0`}
+          >
+            {copiedField === "shareUrl" ? (
+              <>
+                <Check className="h-3.5 w-3.5 text-emerald-500" />
+                <span>Copied</span>
+              </>
+            ) : (
+              <>
+                <Copy className="h-3.5 w-3.5" />
+                <span>Copy Link</span>
+              </>
+            )}
+          </button>
         </div>
+        <p className="mt-2 text-xs text-zinc-500 dark:text-zinc-500">
+          Lowercase letters, numbers, and hyphens only.
+        </p>
+      </div>
 
-        {/* SECTION 2: Custom Domain Accordion Box */}
-        <div className="rounded-xl border border-zinc-200 dark:border-zinc-700/80 bg-[#FAFCFF] dark:bg-[#141418] overflow-hidden transition-all shadow-2xs">
-          
-          {/* Accordion Header */}
-          <div className="flex w-full items-center justify-between p-3.5 sm:p-4 text-left transition-colors">
-            <button
-              type="button"
-              onClick={onToggleCustomDomain}
-              className="flex items-center gap-3 min-w-0 flex-1 text-left cursor-pointer group"
-            >
-              <div className="flex h-8 w-8 sm:h-9 sm:w-9 shrink-0 items-center justify-center rounded-lg bg-[#E0F2FE] text-[#0066B2] dark:bg-[#0066B2]/20 dark:text-[#38BDF8] border border-[#BAE6FD] dark:border-[#0066B2]/40 group-hover:scale-105 transition-transform">
-                <Globe className="h-4 w-4 sm:h-4.5 sm:w-4.5" />
-              </div>
-              <div className="min-w-0">
-                <div className="flex items-center gap-2 flex-wrap">
-                  <p className="text-xs sm:text-sm font-bold text-zinc-900 dark:text-white flex items-center gap-1.5 group-hover:text-[#0066B2] dark:group-hover:text-[#38BDF8] transition-colors">
-                    Custom Domain Configuration
-                    <InfoTooltip
-                      content="Connect your custom brand domain (e.g. get.yourdomain.com) to your lead magnets."
-                      title="Custom Domain Configuration"
-                      align="start"
-                    />
+      {/* Custom domain header */}
+      <div className="flex items-center justify-between gap-3 px-4 sm:px-6 py-3.5">
+        <button
+          type="button"
+          onClick={onToggleCustomDomain}
+          className="flex items-center gap-2 min-w-0 flex-1 text-left cursor-pointer"
+        >
+          <span className="text-[13px] font-medium text-zinc-900 dark:text-white flex items-center gap-1.5">
+            Custom Domain
+            <InfoTooltip
+              content="Connect your custom brand domain (e.g. get.yourdomain.com) to your lead magnets."
+              title="Custom Domain Configuration"
+              align="start"
+            />
+          </span>
+          {planLimits.badge === "Internal Staff Access" ? (
+            <span className={`${badgeBase} ${badgeTone.purple}`}>
+              <ShieldCheck className="h-3 w-3" />
+              Internal Staff Access
+            </span>
+          ) : isCustomDomainLocked ? (
+            <span className={`${badgeBase} ${badgeTone.warning}`}>
+              <Lock className="h-3 w-3" />
+              Pro
+            </span>
+          ) : cnameVerified ? (
+            <span className={`${badgeBase} ${badgeTone.success}`}>Live</span>
+          ) : null}
+        </button>
+        <button
+          type="button"
+          onClick={onToggleCustomDomain}
+          aria-expanded={isCustomDomainOpen}
+          aria-controls="custom-domain-body"
+          className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:text-white dark:hover:bg-white/10 transition cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0066B2]"
+          title={isCustomDomainOpen ? "Collapse section" : "Expand section"}
+        >
+          <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${isCustomDomainOpen ? "rotate-180" : ""}`} />
+          <span className="sr-only">{isCustomDomainOpen ? "Collapse" : "Expand"} Custom Domain section</span>
+        </button>
+      </div>
+
+      {isCustomDomainOpen && (
+        <div id="custom-domain-body" className="px-4 sm:px-6 pb-5 space-y-4">
+
+          {/* Paywall */}
+          {isCustomDomainLocked && (
+            <div className="rounded-lg border border-zinc-200 dark:border-white/10 bg-zinc-50 dark:bg-white/[0.02] p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="flex items-start gap-3 min-w-0">
+                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-amber-500/10 text-amber-600 dark:text-amber-400">
+                  <Sparkles className="h-4 w-4" />
+                </span>
+                <div className="min-w-0">
+                  <p className="text-[13px] font-semibold text-zinc-900 dark:text-white">
+                    Connect your custom domain (e.g. get.yourbrand.com)
                   </p>
-                  {planLimits.badge === "Internal Staff Access" ? (
-                    <span className="rounded-full border border-purple-500/30 bg-purple-500/10 px-2.5 py-0.5 text-[10px] font-bold text-purple-600 dark:text-purple-400 flex items-center gap-1">
-                      <ShieldCheck className="h-3 w-3" />
-                      Internal Staff Access
-                    </span>
-                  ) : isCustomDomainLocked ? (
-                    <span className="rounded-full border border-amber-500/30 bg-amber-500/10 px-2.5 py-0.5 text-[10px] font-extrabold text-amber-600 dark:text-amber-400 flex items-center gap-1">
-                      <Lock className="h-3 w-3" />
-                      PRO FEATURE
-                    </span>
-                  ) : cnameVerified ? (
-                    <span className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-bold text-emerald-600 dark:text-emerald-400">
-                      Live
-                    </span>
-                  ) : null}
+                  <p className="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed">
+                    Upgrade to the Pro plan to publish lead magnets on your branded subdomain with automated SSL certificates, high-speed CNAME routing, and zero LeadMagnets branding.
+                  </p>
                 </div>
               </div>
-            </button>
-
-            {/* Right: Accordion Toggle only — Disconnect lives in the danger zone inside the body */}
-            <div className="flex items-center gap-2 shrink-0 ml-2">
               <button
                 type="button"
-                onClick={onToggleCustomDomain}
-                aria-expanded={isCustomDomainOpen}
-                aria-controls="custom-domain-body"
-                className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-zinc-200 bg-white text-zinc-500 shadow-2xs dark:border-zinc-700 dark:bg-[#1E1E24] dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white transition cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0066B2] focus-visible:ring-offset-2"
-                title={isCustomDomainOpen ? "Collapse section" : "Expand section"}
+                onClick={() => {
+                  if (onUpgradeClick) {
+                    onUpgradeClick();
+                  } else {
+                    addToast("Please upgrade to Pro to unlock custom domains.", "info");
+                  }
+                }}
+                className="shrink-0 inline-flex items-center justify-center gap-1.5 rounded-md bg-[#0066B2] hover:bg-[#005291] px-4 h-9 text-[13px] font-medium text-white transition-colors cursor-pointer"
               >
-                <ChevronDown className={`h-3.5 w-3.5 transition-transform duration-200 ${isCustomDomainOpen ? "rotate-180" : ""}`} />
-                <span className="sr-only">{isCustomDomainOpen ? "Collapse" : "Expand"} Custom Domain section</span>
+                <span>Upgrade to Pro (₹1,999/mo)</span>
+                <ArrowRight className="h-3.5 w-3.5" />
               </button>
             </div>
-          </div>
+          )}
 
-          {/* Accordion Body */}
-          {isCustomDomainOpen && (
-            <div id="custom-domain-body" className="p-3.5 sm:p-5 border-t border-zinc-200 dark:border-zinc-700/80 bg-white dark:bg-[#121215] space-y-5">
-              
-              {/* Paywall Banner for Free Plan */}
-              {isCustomDomainLocked && (
-                <div className="relative overflow-hidden rounded-2xl border-2 border-amber-500/30 bg-gradient-to-br from-amber-500/[0.08] via-[#0066B2]/[0.05] to-transparent dark:from-amber-500/15 dark:via-[#0066B2]/10 dark:to-transparent p-4 sm:p-6 shadow-sm">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                    <div className="space-y-1.5 max-w-xl">
-                      <div className="flex items-center gap-2">
-                        <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/20 text-amber-700 dark:text-amber-300 px-2.5 py-0.5 text-[11px] font-extrabold uppercase tracking-wide">
-                          <Sparkles className="h-3 w-3 text-amber-500" />
-                          Pro Plan Feature
-                        </span>
-                        <span className="text-[11px] font-bold text-zinc-500 dark:text-zinc-400">
-                          White-Label & Custom Domain
-                        </span>
-                      </div>
-                      <h5 className="text-sm sm:text-base font-black text-zinc-900 dark:text-white">
-                        Connect your custom domain (e.g. get.yourbrand.com)
-                      </h5>
-                      <p className="text-xs text-zinc-600 dark:text-zinc-300 leading-relaxed">
-                        Upgrade to the Pro plan to publish lead magnets on your branded subdomain with automated SSL certificates, high-speed CNAME routing, and zero LeadMagnets branding.
-                      </p>
+          {/* Domain card (Vercel-style) */}
+          {(rootDomain.trim() || isEditing) && (
+            <div className="rounded-lg border border-zinc-200 dark:border-white/10 overflow-hidden">
+              {rootDomain.trim() ? (
+              <div className="flex flex-col md:flex-row md:items-center gap-3 md:gap-6 p-4">
+                {/* Left: host + status */}
+                <div className="flex items-start gap-3 min-w-0 md:flex-1">
+                  <span className="mt-0.5 shrink-0">
+                    {isLive ? (
+                      <CheckCircle2 className="h-5 w-5 text-[#0066B2] dark:text-[#38BDF8]" />
+                    ) : status.tone === "warning" ? (
+                      <Loader2 className="h-5 w-5 text-amber-500 animate-spin" />
+                    ) : (
+                      <AlertTriangle className="h-5 w-5 text-rose-500" />
+                    )}
+                  </span>
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-1.5 min-w-0">
+                      {cnameVerified ? (
+                        <a
+                          href={liveCustomUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-sm font-semibold text-zinc-900 dark:text-white hover:underline truncate"
+                        >
+                          {fullCustomHost}
+                        </a>
+                      ) : (
+                        <span className="text-sm font-semibold text-zinc-900 dark:text-white truncate">{fullCustomHost}</span>
+                      )}
+                      {cnameVerified && <ExternalLink className="h-3.5 w-3.5 shrink-0 text-zinc-400" />}
                     </div>
-
-                    <div className="shrink-0 flex items-center">
+                    <div className="mt-1.5 flex items-center gap-2 flex-wrap">
+                      <span className={`${badgeBase} ${badgeTone[status.tone]}`}>{status.label}</span>
                       <button
                         type="button"
-                        onClick={() => {
-                          if (onUpgradeClick) {
-                            onUpgradeClick();
-                          } else {
-                            addToast("Please upgrade to Pro to unlock custom domains.", "info");
-                          }
-                        }}
-                        className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#0066B2] to-[#0284C7] hover:from-[#005291] hover:to-[#0066B2] px-5 py-3 text-xs sm:text-sm font-bold text-white shadow-md hover:shadow-lg transition-all duration-150 active:scale-95 cursor-pointer"
+                        onClick={() => setShowDns((v) => !v)}
+                        className="inline-flex items-center gap-1 text-xs text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white transition cursor-pointer"
                       >
-                        <Sparkles className="h-4 w-4 text-amber-300" />
-                        <span>Upgrade to Pro (₹1,999/mo)</span>
-                        <ArrowRight className="h-4 w-4" />
+                        {showDns ? "Hide" : "View"} DNS configuration
+                        {showDns ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
                       </button>
                     </div>
                   </div>
                 </div>
-              )}
 
-              {/* Inputs Grid */}
-              <div className={`grid grid-cols-1 sm:grid-cols-2 gap-4 ${isCustomDomainLocked ? "opacity-60 cursor-not-allowed" : ""}`}>
-                {/* Root domain */}
-                <div>
-                  <label className="block text-xs font-semibold text-zinc-700 dark:text-zinc-300 mb-1.5 flex items-center justify-between">
-                    <span>Root Domain</span>
-                    {isCustomDomainLocked && (
-                      <span className="text-[10px] text-amber-600 dark:text-amber-400 font-bold flex items-center gap-1">
-                        <Lock className="h-3 w-3" /> Locked
-                      </span>
-                    )}
-                  </label>
+                {/* Middle: SSL state */}
+                <div className="flex items-center gap-1.5 text-[13px] font-mono text-zinc-500 dark:text-zinc-400 md:w-40 shrink-0">
+                  {sslStatus === "active" ? (
+                    <>
+                      <Lock className="h-3.5 w-3.5 text-emerald-500" />
+                      <span>HTTPS</span>
+                    </>
+                  ) : (
+                    <>
+                      <ShieldCheck className="h-3.5 w-3.5" />
+                      <span>{sslStatus === "failed" ? "SSL failed" : "SSL pending"}</span>
+                    </>
+                  )}
+                </div>
+
+                {/* Right: actions */}
+                <div className="flex items-center gap-2 shrink-0">
+                  <button
+                    type="button"
+                    onClick={handleRefresh}
+                    disabled={isRefreshing || isCustomDomainLocked}
+                    aria-busy={isRefreshing}
+                    title={domainVerified ? "Verify CNAME routing" : "Check ownership (TXT)"}
+                    className={btnSecondary}
+                  >
+                    {isRefreshing ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <RefreshCw className="h-3.5 w-3.5" />}
+                    {isRefreshing ? "Checking" : "Refresh"}
+                  </button>
+                  <button type="button" onClick={() => setIsEditing((v) => !v)} className={btnSecondary}>
+                    Edit
+                  </button>
+                </div>
+              </div>
+              ) : null}
+
+              {/* Edit panel */}
+              {isEditing ? (
+                <div className={`p-4 space-y-4 ${rootDomain.trim() ? "border-t border-zinc-200 dark:border-white/10" : ""} ${isCustomDomainLocked ? "opacity-60" : ""}`}>
+                  <div>
+                    <span className="flex items-center gap-1.5 text-[13px] font-medium text-zinc-600 dark:text-zinc-400 mb-1.5">
+                      Domain
+                      {isCustomDomainLocked && <Lock className="h-3 w-3 text-amber-500" />}
+                    </span>
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+                      <div className="sm:w-44 shrink-0">
+                  <input
+                    type="text"
+                    disabled={isCustomDomainLocked}
+                    value={pageSubdomain}
+                    onChange={(e) => {
+                      if (isCustomDomainLocked) return;
+                      const val = e.target.value;
+                      markDirty("customSubdomain");
+                      setPageSubdomain(val);
+                      // Invalidate CNAME routing state if subdomain prefix changed
+                      if (formatSubdomain(val) !== cleanSub) {
+                        setCnameVerified(false);
+                        setSslStatus("pending");
+                        setCnameError("");
+                      }
+                    }}
+                    onBlur={() => !isCustomDomainLocked && handleSave()}
+                    placeholder="get"
+                    className={`${inputClass} ${isCustomDomainLocked ? "cursor-not-allowed" : ""}`}
+                  />
+                      </div>
+                      <span className="hidden sm:block text-sm font-mono text-zinc-400">.</span>
+                      <div className="flex-1 min-w-0">
                   <input
                     type="text"
                     disabled={isCustomDomainLocked}
@@ -423,613 +645,124 @@ export const DomainSection = memo(function DomainSection({
                     }}
                     onBlur={() => !isCustomDomainLocked && handleSave()}
                     placeholder={isCustomDomainLocked ? "yourdomain.com (Requires Pro Plan)" : "example.com"}
-                    className={`w-full rounded-xl border border-zinc-200 bg-zinc-50/50 px-3.5 py-2.5 text-xs sm:text-sm text-zinc-900 placeholder:text-zinc-400 outline-none focus:border-[#0066B2] focus:bg-white dark:border-zinc-700 dark:bg-[#18181C] dark:text-white dark:placeholder:text-zinc-500 transition-all font-mono shadow-2xs ${
-                      isCustomDomainLocked ? "cursor-not-allowed bg-zinc-100 dark:bg-zinc-900/50" : ""
-                    }`}
+                    className={`${inputClass} ${isCustomDomainLocked ? "cursor-not-allowed" : ""}`}
                   />
-                  <p className="mt-1 text-[11px] text-zinc-400 dark:text-zinc-500">
-                    Your base domain without http:// or paths (e.g. coachassist.co.in)
-                  </p>
-                </div>
-
-                {/* Subdomain */}
-                <div>
-                  <label className="block text-xs font-semibold text-zinc-700 dark:text-zinc-300 mb-1.5 flex items-center justify-between">
-                    <span>Subdomain / Prefix</span>
-                    {isCustomDomainLocked && (
-                      <span className="text-[10px] text-amber-600 dark:text-amber-400 font-bold flex items-center gap-1">
-                        <Lock className="h-3 w-3" /> Locked
-                      </span>
-                    )}
-                  </label>
-                  <input
-                    type="text"
-                    disabled={isCustomDomainLocked}
-                    value={pageSubdomain}
-                    onChange={(e) => {
-                      if (isCustomDomainLocked) return;
-                      const val = e.target.value;
-                      markDirty("customSubdomain");
-                      setPageSubdomain(val);
-                      // Invalidate CNAME routing state if subdomain prefix changed
-                      if (formatSubdomain(val) !== cleanSub) {
-                        setCnameVerified(false);
-                        setSslStatus("pending");
-                        setCnameError("");
-                      }
-                    }}
-                    onBlur={() => !isCustomDomainLocked && handleSave()}
-                    placeholder="get"
-                    className={`w-full rounded-xl border border-zinc-200 bg-zinc-50/50 px-3.5 py-2.5 text-xs sm:text-sm text-zinc-900 placeholder:text-zinc-400 outline-none focus:border-[#0066B2] focus:bg-white dark:border-zinc-700 dark:bg-[#18181C] dark:text-white dark:placeholder:text-zinc-500 transition-all font-mono shadow-2xs ${
-                      isCustomDomainLocked ? "cursor-not-allowed bg-zinc-100 dark:bg-zinc-900/50" : ""
-                    }`}
-                  />
-                  <p className="mt-1 text-[11px] text-zinc-400 dark:text-zinc-500">
-                    Subdomain prefix for lead magnet pages (e.g. "get", "access", "guide")
-                  </p>
-                </div>
-              </div>
-
-              {/* 2-Step DNS Verification Flow */}
-              {rootDomain.trim() ? (
-                <div className="space-y-4 pt-1">
-                  
-                  {/* STEP 1: TXT Ownership Record Card */}
-                  <div className={`rounded-2xl border p-4 sm:p-5 transition-all shadow-2xs ${
-                    domainVerified
-                      ? "border-emerald-500/30 bg-emerald-500/[0.03] dark:bg-emerald-950/10"
-                      : "border-zinc-200 dark:border-zinc-700/80 bg-zinc-50/70 dark:bg-[#16161B]"
-                  }`}>
-                    
-                    {/* Step 1 Header */}
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 mb-3">
-                      <div className="flex items-center gap-3">
-                        <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-zinc-300 dark:border-zinc-600 text-xs font-bold text-zinc-900 dark:text-white bg-white dark:bg-[#22222A] shadow-2xs">
-                          1
-                        </span>
-                        <div>
-                          <h5 className="text-xs sm:text-sm font-bold text-zinc-900 dark:text-white flex items-center gap-1.5">
-                            Step 1: Prove Domain Ownership (TXT Record)
-                            <InfoTooltip
-                              content="Add this TXT record to your DNS provider, then click Check Ownership."
-                              title="Domain Ownership (TXT Record)"
-                              align="start"
-                            />
-                          </h5>
-                        </div>
                       </div>
-
-                      {domainVerified && (
-                        <span className="self-start sm:self-auto inline-flex items-center gap-1 text-[11px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-2.5 py-0.5 rounded-full">
-                          <CheckCircle2 className="h-3 w-3" />
-                          Ownership Verified
-                        </span>
-                      )}
                     </div>
-
-                    {/* Step 1 DNS Record Table/Box */}
-                    <div className="rounded-xl border border-zinc-200 dark:border-zinc-700/70 bg-white dark:bg-[#1E1E24] p-3.5 sm:p-4 space-y-3 shadow-2xs">
-                      
-                      {/* Record Type */}
-                      <div className="flex items-center justify-between pb-2.5 border-b border-zinc-100 dark:border-white/5">
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
-                          RECORD TYPE
-                        </span>
-                        <span className="inline-block px-2.5 py-0.5 rounded-md bg-purple-100 text-purple-700 dark:bg-purple-950/60 dark:text-purple-300 font-mono text-xs font-bold border border-purple-200 dark:border-purple-800/60">
-                          TXT
-                        </span>
-                      </div>
-
-                      {/* Host & Value Grid */}
-                      <div className="space-y-3">
-                        {/* HOST */}
-                        <div>
-                          <div className="flex items-center justify-between mb-1">
-                            <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
-                              HOST / NAME
-                            </span>
-                            <span className="text-[10px] text-zinc-400 dark:text-zinc-500 truncate max-w-[200px] sm:max-w-none">
-                              Full Host: leadmagnets-verify.{cleanDom}
-                            </span>
-                          </div>
-                          <div
-                            role="group"
-                            aria-label="TXT Host value — read only"
-                            className="flex items-center justify-between rounded-lg border border-zinc-200 dark:border-zinc-700/80 bg-zinc-100/70 dark:bg-[#141418] px-3 py-2 text-xs font-mono text-zinc-900 dark:text-zinc-100 gap-2"
-                          >
-                            <span className="truncate select-all" aria-label="TXT host name">leadmagnets-verify</span>
-                            <button
-                              type="button"
-                              onClick={() => copyToClipboard("leadmagnets-verify", "host", "TXT host copied!")}
-                              aria-label="Copy TXT host name to clipboard"
-                              className="inline-flex items-center gap-1 text-[11px] font-medium text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white transition cursor-pointer shrink-0 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0066B2] focus-visible:ring-offset-1"
-                            >
-                              {copiedField === "host" ? (
-                                <span className="text-emerald-500 font-bold flex items-center gap-1">
-                                  <Check className="h-3.5 w-3.5" /> Copied
-                                </span>
-                              ) : (
-                                <span className="flex items-center gap-1">
-                                  <Copy className="h-3.5 w-3.5" /> Copy
-                                </span>
-                              )}
-                            </button>
-                          </div>
-                        </div>
-
-                        {/* VALUE */}
-                        <div>
-                          <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 block mb-1">
-                            TXT VALUE / CONTENT
-                          </span>
-                          <div
-                            role="group"
-                            aria-label="TXT verification token — read only"
-                            className="flex items-center justify-between rounded-lg border border-zinc-200 dark:border-zinc-700/80 bg-zinc-100/70 dark:bg-[#141418] px-3 py-2 text-xs font-mono text-zinc-900 dark:text-zinc-100 gap-2"
-                          >
-                            <span className="truncate select-all min-w-0" aria-label="TXT verification token value">
-                              {tokenValue}
-                            </span>
-                            <button
-                              type="button"
-                              onClick={() => copyToClipboard(tokenValue, "value", "TXT token value copied!")}
-                              aria-label="Copy TXT verification token to clipboard"
-                              className="inline-flex items-center gap-1 text-[11px] font-medium text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white transition cursor-pointer shrink-0 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0066B2] focus-visible:ring-offset-1"
-                            >
-                              {copiedField === "value" ? (
-                                <span className="text-emerald-500 font-bold flex items-center gap-1">
-                                  <Check className="h-3.5 w-3.5" /> Copied
-                                </span>
-                              ) : (
-                                <span className="flex items-center gap-1">
-                                  <Copy className="h-3.5 w-3.5" /> Copy
-                                </span>
-                              )}
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-
-                    </div>
-
-                    {/* Step 1 Check Button & Error Display */}
-                    <div className="mt-3.5 flex flex-col sm:flex-row sm:items-center gap-3">
-                      <button
-                        type="button"
-                        disabled={checkingDomain || isCustomDomainLocked}
-                        aria-busy={checkingDomain}
-                        aria-disabled={checkingDomain || isCustomDomainLocked}
-                        onClick={async () => {
-                          if (isCustomDomainLocked) {
-                            if (onUpgradeClick) onUpgradeClick();
-                            addToast("Custom domains are a Pro feature. Please upgrade your plan.", "error");
-                            return;
-                          }
-                          // BUG FIX #10: validate domain format before hitting DNS
-                          if (!cleanDom || !cleanDom.includes(".")) {
-                            setDomainError("Please enter a valid domain (e.g. example.com or yourbrand.co.in)");
-                            addToast("Please enter a valid domain before checking ownership.", "error");
-                            return;
-                          }
-                          setCheckingDomain(true);
-                          setDomainError("");
-                          // Fix #5: AbortController gives a 15s hard timeout — no infinite loading
-                          const controller = new AbortController();
-                          const timeoutId = setTimeout(() => controller.abort(), 15_000);
-                          try {
-                            const res = await fetch("/api/domain/verify", {
-                              method: "POST",
-                              headers: { "Content-Type": "application/json" },
-                              body: JSON.stringify({ domain: cleanDom, subdomain: cleanSub }),
-                              signal: controller.signal,
-                            });
-                            const data = await res.json();
-                            if (data.code === "PLAN_UPGRADE_REQUIRED") {
-                              if (onUpgradeClick) onUpgradeClick();
-                              setDomainError(data.error || "Custom domains require a Pro plan.");
-                              addToast(data.error || "Custom domains require a Pro plan.", "error");
-                              return;
-                            }
-                            if (typeof data.isVerified === "boolean") setDomainVerified(data.isVerified);
-                            if (typeof data.cnameVerified === "boolean") setCnameVerified(data.cnameVerified);
-                            if (data.sslStatus === "pending" || data.sslStatus === "active" || data.sslStatus === "failed") {
-                              setSslStatus(data.sslStatus);
-                            }
-                            setHostingChallenge(data.vercelChallenge?.value ? data.vercelChallenge : null);
-                            if (data.isVerified) {
-                              // The "Ownership Verified" badge handles the success state.
-                              setDomainError("");
-                              await handleSave({
-                                domainVerified: true,
-                                cnameVerified: Boolean(data.cnameVerified),
-                                sslStatus: data.sslStatus || "pending",
-                              });
-                              addToast(
-                                String(data.message || "").includes("unavailable")
-                                  ? data.message
-                                  : "🎉 Domain ownership verified successfully!",
-                                "success"
-                              );
-                            } else {
-                              const errMsg = data.error || data.message || `No TXT record found at leadmagnets-verify.${cleanDom}. DNS updates can take a few minutes.`;
-                              setDomainError(errMsg);
-                              addToast(errMsg, "error");
-                            }
-                          } catch (e: unknown) {
-                            const isTimeout = e instanceof Error && e.name === "AbortError";
-                            const errMsg = isTimeout
-                              ? "DNS check timed out (15s). Please try again."
-                              : `No TXT record found at leadmagnets-verify.${cleanDom}. Check your DNS provider.`;
-                            setDomainError(errMsg);
-                            addToast(errMsg, "error");
-                          } finally {
-                            clearTimeout(timeoutId);
-                            setCheckingDomain(false);
-                          }
-                        }}
-                        className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-[#202028] px-4 py-2.5 text-xs font-bold text-zinc-800 dark:text-white hover:bg-zinc-100 dark:hover:bg-[#282834] transition shadow-2xs cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0066B2] focus-visible:ring-offset-2"
-                      >
-                        {checkingDomain ? (
-                          <Loader2 className="h-3.5 w-3.5 animate-spin text-[#0066B2]" />
-                        ) : (
-                          <RefreshCw className="h-3.5 w-3.5 text-zinc-600 dark:text-zinc-300" />
-                        )}
-                        <span>{checkingDomain ? "Checking DNS..." : "Check Ownership (TXT)"}</span>
-                      </button>
-
-                      {domainError ? (
-                        <p
-                          role={domainVerified ? "status" : "alert"}
-                          aria-live="polite"
-                          className={`text-xs flex items-center gap-1.5 ${
-                            domainVerified ? "text-emerald-600 dark:text-emerald-400 font-medium" : "text-rose-600 dark:text-rose-400"
-                          }`}
-                        >
-                          {domainVerified ? (
-                            <CheckCircle2 className="h-3.5 w-3.5 shrink-0" />
-                          ) : (
-                            <AlertCircle className="h-3.5 w-3.5 shrink-0" />
-                          )}
-                          <span className="break-all">{domainError}</span>
-                        </p>
-                      ) : !domainVerified && (
-                        <p className="text-[11px] text-zinc-400 dark:text-zinc-500 flex items-center gap-1">
-                          <Info className="h-3 w-3 shrink-0" />
-                          DNS changes can take a few minutes to propagate.
-                        </p>
-                      )}
-                    </div>
-
+                    <p className="mt-1.5 text-[11px] text-zinc-500">
+                      Subdomain (e.g. get, access, guide) and root domain without http:// or paths (e.g. coachassist.co.in)
+                    </p>
                   </div>
-
-                  {/* STEP 2: CNAME Record Card */}
-                  <div className={`rounded-2xl border p-4 sm:p-5 transition-all shadow-2xs ${
-                    cnameVerified
-                      ? "border-blue-500/30 bg-blue-500/[0.03] dark:bg-blue-950/10"
-                      : "border-zinc-200 dark:border-zinc-700/80 bg-zinc-50/70 dark:bg-[#16161B]"
-                  }`}>
-                    
-                    {/* Step 2 Header */}
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 mb-3">
-                      <div className="flex items-center gap-3">
-                        <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-zinc-300 dark:border-zinc-600 text-xs font-bold text-zinc-900 dark:text-white bg-white dark:bg-[#22222A] shadow-2xs">
-                          2
-                        </span>
-                        <div>
-                          <h5 className="text-xs sm:text-sm font-bold text-zinc-900 dark:text-white flex items-center gap-1.5">
-                            Step 2: Route Traffic (CNAME Record)
-                            <InfoTooltip
-                              content="Add this CNAME record to route traffic from your subdomain to your magnets."
-                              title="Route Traffic (CNAME Record)"
-                              align="start"
-                            />
-                          </h5>
-                        </div>
-                      </div>
-
-                      {cnameVerified && (
-                        <span className="self-start sm:self-auto inline-flex items-center gap-1 text-[11px] font-bold text-blue-600 dark:text-blue-400 bg-blue-500/10 border border-blue-500/30 px-2.5 py-0.5 rounded-full">
-                          <CheckCircle2 className="h-3 w-3" />
-                          Traffic Routed
-                        </span>
-                      )}
-                    </div>
-
-                    {/* Step 2 DNS Record Box */}
-                    <div className="rounded-xl border border-zinc-200 dark:border-zinc-700/70 bg-white dark:bg-[#1E1E24] p-3.5 sm:p-4 space-y-3 shadow-2xs">
-                      
-                      {/* Record Type */}
-                      <div className="flex items-center justify-between pb-2.5 border-b border-zinc-100 dark:border-white/5">
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
-                          RECORD TYPE
-                        </span>
-                        <span className="inline-block px-2.5 py-0.5 rounded-md bg-blue-100 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300 font-mono text-xs font-bold border border-blue-200 dark:border-blue-800/60">
-                          CNAME
-                        </span>
-                      </div>
-
-                      {/* Subdomain & Target Value */}
-                      <div className="space-y-3">
-                        {/* SUBDOMAIN / HOST */}
-                        <div>
-                          <div className="flex items-center justify-between mb-1">
-                            <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
-                              SUBDOMAIN / HOST
-                            </span>
-                            <span className="text-[10px] text-zinc-400 dark:text-zinc-500 truncate max-w-[200px] sm:max-w-none">
-                              Full Host: {cleanSub}.{cleanDom}
-                            </span>
-                          </div>
-                          <div
-                            role="group"
-                            aria-label="CNAME subdomain host — read only"
-                            className="flex items-center justify-between rounded-lg border border-zinc-200 dark:border-zinc-700/80 bg-zinc-100/70 dark:bg-[#141418] px-3 py-2 text-xs font-mono text-zinc-900 dark:text-zinc-100 gap-2"
-                          >
-                            <span className="truncate select-all" aria-label="CNAME subdomain host">{cleanSub}</span>
-                            <button
-                              type="button"
-                              onClick={() => copyToClipboard(cleanSub, "cnameHost", "CNAME host copied!")}
-                              aria-label="Copy CNAME subdomain host to clipboard"
-                              className="inline-flex items-center gap-1 text-[11px] font-medium text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white transition cursor-pointer shrink-0 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0066B2] focus-visible:ring-offset-1"
-                            >
-                              {copiedField === "cnameHost" ? (
-                                <span className="text-emerald-500 font-bold flex items-center gap-1">
-                                  <Check className="h-3.5 w-3.5" /> Copied
-                                </span>
-                              ) : (
-                                <span className="flex items-center gap-1">
-                                  <Copy className="h-3.5 w-3.5" /> Copy
-                                </span>
-                              )}
-                            </button>
-                          </div>
-                        </div>
-
-                        {/* TARGET VALUE */}
-                        <div>
-                          <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 block mb-1">
-                            TARGET VALUE / POINTS TO
-                          </span>
-                          <div
-                            role="group"
-                            aria-label="CNAME target value — read only"
-                            className="flex items-center justify-between rounded-lg border border-zinc-200 dark:border-zinc-700/80 bg-zinc-100/70 dark:bg-[#141418] px-3 py-2 text-xs font-mono text-zinc-900 dark:text-zinc-100 gap-2"
-                          >
-                            <span className="truncate select-all min-w-0" aria-label="CNAME target points-to value">
-                              {cnamePointsTo}
-                            </span>
-                            <button
-                              type="button"
-                              onClick={() => copyToClipboard(cnamePointsTo, "cnameValue", "CNAME target value copied!")}
-                              aria-label="Copy CNAME target value to clipboard"
-                              className="inline-flex items-center gap-1 text-[11px] font-medium text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white transition cursor-pointer shrink-0 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0066B2] focus-visible:ring-offset-1"
-                            >
-                              {copiedField === "cnameValue" ? (
-                                <span className="text-emerald-500 font-bold flex items-center gap-1">
-                                  <Check className="h-3.5 w-3.5" /> Copied
-                                </span>
-                              ) : (
-                                <span className="flex items-center gap-1">
-                                  <Copy className="h-3.5 w-3.5" /> Copy
-                                </span>
-                              )}
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-
-                    </div>
-
-                    {/* Step 2 Check Button & Error Display */}
-                    <div className="mt-3.5 flex flex-col sm:flex-row sm:items-center gap-3">
-                      <button
-                        type="button"
-                        disabled={checkingCname || isCustomDomainLocked || !domainVerified}
-                        aria-busy={checkingCname}
-                        // BUG FIX #4: CNAME check requires TXT ownership to be proven first
-                        aria-disabled={checkingCname || isCustomDomainLocked || !domainVerified}
-                        onClick={async () => {
-                          if (isCustomDomainLocked) {
-                            if (onUpgradeClick) onUpgradeClick();
-                            addToast("Custom domains are a Pro feature. Please upgrade your plan.", "error");
-                            return;
-                          }
-                          // Guard: Step 1 (TXT) must pass before Step 2 (CNAME) — prevents routing bypass
-                          if (!domainVerified) {
-                            addToast("Please complete Step 1 (TXT ownership check) before verifying CNAME routing.", "error");
-                            return;
-                          }
-                          setCheckingCname(true);
-                          setCnameError("");
-                          const controller = new AbortController();
-                          const timeoutId = setTimeout(() => controller.abort(), 55_000);
-                          try {
-                            const res = await fetch("/api/domain/verify", {
-                              method: "POST",
-                              headers: { "Content-Type": "application/json" },
-                              body: JSON.stringify({ domain: cleanDom, subdomain: cleanSub }),
-                              signal: controller.signal,
-                            });
-                            const data = await res.json();
-                            if (data.code === "PLAN_UPGRADE_REQUIRED") {
-                              if (onUpgradeClick) onUpgradeClick();
-                              setCnameError(data.error || "Custom domains require a Pro plan.");
-                              addToast(data.error || "Custom domains require a Pro plan.", "error");
-                              return;
-                            }
-                            if (typeof data.isVerified === "boolean") setDomainVerified(data.isVerified);
-                            if (typeof data.cnameVerified === "boolean") setCnameVerified(data.cnameVerified);
-                            if (data.sslStatus === "pending" || data.sslStatus === "active" || data.sslStatus === "failed") {
-                              setSslStatus(data.sslStatus);
-                            }
-                            setHostingChallenge(data.vercelChallenge?.value ? data.vercelChallenge : null);
-                            if (data.cnameVerified) {
-                              setCnameError("");
-                              await handleSave({
-                                cnameVerified: true,
-                                sslStatus: data.sslStatus || "pending",
-                              });
-                              addToast(
-                                data.sslStatus === "active"
-                                  ? "🎉 CNAME routing verified and SSL is active!"
-                                  : data.cnameMessage || "CNAME routing verified. SSL is still provisioning.",
-                                "success"
-                              );
-                            } else {
-                              const errMsg = data.error || data.cnameMessage || `No CNAME record detected pointing ${cleanSub}.${cleanDom} to ${cnamePointsTo}.`;
-                              setCnameError(errMsg);
-                              addToast(errMsg, "error");
-                            }
-                          } catch (e: unknown) {
-                            const isTimeout = e instanceof Error && e.name === "AbortError";
-                            const errMsg = isTimeout
-                              ? "CNAME check timed out. Wait a minute and click Verify CNAME again."
-                              : `Unable to verify CNAME routing for ${cleanSub}.${cleanDom}`;
-                            setCnameError(errMsg);
-                            addToast(errMsg, "error");
-                          } finally {
-                            clearTimeout(timeoutId);
-                            setCheckingCname(false);
-                          }
-                        }}
-                        className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-[#202028] px-4 py-2.5 text-xs font-bold text-zinc-800 dark:text-white hover:bg-zinc-100 dark:hover:bg-[#282834] transition shadow-2xs cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0066B2] focus-visible:ring-offset-2"
-                      >
-                        {checkingCname ? (
-                          <Loader2 className="h-3.5 w-3.5 animate-spin text-[#0066B2]" />
-                        ) : (
-                          <RefreshCw className="h-3.5 w-3.5 text-zinc-600 dark:text-zinc-300" />
-                        )}
-                        <span>{checkingCname ? "Verifying CNAME..." : "Verify CNAME Routing"}</span>
-                      </button>
-
-                      {cnameError ? (
-                        <p
-                          role={cnameVerified ? "status" : "alert"}
-                          aria-live="polite"
-                          className={`text-xs flex items-center gap-1.5 ${
-                            cnameVerified ? "text-blue-600 dark:text-blue-400 font-medium" : "text-rose-600 dark:text-rose-400"
-                          }`}
-                        >
-                          {cnameVerified ? (
-                            <CheckCircle2 className="h-3.5 w-3.5 shrink-0" />
-                          ) : (
-                            <AlertCircle className="h-3.5 w-3.5 shrink-0" />
-                          )}
-                          <span className="break-all">{cnameError}</span>
-                        </p>
-                      ) : !cnameVerified && (
-                        <div className="space-y-0.5">
-                          <p className="text-[11px] text-zinc-400 dark:text-zinc-500 flex items-center gap-1">
-                            <Info className="h-3 w-3 shrink-0" />
-                            DNS changes can take a few minutes to propagate.
-                          </p>
-                          <p className="text-[10px] text-zinc-400/90 dark:text-zinc-500/90">
-                            Using Cloudflare? Set proxy to <strong className="text-zinc-600 dark:text-zinc-300">DNS only (Grey Cloud)</strong> so CNAME verification succeeds.
-                          </p>
-                        </div>
-                      )}
-                    </div>
-
-                    {hostingChallenge && (
-                      <div className="mt-3 rounded-xl border border-amber-500/30 bg-amber-500/[0.06] p-3.5 space-y-2">
-                        <p className="text-xs font-bold text-amber-800 dark:text-amber-200">
-                          One more DNS record, from the host
-                        </p>
-                        <p className="text-[11px] text-amber-700/90 dark:text-amber-300/90">
-                          Add this {hostingChallenge.type} record, wait a minute, then click Verify CNAME again. Without it the host returns DEPLOYMENT_NOT_FOUND.
-                        </p>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                          <button
-                            type="button"
-                            onClick={() => copyToClipboard(hostingChallenge.name, "vercelHost", "Host name copied")}
-                            className="rounded-lg border border-amber-500/20 bg-white dark:bg-[#141418] px-3 py-2 text-left"
-                          >
-                            <span className="block text-[10px] font-bold uppercase tracking-wider text-zinc-400">Host</span>
-                            <span className="block truncate font-mono text-xs text-zinc-900 dark:text-zinc-100">{hostingChallenge.name}</span>
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => copyToClipboard(hostingChallenge.value, "vercelValue", "Record value copied")}
-                            className="rounded-lg border border-amber-500/20 bg-white dark:bg-[#141418] px-3 py-2 text-left"
-                          >
-                            <span className="block text-[10px] font-bold uppercase tracking-wider text-zinc-400">Value</span>
-                            <span className="block truncate font-mono text-xs text-zinc-900 dark:text-zinc-100">{hostingChallenge.value}</span>
-                          </button>
-                        </div>
-                      </div>
-                    )}
-
-                  </div>
-
-                  {/* Both-steps complete summary banner */}
-                  {domainVerified && cnameVerified && (
-                    <div
-                      role="status"
-                      aria-live="polite"
-                      className="rounded-xl border border-emerald-500/30 bg-emerald-500/[0.06] dark:bg-emerald-950/20 px-4 py-3 flex items-center gap-3"
-                    >
-                      <CheckCircle2 className="h-5 w-5 text-emerald-600 dark:text-emerald-400 shrink-0" />
-                      <div className="min-w-0">
-                        <p className="text-xs font-bold text-emerald-700 dark:text-emerald-300">
-                          {sslStatus === "active" ? "All steps complete — your domain is live!" : "Domain linked. HTTPS is still being issued."}
-                        </p>
-                        <p className="text-[11px] text-emerald-600/80 dark:text-emerald-400/70 truncate">
-                          {sslStatus === "active"
-                            ? `${liveCustomUrl} is fully configured with SSL.`
-                            : `${liveCustomUrl} is linked to the live deployment. Refresh again in a minute.`}
-                        </p>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Danger Zone: Disconnect Domain Action Box */}
-                  {Boolean(rootDomain.trim()) && (
-                    <div className="rounded-2xl border border-rose-500/20 bg-rose-500/[0.03] dark:bg-rose-950/15 p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs">
-                      <div className="space-y-0.5 min-w-0">
-                        <p className="text-xs sm:text-sm font-bold text-zinc-900 dark:text-white flex items-center gap-2">
-                          <span className="flex h-2 w-2 rounded-full bg-rose-500 animate-pulse shrink-0" />
-                          <span>Disconnect or Remove Custom Domain</span>
-                        </p>
-                        <p className="text-[11px] sm:text-xs text-zinc-500 dark:text-zinc-400">
-                          Stop routing <code className="font-mono text-zinc-700 dark:text-zinc-300 font-semibold">{fullCustomHost}</code> and reset all TXT &amp; CNAME verification records.
-                        </p>
-                      </div>
+                  {rootDomain.trim() ? (
+                    <div className="flex items-center justify-between gap-3">
                       <button
                         type="button"
                         onClick={() => setShowDisconnectModal(true)}
                         aria-label={`Disconnect custom domain ${fullCustomHost}`}
-                        className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 rounded-xl border border-rose-500/30 bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/30 dark:hover:bg-rose-900/40 px-4 py-2.5 text-xs font-bold text-rose-600 dark:text-rose-400 transition cursor-pointer shrink-0 shadow-2xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:ring-offset-2"
+                        className="inline-flex items-center justify-center rounded-md bg-rose-600 hover:bg-rose-700 px-4 h-9 text-[13px] font-medium text-white transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:ring-offset-1"
                       >
-                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                          <path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="11" x2="11" y1="11" y2="17"/><line x1="13" x2="13" y1="11" y2="17"/>
-                        </svg>
-                        <span>Disconnect Domain</span>
+                        Remove
                       </button>
+                      <button
+                        type="button"
+                        onClick={() => setIsEditing(false)}
+                        className="inline-flex items-center justify-center rounded-md bg-zinc-900 hover:bg-zinc-700 dark:bg-white dark:hover:bg-zinc-200 px-4 h-9 text-[13px] font-medium text-white dark:text-zinc-900 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0066B2] focus-visible:ring-offset-1"
+                      >
+                        Save
+                      </button>
+                    </div>
+                  ) : (
+                    <p className="text-xs text-zinc-500 dark:text-zinc-400">
+                      You&apos;ll prove ownership with one TXT record, then add a CNAME record to route traffic.
+                    </p>
+                  )}
+                </div>
+              ) : null}
+
+              {/* DNS configuration */}
+              {rootDomain.trim() && !isEditing && showDns ? (
+                <div className="border-t border-zinc-200 dark:border-white/10 p-4 space-y-3">
+                  <div className="flex items-center gap-4 border-b border-zinc-200 dark:border-white/10">
+                    <span className="-mb-px border-b-2 border-zinc-900 dark:border-white pb-2 text-[13px] font-medium text-zinc-900 dark:text-white">
+                      DNS Records
+                    </span>
+                  </div>
+
+                  <p className="text-[13px] text-zinc-600 dark:text-zinc-300">
+                    {isLive
+                      ? "Your DNS records are set up correctly and your domain is live. Keep these records in place — removing them will disconnect your domain."
+                      : "Update the DNS records at your provider to match the records below, then click Refresh."}
+                  </p>
+
+                  {hostingChallenge && (
+                    <div className="flex items-start gap-2.5 rounded-md border border-amber-500/30 bg-amber-500/10 px-3 py-2.5 text-[13px] text-amber-800 dark:text-amber-300">
+                      <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5" />
+                      <p>
+                        One more DNS record is required by the host. Add this {hostingChallenge.type} record at{" "}
+                        <code className="font-mono">{hostingChallenge.name}</code>, wait a minute, then click Refresh. Without it the host returns DEPLOYMENT_NOT_FOUND.
+                      </p>
                     </div>
                   )}
 
-                </div>
-              ) : (
-                <div className="rounded-xl border border-zinc-200/80 bg-zinc-50/70 p-4 dark:border-white/10 dark:bg-[#18181C] flex items-start gap-3">
-                  <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-zinc-100 text-zinc-600 dark:bg-[#222228] dark:text-zinc-300">
-                    <Globe className="h-3.5 w-3.5" />
-                  </div>
-                  <div>
-                    <h6 className="text-xs font-bold text-zinc-900 dark:text-white">
-                      Enter your root domain above to view DNS records
-                    </h6>
-                    <p className="text-[11px] text-zinc-500 dark:text-zinc-400 mt-0.5">
-                      You will prove ownership with one TXT record, then add a CNAME record to route traffic.
-                    </p>
-                  </div>
-                </div>
-              )}
+                  {activeError && (
+                    <div role="alert" aria-live="polite" className="flex items-start gap-2.5 rounded-md border border-rose-500/30 bg-rose-500/10 px-3 py-2.5 text-[13px] text-rose-700 dark:text-rose-300">
+                      <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5" />
+                      <p className="break-all">{activeError}</p>
+                    </div>
+                  )}
 
+                  <div className="rounded-md border border-zinc-200 dark:border-white/10 overflow-x-auto">
+                    <table className="w-full min-w-[560px] text-left text-[13px]">
+                      <thead>
+                        <tr className="border-b border-zinc-200 dark:border-white/10 text-zinc-500 dark:text-zinc-400">
+                          <th className="px-4 py-2.5 font-medium w-20">Type</th>
+                          <th className="px-4 py-2.5 font-medium w-56">Name</th>
+                          <th className="px-4 py-2.5 font-medium">Value</th>
+                          <th className="px-4 py-2.5 font-medium w-10"><span className="sr-only">Status</span></th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {dnsRows.map((row) => (
+                          <tr key={row.key} className="border-b last:border-b-0 border-zinc-200 dark:border-white/10">
+                            <td className="px-4 py-3 font-semibold text-zinc-900 dark:text-white">{row.type}</td>
+                            <td className="px-4 py-3">
+                              <div className="flex items-center gap-1.5 font-mono text-zinc-900 dark:text-zinc-100">
+                                <span className="truncate select-all max-w-[180px]" title={row.name}>{row.name}</span>
+                                {copyIcon(row.name, row.nameKey, row.nameToast, `Copy ${row.type} name`)}
+                              </div>
+                            </td>
+                            <td className="px-4 py-3">
+                              <div className="flex items-center gap-1.5 font-mono text-zinc-900 dark:text-zinc-100">
+                                <span className="break-all select-all">{row.value}</span>
+                                {copyIcon(row.value, row.valueKey, row.valueToast, `Copy ${row.type} value`)}
+                              </div>
+                            </td>
+                            <td className="px-4 py-3">
+                              {row.done && <CheckCircle2 className="h-4 w-4 text-emerald-500" aria-label="Verified" />}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <div className="rounded-md bg-zinc-50 dark:bg-white/[0.03] px-3 py-2.5 text-xs text-zinc-500 dark:text-zinc-400 flex items-start gap-2">
+                    <Info className="h-3.5 w-3.5 shrink-0 mt-0.5" />
+                    <span>
+                      Verify ownership with the TXT record first, then the CNAME routes traffic. Using Cloudflare? Set proxy to{" "}
+                      <strong className="font-medium text-zinc-700 dark:text-zinc-200">DNS only (Grey Cloud)</strong>.
+                    </span>
+                  </div>
+                  <div className="rounded-md bg-zinc-50 dark:bg-white/[0.03] px-3 py-2.5 text-xs text-zinc-500 dark:text-zinc-400">
+                    DNS changes can take time to propagate.
+                  </div>
+                </div>
+              ) : null}
             </div>
           )}
-        </div>
 
-      </div>
+        </div>
+      )}
 
       {/* Destructive Disconnect Domain Modal */}
       <DisconnectDomainModal
@@ -1044,4 +777,3 @@ export const DomainSection = memo(function DomainSection({
     </div>
   );
 });
-
