@@ -34,13 +34,13 @@ export function getStripeClient() {
 // ─── Pricing Constants ────────────────────────────────────────────────────────
 export const PLAN_PRICING = {
   PRO_INR: {
-    amount: 1999,
-    amountPaise: 199900,   // kept for any legacy references (1 INR = 100 paise)
+    amount: 4999,
+    amountPaise: 499900,   // kept for any legacy references (1 INR = 100 paise)
     currency: "INR",
-    name: "Pro Plan Monthly (India)",
-    displayPrice: "₹1,999",
+    name: "Pro Plan Lifetime (One-Time)",
+    displayPrice: "₹4,999",
     // Item Price ID from Chargebee Product Catalog → Item Prices
-    itemPriceId: process.env.CHARGEBEE_ITEM_PRICE_ID_INR || "pro-monthly-INR",
+    itemPriceId: process.env.CHARGEBEE_ITEM_PRICE_ID_INR || "pro-lifetime-4999-INR",
   },
   PRO_USD: {
     amount: 29,

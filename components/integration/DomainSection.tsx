@@ -367,7 +367,7 @@ export const DomainSection = memo(function DomainSection({
   const activeError = !domainVerified ? domainError : cnameError;
 
   return (
-    <div className="rounded-xl border border-zinc-200 bg-white dark:border-white/10 dark:bg-[#0A0A0B] overflow-hidden">
+    <div id="custom-domain-section" className="rounded-xl border border-zinc-200 bg-white dark:border-white/10 dark:bg-[#0A0A0B] overflow-hidden">
 
       {/* Header */}
       <div className="px-4 sm:px-6 py-4 sm:py-5 border-b border-zinc-200 dark:border-white/10">
@@ -503,7 +503,7 @@ export const DomainSection = memo(function DomainSection({
                 }}
                 className="shrink-0 inline-flex items-center justify-center gap-1.5 rounded-md bg-[#0066B2] hover:bg-[#005291] px-4 h-9 text-[13px] font-medium text-white transition-colors cursor-pointer"
               >
-                <span>Upgrade to Pro (₹1,999/mo)</span>
+                <span>Upgrade to Pro (₹4,999 One-Time)</span>
                 <ArrowRight className="h-3.5 w-3.5" />
               </button>
             </div>

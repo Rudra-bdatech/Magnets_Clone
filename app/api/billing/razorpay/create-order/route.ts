@@ -50,28 +50,28 @@ export async function POST(req: Request) {
       });
     }
 
-    // 4. Create Chargebee hosted page checkout
-    const result = await cb.hostedPage
-      .checkoutOneTime({
-        charges: [
-          {
-            amount: PLAN_PRICING.PRO_INR.amountPaise,
-            description: "Magnets Pro Plan – Monthly (INR)",
-          },
-        ],
-        currency_code: PLAN_PRICING.PRO_INR.currency,
-        customer: {
-          email: account.email,
+    // 4. Create Chargebee hosted page checkout (One-Time Payment)
+    const itemPriceId = PLAN_PRICING.PRO_INR.itemPriceId || "pro-lifetime-4999-INR";
+    const result = await cb.hostedPage.checkoutNewForItems({
+      subscription_items: [
+        {
+          item_price_id: itemPriceId,
+          quantity: 1,
+          billing_cycles: 1,
         },
-        redirect_url: `${appUrl}/api/billing/chargebee/success`,
-        cancel_url: `${appUrl}/dashboard`,
-        pass_thru_content: JSON.stringify({
-          userId: account._id.toString(),
-          userEmail: account.email,
-          plan: "Pro",
-        }),
-      })
-      .request();
+      ],
+      billing_cycles: 1,
+      customer: {
+        email: account.email,
+      },
+      redirect_url: `${appUrl}/api/billing/chargebee/success`,
+      cancel_url: `${appUrl}/dashboard`,
+      pass_thru_content: JSON.stringify({
+        userId: account._id.toString(),
+        userEmail: account.email,
+        plan: "Pro",
+      }),
+    });
 
     const page = result.hosted_page;
 

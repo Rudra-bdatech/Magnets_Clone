@@ -24,20 +24,29 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "User account not found" }, { status: 404 });
     }
 
-    // 2. Get Chargebee client
+    // Parse coupon code if provided
+    const body = await req.json().catch(() => ({}));
+    const rawCoupon = typeof body?.couponCode === "string" ? body.couponCode : "";
+    const cleanCoupon = rawCoupon.trim().toUpperCase();
+
+    // 2. Get Chargebee client & determine dynamic return URL
     const cb = getChargebeeClient();
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+    const reqHost = req.headers.get("host") || "localhost:3000";
+    const proto = req.headers.get("x-forwarded-proto") || (reqHost.includes("localhost") ? "http" : "https");
+    const appUrl = `${proto}://${reqHost}`;
 
     // 3. Graceful sandbox simulation if keys are not yet configured
     if (!cb) {
+      const isCoupon = cleanCoupon === "BDA1" || cleanCoupon === "STAFF1";
       return NextResponse.json({
         success: true,
         isSimulated: true,
         checkoutUrl: null, // signals the UI to open the sandbox modal
-        planName: "Pro Plan Monthly",
-        amount: PLAN_PRICING.PRO_INR.amount,
+        planName: isCoupon ? "Pro Plan (₹1 Coupon Applied)" : "Pro Plan Lifetime (One-Time)",
+        amount: isCoupon ? 1 : PLAN_PRICING.PRO_INR.amount,
         currency: PLAN_PRICING.PRO_INR.currency,
-        displayPrice: PLAN_PRICING.PRO_INR.displayPrice,
+        displayPrice: isCoupon ? "₹1" : PLAN_PRICING.PRO_INR.displayPrice,
+        couponApplied: isCoupon ? cleanCoupon : null,
         user: {
           name: account.name || account.username || "Subscriber",
           email: account.email,
@@ -47,40 +56,55 @@ export async function POST(req: Request) {
       });
     }
 
-    // 4. Create a real Chargebee Hosted Payment Page (Product Catalog 2.0)
-    const itemPriceId = PLAN_PRICING.PRO_INR.itemPriceId || "pro-monthly-INR";
-    const result = await (cb as any).hostedPage.checkoutNewForItems({
+    // 4. Create a real Chargebee Hosted Payment Page (Product Catalog 2.0 - One-Time Payment)
+    const itemPriceId = PLAN_PRICING.PRO_INR.itemPriceId || "pro-lifetime-4999-INR";
+    const checkoutParams: any = {
       subscription_items: [
         {
           item_price_id: itemPriceId,
           quantity: 1,
+          billing_cycles: 1,
         },
       ],
+      billing_cycles: 1,
       customer: {
         email: account.email,
         first_name: (account.name || account.username || "").split(" ")[0] || "",
         last_name: (account.name || account.username || "").split(" ").slice(1).join(" ") || "",
       },
       redirect_url: `${appUrl}/api/billing/chargebee/success`,
-      cancel_url: `${appUrl}/dashboard`,
+      cancel_url: `${appUrl}/dashboard/integration`,
       pass_thru_content: JSON.stringify({
         userId: account._id.toString(),
         userEmail: account.email,
         plan: "Pro",
+        coupon: cleanCoupon || null,
       }),
-    });
+    };
 
+    if (cleanCoupon) {
+      checkoutParams.coupon_ids = [cleanCoupon];
+    }
+
+    const result = await (cb as any).hostedPage.checkoutNewForItems(checkoutParams);
     const page = result.hosted_page;
+
+    const isCouponApplied = Boolean(cleanCoupon);
+    const chargedAmount = isCouponApplied ? 1 : PLAN_PRICING.PRO_INR.amount;
+    const chargedDisplay = isCouponApplied ? "₹1" : PLAN_PRICING.PRO_INR.displayPrice;
 
     return NextResponse.json({
       success: true,
       isSimulated: false,
       checkoutUrl: page.url,
       hostedPageId: page.id,
-      planName: "Pro Plan Monthly",
-      amount: PLAN_PRICING.PRO_INR.amount,
+      hostedPage: page,
+      hosted_page: page,
+      planName: isCouponApplied ? "Pro Plan (₹1 Coupon Applied)" : "Pro Plan Lifetime (One-Time)",
+      amount: chargedAmount,
       currency: PLAN_PRICING.PRO_INR.currency,
-      displayPrice: PLAN_PRICING.PRO_INR.displayPrice,
+      displayPrice: chargedDisplay,
+      couponApplied: cleanCoupon || null,
       user: {
         name: account.name || account.username || "Subscriber",
         email: account.email,

@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { Plug, ChevronDown, Eye, ShieldCheck, User } from "lucide-react";
+import { Plug, ChevronDown, Eye, ShieldCheck, User, CheckCircle2, ArrowRight, Check, X, Sparkles } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import { syncWithDatabase, saveAccount, loadAccount } from "@/lib/store";
 import { type Account, getAppUrl } from "@/lib/data";
 import { isCompanyAccount } from "@/lib/roles";
@@ -27,6 +28,7 @@ export default function WorkspaceSetupPage() {
   const [loading, setLoading] = useState(true);
   const [isLoaded, setIsLoaded] = useState(false);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [simulateCustomerView, setSimulateCustomerView] = useState(false);
   const [username, setUsername] = useState("");
   const [privacyPolicy, setPrivacyPolicy] = useState("");
@@ -143,6 +145,29 @@ export default function WorkspaceSetupPage() {
       isMountedRef.current = false;
     };
   }, []);
+
+  // 3. Handle return from payment gateway (Chargebee / Stripe)
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const paymentStatus = params.get("payment");
+      if (paymentStatus === "success") {
+        setShowSuccessModal(true);
+        addToast("🎉 Pro Plan Activated! Custom domains are now unlocked.", "success");
+        window.history.replaceState({}, "", window.location.pathname);
+        // Force database refresh to immediately unlock the custom domain section
+        syncWithDatabase().then((data) => {
+          if (data?.account && isMountedRef.current) {
+            setAccount(data.account);
+            accountRef.current = data.account;
+          }
+        });
+      } else if (paymentStatus === "error") {
+        addToast("Payment was cancelled or could not be completed.", "error");
+        window.history.replaceState({}, "", window.location.pathname);
+      }
+    }
+  }, [addToast]);
 
   const handleSave = async (overrides?: Partial<Account>) => {
     const currentAcc = accountRef.current;
@@ -449,6 +474,109 @@ export default function WorkspaceSetupPage() {
         isOpen={showHelpModal}
         onClose={() => setShowHelpModal(false)}
       />
+
+      {/* Production-Ready Payment Success Celebration Modal */}
+      <AnimatePresence>
+        {showSuccessModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto">
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowSuccessModal(false)}
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
+            />
+
+            {/* Modal Card */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 15 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 15 }}
+              transition={{ type: "spring", duration: 0.4, bounce: 0.1 }}
+              className="relative w-full max-w-md overflow-hidden rounded-2xl border border-emerald-500/30 bg-white dark:bg-[#12131A] text-zinc-900 dark:text-white shadow-2xl z-10 p-6 sm:p-7 text-center my-8"
+            >
+              {/* Close Button */}
+              <button
+                type="button"
+                onClick={() => setShowSuccessModal(false)}
+                className="absolute top-4 right-4 flex h-8 w-8 items-center justify-center rounded-full bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition cursor-pointer"
+                aria-label="Close"
+              >
+                <X className="h-4 w-4" />
+              </button>
+
+              {/* Glowing Success Badge */}
+              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-emerald-500/15 text-emerald-500 ring-8 ring-emerald-500/10">
+                <CheckCircle2 className="h-10 w-10 animate-in zoom-in-75 duration-300" />
+              </div>
+
+              {/* Title & Description */}
+              <h3 className="text-xl font-extrabold text-zinc-900 dark:text-white tracking-tight">
+                Payment Successful! 🎉
+              </h3>
+              <p className="mt-1.5 text-xs text-zinc-500 dark:text-zinc-400">
+                Your payment was received and your account has been upgraded to <strong className="text-zinc-900 dark:text-white">Pro Lifetime</strong>!
+              </p>
+
+              {/* Receipt Summary Box */}
+              <div className="mt-5 rounded-xl border border-zinc-200 dark:border-white/10 bg-zinc-50 dark:bg-zinc-900/60 p-3.5 text-left text-xs space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-zinc-500 dark:text-zinc-400">Plan</span>
+                  <span className="font-bold text-zinc-900 dark:text-white">Magnets Pro (Lifetime)</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-zinc-500 dark:text-zinc-400">Payment Status</span>
+                  <span className="inline-flex items-center gap-1 font-semibold text-emerald-600 dark:text-emerald-400">
+                    <Check className="h-3 w-3" /> Paid & Active
+                  </span>
+                </div>
+                <div className="flex items-center justify-between pt-1.5 border-t border-zinc-200 dark:border-white/10 font-bold">
+                  <span className="text-zinc-900 dark:text-white">Total Amount</span>
+                  <span className="text-emerald-600 dark:text-emerald-400">₹4,999 One-Time</span>
+                </div>
+              </div>
+
+              {/* Features Unlocked Checklist */}
+              <div className="mt-4 text-left">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 mb-2">
+                  Features Unlocked:
+                </p>
+                <ul className="space-y-1.5 text-xs text-zinc-600 dark:text-zinc-300">
+                  <li className="flex items-center gap-2">
+                    <Check className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
+                    <span>Custom Root & Subdomains</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <Check className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
+                    <span>Remove All Platform Watermarks</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <Check className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
+                    <span>Up to 2,500 Leads / month (5x capacity)</span>
+                  </li>
+                </ul>
+              </div>
+
+              {/* Action Button */}
+              <div className="mt-6">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowSuccessModal(false);
+                    const el = document.getElementById("custom-domain-section");
+                    if (el) el.scrollIntoView({ behavior: "smooth" });
+                  }}
+                  className="w-full py-2.5 px-4 rounded-xl bg-[#0066B2] hover:bg-[#005291] active:scale-[0.98] text-xs font-bold text-white shadow-md shadow-[#0066B2]/20 flex items-center justify-center gap-1.5 transition cursor-pointer"
+                >
+                  <span>Configure Custom Domain Now</span>
+                  <ArrowRight className="h-3.5 w-3.5" />
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
 
       {/* Toast Notification Container */}
       <IntegrationToastContainer

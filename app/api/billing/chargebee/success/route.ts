@@ -9,17 +9,19 @@ export const dynamic = "force-dynamic";
 // GET /api/billing/chargebee/success?id=<hosted_page_id>
 export async function GET(req: NextRequest) {
   const hostedPageId = req.nextUrl.searchParams.get("id");
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+  const reqHost = req.headers.get("host") || "localhost:3000";
+  const proto = req.headers.get("x-forwarded-proto") || (reqHost.includes("localhost") ? "http" : "https");
+  const appUrl = `${proto}://${reqHost}`;
 
   if (!hostedPageId) {
-    return NextResponse.redirect(`${appUrl}/dashboard?payment=error&reason=missing_page_id`);
+    return NextResponse.redirect(`${appUrl}/dashboard/integration?payment=error&reason=missing_page_id`);
   }
 
   try {
     const cb = getChargebeeClient();
     if (!cb) {
-      // If no keys — still redirect to dashboard; webhook will handle the upgrade
-      return NextResponse.redirect(`${appUrl}/dashboard?payment=pending`);
+      // If no keys — still redirect to integration; webhook will handle the upgrade
+      return NextResponse.redirect(`${appUrl}/dashboard/integration?payment=pending`);
     }
 
     // Retrieve and verify the hosted page to confirm payment status
@@ -28,7 +30,7 @@ export async function GET(req: NextRequest) {
 
     if (page.state !== "succeeded") {
       console.warn("[Chargebee Success]: Page not in succeeded state:", page.state);
-      return NextResponse.redirect(`${appUrl}/dashboard?payment=pending`);
+      return NextResponse.redirect(`${appUrl}/dashboard/integration?payment=pending`);
     }
 
     // Extract user email from pass_thru_content or customer
@@ -60,9 +62,9 @@ export async function GET(req: NextRequest) {
       console.log(`[Chargebee Success]: Upgraded ${userEmail} → Pro`);
     }
 
-    return NextResponse.redirect(`${appUrl}/dashboard?payment=success`);
+    return NextResponse.redirect(`${appUrl}/dashboard/integration?payment=success`);
   } catch (error: any) {
     console.error("[Chargebee Success Error]:", error);
-    return NextResponse.redirect(`${appUrl}/dashboard?payment=error`);
+    return NextResponse.redirect(`${appUrl}/dashboard/integration?payment=error`);
   }
 }
