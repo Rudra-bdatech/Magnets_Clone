@@ -11,6 +11,7 @@ import {
 import { getAuthenticatedUserEmail } from "@/lib/auth";
 import { dbConnect } from "@/lib/mongodb";
 import { AccountModel } from "@/lib/models";
+import { getPlanLimits } from "@/lib/plan-limits";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
@@ -302,6 +303,18 @@ export async function POST(req: Request) {
       return NextResponse.json(
         { error: "User account not found", code: "ACCOUNT_NOT_FOUND" },
         { status: 404 }
+      );
+    }
+
+    // Verify user's plan tier allows custom domain
+    const planLimits = getPlanLimits(account.plan, account.email, account.role);
+    if (!planLimits.customDomainAllowed) {
+      return NextResponse.json(
+        {
+          error: "Custom domains require a Pro Plan. Please upgrade your account to connect custom domains.",
+          code: "PLAN_UPGRADE_REQUIRED",
+        },
+        { status: 403 }
       );
     }
 

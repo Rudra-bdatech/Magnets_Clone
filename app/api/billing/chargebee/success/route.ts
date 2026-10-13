@@ -23,7 +23,7 @@ export async function GET(req: NextRequest) {
     }
 
     // Retrieve and verify the hosted page to confirm payment status
-    const result = await (cb as any).hostedPage.retrieve(hostedPageId).request();
+    const result = await (cb as any).hostedPage.retrieve(hostedPageId);
     const page = result.hosted_page;
 
     if (page.state !== "succeeded") {

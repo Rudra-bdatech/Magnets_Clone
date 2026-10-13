@@ -25,7 +25,7 @@ export const PLAN_LIMITS: Record<string, PlanTierConfig> = {
     leadLimit: 500,
     storageLimitMb: 500,
     sequencesLimit: 2,
-    customDomainAllowed: true,
+    customDomainAllowed: false,
   },
   Pro: {
     name: "Pro Plan",

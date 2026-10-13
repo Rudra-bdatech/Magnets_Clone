@@ -47,30 +47,28 @@ export async function POST(req: Request) {
       });
     }
 
-    // 4. Create a real Chargebee Hosted Payment Page
-    const result = await (cb as any).hostedPage
-      .checkoutOneTime({
-        charges: [
-          {
-            amount: PLAN_PRICING.PRO_INR.amount * 100, // Chargebee uses cents/paise
-            description: "Magnets Pro Plan – Monthly (INR)",
-          },
-        ],
-        currency_code: PLAN_PRICING.PRO_INR.currency,
-        customer: {
-          email: account.email,
-          first_name: (account.name || account.username || "").split(" ")[0] || "",
-          last_name: (account.name || account.username || "").split(" ").slice(1).join(" ") || "",
+    // 4. Create a real Chargebee Hosted Payment Page (Product Catalog 2.0)
+    const itemPriceId = PLAN_PRICING.PRO_INR.itemPriceId || "pro-monthly-INR";
+    const result = await (cb as any).hostedPage.checkoutNewForItems({
+      subscription_items: [
+        {
+          item_price_id: itemPriceId,
+          quantity: 1,
         },
-        redirect_url: `${appUrl}/api/billing/chargebee/success`,
-        cancel_url: `${appUrl}/dashboard`,
-        pass_thru_content: JSON.stringify({
-          userId: account._id.toString(),
-          userEmail: account.email,
-          plan: "Pro",
-        }),
-      })
-      .request();
+      ],
+      customer: {
+        email: account.email,
+        first_name: (account.name || account.username || "").split(" ")[0] || "",
+        last_name: (account.name || account.username || "").split(" ").slice(1).join(" ") || "",
+      },
+      redirect_url: `${appUrl}/api/billing/chargebee/success`,
+      cancel_url: `${appUrl}/dashboard`,
+      pass_thru_content: JSON.stringify({
+        userId: account._id.toString(),
+        userEmail: account.email,
+        plan: "Pro",
+      }),
+    });
 
     const page = result.hosted_page;
 
