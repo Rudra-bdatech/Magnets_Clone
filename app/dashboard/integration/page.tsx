@@ -1,11 +1,10 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { Plug, ChevronDown, Eye, ShieldCheck, User, CheckCircle2, ArrowRight, Check, X, Sparkles } from "lucide-react";
+import { Plug, ChevronDown, User, CheckCircle2, ArrowRight, Check, X, Sparkles } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { syncWithDatabase, saveAccount, loadAccount } from "@/lib/store";
 import { type Account, getAppUrl } from "@/lib/data";
-import { isCompanyAccount } from "@/lib/roles";
 import {
   cleanDomain as sanitizeDomain,
   formatSubdomain,
@@ -29,7 +28,6 @@ export default function WorkspaceSetupPage() {
   const [isLoaded, setIsLoaded] = useState(false);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [simulateCustomerView, setSimulateCustomerView] = useState(false);
   const [username, setUsername] = useState("");
   const [privacyPolicy, setPrivacyPolicy] = useState("");
   const [termsOfService, setTermsOfService] = useState("");
@@ -275,62 +273,6 @@ export default function WorkspaceSetupPage() {
             </div>
           </div>
 
-          {/* Admin Preview Mode Switcher (Visible only for Staff / Admins) */}
-          {isCompanyAccount(account?.email, account?.role) && (
-            <div className="mb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-2xl border border-purple-300/60 dark:border-purple-800/60 bg-gradient-to-r from-purple-50 via-indigo-50/40 to-white dark:from-purple-950/30 dark:via-[#181824] dark:to-[#141418] p-3 sm:px-4 sm:py-3 shadow-2xs">
-              <div className="flex items-center gap-2.5">
-                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-purple-100 text-purple-700 dark:bg-purple-900/50 dark:text-purple-300 font-bold">
-                  <Eye className="h-4 w-4" />
-                </div>
-                <div>
-                  <p className="text-xs sm:text-sm font-bold text-purple-950 dark:text-purple-200 flex items-center gap-1.5">
-                    Admin Preview Mode
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-purple-200/70 text-purple-800 dark:bg-purple-900/70 dark:text-purple-300">
-                      Internal Staff Tool
-                    </span>
-                  </p>
-                  <p className="text-[11px] text-purple-700/80 dark:text-purple-300/70 mt-0.5">
-                    {simulateCustomerView
-                      ? "Currently simulating Customer View (Free Plan Locked & Paywall Active)"
-                      : "Active in Full Staff/Admin Mode (All features & custom domains unlocked)"}
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-2 self-start sm:self-auto shrink-0">
-                <button
-                  type="button"
-                  onClick={() => {
-                    const next = !simulateCustomerView;
-                    setSimulateCustomerView(next);
-                    if (next) {
-                      addToast("Switched to Customer View simulation (Paywall Active)", "info");
-                    } else {
-                      addToast("Switched back to Admin / Staff Mode (Full Access)", "success");
-                    }
-                  }}
-                  className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition-all shadow-xs cursor-pointer ${
-                    simulateCustomerView
-                      ? "bg-amber-600 hover:bg-amber-700 text-white shadow-amber-600/20"
-                      : "bg-[#0066B2] hover:bg-[#005291] text-white shadow-[#0066B2]/20"
-                  }`}
-                >
-                  {simulateCustomerView ? (
-                    <>
-                      <ShieldCheck className="h-3.5 w-3.5" />
-                      <span>Exit Simulation (Back to Admin)</span>
-                    </>
-                  ) : (
-                    <>
-                      <Eye className="h-3.5 w-3.5" />
-                      <span>Simulate Customer View</span>
-                    </>
-                  )}
-                </button>
-              </div>
-            </div>
-          )}
-
           {/* Decomposed Components */}
           <div className="space-y-4">
 
@@ -362,9 +304,9 @@ export default function WorkspaceSetupPage() {
               markDirty={markDirty}
               handleSave={handleSave}
               addToast={addToast}
-              userPlan={simulateCustomerView ? "Free" : (account?.plan || "Free")}
-              userEmail={simulateCustomerView ? "public-customer@example.com" : account?.email}
-              userRole={simulateCustomerView ? "user" : account?.role}
+              userPlan={account?.plan || "Free"}
+              userEmail={account?.email}
+              userRole={account?.role}
               onUpgradeClick={() => setShowUpgradeModal(true)}
             />
 
