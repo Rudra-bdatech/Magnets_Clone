@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { AccountModel, MagnetPageModel, LeadModel, SequenceModel, IntegrationModel, ResourceModel, EmailEventModel, PdfOtpModel } from "@/lib/models";
 import { type MagnetPage, type Resource } from "@/lib/data";
-import { clearAuthCookie, setAuthCookie } from "@/lib/auth";
+import { clearAuthCookie, setAuthCookie, hasRecentOAuthLogin } from "@/lib/auth";
 import { hashPassword, comparePassword } from "@/lib/auth-helpers";
 import { deleteCloudinaryAssets } from "@/lib/cloudinary";
 import { sendMail } from "@/lib/email";
@@ -26,6 +26,8 @@ function serverValidatePassword(pass: string): string | null {
 export function sanitizeAccount(accountDoc: any) {
   if (!accountDoc) return null;
   const acc = typeof accountDoc.toObject === "function" ? accountDoc.toObject() : { ...accountDoc };
+  // Google-only accounts have no password; the UI uses this to show "Set password" instead of "Change password"
+  acc.hasPassword = Boolean(acc.password);
   delete acc.password;
   delete acc.resetPasswordToken;
   delete acc.resetPasswordExpires;
@@ -278,6 +280,17 @@ export async function handleDeleteAccount(data: any, authEmail: string | null) {
     if (!isValid) {
       return NextResponse.json({ error: "Incorrect password." }, { status: 400 });
     }
+  } else {
+    // Google-only account: confirm by typing the email, plus a fresh Google sign-in
+    if (String(data.confirmEmail || "").trim().toLowerCase() !== authEmail) {
+      return NextResponse.json({ error: "The email you typed doesn't match your account email." }, { status: 400 });
+    }
+    if (!(await hasRecentOAuthLogin(authEmail))) {
+      return NextResponse.json(
+        { error: "For your security, please confirm with Google before deleting your account.", code: "REAUTH_REQUIRED" },
+        { status: 403 }
+      );
+    }
   }
   const normDelEmail = email.trim().toLowerCase();
 
@@ -410,6 +423,12 @@ export async function handleUpdatePassword(data: any, authEmail: string | null) 
     if (!isValid) {
       return NextResponse.json({ error: "Current password is incorrect." }, { status: 400 });
     }
+  } else if (!(await hasRecentOAuthLogin(authEmail))) {
+    // Google-only account setting its first password: require a fresh Google sign-in instead
+    return NextResponse.json(
+      { error: "For your security, please confirm with Google before setting a password.", code: "REAUTH_REQUIRED" },
+      { status: 403 }
+    );
   }
   account.password = await hashPassword(newPassword);
   await account.save();
@@ -420,7 +439,8 @@ export async function handleGetAccountByEmail(authEmail: string | null) {
   if (!authEmail) {
     return NextResponse.json({ error: "Unauthorized. Please log in." }, { status: 401 });
   }
-  const account = await AccountModel.findOne({ email: authEmail }).select("-password").lean();
+  // sanitizeAccount strips the password hash; it needs it present to compute hasPassword
+  const account = await AccountModel.findOne({ email: authEmail }).lean();
   return NextResponse.json({ account: sanitizeAccount(account) });
 }
 

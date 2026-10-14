@@ -135,7 +135,7 @@ function LoginForm() {
       {/* Social Login Buttons */}
       <div className="flex flex-col gap-2">
         <GoogleAuthButton
-          callbackUrl={redirectTarget}
+          callbackUrl={`/api/auth/continue?next=${encodeURIComponent(redirectTarget)}`}
           disabled={loading}
           isLastUsed={lastUsedMethod === "google"}
         />

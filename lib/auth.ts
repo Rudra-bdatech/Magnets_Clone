@@ -58,6 +58,23 @@ export function clearAuthCookie(res: NextResponse): NextResponse {
   return res;
 }
 
+const RECENT_AUTH_WINDOW_MS = 10 * 60 * 1000;
+
+/**
+ * True when `email` completed an OAuth (Google) sign-in within the last 10 minutes.
+ * Password-less accounts must pass this before setting a password or deleting the account.
+ */
+export async function hasRecentOAuthLogin(email: string): Promise<boolean> {
+  try {
+    const session = await getServerSession(authOptions);
+    const sessionEmail = session?.user?.email?.trim().toLowerCase();
+    const authTime = Number((session as any)?.authTime || 0);
+    return sessionEmail === email && Date.now() - authTime < RECENT_AUTH_WINDOW_MS;
+  } catch {
+    return false;
+  }
+}
+
 export async function getAuthenticatedUserEmail(): Promise<string | null> {
   try {
     const cookieStore = cookies();

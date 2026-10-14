@@ -91,7 +91,7 @@ const pageNames = (pages as any[]).map((p) => p.name).filter(Boolean);
 // Result is byte-for-byte identical to the original code — no data is lost or changed.
 // The only difference: we eliminated one full extra DB round-trip.
 const [account, rawLeads, sequences, integrations, resources] = await Promise.all([
-  AccountModel.findOne({ email: normEmail }).select("-password").lean(),
+  AccountModel.findOne({ email: normEmail }).lean(), // password stripped by sanitizeAccount (needed for hasPassword)
   LeadModel.find({
     $or: [
       { userEmail: normEmail },

@@ -12,6 +12,8 @@ const AccountSchema = new Schema({
   brandColor: { type: String, default: "#0066B2" },
   logo: { type: String, default: null },
   joinedAt: { type: String, required: true },
+  // Set for first-time OAuth sign-ups; cleared once they are routed to onboarding
+  needsOnboarding: { type: Boolean, default: false },
   privacyPolicy: { type: String, default: "" },
   termsOfService: { type: String, default: "" },
   themeMode: { type: String, default: "light" },

@@ -153,6 +153,7 @@ export interface Account {
   privacyPolicy?: string;
   termsOfService?: string;
   isNewAccount?: boolean;
+  hasPassword?: boolean;
   themeMode?: "light" | "dark";
   highlightIntensity?: number;
   templateId?: "template1" | "template2" | "template3" | "template4" | "template5" | "template6" | "template7" | string;

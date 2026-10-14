@@ -97,6 +97,7 @@ export const authOptions: NextAuthOptions = {
             avatar: userAvatar,
             joinedAt: new Date().toLocaleDateString("en-US", { month: "long", year: "numeric" }),
             isNewAccount: true,
+            needsOnboarding: true,
             // If signing up via LinkedIn OAuth, mark their LinkedIn as connected for identity
             ...(isLinkedIn && {
               linkedinConnected: true,
@@ -143,6 +144,8 @@ export const authOptions: NextAuthOptions = {
     },
     async jwt({ token, user }) {
       if (user) {
+        // When the user last actually authenticated with the provider (used for re-auth on sensitive actions)
+        token.authTime = Date.now();
         token.email = user.email?.trim().toLowerCase();
         token.name = user.name;
         let picture = user.image;
@@ -158,6 +161,7 @@ export const authOptions: NextAuthOptions = {
         session.user.email = token.email as string;
         session.user.name = token.name as string;
         session.user.image = token.picture as string;
+        (session as any).authTime = token.authTime;
       }
       return session;
     },

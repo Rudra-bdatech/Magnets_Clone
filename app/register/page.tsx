@@ -127,7 +127,7 @@ export default function RegisterPage() {
 
       {/* Social Auth Buttons */}
       <div className="flex flex-col gap-2">
-        <GoogleAuthButton callbackUrl="/register/onboarding" disabled={loading} />
+        <GoogleAuthButton callbackUrl="/api/auth/continue" disabled={loading} />
       </div>
 
 

@@ -219,7 +219,12 @@ export default function AccountSettingsPage() {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deletePassword, setDeletePassword] = useState("");
   const [deleteConfirmText, setDeleteConfirmText] = useState("");
+  const [deleteConfirmEmail, setDeleteConfirmEmail] = useState("");
   const [deleteError, setDeleteError] = useState("");
+
+  // Google-only accounts have no password: they "set" one and confirm deletion by email + fresh Google sign-in.
+  // Unknown (stale cached account) defaults to the password flow.
+  const hasPassword = account?.hasPassword !== false;
 
   // Tab Navigation State
   const [activeTab, setActiveTab] = useState<"profile" | "email" | "security" | "notifications" | "danger">("profile");
@@ -427,6 +432,16 @@ export default function AccountSettingsPage() {
     }
   }, [addToast]);
 
+  // Sensitive actions on Google-only accounts need a sign-in from the last 10 minutes
+  const reauthWithGoogle = useCallback(
+    (tab: "security" | "danger") => {
+      setTimeout(() => {
+        signIn("google", { callbackUrl: `/dashboard/settings?tab=${tab}` }, { login_hint: account?.email || "" });
+      }, 1200);
+    },
+    [account?.email]
+  );
+
   const handleUpdatePassword = useCallback(async () => {
     const passwordError = validatePasswordStrength(newPassword);
     if (passwordError) {
@@ -448,13 +463,17 @@ export default function AccountSettingsPage() {
         }),
       });
       if (res.ok) {
-        addToast("Password updated successfully!", "success");
+        addToast(hasPassword ? "Password updated successfully!" : "Password set! You can now also log in with your email.", "success");
         setCurrentPassword("");
         setNewPassword("");
         setConfirmPassword("");
+        if (!hasPassword) setAccount((prev) => (prev ? { ...prev, hasPassword: true } : prev));
       } else {
         const errData = await res.json();
         addToast(errData.error || "Failed to update password.", "error");
+        if (errData.code === "REAUTH_REQUIRED") {
+          reauthWithGoogle("security");
+        }
       }
     } catch (err) {
       console.error(err);
@@ -462,7 +481,7 @@ export default function AccountSettingsPage() {
     } finally {
       setUpdatingPassword(false);
     }
-  }, [account, newPassword, confirmPassword, currentPassword, addToast]);
+  }, [account, newPassword, confirmPassword, currentPassword, hasPassword, reauthWithGoogle, addToast]);
 
   const handleSaveLeadAlerts = useCallback(async () => {
     setSavingAlerts(true);
@@ -531,7 +550,9 @@ export default function AccountSettingsPage() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             action: "deleteAccount",
-            data: { email: account!.email, password: deletePassword },
+            data: hasPassword
+              ? { email: account!.email, password: deletePassword }
+              : { email: account!.email, confirmEmail: deleteConfirmEmail },
           }),
         });
         if (res.ok) {
@@ -553,6 +574,9 @@ export default function AccountSettingsPage() {
           const errData = await res.json();
           setDeleteError(errData.error || "Failed to delete account.");
           addToast(errData.error || "Failed to delete account.", "error");
+          if (errData.code === "REAUTH_REQUIRED") {
+            reauthWithGoogle("danger");
+          }
         }
       } catch (err: any) {
         console.error(err);
@@ -562,7 +586,7 @@ export default function AccountSettingsPage() {
         setDeleting(false);
       }
     },
-    [deleteConfirmText, account, deletePassword, router, addToast]
+    [deleteConfirmText, account, deletePassword, deleteConfirmEmail, hasPassword, reauthWithGoogle, router, addToast]
   );
 
   const inputClass =
@@ -863,26 +887,32 @@ export default function AccountSettingsPage() {
                       <KeyRound className="h-4.5 w-4.5" />
                     </div>
                     <div>
-                      <h4 className="text-sm sm:text-[14.2px] font-bold text-zinc-900 dark:text-white">Change password</h4>
+                      <h4 className="text-sm sm:text-[14.2px] font-bold text-zinc-900 dark:text-white">
+                        {hasPassword ? "Change password" : "Set a password"}
+                      </h4>
                       <p className="text-xs sm:text-[12.2px] text-[#71717a] dark:text-[#9B9085] mt-0.5">
-                        Use at least 8 characters with numbers and symbols.
+                        {hasPassword
+                          ? "Use at least 8 characters with numbers and symbols."
+                          : "You sign in with Google, so your account has no password yet. Add one to also log in with your email. You may be asked to confirm with Google first."}
                       </p>
                     </div>
                   </div>
 
                   <div className="mt-5 pl-0 sm:pl-12 space-y-4 max-w-lg">
-                    <div>
-                      <label className="block text-xs sm:text-[12.2px] font-semibold text-[#71717a] dark:text-[#9B9085] mb-1.5">
-                        Current password
-                      </label>
-                      <PasswordInputWithStrength
-                        value={currentPassword}
-                        onChange={setCurrentPassword}
-                        placeholder="Enter current password"
-                        autoComplete="current-password"
-                        showStrengthMeter={false}
-                      />
-                    </div>
+                    {hasPassword && (
+                      <div>
+                        <label className="block text-xs sm:text-[12.2px] font-semibold text-[#71717a] dark:text-[#9B9085] mb-1.5">
+                          Current password
+                        </label>
+                        <PasswordInputWithStrength
+                          value={currentPassword}
+                          onChange={setCurrentPassword}
+                          placeholder="Enter current password"
+                          autoComplete="current-password"
+                          showStrengthMeter={false}
+                        />
+                      </div>
+                    )}
                     <div>
                       <label className="block text-xs sm:text-[12.2px] font-semibold text-[#71717a] dark:text-[#9B9085] mb-1.5">
                         New password
@@ -919,7 +949,7 @@ export default function AccountSettingsPage() {
                         ) : (
                           <KeyRound className="h-3.5 w-3.5 text-white stroke-[2.5px]" />
                         )}
-                        {updatingPassword ? "Updating..." : "Update password"}
+                        {updatingPassword ? "Updating..." : hasPassword ? "Update password" : "Set password"}
                       </button>
                     </div>
                   </div>
@@ -1070,16 +1100,34 @@ export default function AccountSettingsPage() {
                         </div>
                       ) : (
                         <form onSubmit={handleDeleteAccount} className="mt-5 space-y-4 max-w-2xl">
-                          <div>
-                            <label className={labelClass}>Confirm with your password</label>
-                            <input
-                              type="password"
-                              required
-                              value={deletePassword}
-                              onChange={(e) => setDeletePassword(e.target.value)}
-                              className={inputClass}
-                            />
-                          </div>
+                          {hasPassword ? (
+                            <div>
+                              <label className={labelClass}>Confirm with your password</label>
+                              <input
+                                type="password"
+                                required
+                                value={deletePassword}
+                                onChange={(e) => setDeletePassword(e.target.value)}
+                                className={inputClass}
+                              />
+                            </div>
+                          ) : (
+                            <div>
+                              <label className={labelClass}>Type your account email to confirm</label>
+                              <input
+                                type="email"
+                                required
+                                autoComplete="off"
+                                placeholder={account?.email || ""}
+                                value={deleteConfirmEmail}
+                                onChange={(e) => setDeleteConfirmEmail(e.target.value)}
+                                className={inputClass}
+                              />
+                              <span className="block text-[10px] text-[#5c5650] mt-1">
+                                You signed up with Google, so you may be asked to confirm with Google before deletion.
+                              </span>
+                            </div>
+                          )}
 
                           <div>
                             <label className={labelClass}>Type DELETE to confirm</label>
@@ -1102,6 +1150,7 @@ export default function AccountSettingsPage() {
                               onClick={() => {
                                 setShowDeleteConfirm(false);
                                 setDeletePassword("");
+                                setDeleteConfirmEmail("");
                                 setDeleteConfirmText("");
                                 setDeleteError("");
                               }}
