@@ -604,7 +604,7 @@ export async function handleSendResetEmail(data: any, reqHostOrigin?: string) {
 </body>
 </html>
     `,
-  });
+  }, normEmail);
 
   if (!sendResult.success) {
     return NextResponse.json({ error: sendResult.error || "Failed to send reset email. Please try again later." }, { status: 500 });
@@ -726,7 +726,7 @@ export async function handleSendVerificationEmail(data: any, reqHostOrigin: stri
 </body>
 </html>
     `,
-  });
+  }, email.trim().toLowerCase());
 
   if (!sendResult.success) {
     return NextResponse.json({ error: sendResult.error || "Failed to send verification email." }, { status: 500 });
