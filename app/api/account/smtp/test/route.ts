@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
       port: Number(port) || 587,
       secure: secure === true,
       auth: { user: user.trim(), pass },
-      tls: { rejectUnauthorized: false }, // allow test with self-signed
+      tls: { rejectUnauthorized: process.env.NODE_ENV === "production" }, // match lib/email.ts
       connectionTimeout: 8000,
       socketTimeout: 8000,
     });
@@ -33,7 +33,7 @@ export async function POST(req: NextRequest) {
       from: `${fromName || "LeadMagnets"} <${fromEmail || user}>`,
       to: authEmail,
       subject: "SMTP connection verified",
-      html: `<p>Your custom SMTP is connected. Emails to your leads will now be sent from <strong>${fromEmail || user}</strong>.</p>`,
+      html: `<p>Your custom SMTP is connected. Emails to your leads will now be sent from <strong>${escapeHtml(String(fromEmail || user))}</strong>.</p>`,
     });
 
     return NextResponse.json({ success: true, message: "Test email sent! Check your inbox." });
@@ -44,4 +44,8 @@ export async function POST(req: NextRequest) {
       { status: 400 }
     );
   }
+}
+
+function escapeHtml(value: string) {
+  return value.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
 }

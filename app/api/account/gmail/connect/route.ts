@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
+import { randomBytes } from "crypto";
 import { getAuthenticatedUserEmail } from "@/lib/auth";
+import { GMAIL_STATE_COOKIE } from "@/lib/gmail-oauth";
 
 const SCOPES = [
   "https://www.googleapis.com/auth/gmail.send",
@@ -21,8 +23,10 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "GOOGLE_CLIENT_ID not configured" }, { status: 500 });
   }
 
-  // Encode the user email and used redirectUri in state so callback uses identical redirectUri
-  const state = Buffer.from(JSON.stringify({ email: authEmail, redirectUri })).toString("base64url");
+  // CSRF protection: a random, unguessable state value is sent to Google and also stored in an
+  // httpOnly cookie. The callback only accepts the code if both match, and it takes the account
+  // owner from the logged-in session (never from the state).
+  const state = randomBytes(32).toString("base64url");
 
   const params = new URLSearchParams({
     client_id: clientId,
@@ -34,6 +38,15 @@ export async function GET(req: NextRequest) {
     state,
   });
 
-  const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`;
-  return NextResponse.redirect(authUrl);
+  const res = NextResponse.redirect(`https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`);
+  res.cookies.set({
+    name: GMAIL_STATE_COOKIE,
+    value: state,
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax", // must be sent on the top-level redirect back from Google
+    path: "/api/account/gmail",
+    maxAge: 10 * 60,
+  });
+  return res;
 }

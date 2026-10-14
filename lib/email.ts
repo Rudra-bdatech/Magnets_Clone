@@ -65,7 +65,11 @@ async function refreshGmailAccessToken(clientId: string, clientSecret: string, r
   });
   const data = await res.json();
   if (!data.access_token) {
-    throw new Error(`[email] Gmail token refresh failed: ${data.error_description || data.error || "Unknown error"}`);
+    const err: Error & { code?: string } = new Error(
+      `[email] Gmail token refresh failed: ${data.error_description || data.error || "Unknown error"}`
+    );
+    err.code = data.error;
+    throw err;
   }
   return data.access_token;
 }
@@ -204,8 +208,16 @@ export async function sendMail(
           } else {
             console.warn("[email] Gmail OAuth API returned error, falling back:", gmailRes.error);
           }
-        } catch (gmailErr) {
+        } catch (gmailErr: any) {
           console.warn("[email] Gmail OAuth2 failed, falling through:", gmailErr);
+          // invalid_grant = the user revoked access, changed their password, or the token expired.
+          // Mark Gmail as disconnected so the dashboard prompts them to reconnect.
+          if (gmailErr?.code === "invalid_grant" && account?._id) {
+            await AccountModel.updateOne(
+              { _id: account._id },
+              { $set: { "gmailOAuth.connected": false, "gmailOAuth.accessToken": "", "gmailOAuth.refreshToken": "" } }
+            ).catch((e) => console.error("[email] Failed to mark Gmail disconnected:", e));
+          }
         }
       }
     }

@@ -15,7 +15,7 @@ export default function PrivacyPage() {
       <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6 lg:px-8">
         <p className="text-xs font-bold uppercase tracking-wider text-[#0066B2] dark:text-[#38BDF8]">Legal</p>
         <h1 className="mt-2 text-3xl font-extrabold text-zinc-900 dark:text-white sm:text-4xl">Privacy Policy</h1>
-        <p className="mt-2 text-sm font-medium text-zinc-500 dark:text-[#9B9085]">Effective July 20, 2026</p>
+        <p className="mt-2 text-sm font-medium text-zinc-500 dark:text-[#9B9085]">Effective October 14, 2026</p>
         <article className="mt-10 space-y-8 text-[15px] leading-7 text-zinc-800 dark:text-zinc-300">
           <p className="text-zinc-800 dark:text-zinc-200 font-normal">
             This Policy explains how LeadMagnets handles personal data when you use our service. It applies to LeadMagnets account holders
@@ -28,6 +28,10 @@ export default function PrivacyPage() {
               <li>Signup data belongs to the account holder whose page collected it.</li>
               <li>Secrets such as API keys and webhook URLs are encrypted at rest when stored by LeadMagnets.</li>
               <li>Custom domains and custom sender domains are optional. A page can be hosted and sent from LeadMagnets by default.</li>
+              <li>
+                If you connect Gmail, we only use it to send the emails you set up. We never read your inbox, and our use of Google
+                user data follows the Google API Services User Data Policy, including its Limited Use requirements.
+              </li>
             </ul>
           </LegalSection>
 
@@ -49,6 +53,10 @@ export default function PrivacyPage() {
               <li>
                 Integration settings and credentials you choose to add, including email, newsletter, calendar, Slack, Pipedrive, and
                 Zapier connections.
+              </li>
+              <li>
+                If you connect a Gmail account, your Gmail address, the display name on your Google account, and the OAuth tokens
+                Google issues to us. See section 7 for details.
               </li>
               <li>
                 Technical and security information, including IP address information used for abuse prevention and rate limiting,
@@ -96,9 +104,10 @@ export default function PrivacyPage() {
 
           <LegalSection title="6. Email delivery and integrations">
             <p>
-              LeadMagnets can deliver resource emails from a LeadMagnets-managed sender address. An account holder may instead use a sender
-              address on a domain they have verified. Email delivery is provided through Resend. We only use an account
-              holder&apos;s own sender address after its domain has been verified for that account&apos;s sending setup.
+              LeadMagnets can deliver resource emails and follow-up sequences in one of three ways: from a LeadMagnets-managed
+              sender address, through an SMTP server whose credentials the account holder provides, or from the account holder&apos;s
+              own Gmail address if they connect their Google account (see section 7). SMTP passwords and Google tokens are encrypted
+              at rest.
             </p>
             <p>
               Optional integrations are activated by the account holder. Depending on what they connect, signup information may be
@@ -108,12 +117,64 @@ export default function PrivacyPage() {
             </p>
           </LegalSection>
 
-          <LegalSection title="7. Service providers and disclosures">
+          <LegalSection title="7. Google user data (Gmail)">
+            <p>
+              Account holders can choose to connect a Gmail or Google Workspace account so that emails are sent from their own address.
+              Connecting is optional. When you connect, Google asks you to grant LeadMagnets the following permissions:
+            </p>
+            <ul className="list-disc space-y-2 pl-5 text-zinc-700 dark:text-zinc-300">
+              <li>
+                <strong className="text-zinc-900 dark:text-white">Send email on your behalf</strong> (<code>gmail.send</code>). This lets us send the resource emails and
+                follow-up sequence emails you configure, from your Gmail address. Messages sent this way appear in your Gmail Sent folder.
+              </li>
+              <li>
+                <strong className="text-zinc-900 dark:text-white">Your email address and basic profile</strong> (<code>userinfo.email</code>,{" "}
+                <code>userinfo.profile</code>). This lets us show which Gmail account is connected and use your name as the sender name.
+              </li>
+            </ul>
+            <p>
+              <strong className="text-zinc-900 dark:text-white">What we do not do.</strong> We cannot and do not read, search, download, modify, or delete the emails in
+              your mailbox, and we do not access your contacts, calendar, or files. We only send the messages that you have set up in
+              LeadMagnets.
+            </p>
+            <p>
+              <strong className="text-zinc-900 dark:text-white">How it is stored.</strong> The access and refresh tokens Google issues to us are encrypted at rest with
+              AES-256-GCM and are used only by our servers to send your emails. They are never shown in the browser or shared with other
+              account holders.
+            </p>
+            <p>
+              <strong className="text-zinc-900 dark:text-white">Sharing.</strong> We do not sell Google user data, and we do not use it for advertising, for
+              credit-worthiness or lending decisions, or to develop, improve, or train generalised AI or machine-learning models. We do not
+              transfer it to third parties except as needed to provide this sending feature, to comply with applicable law, for security
+              purposes, or as part of a merger or acquisition with prior notice. Our staff do not read Google user data unless you give us
+              explicit permission for a specific message, it is necessary for security or abuse investigation, or it is required by law.
+            </p>
+            <p>
+              <strong className="text-zinc-900 dark:text-white">Limited Use.</strong> LeadMagnets&apos; use and transfer to any other app of information received from
+              Google APIs will adhere to the{" "}
+              <a className="text-[#0066B2] dark:text-[#38BDF8] font-semibold underline-offset-4 hover:underline" href="https://developers.google.com/terms/api-services-user-data-policy" target="_blank" rel="noopener noreferrer">
+                Google API Services User Data Policy
+              </a>
+              , including the Limited Use requirements.
+            </p>
+            <p>
+              <strong className="text-zinc-900 dark:text-white">Disconnecting.</strong> You can disconnect Gmail at any time in Settings &rarr; Email &amp; Gmail Sync.
+              When you disconnect, we revoke our access with Google and delete the stored tokens. Deleting your LeadMagnets account also
+              deletes them. You can also remove access from your{" "}
+              <a className="text-[#0066B2] dark:text-[#38BDF8] font-semibold underline-offset-4 hover:underline" href="https://myaccount.google.com/permissions" target="_blank" rel="noopener noreferrer">
+                Google Account permissions page
+              </a>
+              .
+            </p>
+          </LegalSection>
+
+          <LegalSection title="8. Service providers and disclosures">
             <p>We use service providers to operate LeadMagnets. Depending on which features are used, these include:</p>
             <ul className="list-disc space-y-2 pl-5 text-zinc-700 dark:text-zinc-300">
               <li><strong className="text-zinc-900 dark:text-white">Vercel</strong> for application hosting, content delivery, and file storage.</li>
-              <li><strong className="text-zinc-900 dark:text-white">Neon</strong> for hosted database and authentication infrastructure.</li>
-              <li><strong className="text-zinc-900 dark:text-white">Resend</strong> for email delivery and follow-up automation.</li>
+              <li><strong className="text-zinc-900 dark:text-white">MongoDB</strong> for the hosted application database.</li>
+              <li><strong className="text-zinc-900 dark:text-white">SocketLabs</strong> for email delivery from LeadMagnets-managed sender addresses.</li>
+              <li><strong className="text-zinc-900 dark:text-white">Google</strong> for sign-in with Google and, when an account holder connects Gmail, sending email through the Gmail API.</li>
               <li>
                 <strong className="text-zinc-900 dark:text-white">Substack, Kit, Slack, Pipedrive, Zapier, Calendly, and Cal.com</strong> when an account holder
                 elects to connect those services.
@@ -125,7 +186,7 @@ export default function PrivacyPage() {
             </p>
           </LegalSection>
 
-          <LegalSection title="8. Retention and deletion">
+          <LegalSection title="9. Retention and deletion">
             <p>
               We retain account data while an account is active. Deleting an account removes the active account record and its
               associated LeadMagnets pages, signup records, and follow-up records from our application database. Copies may remain in
@@ -134,7 +195,7 @@ export default function PrivacyPage() {
             </p>
           </LegalSection>
 
-          <LegalSection title="9. Security">
+          <LegalSection title="10. Security">
             <p>
               We use reasonable technical and organisational measures to protect information, including HTTPS in transit, password
               hashing, encrypted storage for supported integration secrets, access controls, and rate limiting. No service can
@@ -142,7 +203,7 @@ export default function PrivacyPage() {
             </p>
           </LegalSection>
 
-          <LegalSection title="10. Your choices and rights">
+          <LegalSection title="11. Your choices and rights">
             <p>
               Depending on where you live, you may have rights to access, correct, delete, restrict, object to, or receive a copy of
               your personal data. Account holders can update much of their account information in the dashboard. To make a request,
@@ -159,21 +220,21 @@ export default function PrivacyPage() {
             </p>
           </LegalSection>
 
-          <LegalSection title="11. International transfers">
+          <LegalSection title="12. International transfers">
             <p>
               LeadMagnets and our providers may process information in countries other than your own, including the United States. Where
               required, we rely on appropriate safeguards for international transfers.
             </p>
           </LegalSection>
 
-          <LegalSection title="12. Children">
+          <LegalSection title="13. Children">
             <p>
               LeadMagnets is not intended for children under 16, and we do not knowingly collect personal information from children
               under 16. Contact us if you believe this has happened.
             </p>
           </LegalSection>
 
-          <LegalSection title="13. Changes and contact">
+          <LegalSection title="14. Changes and contact">
             <p>
               We may update this Policy as LeadMagnets changes. For material changes, we will provide reasonable notice before they take
               effect. Questions can be sent to{" "}

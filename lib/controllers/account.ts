@@ -231,9 +231,16 @@ export async function handleSaveAccount(data: any, authEmail: string | null) {
     if (!data.linkedinWebhookSecret) {
       data.linkedinWebhookSecret = generateWebhookSecret();
     }
-    if (!data.role) {
-      data.role = determineRoleForEmail(data.email || normalizedEmail);
-    }
+    // New accounts are created from the request body, so never trust privileged or
+    // server-managed fields from the client.
+    delete data.plan;
+    delete data.customSmtp;
+    delete data.gmailOAuth;
+    delete data.spfVerified;
+    delete data.dkimVerified;
+    delete data.resetPasswordToken;
+    delete data.resetPasswordExpires;
+    data.role = determineRoleForEmail(data.email || normalizedEmail);
     data.customDomain = sanitizeDomain(data.customDomain);
     data.customSubdomain = formatSubdomain(data.customSubdomain);
     data.domainVerified = false;

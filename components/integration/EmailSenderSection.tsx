@@ -56,9 +56,13 @@ export const EmailSenderSection = memo(function EmailSenderSection({
     if (gmailSuccess === "connected") {
       addToast("Gmail connected successfully! 🎉", "success");
       // Fetch updated account state
-      fetch("/api/account")
+      fetch("/api/data", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "getAccountByEmail", data: {} }),
+      })
         .then((r) => r.json())
-        .then((acc) => { if (acc && !acc.error) setAccount(acc); })
+        .then((res) => { if (res?.account) setAccount(res.account); })
         .catch(() => {});
       url.searchParams.delete("gmail");
       window.history.replaceState({}, "", url.toString());
