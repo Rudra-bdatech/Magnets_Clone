@@ -6,7 +6,7 @@ import Link from "next/link";
 import AuthShell from "@/components/auth-shell";
 import Button from "@/components/ui/button";
 import Input, { FieldLabel } from "@/components/ui/input";
-import { Loader2, Sparkles, ArrowRight } from "lucide-react";
+import { Loader2, Sparkles, ArrowRight, Eye, EyeOff } from "lucide-react";
 
 import { safeSetItem, setSessionExpiry } from "@/lib/store";
 
@@ -38,6 +38,7 @@ function LoginForm() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [lastUsedMethod, setLastUsedMethod] = useState<"google" | "email" | null>(null);
   const [status, setStatus] = useState<"idle" | "authenticating" | "opening_dashboard">("idle");
   const [error, setError] = useState(getInitialError);
@@ -172,25 +173,46 @@ function LoginForm() {
           className={lastUsedMethod === "email" ? "border-blue-500/40 dark:border-blue-500/30 ring-1 ring-blue-500/15" : ""}
         />
       </label>
-      <label className="block">
-        <span className="mb-1.5 flex items-center justify-between gap-3 text-xs font-medium text-zinc-700 dark:text-zinc-300">
-          Password
+      <div className="block">
+        <div className="mb-1.5 flex items-center justify-between gap-3 text-xs font-medium text-zinc-700 dark:text-zinc-300">
+          <label htmlFor="password-input" className="cursor-pointer">
+            Password
+          </label>
           <a className="font-semibold text-blue-600 dark:text-blue-400 underline-offset-4 hover:underline" href="/forgot-password">
             Forgot password?
           </a>
-        </span>
-        <Input
-          autoComplete="current-password"
-          autoFocus={Boolean(email)}
-          type="password"
-          placeholder="At least 8 characters"
-          minLength={8}
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          disabled={loading}
-        />
-      </label>
+        </div>
+        <div className="relative flex items-center">
+          <Input
+            id="password-input"
+            autoComplete="current-password"
+            autoFocus={Boolean(email)}
+            type={showPassword ? "text" : "password"}
+            placeholder="At least 8 characters"
+            minLength={8}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            disabled={loading}
+            className="!pr-10"
+          />
+          <button
+            type="button"
+            onClick={() => setShowPassword((prev) => !prev)}
+            className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 text-zinc-400 hover:text-zinc-600 dark:text-zinc-500 dark:hover:text-zinc-200 transition-colors cursor-pointer disabled:opacity-50"
+            title={showPassword ? "Hide password" : "Show password"}
+            aria-label={showPassword ? "Hide password" : "Show password"}
+            tabIndex={-1}
+            disabled={loading}
+          >
+            {showPassword ? (
+              <EyeOff className="h-4 w-4" />
+            ) : (
+              <Eye className="h-4 w-4" />
+            )}
+          </button>
+        </div>
+      </div>
       <Button
         type="submit"
         className="w-full h-10 rounded-xl bg-gradient-to-r from-blue-600 via-blue-500 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-xs tracking-wide shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 transition-all duration-200 active:scale-[0.99] cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none"

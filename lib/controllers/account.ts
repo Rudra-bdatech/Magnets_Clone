@@ -6,7 +6,8 @@ import { hashPassword, comparePassword } from "@/lib/auth-helpers";
 import { deleteCloudinaryAssets } from "@/lib/cloudinary";
 import { sendMail } from "@/lib/email";
 import { determineRoleForEmail } from "@/lib/roles";
-import { cleanDomain as sanitizeDomain, formatSubdomain } from "@/lib/domain-verify";
+import { cleanDomain as sanitizeDomain, formatSubdomain, removeDomainFromVercel } from "@/lib/domain-verify";
+import { revokeGmailAccess } from "@/lib/gmail-oauth";
 import { randomBytes } from "crypto";
 
 /** Generates a cryptographically random 64-char hex webhook secret. */
@@ -324,6 +325,13 @@ export async function handleDeleteAccount(data: any, authEmail: string | null) {
     const u = r.url || r.fileUrl;
     if (u) allUserAssets.push(u);
   });
+
+  // Release external resources tied to the account (both best-effort, never block deletion):
+  // revoke Gmail access at Google and detach the custom domain from our Vercel project
+  await Promise.all([
+    revokeGmailAccess((account as any).gmailOAuth?.refreshToken),
+    account.customDomain ? removeDomainFromVercel(account.customDomain, account.customSubdomain || "get") : null,
+  ]);
 
   // Permanently delete all Cloudinary media assets
   if (allUserAssets.length > 0) {

@@ -7,6 +7,7 @@ import {
   getCnameTarget,
   cnameRecordMatchesTarget,
   VERCEL_CNAME_TARGET,
+  removeDomainFromVercel,
 } from "@/lib/domain-verify";
 import { getAuthenticatedUserEmail } from "@/lib/auth";
 import { dbConnect } from "@/lib/mongodb";
@@ -515,24 +516,8 @@ export async function DELETE() {
     const previousSubdomain = account.customSubdomain || "get";
 
     // Clean up domain from Vercel project if credentials exist
-    const vercelToken = process.env.VERCEL_AUTH_TOKEN || process.env.VERCEL_TOKEN;
-    const vercelProjectId = process.env.VERCEL_PROJECT_ID || process.env.PROJECT_ID_VERCEL;
-    const vercelTeamId = process.env.VERCEL_TEAM_ID;
-
-    if (vercelToken && vercelProjectId && previousDomain) {
-      try {
-        const fullHost = formatFullHost(previousDomain, previousSubdomain);
-        const teamParam = vercelTeamId ? `?teamId=${vercelTeamId}` : "";
-        await fetch(`https://api.vercel.com/v9/projects/${vercelProjectId}/domains/${fullHost}${teamParam}`, {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${vercelToken}`,
-          },
-          signal: AbortSignal.timeout(10000),
-        });
-      } catch (vercelErr) {
-        console.warn("Failed to delete domain from Vercel:", vercelErr);
-      }
+    if (previousDomain) {
+      await removeDomainFromVercel(previousDomain, previousSubdomain);
     }
 
     // Reset domain fields in MongoDB

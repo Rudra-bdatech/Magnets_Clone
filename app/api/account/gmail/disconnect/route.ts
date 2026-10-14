@@ -2,7 +2,7 @@
 import { dbConnect } from "@/lib/mongodb";
 import { AccountModel } from "@/lib/models";
 import { getAuthenticatedUserEmail } from "@/lib/auth";
-import { decrypt } from "@/lib/encryption";
+import { revokeGmailAccess } from "@/lib/gmail-oauth";
 
 export async function POST(req: NextRequest) {
   const authEmail = await getAuthenticatedUserEmail();
@@ -13,19 +13,9 @@ export async function POST(req: NextRequest) {
   await dbConnect();
 
   const account = await AccountModel.findOne({ email: authEmail }).lean();
-  const refreshToken = decrypt((account as any)?.gmailOAuth?.refreshToken || "");
 
   // Best-effort revoke the token on Google's side
-  if (refreshToken) {
-    try {
-      await fetch(`https://oauth2.googleapis.com/revoke?token=${encodeURIComponent(refreshToken)}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      });
-    } catch {
-      // Non-fatal — continue removing from DB regardless
-    }
-  }
+  await revokeGmailAccess((account as any)?.gmailOAuth?.refreshToken);
 
   await AccountModel.findOneAndUpdate(
     { email: authEmail },

@@ -86,6 +86,31 @@ export function formatFullHost(domain: string, subdomain?: string): string {
   return `${sub}.${clean}`;
 }
 
+/**
+ * Best-effort removal of a customer's custom domain from our Vercel project.
+ * No-op when Vercel credentials aren't configured. Never throws.
+ */
+export async function removeDomainFromVercel(domain: string, subdomain?: string): Promise<void> {
+  const vercelToken = process.env.VERCEL_AUTH_TOKEN || process.env.VERCEL_TOKEN;
+  const vercelProjectId = process.env.VERCEL_PROJECT_ID || process.env.PROJECT_ID_VERCEL;
+  const vercelTeamId = process.env.VERCEL_TEAM_ID;
+  const fullHost = formatFullHost(domain, subdomain);
+  if (!vercelToken || !vercelProjectId || !fullHost) return;
+
+  try {
+    const teamParam = vercelTeamId ? `?teamId=${vercelTeamId}` : "";
+    await fetch(`https://api.vercel.com/v9/projects/${vercelProjectId}/domains/${fullHost}${teamParam}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${vercelToken}`,
+      },
+      signal: AbortSignal.timeout(10000),
+    });
+  } catch (vercelErr) {
+    console.warn("Failed to delete domain from Vercel:", vercelErr);
+  }
+}
+
 /** Vercel's documented CNAME target for project domains. */
 export const VERCEL_CNAME_TARGET = "cname.vercel-dns.com";
 
