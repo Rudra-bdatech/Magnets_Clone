@@ -9,6 +9,7 @@ import {
   handleLogin,
   handleUpdatePassword,
   handleGetAccountByEmail,
+  sanitizeAccount,
   handleSendResetEmail,
   handleResetPassword,
   handleSendVerificationEmail,
@@ -61,11 +62,9 @@ export const dynamic = "force-dynamic";
 export async function GET(req: Request) {
   try {
     await dbConnect();
-    const authEmail = await getAuthenticatedUserEmail();
-
-    const { searchParams } = new URL(req.url);
-    const email = searchParams.get("email");
-    const normEmail = authEmail || (email ? email.trim().toLowerCase() : null);
+    // Only ever return the logged-in user's own data. The ?email= query param is ignored for
+    // access control - trusting it let anyone read any account's data without logging in.
+    const normEmail = await getAuthenticatedUserEmail();
 
     if (!normEmail) {
       return NextResponse.json({
@@ -116,7 +115,7 @@ const leads = Array.isArray(rawLeads)
   : [];
 
 return NextResponse.json({
-  account,
+  account: sanitizeAccount(account),
   pages,
   leads,
   sequences,
@@ -143,15 +142,21 @@ export async function POST(req: Request) {
       "sendVerificationEmail",
       "sendForgotPasswordEmail",
       "verifyEmailToken",
-      "getLinkedInRecentPosts",
-      "saveLinkedInPostCampaign",
+      "getLinkedInRecentPosts", // read-only; called by the browser extension with just an email
     ];
 
     const isPublic = publicActions.includes(action);
-    let normEmail = email ? email.trim().toLowerCase() : (body.userEmail || "").trim().toLowerCase();
-    let authEmail: string | null = null;
-    if (!normEmail && !isPublic) {
-      authEmail = await getAuthenticatedUserEmail();
+    const bodyEmail = String(email || body.userEmail || "").trim().toLowerCase();
+    const authEmail = await getAuthenticatedUserEmail();
+    let normEmail: string;
+    if (isPublic) {
+      normEmail = bodyEmail || authEmail || "";
+    } else {
+      // Private actions always act on the logged-in user. An email in the body is never trusted:
+      // a mismatch is rejected instead of silently acting on someone else's account.
+      if (authEmail && bodyEmail && bodyEmail !== authEmail) {
+        return NextResponse.json({ error: "Forbidden. You can only access your own account." }, { status: 403 });
+      }
       normEmail = authEmail || "";
     }
 
