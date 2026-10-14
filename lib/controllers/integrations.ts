@@ -21,42 +21,70 @@ export async function handleSaveIntegrations(data: any, normEmail: string | null
 }
 
 export async function handleSaveResources(data: any, normEmail: string | null) {
-  if (normEmail) {
-    const existingRes = await ResourceModel.find({ userEmail: normEmail }).lean();
-    const newUrls = new Set(Array.isArray(data) ? data.map((r: any) => r.url || r.fileUrl).filter(Boolean) : []);
-    const removedAssets: string[] = [];
-    existingRes.forEach((r: any) => {
-      const u = r.url || r.fileUrl;
-      if (u && !newUrls.has(u)) {
-        removedAssets.push(u);
-      }
-    });
-    if (removedAssets.length > 0) {
-      deleteCloudinaryAssets(removedAssets).catch((err) =>
-        console.error("Cloudinary cleanup error on saveResources:", err)
-      );
-    }
-    await ResourceModel.deleteMany({ userEmail: normEmail });
+  if (!normEmail) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+
+  const existingRes = await ResourceModel.find({
+    userEmail: normEmail,
+    isPageAsset: { $ne: true },
+    type: { $ne: "page_asset" },
+  }).lean();
+  const newUrls = new Set(Array.isArray(data) ? data.map((r: any) => r.url || r.fileUrl).filter(Boolean) : []);
+  const removedAssets: string[] = [];
+  existingRes.forEach((r: any) => {
+    const u = (r as any).url || (r as any).fileUrl;
+    if (u && !newUrls.has(u)) {
+      removedAssets.push(u);
+    }
+  });
+
+  await ResourceModel.deleteMany({
+    userEmail: normEmail,
+    isPageAsset: { $ne: true },
+    type: { $ne: "page_asset" },
+  });
+
   if (Array.isArray(data) && data.length > 0) {
-    const docs = data.map((item: Resource) => ({ ...item, userEmail: normEmail || item.userEmail }));
+    const docs = data.map((item: Resource) => ({
+      ...item,
+      userEmail: normEmail,
+      isPageAsset: false,
+      type: "deliverable",
+    }));
     await ResourceModel.insertMany(docs);
   }
+
+  if (removedAssets.length > 0) {
+    deleteCloudinaryAssets(removedAssets, normEmail).catch((err) =>
+      console.error("Cloudinary cleanup error on saveResources:", err)
+    );
+  }
+
   return NextResponse.json({ success: true });
 }
 
 export async function handleDeleteResource(data: any, normEmail: string | null) {
-  const { id } = data;
-  const targetResource = await ResourceModel.findOne({ id, userEmail: normEmail }).lean();
+  const { id } = data || {};
+  if (typeof id !== "string" || !id.trim()) {
+    return NextResponse.json({ error: "Invalid resource ID" }, { status: 400 });
+  }
+  if (!normEmail) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const cleanId = id.trim();
+  const targetResource = await ResourceModel.findOne({ id: cleanId, userEmail: normEmail }).lean();
   if (targetResource) {
     const u = (targetResource as any).url || (targetResource as any).fileUrl;
+    await ResourceModel.deleteOne({ id: cleanId, userEmail: normEmail });
     if (u) {
-      deleteCloudinaryAsset(u).catch((err) =>
+      deleteCloudinaryAsset(u, normEmail, { excludeResourceIds: [cleanId] }).catch((err) =>
         console.error("Cloudinary cleanup error on deleteResource:", err)
       );
     }
   }
-  await ResourceModel.deleteOne({ id, userEmail: normEmail });
+
   return NextResponse.json({ success: true });
 }
 
@@ -163,13 +191,36 @@ export async function handleSendTestPipedriveAlert(data: any, normEmail: string 
 }
 
 export async function handleSendTestZapierAlert(data: any, normEmail: string | null) {
-  const webhookUrl = data?.webhookUrl || (await AccountModel.findOne({ email: normEmail }))?.zapierWebhookUrl;
-  if (!webhookUrl) {
+  const rawUrl = (data?.webhookUrl || (await AccountModel.findOne({ email: normEmail }))?.zapierWebhookUrl || "").trim();
+  if (!rawUrl) {
     return NextResponse.json({ error: "No Zapier Catch Hook URL provided." }, { status: 400 });
   }
 
+  let parsed: URL;
   try {
-    const zapRes = await fetch(webhookUrl, {
+    parsed = new URL(rawUrl);
+  } catch {
+    return NextResponse.json({ error: "Invalid Webhook URL format." }, { status: 400 });
+  }
+
+  const hostname = parsed.hostname.toLowerCase();
+  const isAllowedHost =
+    hostname === "hooks.zapier.com" ||
+    hostname.endsWith(".zapier.com") ||
+    hostname === "hook.integromat.com" ||
+    hostname.endsWith(".integromat.com") ||
+    hostname === "hook.eu1.make.com" ||
+    hostname.endsWith(".make.com");
+
+  if (parsed.protocol !== "https:" || !isAllowedHost) {
+    return NextResponse.json(
+      { error: "Invalid Webhook URL. Must be a secure HTTPS URL from Zapier (hooks.zapier.com) or Make/Integromat." },
+      { status: 400 }
+    );
+  }
+
+  try {
+    const zapRes = await fetch(rawUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -184,24 +235,43 @@ export async function handleSendTestZapierAlert(data: any, normEmail: string | n
     });
 
     if (!zapRes.ok) {
-      const text = await zapRes.text();
-      return NextResponse.json({ error: `Zapier returned error: ${text}` }, { status: 400 });
+      return NextResponse.json(
+        { error: `Zapier webhook returned HTTP error ${zapRes.status} (${zapRes.statusText || "Request failed"}). Verify your Catch Hook URL in Zapier.` },
+        { status: 400 }
+      );
     }
 
     return NextResponse.json({ success: true });
   } catch (err: any) {
-    return NextResponse.json({ error: err.message || "Failed to reach Zapier webhook." }, { status: 500 });
+    return NextResponse.json({ error: "Failed to reach Zapier webhook. Check network connectivity." }, { status: 500 });
   }
 }
 
 export async function handleSendTestSlackAlert(data: any, normEmail: string | null) {
-  const webhookUrl = data?.webhookUrl || (await AccountModel.findOne({ email: normEmail }))?.slackWebhookUrl;
-  if (!webhookUrl) {
+  const rawUrl = (data?.webhookUrl || (await AccountModel.findOne({ email: normEmail }))?.slackWebhookUrl || "").trim();
+  if (!rawUrl) {
     return NextResponse.json({ error: "No Slack Webhook URL provided." }, { status: 400 });
   }
 
+  let parsed: URL;
   try {
-    const slackRes = await fetch(webhookUrl, {
+    parsed = new URL(rawUrl);
+  } catch {
+    return NextResponse.json({ error: "Invalid Webhook URL format." }, { status: 400 });
+  }
+
+  const hostname = parsed.hostname.toLowerCase();
+  const isAllowedHost = hostname === "hooks.slack.com" || hostname.endsWith(".slack.com");
+
+  if (parsed.protocol !== "https:" || !isAllowedHost) {
+    return NextResponse.json(
+      { error: "Invalid Webhook URL. Must be a secure HTTPS URL from hooks.slack.com." },
+      { status: 400 }
+    );
+  }
+
+  try {
+    const slackRes = await fetch(rawUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -210,135 +280,14 @@ export async function handleSendTestSlackAlert(data: any, normEmail: string | nu
     });
 
     if (!slackRes.ok) {
-      const text = await slackRes.text();
-      return NextResponse.json({ error: `Slack returned error: ${text}` }, { status: 400 });
+      return NextResponse.json(
+        { error: `Slack webhook returned HTTP error ${slackRes.status} (${slackRes.statusText || "Request failed"}). Verify your Incoming Webhook URL in Slack.` },
+        { status: 400 }
+      );
     }
 
     return NextResponse.json({ success: true });
   } catch (err: any) {
-    return NextResponse.json({ error: err.message || "Failed to reach Slack webhook." }, { status: 500 });
+    return NextResponse.json({ error: "Failed to reach Slack webhook. Check network connectivity." }, { status: 500 });
   }
 }
-
-export async function handleTestCalendarToken(data: any, normEmail: string | null) {
-  const provider = data?.provider || "Calendly";
-  const token = data?.token?.trim() || (await AccountModel.findOne({ email: normEmail }))?.calendarToken?.trim();
-
-  if (!token) {
-    return NextResponse.json(
-      { error: "Please enter a personal access token to verify connection." },
-      { status: 400 }
-    );
-  }
-
-  try {
-    if (provider === "Calendly") {
-      const res = await fetch("https://api.calendly.com/users/me", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (!res.ok) {
-        return NextResponse.json(
-          {
-            error:
-              "Invalid Calendly token (HTTP " +
-              res.status +
-              "). Please verify your Personal Access Token in Calendly Integrations > API & Webhooks.",
-          },
-          { status: 400 }
-        );
-      }
-
-      const resData = await res.json();
-      const user = resData.resource || {};
-      return NextResponse.json({
-        success: true,
-        provider: "Calendly",
-        name: user.name || "Calendly User",
-        email: user.email || "",
-        message: `Successfully connected to Calendly account (${user.name || user.email || "Active"})!`,
-      });
-    } else if (provider === "Cal.com") {
-      const isCalId = token.startsWith("calid_");
-      const hostnames = isCalId 
-        ? ["api.cal.id", "cal.id", "api.cal.com"]
-        : ["api.cal.com", "api.cal.id", "cal.id"];
-
-      let calRes: Response | null = null;
-
-      for (const host of hostnames) {
-        // Try v1 with query param
-        try {
-          calRes = await fetch(`https://${host}/v1/users/me?apiKey=${encodeURIComponent(token)}`);
-          if (calRes.ok) break;
-        } catch (_) {}
-
-        // Try v2 with Bearer header
-        try {
-          calRes = await fetch(`https://${host}/v2/me`, {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "cal-api-version": "2024-08-13",
-            },
-          });
-          if (calRes.ok) break;
-        } catch (_) {}
-
-        // Try v1 with Bearer header
-        try {
-          calRes = await fetch(`https://${host}/v1/users/me`, {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          });
-          if (calRes.ok) break;
-        } catch (_) {}
-      }
-
-      if (!calRes || !calRes.ok) {
-        // If the key is formatted properly (cal_... or calid_...) accept it as verified
-        if (token.startsWith("cal_") || token.startsWith("calid_")) {
-          return NextResponse.json({
-            success: true,
-            provider: "Cal.com",
-            name: "Cal ID User",
-            email: normEmail || "",
-            message: "Successfully connected to Cal.id / Cal.com account!",
-          });
-        }
-
-        return NextResponse.json(
-          {
-            error:
-              "Invalid Cal.com / Cal.id API key (HTTP " +
-              (calRes ? calRes.status : "401") +
-              "). Please verify your API key in Settings > Developer > API Keys.",
-          },
-          { status: 400 }
-        );
-      }
-
-      const calData = await calRes.json().catch(() => ({}));
-      const calUser = calData.user || calData.data || {};
-      return NextResponse.json({
-        success: true,
-        provider: "Cal.com",
-        name: calUser.name || calUser.username || "Cal ID User",
-        email: calUser.email || "",
-        message: `Successfully connected to Cal.com / Cal.id account (${calUser.name || calUser.email || "Active"})!`,
-      });
-    } else {
-      return NextResponse.json({ error: "Unsupported calendar provider." }, { status: 400 });
-    }
-  } catch (err: any) {
-    console.error("Calendar test error:", err);
-    return NextResponse.json(
-      { error: err.message || "Failed to reach calendar provider API." },
-      { status: 500 }
-    );
-  }
-}
-

@@ -255,7 +255,12 @@ const ResourceSchema = new Schema({
   url: { type: String, required: true },
   fileUrl: { type: String },
   fileExt: { type: String },
+  isPageAsset: { type: Boolean, default: false },
+  type: { type: String, default: "deliverable" },
 });
+
+ResourceSchema.index({ fileUrl: 1 });
+ResourceSchema.index({ userEmail: 1, fileUrl: 1 });
 
 export const ResourceModel = mongoose.models.Resource || mongoose.model("Resource", ResourceSchema);
 
@@ -297,6 +302,7 @@ const PdfOtpSchema = new Schema({
   token: { type: String, required: true, unique: true },
   expiresAt: { type: Date, required: true },
   used: { type: Boolean, default: false },
+  attempts: { type: Number, default: 0 },
   name: { type: String, default: "" },
   customFields: { type: Schema.Types.Mixed, default: {} },
 });

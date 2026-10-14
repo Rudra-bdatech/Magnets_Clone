@@ -74,6 +74,11 @@ async function refreshGmailAccessToken(clientId: string, clientSecret: string, r
   return data.access_token;
 }
 
+function sanitizeHeader(val?: string): string {
+  if (!val) return "";
+  return val.replace(/[\r\n]+/g, "").trim();
+}
+
 async function sendViaGmailApi(
   accessToken: string,
   from: string,
@@ -83,11 +88,16 @@ async function sendViaGmailApi(
   replyTo?: string
 ): Promise<{ success: boolean; messageId?: string; error?: string }> {
   try {
-    const utf8Subject = `=?utf-8?B?${Buffer.from(subject).toString("base64")}?=`;
+    const cleanFrom = sanitizeHeader(from);
+    const cleanTo = sanitizeHeader(to);
+    const cleanReplyTo = replyTo ? sanitizeHeader(replyTo) : undefined;
+    const cleanSubject = sanitizeHeader(subject);
+    const utf8Subject = `=?utf-8?B?${Buffer.from(cleanSubject).toString("base64")}?=`;
+
     const messageParts = [
-      `From: ${from}`,
-      `To: ${to}`,
-      ...(replyTo ? [`Reply-To: ${replyTo}`] : []),
+      `From: ${cleanFrom}`,
+      `To: ${cleanTo}`,
+      ...(cleanReplyTo ? [`Reply-To: ${cleanReplyTo}`] : []),
       `Subject: ${utf8Subject}`,
       `MIME-Version: 1.0`,
       `Content-Type: text/html; charset=utf-8`,
@@ -154,10 +164,11 @@ export async function sendMail(
   try {
     await dbConnect();
 
-    const recipientStr = Array.isArray(options.to) ? options.to.join(", ") : options.to;
-    const recipientClean = Array.isArray(options.to)
-      ? options.to[0]?.trim().toLowerCase()
-      : options.to.trim().toLowerCase();
+    const rawRecipient = Array.isArray(options.to) ? options.to.join(", ") : options.to;
+    const recipientStr = sanitizeHeader(rawRecipient);
+    const recipientClean = sanitizeHeader(
+      Array.isArray(options.to) ? options.to[0] : options.to
+    ).toLowerCase();
 
     const resolvedOwner = ownerEmail || options.tracking?.userEmail || "";
     const defaultFrom = process.env.SMTP_FROM || "noreply@bdatech.in";

@@ -83,9 +83,37 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    if (!safeCompare(otpRecord.code, code)) {
+    // ── Check per-code attempt limit (max 5 failed attempts) ──────────────
+    const MAX_ATTEMPTS = 5;
+    const currentAttempts = typeof otpRecord.attempts === "number" ? otpRecord.attempts : 0;
+
+    if (currentAttempts >= MAX_ATTEMPTS) {
+      await PdfOtpModel.deleteOne({ _id: otpRecord._id }).catch(() => {});
       return NextResponse.json(
-        { error: "Incorrect code. Please check your email and try again." },
+        { error: "Too many incorrect attempts. This code has expired. Please request a new one." },
+        { status: 429 }
+      );
+    }
+
+    if (!safeCompare(otpRecord.code, code)) {
+      const nextAttempts = currentAttempts + 1;
+      const remaining = MAX_ATTEMPTS - nextAttempts;
+
+      if (remaining <= 0) {
+        await PdfOtpModel.deleteOne({ _id: otpRecord._id }).catch(() => {});
+        return NextResponse.json(
+          { error: "Too many incorrect attempts. This code has expired. Please request a new one." },
+          { status: 400 }
+        );
+      }
+
+      await PdfOtpModel.updateOne(
+        { _id: otpRecord._id },
+        { $set: { attempts: nextAttempts } }
+      ).catch(() => {});
+
+      return NextResponse.json(
+        { error: `Incorrect code. ${remaining} attempt${remaining === 1 ? "" : "s"} remaining.` },
         { status: 400 }
       );
     }

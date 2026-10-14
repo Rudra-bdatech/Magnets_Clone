@@ -1702,50 +1702,6 @@ export default function SequenceEditor() {
                 </div>
               </div>
 
-              {/* Stop on Booking Automation Card */}
-              <div className="rounded-2xl border border-zinc-200/90 dark:border-zinc-800/90 bg-white dark:bg-[#18181B] p-4 sm:p-5 shadow-xs space-y-3">
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <h3 className="text-xs font-extrabold uppercase tracking-wider text-zinc-900 dark:text-white flex items-center gap-1.5">
-                      <Zap className="h-4 w-4 text-amber-500" />
-                      <span>Stop Drip on Booking</span>
-                    </h3>
-                    <p className="mt-1 text-[11px] text-zinc-500 dark:text-zinc-400 leading-relaxed">
-                      Automatically pause follow-up emails when a lead schedules a call via Calendly or Cal.com.
-                    </p>
-                  </div>
-
-                  <button
-                    role="switch"
-                    aria-checked={seq.stopOnBooking}
-                    onClick={() => {
-                      const nextVal = !seq.stopOnBooking;
-                      update({ ...seq, stopOnBooking: nextVal });
-                      triggerToast(nextVal ? "Stop on booking enabled!" : "Stop on booking disabled.");
-                    }}
-                    className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out ${
-                      seq.stopOnBooking ? "bg-[#0066B2]" : "bg-zinc-300 dark:bg-zinc-700"
-                    }`}
-                  >
-                    <span
-                      className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-md transition duration-200 ease-in-out ${
-                        seq.stopOnBooking ? "translate-x-5" : "translate-x-0"
-                      }`}
-                    />
-                  </button>
-                </div>
-
-                <div className="pt-1">
-                  <Link
-                    href="/dashboard/integration"
-                    className="text-[11px] font-semibold text-zinc-500 hover:text-[#0066B2] dark:hover:text-[#38BDF8] flex items-center gap-1"
-                  >
-                    <span>Configure Calendar Integrations</span>
-                    <ArrowUpRight className="h-3 w-3" />
-                  </Link>
-                </div>
-              </div>
-
               {/* Unsubscribe & Stop Link Explanation */}
               <div className="rounded-2xl border border-blue-500/20 dark:border-blue-500/30 bg-blue-50/50 dark:bg-blue-950/20 p-3 sm:p-4 space-y-2">
                 <div className="flex items-center gap-2 text-xs font-bold text-[#0066B2] dark:text-[#38BDF8]">

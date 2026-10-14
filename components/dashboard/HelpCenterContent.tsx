@@ -90,7 +90,6 @@ const helpTopics = {
       { text: "Connect Slack", icon: "Slack" },
       { text: "Connect Zapier", icon: "Zap" },
       { text: "Connect Pipedrive", icon: "Link" },
-      { text: "Connect a calendar", icon: "Calendar" },
     ],
   },
   manage: {
@@ -473,92 +472,6 @@ export default function HelpCenterContent({
                     <span>Open Leads</span>
                     <span className="text-base font-bold">→</span>
                   </Link>
-                </div>
-              </div>
-            ) : selectedTopic === "Connect a calendar" ? (
-              <div className="max-w-[43rem] mx-auto space-y-6 py-2">
-                {/* Header: SEQUENCE CONTROLS */}
-                <div className="space-y-4">
-                  <div className="flex items-center gap-3.5">
-                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#0066B2]/20 border border-[#0066B2]/40 text-[#0066B2] dark:text-[#38BDF8]">
-                      <Calendar className="h-5.5 w-5.5" />
-                    </span>
-                    <div>
-                      <p className="text-xs font-bold text-zinc-500 dark:text-[#9B9085] uppercase tracking-wider">SEQUENCE CONTROLS</p>
-                      <h2 className="text-xl font-bold text-zinc-900 dark:text-white leading-tight">How do I connect a calendar?</h2>
-                    </div>
-                  </div>
-
-                  <p className="text-sm text-zinc-600 dark:text-[#d4c8bc] leading-relaxed">
-                    Stop sending sales follow-up after a lead has already booked. LeadMagnets can stop an eligible sequence when the booking email matches the signup and that lead magnet has the option enabled. Your sender setup must be ready first.
-                  </p>
-                </div>
-
-                {/* 4 Numbered Steps */}
-                <div className="pt-2 space-y-6">
-                  {/* Step 1 */}
-                  <div className="flex items-start gap-4">
-                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#EFF6FF] border border-[#0066B2]/30 text-[#0066B2] dark:bg-[#0066B2]/20 dark:border-[#0066B2]/40 dark:text-[#38BDF8] text-xs font-bold mt-0.5">
-                      1
-                    </span>
-                    <div className="space-y-1">
-                      <h4 className="text-sm font-bold text-zinc-900 dark:text-white">Open Calendar settings</h4>
-                      <p className="text-xs text-zinc-500 dark:text-[#9B9085] leading-relaxed">
-                        Open Workspace setup, Optional connections, then Calendar.
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Step 2 */}
-                  <div className="flex items-start gap-4">
-                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#EFF6FF] border border-[#0066B2]/30 text-[#0066B2] dark:bg-[#0066B2]/20 dark:border-[#0066B2]/40 dark:text-[#38BDF8] text-xs font-bold mt-0.5">
-                      2
-                    </span>
-                    <div className="space-y-1">
-                      <h4 className="text-sm font-bold text-zinc-900 dark:text-white">Add the provider credential</h4>
-                      <p className="text-xs text-zinc-500 dark:text-[#9B9085] leading-relaxed">
-                        For Calendly, create a personal access token under Integrations, API and Webhooks. For Cal.com, create an API key.
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Step 3 */}
-                  <div className="flex items-start gap-4">
-                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#EFF6FF] border border-[#0066B2]/30 text-[#0066B2] dark:bg-[#0066B2]/20 dark:border-[#0066B2]/40 dark:text-[#38BDF8] text-xs font-bold mt-0.5">
-                      3
-                    </span>
-                    <div className="space-y-1">
-                      <h4 className="text-sm font-bold text-zinc-900 dark:text-white">Finish the connection</h4>
-                      <p className="text-xs text-zinc-500 dark:text-[#9B9085] leading-relaxed">
-                        Connect the account. Calendly requires a paid plan that supports webhooks. LeadMagnets configures the booking webhook for you.
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Step 4 */}
-                  <div className="flex items-start gap-4">
-                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#EFF6FF] border border-[#0066B2]/30 text-[#0066B2] dark:bg-[#0066B2]/20 dark:border-[#0066B2]/40 dark:text-[#38BDF8] text-xs font-bold mt-0.5">
-                      4
-                    </span>
-                    <div className="space-y-1">
-                      <h4 className="text-sm font-bold text-zinc-900 dark:text-white">Enable it per lead magnet</h4>
-                      <p className="text-xs text-zinc-500 dark:text-[#9B9085] leading-relaxed">
-                        In each lead magnet's Sequence tab, turn on the option to stop the sequence when a booking is received.
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Bottom Action Button */}
-                  <div className="pt-2 text-left">
-                    <Link
-                      href="/dashboard/integration#connections-section"
-                      onClick={() => setShowHelp(false)}
-                      className="inline-flex items-center gap-2 rounded-xl bg-[#0066B2] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#005799] transition-all cursor-pointer shadow-sm"
-                    >
-                      <span>Open Calendar connection</span>
-                      <span className="text-base font-bold">→</span>
-                    </Link>
-                  </div>
                 </div>
               </div>
             ) : selectedTopic === "Connect Zapier" ? (

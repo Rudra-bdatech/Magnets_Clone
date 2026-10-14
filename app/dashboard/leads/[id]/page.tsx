@@ -1,10 +1,12 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { ArrowLeft, ArrowUpRight, CalendarClock, Globe, Inbox, Link2, Mail, Rocket, Tag, UserPlus } from "lucide-react";
 import Button from "@/components/ui/button";
 import { type Lead } from "@/lib/data";
 import { formatDateTime } from "@/lib/utils";
 import { dbConnect } from "@/lib/mongodb";
-import { LeadModel, AccountModel } from "@/lib/models";
+import { LeadModel, AccountModel, MagnetPageModel } from "@/lib/models";
+import { getAuthenticatedUserEmail } from "@/lib/auth";
 import { account as seedAccount } from "@/lib/data";
 
 export const dynamic = "force-dynamic";
@@ -43,9 +45,25 @@ function SourceLabel({ source }: { source: Lead["source"] }) {
 export default async function LeadDetail({ params }: { params: { id: string } }) {
   await dbConnect();
 
+  const authEmail = await getAuthenticatedUserEmail();
+  if (!authEmail) {
+    redirect("/login");
+  }
+
+  const userPages = await MagnetPageModel.find({ userEmail: authEmail }).select("id").lean();
+  const userPageIds = userPages.map((p: any) => p.id).filter(Boolean);
+
   const [accountRaw, leadRaw] = await Promise.all([
-    AccountModel.findOne().lean(),
-    LeadModel.findOne({ id: params.id }).lean()
+    AccountModel.findOne({ email: authEmail }).lean(),
+    LeadModel.findOne({
+      id: params.id,
+      $or: [
+        { userEmail: authEmail },
+        ...(userPageIds.length > 0
+          ? [{ pageId: { $in: userPageIds }, userEmail: { $in: [null, "", undefined] } }]
+          : []),
+      ],
+    }).lean()
   ]);
   const account = accountRaw ? JSON.parse(JSON.stringify(accountRaw)) : seedAccount;
   const lead = leadRaw ? (JSON.parse(JSON.stringify(leadRaw)) as Lead) : null;

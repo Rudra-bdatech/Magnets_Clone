@@ -1390,7 +1390,7 @@ export default function PagesPage() {
                   setIsCreating(true);
 
                   const cleanSlug = newSlug;
-                  const newId = `page-${Date.now()}`;
+                  const newId = `page-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
                   const newMagnetPage: MagnetPage = {
                     id: newId,
                     userEmail: account?.email,
@@ -1455,7 +1455,7 @@ export default function PagesPage() {
                       if (isCreating) return;
                       setIsCreating(true);
                       const cleanSlug = newSlug;
-                      const newId = `page-${Date.now()}`;
+                      const newId = `page-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
                       const name = newName.trim() || "Untitled Landing Page";
                       const newMagnetPage: MagnetPage = {
                         id: newId,

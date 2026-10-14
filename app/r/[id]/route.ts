@@ -4,6 +4,7 @@ import path from "path";
 import { dbConnect } from "@/lib/mongodb";
 import { ResourceModel, MagnetPageModel } from "@/lib/models";
 import { v2 as cloudinary } from "cloudinary";
+import { isPrivateOrReservedUrl } from "@/lib/ssrf";
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -113,6 +114,11 @@ export async function GET(
         return NextResponse.redirect(rawFallbackUrl, 302);
       }
 
+      // Check if URL targets internal network or cloud metadata
+      if (await isPrivateOrReservedUrl(resource.fileUrl)) {
+        return NextResponse.json({ error: "Invalid resource URL" }, { status: 400 });
+      }
+
       try {
         const blobResponse = await fetch(resource.fileUrl);
         if (blobResponse.ok && blobResponse.body) {
@@ -120,7 +126,7 @@ export async function GET(
             headers: {
               "Content-Type": isPdf ? "application/pdf" : (blobResponse.headers.get("content-type") || "application/octet-stream"),
               "Content-Disposition": `attachment; filename="${encodeURIComponent(downloadFilename)}"`,
-              "Cache-Control": "public, max-age=31536000, immutable",
+              "Cache-Control": "private, no-cache, no-store, must-revalidate",
             },
           });
         }

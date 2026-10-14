@@ -52,7 +52,6 @@ import {
   handleSendTestPipedriveAlert,
   handleSendTestZapierAlert,
   handleSendTestSlackAlert,
-  handleTestCalendarToken,
 } from "@/lib/controllers/integrations";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { parseFlexibleDate } from "@/lib/utils";
@@ -83,20 +82,20 @@ const pages = await MagnetPageModel.find({ userEmail: normEmail })
   .sort({ updatedAt: -1, createdAt: -1, _id: -1 })
   .lean();
 
-const pageIds   = (pages as any[]).map((p) => p.id).filter(Boolean);
-const pageNames = (pages as any[]).map((p) => p.name).filter(Boolean);
+const pageIds = (pages as any[]).map((p) => p.id).filter(Boolean);
 
 // ── Phase 2: Run the remaining 5 queries in parallel ────────────────────────────────────────
-// The leads query uses the same wider $or that was previously run as a *second* serial query.
-// Result is byte-for-byte identical to the original code — no data is lost or changed.
-// The only difference: we eliminated one full extra DB round-trip.
+// Strictly tenant-isolated: Leads must have userEmail === normEmail,
+// or be unassigned legacy leads specifically matching this user's pageIds.
+// We never query globally by page title/name, preventing cross-account leaks.
 const [account, rawLeads, sequences, integrations, resources] = await Promise.all([
   AccountModel.findOne({ email: normEmail }).lean(), // password stripped by sanitizeAccount (needed for hasPassword)
   LeadModel.find({
     $or: [
       { userEmail: normEmail },
-      ...(pageIds.length   ? [{ pageId: { $in: pageIds } }]   : []),
-      ...(pageNames.length ? [{ page:   { $in: pageNames } }] : []),
+      ...(pageIds.length
+        ? [{ pageId: { $in: pageIds }, userEmail: { $in: [null, "", undefined] } }]
+        : []),
     ],
   }).sort({ createdAt: -1, _id: -1 }).lean(),
   SequenceModel.find({ userEmail: normEmail }).sort({ updatedAt: -1, createdAt: -1, _id: -1 }).lean(),
@@ -105,6 +104,14 @@ const [account, rawLeads, sequences, integrations, resources] = await Promise.al
     .sort({ uploadedAt: -1, createdAt: -1, _id: -1 })
     .lean(),
 ]);
+
+// Asynchronously backfill userEmail on any unassigned legacy leads for this user's pages
+if (pageIds.length > 0) {
+  LeadModel.updateMany(
+    { pageId: { $in: pageIds }, userEmail: { $in: [null, "", undefined] } },
+    { $set: { userEmail: normEmail } }
+  ).exec().catch(() => {});
+}
 
 const leads = Array.isArray(rawLeads)
   ? [...rawLeads].sort((a: any, b: any) => {
@@ -281,8 +288,23 @@ export async function POST(req: Request) {
         return handleSendTestSequenceEmail(data, normEmail);
 
       // Leads Controller
-      case "addLead":
-        return handleAddLead(data, req, normEmail);
+      case "addLead": {
+        if (!authEmail) {
+          const rlIp =
+            (req as any).headers?.get?.("x-forwarded-for")?.split(",")[0]?.trim() ||
+            (req as any).headers?.get?.("x-real-ip") ||
+            "unknown";
+          const targetKey = String(data?.pageId || data?.pageSlug || "signup").slice(0, 50);
+          const rl = await checkRateLimit(rlIp, `add_lead_${targetKey}`, 30, 60 * 1000);
+          if (!rl.success) {
+            return NextResponse.json(
+              { error: "Too many signups submitted. Please try again in a moment." },
+              { status: 429 }
+            );
+          }
+        }
+        return handleAddLead(data, req, normEmail, authEmail);
+      }
       case "deleteLead":
         return handleDeleteLead(data, normEmail);
       case "saveLeads":
@@ -313,8 +335,6 @@ export async function POST(req: Request) {
         return handleSendTestZapierAlert(data, normEmail);
       case "sendTestSlackAlert":
         return handleSendTestSlackAlert(data, normEmail);
-      case "testCalendarToken":
-        return handleTestCalendarToken(data, normEmail);
 
       default:
         return NextResponse.json({ error: "Invalid action" }, { status: 400 });

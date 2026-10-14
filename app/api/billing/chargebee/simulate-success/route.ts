@@ -9,6 +9,11 @@ export const dynamic = "force-dynamic";
 // Upgrades the authenticated user to Pro without a real payment.
 // This route is only reached when CHARGEBEE_API_KEY is not configured in .env.local.
 export async function POST(req: Request) {
+  // Never grant free upgrades in production unless sandbox simulation is explicitly enabled.
+  if (process.env.NODE_ENV === "production" && process.env.ALLOW_SIMULATED_BILLING !== "true") {
+    return NextResponse.json({ error: "Not found" }, { status: 404 });
+  }
+
   try {
     const { isSimulated } = await req.json();
 

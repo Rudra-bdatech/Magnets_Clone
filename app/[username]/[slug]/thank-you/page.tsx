@@ -192,7 +192,6 @@ export default async function ThankYouPage({
           pageName={pageDoc.name}
           magnetSlug={pageDoc.slug || pageDoc.id}
           username={decodedUsername || "u"}
-          calendarUrl={accountDoc?.calendarToken || null}
           afterSignupOption={pageDoc.afterSignupOption || "standard"}
           customHeading={pageDoc.customHeading || null}
           customMessage={pageDoc.customMessage || null}

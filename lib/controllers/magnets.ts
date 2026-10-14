@@ -4,9 +4,33 @@ import { type MagnetPage, type Sequence } from "@/lib/data";
 import { deleteCloudinaryAssets } from "@/lib/cloudinary";
 
 export async function handleSavePages(data: any, normEmail: string | null) {
+  if (!normEmail) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   if (Array.isArray(data) && data.length > 0) {
     const incomingIds = (data as MagnetPage[]).map((item) => item.id).filter(Boolean);
-    const existingPages = await MagnetPageModel.find({ id: { $in: incomingIds } }).lean();
+
+    // Prevent cross-account page ID hijacking or collisions
+    if (incomingIds.length > 0) {
+      const conflictingPages = await MagnetPageModel.find({
+        id: { $in: incomingIds },
+        userEmail: { $ne: normEmail },
+      }).select("id").lean();
+
+      if (conflictingPages.length > 0) {
+        return NextResponse.json(
+          { error: "One or more page IDs belong to another account." },
+          { status: 403 }
+        );
+      }
+    }
+
+    // Only fetch pages belonging to the current authenticated tenant
+    const existingPages = await MagnetPageModel.find({
+      id: { $in: incomingIds },
+      userEmail: normEmail,
+    }).lean();
     const existingMap = new Map<string, MagnetPage>((existingPages as unknown as MagnetPage[]).map((p) => [p.id, p]));
 
     const replacedAssets: string[] = [];
@@ -30,31 +54,54 @@ export async function handleSavePages(data: any, normEmail: string | null) {
       }
     });
 
-    if (replacedAssets.length > 0) {
-      deleteCloudinaryAssets(replacedAssets).catch((err) =>
-        console.error("Cloudinary cleanup error on savePages:", err)
-      );
-    }
-
     const ops = (data as MagnetPage[]).map((item) => {
-      const itemEmail = normEmail || item.userEmail || "";
       return {
         updateOne: {
-          filter: { id: item.id, ...(normEmail ? { userEmail: normEmail } : {}) },
-          update: { $set: { ...item, userEmail: itemEmail } },
+          filter: { id: item.id, userEmail: normEmail },
+          update: { $set: { ...item, userEmail: normEmail } },
           upsert: true,
         },
       };
     });
     await MagnetPageModel.bulkWrite(ops);
+
+    // After updating database, safely clean up replaced assets with tenant verification
+    if (replacedAssets.length > 0) {
+      deleteCloudinaryAssets(replacedAssets, normEmail, { excludePageIds: incomingIds }).catch((err) =>
+        console.error("Cloudinary cleanup error on savePages:", err)
+      );
+    }
   }
   return NextResponse.json({ success: true });
 }
 
 export async function handleAddPage(data: any, normEmail: string | null) {
-  const existingPage = (await MagnetPageModel.findOne({ id: data.id }).lean()) as unknown as MagnetPage | null;
+  if (!normEmail) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  if (data.id) {
+    const existingOther = await MagnetPageModel.findOne({
+      id: data.id,
+      userEmail: { $ne: normEmail },
+    }).select("id").lean();
+
+    if (existingOther) {
+      return NextResponse.json(
+        { error: "Page ID is already in use by another account." },
+        { status: 403 }
+      );
+    }
+  }
+
+  // Only check existing page belonging to this authenticated user
+  const existingPage = (await MagnetPageModel.findOne({
+    id: data.id,
+    userEmail: normEmail,
+  }).lean()) as unknown as MagnetPage | null;
+
+  const replacedAssets: string[] = [];
   if (existingPage) {
-    const replacedAssets: string[] = [];
     if (existingPage.imageUrl && data.imageUrl && existingPage.imageUrl !== data.imageUrl) {
       replacedAssets.push(existingPage.imageUrl);
     }
@@ -69,46 +116,58 @@ export async function handleAddPage(data: any, normEmail: string | null) {
         }
       });
     }
-    if (replacedAssets.length > 0) {
-      deleteCloudinaryAssets(replacedAssets).catch((err) =>
-        console.error("Cloudinary cleanup error on addPage:", err)
-      );
-    }
   }
 
-  const pageToInsert = normEmail ? { ...data, userEmail: normEmail } : data;
+  const pageToInsert = { ...data, userEmail: normEmail };
   await MagnetPageModel.findOneAndUpdate(
-    { id: data.id, ...(normEmail ? { userEmail: normEmail } : {}) },
+    { id: data.id, userEmail: normEmail },
     pageToInsert,
     { upsert: true, returnDocument: 'after' }
   );
+
+  if (replacedAssets.length > 0) {
+    deleteCloudinaryAssets(replacedAssets, normEmail, { excludePageIds: [data.id] }).catch((err) =>
+      console.error("Cloudinary cleanup error on addPage:", err)
+    );
+  }
+
   return NextResponse.json({ success: true });
 }
 
 export async function handleDeletePage(data: any, normEmail: string | null) {
-  const { id } = data;
-  const filter = normEmail
-    ? { id, userEmail: normEmail } // exact match — normEmail is always lowercase (route.ts L141), userEmail in DB is always lowercase (Mongoose schema lowercase:true). Index can now be used.
-    : { id };
+  const { id } = data || {};
+  if (typeof id !== "string" || !id.trim()) {
+    return NextResponse.json({ error: "Invalid page ID" }, { status: 400 });
+  }
+  if (!normEmail) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const cleanId = id.trim();
+  const filter = { id: cleanId, userEmail: normEmail };
 
   const targetPage = (await MagnetPageModel.findOne(filter).lean()) as unknown as MagnetPage | null;
-  if (targetPage) {
-    const assetsToDelete: string[] = [];
-    if (targetPage.imageUrl) assetsToDelete.push(targetPage.imageUrl);
-    if (targetPage.variantBImage) assetsToDelete.push(targetPage.variantBImage);
-    if (Array.isArray(targetPage.pdfPages)) {
-      targetPage.pdfPages.forEach((url: string) => {
-        if (url) assetsToDelete.push(url);
-      });
-    }
-    if (assetsToDelete.length > 0) {
-      deleteCloudinaryAssets(assetsToDelete).catch((err) =>
-        console.error("Cloudinary cleanup error on deletePage:", err)
-      );
-    }
+  if (!targetPage) {
+    return NextResponse.json({ success: true });
+  }
+
+  const assetsToDelete: string[] = [];
+  if (targetPage.imageUrl) assetsToDelete.push(targetPage.imageUrl);
+  if (targetPage.variantBImage) assetsToDelete.push(targetPage.variantBImage);
+  if (Array.isArray(targetPage.pdfPages)) {
+    targetPage.pdfPages.forEach((url: string) => {
+      if (url) assetsToDelete.push(url);
+    });
   }
 
   await MagnetPageModel.deleteOne(filter);
+
+  if (assetsToDelete.length > 0) {
+    deleteCloudinaryAssets(assetsToDelete, normEmail, { excludePageIds: [cleanId] }).catch((err) =>
+      console.error("Cloudinary cleanup error on deletePage:", err)
+    );
+  }
+
   return NextResponse.json({ success: true });
 }
 
@@ -153,16 +212,31 @@ export async function handleSaveSequences(data: any, normEmail: string | null) {
 }
 
 export async function handleDeleteSequence(data: any, normEmail: string | null) {
-  const { id } = data;
-  const filter = normEmail ? { id, userEmail: normEmail } : { id };
+  const { id } = data || {};
+  if (typeof id !== "string" || !id.trim()) {
+    return NextResponse.json({ error: "Invalid sequence ID" }, { status: 400 });
+  }
+  if (!normEmail) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const cleanId = id.trim();
+  const filter = { id: cleanId, userEmail: normEmail };
   const targetSeq = (await SequenceModel.findOne(filter).lean()) as unknown as Sequence | null;
-  const pageIdToUpdate = targetSeq?.pageId || id;
+  const pageIdToUpdate = typeof targetSeq?.pageId === "string" ? targetSeq.pageId.trim() : "";
 
   await SequenceModel.deleteOne(filter);
+
+  // Strictly scope the magnet page updates to this authenticated user's account only
+  const pageUpdateIds = [cleanId, ...(pageIdToUpdate ? [pageIdToUpdate] : [])];
   await MagnetPageModel.updateMany(
-    { $or: [{ id }, { id: pageIdToUpdate }] },
+    {
+      userEmail: normEmail,
+      id: { $in: pageUpdateIds },
+    },
     { $set: { sequenceEnabled: false, sequenceEmails: [] } }
   );
+
   return NextResponse.json({ success: true });
 }
 

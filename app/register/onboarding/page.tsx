@@ -161,7 +161,7 @@ function OnboardingContent() {
     if (!pageName.trim() || !pageSlug.trim()) return;
 
     setCreatingPage(true);
-    const pageId = Math.random().toString(36).substring(2, 9);
+    const pageId = `page-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
 
     const formatLabels: Record<string, string> = {
       ebook: "Guide / Ebook",

@@ -33,6 +33,7 @@ export function sanitizeAccount(accountDoc: any) {
   delete acc.resetPasswordToken;
   delete acc.resetPasswordExpires;
   delete acc.linkedinLiAt;
+  delete acc.calendarToken; // calendar integration removed; never expose a leftover token
   const computedRole = determineRoleForEmail(acc.email);
   acc.role = computedRole === "super_admin" ? "super_admin" : (acc.role || computedRole);
   // Strip encrypted secrets — never send raw credentials to the client
@@ -82,6 +83,24 @@ export async function handleSaveAccount(data: any, authEmail: string | null) {
       return NextResponse.json({ error: pwdErr }, { status: 400 });
     }
   }
+
+  // Validate GA4 Measurement ID and Meta Pixel ID to prevent script injection
+  if (data.ga4MeasurementId !== undefined && data.ga4MeasurementId !== null) {
+    const trimmed = String(data.ga4MeasurementId).trim();
+    if (trimmed !== "" && !/^G-[A-Z0-9]+$/i.test(trimmed)) {
+      return NextResponse.json({ error: "Invalid GA4 Measurement ID format. Expected G-XXXXXXXXXX" }, { status: 400 });
+    }
+    data.ga4MeasurementId = trimmed;
+  }
+
+  if (data.metaPixelId !== undefined && data.metaPixelId !== null) {
+    const trimmed = String(data.metaPixelId).trim();
+    if (trimmed !== "" && !/^\d{1,30}$/.test(trimmed)) {
+      return NextResponse.json({ error: "Invalid Meta Pixel ID format. Expected numbers only." }, { status: 400 });
+    }
+    data.metaPixelId = trimmed;
+  }
+
   let existing = await AccountModel.findOne({ email: normalizedEmail });
   if (!existing && data.id) {
     existing = await AccountModel.findOne({ id: data.id, email: normalizedEmail });
@@ -117,9 +136,6 @@ export async function handleSaveAccount(data: any, authEmail: string | null) {
     existing.kitApiKey = data.kitApiKey !== undefined ? data.kitApiKey : existing.kitApiKey;
     existing.senderDisplayName = data.senderDisplayName !== undefined ? data.senderDisplayName : existing.senderDisplayName;
     existing.senderAddress = data.senderAddress !== undefined ? data.senderAddress : existing.senderAddress;
-    existing.calendarProvider = data.calendarProvider || existing.calendarProvider;
-    existing.calendarToken = data.calendarToken !== undefined ? data.calendarToken : existing.calendarToken;
-    existing.calendarConnected = data.calendarConnected !== undefined ? data.calendarConnected : existing.calendarConnected;
     // Domain verification flags are owned by /api/domain/verify.
     // This save may change the requested host, and clears proof when the host changes.
     // It never copies domainVerified / cnameVerified from the client.
@@ -333,13 +349,6 @@ export async function handleDeleteAccount(data: any, authEmail: string | null) {
     account.customDomain ? removeDomainFromVercel(account.customDomain, account.customSubdomain || "get") : null,
   ]);
 
-  // Permanently delete all Cloudinary media assets
-  if (allUserAssets.length > 0) {
-    deleteCloudinaryAssets(allUserAssets).catch((err) =>
-      console.error("Cloudinary cleanup error on deleteAccount:", err)
-    );
-  }
-
   // Completely purge all collections from top to bottom
   await Promise.all([
     AccountModel.deleteOne({ email: normDelEmail }),
@@ -356,6 +365,13 @@ export async function handleDeleteAccount(data: any, authEmail: string | null) {
     EmailEventModel.deleteMany({ userEmail: normDelEmail }),
     ...(userPageIds.length > 0 ? [PdfOtpModel.deleteMany({ magnetId: { $in: userPageIds } })] : []),
   ]);
+
+  // Permanently delete all Cloudinary media assets with tenant verification
+  if (allUserAssets.length > 0) {
+    deleteCloudinaryAssets(allUserAssets, normDelEmail).catch((err) =>
+      console.error("Cloudinary cleanup error on deleteAccount:", err)
+    );
+  }
 
   const res = NextResponse.json({ success: true });
   clearAuthCookie(res);

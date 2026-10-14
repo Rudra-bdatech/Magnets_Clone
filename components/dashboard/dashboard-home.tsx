@@ -304,7 +304,7 @@ export default function DashboardHome({
       .replace(/[^a-z0-9\s-]/g, "")
       .replace(/\s+/g, "-") || (templateType === "locked-pdf" ? "locked-pdf" : "untitled-page");
 
-    const newId = `page-${Date.now()}`;
+    const newId = `page-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
     const newPage: MagnetPage = {
       id: newId,
       name,

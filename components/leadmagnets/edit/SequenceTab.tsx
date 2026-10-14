@@ -209,37 +209,6 @@ export default function SequenceTab({
                 <span>{sequenceEnabled ? "Enabled" : "Disabled"}</span>
               </button>
             </div>
-
-            {/* 2 Sub-cards in grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-1">
-              {/* Sub-card 1: Stop when a call is booked */}
-              <div
-                onClick={() => { if (sequenceEnabled) setStopOnCall(!stopOnCall); }}
-                className={`rounded-xl border p-3.5 transition shadow-2xs ${sequenceEnabled ? "cursor-pointer" : "opacity-50 cursor-not-allowed"} ${(account?.themeMode || "light") === "dark" ? "border-[#27272A] bg-[#121216] hover:border-zinc-500 text-white" : "border-zinc-200 bg-white hover:border-zinc-300 text-zinc-900"}`}
-              >
-                <div className="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    checked={stopOnCall}
-                    disabled={!sequenceEnabled}
-                    onChange={() => { }}
-                    className="rounded border-zinc-300 text-[#FE6F34] focus:ring-[#FE6F34] cursor-pointer disabled:cursor-not-allowed"
-                  />
-                  <span className={`text-xs font-bold ${(account?.themeMode || "light") === "dark" ? "text-white" : "text-zinc-800"}`}>Stop when a call is booked</span>
-                </div>
-                <p className="text-[11px] text-zinc-400 mt-1 pl-6 leading-relaxed">
-                  Calendly and Cal.com booking-created webhooks stop this magnet&apos;s sequence for that email.
-                </p>
-              </div>
-
-              {/* Sub-card 2: Calendar connection */}
-              <div className={`rounded-xl border p-3.5 transition ${sequenceEnabled ? "" : "opacity-50"} ${(account?.themeMode || "light") === "dark" ? "border-[#27272A] bg-[#121216] text-white" : "border-zinc-200 bg-[#F9F9FB] text-zinc-900"}`}>
-                <span className={`text-xs font-bold block ${(account?.themeMode || "light") === "dark" ? "text-white" : "text-zinc-700"}`}>Calendar connection</span>
-                <p className="text-[11px] text-zinc-400 mt-1 leading-relaxed">
-                  Connect Calendly or Cal.com in Configure to let booked calls stop this sequence.
-                </p>
-              </div>
-            </div>
           </div>
 
           {/* Main Editor Body: 2-Column Sidebar + Detail View */}

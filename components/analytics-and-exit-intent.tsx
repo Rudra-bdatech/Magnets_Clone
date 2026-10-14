@@ -155,13 +155,17 @@ export default function AnalyticsAndExitIntent({
     }
   };
 
+  // Strictly validate analytics IDs to ensure only safe, standard formats are injected into inline scripts
+  const validGa4Id = ga4Id && /^G-[A-Z0-9]+$/i.test(ga4Id.trim()) ? ga4Id.trim() : null;
+  const validPixelId = pixelId && /^\d{1,30}$/.test(pixelId.trim()) ? pixelId.trim() : null;
+
   return (
     <>
       {/* Google Analytics 4 Script - lazyOnload strategy to prevent blocking browser tab load */}
-      {ga4Id && ga4Id.trim() !== "" && (
+      {validGa4Id && (
         <>
           <Script
-            src={`https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(ga4Id.trim())}`}
+            src={`https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(validGa4Id)}`}
             strategy="lazyOnload"
           />
           <Script id="ga4-init" strategy="lazyOnload">
@@ -169,14 +173,14 @@ export default function AnalyticsAndExitIntent({
               window.dataLayer = window.dataLayer || [];
               function gtag(){dataLayer.push(arguments);}
               gtag('js', new Date());
-              gtag('config', '${ga4Id.trim()}', { page_path: window.location.pathname });
+              gtag('config', '${validGa4Id}', { page_path: window.location.pathname });
             `}
           </Script>
         </>
       )}
 
       {/* Meta (Facebook) Pixel Script - lazyOnload strategy */}
-      {pixelId && pixelId.trim() !== "" && (
+      {validPixelId && (
         <Script id="meta-pixel-init" strategy="lazyOnload">
           {`
             !function(f,b,e,v,n,t,s)
@@ -187,7 +191,7 @@ export default function AnalyticsAndExitIntent({
             t.src=v;s=b.getElementsByTagName(e)[0];
             s.parentNode.insertBefore(t,s)}(window, document,'script',
             'https://connect.facebook.net/en_US/fbevents.js');
-            fbq('init', '${pixelId.trim()}');
+            fbq('init', '${validPixelId}');
             fbq('track', 'PageView');
           `}
         </Script>

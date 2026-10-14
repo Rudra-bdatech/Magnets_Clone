@@ -5,30 +5,63 @@ import { sendInstantLeadAlert } from "@/lib/email-alerts";
 import { sendMail } from "@/lib/email";
 import { parseFlexibleDate } from "@/lib/utils";
 
-export async function handleAddLead(data: any, req: Request, normEmail: string | null) {
-  let ownerEmail = normEmail || data.userEmail;
-  let pageTitle = data.page || "Lead Magnet";
+function escapeHtml(str: string): string {
+  if (!str) return "";
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+function stripHtmlTags(str: string): string {
+  if (!str) return "";
+  return String(str).replace(/<[^>]*>/g, "").trim();
+}
+
+function cleanStr(val: any, maxLen = 300): string {
+  if (typeof val !== "string") return "";
+  return val.trim().slice(0, maxLen);
+}
+
+export async function handleAddLead(data: any, req: Request, normEmail: string | null, authEmail?: string | null) {
+  // Auto-generate ID if missing or sanitize string
+  const safeDataId = cleanStr(data.id, 100);
+  data.id = safeDataId || `lead-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`;
+
+  // Sanitize name and email
+  const rawInputName = cleanStr(data.name, 150);
+  const safePlainName = stripHtmlTags(rawInputName);
+  data.name = safePlainName || "LinkedIn Prospect";
+
+  const cleanEmail = cleanStr(data.email, 150).replace(/[\r\n]+/g, "").toLowerCase();
+  if (!cleanEmail) {
+    const slugName = data.name.toLowerCase().replace(/[^a-z0-9]/g, "") || "prospect";
+    data.email = `${slugName}@linkedin-prospect.com`;
+  } else {
+    data.email = cleanEmail;
+  }
+
+  // Sanitize page identifier strings to prevent NoSQL operator injection ($ne, $regex, etc.)
+  const cleanPageId = cleanStr(data.pageId, 100);
+  const cleanPageName = cleanStr(data.page, 200);
+  const cleanPageSlug = cleanStr(data.pageSlug, 100);
+
+  let pageTitle = cleanPageName || "Lead Magnet";
   let foundPageDoc: any = null;
 
-  // Auto-generate ID if missing
-  if (!data.id) {
-    data.id = `lead-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`;
-  }
+  // Track if the owner email is verified by active user session or matching page document in DB
+  let isVerifiedOwner = Boolean(authEmail && authEmail.trim());
+  let ownerEmail = authEmail
+    ? authEmail.trim().replace(/[\r\n]+/g, "").toLowerCase()
+    : (cleanStr(normEmail, 150).replace(/[\r\n]+/g, "").toLowerCase() || cleanStr(data.userEmail, 150).replace(/[\r\n]+/g, "").toLowerCase());
 
-  // Ensure name and email exist
-  if (!data.name || !String(data.name).trim()) {
-    data.name = "LinkedIn Prospect";
-  }
-  if (!data.email || !String(data.email).trim()) {
-    const slugName = String(data.name).toLowerCase().replace(/[^a-z0-9]/g, "") || "prospect";
-    data.email = `${slugName}@linkedin-prospect.com`;
-  }
-
-  if (data.pageId || data.page || data.pageSlug) {
+  if (cleanPageId || cleanPageName || cleanPageSlug) {
     const query: any[] = [];
-    if (data.pageId) query.push({ id: data.pageId });
-    if (data.page) query.push({ name: data.page });
-    if (data.pageSlug) query.push({ slug: data.pageSlug });
+    if (cleanPageId) query.push({ id: cleanPageId });
+    if (cleanPageName) query.push({ name: cleanPageName });
+    if (cleanPageSlug) query.push({ slug: cleanPageSlug });
     try {
       if (ownerEmail) {
         foundPageDoc = await MagnetPageModel.findOne({
@@ -39,13 +72,23 @@ export async function handleAddLead(data: any, req: Request, normEmail: string |
         }).sort({ updatedAt: -1, createdAt: -1, _id: -1 }).lean();
       }
       if (!foundPageDoc) {
-        foundPageDoc = await MagnetPageModel.findOne({ $or: query })
-          .sort({ updatedAt: -1, createdAt: -1, _id: -1 })
-          .lean();
+        // Without a verified ownerEmail, NEVER match by generic page name across the entire database.
+        // Only match by unambiguous identifiers (pageId or pageSlug).
+        const specificQuery: any[] = [];
+        if (cleanPageId) specificQuery.push({ id: cleanPageId });
+        if (cleanPageSlug) specificQuery.push({ slug: cleanPageSlug });
+        if (specificQuery.length > 0) {
+          foundPageDoc = await MagnetPageModel.findOne({ $or: specificQuery })
+            .sort({ updatedAt: -1, createdAt: -1, _id: -1 })
+            .lean();
+        }
       }
     } catch (_) {}
     if (foundPageDoc) {
-      if (foundPageDoc.userEmail) ownerEmail = foundPageDoc.userEmail;
+      if (foundPageDoc.userEmail) {
+        ownerEmail = foundPageDoc.userEmail;
+        isVerifiedOwner = true;
+      }
       if (foundPageDoc.name) pageTitle = foundPageDoc.name;
       data.pageId = foundPageDoc.id;
       data.page = foundPageDoc.name || pageTitle;
@@ -63,11 +106,11 @@ export async function handleAddLead(data: any, req: Request, normEmail: string |
   // Fallback: If page or pageId is still missing, attempt resolution from owner account or latest magnet
   if (!data.pageId || !data.page) {
     let resolvedMagnet: any = null;
-    if (ownerEmail) {
+    if (ownerEmail && isVerifiedOwner) {
       try {
         const ownerAcc = await AccountModel.findOne({ email: ownerEmail.trim().toLowerCase() }).lean();
         if (ownerAcc) {
-          const incomingPostId = data.postId || data.customFields?.postId;
+          const incomingPostId = cleanStr(data.postId || (data.customFields && typeof data.customFields === "object" ? data.customFields.postId : ""), 100);
           if (incomingPostId && Array.isArray((ownerAcc as any).linkedinPostCampaigns)) {
             const matchedCampaign = (ownerAcc as any).linkedinPostCampaigns.find((c: any) => c.postId === incomingPostId);
             if (matchedCampaign?.magnetId) {
@@ -90,24 +133,25 @@ export async function handleAddLead(data: any, req: Request, normEmail: string |
       data.page = resolvedMagnet.name || resolvedMagnet.slug || "Lead Magnet";
       pageTitle = data.page;
     } else {
-      data.pageId = data.pageId || "linkedin-auto-lead";
-      data.page = data.page || "LinkedIn Lead Magnet";
+      data.pageId = cleanPageId || "linkedin-auto-lead";
+      data.page = cleanPageName || "LinkedIn Lead Magnet";
       pageTitle = data.page;
     }
   }
 
   let isUpgradedFromPending = false;
   let createdOrUpdatedLead: any = null;
+  let existingLeadDoc: any = null;
 
   if (data.email && (data.pageId || data.page)) {
-    const targetPageId = data.pageId || (foundPageDoc ? foundPageDoc.id : null);
+    const targetPageId = cleanStr(data.pageId || (foundPageDoc ? foundPageDoc.id : null), 100);
     const normalizedEmail = data.email.trim().toLowerCase();
 
     // Check if there is a pending LinkedIn lead waiting for email conversion
     let pendingLead: any = null;
 
     // 1. Check by explicit liLeadId or customFields.liLeadId
-    const targetLiLeadId = data.liLeadId || data.customFields?.liLeadId;
+    const targetLiLeadId = cleanStr(data.liLeadId || (data.customFields && typeof data.customFields === "object" ? data.customFields.liLeadId : ""), 100);
     if (targetLiLeadId) {
       pendingLead = await LeadModel.findOne({
         $or: [{ id: targetLiLeadId }, { "customFields.commentId": targetLiLeadId }],
@@ -116,7 +160,7 @@ export async function handleAddLead(data: any, req: Request, normEmail: string |
     }
 
     // 2. Check by authorId
-    const targetAuthorId = data.liAuthorId || data.customFields?.liAuthorId;
+    const targetAuthorId = cleanStr(data.liAuthorId || (data.customFields && typeof data.customFields === "object" ? data.customFields.liAuthorId : ""), 100);
     if (!pendingLead && targetAuthorId) {
       pendingLead = await LeadModel.findOne({
         "customFields.authorId": targetAuthorId,
@@ -131,17 +175,17 @@ export async function handleAddLead(data: any, req: Request, normEmail: string |
       };
       if (targetPageId) {
         pendingQuery.pageId = targetPageId;
-      } else if (data.page) {
-        pendingQuery.page = data.page;
+      } else if (cleanPageName) {
+        pendingQuery.page = cleanPageName;
       } else if (ownerEmail) {
         pendingQuery.userEmail = ownerEmail;
       }
 
       const nameConditions: any[] = [{ email: normalizedEmail }];
       if (data.name && data.name.trim()) {
-        const cleanName = data.name.trim();
-        nameConditions.push({ name: new RegExp(cleanName.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'), "i") });
-        nameConditions.push({ email: new RegExp(cleanName.toLowerCase().replace(/[^a-z0-9]/g, ""), "i") });
+        const cleanNameText = data.name.trim();
+        nameConditions.push({ name: new RegExp(cleanNameText.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'), "i") });
+        nameConditions.push({ email: new RegExp(cleanNameText.toLowerCase().replace(/[^a-z0-9]/g, ""), "i") });
       }
       pendingQuery.$or = nameConditions;
 
@@ -169,10 +213,11 @@ export async function handleAddLead(data: any, req: Request, normEmail: string |
         convertedAt: new Date().toISOString(),
         verifiedEmail: normalizedEmail,
         isConverted: true,
+        lastDeliverableSentAt: new Date().toISOString(),
       };
-      if (data.customAnswer) pendingLead.customAnswer = data.customAnswer;
-      if (data.sequence) pendingLead.sequence = data.sequence;
-      if (data.sequenceStep) pendingLead.sequenceStep = data.sequenceStep;
+      if (data.customAnswer) pendingLead.customAnswer = cleanStr(data.customAnswer, 1000);
+      if (data.sequence) pendingLead.sequence = cleanStr(data.sequence, 100);
+      if (data.sequenceStep) pendingLead.sequenceStep = cleanStr(data.sequenceStep, 100);
       await pendingLead.save();
 
       createdOrUpdatedLead = pendingLead;
@@ -183,12 +228,12 @@ export async function handleAddLead(data: any, req: Request, normEmail: string |
         email: normalizedEmail,
         status: { $ne: "pending_email" },
       };
-      if (data.pageId) leadQuery.pageId = data.pageId;
-      else if (data.page) leadQuery.page = data.page;
+      if (targetPageId) leadQuery.pageId = targetPageId;
+      else if (cleanPageName) leadQuery.page = cleanPageName;
 
-      const existingLead = await LeadModel.findOne(leadQuery).lean();
-      if (existingLead) {
-        createdOrUpdatedLead = existingLead;
+      existingLeadDoc = await LeadModel.findOne(leadQuery).lean();
+      if (existingLeadDoc) {
+        createdOrUpdatedLead = existingLeadDoc;
         isUpgradedFromPending = true; // prevent duplicate DB insert, but allow deliverable email to be sent
       }
     }
@@ -213,17 +258,30 @@ export async function handleAddLead(data: any, req: Request, normEmail: string |
     : new Date().toISOString();
 
   if (!isUpgradedFromPending) {
+    const sanitizedCustomFields = (data.customFields && typeof data.customFields === "object" && !Array.isArray(data.customFields))
+      ? { ...data.customFields }
+      : {};
+    sanitizedCustomFields.lastDeliverableSentAt = new Date().toISOString();
+
+    const allowedStatus = ["new", "delivered", "opened", "replied", "completed", "stopped", "pending_email", "converted"];
+    const leadStatus = allowedStatus.includes(data.status) ? data.status : "new";
+    const leadTags = Array.isArray(data.tags) ? data.tags.filter((t: any) => typeof t === "string") : [];
+
     createdOrUpdatedLead = await LeadModel.create({
       id: data.id,
       pageId: data.pageId,
       page: data.page,
       name: data.name,
       email: data.email,
-      status: data.status || "new",
-      ...data,
+      status: leadStatus,
+      tags: leadTags,
+      customAnswer: typeof data.customAnswer === "string" ? cleanStr(data.customAnswer, 1000) : "",
+      customFields: sanitizedCustomFields,
+      source: cleanStr(data.source, 50) || "leadmagnets",
+      isVariantB: Boolean(data.isVariantB),
       signedUpAt: normalizedSignedUpAt,
-      deviceType: data.deviceType || (isMobile ? "mobile" : "desktop"),
-      referrer: data.referrer || cleanReferrer,
+      deviceType: cleanStr(data.deviceType, 20) || (isMobile ? "mobile" : "desktop"),
+      referrer: cleanStr(data.referrer, 100) || cleanReferrer,
       userEmail: ownerEmail || "",
     });
   }
@@ -246,13 +304,16 @@ export async function handleAddLead(data: any, req: Request, normEmail: string |
     }
   }
 
-  if (ownerEmail) {
+  if (ownerEmail && isVerifiedOwner) {
     waitUntil((async () => {
       try {
         const ownerAccount = await AccountModel.findOne({ email: ownerEmail.trim().toLowerCase() });
         const alertsEnabled = ownerAccount ? ownerAccount.leadAlertsEnabled !== false : true;
         const targetInbox = (ownerAccount && ownerAccount.notifyEmail) ? ownerAccount.notifyEmail : ownerEmail;
         const isPendingLead = data.status === "pending_email" || (data.email && data.email.endsWith("@linkedin-prospect.com"));
+
+        const safePlainName = stripHtmlTags(data.name || "there") || "there";
+        const safePageTitle = stripHtmlTags(pageTitle || "Lead Magnet");
 
         if (alertsEnabled && !isPendingLead) {
           try {
@@ -261,12 +322,12 @@ export async function handleAddLead(data: any, req: Request, normEmail: string |
             await sendInstantLeadAlert({
               ownerEmail: targetInbox,
               leadEmail: data.email,
-              leadName: data.name,
-              pageTitle: pageTitle,
+              leadName: safePlainName,
+              pageTitle: safePageTitle,
               signedUpAt: data.signedUpAt || new Date().toLocaleString(),
-              customAnswer: data.customAnswer,
+              customAnswer: typeof data.customAnswer === "string" ? stripHtmlTags(data.customAnswer) : undefined,
               hasSequence: hasRealSequence,
-              sequenceName: hasRealSequence ? (data.sequence || `${pageTitle} Follow-up`) : undefined,
+              sequenceName: hasRealSequence ? (data.sequence || `${safePageTitle} Follow-up`) : undefined,
             });
           } catch (err) {
             console.error("Lead Alert Background Error:", err);
@@ -274,6 +335,24 @@ export async function handleAddLead(data: any, req: Request, normEmail: string |
         }
 
         if (data.email && !isPendingLead) {
+          // If this lead was already subscribed, apply a 2-minute cooldown
+          // to prevent email-bombing loops while allowing legitimate returning visitors to get their link
+          if (isUpgradedFromPending && existingLeadDoc) {
+            const lastSentAt = (existingLeadDoc as any)?.customFields?.lastDeliverableSentAt;
+            if (lastSentAt) {
+              const diffMs = Date.now() - new Date(lastSentAt).getTime();
+              if (diffMs >= 0 && diffMs < 2 * 60 * 1000) {
+                console.log(`[Deliverable] Cooldown active for ${data.email} (${Math.round(diffMs / 1000)}s ago), skipping duplicate send`);
+                return;
+              }
+            }
+            // Update lastDeliverableSentAt timestamp on the existing lead
+            await LeadModel.updateOne(
+              { _id: (existingLeadDoc as any)._id },
+              { $set: { "customFields.lastDeliverableSentAt": new Date().toISOString() } }
+            ).catch(() => {});
+          }
+
           const reqHost = req.headers.get("x-forwarded-host") || req.headers.get("host") || "";
           const reqProto = req.headers.get("x-forwarded-proto") || "https";
           const dynamicOrigin = reqHost ? `${reqProto}://${reqHost}` : "http://localhost:3000";
@@ -317,25 +396,26 @@ export async function handleAddLead(data: any, req: Request, normEmail: string |
           const thankYouUrl = `${appUrl}/${encodeURIComponent(targetUser)}/${encodeURIComponent(targetSlug)}/thank-you?email=${encodeURIComponent(data.email)}&name=${encodeURIComponent(data.name || "")}${resParam}`;
           const resourceAccessUrl = directDownloadUrl || thankYouUrl;
 
-          const subject = (foundPageDoc?.emailSubject && foundPageDoc.emailSubject.trim())
-            ? foundPageDoc.emailSubject.replace(/\{name\}/gi, data.name || "there")
-            : `Here is your resource: ${pageTitle}`;
+          const recipientDisplayName = escapeHtml(safePlainName);
 
-          const previewText = foundPageDoc?.emailPreviewText ? foundPageDoc.emailPreviewText.trim() : "";
+          const subject = (foundPageDoc?.emailSubject && foundPageDoc.emailSubject.trim())
+            ? stripHtmlTags(foundPageDoc.emailSubject.replace(/\{name\}/gi, safePlainName))
+            : `Here is your resource: ${safePageTitle}`;
+
+          const previewText = foundPageDoc?.emailPreviewText ? stripHtmlTags(foundPageDoc.emailPreviewText.trim()) : "";
 
           let rawBody = (foundPageDoc?.emailBody && foundPageDoc.emailBody.trim())
             ? foundPageDoc.emailBody
-            : `Hey {name},\n\nThank you for requesting ${pageTitle}! Click the link below to access your resource:\n\n${resourceAccessUrl}\n\nEnjoy!`;
+            : `Hey {name},\n\nThank you for requesting ${safePageTitle}! Click the link below to access your resource:\n\n${resourceAccessUrl}\n\nEnjoy!`;
 
           const brandColor = ownerAccount?.brandColor || "#0066B2";
           const senderName = ownerAccount?.senderDisplayName || ownerAccount?.name || "LeadMagnets";
           const logoUrl = `${appUrl}/brand/custom-logo-light.png`;
 
-          // Replace dynamic tags ({name}, {email})
-          const recipientDisplayName = (data.name && data.name.trim()) ? data.name.trim() : "there";
+          // Replace dynamic tags ({name}, {email}) safely with HTML escaping
           rawBody = rawBody
             .replace(/\{name\}/gi, recipientDisplayName)
-            .replace(/\{email\}/gi, data.email || "");
+            .replace(/\{email\}/gi, escapeHtml(data.email || ""));
 
           // Clean up localhost occurrences to production appUrl
           rawBody = rawBody.replace(/http:\/\/localhost:3000/g, appUrl);
@@ -487,7 +567,7 @@ export async function handleAddLead(data: any, req: Request, normEmail: string |
                       Hi ${recipientDisplayName},
                     </p>
                     <p style="margin:0 0 26px 0; font-family:'DM Sans','Helvetica Neue',Helvetica,Arial,sans-serif; font-size:14px; line-height:1.8; color:#7b858c;">
-                      Thank you for your interest in <strong>${pageTitle}</strong>. The resource you requested is ready for you below.
+                      Thank you for your interest in <strong>${escapeHtml(safePageTitle)}</strong>. The resource you requested is ready for you below.
                     </p>
 
                     <!-- Resource row -->
@@ -635,7 +715,7 @@ export async function handleAddLead(data: any, req: Request, normEmail: string |
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-              text: `🚀 *New Lead Alert!*\n*Name:* ${data.name}\n*Email:* ${data.email}\n*Lead Magnet:* ${pageTitle}`,
+              text: `🚀 *New Lead Alert!*\n*Name:* ${safePlainName}\n*Email:* ${data.email}\n*Lead Magnet:* ${safePageTitle}`,
             }),
           }).catch((err) => console.error("Slack Webhook dispatch error:", err));
         }
@@ -647,11 +727,11 @@ export async function handleAddLead(data: any, req: Request, normEmail: string |
             body: JSON.stringify({
               event: "new_lead",
               lead_id: createdOrUpdatedLead?.id || data.id,
-              name: data.name,
+              name: safePlainName,
               email: data.email,
-              lead_magnet_title: pageTitle,
+              lead_magnet_title: safePageTitle,
               signed_up_at: data.signedUpAt || new Date().toISOString(),
-              custom_answer: data.customAnswer || "",
+              custom_answer: typeof data.customAnswer === "string" ? cleanStr(data.customAnswer, 1000) : "",
             }),
           }).catch((err) => console.error("Zapier Webhook dispatch error:", err));
         }
@@ -662,7 +742,7 @@ export async function handleAddLead(data: any, req: Request, normEmail: string |
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-              name: data.name || "Lead Subscriber",
+              name: safePlainName || "Lead Subscriber",
               email: [{ value: data.email, primary: true }],
             }),
           }).catch((err) => console.error("Pipedrive API sync error:", err));
@@ -694,8 +774,8 @@ export async function handleAddLead(data: any, req: Request, normEmail: string |
                     api_secret: kitKey,
                     api_key: kitKey,
                     email: data.email,
-                    first_name: data.name || "",
-                    fields: { lead_magnet: pageTitle },
+                    first_name: safePlainName || "",
+                    fields: { lead_magnet: safePageTitle },
                   }),
                 });
               }
@@ -710,27 +790,46 @@ export async function handleAddLead(data: any, req: Request, normEmail: string |
     })());
   }
 
+  // For authenticated requests (e.g. Dashboard), return the full lead record.
+  // For public anonymous callers, return a sanitized lead object to prevent PII harvesting.
+  const isAuthCaller = Boolean(authEmail && isVerifiedOwner);
+  const safeLead = isAuthCaller
+    ? createdOrUpdatedLead
+    : {
+        id: createdOrUpdatedLead?.id || data.id,
+        name: createdOrUpdatedLead?.name || data.name,
+        email: createdOrUpdatedLead?.email || data.email,
+        pageId: createdOrUpdatedLead?.pageId || data.pageId,
+        status: createdOrUpdatedLead?.status || "new",
+      };
+
   return NextResponse.json({
     success: true,
-    lead: createdOrUpdatedLead,
-    afterSignupOption: foundPageDoc?.afterSignupOption || data.afterSignupOption || "standard",
-    destinationUrl: foundPageDoc?.destinationUrl || data.destinationUrl || "",
+    lead: safeLead,
+    afterSignupOption: foundPageDoc?.afterSignupOption || cleanStr(data.afterSignupOption, 50) || "standard",
+    destinationUrl: foundPageDoc?.destinationUrl || cleanStr(data.destinationUrl, 500) || "",
   });
 }
 
 export async function handleDeleteLead(data: any, normEmail: string | null) {
   const { id } = data;
   if (!id) return NextResponse.json({ success: false, message: "Missing lead id" }, { status: 400 });
-  const filter: any = { id };
-  if (normEmail) {
-    filter.$or = [
-      { userEmail: { $regex: new RegExp(`^${normEmail.trim()}$`, "i") } },
-      { userEmail: { $exists: false } },
-      { userEmail: null },
-      { userEmail: "" },
-    ];
+  if (!normEmail) {
+    return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 });
   }
-  await LeadModel.deleteOne(filter);
+
+  const userPages = await MagnetPageModel.find({ userEmail: normEmail }).select("id").lean();
+  const userPageIds = userPages.map((p: any) => p.id).filter(Boolean);
+
+  await LeadModel.deleteOne({
+    id,
+    $or: [
+      { userEmail: { $regex: new RegExp(`^${normEmail.trim()}$`, "i") } },
+      ...(userPageIds.length > 0
+        ? [{ pageId: { $in: userPageIds }, userEmail: { $in: [null, "", undefined] } }]
+        : []),
+    ],
+  });
   return NextResponse.json({ success: true });
 }
 

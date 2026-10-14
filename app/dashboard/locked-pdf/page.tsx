@@ -751,7 +751,7 @@ export default function LockedPdfPage() {
       .toLowerCase()
       .replace(/[^a-z0-9\s-]/g, "")
       .replace(/\s+/g, "-") || "locked-pdf";
-    const newId = `page-${Date.now()}`;
+    const newId = `page-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
 
     const newMagnet: MagnetPage = {
       id: newId,
@@ -791,7 +791,7 @@ export default function LockedPdfPage() {
   const handleCreateLandingPage = () => {
     const name = createMagnetName.trim() || "Untitled Landing Page";
     const cleanSlug = derivedSlug || "untitled-page";
-    const newId = `page-${Date.now()}`;
+    const newId = `page-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
 
     const newMagnet: MagnetPage = {
       id: newId,

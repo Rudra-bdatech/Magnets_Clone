@@ -14,6 +14,7 @@ cloudinary.config({
 });
 
 import { getAuthenticatedUserEmail } from "@/lib/auth";
+import { getUserAssetFolder } from "@/lib/cloudinary";
 
 export const dynamic = "force-dynamic";
 
@@ -23,6 +24,7 @@ export async function POST(req: NextRequest) {
     if (!sessionEmail) {
       return NextResponse.json({ error: "Unauthorized access" }, { status: 401 });
     }
+    const normSessionEmail = sessionEmail.trim().toLowerCase();
 
     await dbConnect();
     const formData = await req.formData();
@@ -48,11 +50,10 @@ export async function POST(req: NextRequest) {
     const id = Math.random().toString(36).substring(2, 9);
     const originalExt = path.extname(file.name);
     const safeFilename = `${id}-${file.name.replace(/[^a-zA-Z0-9.-]/g, "_")}`;
-    const userEmail = formData.get("userEmail") as string | null;
 
     let publicFileUrl = "";
 
-    // 1. Upload to Cloudinary if configured
+    // 1. Upload to Cloudinary inside the tenant's isolated folder
     if (process.env.CLOUDINARY_CLOUD_NAME && process.env.CLOUDINARY_API_KEY) {
       try {
         const bytes = await file.arrayBuffer();
@@ -60,13 +61,14 @@ export async function POST(req: NextRequest) {
 
         const isImage = file.type.startsWith("image/");
         const isPdf = file.type === "application/pdf" || file.name.toLowerCase().endsWith(".pdf");
+        const tenantFolder = getUserAssetFolder(normSessionEmail);
 
         const uploadResult = await new Promise<any>((resolve, reject) => {
           const uploadStream = cloudinary.uploader.upload_stream(
             {
               resource_type: isImage ? "image" : "raw",
               public_id: isImage ? safeFilename.replace(/\.[^/.]+$/, "") : safeFilename,
-              folder: "leadmagnets",
+              folder: tenantFolder,
               transformation: isImage ? [{ quality: "auto", fetch_format: "auto" }] : undefined,
             },
             (error, result) => {
@@ -100,7 +102,7 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // 2. Local disk / Vercel /tmp fallback
+    // 3. Local disk / Vercel /tmp fallback
     if (!publicFileUrl) {
       const bytes = await file.arrayBuffer();
       const buffer = Buffer.from(bytes);
@@ -116,12 +118,11 @@ export async function POST(req: NextRequest) {
     }
 
     const downloadRouteUrl = `${req.nextUrl.origin}/r/${id}`;
-
     const isPageAsset = formData.get("isPageAsset") === "true";
 
     const newResource = {
       id,
-      userEmail: userEmail ? userEmail.trim().toLowerCase() : undefined,
+      userEmail: normSessionEmail,
       name: file.name,
       size: file.size,
       uploadedAt: new Date().toLocaleString("en-US", { month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit", hour12: true }),
@@ -132,10 +133,8 @@ export async function POST(req: NextRequest) {
       type: isPageAsset ? "page_asset" : "deliverable",
     };
 
-    // Save metadata in DB only if this is a deliverable resource, NOT a page asset
-    if (!isPageAsset) {
-      await ResourceModel.create(newResource);
-    }
+    // Save metadata in DB for all uploads so ownership is verified and audited
+    await ResourceModel.create(newResource);
 
     return NextResponse.json({ success: true, data: newResource });
   } catch (error: any) {

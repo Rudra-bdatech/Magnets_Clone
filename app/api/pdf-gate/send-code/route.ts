@@ -11,7 +11,7 @@ export const dynamic = "force-dynamic";
 const OTP_TTL_MS = 10 * 60 * 1000;
 
 function generateOtp(): string {
-  return String(Math.floor(100000 + Math.random() * 900000));
+  return String(crypto.randomInt(100000, 1000000));
 }
 
 function generateToken(): string {

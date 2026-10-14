@@ -13,9 +13,17 @@ export const AUTH_COOKIE_NAME = "session_token";
 export interface SessionUser {
   email: string;
   name?: string;
+  type?: "session";
   iat?: number;
   exp?: number;
 }
+
+// Cryptographically domain-separated secret for PDF unlock tokens.
+// This prevents PDF unlock tokens from ever being verified or accepted as dashboard login sessions.
+const PDF_UNLOCK_SECRET = crypto
+  .createHmac("sha256", JWT_SECRET)
+  .update("leadmagnets_pdf_unlock_subsystem_secret_v1")
+  .digest("hex");
 
 function base64UrlEncode(str: string): string {
   return Buffer.from(str)
@@ -38,7 +46,7 @@ export function createSessionToken(payload: { email: string; name?: string }, ex
   const now = Math.floor(Date.now() / 1000);
   const exp = now + expiresInDays * 24 * 60 * 60;
 
-  const fullPayload = { ...payload, iat: now, exp };
+  const fullPayload: SessionUser = { ...payload, type: "session", iat: now, exp };
 
   const encodedHeader = base64UrlEncode(JSON.stringify(header));
   const encodedPayload = base64UrlEncode(JSON.stringify(fullPayload));
@@ -82,12 +90,24 @@ export function verifySessionToken(token: string): SessionUser | null {
 
     if (!safeCompareSignatures(signature, expectedSignature)) return null;
 
-    const payload: SessionUser = JSON.parse(base64UrlDecode(encodedPayload));
+    const payload: any = JSON.parse(base64UrlDecode(encodedPayload));
     if (payload.exp && payload.exp < Math.floor(Date.now() / 1000)) {
       return null;
     }
 
-    return payload;
+    // Security check: reject PDF unlock tokens or any non-session token
+    if (payload.type && payload.type !== "session") {
+      return null;
+    }
+    if (payload.magnetId || payload.pdfPages || payload.unlockedAt || payload.type === "pdf_unlock") {
+      return null;
+    }
+
+    if (!payload.email || typeof payload.email !== "string") {
+      return null;
+    }
+
+    return payload as SessionUser;
   } catch (e) {
     return null;
   }
@@ -98,6 +118,7 @@ export interface PdfUnlockPayload {
   email: string;
   pdfPages?: string[];
   unlockedAt?: number;
+  type?: "pdf_unlock";
   iat?: number;
   exp?: number;
 }
@@ -112,6 +133,7 @@ export function createPdfUnlockToken(
 
   const fullPayload: PdfUnlockPayload = {
     ...payload,
+    type: "pdf_unlock",
     unlockedAt: Date.now(),
     iat: now,
     exp,
@@ -122,7 +144,7 @@ export function createPdfUnlockToken(
 
   const dataToSign = `${encodedHeader}.${encodedPayload}`;
   const signature = crypto
-    .createHmac("sha256", JWT_SECRET)
+    .createHmac("sha256", PDF_UNLOCK_SECRET)
     .update(dataToSign)
     .digest("base64")
     .replace(/=/g, "")
@@ -141,18 +163,38 @@ export function verifyPdfUnlockToken(token: string): PdfUnlockPayload | null {
     const [encodedHeader, encodedPayload, signature] = parts;
     const dataToSign = `${encodedHeader}.${encodedPayload}`;
 
+    // Verify signature with dedicated PDF_UNLOCK_SECRET
     const expectedSignature = crypto
-      .createHmac("sha256", JWT_SECRET)
+      .createHmac("sha256", PDF_UNLOCK_SECRET)
       .update(dataToSign)
       .digest("base64")
       .replace(/=/g, "")
       .replace(/\+/g, "-")
       .replace(/\//g, "_");
 
-    if (!safeCompareSignatures(signature, expectedSignature)) return null;
+    let isSigValid = safeCompareSignatures(signature, expectedSignature);
+
+    // Fallback: support legacy tokens signed with JWT_SECRET so existing visitors don't get locked out
+    if (!isSigValid) {
+      const legacySignature = crypto
+        .createHmac("sha256", JWT_SECRET)
+        .update(dataToSign)
+        .digest("base64")
+        .replace(/=/g, "")
+        .replace(/\+/g, "-")
+        .replace(/\//g, "_");
+      isSigValid = safeCompareSignatures(signature, legacySignature);
+    }
+
+    if (!isSigValid) return null;
 
     const payload: PdfUnlockPayload = JSON.parse(base64UrlDecode(encodedPayload));
     if (payload.exp && payload.exp < Math.floor(Date.now() / 1000)) {
+      return null;
+    }
+
+    // Must have magnetId to be a valid PDF unlock token
+    if (!payload.magnetId) {
       return null;
     }
 

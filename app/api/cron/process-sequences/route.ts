@@ -103,9 +103,13 @@ export async function GET(req: NextRequest) {
       }
 
       // Map lookup — zero DB calls
-      const pageDoc = (lead.pageId ? pageById.get(lead.pageId) : null) ??
-        (lead.page ? pageByName.get(lead.page) : null) ??
-        null;
+      let pageDoc = lead.pageId ? pageById.get(lead.pageId) : null;
+      if (!pageDoc && lead.page) {
+        const candidate = pageByName.get(lead.page);
+        if (candidate && (!lead.userEmail || !candidate.userEmail || candidate.userEmail.toLowerCase().trim() === lead.userEmail.toLowerCase().trim())) {
+          pageDoc = candidate;
+        }
+      }
 
       if (!pageDoc) {
         debugLogs.push({ email: lead.email, page: lead.page, pageId: lead.pageId, reason: "Page doc not found in DB" });

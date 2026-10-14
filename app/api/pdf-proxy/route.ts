@@ -14,28 +14,32 @@ cloudinary.config({
 
 export const dynamic = "force-dynamic";
 
+import { isPrivateOrReservedUrl } from "@/lib/ssrf";
+
 /**
  * Parse a Cloudinary secure_url into its components.
  * Returns null if the URL doesn't match the expected Cloudinary pattern.
  */
 function parseCloudinaryUrl(url: string): {
+  cloudName: string;
   publicId: string;   // full path including folder
   format: string;     // file extension, e.g. "pdf"
   resourceType: "image" | "raw" | "video";
 } | null {
   const match = url.match(
-    /res\.cloudinary\.com\/[^/]+\/(image|raw|video)\/upload\/(?:v\d+\/)?(.+)$/
+    /res\.cloudinary\.com\/([^/]+)\/(image|raw|video)\/upload\/(?:v\d+\/)?(.+)$/
   );
   if (!match) return null;
 
-  const resourceType = match[1] as "image" | "raw" | "video";
-  const pathWithExt = match[2];
+  const cloudName = match[1];
+  const resourceType = match[2] as "image" | "raw" | "video";
+  const pathWithExt = match[3];
 
   const lastDot = pathWithExt.lastIndexOf(".");
   const publicId = resourceType === "raw" ? pathWithExt : (lastDot !== -1 ? pathWithExt.substring(0, lastDot) : pathWithExt);
   const format = resourceType === "raw" ? "" : (lastDot !== -1 ? pathWithExt.substring(lastDot + 1) : "pdf");
 
-  return { publicId, format, resourceType };
+  return { cloudName, publicId, format, resourceType };
 }
 
 /**
@@ -75,14 +79,26 @@ export async function GET(req: NextRequest) {
           ],
         };
         const pageDoc: any = await MagnetPageModel.findOne(query).lean();
-        if (
-          pageDoc &&
-          (pageDoc.pdfUrl === resolvedUrl ||
+        if (pageDoc) {
+          const reqParsed = parseCloudinaryUrl(resolvedUrl);
+          const pageParsed = pageDoc.pdfUrl ? parseCloudinaryUrl(pageDoc.pdfUrl) : null;
+          const assetParsed = pageDoc.assetUrl ? parseCloudinaryUrl(pageDoc.assetUrl) : null;
+
+          const isDirectMatch =
+            pageDoc.pdfUrl === resolvedUrl ||
             pageDoc.assetUrl === resolvedUrl ||
-            (pageDoc.pdfPages && pageDoc.pdfPages.includes(resolvedUrl)) ||
-            resolvedUrl.includes("cloudinary.com"))
-        ) {
-          isAuthorized = true;
+            (Array.isArray(pageDoc.pdfPages) && pageDoc.pdfPages.includes(resolvedUrl));
+
+          const isCloudinaryMatch =
+            Boolean(reqParsed) &&
+            ((pageParsed && reqParsed?.publicId === pageParsed.publicId) ||
+              (assetParsed && reqParsed?.publicId === assetParsed.publicId) ||
+              (Array.isArray(pageDoc.pdfPages) &&
+                pageDoc.pdfPages.some((p: string) => parseCloudinaryUrl(p)?.publicId === reqParsed?.publicId)));
+
+          if (isDirectMatch || isCloudinaryMatch) {
+            isAuthorized = true;
+          }
         }
       } catch (err) {
         console.warn("[pdf-proxy] Magnet verification error:", err);
@@ -96,11 +112,11 @@ export async function GET(req: NextRequest) {
     // ── Cloudinary path ──────────────────────────────────────────────────────
     if (resolvedUrl.includes("res.cloudinary.com")) {
       const parsed = parseCloudinaryUrl(resolvedUrl);
+      const appCloudName = process.env.CLOUDINARY_CLOUD_NAME;
 
-      if (parsed && process.env.CLOUDINARY_API_SECRET) {
+      // Only sign if configured and belongs to the app's own cloud name
+      if (parsed && process.env.CLOUDINARY_API_SECRET && (!appCloudName || parsed.cloudName === appCloudName)) {
         // Generate a server-signed private download URL using the Cloudinary SDK.
-        // private_download_url signs the request with the API secret so Cloudinary
-        // serves the asset regardless of delivery restrictions.
         const signedUrl: string = cloudinary.utils.private_download_url(
           parsed.publicId,
           parsed.format,
@@ -182,19 +198,43 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    // ── Generic fetch (Vercel Blob, own-origin /uploads/, etc.) ─────────────
-    const allowedPrefixes = [
-      "https://pub-",
-      "https://blob.vercel-storage.com",
-      req.nextUrl.origin,
-    ];
-    const isAllowed = allowedPrefixes.some((p) => resolvedUrl.startsWith(p));
-
-    if (!isAllowed && resolvedUrl.startsWith("/")) {
+    // ── Generic fetch (Vercel Blob, own-origin /uploads/, Cloudflare R2, etc.) ─────────────
+    let isAllowed = false;
+    if (resolvedUrl.startsWith("/")) {
       resolvedUrl = `${req.nextUrl.origin}${resolvedUrl}`;
-    } else if (!isAllowed) {
+      isAllowed = true;
+    } else {
+      try {
+        const parsedUrl = new URL(resolvedUrl);
+        const hostname = parsedUrl.hostname.toLowerCase();
+        const originHostname = req.nextUrl.hostname.toLowerCase();
+
+        if (parsedUrl.protocol === "https:" || (parsedUrl.protocol === "http:" && hostname === "localhost")) {
+          if (
+            hostname === originHostname ||
+            hostname === "blob.vercel-storage.com" ||
+            hostname.endsWith(".blob.vercel-storage.com") ||
+            (hostname.startsWith("pub-") && hostname.endsWith(".r2.dev")) ||
+            (process.env.VERCEL_URL && hostname === new URL(`https://${process.env.VERCEL_URL}`).hostname.toLowerCase())
+          ) {
+            isAllowed = true;
+          }
+        }
+      } catch {
+        isAllowed = false;
+      }
+    }
+
+    if (!isAllowed) {
       return NextResponse.json(
         { error: "URL origin not allowed for proxying" },
+        { status: 403 }
+      );
+    }
+
+    if (new URL(resolvedUrl).hostname !== req.nextUrl.hostname && (await isPrivateOrReservedUrl(resolvedUrl))) {
+      return NextResponse.json(
+        { error: "Target host is not allowed" },
         { status: 403 }
       );
     }

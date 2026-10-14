@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { v2 as cloudinary } from "cloudinary";
 import { getAuthenticatedUserEmail } from "@/lib/auth";
+import { getUserAssetFolder } from "@/lib/cloudinary";
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -16,6 +17,7 @@ export const dynamic = "force-dynamic";
  * Generates a signed payload so the browser can upload large files (e.g. 50MB PDFs)
  * DIRECTLY to Cloudinary's raw/upload endpoint, completely bypassing Vercel's
  * 4.5MB Serverless Function payload limit.
+ * The signed folder is strictly scoped to the authenticated user's tenant folder.
  */
 export async function POST(req: NextRequest) {
   try {
@@ -29,7 +31,7 @@ export async function POST(req: NextRequest) {
     }
 
     const timestamp = Math.round(Date.now() / 1000);
-    const folder = "leadmagnets";
+    const folder = getUserAssetFolder(sessionEmail);
 
     // Parameters to sign
     const paramsToSign = {

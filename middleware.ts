@@ -49,6 +49,17 @@ async function verifySessionTokenEdge(token: string, secret: string): Promise<bo
       return false; // Token expired
     }
 
+    // Security check: strictly reject PDF unlock tokens or any non-session tokens
+    if (payload.type && payload.type !== "session") {
+      return false;
+    }
+    if (payload.magnetId || payload.pdfPages || payload.unlockedAt || payload.type === "pdf_unlock") {
+      return false;
+    }
+    if (!payload.email || typeof payload.email !== "string") {
+      return false;
+    }
+
     return true;
   } catch (e) {
     return false;
