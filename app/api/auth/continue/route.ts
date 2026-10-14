@@ -3,14 +3,15 @@ import { getServerSession } from "next-auth";
 import { dbConnect } from "@/lib/mongodb";
 import { AccountModel } from "@/lib/models";
 import { authOptions } from "@/lib/auth-options";
+import { sanitizeRedirect } from "@/lib/redirect";
 
 /**
  * Post-OAuth landing route. First-time OAuth users (needsOnboarding) are sent to
  * the onboarding wizard once; returning users continue to `next` (default /dashboard).
  */
 export async function GET(request: NextRequest) {
-  const rawNext = request.nextUrl.searchParams.get("next") || "/dashboard";
-  const next = rawNext.startsWith("/") && !rawNext.startsWith("//") ? rawNext : "/dashboard";
+  const rawNext = request.nextUrl.searchParams.get("next");
+  const next = sanitizeRedirect(rawNext, "/dashboard");
 
   const session = await getServerSession(authOptions);
   const email = session?.user?.email?.trim().toLowerCase();

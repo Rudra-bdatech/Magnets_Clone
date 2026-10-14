@@ -21,6 +21,7 @@ export interface SendMailOptions {
   from?: string;
   replyTo?: string;
   tracking?: EmailTrackingOptions;
+  isTransactional?: boolean;
 }
 
 // Platform-level fallback transporter (singleton)
@@ -266,9 +267,9 @@ export async function sendMail(
       }
     }
 
-    // Priority 3: Platform Fallback (Restricted to Internal Company Staff / Admins)
+    // Priority 3: Platform Fallback (Restricted to Internal Company Staff / Admins OR System Transactional Emails)
     const isCompanyStaff = isCompanyAccount(resolvedOwner, account?.role);
-    if (!isCompanyStaff) {
+    if (!isCompanyStaff && !options.isTransactional) {
       const blockedMsg = "Sender email is not configured. Please connect your Gmail or custom SMTP in Settings to deliver emails to your leads.";
       console.warn(`[email] Platform fallback blocked for external user: "${resolvedOwner || 'unknown'}". Prompting to connect Gmail.`);
       return {

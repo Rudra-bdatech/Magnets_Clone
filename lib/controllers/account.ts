@@ -77,12 +77,6 @@ export async function handleSaveAccount(data: any, authEmail: string | null) {
   }
 
   data.email = normalizedEmail;
-  if (data.password && !/^\$2[aby]\$\d+\$/.test(data.password)) {
-    const pwdErr = serverValidatePassword(data.password);
-    if (pwdErr) {
-      return NextResponse.json({ error: pwdErr }, { status: 400 });
-    }
-  }
 
   // Validate GA4 Measurement ID and Meta Pixel ID to prevent script injection
   if (data.ga4MeasurementId !== undefined && data.ga4MeasurementId !== null) {
@@ -225,9 +219,8 @@ export async function handleSaveAccount(data: any, authEmail: string | null) {
     existing.spfVerified = data.spfVerified !== undefined ? data.spfVerified : existing.spfVerified;
     existing.dkimVerified = data.dkimVerified !== undefined ? data.dkimVerified : existing.dkimVerified;
 
-    if (data.password && !/^\$2[aby]\$\d+\$/.test(data.password) && data.password !== existing.password) {
-      existing.password = await hashPassword(data.password);
-    }
+    // Security: Existing accounts CANNOT update password through handleSaveAccount.
+    // Password updates must strictly use handleUpdatePassword with verification.
     account = await existing.save();
   } else {
     let username = data.username || "user";
@@ -239,6 +232,10 @@ export async function handleSaveAccount(data: any, authEmail: string | null) {
     }
     data.username = uniqueUsername;
     if (data.password && !/^\$2[aby]\$\d+\$/.test(data.password)) {
+      const pwdErr = serverValidatePassword(data.password);
+      if (pwdErr) {
+        return NextResponse.json({ error: pwdErr }, { status: 400 });
+      }
       data.password = await hashPassword(data.password);
     }
     if (!data.joinedAt) {
@@ -269,7 +266,7 @@ export async function handleSaveAccount(data: any, authEmail: string | null) {
   }
 
   const res = NextResponse.json({ success: true, account: sanitizeAccount(account) });
-  setAuthCookie(res, normalizedEmail, account?.name);
+  setAuthCookie(res, normalizedEmail, account?.name, account?.tokenVersion ?? 0);
   return res;
 }
 
@@ -401,7 +398,7 @@ export async function handleLogin(data: any) {
   // Set the HttpOnly session cookie right here — identity is verified above.
   // Sensitive fields (password, tokens, LinkedIn session cookies) are completely sanitized.
   const res = NextResponse.json({ success: true, account: sanitizeAccount(account) });
-  setAuthCookie(res, account.email, account.name);
+  setAuthCookie(res, account.email, account.name, account.tokenVersion ?? 0);
 
   // Set persistent client-accessible cookies for Last Used login indicator
   res.cookies.set("leadmagnets_last_auth_method", "email", {
@@ -455,8 +452,14 @@ export async function handleUpdatePassword(data: any, authEmail: string | null) 
     );
   }
   account.password = await hashPassword(newPassword);
+  // Increment tokenVersion so all other active sessions are revoked
+  account.tokenVersion = (account.tokenVersion || 0) + 1;
   await account.save();
-  return NextResponse.json({ success: true });
+
+  const updateRes = NextResponse.json({ success: true });
+  // Refresh auth cookie for current session with new tokenVersion
+  setAuthCookie(updateRes, account.email, account.name, account.tokenVersion);
+  return updateRes;
 }
 
 export async function handleGetAccountByEmail(authEmail: string | null) {
@@ -466,6 +469,24 @@ export async function handleGetAccountByEmail(authEmail: string | null) {
   // sanitizeAccount strips the password hash; it needs it present to compute hasPassword
   const account = await AccountModel.findOne({ email: authEmail }).lean();
   return NextResponse.json({ account: sanitizeAccount(account) });
+}
+
+function getSafeAppUrl(reqHostOrigin?: string): string {
+  if (reqHostOrigin) {
+    try {
+      const parsed = new URL(reqHostOrigin);
+      if (
+        parsed.hostname === "localhost" ||
+        parsed.hostname === "127.0.0.1" ||
+        parsed.hostname === "magnets.bdatech.in" ||
+        parsed.hostname.endsWith(".bdatech.in") ||
+        parsed.hostname.endsWith(".vercel.app")
+      ) {
+        return parsed.origin;
+      }
+    } catch {}
+  }
+  return process.env.NEXT_PUBLIC_APP_URL || "https://magnets.bdatech.in";
 }
 
 export async function handleSendResetEmail(data: any, reqHostOrigin?: string) {
@@ -494,13 +515,14 @@ export async function handleSendResetEmail(data: any, reqHostOrigin?: string) {
   account.resetPasswordExpires = expires;
   await account.save();
 
-  const origin = reqHostOrigin || process.env.NEXT_PUBLIC_APP_URL || "https://magnets.bdatech.in";
-  const cleanOrigin = origin.replace(/\/$/, "");
+  const safeOrigin = getSafeAppUrl(reqHostOrigin);
+  const cleanOrigin = safeOrigin.replace(/\/$/, "");
   const resetUrl = `${cleanOrigin}/reset-password?token=${token}`;
 
   const sendResult = await sendMail({
     to: normEmail,
     subject: "Reset your LeadMagnets password",
+    isTransactional: true,
     html: `
 <!DOCTYPE html>
 <html lang="en">
@@ -602,8 +624,10 @@ export async function handleResetPassword(data: any) {
     return NextResponse.json({ error: pwdErr }, { status: 400 });
   }
 
+  const cleanToken = token.trim();
+
   const account = await AccountModel.findOne({
-    resetPasswordToken: token,
+    resetPasswordToken: cleanToken,
     resetPasswordExpires: { $gt: new Date() },
   });
 
@@ -614,6 +638,8 @@ export async function handleResetPassword(data: any) {
   account.password = await hashPassword(newPassword);
   account.resetPasswordToken = null;
   account.resetPasswordExpires = null;
+  // Increment tokenVersion so all previous sessions are revoked immediately
+  account.tokenVersion = (account.tokenVersion || 0) + 1;
   await account.save();
 
   return NextResponse.json({ success: true });
@@ -621,12 +647,14 @@ export async function handleResetPassword(data: any) {
 
 export async function handleSendVerificationEmail(data: any, reqHostOrigin: string) {
   const { email } = data;
-  const origin = (reqHostOrigin || process.env.NEXT_PUBLIC_APP_URL || "https://magnets.bdatech.in").replace(/\/$/, "");
+  const canonicalAppUrl = process.env.NEXT_PUBLIC_APP_URL || "https://magnets.bdatech.in";
+  const origin = canonicalAppUrl.replace(/\/$/, "");
   const confirmUrl = `${origin}/register/confirm?email=${encodeURIComponent(email.trim())}`;
 
   const sendResult = await sendMail({
     to: email.trim(),
     subject: "Verify your LeadMagnets email",
+    isTransactional: true,
     html: `
 <!DOCTYPE html>
 <html lang="en">

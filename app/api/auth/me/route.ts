@@ -72,51 +72,22 @@ export async function GET() {
       console.warn("Could not query DB for account in /api/auth/me:", e);
     }
 
-    if (!account && email) {
-      try {
-        const baseName = name || email.split("@")[0];
-        const generatedUsername = baseName.toLowerCase().replace(/[^a-z0-9]+/g, "").slice(0, 15) || "user";
-        const newAcc = {
-          name: baseName,
-          email: email,
-          username: generatedUsername,
-          password: "",
-          role: determineRoleForEmail(email),
-          plan: "Free",
-          brandColor: "#0066B2",
-          logo: null,
-          avatar: nextAuthImage || null,
-          joinedAt: new Date().toLocaleDateString("en-US", { month: "long", year: "numeric" }),
-          templateId: "template1",
-          isNewAccount: true,
-        };
-        account = await AccountModel.create(newAcc);
-        if (account && (account as any).toObject) {
-          account = (account as any).toObject();
-        }
-      } catch (err) {
-        console.error("Auto-creating account in /api/auth/me error:", err);
-      }
-    }
-
-    if (!account && email) {
-      account = {
-        name: name || email.split("@")[0],
-        email: email,
-        username: email.split("@")[0],
-        role: determineRoleForEmail(email),
-        plan: "Free",
-        brandColor: "#0066B2",
-        logo: null,
-        avatar: nextAuthImage || null,
-      };
-    }
-
     if (!account) {
       const response = NextResponse.json({ authenticated: false, user: null }, { status: 401 });
-      const { clearAuthCookie } = await import("@/lib/auth");
       clearAuthCookie(response);
       return response;
+    }
+
+    // Security check: If password was changed or session was revoked, reject stale token
+    if (token) {
+      const session = verifySessionToken(token);
+      const expectedVersion = account.tokenVersion ?? 0;
+      const actualVersion = session?.tokenVersion ?? 0;
+      if (actualVersion < expectedVersion) {
+        const response = NextResponse.json({ authenticated: false, user: null }, { status: 401 });
+        clearAuthCookie(response);
+        return response;
+      }
     }
 
     // Sanitize user object to never leak password hashes or sensitive keys to client
@@ -133,8 +104,14 @@ export async function GET() {
       user: sanitizedUser || { email: email, name: name || email.split("@")[0] },
     });
 
-    // Ensure custom session_token cookie is issued/synchronized for NextAuth / Google users
-    setAuthCookie(response, email, name);
+    // Ensure custom session_token cookie is issued for NextAuth / Google users if missing,
+    // or refreshed if older than 7 days (prevents endless sliding window vulnerability).
+    const currentSession = token ? verifySessionToken(token) : null;
+    const nowSec = Math.floor(Date.now() / 1000);
+    const shouldRefresh = !currentSession || !currentSession.iat || (nowSec - currentSession.iat > 7 * 24 * 60 * 60);
+    if (shouldRefresh) {
+      setAuthCookie(response, email, name, account.tokenVersion ?? 0);
+    }
 
     if (nextAuthSession?.user?.email) {
       response.cookies.set("leadmagnets_last_auth_method", "google", {

@@ -16,6 +16,7 @@ export interface SessionUser {
   type?: "session";
   iat?: number;
   exp?: number;
+  tokenVersion?: number;
 }
 
 // Cryptographically domain-separated secret for PDF unlock tokens.
@@ -41,12 +42,18 @@ function base64UrlDecode(str: string): string {
   return Buffer.from(base64, "base64").toString("utf-8");
 }
 
-export function createSessionToken(payload: { email: string; name?: string }, expiresInDays = 30): string {
+export function createSessionToken(payload: { email: string; name?: string; tokenVersion?: number }, expiresInDays = 30): string {
   const header = { alg: "HS256", typ: "JWT" };
   const now = Math.floor(Date.now() / 1000);
   const exp = now + expiresInDays * 24 * 60 * 60;
 
-  const fullPayload: SessionUser = { ...payload, type: "session", iat: now, exp };
+  const fullPayload: SessionUser = {
+    ...payload,
+    type: "session",
+    iat: now,
+    exp,
+    tokenVersion: typeof payload.tokenVersion === "number" ? payload.tokenVersion : 0,
+  };
 
   const encodedHeader = base64UrlEncode(JSON.stringify(header));
   const encodedPayload = base64UrlEncode(JSON.stringify(fullPayload));

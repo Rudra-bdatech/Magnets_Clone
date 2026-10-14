@@ -46,6 +46,7 @@ const AccountSchema = new Schema({
   substackPublication: { type: String, default: "" },
   spfVerified: { type: Boolean, default: false },
   dkimVerified: { type: Boolean, default: false },
+  tokenVersion: { type: Number, default: 0 },
   // LinkedIn Comment Automation
   linkedinWebhookSecret: { type: String, default: "" },
   linkedinConnected: { type: Boolean, default: false },

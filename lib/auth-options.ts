@@ -4,6 +4,7 @@ import LinkedInProvider from "next-auth/providers/linkedin";
 import { dbConnect } from "@/lib/mongodb";
 import { AccountModel } from "@/lib/models";
 import { determineRoleForEmail } from "@/lib/roles";
+import { sanitizeRedirect } from "@/lib/redirect";
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -166,8 +167,12 @@ export const authOptions: NextAuthOptions = {
       return session;
     },
     async redirect({ url, baseUrl }) {
-      if (url && url.startsWith("/")) return `${baseUrl}${url}`;
-      if (url && new URL(url).origin === baseUrl) return url;
+      if (url && (url.startsWith("/") || url.startsWith(baseUrl))) {
+        // If it starts with baseUrl, strip baseUrl to inspect the relative path
+        const relative = url.startsWith(baseUrl) ? url.slice(baseUrl.length) : url;
+        const safePath = sanitizeRedirect(relative, "/register/onboarding");
+        return `${baseUrl}${safePath}`;
+      }
       return `${baseUrl}/register/onboarding`;
     },
   },

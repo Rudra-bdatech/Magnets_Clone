@@ -11,6 +11,7 @@ import { Loader2, Sparkles, ArrowRight, Eye, EyeOff } from "lucide-react";
 import { safeSetItem, setSessionExpiry } from "@/lib/store";
 
 import GoogleAuthButton from "@/components/ui/google-auth-button";
+import { sanitizeRedirect } from "@/lib/redirect";
 
 function getClientCookie(name: string): string | null {
   if (typeof document === "undefined") return null;
@@ -21,8 +22,8 @@ function getClientCookie(name: string): string | null {
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const rawFrom = searchParams.get("from") || searchParams.get("callbackUrl") || "/dashboard";
-  const redirectTarget = rawFrom.startsWith("/") && !rawFrom.startsWith("//") ? rawFrom : "/dashboard";
+  const rawFrom = searchParams.get("from") || searchParams.get("callbackUrl");
+  const redirectTarget = sanitizeRedirect(rawFrom, "/dashboard");
 
   const authError = searchParams.get("error");
   const getInitialError = () => {

@@ -6,8 +6,8 @@ import { createSessionToken, verifySessionToken, AUTH_COOKIE_NAME, type SessionU
 
 export { createSessionToken, verifySessionToken, AUTH_COOKIE_NAME, type SessionUser };
 
-export function setAuthCookie(res: NextResponse, email: string, name?: string): NextResponse {
-  const token = createSessionToken({ email: email.trim().toLowerCase(), name });
+export function setAuthCookie(res: NextResponse, email: string, name?: string, tokenVersion?: number): NextResponse {
+  const token = createSessionToken({ email: email.trim().toLowerCase(), name, tokenVersion });
   const maxAge = 30 * 24 * 60 * 60; // 30 days in seconds
 
   res.cookies.set({
@@ -82,7 +82,20 @@ export async function getAuthenticatedUserEmail(): Promise<string | null> {
     if (token) {
       const session = verifySessionToken(token);
       if (session?.email) {
-        return session.email.trim().toLowerCase();
+        const cleanEmail = session.email.trim().toLowerCase();
+        try {
+          const { dbConnect } = await import("@/lib/mongodb");
+          const { AccountModel } = await import("@/lib/models");
+          await dbConnect();
+          const acc = await AccountModel.findOne({ email: cleanEmail }, { tokenVersion: 1 }).lean();
+          if (!acc) return null; // Account was deleted
+          const expectedVersion = (acc as any).tokenVersion ?? 0;
+          const actualVersion = session.tokenVersion ?? 0;
+          if (actualVersion < expectedVersion) return null; // Session was revoked (e.g. password changed)
+        } catch (dbErr) {
+          // If DB check is temporarily unavailable, fallback to session token validation
+        }
+        return cleanEmail;
       }
     }
   } catch (err) {
