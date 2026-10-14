@@ -43,7 +43,7 @@ const baseNavItems: { href: string; label: string; icon: any; isModal?: boolean;
   { href: "/dashboard/sequences", label: "Email Sequences", icon: Mail },
   { href: "/dashboard/assets", label: "Assets", icon: FolderOpen },
   { href: "/dashboard/integration", label: "Integration", icon: Sliders },
-  { href: "/dashboard/linkedin", label: "LinkedIn Auto-Reply", icon: Linkedin },
+  // { href: "/dashboard/linkedin", label: "LinkedIn Auto-Reply", icon: Linkedin },
   { href: "/dashboard/templates", label: "Templates", icon: Palette },
 ];
 
