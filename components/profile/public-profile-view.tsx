@@ -25,8 +25,7 @@ interface PublicMagnetPage {
   subheadline?: string;
   cta?: string;
   imageUrl?: string | null;
-  pdfUrl?: string;
-  pdfPages?: string[];
+  isPdf?: boolean;
   pdfPageCount?: number;
   deliverable?: string;
   views?: number;
@@ -66,11 +65,7 @@ export default function PublicProfileView({
   // Filter items based on search and category tab
   const filteredPages = useMemo(() => {
     return pages.filter((page) => {
-      const isPdf = Boolean(
-        page.pdfUrl ||
-          (page.pdfPages && page.pdfPages.length > 0) ||
-          (page.pdfPageCount && page.pdfPageCount > 0)
-      );
+      const isPdf = Boolean(page.isPdf);
 
       if (activeFilter === "pdf" && !isPdf) return false;
       if (activeFilter === "instant" && isPdf) return false;
@@ -86,7 +81,7 @@ export default function PublicProfileView({
 
   const pdfCount = useMemo(() => {
     return pages.filter((p) =>
-      Boolean(p.pdfUrl || (p.pdfPages && p.pdfPages.length > 0) || (p.pdfPageCount && p.pdfPageCount > 0))
+      Boolean(p.isPdf)
     ).length;
   }, [pages]);
 
@@ -344,11 +339,7 @@ export default function PublicProfileView({
             {filteredPages.map((page) => {
               const slug = page.slug || page.id;
               const pageUrl = isCustomDomain ? `/${slug}` : `/${account.username}/${slug}`;
-              const isPdf = Boolean(
-                page.pdfUrl ||
-                  (page.pdfPages && page.pdfPages.length > 0) ||
-                  (page.pdfPageCount && page.pdfPageCount > 0)
-              );
+              const isPdf = Boolean(page.isPdf);
 
               return (
                 <Link

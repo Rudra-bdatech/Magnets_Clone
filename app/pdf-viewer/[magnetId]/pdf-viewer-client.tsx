@@ -14,21 +14,6 @@ import {
 } from "lucide-react";
 import "./pdf-viewer.css";
 
-// ─── Cloudinary blur helper ───────────────────────────────────────────────────
-function getBlurUrl(url: string): string {
-  if (!url) return url;
-  if (url.includes("/image/upload/f_auto,q_auto/")) {
-    return url.replace("/image/upload/f_auto,q_auto/", "/image/upload/e_blur:900,q_30/");
-  }
-  if (url.includes("/image/upload/")) {
-    return url.replace("/image/upload/", "/image/upload/e_blur:900,q_30/");
-  }
-  if (url.includes("/video/upload/")) {
-    return url.replace("/video/upload/", "/video/upload/e_blur:900,q_30/");
-  }
-  return url;
-}
-
 // ─── PDF.js loader ────────────────────────────────────────────────────────────
 async function loadPdfJs(): Promise<any> {
   const pdfjs = await import(/* webpackChunkName: "pdfjs-dist" */ "pdfjs-dist");
@@ -39,6 +24,85 @@ async function loadPdfJs(): Promise<any> {
     ).toString();
   }
   return pdfjs;
+}
+
+// ─── Locked page placeholder (no real page content is ever loaded) ───────────
+function LockedPageOverlay({ pageNum }: { pageNum: number }) {
+  return (
+    <div
+      style={{
+        position: "absolute",
+        inset: 0,
+        background: "linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%)",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: "24px",
+        textAlign: "center",
+      }}
+    >
+      {/* Blurred document skeleton lines */}
+      <div
+        style={{
+          position: "absolute",
+          inset: 24,
+          opacity: 0.15,
+          display: "flex",
+          flexDirection: "column",
+          gap: 16,
+          filter: "blur(2px)",
+        }}
+      >
+        <div style={{ height: 28, width: "65%", background: "#000", borderRadius: 4 }} />
+        <div style={{ height: 14, width: "95%", background: "#000", borderRadius: 4 }} />
+        <div style={{ height: 14, width: "90%", background: "#000", borderRadius: 4 }} />
+        <div style={{ height: 14, width: "92%", background: "#000", borderRadius: 4 }} />
+        <div style={{ height: 180, width: "100%", background: "#000", borderRadius: 6, marginTop: 12 }} />
+        <div style={{ height: 14, width: "88%", background: "#000", borderRadius: 4 }} />
+        <div style={{ height: 14, width: "85%", background: "#000", borderRadius: 4 }} />
+      </div>
+
+      {/* Frosted lock badge */}
+      <div
+        style={{
+          position: "relative",
+          zIndex: 2,
+          background: "rgba(15, 23, 42, 0.85)",
+          backdropFilter: "blur(12px)",
+          color: "#fff",
+          padding: "18px 32px",
+          borderRadius: "16px",
+          boxShadow: "0 12px 32px rgba(0,0,0,0.35)",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          gap: "10px",
+          border: "1px solid rgba(255,255,255,0.15)",
+        }}
+      >
+        <div
+          style={{
+            width: 46,
+            height: 46,
+            borderRadius: "50%",
+            background: "rgba(255,255,255,0.15)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <Lock size={22} color="#f59e0b" />
+        </div>
+        <div style={{ fontSize: 15, fontWeight: 700, letterSpacing: "-0.2px" }}>
+          Page {pageNum} is Locked
+        </div>
+        <div style={{ fontSize: 12, opacity: 0.8, maxWidth: 220 }}>
+          Verify your details below to unlock all pages.
+        </div>
+      </div>
+    </div>
+  );
 }
 
 // ─── High-performance On-Demand Canvas Renderer ───────────────────────────────
@@ -129,79 +193,7 @@ function PdfPageCanvas({
       }}
     >
       {isLocked ? (
-        <div
-          style={{
-            position: "absolute",
-            inset: 0,
-            background: "linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%)",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-            padding: "24px",
-            textAlign: "center",
-          }}
-        >
-          {/* Blurred document skeleton lines */}
-          <div
-            style={{
-              position: "absolute",
-              inset: 24,
-              opacity: 0.15,
-              display: "flex",
-              flexDirection: "column",
-              gap: 16,
-              filter: "blur(2px)",
-            }}
-          >
-            <div style={{ height: 28, width: "65%", background: "#000", borderRadius: 4 }} />
-            <div style={{ height: 14, width: "95%", background: "#000", borderRadius: 4 }} />
-            <div style={{ height: 14, width: "90%", background: "#000", borderRadius: 4 }} />
-            <div style={{ height: 14, width: "92%", background: "#000", borderRadius: 4 }} />
-            <div style={{ height: 180, width: "100%", background: "#000", borderRadius: 6, marginTop: 12 }} />
-            <div style={{ height: 14, width: "88%", background: "#000", borderRadius: 4 }} />
-            <div style={{ height: 14, width: "85%", background: "#000", borderRadius: 4 }} />
-          </div>
-
-          {/* Frosted lock badge */}
-          <div
-            style={{
-              position: "relative",
-              zIndex: 2,
-              background: "rgba(15, 23, 42, 0.85)",
-              backdropFilter: "blur(12px)",
-              color: "#fff",
-              padding: "18px 32px",
-              borderRadius: "16px",
-              boxShadow: "0 12px 32px rgba(0,0,0,0.35)",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              gap: "10px",
-              border: "1px solid rgba(255,255,255,0.15)",
-            }}
-          >
-            <div
-              style={{
-                width: 46,
-                height: 46,
-                borderRadius: "50%",
-                background: "rgba(255,255,255,0.15)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <Lock size={22} color="#f59e0b" />
-            </div>
-            <div style={{ fontSize: 15, fontWeight: 700, letterSpacing: "-0.2px" }}>
-              Page {pageNum} is Locked
-            </div>
-            <div style={{ fontSize: 12, opacity: 0.8, maxWidth: 220 }}>
-              Verify your details below to unlock all pages.
-            </div>
-          </div>
-        </div>
+        <LockedPageOverlay pageNum={pageNum} />
       ) : (
         <canvas
           ref={canvasRef}
@@ -223,6 +215,8 @@ interface Props {
   magnetId: string;
   pdfTitle: string;
   pdfPages: string[];
+  /** Total page images; locked visitors only receive the first pdfFreePages URLs */
+  pageImageCount?: number;
   pdfFreePages: number;
   pdfPageCount?: number;
   pdfUrl?: string;
@@ -234,7 +228,8 @@ interface Props {
 export default function PdfViewerClient({
   magnetId,
   pdfTitle,
-  pdfPages,
+  pdfPages: initialPdfPages,
+  pageImageCount,
   pdfFreePages,
   pdfPageCount,
   pdfUrl,
@@ -243,13 +238,15 @@ export default function PdfViewerClient({
   customFormFields = [],
 }: Props) {
   const isStreamingPdf = Boolean(pdfUrl);
+  // Starts with only the free pages; the rest arrive after a verified unlock
+  const [pdfPages, setPdfPages] = useState<string[]>(initialPdfPages);
   const [pdfDoc, setPdfDoc] = useState<any>(null);
   const [loadingPdf, setLoadingPdf] = useState(isStreamingPdf);
   const [pdfLoadError, setPdfLoadError] = useState<string | null>(null);
 
   const totalPages = isStreamingPdf
     ? (pdfDoc?.numPages || pdfPageCount || pdfPages.length || 1)
-    : pdfPages.length;
+    : Math.max(pdfPages.length, pageImageCount || 0);
 
   useEffect(() => {
     if (!pdfUrl) return;
@@ -430,7 +427,7 @@ export default function PdfViewerClient({
       .then((r) => r.json())
       .then((data) => {
         if (data.unlocked) {
-          performUnlock();
+          performUnlock(data.pdfPages);
         } else if (pdfFreePages === 0) {
           setGateVisible(true);
         }
@@ -514,7 +511,10 @@ export default function PdfViewerClient({
   }, [currentPage, sidebarOpen]);
 
   // ── Unlock all pages ──────────────────────────────────────────────────────
-  const performUnlock = useCallback(() => {
+  const performUnlock = useCallback((unlockedPages?: string[]) => {
+    if (Array.isArray(unlockedPages) && unlockedPages.length > 0) {
+      setPdfPages(unlockedPages);
+    }
     setUnlocked(true);
     setGateVisible(false);
     visibleLocked.current.clear();
@@ -603,7 +603,7 @@ export default function PdfViewerClient({
             localStorage.setItem(`pdf_unlock_token_${magnetId}`, data.unlockToken);
           } catch (e) {}
         }
-        performUnlock();
+        performUnlock(data.pdfPages);
       } catch {
         setHint({ msg: "Network error. Please try again.", isError: true });
       } finally {
@@ -749,7 +749,7 @@ export default function PdfViewerClient({
                 {Array.from({ length: totalPages }, (_, idx) => {
                   const isLocked = !unlocked && idx >= pdfFreePages;
                   const thumbImgUrl = pdfPages[idx] || (idx === 0 ? pdfPages[0] : null);
-                  const displayUrl = isLocked && thumbImgUrl ? getBlurUrl(thumbImgUrl) : thumbImgUrl;
+                  const displayUrl = thumbImgUrl;
                   return (
                     <button
                       key={idx}
@@ -826,9 +826,9 @@ export default function PdfViewerClient({
               );
             })
           ) : (
-            pdfPages.map((url, idx) => {
+            Array.from({ length: totalPages }, (_, idx) => {
               const isLocked = !unlocked && idx >= pdfFreePages;
-              const displayUrl = isLocked ? getBlurUrl(url) : url;
+              const url = pdfPages[idx];
               const computedWidth = Math.round(860 * (zoomScale / 100));
 
               return (
@@ -845,14 +845,29 @@ export default function PdfViewerClient({
                     ...(rotation !== 0 ? { transform: `rotate(${rotation}deg)` } : {}),
                   }}
                 >
-                  <img
-                    src={displayUrl}
-                    alt={`Document Page ${idx + 1}`}
-                    className="adobe-page-img"
-                    loading={idx < 3 ? "eager" : "lazy"}
-                    decoding="async"
-                    draggable={false}
-                  />
+                  {isLocked || !url ? (
+                    <div
+                      style={{
+                        position: "relative",
+                        width: "100%",
+                        aspectRatio: `${612 / 792}`,
+                        background: "#ffffff",
+                        borderRadius: "4px",
+                        overflow: "hidden",
+                      }}
+                    >
+                      {isLocked && <LockedPageOverlay pageNum={idx + 1} />}
+                    </div>
+                  ) : (
+                    <img
+                      src={url}
+                      alt={`Document Page ${idx + 1}`}
+                      className="adobe-page-img"
+                      loading={idx < 3 ? "eager" : "lazy"}
+                      decoding="async"
+                      draggable={false}
+                    />
+                  )}
                 </div>
               );
             })

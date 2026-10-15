@@ -90,8 +90,12 @@ export default async function UserProfileRoute({
     subheadline: page.subheadline || "",
     cta: page.cta || "Get instant access",
     imageUrl: page.imageUrl || null,
-    pdfUrl: page.pdfUrl || "",
-    pdfPages: Array.isArray(page.pdfPages) ? page.pdfPages : [],
+    // Only a flag — never ship PDF/page URLs to the public profile
+    isPdf: Boolean(
+      page.pdfUrl ||
+        (Array.isArray(page.pdfPages) && page.pdfPages.length > 0) ||
+        (typeof page.pdfPageCount === "number" && page.pdfPageCount > 0)
+    ),
     pdfPageCount: typeof page.pdfPageCount === "number" ? page.pdfPageCount : 0,
     deliverable: page.deliverable || "Instant Access",
     views: page.views || 0,

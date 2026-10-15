@@ -212,7 +212,7 @@ export async function POST(req: NextRequest) {
       pdfPages: pdfSnapshot,
     });
 
-    const res = NextResponse.json({ ok: true, unlockToken });
+    const res = NextResponse.json({ ok: true, unlockToken, pdfPages: pdfSnapshot });
     res.cookies.set(cookieName(magnetId), unlockToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",

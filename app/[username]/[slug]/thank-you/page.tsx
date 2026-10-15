@@ -27,15 +27,11 @@ export default async function ThankYouPage({
       ? await AccountModel.findOne({ username: { $regex: new RegExp(`^${escapedUsername}$`, "i") } }).lean()
       : null;
 
+    // Only this user's own landing pages — locked PDFs live at /pdf-viewer/<id>
     if (accountDoc && accountDoc.email) {
       pageDoc = await MagnetPageModel.findOne({
         userEmail: accountDoc.email.trim().toLowerCase(),
-        $or: [{ id: params.slug }, { slug: params.slug }],
-      }).sort({ _id: -1 }).lean();
-    }
-
-    if (!pageDoc) {
-      pageDoc = await MagnetPageModel.findOne({
+        template: { $ne: "locked-pdf" },
         $or: [{ id: params.slug }, { slug: params.slug }],
       }).sort({ _id: -1 }).lean();
     }

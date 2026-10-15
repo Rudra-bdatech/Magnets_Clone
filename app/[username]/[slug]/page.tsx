@@ -30,15 +30,11 @@ export async function generateMetadata({
       escapedUsername ? { username: { $regex: new RegExp(`^${escapedUsername}$`, "i") } } : {}
     ).lean();
 
+    // Only this user's own landing pages — locked PDFs live at /pdf-viewer/<id>
     if (accountDoc && accountDoc.email) {
       pageDoc = await MagnetPageModel.findOne({
         userEmail: accountDoc.email.trim().toLowerCase(),
-        $or: [{ id: params.slug }, { slug: params.slug }]
-      }).lean();
-    }
-
-    if (!pageDoc) {
-      pageDoc = await MagnetPageModel.findOne({
+        template: { $ne: "locked-pdf" },
         $or: [{ id: params.slug }, { slug: params.slug }]
       }).lean();
     }
@@ -177,15 +173,11 @@ export default async function MagnetPageRoute({
       escapedUsername ? { username: { $regex: new RegExp(`^${escapedUsername}$`, "i") } } : {}
     ).lean();
 
+    // Only this user's own landing pages — locked PDFs live at /pdf-viewer/<id>
     if (accountDoc && accountDoc.email) {
       pageDoc = await MagnetPageModel.findOne({
         userEmail: accountDoc.email.trim().toLowerCase(),
-        $or: [{ id: params.slug }, { slug: params.slug }]
-      }).sort({ _id: -1 }).lean();
-    }
-
-    if (!pageDoc) {
-      pageDoc = await MagnetPageModel.findOne({
+        template: { $ne: "locked-pdf" },
         $or: [{ id: params.slug }, { slug: params.slug }]
       }).sort({ _id: -1 }).lean();
     }

@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
+import mongoose from "mongoose";
 import { verifyPdfUnlockToken } from "@/lib/session-token";
+import { dbConnect } from "@/lib/mongodb";
+import { MagnetPageModel } from "@/lib/models";
 
 export const dynamic = "force-dynamic";
 
@@ -36,18 +39,34 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ unlocked: false });
     }
 
-    // Support legacy "1" cookie for backwards compatibility during session migration
-    if (tokenToVerify === "1") {
-      return NextResponse.json({ unlocked: true });
-    }
-
     const payload = verifyPdfUnlockToken(tokenToVerify);
     const unlocked = !!(payload && (payload.magnetId === magnetId || !payload.magnetId));
 
+    if (!unlocked) {
+      return NextResponse.json({ unlocked: false });
+    }
+
+    // Locked pages are only delivered here, after the token is verified.
+    // Prefer the snapshot taken at unlock time; fall back to the magnet's current pages.
+    const snapshot = payload?.pdfPages;
+    let pdfPages: string[] = Array.isArray(snapshot) ? snapshot : [];
+    if (pdfPages.length === 0) {
+      await dbConnect();
+      const pageDoc: any = await MagnetPageModel.findOne({
+        $or: [
+          { id: magnetId },
+          ...(mongoose.Types.ObjectId.isValid(magnetId) ? [{ _id: magnetId }] : []),
+        ],
+      })
+        .select("pdfPages")
+        .lean();
+      pdfPages = Array.isArray(pageDoc?.pdfPages) ? pageDoc.pdfPages : [];
+    }
+
     return NextResponse.json({
-      unlocked,
+      unlocked: true,
       email: payload?.email,
-      pdfPages: payload?.pdfPages || [],
+      pdfPages,
     });
   } catch (err: any) {
     console.error("[pdf-gate/status] Error:", err);

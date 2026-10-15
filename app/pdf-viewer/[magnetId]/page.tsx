@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { cookies } from "next/headers";
 import { FileText } from "lucide-react";
+import mongoose from "mongoose";
 import { dbConnect } from "@/lib/mongodb";
 import { MagnetPageModel, AccountModel } from "@/lib/models";
 import { type MagnetPage } from "@/lib/data";
@@ -24,11 +25,12 @@ export default async function PdfViewerPage({ params, searchParams }: Props) {
     await dbConnect();
 
     // Try lookup by custom `id` field first, then by MongoDB _id
-    pageDoc = await MagnetPageModel.findOne({ id: magnetId }).lean();
+    // Only locked PDFs open here — landing pages live at /<username>/<slug>
+    pageDoc = await MagnetPageModel.findOne({ id: magnetId, template: "locked-pdf" }).lean();
 
-    if (!pageDoc) {
+    if (!pageDoc && mongoose.Types.ObjectId.isValid(magnetId)) {
       // Fallback: try by MongoDB _id in case the id field differs
-      pageDoc = await MagnetPageModel.findOne({ _id: magnetId }).lean();
+      pageDoc = await MagnetPageModel.findOne({ _id: magnetId, template: "locked-pdf" }).lean();
     }
 
     if (pageDoc?.userEmail) {
@@ -57,9 +59,11 @@ export default async function PdfViewerPage({ params, searchParams }: Props) {
 
   // If the subscriber has a valid unlock token with a snapshot of the pages they unlocked,
   // ensure they retain access to their original unlocked PDF version even if the owner updates the file later.
-  if (rawToken && rawToken !== "1") {
+  let isUnlocked = false;
+  if (rawToken) {
     const verifiedPayload = verifyPdfUnlockToken(rawToken);
     if (verifiedPayload && (verifiedPayload.magnetId === magnetId || !verifiedPayload.magnetId)) {
+      isUnlocked = true;
       if (Array.isArray(verifiedPayload.pdfPages) && verifiedPayload.pdfPages.length > 0) {
         effectivePdfPages = verifiedPayload.pdfPages;
       }
@@ -79,11 +83,16 @@ export default async function PdfViewerPage({ params, searchParams }: Props) {
   const pdfTitle = page.pdfTitle || page.name || "Document";
   const customFormFields = Array.isArray(page.customFormFields) ? page.customFormFields : [];
 
-  const pdfUrl = (pageDoc.pdfUrl || pageDoc.assetUrl || "").trim();
+  const pdfUrl = (pageDoc.pdfUrl || "").trim();
   const pdfPageCount =
     typeof pageDoc.pdfPageCount === "number" && pageDoc.pdfPageCount > 0
       ? pageDoc.pdfPageCount
       : effectivePdfPages.length;
+
+  // Locked visitors only receive the free page images; the rest arrive from
+  // /api/pdf-gate/status after a verified unlock. Blurring on the client is not a lock.
+  const pageImageCount = effectivePdfPages.length;
+  const sentPdfPages = isUnlocked ? effectivePdfPages : effectivePdfPages.slice(0, Math.max(0, pdfFreePages));
 
   // PDF pages not uploaded yet — show a setup pending screen
   if (effectivePdfPages.length === 0 && !pdfUrl) {
@@ -124,7 +133,8 @@ export default async function PdfViewerPage({ params, searchParams }: Props) {
       <PdfViewerClient
         magnetId={magnetId}
         pdfTitle={pdfTitle}
-        pdfPages={effectivePdfPages}
+        pdfPages={sentPdfPages}
+        pageImageCount={pageImageCount}
         pdfFreePages={pdfFreePages}
         pdfPageCount={pdfPageCount}
         pdfUrl={pdfUrl}
