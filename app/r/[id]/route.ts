@@ -47,7 +47,9 @@ export async function GET(
 
     // If not found by direct resource id, check if resourceId is a MagnetPage slug/id
     if (!resource) {
+      // Locked PDFs are only served through /api/pdf-gate/file (never resolved here)
       const page = await MagnetPageModel.findOne({
+        template: { $ne: "locked-pdf" },
         $or: [{ id: resourceId }, { slug: resourceId }],
       }).sort({ _id: -1 }).lean();
 
@@ -68,7 +70,8 @@ export async function GET(
         }
 
         if (!resource && page.userEmail) {
-          resource = await ResourceModel.findOne({ userEmail: page.userEmail.toLowerCase().trim() })
+          // Page assets (e.g. a locked PDF's file) are never handed out as a deliverable
+          resource = await ResourceModel.findOne({ userEmail: page.userEmail.toLowerCase().trim(), isPageAsset: { $ne: true } })
             .sort({ uploadedAt: -1 })
             .lean();
         }

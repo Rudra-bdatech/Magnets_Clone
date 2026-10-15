@@ -12,7 +12,7 @@ export const dynamic = "force-dynamic";
 
 interface Props {
   params: { magnetId: string };
-  searchParams?: { token?: string };
+  searchParams?: { token?: string; reset?: string };
 }
 
 export default async function PdfViewerPage({ params, searchParams }: Props) {
@@ -51,7 +51,8 @@ export default async function PdfViewerPage({ params, searchParams }: Props) {
   const cookieStore = cookies();
   const tokenFromCookie = cookieStore.get(`pdf_unlocked_${magnetId}`)?.value;
   const tokenFromQuery = searchParams?.token;
-  const rawToken = tokenFromQuery || tokenFromCookie;
+  // ?reset=1 is the owner's "view as a new visitor" link — always start locked
+  const rawToken = searchParams?.reset === "1" ? undefined : tokenFromQuery || tokenFromCookie;
 
   let effectivePdfPages: string[] = Array.isArray(pageDoc.pdfPages) && pageDoc.pdfPages.length > 0
     ? pageDoc.pdfPages
@@ -83,6 +84,8 @@ export default async function PdfViewerPage({ params, searchParams }: Props) {
   const pdfTitle = page.pdfTitle || page.name || "Document";
   const customFormFields = Array.isArray(page.customFormFields) ? page.customFormFields : [];
 
+  // Server-only: the stored file URL is never sent to the browser. The viewer
+  // loads bytes from /api/pdf-gate/file, which enforces the unlock gate.
   const pdfUrl = (pageDoc.pdfUrl || "").trim();
   const pdfPageCount =
     typeof pageDoc.pdfPageCount === "number" && pageDoc.pdfPageCount > 0
@@ -137,7 +140,8 @@ export default async function PdfViewerPage({ params, searchParams }: Props) {
         pageImageCount={pageImageCount}
         pdfFreePages={pdfFreePages}
         pdfPageCount={pdfPageCount}
-        pdfUrl={pdfUrl}
+        hasPdfFile={Boolean(pdfUrl)}
+        initiallyUnlocked={isUnlocked}
         businessName={businessName}
         brandColor={brandColor}
         customFormFields={customFormFields}

@@ -26,6 +26,18 @@ async function loadPdfJs(): Promise<any> {
   return pdfjs;
 }
 
+// ─── Unlock token saved by an earlier visit (or passed as ?token=) ────────────
+function readStoredUnlockToken(magnetId: string): string {
+  if (typeof window === "undefined") return "";
+  try {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("reset") === "1") return "";
+    return params.get("token") || localStorage.getItem(`pdf_unlock_token_${magnetId}`) || "";
+  } catch {
+    return "";
+  }
+}
+
 // ─── Locked page placeholder (no real page content is ever loaded) ───────────
 function LockedPageOverlay({ pageNum }: { pageNum: number }) {
   return (
@@ -144,7 +156,7 @@ function PdfPageCanvas({
   }, []);
 
   useEffect(() => {
-    if (!pdfDoc || !isVisible || isLocked) return;
+    if (!pdfDoc || !isVisible || isLocked || pageNum > pdfDoc.numPages) return;
     let cancel = false;
     let renderTask: any = null;
 
@@ -219,7 +231,10 @@ interface Props {
   pageImageCount?: number;
   pdfFreePages: number;
   pdfPageCount?: number;
-  pdfUrl?: string;
+  /** Magnet has a stored PDF file; bytes come from /api/pdf-gate/file, never a raw URL */
+  hasPdfFile?: boolean;
+  /** Server already verified an unlock cookie for this visitor */
+  initiallyUnlocked?: boolean;
   businessName: string;
   brandColor: string;
   customFormFields?: import("@/lib/data").CustomFormField[];
@@ -232,56 +247,73 @@ export default function PdfViewerClient({
   pageImageCount,
   pdfFreePages,
   pdfPageCount,
-  pdfUrl,
+  hasPdfFile = false,
+  initiallyUnlocked = false,
   businessName,
   brandColor,
   customFormFields = [],
 }: Props) {
-  const isStreamingPdf = Boolean(pdfUrl);
+  const isStreamingPdf = hasPdfFile;
   // Starts with only the free pages; the rest arrive after a verified unlock
   const [pdfPages, setPdfPages] = useState<string[]>(initialPdfPages);
+  const [unlocked, setUnlocked] = useState(initiallyUnlocked);
   const [pdfDoc, setPdfDoc] = useState<any>(null);
+  // Whether the loaded document is the full file or the free-pages preview
+  const [pdfDocIsFull, setPdfDocIsFull] = useState(false);
   const [loadingPdf, setLoadingPdf] = useState(isStreamingPdf);
   const [pdfLoadError, setPdfLoadError] = useState<string | null>(null);
+  // Read before the first file request so it carries the visitor's token
+  const unlockTokenRef = useRef<string | null>(null);
+  if (unlockTokenRef.current === null) unlockTokenRef.current = readStoredUnlockToken(magnetId);
+  const pdfDocRef = useRef<any>(null);
 
+  // A preview document only holds the free pages, so the real total comes from the server
   const totalPages = isStreamingPdf
-    ? (pdfDoc?.numPages || pdfPageCount || pdfPages.length || 1)
+    ? (pdfDoc && pdfDocIsFull ? pdfDoc.numPages : (pdfPageCount || pdfDoc?.numPages || pdfPages.length || 1))
     : Math.max(pdfPages.length, pageImageCount || 0);
 
+  // Load the preview while locked, then the full file once unlocked. The server
+  // decides which one to send based on the unlock token.
   useEffect(() => {
-    if (!pdfUrl) return;
+    if (!isStreamingPdf) return;
+    if (!unlocked && pdfFreePages <= 0) {
+      // Nothing is free to show; don't request anything until unlocked
+      setLoadingPdf(false);
+      return;
+    }
     let cancel = false;
+    let loadingTask: any = null;
+    const wantFull = unlocked;
 
     async function initPdf() {
       try {
-        setLoadingPdf(true);
+        setPdfLoadError(null);
+        // Keep showing the preview while the full file loads
+        if (!pdfDocRef.current) setLoadingPdf(true);
         const pdfjs = await loadPdfJs();
         if (cancel) return;
 
-        const proxyUrl = `/api/pdf-proxy?url=${encodeURIComponent(pdfUrl!)}&magnetId=${encodeURIComponent(magnetId)}`;
-        const doc = await pdfjs.getDocument({
-          url: proxyUrl,
+        const fileUrl = `/api/pdf-gate/file?magnetId=${encodeURIComponent(magnetId)}&v=${wantFull ? "full" : "preview"}`;
+        loadingTask = pdfjs.getDocument({
+          url: fileUrl,
+          httpHeaders: unlockTokenRef.current ? { "X-Pdf-Unlock-Token": unlockTokenRef.current } : undefined,
           rangeChunkSize: 65536,
-        }).promise;
+        });
+        const doc = await loadingTask.promise;
 
         if (!cancel) {
+          const previous = pdfDocRef.current;
+          pdfDocRef.current = doc;
           setPdfDoc(doc);
+          setPdfDocIsFull(wantFull);
+          if (previous && previous !== doc) previous.destroy?.();
           setLoadingPdf(false);
         }
       } catch (err: any) {
-        console.warn("[pdf-viewer] Proxy stream attempt failed, trying direct URL:", err);
-        try {
-          const pdfjs = await loadPdfJs();
-          const doc = await pdfjs.getDocument({ url: pdfUrl }).promise;
-          if (!cancel) {
-            setPdfDoc(doc);
-            setLoadingPdf(false);
-          }
-        } catch (fallbackErr: any) {
-          if (!cancel) {
-            setPdfLoadError("Failed to load PDF document.");
-            setLoadingPdf(false);
-          }
+        if (!cancel) {
+          console.warn("[pdf-viewer] Failed to load PDF:", err);
+          setPdfLoadError("Failed to load PDF document. Please refresh the page.");
+          setLoadingPdf(false);
         }
       }
     }
@@ -289,11 +321,11 @@ export default function PdfViewerClient({
     initPdf();
     return () => {
       cancel = true;
+      loadingTask?.destroy?.();
     };
-  }, [pdfUrl, magnetId]);
+  }, [isStreamingPdf, magnetId, unlocked, pdfFreePages]);
 
   // ── State ──────────────────────────────────────────────────────────────────
-  const [unlocked, setUnlocked] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [zoomScale, setZoomScale] = useState(100);
@@ -415,6 +447,7 @@ export default function PdfViewerClient({
           localStorage.removeItem(`pdf_unlock_token_${magnetId}`);
         } else {
           localToken = localStorage.getItem(`pdf_unlock_token_${magnetId}`) || "";
+          unlockTokenRef.current = localToken;
         }
       } catch (e) {}
     }
@@ -428,8 +461,10 @@ export default function PdfViewerClient({
       .then((data) => {
         if (data.unlocked) {
           performUnlock(data.pdfPages);
-        } else if (pdfFreePages === 0) {
-          setGateVisible(true);
+        } else {
+          // e.g. ?reset=1 or an expired token: drop back to the preview
+          setUnlocked(false);
+          if (pdfFreePages === 0) setGateVisible(true);
         }
       })
       .catch(() => {
@@ -603,6 +638,7 @@ export default function PdfViewerClient({
             localStorage.setItem(`pdf_unlock_token_${magnetId}`, data.unlockToken);
           } catch (e) {}
         }
+        if (data.unlockToken) unlockTokenRef.current = data.unlockToken;
         performUnlock(data.pdfPages);
       } catch {
         setHint({ msg: "Network error. Please try again.", isError: true });
@@ -791,12 +827,17 @@ export default function PdfViewerClient({
 
         {/* Document View Canvas */}
         <main className="adobe-doc-viewport" ref={docRef} data-lenis-prevent>
+          {pdfLoadError && (
+            <div className="mx-auto my-6 max-w-md rounded-lg bg-red-500/10 px-4 py-3 text-center text-sm text-red-300">
+              {pdfLoadError}
+            </div>
+          )}
           {loadingPdf ? (
             <div className="flex flex-col items-center justify-center py-36 text-white gap-3">
               <div className="w-8 h-8 border-2 border-white/20 border-t-white rounded-full animate-spin" />
               <p className="text-sm font-medium opacity-80">Streaming document…</p>
             </div>
-          ) : isStreamingPdf && pdfDoc ? (
+          ) : isStreamingPdf ? (
             Array.from({ length: totalPages }, (_, idx) => {
               const isLocked = !unlocked && idx >= pdfFreePages;
               const computedWidth = Math.round(860 * (zoomScale / 100));

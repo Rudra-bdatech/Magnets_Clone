@@ -43,6 +43,7 @@
         "nextjs-toploader": "^3.9.17",
         "nodemailer": "^7.0.13",
         "ogl": "^1.0.11",
+        "pdf-lib": "^1.17.1",
         "pdfjs-dist": "^6.3.289",
         "playwright": "^1.63.0",
         "razorpay": "^2.9.8",
