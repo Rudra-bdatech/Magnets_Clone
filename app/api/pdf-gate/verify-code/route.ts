@@ -136,9 +136,11 @@ export async function POST(req: NextRequest) {
       const leadName = (otpRecord.name || body.name || "").trim() || cleanEmail.split("@")[0];
       const customFields = otpRecord.customFields || body.customFields || {};
 
+      // Match by pageId only — page titles aren't unique across accounts, so matching
+      // by title could pick up (and re-assign) another account's lead.
       const existingLead = await LeadModel.findOne({
         email: cleanEmail,
-        $or: [{ pageId: magnetId }, { page: pageTitle }],
+        pageId: magnetId,
       });
 
       if (!existingLead) {
@@ -179,12 +181,12 @@ export async function POST(req: NextRequest) {
           await MagnetPageModel.updateOne({ _id: pageDoc._id }, { $inc: { signups: 1 } });
         }
       } else {
-        // Ensure existing lead is linked to owner and retains locked-pdf tag & customFields
+        // Keep existing owner; only fill it in if missing. Retain locked-pdf tag & customFields.
         await LeadModel.updateOne(
           { _id: existingLead._id },
           {
             $set: {
-              userEmail: ownerEmail || (existingLead as any).userEmail,
+              userEmail: (existingLead as any).userEmail || ownerEmail,
               name: leadName || existingLead.name,
               customFields: { ...((existingLead as any).customFields || {}), ...customFields },
             },

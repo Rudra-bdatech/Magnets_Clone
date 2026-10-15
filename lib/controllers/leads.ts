@@ -904,11 +904,29 @@ export async function handleResendLeadEmail(data: any, normEmail: string | null)
     signedUpAt: new Date().toLocaleString(),
   });
 
-  if (leadId) {
-    await LeadModel.updateOne({ id: leadId }, { status: "delivered" });
+  if (leadId && normEmail) {
+    const ownership = await ownedLeadFilter(normEmail);
+    await LeadModel.updateOne({ id: leadId, ...ownership }, { status: "delivered" });
   }
 
   return NextResponse.json(result);
+}
+
+// Mongo filter matching only leads owned by `normEmail` (same ownership rule as handleDeleteLead):
+// either userEmail matches, or userEmail is empty and the lead belongs to one of their pages.
+async function ownedLeadFilter(normEmail: string) {
+  const userPages = await MagnetPageModel.find({ userEmail: normEmail }).select("id").lean();
+  const userPageIds = userPages.map((p: any) => p.id).filter(Boolean);
+  const escapedEmail = normEmail.trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+  return {
+    $or: [
+      { userEmail: { $regex: new RegExp(`^${escapedEmail}$`, "i") } },
+      ...(userPageIds.length > 0
+        ? [{ pageId: { $in: userPageIds }, userEmail: { $in: [null, ""] } }]
+        : []),
+    ],
+  };
 }
 
 export async function handleSaveLeadQuizAnswers(data: any, normEmail: string | null) {
@@ -917,10 +935,14 @@ export async function handleSaveLeadQuizAnswers(data: any, normEmail: string | n
     return NextResponse.json({ error: "Missing email or quizAnswers." }, { status: 400 });
   }
 
+  if (!normEmail) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   const normalizedEmail = leadEmail.trim().toLowerCase();
 
-  // Find the most-recent matching lead for this subscriber + page
-  const query: any = { email: normalizedEmail };
+  // Find the most-recent matching lead for this subscriber + page, owned by the caller
+  const query: any = { email: normalizedEmail, ...(await ownedLeadFilter(normEmail)) };
   if (pageId) query.pageId = pageId;
 
   const result = await LeadModel.findOneAndUpdate(
