@@ -151,16 +151,28 @@ function BrandSettingsForm({
             <label className="relative h-6 w-9 shrink-0 rounded cursor-pointer overflow-hidden border border-zinc-200 dark:border-[#0066B2]/30 mr-2.5 touch-manipulation">
               <input
                 type="color"
-                value={brandColor}
+                value={/^#[0-9a-f]{6}$/i.test(brandColor) ? brandColor : "#0066B2"}
                 onChange={(e) => setBrandColor(e.target.value)}
                 className="absolute inset-0 opacity-0 cursor-pointer h-full w-full"
               />
-              <div className="h-full w-full" style={{ backgroundColor: brandColor }} />
+              <div className="h-full w-full" style={{ backgroundColor: /^#([0-9a-f]{3}|[0-9a-f]{4}|[0-9a-f]{6}|[0-9a-f]{8})$/i.test(brandColor) ? brandColor : "#0066B2" }} />
             </label>
             <input
               type="text"
               value={brandColor}
               onChange={(e) => setBrandColor(e.target.value)}
+              onBlur={() => {
+                let trimmed = brandColor.trim();
+                if (!trimmed.startsWith("#") && /^[0-9a-f]{3,8}$/i.test(trimmed) && (trimmed.length === 3 || trimmed.length === 4 || trimmed.length === 6 || trimmed.length === 8)) {
+                  trimmed = `#${trimmed}`;
+                }
+                if (/^#([0-9a-f]{3}|[0-9a-f]{4}|[0-9a-f]{6}|[0-9a-f]{8})$/i.test(trimmed)) {
+                  setBrandColor(trimmed);
+                } else {
+                  setBrandColor("#0066B2");
+                }
+              }}
+              placeholder="#0066B2"
               className="w-full bg-transparent text-sm text-zinc-900 dark:text-white outline-none font-mono"
             />
           </div>

@@ -160,11 +160,18 @@ export default function TemplatesPage() {
     setSaving(true);
     const currentUserEmail = (typeof window !== "undefined" ? localStorage.getItem("currentUserEmail") : null) || account?.email || "";
 
+    const rawBrandColor = brandColor.trim();
+    const cleanBrandColor = /^#([0-9a-f]{3}|[0-9a-f]{4}|[0-9a-f]{6}|[0-9a-f]{8})$/i.test(rawBrandColor)
+      ? rawBrandColor
+      : /^([0-9a-f]{3}|[0-9a-f]{4}|[0-9a-f]{6}|[0-9a-f]{8})$/i.test(rawBrandColor)
+      ? `#${rawBrandColor}`
+      : "#0066B2";
+
     const updatedAccount: Account = {
       ...(account || { email: currentUserEmail, name: "User", username: "user", plan: "Free" as const, joinedAt: "Just now" }),
       email: currentUserEmail,
       brandName: businessName.trim(),
-      brandColor: brandColor.trim(),
+      brandColor: cleanBrandColor,
       themeMode,
       highlightIntensity,
       templateId,

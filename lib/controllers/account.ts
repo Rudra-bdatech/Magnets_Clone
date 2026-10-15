@@ -71,6 +71,21 @@ function sanitizeHttpUrl(url: any): string {
   return `https://${trimmed}`;
 }
 
+function sanitizeBrandColor(val: any): string {
+  if (typeof val !== "string") return "#0066B2";
+  let trimmed = val.trim();
+  if (!trimmed) return "#0066B2";
+  // Auto-prepend leading # if user supplied valid hex chars without #
+  if (!trimmed.startsWith("#") && /^[0-9a-f]{3,8}$/i.test(trimmed) && (trimmed.length === 3 || trimmed.length === 4 || trimmed.length === 6 || trimmed.length === 8)) {
+    trimmed = `#${trimmed}`;
+  }
+  // Validate strict hex pattern (#RGB, #RGBA, #RRGGBB, #RRGGBBAA)
+  if (/^#([0-9a-f]{3}|[0-9a-f]{4}|[0-9a-f]{6}|[0-9a-f]{8})$/i.test(trimmed)) {
+    return trimmed;
+  }
+  return "#0066B2";
+}
+
 export async function handleSaveAccount(data: any, authEmail: string | null) {
   let normalizedEmail = authEmail ? authEmail.trim().toLowerCase() : null;
   if (!normalizedEmail && data?.email && typeof data.email === "string") {
@@ -111,6 +126,11 @@ export async function handleSaveAccount(data: any, authEmail: string | null) {
   }
   if (data.termsOfService !== undefined && data.termsOfService !== null) {
     data.termsOfService = sanitizeHttpUrl(data.termsOfService);
+  }
+
+  // Validate brandColor: only valid hex allowed, otherwise fall back to #0066B2
+  if (data.brandColor !== undefined && data.brandColor !== null) {
+    data.brandColor = sanitizeBrandColor(data.brandColor);
   }
 
   let existing = await AccountModel.findOne({ email: normalizedEmail });
