@@ -61,6 +61,16 @@ export function sanitizeAccount(accountDoc: any) {
   return acc;
 }
 
+function sanitizeHttpUrl(url: any): string {
+  if (typeof url !== "string") return "";
+  const trimmed = url.trim();
+  if (!trimmed) return "";
+  if (/^https?:\/\//i.test(trimmed)) return trimmed;
+  // Disallow pseudo-protocols like javascript:, data:, vbscript:, etc.
+  if (/^[a-z0-9+.-]+:/i.test(trimmed)) return "";
+  return `https://${trimmed}`;
+}
+
 export async function handleSaveAccount(data: any, authEmail: string | null) {
   let normalizedEmail = authEmail ? authEmail.trim().toLowerCase() : null;
   if (!normalizedEmail && data?.email && typeof data.email === "string") {
@@ -93,6 +103,14 @@ export async function handleSaveAccount(data: any, authEmail: string | null) {
       return NextResponse.json({ error: "Invalid Meta Pixel ID format. Expected numbers only." }, { status: 400 });
     }
     data.metaPixelId = trimmed;
+  }
+
+  // Sanitize Privacy Policy & Terms of Service URLs: only allow http/https, auto-prefix https://
+  if (data.privacyPolicy !== undefined && data.privacyPolicy !== null) {
+    data.privacyPolicy = sanitizeHttpUrl(data.privacyPolicy);
+  }
+  if (data.termsOfService !== undefined && data.termsOfService !== null) {
+    data.termsOfService = sanitizeHttpUrl(data.termsOfService);
   }
 
   let existing = await AccountModel.findOne({ email: normalizedEmail });

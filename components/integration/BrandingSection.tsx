@@ -51,6 +51,24 @@ export const BrandingSection = memo(function BrandingSection({
     return /^https?:\/\/.+/i.test(trimmed);
   };
 
+  const normalizeHttpUrl = (url: string): string => {
+    const trimmed = url.trim();
+    if (!trimmed) return "";
+    if (/^https?:\/\//i.test(trimmed)) return trimmed;
+    // Disallow dangerous non-http schemes like javascript:, data:, etc.
+    if (/^[a-z0-9+.-]+:/i.test(trimmed)) return "";
+    return `https://${trimmed}`;
+  };
+
+  const validateLegalUrl = (url: string) => {
+    const trimmed = url.trim();
+    if (!trimmed) return true;
+    if (/^[a-z0-9+.-]+:/i.test(trimmed) && !/^https?:\/\//i.test(trimmed)) {
+      return false;
+    }
+    return /^https?:\/\/.+/i.test(trimmed) || /^[a-z0-9][a-z0-9-]*(\.[a-z0-9-]+)+.*$/i.test(trimmed);
+  };
+
   return (
     <div className="space-y-4">
       {/* Legal links card */}
@@ -92,18 +110,29 @@ export const BrandingSection = memo(function BrandingSection({
                     markDirty("privacyPolicy");
                     const val = e.target.value;
                     setPrivacyPolicy(val);
-                    if (validateUrl(val)) {
+                    if (validateLegalUrl(val)) {
                       setPrivacyError("");
                     } else {
-                      setPrivacyError("Must start with http:// or https://");
+                      setPrivacyError("Please enter a valid website URL");
                     }
                   }}
                   onBlur={() => {
-                    if (privacyPolicy && !validateUrl(privacyPolicy)) {
+                    const trimmed = privacyPolicy.trim();
+                    if (!trimmed) {
+                      setPrivacyPolicy("");
+                      setPrivacyError("");
+                      handleSave({ privacyPolicy: "" });
+                      return;
+                    }
+                    if (!validateLegalUrl(trimmed)) {
+                      setPrivacyError("Please enter a valid website URL");
                       addToast("Please enter a valid Privacy Policy URL (e.g. https://...)", "error");
                       return;
                     }
-                    handleSave({ privacyPolicy: privacyPolicy.trim() });
+                    const normalized = normalizeHttpUrl(trimmed);
+                    setPrivacyPolicy(normalized);
+                    setPrivacyError("");
+                    handleSave({ privacyPolicy: normalized });
                   }}
                   className={`w-full rounded-xl border bg-white dark:bg-[#0E0E10] px-3.5 py-2.5 text-xs text-zinc-900 dark:text-white outline-none placeholder:text-zinc-400 dark:placeholder:text-[#52525b] transition ${
                     privacyError ? "border-rose-500 focus:border-rose-500" : "border-[#E2E8F0] dark:border-[#2e2e38] focus:border-[#0066B2]"
@@ -128,18 +157,29 @@ export const BrandingSection = memo(function BrandingSection({
                     markDirty("termsOfService");
                     const val = e.target.value;
                     setTermsOfService(val);
-                    if (validateUrl(val)) {
+                    if (validateLegalUrl(val)) {
                       setTermsError("");
                     } else {
-                      setTermsError("Must start with http:// or https://");
+                      setTermsError("Please enter a valid website URL");
                     }
                   }}
                   onBlur={() => {
-                    if (termsOfService && !validateUrl(termsOfService)) {
+                    const trimmed = termsOfService.trim();
+                    if (!trimmed) {
+                      setTermsOfService("");
+                      setTermsError("");
+                      handleSave({ termsOfService: "" });
+                      return;
+                    }
+                    if (!validateLegalUrl(trimmed)) {
+                      setTermsError("Please enter a valid website URL");
                       addToast("Please enter a valid Terms of Service URL (e.g. https://...)", "error");
                       return;
                     }
-                    handleSave({ termsOfService: termsOfService.trim() });
+                    const normalized = normalizeHttpUrl(trimmed);
+                    setTermsOfService(normalized);
+                    setTermsError("");
+                    handleSave({ termsOfService: normalized });
                   }}
                   className={`w-full rounded-xl border bg-white dark:bg-[#0E0E10] px-3.5 py-2.5 text-xs text-zinc-900 dark:text-white outline-none placeholder:text-zinc-400 dark:placeholder:text-[#52525b] transition ${
                     termsError ? "border-rose-500 focus:border-rose-500" : "border-[#E5E3DD] dark:border-[#2e2e38] focus:border-[#0066B2]"

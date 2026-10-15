@@ -167,6 +167,14 @@ export default function WorkspaceSetupPage() {
     }
   }, [addToast]);
 
+  const normalizeHttpUrl = (url: string): string => {
+    const trimmed = (url || "").trim();
+    if (!trimmed) return "";
+    if (/^https?:\/\//i.test(trimmed)) return trimmed;
+    if (/^[a-z0-9+.-]+:/i.test(trimmed)) return "";
+    return `https://${trimmed}`;
+  };
+
   const handleSave = async (overrides?: Partial<Account>) => {
     const currentAcc = accountRef.current;
     const email = (typeof window !== "undefined" ? localStorage.getItem("currentUserEmail") : null) || currentAcc?.email || "";
@@ -192,8 +200,8 @@ export default function WorkspaceSetupPage() {
       brandColor: currentAcc?.brandColor || "#0066B2",
       logo: currentAcc?.logo ?? null,
       joinedAt: currentAcc?.joinedAt || "Just now",
-      privacyPolicy: (overrides?.privacyPolicy !== undefined ? overrides.privacyPolicy : privacyPolicy).trim(),
-      termsOfService: (overrides?.termsOfService !== undefined ? overrides.termsOfService : termsOfService).trim(),
+      privacyPolicy: normalizeHttpUrl(overrides?.privacyPolicy !== undefined ? overrides.privacyPolicy : privacyPolicy),
+      termsOfService: normalizeHttpUrl(overrides?.termsOfService !== undefined ? overrides.termsOfService : termsOfService),
       customDomain: sanitizeDomain(overrides?.customDomain !== undefined ? overrides.customDomain : rootDomain),
       customSubdomain: formatSubdomain(overrides?.customSubdomain !== undefined ? overrides.customSubdomain : pageSubdomain),
       domainVerified: overrides?.domainVerified !== undefined ? overrides.domainVerified : domainVerified,
