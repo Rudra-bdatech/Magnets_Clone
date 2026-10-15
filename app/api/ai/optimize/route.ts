@@ -1,9 +1,21 @@
 import { NextResponse } from "next/server";
+import { getAuthenticatedUserEmail } from "@/lib/auth";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 export const dynamic = "force-dynamic";
 
 export async function POST(req: Request) {
   try {
+    const sessionEmail = await getAuthenticatedUserEmail();
+    if (!sessionEmail) {
+      return NextResponse.json({ error: "Unauthorized access" }, { status: 401 });
+    }
+
+    const rl = await checkRateLimit(sessionEmail, "ai_optimize", 20, 60 * 1000);
+    if (!rl.success) {
+      return NextResponse.json({ error: "Too many requests. Please try again later." }, { status: 429 });
+    }
+
     const { action, lead, magnetTitle } = await req.json();
 
     if (action === "score_lead") {

@@ -240,16 +240,28 @@ export async function handleDeleteSequence(data: any, normEmail: string | null) 
   return NextResponse.json({ success: true });
 }
 
+function escapeHtml(str: string): string {
+  if (!str) return "";
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
 export async function handleSendTestSequenceEmail(data: any, normEmail: string | null) {
   const { sendMail } = await import("@/lib/email");
-  const recipient = data.recipientEmail || normEmail;
+  // Test sequence emails must go strictly to the authenticated user's own verified email address
+  const recipient = normEmail?.trim().toLowerCase();
   if (!recipient) {
-    return NextResponse.json({ error: "Recipient email required." }, { status: 400 });
+    return NextResponse.json({ error: "Unauthorized. Recipient email required." }, { status: 401 });
   }
 
-  const subject = data.subject || "Test Sequence Email";
-  const bodyText = (data.bodyText || "This is a test preview of your sequence email.")
-    .replace(/\n/g, "<br/>");
+  const rawSubject = String(data?.subject || "Test Sequence Email");
+  const escapedSubject = escapeHtml(rawSubject);
+  const rawBody = String(data?.bodyText || "This is a test preview of your sequence email.");
+  const bodyText = escapeHtml(rawBody).replace(/\n/g, "<br/>");
 
   const appUrl = (process.env.NEXTAUTH_URL || "https://leadmagnets.app").replace(/\/+$/, "");
   const logoUrl = `${appUrl}/brand/custom-logo-light.png`;
@@ -279,7 +291,7 @@ export async function handleSendTestSequenceEmail(data: any, normEmail: string |
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>${subject}</title>
+  <title>${escapedSubject}</title>
   <style type="text/css">
     body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
     table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; border-collapse: collapse; }
@@ -327,7 +339,7 @@ export async function handleSendTestSequenceEmail(data: any, normEmail: string |
                   <td class="card-padding" style="padding:40px 40px 30px 40px;">
                     
                     <h1 class="heading-text" style="margin:0 0 20px 0; font-family:'DM Sans','Helvetica Neue',Helvetica,Arial,sans-serif; font-size:24px; line-height:1.3; font-weight:600; color:#2a3138;">
-                      ${subject}
+                      ${escapedSubject}
                     </h1>
 
                     <div style="font-family:'DM Sans','Helvetica Neue',Helvetica,Arial,sans-serif; color:#334155; font-size:15px; line-height:1.7;">
@@ -346,14 +358,14 @@ export async function handleSendTestSequenceEmail(data: any, normEmail: string |
                           <table role="presentation" border="0" cellpadding="0" cellspacing="0">
                             <tr>
                               <td width="36" height="36" align="center" valign="middle" style="width:36px; height:36px; background-color:#f6f8f9; border:1px solid #e2e7ea; border-radius:18px; font-family:'DM Sans','Helvetica Neue',Helvetica,Arial,sans-serif; font-size:11px; font-weight:600; color:#7b858c;">
-                                ${senderInitials}
+                                ${escapeHtml(senderInitials)}
                               </td>
                             </tr>
                           </table>
                         </td>
                         <td valign="middle" style="padding-left:12px; font-family:'DM Sans','Helvetica Neue',Helvetica,Arial,sans-serif;">
                           <p style="margin:0 0 3px 0; font-size:10px; color:#7b858c;">Sent by</p>
-                          <p style="margin:0; font-size:12px; font-weight:600; color:#2a3138;">${senderName}</p>
+                          <p style="margin:0; font-size:12px; font-weight:600; color:#2a3138;">${escapeHtml(senderName)}</p>
                         </td>
                         <td class="hide-mobile" align="right" valign="middle">
                           <table role="presentation" border="0" cellpadding="0" cellspacing="0">
@@ -398,7 +410,7 @@ export async function handleSendTestSequenceEmail(data: any, normEmail: string |
   const result = await sendMail(
     {
       to: recipient,
-      subject: subject.startsWith("[TEST]") ? subject : `[TEST] ${subject}`,
+      subject: rawSubject.startsWith("[TEST]") ? rawSubject : `[TEST] ${rawSubject}`,
       html: formattedHtml,
       tracking: {
         userEmail: normEmail || "",

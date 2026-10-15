@@ -11,6 +11,16 @@ export interface LeadAlertPayload {
   sequenceName?: string;
 }
 
+function escapeHtml(str: string): string {
+  if (!str) return "";
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
 export async function sendInstantLeadAlert(payload: LeadAlertPayload): Promise<{ success: boolean; error?: string }> {
   const { ownerEmail, leadEmail, leadName, pageTitle, signedUpAt, customAnswer, hasSequence, sequenceName } = payload;
 
@@ -21,7 +31,12 @@ export async function sendInstantLeadAlert(payload: LeadAlertPayload): Promise<{
   // Use the public production URL by default so image assets load reliably across all email clients
   const appUrl = (process.env.NEXT_PUBLIC_APP_URL || "https://magnets.bdatech.in").replace(/\/$/, "");
   const logoUrl = `${appUrl}/brand/custom-logo-light.png`;
-  const leadDisplayName = leadName?.trim() || "New Subscriber";
+  const rawLeadDisplayName = leadName?.trim() || "New Subscriber";
+  const safeLeadDisplayName = escapeHtml(rawLeadDisplayName);
+  const safeLeadEmail = escapeHtml(leadEmail?.trim() || "");
+  const safePageTitle = escapeHtml(pageTitle || "01");
+  const safeSignedUpAt = escapeHtml(signedUpAt || "");
+  const safeCustomAnswer = customAnswer ? escapeHtml(customAnswer) : "";
 
   const isSequenceActive = Boolean(hasSequence || sequenceName);
   const automationStatusHtml = isSequenceActive
@@ -88,7 +103,7 @@ export async function sendInstantLeadAlert(payload: LeadAlertPayload): Promise<{
                 <tr><td style="text-align:left;padding:5px 10px;background-color:#eff6ff;border:1px solid #bfdbfe;border-radius:4px;color:#1d4ed8;font-size:10px;line-height:16px;font-weight:bold;letter-spacing:1px;">LEAD NOTIFICATION</td></tr>
               </table>
               <h1 class="headline" style="margin:18px 0 12px;font-size:28px;line-height:36px;font-weight:bold;color:#17212f;">New lead received</h1>
-              <p style="margin:0;font-size:15px;line-height:24px;color:#647185;">${leadDisplayName} signed up through lead magnet <strong style="color:#17212f;">${pageTitle || "01"}</strong>. Review the contact details below.</p>
+              <p style="margin:0;font-size:15px;line-height:24px;color:#647185;">${safeLeadDisplayName} signed up through lead magnet <strong style="color:#17212f;">${safePageTitle}</strong>. Review the contact details below.</p>
             </td></tr>
             <tr><td class="content-pad" style="text-align:left;padding:26px 40px 0;">
               <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="width:100%;background-color:#ffffff;border:1px solid #e2e7ee;border-radius:4px;">
@@ -96,11 +111,11 @@ export async function sendInstantLeadAlert(payload: LeadAlertPayload): Promise<{
                   <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="width:100%;">
                     <tr>
                       <td width="44" valign="top" style="text-align:left;width:44px;">
-                        <table role="presentation" cellspacing="0" cellpadding="0" border="0"><tr><td width="44" height="44" align="center" style="text-align:center;width:44px;height:44px;background-color:#eff6ff;border-radius:22px;color:#0066cc;font-size:19px;line-height:44px;font-weight:bold;">${(leadDisplayName || "L").charAt(0).toUpperCase()}</td></tr></table>
+                        <table role="presentation" cellspacing="0" cellpadding="0" border="0"><tr><td width="44" height="44" align="center" style="text-align:center;width:44px;height:44px;background-color:#eff6ff;border-radius:22px;color:#0066cc;font-size:19px;line-height:44px;font-weight:bold;">${(rawLeadDisplayName || "L").charAt(0).toUpperCase()}</td></tr></table>
                       </td>
                       <td style="text-align:left;padding-left:12px;word-break:break-word;">
-                        <p style="margin:0 0 3px;font-size:16px;line-height:22px;font-weight:bold;color:#17212f;">${leadDisplayName}</p>
-                        <a href="mailto:${leadEmail}" style="font-size:13px;line-height:20px;color:#0066cc;text-decoration:none;word-break:break-all;">${leadEmail}</a>
+                        <p style="margin:0 0 3px;font-size:16px;line-height:22px;font-weight:bold;color:#17212f;">${safeLeadDisplayName}</p>
+                        <a href="mailto:${safeLeadEmail}" style="font-size:13px;line-height:20px;color:#0066cc;text-decoration:none;word-break:break-all;">${safeLeadEmail}</a>
                       </td>
                     </tr>
                   </table>
@@ -110,24 +125,24 @@ export async function sendInstantLeadAlert(payload: LeadAlertPayload): Promise<{
                   <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="width:100%;table-layout:fixed;">
                     <tr>
                       <td class="detail-label" width="128" valign="top" style="text-align:left;width:128px;padding:5px 10px 5px 0;font-size:12px;line-height:19px;color:#647185;">Email address</td>
-                      <td valign="top" style="text-align:left;padding:5px 0;font-size:12px;line-height:19px;color:#17212f;word-break:break-all;">${leadEmail}</td>
+                      <td valign="top" style="text-align:left;padding:5px 0;font-size:12px;line-height:19px;color:#17212f;word-break:break-all;">${safeLeadEmail}</td>
                     </tr>
                     <tr>
                       <td class="detail-label" width="128" valign="top" style="text-align:left;width:128px;padding:5px 10px 5px 0;font-size:12px;line-height:19px;color:#647185;">Full name</td>
-                      <td style="text-align:left;padding:5px 0;font-size:12px;line-height:19px;color:#17212f;">${leadDisplayName}</td>
+                      <td style="text-align:left;padding:5px 0;font-size:12px;line-height:19px;color:#17212f;">${safeLeadDisplayName}</td>
                     </tr>
                     <tr>
                       <td class="detail-label" width="128" valign="top" style="text-align:left;width:128px;padding:5px 10px 5px 0;font-size:12px;line-height:19px;color:#647185;">Lead magnet</td>
-                      <td style="text-align:left;padding:5px 0;font-size:12px;line-height:19px;color:#17212f;">${pageTitle || "Lead Magnet"}</td>
+                      <td style="text-align:left;padding:5px 0;font-size:12px;line-height:19px;color:#17212f;">${safePageTitle}</td>
                     </tr>
                     <tr>
                       <td class="detail-label" width="128" valign="top" style="text-align:left;width:128px;padding:5px 10px 5px 0;font-size:12px;line-height:19px;color:#647185;">Signed up</td>
-                      <td style="text-align:left;padding:5px 0;font-size:12px;line-height:19px;color:#17212f;">${signedUpAt}</td>
+                      <td style="text-align:left;padding:5px 0;font-size:12px;line-height:19px;color:#17212f;">${safeSignedUpAt}</td>
                     </tr>
-                    ${customAnswer ? `
+                    ${safeCustomAnswer ? `
                     <tr>
                       <td class="detail-label" width="128" valign="top" style="text-align:left;width:128px;padding:5px 10px 5px 0;font-size:12px;line-height:19px;color:#647185;">Custom answer</td>
-                      <td style="text-align:left;padding:5px 0;font-size:12px;line-height:19px;color:#17212f;">${customAnswer}</td>
+                      <td style="text-align:left;padding:5px 0;font-size:12px;line-height:19px;color:#17212f;">${safeCustomAnswer}</td>
                     </tr>` : ""}
                   </table>
                 </td></tr>
@@ -153,7 +168,7 @@ export async function sendInstantLeadAlert(payload: LeadAlertPayload): Promise<{
   return sendMail(
     {
       to: ownerEmail.trim(),
-      subject: `New Lead: ${leadDisplayName} on "${pageTitle || "LeadMagnet"}"`,
+      subject: `New Lead: ${rawLeadDisplayName} on "${pageTitle || "LeadMagnet"}"`,
       html: htmlContent,
     },
     ownerEmail.trim()

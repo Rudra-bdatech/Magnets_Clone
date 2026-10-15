@@ -870,9 +870,27 @@ export async function handleSaveLeads(data: any, normEmail: string | null) {
 
 
 export async function handleSendTestLeadAlert(data: any, normEmail: string | null) {
-  const targetEmail = data.email || normEmail;
-  if (!targetEmail) {
-    return NextResponse.json({ error: "Target email required for test alert." }, { status: 400 });
+  if (!normEmail) {
+    return NextResponse.json({ error: "Unauthorized. Target email required for test alert." }, { status: 401 });
+  }
+
+  // The lead-alert test must strictly go to the logged-in owner.
+  // Allow an alternate inbox only if it is already verified & configured as the owner's notifyEmail in settings.
+  let targetEmail = normEmail.trim().toLowerCase();
+  if (data?.email && typeof data.email === "string" && data.email.trim()) {
+    const requestedEmail = data.email.trim().toLowerCase();
+    if (requestedEmail === targetEmail) {
+      targetEmail = requestedEmail;
+    } else {
+      try {
+        const ownerAcc = await AccountModel.findOne({ email: normEmail }).select("notifyEmail").lean();
+        if (ownerAcc && (ownerAcc as any).notifyEmail && String((ownerAcc as any).notifyEmail).trim().toLowerCase() === requestedEmail) {
+          targetEmail = String((ownerAcc as any).notifyEmail).trim().toLowerCase();
+        }
+      } catch {
+        targetEmail = normEmail.trim().toLowerCase();
+      }
+    }
   }
 
   const result = await sendInstantLeadAlert({
@@ -886,7 +904,7 @@ export async function handleSendTestLeadAlert(data: any, normEmail: string | nul
     sequenceName: "Test Email Sequence",
   });
 
-  return NextResponse.json(result);
+  return NextResponse.json({ ...result, targetEmail });
 }
 
 export async function handleResendLeadEmail(data: any, normEmail: string | null) {
