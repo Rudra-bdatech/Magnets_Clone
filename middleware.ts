@@ -231,9 +231,10 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
-  // Redirect authenticated users away from /login and /register if they already have a valid session
+  // Redirect authenticated users away from /login and /register if they already have a verified session.
+  // Unverified sessions still see the form, so they can sign in again or switch accounts.
   if (pathname === "/login" || pathname === "/register") {
-    if (isValidSession) {
+    if (isValidSession && isEmailVerified) {
       return NextResponse.redirect(new URL("/dashboard", request.url));
     }
     // Clean up stale or invalid cookies when visiting login/register so the client starts in a clean state
