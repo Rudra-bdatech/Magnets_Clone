@@ -116,6 +116,7 @@ export interface Lead {
   customFields?: Record<string, any>;
   deviceType?: "desktop" | "mobile";
   referrer?: string;
+  userEmail?: string;
 }
 
 export interface SequenceEmail {

@@ -94,7 +94,8 @@ export default async function ThankYouPage({
       });
     } else if (cleanUserEmail) {
       // Fallback to latest account resource if no specific asset was bound
-      const resourceDoc = await ResourceModel.findOne({ userEmail: cleanUserEmail }).sort({ uploadedAt: -1 }).lean() as any;
+      // Page assets (e.g. a locked PDF's file) are never handed out as a deliverable
+      const resourceDoc = await ResourceModel.findOne({ userEmail: cleanUserEmail, isPageAsset: { $ne: true } }).sort({ uploadedAt: -1 }).lean() as any;
       if (resourceDoc && resourceDoc.id) {
         downloadUrl = `/r/${resourceDoc.id}`;
         if (resourceDoc.name) resolvedDeliverableName = resourceDoc.name;

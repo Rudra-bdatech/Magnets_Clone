@@ -324,7 +324,7 @@ export default function CheckoutPage() {
                               handleApplyCoupon();
                             }
                           }}
-                          placeholder="Promo code (e.g. BDA1)"
+                          placeholder="Promo code"
                           className="flex-1 px-3 py-1.5 text-xs rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white uppercase tracking-wider focus:outline-none focus:ring-1 focus:ring-zinc-900 dark:focus:ring-white"
                         />
                         <button

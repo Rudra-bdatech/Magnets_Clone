@@ -346,12 +346,6 @@ export async function handleSaveAccount(data: any, authEmail: string | null) {
     if (!data.joinedAt) {
       data.joinedAt = new Date().toLocaleDateString("en-US", { month: "long", year: "numeric" });
     }
-    // Auto-provision a unique LinkedIn webhook secret for every new account.
-    // This mirrors how Stripe, Twilio, and other SaaS platforms automatically
-    // generate API keys at signup — no extra step needed from the user.
-    if (!data.linkedinWebhookSecret) {
-      data.linkedinWebhookSecret = generateWebhookSecret();
-    }
     // Build new account document from an explicit allowlist of legitimate signup fields.
     // Privileged, server-managed, and lead-routing fields (webhooks, notify email, tokens)
     // are strictly excluded to prevent pre-account takeover attacks.
@@ -369,7 +363,9 @@ export async function handleSaveAccount(data: any, authEmail: string | null) {
       templateId: typeof data.templateId === "string" && data.templateId.trim() ? data.templateId.trim().slice(0, 50) : "template1",
       joinedAt: data.joinedAt || new Date().toLocaleDateString("en-US", { month: "long", year: "numeric" }),
       role: determineRoleForEmail(data.email || normalizedEmail),
-      linkedinWebhookSecret: data.linkedinWebhookSecret || generateWebhookSecret(),
+      // Always server-generated: a client-chosen secret would let whoever pre-registers
+      // this email post leads into the account after the real owner claims it.
+      linkedinWebhookSecret: generateWebhookSecret(),
       plan: "Free",
       emailVerified: null,
       tokenVersion: 0,

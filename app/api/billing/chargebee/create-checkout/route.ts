@@ -2,7 +2,8 @@ import { NextResponse } from "next/server";
 import { getAuthenticatedUserEmail } from "@/lib/auth";
 import { dbConnect } from "@/lib/mongodb";
 import { AccountModel } from "@/lib/models";
-import { getChargebeeClient, PLAN_PRICING } from "@/lib/billing";
+import { getChargebeeClient, PLAN_PRICING, isStaffCoupon } from "@/lib/billing";
+import { isCompanyAccount } from "@/lib/roles";
 import crypto from "crypto";
 
 export const dynamic = "force-dynamic";
@@ -29,6 +30,14 @@ export async function POST(req: Request) {
     const rawCoupon = typeof body?.couponCode === "string" ? body.couponCode : "";
     const cleanCoupon = rawCoupon.trim().toUpperCase();
 
+    // Staff coupons are for company accounts only; Chargebee must restrict them too.
+    if (isStaffCoupon(cleanCoupon) && !isCompanyAccount(account.email, account.role)) {
+      return NextResponse.json(
+        { error: "Invalid or expired coupon code.", code: "INVALID_COUPON" },
+        { status: 400 }
+      );
+    }
+
     // 2. Get Chargebee client & determine dynamic return URL
     const cb = getChargebeeClient();
     const reqHost = req.headers.get("host") || "localhost:3000";
@@ -37,7 +46,7 @@ export async function POST(req: Request) {
 
     // 3. Graceful sandbox simulation if keys are not yet configured
     if (!cb) {
-      const isCoupon = cleanCoupon === "BDA1" || cleanCoupon === "STAFF1";
+      const isCoupon = isStaffCoupon(cleanCoupon);
       return NextResponse.json({
         success: true,
         isSimulated: true,

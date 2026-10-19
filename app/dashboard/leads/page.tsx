@@ -437,6 +437,7 @@ export default function LeadsPage() {
       setIsAdding(true);
 
       try {
+        const currentUserEmail = localStorage.getItem("currentUserEmail") || account?.email || "";
         const magnetTitle = newLeadMagnet || (magnetPages.length > 0 ? magnetPages[0].name : "Direct Lead");
         const pageId = magnetPages.find((p) => p.name === magnetTitle)?.id || "";
 
@@ -454,10 +455,11 @@ export default function LeadsPage() {
             minute: "2-digit",
             hour12: true,
           }),
-          sequence: `${magnetTitle} Sequence`,
+          sequence: pageId ? `${magnetTitle} Sequence` : "",
           status: "new",
           source: "leadmagnets",
           tags: [],
+          userEmail: currentUserEmail,
         };
 
         const updated = [newLead, ...leads];
@@ -465,7 +467,6 @@ export default function LeadsPage() {
         saveLeads(updated);
 
         // Trigger backend addLead endpoint to send lead alerts & sync MongoDB
-        const currentUserEmail = localStorage.getItem("currentUserEmail") || account?.email || "";
         fetch("/api/data", {
           method: "POST",
           headers: { "Content-Type": "application/json" },

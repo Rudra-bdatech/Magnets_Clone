@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
 import { getAuthenticatedUserEmail } from "@/lib/auth";
-import { getChargebeeClient, PLAN_PRICING } from "@/lib/billing";
+import { getChargebeeClient, PLAN_PRICING, isStaffCoupon } from "@/lib/billing";
+import { dbConnect } from "@/lib/mongodb";
+import { AccountModel } from "@/lib/models";
+import { isCompanyAccount } from "@/lib/roles";
 
 export const dynamic = "force-dynamic";
 
@@ -27,8 +30,20 @@ export async function POST(req: Request) {
 
     const originalAmount = PLAN_PRICING.PRO_INR.amount; // 4999
 
-    // Check special company staff coupons
-    if (cleanCode === "BDA1" || cleanCode === "STAFF1") {
+    const invalidCoupon = () =>
+      NextResponse.json(
+        { success: false, valid: false, error: "Invalid or expired coupon code.", code: "INVALID_COUPON" },
+        { status: 400 }
+      );
+
+    // Staff coupons: company accounts only. Others get the same answer as an unknown code,
+    // and the code is never looked up in Chargebee for them.
+    if (isStaffCoupon(cleanCode)) {
+      await dbConnect();
+      const account = await AccountModel.findOne({ email }, { role: 1 }).lean();
+      if (!isCompanyAccount(email, (account as any)?.role)) {
+        return invalidCoupon();
+      }
       return NextResponse.json({
         success: true,
         valid: true,
@@ -76,15 +91,7 @@ export async function POST(req: Request) {
       }
     }
 
-    return NextResponse.json(
-      {
-        success: false,
-        valid: false,
-        error: "Invalid or expired coupon code. Company staff can use coupon code: BDA1",
-        code: "INVALID_COUPON",
-      },
-      { status: 400 }
-    );
+    return invalidCoupon();
   } catch (error: any) {
     console.error("[Validate Coupon Error]:", error);
     return NextResponse.json(

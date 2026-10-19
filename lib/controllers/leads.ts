@@ -53,28 +53,41 @@ export async function handleAddLead(data: any, req: Request, normEmail: string |
   let foundPageDoc: any = null;
 
   // Track if the owner email is verified by active user session or matching page document in DB
-  let isVerifiedOwner = Boolean(authEmail && authEmail.trim());
-  let ownerEmail = authEmail
-    ? authEmail.trim().replace(/[\r\n]+/g, "").toLowerCase()
-    : (cleanStr(normEmail, 150).replace(/[\r\n]+/g, "").toLowerCase() || cleanStr(data.userEmail, 150).replace(/[\r\n]+/g, "").toLowerCase());
+  let isVerifiedOwner = false;
+  let ownerEmail = "";
 
+  const verifiedSessionEmail = authEmail && typeof authEmail === "string" && authEmail.trim()
+    ? cleanStr(authEmail, 150).replace(/[\r\n]+/g, "").toLowerCase()
+    : null;
+
+  const fallbackBodyEmail = normEmail && typeof normEmail === "string" && normEmail.trim()
+    ? cleanStr(normEmail, 150).replace(/[\r\n]+/g, "").toLowerCase()
+    : (data?.userEmail && typeof data.userEmail === "string" ? cleanStr(data.userEmail, 150).replace(/[\r\n]+/g, "").toLowerCase() : "");
+
+  // 1. First, attempt to match the page document in the database
   if (cleanPageId || cleanPageName || cleanPageSlug) {
-    const query: any[] = [];
-    if (cleanPageId) query.push({ id: cleanPageId });
-    if (cleanPageName) query.push({ name: cleanPageName });
-    if (cleanPageSlug) query.push({ slug: cleanPageSlug });
     try {
-      if (ownerEmail) {
-        foundPageDoc = await MagnetPageModel.findOne({
-          $and: [
-            { userEmail: { $regex: new RegExp(`^${ownerEmail.trim()}$`, "i") } },
-            { $or: query }
-          ]
-        }).sort({ updatedAt: -1, createdAt: -1, _id: -1 }).lean();
+      // If we have a verified session email, prioritize matching pages owned by this logged-in user
+      if (verifiedSessionEmail) {
+        const query: any[] = [];
+        if (cleanPageId) query.push({ id: cleanPageId });
+        if (cleanPageSlug) query.push({ slug: cleanPageSlug });
+        if (cleanPageName && cleanPageName !== "Direct Manual Add" && cleanPageName !== "Direct Lead") {
+          query.push({ name: cleanPageName });
+        }
+        if (query.length > 0) {
+          foundPageDoc = await MagnetPageModel.findOne({
+            $and: [
+              { userEmail: { $regex: new RegExp(`^${verifiedSessionEmail}$`, "i") } },
+              { $or: query }
+            ]
+          }).sort({ updatedAt: -1, createdAt: -1, _id: -1 }).lean();
+        }
       }
+
+      // If not found yet (e.g. public signup form where caller has no session),
+      // match ONLY by unambiguous identifiers (pageId or pageSlug) across the database.
       if (!foundPageDoc) {
-        // Without a verified ownerEmail, NEVER match by generic page name across the entire database.
-        // Only match by unambiguous identifiers (pageId or pageSlug).
         const specificQuery: any[] = [];
         if (cleanPageId) specificQuery.push({ id: cleanPageId });
         if (cleanPageSlug) specificQuery.push({ slug: cleanPageSlug });
@@ -85,9 +98,10 @@ export async function handleAddLead(data: any, req: Request, normEmail: string |
         }
       }
     } catch (_) {}
+
     if (foundPageDoc) {
       if (foundPageDoc.userEmail) {
-        ownerEmail = foundPageDoc.userEmail;
+        ownerEmail = foundPageDoc.userEmail.trim().replace(/[\r\n]+/g, "").toLowerCase();
         isVerifiedOwner = true;
       }
       if (foundPageDoc.name) pageTitle = foundPageDoc.name;
@@ -104,40 +118,68 @@ export async function handleAddLead(data: any, req: Request, normEmail: string |
     }
   }
 
-  // Fallback: If page or pageId is still missing, attempt resolution from owner account or latest magnet
-  if (!data.pageId || !data.page) {
-    let resolvedMagnet: any = null;
-    if (ownerEmail && isVerifiedOwner) {
-      try {
-        const ownerAcc = await AccountModel.findOne({ email: ownerEmail.trim().toLowerCase() }).lean();
-        if (ownerAcc) {
-          const incomingPostId = cleanStr(data.postId || (data.customFields && typeof data.customFields === "object" ? data.customFields.postId : ""), 100);
-          if (incomingPostId && Array.isArray((ownerAcc as any).linkedinPostCampaigns)) {
-            const matchedCampaign = (ownerAcc as any).linkedinPostCampaigns.find((c: any) => c.postId === incomingPostId);
-            if (matchedCampaign?.magnetId) {
-              resolvedMagnet = await MagnetPageModel.findOne({ id: matchedCampaign.magnetId }).lean();
+  // 2. Caller-specific owner and page resolution when no page document was matched in DB:
+  if (!foundPageDoc) {
+    if (verifiedSessionEmail) {
+      // ── CALLER 2: Dashboard "Add Lead" / Logged-in User with No Page ──
+      // The dashboard can add a lead with no page (e.g. "Direct Manual Add" or "Direct Lead").
+      // It MUST fall back to the logged-in user as the verified owner.
+      ownerEmail = verifiedSessionEmail;
+      isVerifiedOwner = true;
+      data.pageId = cleanPageId || "";
+      data.page = cleanPageName || "Direct Lead";
+      pageTitle = data.page;
+      data.sequence = "";
+      data.sequenceStep = "";
+    } else {
+      // ── CALLER 4: LinkedIn Browser Extension ──
+      const isLinkedInLead = data.source === "linkedin-comment" || data.status === "pending_email" || Boolean(data.customFields?.linkedinProfile);
+      if (isLinkedInLead && fallbackBodyEmail) {
+        try {
+          const ownerAcc = await AccountModel.findOne({ email: fallbackBodyEmail }).lean();
+          if (ownerAcc) {
+            ownerEmail = (ownerAcc as any).email.trim().toLowerCase();
+            isVerifiedOwner = true;
+
+            // Attempt to resolve target magnet from LinkedIn campaign settings or default magnet
+            let resolvedMagnet: any = null;
+            const incomingPostId = cleanStr(data.postId || (data.customFields && typeof data.customFields === "object" ? data.customFields.postId : ""), 100);
+            if (incomingPostId && Array.isArray((ownerAcc as any).linkedinPostCampaigns)) {
+              const matchedCampaign = (ownerAcc as any).linkedinPostCampaigns.find((c: any) => c.postId === incomingPostId);
+              if (matchedCampaign?.magnetId) {
+                resolvedMagnet = await MagnetPageModel.findOne({ userEmail: ownerEmail, id: matchedCampaign.magnetId }).lean();
+              }
+            }
+            if (!resolvedMagnet && (ownerAcc as any).linkedinDefaultMagnetId) {
+              resolvedMagnet = await MagnetPageModel.findOne({ userEmail: ownerEmail, id: (ownerAcc as any).linkedinDefaultMagnetId }).lean();
+            }
+            if (!resolvedMagnet) {
+              resolvedMagnet = await MagnetPageModel.findOne({ userEmail: ownerEmail }).sort({ updatedAt: -1, createdAt: -1 }).lean();
+            }
+
+            if (resolvedMagnet) {
+              foundPageDoc = resolvedMagnet;
+              data.pageId = resolvedMagnet.id;
+              data.page = resolvedMagnet.name || resolvedMagnet.slug || "Lead Magnet";
+              pageTitle = data.page;
+            } else {
+              data.pageId = cleanPageId || "linkedin-auto-lead";
+              data.page = cleanPageName || "LinkedIn Lead Magnet";
+              pageTitle = data.page;
             }
           }
-          if (!resolvedMagnet && (ownerAcc as any).linkedinDefaultMagnetId) {
-            resolvedMagnet = await MagnetPageModel.findOne({ id: (ownerAcc as any).linkedinDefaultMagnetId }).lean();
-          }
-        }
-        if (!resolvedMagnet) {
-          resolvedMagnet = await MagnetPageModel.findOne({ userEmail: ownerEmail.trim().toLowerCase() }).sort({ updatedAt: -1, createdAt: -1 }).lean();
-        }
-      } catch (_) {}
+        } catch (_) {}
+      }
     }
+  }
 
-    if (resolvedMagnet) {
-      foundPageDoc = resolvedMagnet;
-      data.pageId = resolvedMagnet.id;
-      data.page = resolvedMagnet.name || resolvedMagnet.slug || "Lead Magnet";
-      pageTitle = data.page;
-    } else {
-      data.pageId = cleanPageId || "linkedin-auto-lead";
-      data.page = cleanPageName || "LinkedIn Lead Magnet";
-      pageTitle = data.page;
-    }
+  // 3. Security Boundary: If owner is unverified or missing, REJECT the request.
+  // An anonymous caller cannot inject leads into an account without a matching page document.
+  if (!isVerifiedOwner || !ownerEmail) {
+    return NextResponse.json(
+      { error: "Invalid lead submission: page not found or unauthorized." },
+      { status: 400 }
+    );
   }
 
   let isUpgradedFromPending = false;
@@ -229,6 +271,7 @@ export async function handleAddLead(data: any, req: Request, normEmail: string |
         email: normalizedEmail,
         status: { $ne: "pending_email" },
       };
+      if (ownerEmail) leadQuery.userEmail = ownerEmail;
       if (targetPageId) leadQuery.pageId = targetPageId;
       else if (cleanPageName) leadQuery.page = cleanPageName;
 
@@ -335,7 +378,7 @@ export async function handleAddLead(data: any, req: Request, normEmail: string |
           }
         }
 
-        if (data.email && !isPendingLead) {
+        if (data.email && !isPendingLead && foundPageDoc) {
           // If this lead was already subscribed, apply a 2-minute cooldown
           // to prevent email-bombing loops while allowing legitimate returning visitors to get their link
           if (isUpgradedFromPending && existingLeadDoc) {

@@ -34,6 +34,24 @@ function parseCloudinaryUrl(url: string): {
   return { publicId, format, resourceType };
 }
 
+const NOT_PAGE_ASSET = { isPageAsset: { $ne: true }, type: { $ne: "page_asset" } };
+
+/** HTTPS URLs on the storage hosts uploads go to (Cloudinary, Vercel Blob). */
+function isTrustedStorageUrl(rawUrl: string): boolean {
+  try {
+    const parsed = new URL(rawUrl);
+    const hostname = parsed.hostname.toLowerCase();
+    return (
+      parsed.protocol === "https:" &&
+      (hostname === "res.cloudinary.com" ||
+        hostname === "blob.vercel-storage.com" ||
+        hostname.endsWith(".blob.vercel-storage.com"))
+    );
+  } catch {
+    return false;
+  }
+}
+
 export async function GET(
   req: NextRequest,
   { params }: { params: { id: string } }
@@ -42,7 +60,9 @@ export async function GET(
 
   try {
     await dbConnect();
-    let resource = await ResourceModel.findOne({ id: resourceId }).lean();
+    // Page assets (a locked PDF's file, cover images) are never served here:
+    // a locked PDF is only released through the OTP gate at /api/pdf-gate/file.
+    let resource = await ResourceModel.findOne({ id: resourceId, ...NOT_PAGE_ASSET }).lean();
     let linkedPage: any = null;
 
     // If not found by direct resource id, check if resourceId is a MagnetPage slug/id
@@ -62,16 +82,17 @@ export async function GET(
         }
 
         if (boundResId) {
-          resource = await ResourceModel.findOne({ id: boundResId }).lean();
+          resource = await ResourceModel.findOne({ id: boundResId, ...NOT_PAGE_ASSET }).lean();
         }
 
-        if (!resource && page.assetUrl && page.assetUrl.startsWith("http")) {
+        // Only redirect to our own storage, never to an arbitrary stored URL (open redirect)
+        if (!resource && page.assetUrl && isTrustedStorageUrl(page.assetUrl)) {
           return NextResponse.redirect(page.assetUrl, 307);
         }
 
         if (!resource && page.userEmail) {
           // Page assets (e.g. a locked PDF's file) are never handed out as a deliverable
-          resource = await ResourceModel.findOne({ userEmail: page.userEmail.toLowerCase().trim(), isPageAsset: { $ne: true } })
+          resource = await ResourceModel.findOne({ userEmail: page.userEmail.toLowerCase().trim(), ...NOT_PAGE_ASSET })
             .sort({ uploadedAt: -1 })
             .lean();
         }
@@ -87,7 +108,7 @@ export async function GET(
       const downloadFilename = resource.name || resource.fileUrl.split("/").pop() || "download.pdf";
       const isPdf = downloadFilename.toLowerCase().endsWith(".pdf") || resource.fileUrl.toLowerCase().endsWith(".pdf");
 
-      if (resource.fileUrl.includes("res.cloudinary.com")) {
+      if (isTrustedStorageUrl(resource.fileUrl) && new URL(resource.fileUrl).hostname.toLowerCase() === "res.cloudinary.com") {
         const parsed = parseCloudinaryUrl(resource.fileUrl);
         if (parsed && process.env.CLOUDINARY_API_SECRET) {
           try {
@@ -117,13 +138,15 @@ export async function GET(
         return NextResponse.redirect(rawFallbackUrl, 302);
       }
 
-      // Check if URL targets internal network or cloud metadata
-      if (await isPrivateOrReservedUrl(resource.fileUrl)) {
+      // Only our own storage is fetched or redirected to. Anything else is either an
+      // SSRF attempt (internal hosts, cloud metadata) or an open redirect.
+      if (!isTrustedStorageUrl(resource.fileUrl) || (await isPrivateOrReservedUrl(resource.fileUrl))) {
         return NextResponse.json({ error: "Invalid resource URL" }, { status: 400 });
       }
 
       try {
-        const blobResponse = await fetch(resource.fileUrl);
+        // redirect: "error" so a 3xx can't send this server fetch to an unchecked host
+        const blobResponse = await fetch(resource.fileUrl, { redirect: "error" });
         if (blobResponse.ok && blobResponse.body) {
           return new NextResponse(blobResponse.body, {
             headers: {
@@ -142,14 +165,19 @@ export async function GET(
     const isVercel = Boolean(process.env.VERCEL);
     const uploadsDir = isVercel ? "/tmp" : path.join(process.cwd(), "public", "uploads");
     const filesOnDisk = await fs.readdir(uploadsDir).catch(() => []);
-    let matchingFile = filesOnDisk.find((f) => f.startsWith(resourceId) || (resource && f.startsWith(resource.id)));
+    // Uploads are saved as "<resource id>-<name>". Only serve a file that belongs to a
+    // resource found above: matching on the raw URL id would serve any file (including
+    // page assets) whose name starts with whatever the visitor typed.
+    const localPrefix = resource?.id ? `${resource.id}-` : null;
+    const isResourceFile = (f: string) => Boolean(localPrefix) && f.startsWith(localPrefix as string);
+    let matchingFile = filesOnDisk.find(isResourceFile);
     let targetDir = uploadsDir;
 
     if (!matchingFile && isVercel) {
       // Check fallback public/uploads directory
       const localPublic = path.join(process.cwd(), "public", "uploads");
       const altFiles = await fs.readdir(localPublic).catch(() => []);
-      matchingFile = altFiles.find((f) => f.startsWith(resourceId) || (resource && f.startsWith(resource.id)));
+      matchingFile = altFiles.find(isResourceFile);
       if (matchingFile) targetDir = localPublic;
     }
 

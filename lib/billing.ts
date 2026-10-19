@@ -51,3 +51,11 @@ export const PLAN_PRICING = {
     itemPriceId: process.env.CHARGEBEE_ITEM_PRICE_ID_USD || "pro-monthly-USD",
   },
 } as const;
+
+// ₹1 staff coupons. Only company accounts (isCompanyAccount) may use them; the
+// same codes must also be restricted in Chargebee, which applies the real discount.
+export const STAFF_COUPON_CODES = ["BDA1", "STAFF1"];
+
+export function isStaffCoupon(code: string): boolean {
+  return STAFF_COUPON_CODES.includes(code);
+}
