@@ -94,19 +94,27 @@ export async function GET() {
     // (this response is cached in localStorage by lib/store.ts)
     const sanitizedUser = sanitizeAccount(account);
 
+    const emailVerified = Boolean(account.emailVerified);
     const response = NextResponse.json({
       authenticated: true,
       email: email,
+      emailVerified,
       user: sanitizedUser || { email: email, name: name || email.split("@")[0] },
     });
 
     // Ensure custom session_token cookie is issued for NextAuth / Google users if missing,
     // or refreshed if older than 7 days (prevents endless sliding window vulnerability).
+    // Also refreshed when the email was verified elsewhere (e.g. link opened on another device),
+    // so the middleware's verification gate sees the new state.
     const currentSession = token ? verifySessionToken(token) : null;
     const nowSec = Math.floor(Date.now() / 1000);
-    const shouldRefresh = !currentSession || !currentSession.iat || (nowSec - currentSession.iat > 7 * 24 * 60 * 60);
+    const shouldRefresh =
+      !currentSession ||
+      !currentSession.iat ||
+      (nowSec - currentSession.iat > 7 * 24 * 60 * 60) ||
+      (currentSession.ev === true) !== emailVerified;
     if (shouldRefresh) {
-      setAuthCookie(response, email, name, account.tokenVersion ?? 0);
+      setAuthCookie(response, email, name, account.tokenVersion ?? 0, emailVerified);
     }
 
     if (nextAuthSession?.user?.email) {

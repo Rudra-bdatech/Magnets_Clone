@@ -7,6 +7,12 @@ import { determineRoleForEmail } from "@/lib/roles";
 import { sanitizeRedirect } from "@/lib/redirect";
 import { isReservedUsername } from "@/lib/reserved-usernames";
 
+/** True when the OAuth provider itself confirms the user owns this email address. */
+function isProviderEmailVerified(provider: string | undefined, profile: any): boolean {
+  if (provider !== "google" && provider !== "linkedin") return false;
+  return profile?.email_verified === true || profile?.email_verified === "true";
+}
+
 export const authOptions: NextAuthOptions = {
   providers: [
     GoogleProvider({
@@ -61,13 +67,14 @@ export const authOptions: NextAuthOptions = {
   },
 
   callbacks: {
-    async signIn({ user, account: oauthAccount }) {
+    async signIn({ user, account: oauthAccount, profile }) {
       if (!user.email) return false;
 
       try {
         await dbConnect();
         const cleanEmail = user.email.trim().toLowerCase();
         const isLinkedIn = oauthAccount?.provider === "linkedin";
+        const providerVerified = isProviderEmailVerified(oauthAccount?.provider, profile);
 
         let userAvatar = user.image || null;
         if (userAvatar && userAvatar.includes("googleusercontent.com") && userAvatar.includes("=s")) {
@@ -104,6 +111,7 @@ export const authOptions: NextAuthOptions = {
             joinedAt: new Date().toLocaleDateString("en-US", { month: "long", year: "numeric" }),
             isNewAccount: true,
             needsOnboarding: true,
+            emailVerified: providerVerified ? new Date() : null,
             // If signing up via LinkedIn OAuth, mark their LinkedIn as connected for identity
             ...(isLinkedIn && {
               linkedinConnected: true,
@@ -138,6 +146,18 @@ export const authOptions: NextAuthOptions = {
             existing.linkedinProfileId = oauthAccount.providerAccountId || existing.linkedinProfileId || "";
             modified = true;
           }
+          // The provider proved this person owns the address. If the account was never verified,
+          // it may have been registered by someone else, so drop that password and revoke its sessions.
+          if (providerVerified && !existing.emailVerified) {
+            existing.emailVerified = new Date();
+            existing.emailVerifyTokenHash = null;
+            existing.emailVerifyExpires = null;
+            if (existing.password) {
+              existing.password = "";
+              existing.tokenVersion = (existing.tokenVersion || 0) + 1;
+            }
+            modified = true;
+          }
           if (modified) {
             await existing.save();
           }
@@ -159,6 +179,14 @@ export const authOptions: NextAuthOptions = {
           picture = picture.replace(/=s\d+(-c)?/, "=s256-c");
         }
         token.picture = picture;
+        // Read by the middleware's email verification gate (signIn above has already updated the DB)
+        try {
+          await dbConnect();
+          const acc: any = await AccountModel.findOne({ email: token.email }, { emailVerified: 1 }).lean();
+          token.emailVerified = Boolean(acc?.emailVerified);
+        } catch {
+          token.emailVerified = false;
+        }
       }
       return token;
     },

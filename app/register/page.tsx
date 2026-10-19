@@ -84,20 +84,11 @@ export default function RegisterPage() {
         safeSetItem("leadmagnets_last_auth_email", email.trim().toLowerCase());
       }
 
-      // Transition button text to Opening dashboard...
       setLoadingStatus("opening");
 
-      // Fire verification email in background — never blocks registration flow
-      fetch("/api/data", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "sendVerificationEmail", data: { email: email.trim(), name: name.trim() } }),
-      }).catch(() => { /* silently ignore if Resend sandbox blocks delivery */ });
-
-      // Always go straight to onboarding — no email verification gate
-      setTimeout(() => {
-        router.push(`/register/onboarding?email=${encodeURIComponent(email.trim())}`);
-      }, 600);
+      // The server emailed a verification link when it created the account.
+      // Onboarding and the dashboard stay locked until that link is opened.
+      router.push(`/register/verify?next=${encodeURIComponent("/register/onboarding")}`);
     } catch (err: any) {
       console.error(err);
       setError(err.message || "Failed to create account. Please try again.");
@@ -241,7 +232,7 @@ export default function RegisterPage() {
           {loadingStatus === "opening" && (
             <span className="inline-flex items-center justify-center gap-2">
               <Loader2 className="h-3.5 w-3.5 animate-spin" />
-              Opening dashboard...
+              Redirecting...
             </span>
           )}
           {loadingStatus === "idle" && (

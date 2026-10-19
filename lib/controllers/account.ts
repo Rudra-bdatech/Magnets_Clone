@@ -9,7 +9,7 @@ import { determineRoleForEmail } from "@/lib/roles";
 import { cleanDomain as sanitizeDomain, formatSubdomain, removeDomainFromVercel } from "@/lib/domain-verify";
 import { revokeGmailAccess } from "@/lib/gmail-oauth";
 import { isReservedUsername } from "@/lib/reserved-usernames";
-import { randomBytes } from "crypto";
+import { createHash, randomBytes } from "crypto";
 
 /** Generates a cryptographically random 64-char hex webhook secret. */
 function generateWebhookSecret(): string {
@@ -33,6 +33,8 @@ export function sanitizeAccount(accountDoc: any) {
   delete acc.password;
   delete acc.resetPasswordToken;
   delete acc.resetPasswordExpires;
+  delete acc.emailVerifyTokenHash;
+  delete acc.emailVerifyExpires;
   delete acc.linkedinLiAt;
   delete acc.linkedinJSessionId;
   delete acc.linkedinWebhookSecret; // served only via the dedicated webhook-secret endpoint
@@ -309,6 +311,10 @@ export async function handleSaveAccount(data: any, authEmail: string | null) {
     delete data.dkimVerified;
     delete data.resetPasswordToken;
     delete data.resetPasswordExpires;
+    delete data.emailVerified;
+    delete data.emailVerifyTokenHash;
+    delete data.emailVerifyExpires;
+    delete data.tokenVersion;
     data.role = determineRoleForEmail(data.email || normalizedEmail);
     data.customDomain = sanitizeDomain(data.customDomain);
     data.customSubdomain = formatSubdomain(data.customSubdomain);
@@ -316,10 +322,16 @@ export async function handleSaveAccount(data: any, authEmail: string | null) {
     data.cnameVerified = false;
     data.sslStatus = "pending";
     account = await AccountModel.create(data);
+
+    // A failed send must not fail the signup: the "check your inbox" page can resend.
+    const verifyResult = await issueEmailVerification(account).catch((err) => ({ success: false, error: String(err) }));
+    if (!verifyResult.success) {
+      console.error("[signup] Verification email failed:", verifyResult.error);
+    }
   }
 
   const res = NextResponse.json({ success: true, account: sanitizeAccount(account) });
-  setAuthCookie(res, normalizedEmail, account?.name, account?.tokenVersion ?? 0);
+  setAuthCookie(res, normalizedEmail, account?.name, account?.tokenVersion ?? 0, Boolean(account?.emailVerified));
   return res;
 }
 
@@ -451,7 +463,7 @@ export async function handleLogin(data: any) {
   // Set the HttpOnly session cookie right here — identity is verified above.
   // Sensitive fields (password, tokens, LinkedIn session cookies) are completely sanitized.
   const res = NextResponse.json({ success: true, account: sanitizeAccount(account) });
-  setAuthCookie(res, account.email, account.name, account.tokenVersion ?? 0);
+  setAuthCookie(res, account.email, account.name, account.tokenVersion ?? 0, Boolean(account.emailVerified));
 
   // Set persistent client-accessible cookies for Last Used login indicator
   res.cookies.set("leadmagnets_last_auth_method", "email", {
@@ -511,7 +523,7 @@ export async function handleUpdatePassword(data: any, authEmail: string | null) 
 
   const updateRes = NextResponse.json({ success: true });
   // Refresh auth cookie for current session with new tokenVersion
-  setAuthCookie(updateRes, account.email, account.name, account.tokenVersion);
+  setAuthCookie(updateRes, account.email, account.name, account.tokenVersion, Boolean(account.emailVerified));
   return updateRes;
 }
 
@@ -560,11 +572,10 @@ export async function handleSendResetEmail(data: any, reqHostOrigin?: string) {
     });
   }
 
-  const crypto = await import("crypto");
-  const token = crypto.randomBytes(32).toString("hex");
+  const token = randomBytes(32).toString("hex");
   const expires = new Date(Date.now() + 60 * 60 * 1000);
 
-  account.resetPasswordToken = token;
+  account.resetPasswordToken = hashToken(token);
   account.resetPasswordExpires = expires;
   await account.save();
 
@@ -680,7 +691,7 @@ export async function handleResetPassword(data: any) {
   const cleanToken = token.trim();
 
   const account = await AccountModel.findOne({
-    resetPasswordToken: cleanToken,
+    resetPasswordToken: hashToken(cleanToken),
     resetPasswordExpires: { $gt: new Date() },
   });
 
@@ -691,6 +702,12 @@ export async function handleResetPassword(data: any) {
   account.password = await hashPassword(newPassword);
   account.resetPasswordToken = null;
   account.resetPasswordExpires = null;
+  // Opening the reset link proves the user controls this inbox
+  if (!account.emailVerified) {
+    account.emailVerified = new Date();
+    account.emailVerifyTokenHash = null;
+    account.emailVerifyExpires = null;
+  }
   // Increment tokenVersion so all previous sessions are revoked immediately
   account.tokenVersion = (account.tokenVersion || 0) + 1;
   await account.save();
@@ -698,14 +715,46 @@ export async function handleResetPassword(data: any) {
   return NextResponse.json({ success: true });
 }
 
-export async function handleSendVerificationEmail(data: any, reqHostOrigin: string) {
-  const { email } = data;
-  const canonicalAppUrl = process.env.NEXT_PUBLIC_APP_URL || "https://magnets.bdatech.in";
-  const origin = canonicalAppUrl.replace(/\/$/, "");
-  const confirmUrl = `${origin}/register/confirm?email=${encodeURIComponent(email.trim())}`;
+const EMAIL_VERIFY_TTL_MS = 24 * 60 * 60 * 1000;
 
-  const sendResult = await sendMail({
-    to: email.trim(),
+/** Tokens are stored only as SHA-256 hashes, so a leaked database cannot be used to verify or reset accounts. */
+function hashToken(token: string): string {
+  return createHash("sha256").update(token).digest("hex");
+}
+
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+/**
+ * Creates a fresh single-use verification token for `account` (replacing any earlier one)
+ * and emails the confirmation link to the account's address.
+ */
+async function issueEmailVerification(account: any): Promise<{ success: boolean; error?: string }> {
+  const token = randomBytes(32).toString("hex");
+  account.emailVerifyTokenHash = hashToken(token);
+  account.emailVerifyExpires = new Date(Date.now() + EMAIL_VERIFY_TTL_MS);
+  await account.save();
+
+  // Local dev links back to the dev server; production always uses the canonical app URL
+  // (never the request's Host header, which an attacker could spoof).
+  const appUrl =
+    process.env.NODE_ENV !== "production" && process.env.NEXTAUTH_URL
+      ? process.env.NEXTAUTH_URL
+      : process.env.NEXT_PUBLIC_APP_URL || "https://magnets.bdatech.in";
+  const origin = appUrl.replace(/\/$/, "");
+  const confirmUrl = `${origin}/register/confirm?token=${token}`;
+  const safeEmail = escapeHtml(account.email);
+
+  // No owner argument: this system email must always come from the platform sender (SMTP_FROM),
+  // never from a Gmail or SMTP account the user connected.
+  return sendMail({
+    to: account.email,
     subject: "Verify your LeadMagnets email",
     isTransactional: true,
     html: `
@@ -743,7 +792,7 @@ export async function handleSendVerificationEmail(data: any, reqHostOrigin: stri
               Verify your email address
             </h1>
             <p style="color: #64748b; font-size: 14px; margin: 0 0 28px 0; line-height: 1.6;">
-              Please confirm your email address (<strong style="color: #0f172a;">${email.trim()}</strong>) to finish setting up your LeadMagnets account.
+              Please confirm your email address (<strong style="color: #0f172a;">${safeEmail}</strong>) to finish setting up your LeadMagnets account.
             </p>
 
             <!-- CTA Button -->
@@ -779,13 +828,69 @@ export async function handleSendVerificationEmail(data: any, reqHostOrigin: stri
 </body>
 </html>
     `,
-  }, email.trim().toLowerCase());
+  });
+}
 
+/**
+ * Resends the verification link to the signed-in user's own address.
+ * The recipient always comes from the session, never from the request body.
+ */
+export async function handleSendVerificationEmail(sessionEmail: string | null) {
+  if (!sessionEmail) {
+    return NextResponse.json({ error: "Please sign in to resend the verification email." }, { status: 401 });
+  }
+
+  const account = await AccountModel.findOne({ email: sessionEmail });
+  if (!account) {
+    return NextResponse.json({ error: "Account not found." }, { status: 404 });
+  }
+  if (account.emailVerified) {
+    return NextResponse.json({ success: true, alreadyVerified: true });
+  }
+
+  const sendResult = await issueEmailVerification(account);
   if (!sendResult.success) {
     return NextResponse.json({ error: sendResult.error || "Failed to send verification email." }, { status: 500 });
   }
 
   return NextResponse.json({ success: true });
+}
+
+/**
+ * Consumes a verification token from the email link. If the same browser is signed in
+ * to that account, its session cookie is reissued so the gate opens without a new login.
+ */
+export async function handleVerifyEmailToken(data: any, sessionEmail: string | null) {
+  const { token } = data || {};
+  if (!token || typeof token !== "string" || !/^[a-f0-9]{64}$/i.test(token.trim())) {
+    return NextResponse.json({ error: "This verification link is invalid." }, { status: 400 });
+  }
+
+  const account = await AccountModel.findOneAndUpdate(
+    {
+      emailVerifyTokenHash: hashToken(token.trim().toLowerCase()),
+      emailVerifyExpires: { $gt: new Date() },
+    },
+    {
+      $set: { emailVerified: new Date() },
+      $unset: { emailVerifyTokenHash: 1, emailVerifyExpires: 1 },
+    },
+    { returnDocument: "after" }
+  );
+
+  if (!account) {
+    return NextResponse.json(
+      { error: "This verification link is invalid or has expired. Sign in to request a new one.", code: "TOKEN_INVALID" },
+      { status: 400 }
+    );
+  }
+
+  const signedIn = sessionEmail === account.email;
+  const res = NextResponse.json({ success: true, signedIn });
+  if (signedIn) {
+    setAuthCookie(res, account.email, account.name, account.tokenVersion ?? 0, true);
+  }
+  return res;
 }
 
 // ---------------------------------------------------------------------------

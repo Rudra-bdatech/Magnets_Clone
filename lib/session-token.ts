@@ -17,6 +17,8 @@ export interface SessionUser {
   iat?: number;
   exp?: number;
   tokenVersion?: number;
+  /** True when the account's email was verified at the time this token was issued. */
+  ev?: boolean;
 }
 
 // Cryptographically domain-separated secret for PDF unlock tokens.
@@ -42,7 +44,7 @@ function base64UrlDecode(str: string): string {
   return Buffer.from(base64, "base64").toString("utf-8");
 }
 
-export function createSessionToken(payload: { email: string; name?: string; tokenVersion?: number }, expiresInDays = 30): string {
+export function createSessionToken(payload: { email: string; name?: string; tokenVersion?: number; ev?: boolean }, expiresInDays = 30): string {
   const header = { alg: "HS256", typ: "JWT" };
   const now = Math.floor(Date.now() / 1000);
   const exp = now + expiresInDays * 24 * 60 * 60;
@@ -53,6 +55,7 @@ export function createSessionToken(payload: { email: string; name?: string; toke
     iat: now,
     exp,
     tokenVersion: typeof payload.tokenVersion === "number" ? payload.tokenVersion : 0,
+    ev: payload.ev === true,
   };
 
   const encodedHeader = base64UrlEncode(JSON.stringify(header));

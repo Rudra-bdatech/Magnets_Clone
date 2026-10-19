@@ -7,12 +7,13 @@ import { isPlatformHost } from "@/lib/domain-verify";
 /**
  * Edge-compatible HMAC-SHA256 JWT Verification using Web Crypto API (crypto.subtle)
  * Runs in microseconds in Edge Runtime without importing Node.js `crypto`
+ * Returns the token payload when valid, otherwise null.
  */
-async function verifySessionTokenEdge(token: string, secret: string): Promise<boolean> {
+async function verifySessionTokenEdge(token: string, secret: string): Promise<{ email: string; ev?: boolean } | null> {
   try {
-    if (!token) return false;
+    if (!token) return null;
     const parts = token.split(".");
-    if (parts.length !== 3) return false;
+    if (parts.length !== 3) return null;
 
     const [headerB64, payloadB64, signatureB64] = parts;
     const dataToSign = `${headerB64}.${payloadB64}`;
@@ -40,29 +41,29 @@ async function verifySessionTokenEdge(token: string, secret: string): Promise<bo
       encoder.encode(dataToSign)
     );
 
-    if (!isValid) return false;
+    if (!isValid) return null;
 
     // Verify expiration timestamp
     const payloadJson = atob(payloadB64.replace(/-/g, "+").replace(/_/g, "/"));
     const payload = JSON.parse(payloadJson);
     if (payload.exp && payload.exp < Math.floor(Date.now() / 1000)) {
-      return false; // Token expired
+      return null; // Token expired
     }
 
     // Security check: strictly reject PDF unlock tokens or any non-session tokens
     if (payload.type && payload.type !== "session") {
-      return false;
+      return null;
     }
     if (payload.magnetId || payload.pdfPages || payload.unlockedAt || payload.type === "pdf_unlock") {
-      return false;
+      return null;
     }
     if (!payload.email || typeof payload.email !== "string") {
-      return false;
+      return null;
     }
 
-    return true;
+    return payload;
   } catch (e) {
-    return false;
+    return null;
   }
 }
 
@@ -79,11 +80,13 @@ export async function middleware(request: NextRequest) {
     request.cookies.get("__Secure-next-auth.session-token")?.value;
 
   // Real cryptographic HMAC verification for Edge Runtime
-  const isValidCustomSession = sessionToken && secret
+  const customSession = sessionToken && secret
     ? await verifySessionTokenEdge(sessionToken, secret)
-    : false;
+    : null;
+  const isValidCustomSession = Boolean(customSession);
 
   let isValidNextAuthSession = false;
+  let isNextAuthEmailVerified = false;
   if (rawNextAuthToken && process.env.NEXTAUTH_SECRET) {
     try {
       const nextAuthPayload = await getToken({
@@ -92,6 +95,7 @@ export async function middleware(request: NextRequest) {
       });
       if (nextAuthPayload && nextAuthPayload.email) {
         isValidNextAuthSession = true;
+        isNextAuthEmailVerified = nextAuthPayload.emailVerified === true;
       }
     } catch {
       isValidNextAuthSession = false;
@@ -99,6 +103,8 @@ export async function middleware(request: NextRequest) {
   }
 
   const isValidSession = Boolean(isValidCustomSession || isValidNextAuthSession);
+  // Fast check from signed token claims. API routes re-check the database on every request.
+  const isEmailVerified = customSession?.ev === true || isNextAuthEmailVerified;
 
   // Rate limiting for API routes that are not limited inside their own handlers.
   // Password login, password reset and OTP routes enforce their own (stricter) limits.
@@ -198,7 +204,8 @@ export async function middleware(request: NextRequest) {
   }
 
   // Protect /dashboard routes on primary domain — require cryptographically signed session
-  if (pathname.startsWith("/dashboard")) {
+  // and a verified email. Onboarding creates pages, so it is gated the same way.
+  if (pathname.startsWith("/dashboard") || pathname.startsWith("/register/onboarding")) {
     if (!isValidSession) {
       const loginUrl = new URL("/login", request.url);
       loginUrl.searchParams.set("from", pathname);
@@ -212,6 +219,16 @@ export async function middleware(request: NextRequest) {
       }
       return res;
     }
+    if (!isEmailVerified) {
+      const verifyUrl = new URL("/register/verify", request.url);
+      verifyUrl.searchParams.set("next", pathname + request.nextUrl.search);
+      return NextResponse.redirect(verifyUrl);
+    }
+  }
+
+  // The "check your inbox" page belongs to a signed-in account
+  if (pathname === "/register/verify" && !isValidSession) {
+    return NextResponse.redirect(new URL("/login", request.url));
   }
 
   // Redirect authenticated users away from /login and /register if they already have a valid session

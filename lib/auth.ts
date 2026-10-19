@@ -6,8 +6,14 @@ import { createSessionToken, verifySessionToken, AUTH_COOKIE_NAME, type SessionU
 
 export { createSessionToken, verifySessionToken, AUTH_COOKIE_NAME, type SessionUser };
 
-export function setAuthCookie(res: NextResponse, email: string, name?: string, tokenVersion?: number): NextResponse {
-  const token = createSessionToken({ email: email.trim().toLowerCase(), name, tokenVersion });
+export function setAuthCookie(
+  res: NextResponse,
+  email: string,
+  name?: string,
+  tokenVersion?: number,
+  emailVerified = false
+): NextResponse {
+  const token = createSessionToken({ email: email.trim().toLowerCase(), name, tokenVersion, ev: emailVerified });
   const maxAge = 30 * 24 * 60 * 60; // 30 days in seconds
 
   res.cookies.set({
@@ -75,7 +81,13 @@ export async function hasRecentOAuthLogin(email: string): Promise<boolean> {
   }
 }
 
-export async function getAuthenticatedUserEmail(): Promise<string | null> {
+interface ResolvedSession {
+  email: string;
+  emailVerified: boolean;
+}
+
+/** Reads the signed-in user from the custom session cookie or the NextAuth session, verified or not. */
+async function resolveSession(): Promise<ResolvedSession | null> {
   try {
     const cookieStore = cookies();
     const token = cookieStore.get(AUTH_COOKIE_NAME)?.value;
@@ -87,15 +99,16 @@ export async function getAuthenticatedUserEmail(): Promise<string | null> {
           const { dbConnect } = await import("@/lib/mongodb");
           const { AccountModel } = await import("@/lib/models");
           await dbConnect();
-          const acc = await AccountModel.findOne({ email: cleanEmail }, { tokenVersion: 1 }).lean();
+          const acc = await AccountModel.findOne({ email: cleanEmail }, { tokenVersion: 1, emailVerified: 1 }).lean();
           if (!acc) return null; // Account was deleted
           const expectedVersion = (acc as any).tokenVersion ?? 0;
           const actualVersion = session.tokenVersion ?? 0;
           if (actualVersion < expectedVersion) return null; // Session was revoked (e.g. password changed)
+          return { email: cleanEmail, emailVerified: Boolean((acc as any).emailVerified) };
         } catch (dbErr) {
           // If DB check is temporarily unavailable, fallback to session token validation
         }
-        return cleanEmail;
+        return { email: cleanEmail, emailVerified: session.ev === true };
       }
     }
   } catch (err) {
@@ -105,7 +118,18 @@ export async function getAuthenticatedUserEmail(): Promise<string | null> {
   try {
     const nextAuthSession = await getServerSession(authOptions);
     if (nextAuthSession?.user?.email) {
-      return nextAuthSession.user.email.trim().toLowerCase();
+      const cleanEmail = nextAuthSession.user.email.trim().toLowerCase();
+      let emailVerified = false;
+      try {
+        const { dbConnect } = await import("@/lib/mongodb");
+        const { AccountModel } = await import("@/lib/models");
+        await dbConnect();
+        const acc = await AccountModel.findOne({ email: cleanEmail }, { emailVerified: 1 }).lean();
+        emailVerified = Boolean((acc as any)?.emailVerified);
+      } catch (dbErr) {
+        // Without the DB we cannot confirm verification, so treat the session as unverified
+      }
+      return { email: cleanEmail, emailVerified };
     }
   } catch (err: any) {
     // Silently ignore JWEDecryptionFailed (stale cookies from old NEXTAUTH_SECRET).
@@ -118,4 +142,20 @@ export async function getAuthenticatedUserEmail(): Promise<string | null> {
     }
   }
   return null;
+}
+
+/**
+ * Email of the signed-in user, even if they have not verified their email yet.
+ * Only for the verification flow itself (resend, confirm). Everything else must use
+ * getAuthenticatedUserEmail().
+ */
+export async function getSessionEmail(): Promise<string | null> {
+  const session = await resolveSession();
+  return session?.email ?? null;
+}
+
+/** Email of the signed-in user. Returns null for unverified accounts, so they cannot use the app's APIs. */
+export async function getAuthenticatedUserEmail(): Promise<string | null> {
+  const session = await resolveSession();
+  return session?.emailVerified ? session.email : null;
 }

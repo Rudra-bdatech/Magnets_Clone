@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import { setAuthCookie, getAuthenticatedUserEmail } from "@/lib/auth";
+import { dbConnect } from "@/lib/mongodb";
+import { AccountModel } from "@/lib/models";
 
 /**
  * POST /api/auth/login
@@ -39,8 +41,12 @@ export async function POST(req: Request) {
     }
 
     // ── Issue / refresh the custom session cookie ─────────────────────────
+    // getAuthenticatedUserEmail() only returns verified accounts, so the new cookie is verified too.
+    // Keep the account's tokenVersion, or the fresh cookie would count as revoked.
+    await dbConnect();
+    const account: any = await AccountModel.findOne({ email: sessionEmail }, { tokenVersion: 1 }).lean();
     const response = NextResponse.json({ success: true, email: sessionEmail });
-    setAuthCookie(response, sessionEmail, name);
+    setAuthCookie(response, sessionEmail, name, account?.tokenVersion ?? 0, true);
     return response;
   } catch (error: any) {
     return NextResponse.json(

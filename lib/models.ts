@@ -34,6 +34,10 @@ const AccountSchema = new Schema({
   avatar: { type: String, default: null },
   resetPasswordToken: { type: String, default: null },
   resetPasswordExpires: { type: Date, default: null },
+  // Set once the owner proves they control the address (email link, password reset, or a verified OAuth sign-in)
+  emailVerified: { type: Date, default: null },
+  emailVerifyTokenHash: { type: String, default: null },
+  emailVerifyExpires: { type: Date, default: null },
   customDomain: { type: String, default: "" },
   customSubdomain: { type: String, default: "get" },
   domainVerified: { type: Boolean, default: false },
@@ -97,6 +101,7 @@ const AccountSchema = new Schema({
 });
 
 AccountSchema.index({ resetPasswordToken: 1 });
+AccountSchema.index({ emailVerifyTokenHash: 1 });
 AccountSchema.index({ linkedinWebhookSecret: 1 });
 AccountSchema.index({ customDomain: 1, domainVerified: 1, cnameVerified: 1 });
 AccountSchema.index({ customDomain: 1, customSubdomain: 1, domainVerified: 1, cnameVerified: 1 });

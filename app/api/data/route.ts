@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { dbConnect } from "@/lib/mongodb";
 import { AccountModel, MagnetPageModel, LeadModel, SequenceModel, IntegrationModel, ResourceModel } from "@/lib/models";
-import { getAuthenticatedUserEmail } from "@/lib/auth";
+import { getAuthenticatedUserEmail, getSessionEmail } from "@/lib/auth";
 import {
   handleSaveAccount,
   handleCheckEmail,
@@ -13,6 +13,7 @@ import {
   handleSendResetEmail,
   handleResetPassword,
   handleSendVerificationEmail,
+  handleVerifyEmailToken,
   handleGetLinkedInConfig,
   handleRegenerateLinkedInSecret,
   handleConnectLinkedInExtension,
@@ -262,18 +263,23 @@ export async function POST(req: Request) {
         return handleResetPassword(data);
       }
       case "sendVerificationEmail": {
-        const verifyEmail = normalizeEmailKey(data?.email);
-        if (!verifyEmail) {
-          return NextResponse.json({ error: "A valid email address is required." }, { status: 400 });
-        }
+        // Unverified users have no authEmail yet, so read the raw session. The recipient is
+        // always the signed-in account, never an address from the request body.
+        const sessionEmail = await getSessionEmail();
         const rl = await checkRateLimit(getClientIp(req.headers), "verification_email", 5, 15 * 60 * 1000, { failClosed: true });
         if (!rl.success) return rateLimitedResponse(rl, "Too many verification emails requested. Please wait 15 minutes.");
-        const inboxRl = await checkRateLimit(verifyEmail, "verification_email_inbox", 3, 15 * 60 * 1000, { failClosed: true });
-        if (!inboxRl.success) {
-          return rateLimitedResponse(inboxRl, "A verification email was already sent. Please check your inbox or wait 15 minutes.");
+        if (sessionEmail) {
+          const inboxRl = await checkRateLimit(sessionEmail, "verification_email_inbox", 3, 15 * 60 * 1000, { failClosed: true });
+          if (!inboxRl.success) {
+            return rateLimitedResponse(inboxRl, "A verification email was already sent. Please check your inbox or wait 15 minutes.");
+          }
         }
-        const reqHost = req.headers.get("origin") || "http://localhost:3000";
-        return handleSendVerificationEmail(data, reqHost);
+        return handleSendVerificationEmail(sessionEmail);
+      }
+      case "verifyEmailToken": {
+        const rl = await checkRateLimit(getClientIp(req.headers), "verify_email_token", 20, 60 * 1000, { failClosed: true });
+        if (!rl.success) return rateLimitedResponse(rl, "Too many attempts. Please wait a minute.");
+        return handleVerifyEmailToken(data, await getSessionEmail());
       }
 
       // Magnets Controller
