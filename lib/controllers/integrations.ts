@@ -88,34 +88,22 @@ export async function handleDeleteResource(data: any, normEmail: string | null) 
   return NextResponse.json({ success: true });
 }
 
-export async function handleAddResource(data: any) {
-  await ResourceModel.create(data);
-  return NextResponse.json({ success: true });
-}
-
 export async function handleUpdateResource(data: any, normEmail: string | null) {
   const { id, name } = data || {};
-  if (!id || !name || !name.trim()) {
+  // Strings only: an object id like {"$gt":""} would be read as a query operator.
+  if (!normEmail || typeof id !== "string" || !id || typeof name !== "string" || !name.trim()) {
     return NextResponse.json({ error: "Invalid resource id or name" }, { status: 400 });
   }
   const cleanName = name.trim();
-  const query: any = { id };
-  if (normEmail) {
-    query.userEmail = normEmail;
-  }
-  let updated = await ResourceModel.findOneAndUpdate(
-    query,
+  // Owner-scoped only: a resource that isn't the caller's is never touched.
+  const updated = await ResourceModel.findOneAndUpdate(
+    { id, userEmail: normEmail },
     { $set: { name: cleanName } },
     { returnDocument: 'after' }
   ).lean();
 
   if (!updated) {
-    // If not found with userEmail filter, attempt direct by id
-    updated = await ResourceModel.findOneAndUpdate(
-      { id },
-      { $set: { name: cleanName } },
-      { returnDocument: 'after' }
-    ).lean();
+    return NextResponse.json({ error: "Resource not found" }, { status: 404 });
   }
 
   return NextResponse.json({ success: true, name: cleanName, data: updated });

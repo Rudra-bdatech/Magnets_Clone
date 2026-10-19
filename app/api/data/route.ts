@@ -47,7 +47,6 @@ import {
   handleSaveIntegrations,
   handleSaveResources,
   handleDeleteResource,
-  handleAddResource,
   handleUpdateResource,
   handleSendTestKitAlert,
   handleSendTestPipedriveAlert,
@@ -332,8 +331,6 @@ export async function POST(req: Request) {
         return handleSaveResources(data, normEmail);
       case "deleteResource":
         return handleDeleteResource(data, normEmail);
-      case "addResource":
-        return handleAddResource(data);
       case "updateResource":
         return handleUpdateResource(data, normEmail);
       case "sendTestKitAlert":
