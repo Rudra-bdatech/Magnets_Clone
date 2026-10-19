@@ -418,7 +418,8 @@ export async function handleDeleteAccount(data: any, authEmail: string | null) {
     LeadModel.deleteMany({
       $or: [
         { userEmail: normDelEmail },
-        ...(userPageIds.length > 0 ? [{ pageId: { $in: userPageIds } }] : []),
+        // Only unassigned legacy leads by pageId: page ids are not unique across tenants
+        ...(userPageIds.length > 0 ? [{ pageId: { $in: userPageIds }, userEmail: { $in: [null, ""] } }] : []),
       ],
     }),
     SequenceModel.deleteMany({ userEmail: normDelEmail }),
@@ -1012,7 +1013,7 @@ export async function handleConnectLinkedInNative(data: any, authEmail: string |
       fullName: account.linkedinAccountName || "LinkedIn User",
       avatarUrl: account.linkedinProfileImage || "",
     },
-    account,
+    account: sanitizeAccount(account),
   });
 }
 
@@ -1068,7 +1069,7 @@ export async function handleLoginLinkedInCredentials(data: any, authEmail: strin
     success: true,
     message: "LinkedIn connected successfully!",
     profile: result.profile,
-    account,
+    account: sanitizeAccount(account),
   });
 }
 
@@ -1113,7 +1114,7 @@ export async function handleSubmitLinkedInPin(data: any, authEmail: string | nul
     success: true,
     message: "LinkedIn verified and connected successfully!",
     profile: result.profile,
-    account,
+    account: sanitizeAccount(account),
   });
 }
 
@@ -1144,7 +1145,7 @@ export async function handleConnectLinkedInExtension(data: any, authEmail: strin
   return NextResponse.json({
     success: true,
     message: "LinkedIn connected via Chrome Extension!",
-    account,
+    account: sanitizeAccount(account),
   });
 }
 
@@ -1214,7 +1215,7 @@ export async function handleSyncLinkedInNow(authEmail: string | null) {
   const result = await syncUserLinkedInComments(account);
 
   const updatedAccount = await AccountModel.findOne({ email: authEmail.trim().toLowerCase() }).lean();
-  return NextResponse.json({ ...result, account: updatedAccount });
+  return NextResponse.json({ ...result, account: sanitizeAccount(updatedAccount) });
 }
 
 /**

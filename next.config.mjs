@@ -30,9 +30,9 @@ const nextConfig = {
     optimizePackageImports: ["lucide-react", "lenis", "framer-motion"],
   },
 
-  // Production compiler: remove console.log to reduce bundle size
+  // Production compiler: remove console.log to reduce bundle size (keep errors/warnings for server logs)
   compiler: {
-    removeConsole: process.env.NODE_ENV === "production",
+    removeConsole: process.env.NODE_ENV === "production" ? { exclude: ["error", "warn"] } : false,
   },
 
   // Security + Caching Headers

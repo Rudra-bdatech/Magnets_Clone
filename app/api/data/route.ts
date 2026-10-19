@@ -301,10 +301,16 @@ export async function POST(req: Request) {
       // Leads Controller
       case "addLead": {
         if (!authEmail) {
-          const targetKey = String(data?.pageId || data?.pageSlug || "signup").slice(0, 50);
+          // Keyed on IP alone: a client-supplied pageId in the key let callers dodge the limit.
           // Fails open: a limiter outage must not stop real leads from being captured.
-          const rl = await checkRateLimit(getClientIp(req.headers), `add_lead_${targetKey}`, 30, 60 * 1000);
+          const rl = await checkRateLimit(getClientIp(req.headers), "add_lead", 30, 60 * 1000);
           if (!rl.success) return rateLimitedResponse(rl, "Too many signups submitted. Please try again in a moment.");
+          // Per-recipient limit stops one inbox being flooded with lead emails from many IPs.
+          const leadEmail = normalizeEmailKey(data?.email);
+          if (leadEmail) {
+            const inboxRl = await checkRateLimit(leadEmail, "add_lead_inbox", 5, 10 * 60 * 1000);
+            if (!inboxRl.success) return rateLimitedResponse(inboxRl, "Too many signups for this email. Please try again later.");
+          }
         }
         return handleAddLead(data, req, normEmail, authEmail);
       }

@@ -99,7 +99,7 @@ export default function CheckoutPage() {
           return;
         }
       } else {
-        const res = await fetch("/api/billing/stripe/create-checkout", {
+        const res = await fetch("/api/billing/stripe/create-checkout-session", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
         });

@@ -14,15 +14,19 @@ export async function POST(req: Request) {
     const stripe = getStripeClient();
     let event: any;
 
-    if (stripe && webhookSecret && signature) {
-      try {
-        event = stripe.webhooks.constructEvent(rawBody, signature, webhookSecret);
-      } catch (err: any) {
-        console.error("[Stripe Webhook Signature Error]:", err.message);
-        return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
-      }
-    } else {
-      event = JSON.parse(rawBody);
+    // Fail closed: never process an event we cannot verify.
+    if (!stripe || !webhookSecret) {
+      console.error("[Stripe Webhook]: STRIPE_SECRET_KEY or STRIPE_WEBHOOK_SECRET not configured");
+      return NextResponse.json({ error: "Webhook not configured" }, { status: 500 });
+    }
+    if (!signature) {
+      return NextResponse.json({ error: "Missing signature" }, { status: 400 });
+    }
+    try {
+      event = stripe.webhooks.constructEvent(rawBody, signature, webhookSecret);
+    } catch (err: any) {
+      console.error("[Stripe Webhook Signature Error]:", err.message);
+      return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
     }
 
     console.log("[Stripe Webhook Event]:", event.type);
@@ -31,7 +35,8 @@ export async function POST(req: Request) {
     switch (event.type) {
       case "checkout.session.completed": {
         const session = event.data.object;
-        const userEmail = session.customer_email || session.metadata?.userEmail;
+        if (session.payment_status !== "paid") break;
+        const userEmail = session.metadata?.userEmail || session.customer_email;
         if (userEmail) {
           await AccountModel.findOneAndUpdate(
             { email: userEmail.trim().toLowerCase() },

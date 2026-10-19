@@ -15,12 +15,12 @@ export async function GET(req: NextRequest) {
   const userEmail = (searchParams.get("userEmail") || "").toLowerCase().trim();
   const recipient = (searchParams.get("recipient") || "").toLowerCase().trim();
 
-  // Validate URL protocol to prevent open redirect vulnerabilities
+  // Only redirect within this site: an unsigned external URL would make this an open redirect.
   let validatedUrl = "/";
   try {
     const parsed = new URL(targetUrl, req.url);
-    if (parsed.protocol === "http:" || parsed.protocol === "https:") {
-      validatedUrl = targetUrl;
+    if ((parsed.protocol === "http:" || parsed.protocol === "https:") && parsed.origin === req.nextUrl.origin) {
+      validatedUrl = parsed.pathname + parsed.search + parsed.hash;
     }
   } catch {
     validatedUrl = "/";
