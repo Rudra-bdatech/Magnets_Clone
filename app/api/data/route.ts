@@ -53,10 +53,20 @@ import {
   handleSendTestZapierAlert,
   handleSendTestSlackAlert,
 } from "@/lib/controllers/integrations";
-import { checkRateLimit } from "@/lib/rate-limit";
+import { checkRateLimit, getClientIp, rateLimitMessage, type RateLimitResult } from "@/lib/rate-limit";
 import { parseFlexibleDate } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
+
+function rateLimitedResponse(rl: RateLimitResult, limitedMessage: string) {
+  const { error, status } = rateLimitMessage(rl, limitedMessage);
+  return NextResponse.json({ error }, { status, headers: { "Retry-After": String(rl.reset) } });
+}
+
+// Lowercased email used as a per-account / per-inbox rate-limit identifier.
+function normalizeEmailKey(value: unknown): string {
+  return typeof value === "string" ? value.trim().toLowerCase().slice(0, 254) : "";
+}
 
 export async function GET(req: Request) {
   try {
@@ -178,32 +188,24 @@ export async function POST(req: Request) {
         return handleSaveAccount(data, authEmail);
       case "checkEmail": {
         // Rate-limit email existence checks to prevent user enumeration attacks.
-        const rlIp =
-          (req as any).headers?.get?.("x-forwarded-for")?.split(",")[0]?.trim() ||
-          (req as any).headers?.get?.("x-real-ip") ||
-          "unknown";
-        const rl = await checkRateLimit(rlIp, "check_email", 10, 60 * 1000);
-        if (!rl.success) {
-          return NextResponse.json(
-            { error: "Too many requests. Please slow down." },
-            { status: 429 }
-          );
-        }
+        const rl = await checkRateLimit(getClientIp(req.headers), "check_email", 10, 60 * 1000, { failClosed: true });
+        if (!rl.success) return rateLimitedResponse(rl, "Too many requests. Please slow down.");
         return handleCheckEmail(data);
       }
       case "deleteAccount":
         return handleDeleteAccount(data, authEmail);
       case "login": {
-        const rlIp =
-          (req as any).headers?.get?.("x-forwarded-for")?.split(",")[0]?.trim() ||
-          (req as any).headers?.get?.("x-real-ip") ||
-          "unknown";
-        const rl = await checkRateLimit(rlIp, "login_attempt", 15, 60 * 1000);
+        const rl = await checkRateLimit(getClientIp(req.headers), "login_attempt", 15, 60 * 1000, { failClosed: true });
         if (!rl.success) {
-          return NextResponse.json(
-            { error: "Too many login attempts. Please wait 1 minute before trying again." },
-            { status: 429 }
-          );
+          return rateLimitedResponse(rl, "Too many login attempts. Please wait 1 minute before trying again.");
+        }
+        // Per-account limit stops password guessing spread across many IPs.
+        const loginEmail = normalizeEmailKey(data?.email);
+        if (loginEmail) {
+          const accountRl = await checkRateLimit(loginEmail, "login_account", 10, 15 * 60 * 1000, { failClosed: true });
+          if (!accountRl.success) {
+            return rateLimitedResponse(accountRl, "Too many login attempts for this account. Please wait 15 minutes or reset your password.");
+          }
         }
         return handleLogin(data);
       }
@@ -239,37 +241,40 @@ export async function POST(req: Request) {
         return handleSaveLinkedInPostCampaign(data, normEmail);
       case "sendResetEmail":
       case "sendForgotPasswordEmail": {
-        const rlIp =
-          (req as any).headers?.get?.("x-forwarded-for")?.split(",")[0]?.trim() ||
-          (req as any).headers?.get?.("x-real-ip") ||
-          "unknown";
-        const rl = await checkRateLimit(rlIp, "forgot_password", 5, 60 * 1000);
+        const rl = await checkRateLimit(getClientIp(req.headers), "forgot_password", 5, 60 * 1000, { failClosed: true });
         if (!rl.success) {
-          return NextResponse.json(
-            { error: "Too many reset requests. Please wait a minute before requesting another link." },
-            { status: 429 }
-          );
+          return rateLimitedResponse(rl, "Too many reset requests. Please wait a minute before requesting another link.");
+        }
+        // Per-recipient limit stops one inbox being flooded from many IPs.
+        const resetEmail = normalizeEmailKey(data?.email);
+        if (resetEmail) {
+          const inboxRl = await checkRateLimit(resetEmail, "forgot_password_inbox", 3, 15 * 60 * 1000, { failClosed: true });
+          if (!inboxRl.success) {
+            return rateLimitedResponse(inboxRl, "A reset link was already sent to this email. Please check your inbox or wait 15 minutes.");
+          }
         }
         const reqHost = req.headers.get("origin") || req.headers.get("referer") || undefined;
         return handleSendResetEmail(data, reqHost);
       }
       case "resetPassword": {
-        const rlIp =
-          (req as any).headers?.get?.("x-forwarded-for")?.split(",")[0]?.trim() ||
-          (req as any).headers?.get?.("x-real-ip") ||
-          "unknown";
-        const rl = await checkRateLimit(rlIp, "reset_password", 10, 60 * 1000);
-        if (!rl.success) {
-          return NextResponse.json(
-            { error: "Too many reset attempts. Please wait a minute." },
-            { status: 429 }
-          );
-        }
+        const rl = await checkRateLimit(getClientIp(req.headers), "reset_password", 10, 60 * 1000, { failClosed: true });
+        if (!rl.success) return rateLimitedResponse(rl, "Too many reset attempts. Please wait a minute.");
         return handleResetPassword(data);
       }
-      case "sendVerificationEmail":
+      case "sendVerificationEmail": {
+        const verifyEmail = normalizeEmailKey(data?.email);
+        if (!verifyEmail) {
+          return NextResponse.json({ error: "A valid email address is required." }, { status: 400 });
+        }
+        const rl = await checkRateLimit(getClientIp(req.headers), "verification_email", 5, 15 * 60 * 1000, { failClosed: true });
+        if (!rl.success) return rateLimitedResponse(rl, "Too many verification emails requested. Please wait 15 minutes.");
+        const inboxRl = await checkRateLimit(verifyEmail, "verification_email_inbox", 3, 15 * 60 * 1000, { failClosed: true });
+        if (!inboxRl.success) {
+          return rateLimitedResponse(inboxRl, "A verification email was already sent. Please check your inbox or wait 15 minutes.");
+        }
         const reqHost = req.headers.get("origin") || "http://localhost:3000";
         return handleSendVerificationEmail(data, reqHost);
+      }
 
       // Magnets Controller
       case "savePages":
@@ -290,18 +295,10 @@ export async function POST(req: Request) {
       // Leads Controller
       case "addLead": {
         if (!authEmail) {
-          const rlIp =
-            (req as any).headers?.get?.("x-forwarded-for")?.split(",")[0]?.trim() ||
-            (req as any).headers?.get?.("x-real-ip") ||
-            "unknown";
           const targetKey = String(data?.pageId || data?.pageSlug || "signup").slice(0, 50);
-          const rl = await checkRateLimit(rlIp, `add_lead_${targetKey}`, 30, 60 * 1000);
-          if (!rl.success) {
-            return NextResponse.json(
-              { error: "Too many signups submitted. Please try again in a moment." },
-              { status: 429 }
-            );
-          }
+          // Fails open: a limiter outage must not stop real leads from being captured.
+          const rl = await checkRateLimit(getClientIp(req.headers), `add_lead_${targetKey}`, 30, 60 * 1000);
+          if (!rl.success) return rateLimitedResponse(rl, "Too many signups submitted. Please try again in a moment.");
         }
         return handleAddLead(data, req, normEmail, authEmail);
       }

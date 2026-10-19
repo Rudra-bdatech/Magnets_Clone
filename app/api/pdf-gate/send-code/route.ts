@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { dbConnect } from "@/lib/mongodb";
 import { sendMail } from "@/lib/email";
-import { checkRateLimit } from "@/lib/rate-limit";
-import { PdfOtpModel, MagnetPageModel } from "@/lib/models";
+import { checkRateLimit, getClientIp, rateLimitMessage } from "@/lib/rate-limit";
+import { PdfOtpModel, MagnetPageModel, AccountModel } from "@/lib/models";
+import { isCompanyAccount } from "@/lib/roles";
 import crypto from "crypto";
+import mongoose from "mongoose";
 
 export const dynamic = "force-dynamic";
 
@@ -20,18 +22,15 @@ function generateToken(): string {
 
 export async function POST(req: NextRequest) {
   try {
-    // ── Rate limit: max 5 send-code attempts per IP per 15 minutes ────────
-    const ip =
-      req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
-      req.headers.get("x-real-ip") ||
-      "unknown";
+    // ── Rate limit: max 30 send-code attempts per IP per 15 minutes ───────
+    // Generous on purpose: a whole office or webinar audience can share one IP.
+    // Inboxes are protected by the stricter per-recipient limit below.
+    const ip = getClientIp(req.headers);
 
-    const rl = await checkRateLimit(ip, "pdf_send_code", 5, 15 * 60 * 1000);
+    const rl = await checkRateLimit(ip, "pdf_send_code", 30, 15 * 60 * 1000, { failClosed: true });
     if (!rl.success) {
-      return NextResponse.json(
-        { error: "Too many requests. Please wait 15 minutes before trying again." },
-        { status: 429 }
-      );
+      const { error, status } = rateLimitMessage(rl, "Too many requests. Please wait 15 minutes before trying again.");
+      return NextResponse.json({ error }, { status, headers: { "Retry-After": String(rl.reset) } });
     }
 
     // ── Parse body ─────────────────────────────────────────────────────────
@@ -56,13 +55,60 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Please enter a valid email address." }, { status: 400 });
     }
 
+    // Per-recipient limit stops one inbox being flooded with codes from many IPs.
+    const inboxRl = await checkRateLimit(email.slice(0, 254), "pdf_send_code_inbox", 5, 15 * 60 * 1000, { failClosed: true });
+    if (!inboxRl.success) {
+      const { error, status } = rateLimitMessage(inboxRl, "Too many codes sent to this email. Please wait 15 minutes before trying again.");
+      return NextResponse.json({ error }, { status, headers: { "Retry-After": String(inboxRl.reset) } });
+    }
+
     await dbConnect();
 
     // Look up page owner so we send via their synced email if available
-    const pageDoc = await MagnetPageModel.findOne({
+    let pageDoc: any = await MagnetPageModel.findOne({
       $or: [{ id: magnetId }, { slug: magnetId }, { customUrl: magnetId }],
     }).lean().catch(() => null);
+    // The viewer also serves pages by Mongo _id, so accept that form too (same as verify-code).
+    if (!pageDoc && mongoose.Types.ObjectId.isValid(magnetId)) {
+      pageDoc = await MagnetPageModel.findOne({ _id: magnetId }).lean().catch(() => null);
+    }
+    // Never send codes for a page that does not exist, so made-up IDs cannot be used to send email.
+    if (!pageDoc) {
+      return NextResponse.json({ error: "This document is no longer available." }, { status: 404 });
+    }
     const ownerEmail = (pageDoc as any)?.userEmail || "";
+
+    // Per-document ceiling bounds the total email one page can trigger, however the requests are spread.
+    // Keyed by the stored page id so the id, slug and custom URL share one count.
+    const pageKey = String((pageDoc as any).id || (pageDoc as any)._id);
+    const pageRl = await checkRateLimit(pageKey, "pdf_send_code_page", 300, 60 * 60 * 1000, { failClosed: true });
+    if (!pageRl.success) {
+      const { error, status } = rateLimitMessage(pageRl, "This document is receiving too many requests right now. Please try again later.");
+      return NextResponse.json({ error }, { status, headers: { "Retry-After": String(pageRl.reset) } });
+    }
+
+    // Per-creator daily ceiling. Codes go out from the creator's own Gmail / SMTP, and Gmail
+    // suspends sending for up to 24h past ~500/day, which would also stop their sequences and
+    // personal mail. Company accounts send through the platform server and are exempt.
+    if (ownerEmail) {
+      const ownerAccount: any = await AccountModel.findOne(
+        { email: String(ownerEmail).toLowerCase().trim() },
+        { role: 1 }
+      ).lean().catch(() => null);
+      if (!isCompanyAccount(ownerEmail, ownerAccount?.role)) {
+        const ownerRl = await checkRateLimit(
+          String(ownerEmail).toLowerCase().trim(),
+          "pdf_send_code_owner_daily",
+          300,
+          24 * 60 * 60 * 1000,
+          { failClosed: true }
+        );
+        if (!ownerRl.success) {
+          const { error, status } = rateLimitMessage(ownerRl, "This document has reached its daily limit for access codes. Please try again later.");
+          return NextResponse.json({ error }, { status, headers: { "Retry-After": String(ownerRl.reset) } });
+        }
+      }
+    }
 
     // ── Clean up any old unused OTPs for this email+magnet ────────────────
     await PdfOtpModel.deleteMany({ email, magnetId, used: false }).catch(() => {});

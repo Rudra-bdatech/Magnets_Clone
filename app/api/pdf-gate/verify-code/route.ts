@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { dbConnect } from "@/lib/mongodb";
-import { checkRateLimit } from "@/lib/rate-limit";
+import { checkRateLimit, getClientIp, rateLimitMessage } from "@/lib/rate-limit";
 import { PdfOtpModel, MagnetPageModel, LeadModel, AccountModel } from "@/lib/models";
 import { createPdfUnlockToken } from "@/lib/session-token";
 import { timingSafeEqual, createHash } from "crypto";
@@ -26,17 +26,12 @@ const UNLOCK_MAX_AGE = 7 * 24 * 60 * 60; // seconds
 export async function POST(req: NextRequest) {
   try {
     // ── Rate limit: max 10 verify attempts per IP per minute ───────────────
-    const ip =
-      req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
-      req.headers.get("x-real-ip") ||
-      "unknown";
+    const ip = getClientIp(req.headers);
 
-    const rl = await checkRateLimit(ip, "pdf_verify_code", 10, 60 * 1000);
+    const rl = await checkRateLimit(ip, "pdf_verify_code", 10, 60 * 1000, { failClosed: true });
     if (!rl.success) {
-      return NextResponse.json(
-        { error: "Too many attempts. Please wait a moment." },
-        { status: 429 }
-      );
+      const { error, status } = rateLimitMessage(rl, "Too many attempts. Please wait a moment.");
+      return NextResponse.json({ error }, { status, headers: { "Retry-After": String(rl.reset) } });
     }
 
     // ── Parse body ─────────────────────────────────────────────────────────

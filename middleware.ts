@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { checkRateLimit } from "@/lib/rate-limit";
+import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
 import { getToken } from "next-auth/jwt";
 import { isPlatformHost } from "@/lib/domain-verify";
 
@@ -70,7 +70,7 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const rawHost = request.headers.get("host") || "";
   const host = rawHost.split(":")[0].toLowerCase();
-  const ip = request.ip || request.headers.get("x-forwarded-for")?.split(",")[0] || "127.0.0.1";
+  const ip = request.ip || getClientIp(request.headers);
   const secret = process.env.JWT_SECRET || "";
 
   const sessionToken = request.cookies.get("session_token")?.value;
@@ -100,23 +100,24 @@ export async function middleware(request: NextRequest) {
 
   const isValidSession = Boolean(isValidCustomSession || isValidNextAuthSession);
 
-  // Rate Limiting Protection for Auth & Domain Verification API Endpoints
-  if (
-    pathname.startsWith("/api/auth") ||
-    pathname.startsWith("/api/domain") ||
-    pathname.startsWith("/login") ||
-    pathname.startsWith("/register") ||
-    pathname.startsWith("/reset-password") ||
-    pathname.startsWith("/forgot-password")
-  ) {
-    const { success, reset } = await checkRateLimit(ip, "auth_limit", 30, 60 * 1000);
-    if (!success) {
-      if (pathname.startsWith("/api")) {
-        return NextResponse.json(
-          { error: `Too many requests. Please wait ${reset} seconds before trying again.` },
-          { status: 429 }
-        );
-      }
+  // Rate limiting for API routes that are not limited inside their own handlers.
+  // Password login, password reset and OTP routes enforce their own (stricter) limits.
+  // NextAuth's internal endpoints (session, csrf, providers, signout) and /api/auth/me are
+  // deliberately unlimited: the app calls them on every page load, and a 429 there logs users out.
+  const middlewareLimit =
+    pathname.startsWith("/api/auth/signin") || pathname.startsWith("/api/auth/callback")
+      ? { key: "oauth_signin", limit: 30, windowMs: 60 * 1000 }
+      : pathname.startsWith("/api/domain")
+        ? { key: "domain_api", limit: 20, windowMs: 60 * 1000 }
+        : null;
+
+  if (middlewareLimit) {
+    const rl = await checkRateLimit(ip, middlewareLimit.key, middlewareLimit.limit, middlewareLimit.windowMs);
+    if (!rl.success) {
+      return NextResponse.json(
+        { error: `Too many requests. Please wait ${rl.reset} seconds before trying again.` },
+        { status: 429, headers: { "Retry-After": String(rl.reset) } }
+      );
     }
   }
 
