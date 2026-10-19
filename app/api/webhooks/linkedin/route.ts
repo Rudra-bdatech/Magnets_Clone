@@ -484,6 +484,7 @@ export async function POST(req: NextRequest) {
               to: commenterEmail,
               subject: emailSubject,
               html: deliveryEmailHtml,
+              unsubscribeLeadId: leadId,
             }).catch((err) =>
               console.error("[LinkedIn Webhook] Delivery email failed:", err)
             );

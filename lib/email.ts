@@ -3,6 +3,7 @@ import { dbConnect } from "@/lib/mongodb";
 import { AccountModel, EmailEventModel } from "@/lib/models";
 import { decrypt } from "@/lib/encryption";
 import { isCompanyAccount } from "@/lib/roles";
+import { buildUnsubscribeUrls } from "@/lib/unsubscribe";
 import crypto from "crypto";
 
 export interface EmailTrackingOptions {
@@ -22,6 +23,12 @@ export interface SendMailOptions {
   replyTo?: string;
   tracking?: EmailTrackingOptions;
   isTransactional?: boolean;
+  /**
+   * Set for every email sent to a lead. Adds an unsubscribe link to the footer and the
+   * List-Unsubscribe / List-Unsubscribe-Post headers Gmail and Yahoo require for one-click unsubscribe.
+   * Must be the stored lead's id; the link is signed for that lead and the first recipient.
+   */
+  unsubscribeLeadId?: string;
 }
 
 // Platform-level fallback transporter (singleton)
@@ -86,7 +93,8 @@ async function sendViaGmailApi(
   to: string,
   subject: string,
   html: string,
-  replyTo?: string
+  replyTo?: string,
+  extraHeaders: Record<string, string> = {}
 ): Promise<{ success: boolean; messageId?: string; error?: string }> {
   try {
     const cleanFrom = sanitizeHeader(from);
@@ -100,6 +108,7 @@ async function sendViaGmailApi(
       `To: ${cleanTo}`,
       ...(cleanReplyTo ? [`Reply-To: ${cleanReplyTo}`] : []),
       `Subject: ${utf8Subject}`,
+      ...Object.entries(extraHeaders).map(([name, value]) => `${sanitizeHeader(name)}: ${sanitizeHeader(value)}`),
       `MIME-Version: 1.0`,
       `Content-Type: text/html; charset=utf-8`,
       `Content-Transfer-Encoding: base64`,
@@ -158,6 +167,18 @@ export function injectTrackingPixel(html: string, tracking: EmailTrackingOptions
   return `${html}\n${pixelTag}`;
 }
 
+function injectUnsubscribeFooter(html: string, pageUrl: string): string {
+  const footer =
+    `<div style="text-align:center; padding:0 16px 32px 16px; font-family:'DM Sans','Helvetica Neue',Helvetica,Arial,sans-serif; font-size:11px; line-height:1.6; color:#7b858c;">` +
+    `Don&rsquo;t want these emails? <a href="${pageUrl}" target="_blank" style="color:#7b858c; text-decoration:underline;">Unsubscribe</a>` +
+    `</div>`;
+  const idx = html.lastIndexOf("</body>");
+  if (idx !== -1) {
+    return `${html.slice(0, idx)}${footer}\n${html.slice(idx)}`;
+  }
+  return `${html}\n${footer}`;
+}
+
 export async function sendMail(
   options: SendMailOptions,
   ownerEmail?: string
@@ -180,6 +201,14 @@ export async function sendMail(
         ...options.tracking,
         recipient: options.tracking.recipient || recipientClean,
       });
+    }
+
+    const extraHeaders: Record<string, string> = {};
+    if (options.unsubscribeLeadId && recipientClean) {
+      const { pageUrl, oneClickUrl } = buildUnsubscribeUrls(getBaseUrl(), options.unsubscribeLeadId, recipientClean);
+      finalHtml = injectUnsubscribeFooter(finalHtml, pageUrl);
+      extraHeaders["List-Unsubscribe"] = `<${oneClickUrl}>`;
+      extraHeaders["List-Unsubscribe-Post"] = "List-Unsubscribe=One-Click";
     }
 
     // Look up owner account if available
@@ -210,7 +239,8 @@ export async function sendMail(
             recipientStr,
             options.subject,
             finalHtml,
-            options.replyTo
+            options.replyTo,
+            extraHeaders
           );
 
           if (gmailRes.success) {
@@ -257,6 +287,7 @@ export async function sendMail(
           subject: options.subject,
           html: finalHtml,
           replyTo: options.replyTo,
+          headers: extraHeaders,
         });
 
         console.log(`[CUSTOM-SMTP] Email sent:`, info.messageId, "to:", options.to);
@@ -288,6 +319,7 @@ export async function sendMail(
       subject: options.subject,
       html: finalHtml,
       replyTo: options.replyTo,
+      headers: extraHeaders,
     });
 
     console.log(`[PLATFORM-ADMIN] Email sent:`, info.messageId, "to:", options.to, "for company staff:", resolvedOwner);

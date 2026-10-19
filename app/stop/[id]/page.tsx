@@ -1,78 +1,78 @@
 "use client";
 
-import Link from "next/link";
 import { useParams, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { CheckCircle2, ShieldCheck, Mail, ArrowRight, Loader2, BellOff } from "lucide-react";
-import { loadSequences, loadLeads, saveLeads, loadPages } from "@/lib/store";
+import { ShieldCheck, Mail, Loader2, BellOff, AlertTriangle } from "lucide-react";
 
+type ViewState = "checking" | "invalid" | "confirm" | "done";
+
+/**
+ * Unsubscribe page linked from the footer of every email sent to a lead.
+ * The route id is the lead id and `t` is its signed token (see lib/unsubscribe.ts).
+ * Unsubscribing needs a click: email security scanners open links automatically,
+ * so loading this page must never unsubscribe anyone by itself.
+ */
 export default function StopSequencePage() {
   const params = useParams<{ id: string }>();
   const searchParams = useSearchParams();
-  const emailParam = searchParams.get("email");
+  const token = searchParams.get("t") || "";
+  const leadId = params.id || "";
 
-  const [emailInput, setEmailInput] = useState(emailParam || "");
-  const [sequenceName, setSequenceName] = useState<string>("Follow-up Sequence");
-  const [unsubscribed, setUnsubscribed] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [view, setView] = useState<ViewState>("checking");
+  const [pageName, setPageName] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState("");
+
+  const query = `lid=${encodeURIComponent(leadId)}&t=${encodeURIComponent(token)}`;
 
   useEffect(() => {
-    const sequences = loadSequences();
-    const pages = loadPages();
-    const foundSeq = sequences.find((s) => s.id === params.id || s.pageId === params.id);
-    const foundPage = pages.find((p) => p.id === params.id);
-
-    if (foundSeq) {
-      setSequenceName(foundSeq.name);
-    } else if (foundPage) {
-      setSequenceName(`${foundPage.name} Follow-up`);
+    if (!leadId || !token) {
+      setView("invalid");
+      return;
     }
-
-    // Auto-unsubscribe if email param is provided
-    if (emailParam) {
-      handleConfirmUnsubscribe(emailParam);
-    }
-  }, [params.id, emailParam]);
-
-  function handleConfirmUnsubscribe(targetEmail?: string) {
-    const emailToStop = (targetEmail || emailInput).trim().toLowerCase();
-    setLoading(true);
-
-    setTimeout(() => {
-      if (emailToStop) {
-        const leads = loadLeads();
-        let changed = false;
-        const updated = leads.map((l) => {
-          if (l.email.toLowerCase() === emailToStop) {
-            changed = true;
-            return {
-              ...l,
-              status: "stopped" as const,
-              sequenceStep: "Stopped · unsubscribed via stop link",
-            };
-          }
-          return l;
-        });
-
-        if (changed) {
-          saveLeads(updated);
+    let cancelled = false;
+    fetch(`/api/unsubscribe?${query}`, { cache: "no-store" })
+      .then(async (res) => {
+        const data = await res.json().catch(() => ({}));
+        if (cancelled) return;
+        if (!res.ok || !data.valid) {
+          setView("invalid");
+          return;
         }
+        setPageName(typeof data.pageName === "string" ? data.pageName : "");
+        setView(data.unsubscribed ? "done" : "confirm");
+      })
+      .catch(() => {
+        if (!cancelled) setView("invalid");
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [leadId, token, query]);
 
-        // Notify API to stop this email from future crons
-        fetch("/api/data", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            action: "saveLeads",
-            data: updated.filter((l) => l.email.toLowerCase() === emailToStop),
-          }),
-        }).catch(console.error);
+  async function handleConfirmUnsubscribe() {
+    setSubmitting(true);
+    setError("");
+    try {
+      const res = await fetch(`/api/unsubscribe?${query}`, { method: "POST" });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || !data.success) {
+        setError(data.error || "Something went wrong. Please try again.");
+        return;
       }
-
-      setUnsubscribed(true);
-      setLoading(false);
-    }, 400);
+      setView("done");
+    } catch {
+      setError("Network error. Please check your connection and try again.");
+    } finally {
+      setSubmitting(false);
+    }
   }
+
+  const sourceLabel = pageName ? (
+    <span className="font-semibold text-zinc-200">&ldquo;{pageName}&rdquo;</span>
+  ) : (
+    "this sender"
+  );
 
   return (
     <div className="min-h-screen bg-[#09090B] text-white flex flex-col items-center justify-center p-6 selection:bg-[#0066B2]">
@@ -82,74 +82,78 @@ export default function StopSequencePage() {
       </div>
 
       <div className="relative z-10 w-full max-w-md bg-[#18181B] border border-zinc-800 rounded-3xl p-8 shadow-2xl backdrop-blur-xl text-center">
-        {unsubscribed ? (
+        {view === "checking" && (
+          <div className="flex flex-col items-center gap-3 py-6 text-xs text-zinc-400">
+            <Loader2 className="h-6 w-6 animate-spin text-zinc-500" />
+            <span>Checking your link...</span>
+          </div>
+        )}
+
+        {view === "invalid" && (
+          <div className="space-y-5">
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-400">
+              <AlertTriangle className="h-8 w-8" />
+            </div>
+            <div className="space-y-2">
+              <h1 className="text-xl font-bold tracking-tight text-white">This Link Isn&rsquo;t Valid</h1>
+              <p className="text-xs text-zinc-400 leading-relaxed">
+                The unsubscribe link is incomplete or has been changed. Please use the Unsubscribe link at the
+                bottom of the most recent email you received, or reply to that email and ask the sender to remove you.
+              </p>
+            </div>
+          </div>
+        )}
+
+        {view === "done" && (
           <div className="space-y-5 animate-in fade-in zoom-in-95 duration-200">
             <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-400">
               <BellOff className="h-8 w-8" />
             </div>
 
             <div className="space-y-2">
-              <h1 className="text-xl font-bold tracking-tight text-white">
-                You Have Been Unsubscribed
-              </h1>
+              <h1 className="text-xl font-bold tracking-tight text-white">You Have Been Unsubscribed</h1>
               <p className="text-xs text-zinc-400 leading-relaxed">
-                You will no longer receive automated follow-up emails for{" "}
-                <span className="font-semibold text-zinc-200">"{sequenceName}"</span>.
+                You will no longer receive automated follow-up emails from {sourceLabel}.
               </p>
             </div>
 
-            {emailInput && (
-              <div className="rounded-xl border border-zinc-800 bg-zinc-900/60 p-3 text-xs text-zinc-300 font-mono">
-                {emailInput}
-              </div>
-            )}
-
             <div className="pt-2 text-xs text-zinc-500 flex items-center justify-center gap-1.5">
               <ShieldCheck className="h-4 w-4 text-emerald-400" />
-              <span>Your email preferences have been recorded securely.</span>
+              <span>Your email preferences have been saved.</span>
             </div>
           </div>
-        ) : (
+        )}
+
+        {view === "confirm" && (
           <div className="space-y-6">
             <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-[#0066B2]/10 border border-[#0066B2]/20 text-[#38BDF8]">
               <Mail className="h-8 w-8" />
             </div>
 
             <div className="space-y-2">
-              <h1 className="text-xl font-bold tracking-tight text-white">
-                Unsubscribe From Sequence
-              </h1>
+              <h1 className="text-xl font-bold tracking-tight text-white">Unsubscribe From Emails</h1>
               <p className="text-xs text-zinc-400 leading-relaxed">
-                Confirm your email below to permanently stop receiving follow-up drip emails for{" "}
-                <span className="font-semibold text-zinc-200">"{sequenceName}"</span>.
+                Stop receiving automated follow-up emails from {sourceLabel}.
               </p>
             </div>
 
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                handleConfirmUnsubscribe();
-              }}
-              className="space-y-3"
-            >
-              <input
-                type="email"
-                required
-                value={emailInput}
-                onChange={(e) => setEmailInput(e.target.value)}
-                placeholder="Enter your email address"
-                className="w-full rounded-xl border border-zinc-800 bg-zinc-900/90 px-4 py-3 text-xs text-white placeholder-zinc-500 focus:border-[#0066B2] focus:outline-none"
-              />
-
+            <div className="space-y-3">
               <button
-                type="submit"
-                disabled={loading || !emailInput.trim()}
+                type="button"
+                onClick={handleConfirmUnsubscribe}
+                disabled={submitting}
                 className="w-full flex items-center justify-center gap-2 rounded-xl bg-rose-600 hover:bg-rose-500 active:scale-[0.98] py-3 text-xs font-bold text-white transition disabled:opacity-50 cursor-pointer shadow-lg"
               >
-                {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <BellOff className="h-4 w-4" />}
-                <span>{loading ? "Unsubscribing..." : "Stop Follow-Up Emails"}</span>
+                {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <BellOff className="h-4 w-4" />}
+                <span>{submitting ? "Unsubscribing..." : "Unsubscribe"}</span>
               </button>
-            </form>
+
+              {error && (
+                <p role="alert" className="text-xs text-rose-400">
+                  {error}
+                </p>
+              )}
+            </div>
           </div>
         )}
       </div>

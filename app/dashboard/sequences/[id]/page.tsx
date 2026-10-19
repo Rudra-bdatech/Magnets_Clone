@@ -10,7 +10,6 @@ import {
   CalendarClock,
   Check,
   Clock,
-  Copy,
   ChevronDown,
   ChevronUp,
   FileText,
@@ -86,7 +85,6 @@ export default function SequenceEditor() {
   const [seq, setSeq] = useState<Sequence | undefined>(undefined);
   const [emailsWithBody, setEmailsWithBody] = useState<ExtendedSequenceEmail[]>([]);
   const [saving, setSaving] = useState(false);
-  const [copied, setCopied] = useState(false);
   const [expandedEmailId, setExpandedEmailId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<Record<string, "edit" | "preview">>({});
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -676,25 +674,6 @@ export default function SequenceEditor() {
     }
   }
 
-  async function copyStartLink() {
-    if (!seq) return;
-    const link = `${typeof window !== "undefined" ? window.location.origin : "https://magnets.app"}/stop/${seq.id}`;
-    try {
-      if (navigator.clipboard?.writeText) {
-        await navigator.clipboard.writeText(link);
-      } else {
-        const textarea = document.createElement("textarea");
-        textarea.value = link;
-        document.body.appendChild(textarea);
-        textarea.select();
-        document.execCommand("copy");
-        document.body.removeChild(textarea);
-      }
-    } catch (_) {}
-    setCopied(true);
-    triggerToast("Unsubscribe stop link copied to clipboard!");
-    setTimeout(() => setCopied(false), 2000);
-  }
 
   const { signedUp, delivered, opened, replied, stopped } = seq.stats;
   const overallOpenRate = delivered > 0 ? Math.round((opened / delivered) * 100) : 0;
@@ -805,14 +784,6 @@ export default function SequenceEditor() {
             {/* Desktop Action Row (lg and above) */}
             <div className="hidden lg:flex items-center gap-2.5 w-auto">
               <button
-                onClick={copyStartLink}
-                className="flex items-center justify-center gap-2 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#18181B] px-3.5 py-2.5 text-xs font-bold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-zinc-800 active:scale-95 transition shadow-xs cursor-pointer"
-              >
-                {copied ? <Check className="h-4 w-4 text-emerald-500 shrink-0" /> : <Copy className="h-4 w-4 text-zinc-400 shrink-0" />}
-                <span>{copied ? "Copied Link" : "Copy Stop Link"}</span>
-              </button>
-
-              <button
                 onClick={toggleStatus}
                 className={`flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-xs font-bold transition shadow-xs cursor-pointer border active:scale-95 ${
                   seq.status === "live"
@@ -891,29 +862,6 @@ export default function SequenceEditor() {
                       onClick={() => setIsMobileMenuOpen(false)}
                     />
                     <div className="absolute right-0 top-11 z-50 w-52 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#18181B] p-1.5 shadow-2xl animate-in fade-in zoom-in-95 duration-150">
-                      <button
-                        onClick={() => {
-                          copyStartLink();
-                          setIsMobileMenuOpen(false);
-                        }}
-                        className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 active:bg-zinc-100 transition"
-                      >
-                        {copied ? <Check className="h-4 w-4 text-emerald-500" /> : <Copy className="h-4 w-4 text-zinc-400" />}
-                        <span>{copied ? "Copied Link!" : "Copy Stop Link"}</span>
-                      </button>
-
-                      <Link
-                        href={`/stop/${seq.id}`}
-                        target="_blank"
-                        onClick={() => setIsMobileMenuOpen(false)}
-                        className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 active:bg-zinc-100 transition"
-                      >
-                        <ExternalLink className="h-4 w-4 text-zinc-400" />
-                        <span>Preview Stop Page</span>
-                      </Link>
-
-                      <div className="my-1 border-t border-zinc-100 dark:border-zinc-800/80" />
-
                       <button
                         onClick={() => {
                           setIsMobileMenuOpen(false);
@@ -1709,18 +1657,8 @@ export default function SequenceEditor() {
                   <span>How Stop Links Work</span>
                 </div>
                 <p className="text-[11px] text-zinc-600 dark:text-zinc-300 leading-relaxed">
-                  Every sequence email automatically attaches your unique stop link at the bottom. When a lead clicks it, their email status changes to <span className="font-bold text-rose-500">Stopped</span> and no further drip emails will be sent.
+                  Every email sent to a lead automatically includes a personal unsubscribe link at the bottom, plus one-click unsubscribe in Gmail and Yahoo. When a lead unsubscribes, their status changes to <span className="font-bold text-rose-500">Stopped</span> and they will not receive any more of your follow-up emails.
                 </p>
-                <div className="pt-1">
-                  <Link
-                    href={`/stop/${seq.id}`}
-                    target="_blank"
-                    className="text-[11px] font-bold text-[#0066B2] dark:text-[#38BDF8] hover:underline inline-flex items-center gap-1"
-                  >
-                    <span>Preview Live Stop Page</span>
-                    <ExternalLink className="h-3 w-3" />
-                  </Link>
-                </div>
               </div>
 
             </div>

@@ -29,6 +29,7 @@ export async function GET(req: NextRequest) {
     // 2. Fetch active leads with sequences attached (chronologically sorted, scaled batch size)
     const activeLeads = await LeadModel.find({
       status: { $ne: "stopped" },
+      unsubscribedAt: null, // matches leads without the field too
       sequenceStep: { $exists: true, $ne: "" },
     })
       .sort({ signedUpAt: 1 })
@@ -403,6 +404,7 @@ export async function GET(req: NextRequest) {
             userEmail: ownerEmail || lead.userEmail,
             recipient: lead.email.trim(),
           },
+          unsubscribeLeadId: lead.id,
         },
         ownerEmail || lead.userEmail
       );

@@ -741,6 +741,7 @@ export async function handleAddLead(data: any, req: Request, normEmail: string |
                   userEmail: ownerEmail || ownerAccount?.email || "",
                   recipient: data.email.trim(),
                 },
+                unsubscribeLeadId: createdOrUpdatedLead?.id || data.id,
               },
               ownerEmail || ownerAccount?.email
             );
@@ -894,7 +895,8 @@ export async function handleSaveLeads(data: any, normEmail: string | null) {
   //
   // This matches the pattern already used correctly in handleSavePages.
   const ops = (data as any[]).map((item) => {
-    const { _id, ...cleanItem } = item;
+    // unsubscribedAt is only ever written by /api/unsubscribe; the owner's dashboard cannot clear it
+    const { _id, unsubscribedAt, ...cleanItem } = item;
     const itemEmail = normEmail || cleanItem.userEmail || "";
     return {
       updateOne: {

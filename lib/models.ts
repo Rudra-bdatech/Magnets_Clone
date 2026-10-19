@@ -201,6 +201,9 @@ const LeadSchema = new Schema({
   deviceType: { type: String, enum: ["desktop", "mobile"], default: "desktop" },
   referrer: { type: String, default: "Direct" },
   isVariantB: { type: Boolean, default: false },
+  // Set only by /api/unsubscribe. The sequence cron never emails a lead that has it,
+  // whatever its status, so a dashboard save cannot re-subscribe someone.
+  unsubscribedAt: { type: Date, default: null },
 });
 
 LeadSchema.index({ userEmail: 1, pageId: 1 });
