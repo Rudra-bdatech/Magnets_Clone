@@ -4,6 +4,7 @@ import { LeadModel, MagnetPageModel, AccountModel, ResourceModel } from "@/lib/m
 import { sendInstantLeadAlert } from "@/lib/email-alerts";
 import { sendMail } from "@/lib/email";
 import { parseFlexibleDate } from "@/lib/utils";
+import { isValidSlackWebhookUrl, isValidZapierWebhookUrl } from "./account";
 
 function escapeHtml(str: string): string {
   if (!str) return "";
@@ -710,7 +711,7 @@ export async function handleAddLead(data: any, req: Request, normEmail: string |
           }
         }
 
-        if (ownerAccount?.slackWebhookUrl) {
+        if (ownerAccount?.slackWebhookUrl && isValidSlackWebhookUrl(ownerAccount.slackWebhookUrl)) {
           fetch(ownerAccount.slackWebhookUrl, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -720,7 +721,7 @@ export async function handleAddLead(data: any, req: Request, normEmail: string |
           }).catch((err) => console.error("Slack Webhook dispatch error:", err));
         }
 
-        if (ownerAccount?.zapierWebhookUrl) {
+        if (ownerAccount?.zapierWebhookUrl && isValidZapierWebhookUrl(ownerAccount.zapierWebhookUrl)) {
           fetch(ownerAccount.zapierWebhookUrl, {
             method: "POST",
             headers: { "Content-Type": "application/json" },

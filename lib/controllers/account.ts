@@ -91,6 +91,38 @@ function sanitizeBrandColor(val: any): string {
   return "#0066B2";
 }
 
+/** Validates that Slack webhooks are secure HTTPS endpoints hosted on slack.com */
+export function isValidSlackWebhookUrl(rawUrl: string): boolean {
+  if (!rawUrl || !rawUrl.trim()) return true; // Empty string allowed so users can disconnect
+  try {
+    const parsed = new URL(rawUrl.trim());
+    const hostname = parsed.hostname.toLowerCase();
+    const isAllowedHost = hostname === "hooks.slack.com" || hostname.endsWith(".slack.com");
+    return parsed.protocol === "https:" && isAllowedHost;
+  } catch {
+    return false;
+  }
+}
+
+/** Validates that Zapier/Make webhooks are secure HTTPS endpoints hosted on official domains */
+export function isValidZapierWebhookUrl(rawUrl: string): boolean {
+  if (!rawUrl || !rawUrl.trim()) return true; // Empty string allowed so users can disconnect
+  try {
+    const parsed = new URL(rawUrl.trim());
+    const hostname = parsed.hostname.toLowerCase();
+    const isAllowedHost =
+      hostname === "hooks.zapier.com" ||
+      hostname.endsWith(".zapier.com") ||
+      hostname === "hook.integromat.com" ||
+      hostname.endsWith(".integromat.com") ||
+      hostname === "hook.eu1.make.com" ||
+      hostname.endsWith(".make.com");
+    return parsed.protocol === "https:" && isAllowedHost;
+  } catch {
+    return false;
+  }
+}
+
 export async function handleSaveAccount(data: any, authEmail: string | null) {
   let normalizedEmail = authEmail ? authEmail.trim().toLowerCase() : null;
   if (!normalizedEmail && data?.email && typeof data.email === "string") {
@@ -178,8 +210,26 @@ export async function handleSaveAccount(data: any, authEmail: string | null) {
     existing.themeMode = data.themeMode || existing.themeMode;
     existing.highlightIntensity = data.highlightIntensity ?? existing.highlightIntensity;
     existing.templateId = data.templateId || existing.templateId;
-    existing.slackWebhookUrl = data.slackWebhookUrl !== undefined ? data.slackWebhookUrl : existing.slackWebhookUrl;
-    existing.zapierWebhookUrl = data.zapierWebhookUrl !== undefined ? data.zapierWebhookUrl : existing.zapierWebhookUrl;
+    if (data.slackWebhookUrl !== undefined && data.slackWebhookUrl !== null) {
+      const rawSlack = String(data.slackWebhookUrl).trim();
+      if (rawSlack && !isValidSlackWebhookUrl(rawSlack)) {
+        return NextResponse.json(
+          { error: "Invalid Slack Webhook URL. Must be a secure HTTPS URL from hooks.slack.com." },
+          { status: 400 }
+        );
+      }
+      existing.slackWebhookUrl = rawSlack;
+    }
+    if (data.zapierWebhookUrl !== undefined && data.zapierWebhookUrl !== null) {
+      const rawZapier = String(data.zapierWebhookUrl).trim();
+      if (rawZapier && !isValidZapierWebhookUrl(rawZapier)) {
+        return NextResponse.json(
+          { error: "Invalid Webhook URL. Must be a secure HTTPS URL from Zapier (hooks.zapier.com) or Make/Integromat." },
+          { status: 400 }
+        );
+      }
+      existing.zapierWebhookUrl = rawZapier;
+    }
     existing.pipedriveApiToken = data.pipedriveApiToken !== undefined ? data.pipedriveApiToken : existing.pipedriveApiToken;
     existing.kitConnected = data.kitConnected !== undefined ? data.kitConnected : existing.kitConnected;
     existing.kitApiKey = data.kitApiKey !== undefined ? data.kitApiKey : existing.kitApiKey;
@@ -302,26 +352,34 @@ export async function handleSaveAccount(data: any, authEmail: string | null) {
     if (!data.linkedinWebhookSecret) {
       data.linkedinWebhookSecret = generateWebhookSecret();
     }
-    // New accounts are created from the request body, so never trust privileged or
-    // server-managed fields from the client.
-    delete data.plan;
-    delete data.customSmtp;
-    delete data.gmailOAuth;
-    delete data.spfVerified;
-    delete data.dkimVerified;
-    delete data.resetPasswordToken;
-    delete data.resetPasswordExpires;
-    delete data.emailVerified;
-    delete data.emailVerifyTokenHash;
-    delete data.emailVerifyExpires;
-    delete data.tokenVersion;
-    data.role = determineRoleForEmail(data.email || normalizedEmail);
-    data.customDomain = sanitizeDomain(data.customDomain);
-    data.customSubdomain = formatSubdomain(data.customSubdomain);
-    data.domainVerified = false;
-    data.cnameVerified = false;
-    data.sslStatus = "pending";
-    account = await AccountModel.create(data);
+    // Build new account document from an explicit allowlist of legitimate signup fields.
+    // Privileged, server-managed, and lead-routing fields (webhooks, notify email, tokens)
+    // are strictly excluded to prevent pre-account takeover attacks.
+    const newAccountData: Record<string, any> = {
+      email: normalizedEmail,
+      name: typeof data.name === "string" && data.name.trim() ? data.name.trim().slice(0, 100) : "Subscriber",
+      username: uniqueUsername,
+      password: data.password,
+      brandName: typeof data.brandName === "string" ? data.brandName.trim().slice(0, 100) : "",
+      brandColor: data.brandColor || "#0066B2",
+      logo: typeof data.logo === "string" && data.logo.trim() ? data.logo.trim() : null,
+      avatar: typeof data.avatar === "string" && data.avatar.trim() ? data.avatar.trim() : null,
+      themeMode: data.themeMode === "dark" ? "dark" : "light",
+      highlightIntensity: typeof data.highlightIntensity === "number" ? data.highlightIntensity : 100,
+      templateId: typeof data.templateId === "string" && data.templateId.trim() ? data.templateId.trim().slice(0, 50) : "template1",
+      joinedAt: data.joinedAt || new Date().toLocaleDateString("en-US", { month: "long", year: "numeric" }),
+      role: determineRoleForEmail(data.email || normalizedEmail),
+      linkedinWebhookSecret: data.linkedinWebhookSecret || generateWebhookSecret(),
+      plan: "Free",
+      emailVerified: null,
+      tokenVersion: 0,
+      domainVerified: false,
+      cnameVerified: false,
+      sslStatus: "pending",
+      customDomain: sanitizeDomain(data.customDomain),
+      customSubdomain: formatSubdomain(data.customSubdomain),
+    };
+    account = await AccountModel.create(newAccountData);
 
     // A failed send must not fail the signup: the "check your inbox" page can resend.
     const verifyResult = await issueEmailVerification(account).catch((err) => ({ success: false, error: String(err) }));
@@ -550,7 +608,7 @@ function getSafeAppUrl(reqHostOrigin?: string): string {
       ) {
         return parsed.origin;
       }
-    } catch {}
+    } catch { }
   }
   return process.env.NEXT_PUBLIC_APP_URL || "https://magnets.bdatech.in";
 }
@@ -563,7 +621,7 @@ export async function handleSendResetEmail(data: any, reqHostOrigin?: string) {
 
   const normEmail = email.trim().toLowerCase();
   const account = await AccountModel.findOne({ email: normEmail });
-  
+
   // Production security best practice (OWASP):
   // Return success without leaking whether an account exists to prevent account enumeration.
   if (!account) {
