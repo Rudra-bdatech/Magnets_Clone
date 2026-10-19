@@ -879,38 +879,191 @@ export async function handleDeleteLead(data: any, normEmail: string | null) {
 }
 
 export async function handleSaveLeads(data: any, normEmail: string | null) {
+  if (!normEmail) {
+    return NextResponse.json({ error: "Unauthorized. Please log in to perform this action." }, { status: 401 });
+  }
+
   if (!Array.isArray(data) || data.length === 0) {
     return NextResponse.json({ success: true });
   }
 
-  // Use bulkWrite upserts instead of deleteMany + insertMany.
-  //
-  // The old pattern (delete all → re-insert) had a race condition: if two browser
-  // tabs saved simultaneously, the second save would overwrite the first, silently
-  // dropping any leads the first tab had just written.
-  //
-  // bulkWrite with upsert:true is atomic per-document: each lead is independently
-  // updated (if it exists) or created (if it doesn't). Concurrent saves from
-  // multiple tabs can never destroy each other's changes.
-  //
-  // This matches the pattern already used correctly in handleSavePages.
-  const ops = (data as any[]).map((item) => {
-    // unsubscribedAt is only ever written by /api/unsubscribe; the owner's dashboard cannot clear it
-    const { _id, unsubscribedAt, ...cleanItem } = item;
-    const itemEmail = normEmail || cleanItem.userEmail || "";
-    return {
+  // Safety ceiling: prevent memory exhaustion from absurd payload sizes
+  const MAX_BATCH_SIZE = 5000;
+  if (data.length > MAX_BATCH_SIZE) {
+    return NextResponse.json(
+      { error: `Batch too large. Maximum ${MAX_BATCH_SIZE} leads allowed per save.` },
+      { status: 400 }
+    );
+  }
+
+  // Fetch the logged-in user's pages to validate pageId ownership
+  const userPages = await MagnetPageModel.find({ userEmail: normEmail })
+    .select("id name slug")
+    .lean();
+
+  const userPageIdSet = new Set<string>();
+  const pageNameToId = new Map<string, string>();
+  const pageSlugToId = new Map<string, string>();
+
+  for (const p of userPages as any[]) {
+    if (p.id) {
+      userPageIdSet.add(p.id);
+      if (p.name) pageNameToId.set(p.name.trim().toLowerCase(), p.id);
+      if (p.slug) pageSlugToId.set(p.slug.trim().toLowerCase(), p.id);
+    }
+  }
+
+  const VALID_STATUSES = new Set([
+    "new",
+    "delivered",
+    "opened",
+    "replied",
+    "completed",
+    "stopped",
+    "pending_email",
+    "converted",
+  ]);
+
+  const ALLOWED_NON_PAGE_IDS = new Set([
+    "direct-lead",
+    "direct-manual-add",
+    "linkedin-auto-lead",
+    "imported-lead",
+    "csv-import",
+    "",
+  ]);
+
+  const ops: any[] = [];
+
+  for (const item of data) {
+    if (!item || typeof item !== "object") continue;
+
+    // Validate ID
+    let cleanId = cleanStr(item.id, 100);
+    if (!cleanId) {
+      const rawEmail = cleanStr(item.email, 150);
+      if (!rawEmail) continue;
+      cleanId = `lead-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`;
+    }
+
+    const cleanEmail = cleanStr(item.email, 255).replace(/[\r\n]+/g, "").toLowerCase();
+    const cleanName = stripHtmlTags(cleanStr(item.name, 200)) || (cleanEmail ? cleanEmail.split("@")[0] : "Subscriber");
+    const cleanPage = cleanStr(item.page, 200) || "Direct Lead";
+
+    // Validate and resolve pageId to prevent arbitrary or foreign pageId injection
+    const rawPageId = cleanStr(item.pageId, 100);
+    let cleanPageId = "";
+
+    if (rawPageId && userPageIdSet.has(rawPageId)) {
+      cleanPageId = rawPageId;
+    } else if (cleanPage && pageNameToId.has(cleanPage.toLowerCase())) {
+      cleanPageId = pageNameToId.get(cleanPage.toLowerCase())!;
+    } else if (cleanPage && pageSlugToId.has(cleanPage.toLowerCase())) {
+      cleanPageId = pageSlugToId.get(cleanPage.toLowerCase())!;
+    } else if (ALLOWED_NON_PAGE_IDS.has(rawPageId.toLowerCase())) {
+      cleanPageId = rawPageId || "direct-lead";
+    } else {
+      // Foreign or unrecognized pageId -> fallback to direct-lead
+      cleanPageId = "direct-lead";
+    }
+
+    const cleanStatus = typeof item.status === "string" && VALID_STATUSES.has(item.status)
+      ? item.status
+      : "new";
+
+    // Strictly whitelist and sanitize only authorized LeadSchema fields
+    const sanitizedDoc: Record<string, any> = {
+      id: cleanId,
+      userEmail: normEmail,
+      name: cleanName,
+      email: cleanEmail,
+      page: cleanPage,
+      pageId: cleanPageId,
+      status: cleanStatus,
+      opened: Boolean(item.opened),
+      source: typeof item.source === "string" && item.source.trim()
+        ? cleanStr(item.source, 50)
+        : "leadmagnets",
+      signedUpAt: typeof item.signedUpAt === "string" && item.signedUpAt.trim()
+        ? cleanStr(item.signedUpAt, 100)
+        : new Date().toISOString(),
+      sequence: typeof item.sequence === "string" ? cleanStr(item.sequence, 200) : "",
+      sequenceStep: typeof item.sequenceStep === "string" ? cleanStr(item.sequenceStep, 200) : "",
+      tags: Array.isArray(item.tags)
+        ? item.tags
+            .filter((t: any) => typeof t === "string" && t.trim())
+            .map((t: string) => cleanStr(t, 50))
+            .slice(0, 50)
+        : [],
+      customAnswer: typeof item.customAnswer === "string" ? cleanStr(item.customAnswer, 2000) : "",
+      deviceType: item.deviceType === "mobile" ? "mobile" : "desktop",
+      referrer: typeof item.referrer === "string" && item.referrer.trim()
+        ? cleanStr(item.referrer, 500)
+        : "Direct",
+      isVariantB: Boolean(item.isVariantB),
+    };
+
+    if (Array.isArray(item.openedSteps)) {
+      sanitizedDoc.openedSteps = item.openedSteps
+        .filter((s: any) => typeof s === "string")
+        .map((s: string) => cleanStr(s, 100))
+        .slice(0, 50);
+    }
+
+    if (item.openedAt) {
+      const openedAtDate = new Date(item.openedAt);
+      if (!isNaN(openedAtDate.getTime())) {
+        sanitizedDoc.openedAt = openedAtDate;
+      }
+    }
+
+    // Sanitize customFields object (prevent prototype pollution & operator injection)
+    if (item.customFields && typeof item.customFields === "object" && !Array.isArray(item.customFields)) {
+      const safeCustomFields: Record<string, any> = {};
+      const keys = Object.keys(item.customFields).slice(0, 50);
+      for (const k of keys) {
+        if (!k || k.startsWith("$") || k.includes(".") || k === "__proto__" || k === "constructor") {
+          continue;
+        }
+        const val = item.customFields[k];
+        if (typeof val === "string") {
+          safeCustomFields[k] = cleanStr(val, 2000);
+        } else if (typeof val === "number" && !isNaN(val) && isFinite(val)) {
+          safeCustomFields[k] = val;
+        } else if (typeof val === "boolean") {
+          safeCustomFields[k] = val;
+        }
+      }
+      sanitizedDoc.customFields = safeCustomFields;
+    }
+
+    // NOTE: unsubscribedAt is purposefully NOT included here.
+    // Unsubscribe state is managed solely by /api/unsubscribe to prevent
+    // bulk saves from ever accidentally or maliciously resubscribing opted-out contacts.
+
+    ops.push({
       updateOne: {
         filter: {
-          id: cleanItem.id,
-          ...(normEmail ? { userEmail: normEmail } : {}),
+          id: cleanId,
+          userEmail: normEmail,
         },
-        update: { $set: { ...cleanItem, userEmail: itemEmail } },
+        update: { $set: sanitizedDoc },
         upsert: true,
       },
-    };
-  });
+    });
+  }
 
-  await LeadModel.bulkWrite(ops);
+  if (ops.length === 0) {
+    return NextResponse.json({ success: true });
+  }
+
+  // Chunk bulkWrite operations in batches of 500 to keep MongoDB latency optimal
+  const CHUNK_SIZE = 500;
+  for (let i = 0; i < ops.length; i += CHUNK_SIZE) {
+    const chunk = ops.slice(i, i + CHUNK_SIZE);
+    await LeadModel.bulkWrite(chunk, { ordered: false });
+  }
+
   return NextResponse.json({ success: true });
 }
 

@@ -189,6 +189,23 @@ html.lenis body {
   animation: laserPulse 4s linear infinite;
 }
 
+/* Even outward glow for coachmark targets; uses currentColor so the caller sets the tint */
+@keyframes coachmarkPulse {
+  0% {
+    box-shadow: 0 0 0 0 currentColor;
+    opacity: 0.45;
+  }
+
+  100% {
+    box-shadow: 0 0 0 10px currentColor;
+    opacity: 0;
+  }
+}
+
+.animate-coachmark-pulse {
+  animation: coachmarkPulse 1.8s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
 @keyframes travelDot {
   0% {
     top: 0%;

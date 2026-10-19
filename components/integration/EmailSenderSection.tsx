@@ -215,7 +215,7 @@ export const EmailSenderSection = memo(function EmailSenderSection({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3 items-stretch">
 
         {/* ─── Gmail OAuth2 Card ─────────────────────────────────────────────── */}
-        <div className="rounded-2xl border border-[#0066B2]/30 bg-white dark:border-[#0066B2]/35 dark:bg-[#121214] overflow-hidden shadow-sm flex flex-col justify-between h-full">
+        <div data-tour="gmail-connect" className="rounded-2xl border border-[#0066B2]/30 bg-white dark:border-[#0066B2]/35 dark:bg-[#121214] overflow-hidden shadow-sm flex flex-col justify-between h-full">
           <div className="p-4 flex flex-col justify-between h-full">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">

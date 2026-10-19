@@ -15,6 +15,7 @@ import { isSessionValid, loadAccount, setSessionExpiry, loadPages, loadSequences
 import { computeOnboardingStatus, type OnboardingStatus } from "@/lib/onboarding";
 import { signOut } from "next-auth/react";
 import { CommandMenu } from "@/components/dashboard/command-menu";
+import GmailSyncTour from "@/components/dashboard/gmail-sync-tour";
 
 export interface SidebarContextType {
   isCollapsed: boolean;
@@ -920,6 +921,7 @@ export default function DashboardShell({
               </AnimatePresence>
 
               <button
+                data-tour="account-menu"
                 onClick={() => setShowProfileMenu(!showProfileMenu)}
                 title={isCollapsed ? `${displayAccount.name}` : undefined}
                 className={`flex items-center rounded-xl transition cursor-pointer hover:bg-[#E2F0FD] dark:hover:bg-[#25252A] ${
@@ -1229,6 +1231,7 @@ export default function DashboardShell({
             <div className="flex items-center gap-2.5">
               <button
                 aria-label="Open menu"
+                data-tour="mobile-menu"
                 className="flex h-8.5 w-8.5 items-center justify-center rounded-lg border border-zinc-200 dark:border-white/10 text-zinc-700 dark:text-zinc-300 md:hidden hover:bg-zinc-100 dark:hover:bg-zinc-800 transition cursor-pointer"
                 onClick={() => setMenuOpen(true)}
               >
@@ -1604,6 +1607,7 @@ export default function DashboardShell({
         )}
       </div>
       <CommandMenu isOpen={isCommandMenuOpen} onClose={() => setIsCommandMenuOpen(false)} />
+      <GmailSyncTour />
     </ExpandableScreen>
     </SidebarContext.Provider>
   );
