@@ -8,6 +8,7 @@ import { sendMail } from "@/lib/email";
 import { determineRoleForEmail } from "@/lib/roles";
 import { cleanDomain as sanitizeDomain, formatSubdomain, removeDomainFromVercel } from "@/lib/domain-verify";
 import { revokeGmailAccess } from "@/lib/gmail-oauth";
+import { isReservedUsername } from "@/lib/reserved-usernames";
 import { randomBytes } from "crypto";
 
 /** Generates a cryptographically random 64-char hex webhook secret. */
@@ -33,6 +34,8 @@ export function sanitizeAccount(accountDoc: any) {
   delete acc.resetPasswordToken;
   delete acc.resetPasswordExpires;
   delete acc.linkedinLiAt;
+  delete acc.linkedinJSessionId;
+  delete acc.linkedinWebhookSecret; // served only via the dedicated webhook-secret endpoint
   delete acc.calendarToken; // calendar integration removed; never expose a leftover token
   const computedRole = determineRoleForEmail(acc.email);
   acc.role = computedRole === "super_admin" ? "super_admin" : (acc.role || computedRole);
@@ -152,7 +155,19 @@ export async function handleSaveAccount(data: any, authEmail: string | null) {
   if (existing) {
     existing.name = data.name || existing.name;
     existing.brandName = data.brandName !== undefined ? data.brandName : existing.brandName;
-    existing.username = data.username || existing.username;
+    if (data.username !== undefined && data.username !== existing.username) {
+      const cleanUser = String(data.username).trim().toLowerCase().replace(/[^a-z0-9-]/g, "");
+      if (cleanUser && cleanUser !== existing.username) {
+        if (isReservedUsername(cleanUser)) {
+          return NextResponse.json({ error: "This username is reserved. Please choose another." }, { status: 400 });
+        }
+        const collision = await AccountModel.findOne({ username: cleanUser, email: { $ne: normalizedEmail } });
+        if (collision) {
+          return NextResponse.json({ error: "This username is already taken. Please choose another." }, { status: 400 });
+        }
+        existing.username = cleanUser;
+      }
+    }
     existing.brandColor = data.brandColor || existing.brandColor;
     existing.logo = data.logo !== undefined ? data.logo : existing.logo;
     existing.avatar = data.avatar !== undefined ? data.avatar : existing.avatar;
@@ -261,10 +276,10 @@ export async function handleSaveAccount(data: any, authEmail: string | null) {
     // Password updates must strictly use handleUpdatePassword with verification.
     account = await existing.save();
   } else {
-    let username = data.username || "user";
+    let username = String(data.username || "user").toLowerCase().replace(/[^a-z0-9-]/g, "").slice(0, 15) || "user";
     let count = 0;
     let uniqueUsername = username;
-    while (await AccountModel.findOne({ username: uniqueUsername })) {
+    while (isReservedUsername(uniqueUsername) || (await AccountModel.findOne({ username: uniqueUsername }))) {
       count++;
       uniqueUsername = `${username.slice(0, 15 - String(count).length)}${count}`;
     }

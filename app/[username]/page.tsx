@@ -3,6 +3,7 @@ import { headers } from "next/headers";
 import { dbConnect } from "@/lib/mongodb";
 import { MagnetPageModel, AccountModel } from "@/lib/models";
 import PublicProfileView from "@/components/profile/public-profile-view";
+import { isReservedUsername } from "@/lib/reserved-usernames";
 import type { Metadata } from "next";
 
 export const dynamic = "force-dynamic";
@@ -18,7 +19,7 @@ export default async function UserProfileRoute({
 
   try {
     const rawUser = params.username || "";
-    if (rawUser.includes(".") || rawUser.startsWith("_") || rawUser === "favicon.ico" || rawUser === "custom-domain" || rawUser === "domain-resolver") {
+    if (rawUser.includes(".") || rawUser.startsWith("_") || isReservedUsername(rawUser)) {
       notFound();
     }
 

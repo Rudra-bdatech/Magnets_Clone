@@ -18,6 +18,7 @@ import { BrandingSection } from "@/components/integration/BrandingSection";
 import { HelpModal } from "@/components/integration/HelpModal";
 import { UpgradeModal } from "@/components/dashboard/UpgradeModal";
 import { useToast, IntegrationToastContainer } from "@/components/integration/IntegrationToast";
+import { isReservedUsername } from "@/lib/reserved-usernames";
 import { InfoTooltip } from "@/components/ui/info-tooltip";
 import { useSidebar } from "@/components/dashboard/dashboard-shell";
 
@@ -180,6 +181,10 @@ export default function WorkspaceSetupPage() {
     const email = (typeof window !== "undefined" ? localStorage.getItem("currentUserEmail") : null) || currentAcc?.email || "";
     const cleanUsername = username.trim().toLowerCase().replace(/[^a-z0-9-]/g, "");
     if (!cleanUsername) return;
+    if (isReservedUsername(cleanUsername)) {
+      addToast(`The username "${cleanUsername}" is reserved. Please choose another.`, "error");
+      return;
+    }
 
     setSaving(true);
     const defaultAccountBase: Account = {

@@ -5,6 +5,7 @@ import { dbConnect } from "@/lib/mongodb";
 import { AccountModel } from "@/lib/models";
 import { determineRoleForEmail } from "@/lib/roles";
 import { sanitizeRedirect } from "@/lib/redirect";
+import { isReservedUsername } from "@/lib/reserved-usernames";
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -81,9 +82,13 @@ export const authOptions: NextAuthOptions = {
           const rawUsername = baseName.toLowerCase().replace(/[^a-z0-9]+/g, "").slice(0, 15) || "user";
           let generatedUsername = rawUsername;
 
-          const existingUsername = await AccountModel.findOne({ username: generatedUsername });
-          if (existingUsername) {
-            generatedUsername = `${rawUsername}${Math.floor(1000 + Math.random() * 9000)}`;
+          // Ensure generated username is not reserved and not already taken in MongoDB
+          if (isReservedUsername(generatedUsername) || (await AccountModel.findOne({ username: generatedUsername }))) {
+            const prefix = rawUsername.slice(0, 10) || "user";
+            generatedUsername = `${prefix}${Math.floor(1000 + Math.random() * 9000)}`;
+            while (isReservedUsername(generatedUsername) || (await AccountModel.findOne({ username: generatedUsername }))) {
+              generatedUsername = `${prefix}${Math.floor(1000 + Math.random() * 9000)}`;
+            }
           }
 
           await AccountModel.create({

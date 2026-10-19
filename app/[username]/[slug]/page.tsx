@@ -7,6 +7,7 @@ import AnalyticsAndExitIntent from "@/components/analytics-and-exit-intent";
 import { dbConnect } from "@/lib/mongodb";
 import { MagnetPageModel, AccountModel } from "@/lib/models";
 import { verifySessionToken } from "@/lib/session-token";
+import { isReservedUsername } from "@/lib/reserved-usernames";
 import { type MagnetPage } from "@/lib/data";
 import { Check, Lock, Zap, ShieldCheck, Sparkles } from "lucide-react";
 
@@ -18,6 +19,10 @@ export async function generateMetadata({
 }: {
   params: { username: string; slug: string };
 }): Promise<Metadata> {
+  if (isReservedUsername(params.username)) {
+    return { title: "Not Found" };
+  }
+
   let accountDoc: any = null;
   let pageDoc: any = null;
 
@@ -160,7 +165,7 @@ export default async function MagnetPageRoute({
   let pageDoc: any = null;
 
   const rawUser = params.username || "";
-  if (rawUser.includes(".") || rawUser.startsWith("_") || rawUser === "favicon.ico" || rawUser === "custom-domain" || rawUser === "domain-resolver") {
+  if (rawUser.includes(".") || rawUser.startsWith("_") || isReservedUsername(rawUser)) {
     notFound();
   }
 

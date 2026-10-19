@@ -5,7 +5,7 @@ import { AUTH_COOKIE_NAME, verifySessionToken, setAuthCookie, clearAuthCookie } 
 import { dbConnect } from "@/lib/mongodb";
 import { AccountModel } from "@/lib/models";
 import { authOptions } from "@/lib/auth-options";
-import { determineRoleForEmail } from "@/lib/roles";
+import { sanitizeAccount } from "@/lib/controllers/account";
 
 export async function GET() {
   try {
@@ -90,13 +90,9 @@ export async function GET() {
       }
     }
 
-    // Sanitize user object to never leak password hashes or sensitive keys to client
-    const sanitizedUser = typeof (account as any).toObject === "function" ? (account as any).toObject() : { ...account };
-    delete sanitizedUser.password;
-    delete sanitizedUser.resetPasswordToken;
-    delete sanitizedUser.resetPasswordExpires;
-    delete sanitizedUser.linkedinLiAt;
-    delete sanitizedUser.linkedinJSessionId;
+    // Sanitize user object to never leak password hashes or third-party credentials to client
+    // (this response is cached in localStorage by lib/store.ts)
+    const sanitizedUser = sanitizeAccount(account);
 
     const response = NextResponse.json({
       authenticated: true,

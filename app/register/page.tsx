@@ -9,6 +9,7 @@ import Button from "@/components/ui/button";
 import Input, { FieldLabel } from "@/components/ui/input";
 import PasswordInputWithStrength, { validatePasswordStrength } from "@/components/ui/password-input-with-strength";
 import GoogleAuthButton from "@/components/ui/google-auth-button";
+import { makeSafeUsernameCandidate } from "@/lib/reserved-usernames";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -55,7 +56,7 @@ export default function RegisterPage() {
         }
       }
 
-      const generatedUsername = name.toLowerCase().replace(/[^a-z0-9]+/g, "").slice(0, 15) || "user";
+      const generatedUsername = makeSafeUsernameCandidate(name);
       const newAccount = {
         name: name.trim(),
         email: email.trim(),
