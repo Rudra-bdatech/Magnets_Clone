@@ -46,6 +46,23 @@ const nextConfig = {
           { key: "X-Content-Type-Options", value: "nosniff" },
           { key: "Referrer-Policy", value: "origin-when-cross-origin" },
           { key: "Strict-Transport-Security", value: "max-age=31536000; includeSubDomains" },
+          {
+            key: "Content-Security-Policy-Report-Only",
+            value: [
+              "default-src 'self'",
+              "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://accounts.google.com https://apis.google.com https://js.stripe.com https://checkout.razorpay.com https://js.chargebee.com https://va.vercel-scripts.com",
+              "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+              "font-src 'self' https://fonts.gstatic.com data:",
+              "img-src 'self' data: blob: https: http:",
+              "media-src 'self' data: blob: https: http:",
+              "connect-src 'self' https: wss: data: blob:",
+              "frame-src 'self' https://accounts.google.com https://js.stripe.com https://api.stripe.com https://checkout.razorpay.com https://*.chargebee.com",
+              "worker-src 'self' blob:",
+              "object-src 'none'",
+              "base-uri 'self'",
+              "form-action 'self' https://accounts.google.com",
+            ].join("; "),
+          },
         ],
       },
       {
