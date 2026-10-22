@@ -7,9 +7,18 @@ import { useIsMobile } from "@/lib/use-mobile";
 interface DeleteModalProps {
   onConfirm: () => void;
   onClose: () => void;
+  title?: string;
+  description?: string;
+  confirmLabel?: string;
 }
 
-export default function DeleteModal({ onConfirm, onClose }: DeleteModalProps) {
+export default function DeleteModal({
+  onConfirm,
+  onClose,
+  title = "Delete this magnet?",
+  description = "This removes the page and stops it serving. Any signups already collected stay on your list.",
+  confirmLabel = "Delete magnet",
+}: DeleteModalProps) {
   const isMobile = useIsMobile();
 
   return (
@@ -51,7 +60,7 @@ export default function DeleteModal({ onConfirm, onClose }: DeleteModalProps) {
               <AlertTriangle className="h-5 w-5" />
             </div>
             <div>
-              <h3 className="text-base sm:text-lg font-bold text-zinc-900 dark:text-white tracking-tight">Delete this magnet?</h3>
+              <h3 className="text-base sm:text-lg font-bold text-zinc-900 dark:text-white tracking-tight">{title}</h3>
               <p className="text-[11px] text-zinc-500 dark:text-zinc-400 mt-0.5">This action cannot be undone</p>
             </div>
           </div>
@@ -66,9 +75,7 @@ export default function DeleteModal({ onConfirm, onClose }: DeleteModalProps) {
 
         {/* Modal Content */}
         <div className="space-y-1.5 pt-1 text-xs leading-relaxed text-zinc-600 dark:text-zinc-400">
-          <p>
-            This removes the page and stops it serving. Any signups already collected stay on your list.
-          </p>
+          <p>{description}</p>
         </div>
 
         {/* Modal Action Buttons */}
@@ -85,7 +92,7 @@ export default function DeleteModal({ onConfirm, onClose }: DeleteModalProps) {
             onClick={onConfirm}
             className="flex-1 sm:flex-none rounded-xl border border-rose-500/30 bg-rose-500/15 dark:bg-rose-500/15 px-4 py-2.5 text-xs font-bold text-rose-600 dark:text-rose-400 hover:bg-rose-600 hover:text-white dark:hover:bg-rose-600 dark:hover:text-white transition-all cursor-pointer shadow-sm text-center"
           >
-            Delete magnet
+            {confirmLabel}
           </button>
         </div>
       </motion.div>

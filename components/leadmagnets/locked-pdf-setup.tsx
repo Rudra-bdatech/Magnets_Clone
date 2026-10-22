@@ -24,6 +24,7 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { Upload, Lock, Eye, Loader2, CheckCircle2, Trash2, HardDrive, FileText, Copy, ExternalLink, X, Plus, AlertCircle } from "lucide-react";
 import { loadResources } from "@/lib/store";
+import DeleteModal from "@/components/leadmagnets/edit/DeleteModal";
 
 interface Props {
   magnetId: string;
@@ -197,6 +198,7 @@ export default function LockedPdfSetup({
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [showInternalAssetModal, setShowInternalAssetModal] = useState(false);
+  const [showRemoveModal, setShowRemoveModal] = useState(false);
   const [internalAssetSearch, setInternalAssetSearch] = useState("");
   const [availableAssets, setAvailableAssets] = useState<any[]>([]);
   const [mounted, setMounted] = useState(false);
@@ -448,7 +450,7 @@ export default function LockedPdfSetup({
 
   // ── Remove PDF & persist to DB ──────────────────────────────────────────
   async function handleRemove() {
-    if (!confirm("Remove this PDF and all uploaded pages?")) return;
+    setShowRemoveModal(false);
     setSaving(true);
     setSaved(false);
     try {
@@ -808,7 +810,7 @@ export default function LockedPdfSetup({
         {pages.length > 0 && (
           <button
             type="button"
-            onClick={handleRemove}
+            onClick={() => setShowRemoveModal(true)}
             disabled={saving}
             className="inline-flex items-center gap-1.5 text-xs text-red-500 hover:text-red-600 dark:text-red-400 transition disabled:opacity-50 cursor-pointer"
           >
@@ -821,6 +823,16 @@ export default function LockedPdfSetup({
       {/* Internal Asset Picker Modal rendered via Portal at root body */}
       {mounted && typeof document !== "undefined" && createPortal(
         <AnimatePresence>
+          {showRemoveModal && (
+            <DeleteModal
+              key="remove-pdf-modal"
+              title="Remove this PDF?"
+              description="This removes the PDF and all its uploaded pages from this page. Visitors will no longer be able to view it until you upload a new one."
+              confirmLabel="Remove PDF"
+              onConfirm={handleRemove}
+              onClose={() => setShowRemoveModal(false)}
+            />
+          )}
           {showInternalAssetModal && (
             <motion.div
               key="asset-picker-backdrop"
