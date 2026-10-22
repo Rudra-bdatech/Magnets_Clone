@@ -170,6 +170,8 @@ export interface Account {
   calendarConnected?: boolean;
   leadAlertsEnabled?: boolean;
   notifyEmail?: string;
+  /** Requested alert inbox waiting for its owner to click the confirmation link. */
+  notifyEmailPending?: string;
   avatar?: string | null;
   avatar_url?: string | null;
   customDomain?: string;

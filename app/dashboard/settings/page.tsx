@@ -492,12 +492,23 @@ export default function AccountSettingsPage() {
         leadAlertsEnabled,
         notifyEmail: notifyEmail.trim(),
       };
-      await saveAccount(updated as any);
-      setAccount(updated as any);
+      const res = await saveAccount(updated as any);
+      if (!res.success) {
+        addToast(res.error || "Failed to save notification settings.", "error");
+        return;
+      }
+      const saved: any = res.account || updated;
+      setAccount(saved);
 
-      setAlertStatusMsg("Notification preferences saved successfully!");
-      addToast("Notification preferences saved successfully!", "success");
-      setTimeout(() => setAlertStatusMsg(""), 4000);
+      // A new alert inbox only takes effect after it confirms the link we email it
+      const requested = notifyEmail.trim().toLowerCase();
+      const message =
+        saved?.notifyEmailPending && saved.notifyEmailPending === requested
+          ? `We sent a confirmation link to ${requested}. Lead alerts go there once it is confirmed.`
+          : "Notification preferences saved successfully!";
+      setAlertStatusMsg(message);
+      addToast(message, "success");
+      setTimeout(() => setAlertStatusMsg(""), 6000);
     } catch (err: any) {
       console.error(err);
       addToast("Failed to save notification settings.", "error");
@@ -1020,6 +1031,12 @@ export default function AccountSettingsPage() {
                         <p className="text-[11px] text-zinc-500 dark:text-zinc-400 mt-1">
                           New lead alerts will be sent to this email address immediately after signup.
                         </p>
+                        {account?.notifyEmailPending && (
+                          <p className="text-[11px] text-amber-600 dark:text-amber-400 mt-1">
+                            Waiting for {account.notifyEmailPending} to confirm. Alerts go to{" "}
+                            {account.notifyEmail || account.email} until then.
+                          </p>
+                        )}
                       </div>
 
                       {alertStatusMsg && (

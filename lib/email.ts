@@ -4,6 +4,8 @@ import { AccountModel, EmailEventModel } from "@/lib/models";
 import { decrypt } from "@/lib/encryption";
 import { isCompanyAccount } from "@/lib/roles";
 import { buildUnsubscribeUrls } from "@/lib/unsubscribe";
+import { emailLinkBaseUrl } from "@/lib/magnet-access";
+import { isValidEmailAddress } from "@/lib/email-guard";
 import crypto from "crypto";
 
 export interface EmailTrackingOptions {
@@ -29,6 +31,19 @@ export interface SendMailOptions {
    * Must be the stored lead's id; the link is signed for that lead and the first recipient.
    */
   unsubscribeLeadId?: string;
+}
+
+/**
+ * NO_SENDER: the owner has no working Gmail / SMTP connected (an owner problem, not a recipient problem).
+ * INVALID_RECIPIENT: a recipient is not a single valid address. SEND_FAILED: anything else.
+ */
+export type SendMailErrorCode = "NO_SENDER" | "INVALID_RECIPIENT" | "SEND_FAILED";
+
+export interface SendMailResult {
+  success: boolean;
+  messageId?: string;
+  error?: string;
+  errorCode?: SendMailErrorCode;
 }
 
 // Platform-level fallback transporter (singleton)
@@ -140,6 +155,8 @@ async function sendViaGmailApi(
 }
 
 function getBaseUrl(): string {
+  // Signed links (unsubscribe) must come back to the server that signed them; see emailLinkBaseUrl
+  if (process.env.NODE_ENV === "development") return emailLinkBaseUrl();
   if (process.env.NEXT_PUBLIC_APP_URL) return process.env.NEXT_PUBLIC_APP_URL.replace(/\/$/, "");
   if (process.env.NEXTAUTH_URL) return process.env.NEXTAUTH_URL.replace(/\/$/, "");
   if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL.replace(/\/$/, "")}`;
@@ -182,8 +199,18 @@ function injectUnsubscribeFooter(html: string, pageUrl: string): string {
 export async function sendMail(
   options: SendMailOptions,
   ownerEmail?: string
-): Promise<{ success: boolean; messageId?: string; error?: string }> {
+): Promise<SendMailResult> {
   try {
+    // Every recipient must be exactly one plain address. A value such as "a@x.com,b@y.com"
+    // would otherwise land in the To header and turn one signup into a mass mailing.
+    const recipients = (Array.isArray(options.to) ? options.to : [options.to]).map((r) =>
+      typeof r === "string" ? r.trim() : ""
+    );
+    if (recipients.length === 0 || !recipients.every((r) => isValidEmailAddress(r))) {
+      console.warn("[email] Refusing to send: invalid recipient address");
+      return { success: false, error: "Invalid recipient email address.", errorCode: "INVALID_RECIPIENT" };
+    }
+
     await dbConnect();
 
     const rawRecipient = Array.isArray(options.to) ? options.to.join(", ") : options.to;
@@ -220,6 +247,10 @@ export async function sendMail(
       ).lean();
     }
 
+    // Set when the owner's own sender was tried and failed, so a later "no sender" result is
+    // reported as a send failure rather than as a missing connection.
+    let ownerSenderFailed = false;
+
     // Priority 1: Gmail OAuth2 (Direct Gmail REST API)
     const gmail = account?.gmailOAuth;
     if (gmail?.connected && gmail?.refreshToken && gmail?.gmailAddress) {
@@ -245,13 +276,16 @@ export async function sendMail(
 
           if (gmailRes.success) {
             console.log(`[GMAIL-OAUTH] Email sent:`, gmailRes.messageId, "to:", options.to);
-            logEmailEvent(options, recipientClean, gmailRes.messageId);
+            await logEmailEvent(options, recipientClean, gmailRes.messageId);
             return gmailRes;
           } else {
+            ownerSenderFailed = true;
             console.warn("[email] Gmail OAuth API returned error, falling back:", gmailRes.error);
           }
         } catch (gmailErr: any) {
           console.warn("[email] Gmail OAuth2 failed, falling through:", gmailErr);
+          // A revoked grant means Gmail is simply no longer connected; anything else is a failed attempt.
+          if (gmailErr?.code !== "invalid_grant") ownerSenderFailed = true;
           // invalid_grant = the user revoked access, changed their password, or the token expired.
           // Mark Gmail as disconnected so the dashboard prompts them to reconnect.
           if (gmailErr?.code === "invalid_grant" && account?._id) {
@@ -291,9 +325,10 @@ export async function sendMail(
         });
 
         console.log(`[CUSTOM-SMTP] Email sent:`, info.messageId, "to:", options.to);
-        logEmailEvent(options, recipientClean, info.messageId);
+        await logEmailEvent(options, recipientClean, info.messageId);
         return { success: true, messageId: info.messageId };
       } catch (smtpErr: any) {
+        ownerSenderFailed = true;
         console.warn("[email] Custom SMTP send failed, falling through to platform:", smtpErr);
       }
     }
@@ -303,10 +338,9 @@ export async function sendMail(
     if (!isCompanyStaff && !options.isTransactional) {
       const blockedMsg = "Sender email is not configured. Please connect your Gmail or custom SMTP in Settings to deliver emails to your leads.";
       console.warn(`[email] Platform fallback blocked for external user: "${resolvedOwner || 'unknown'}". Prompting to connect Gmail.`);
-      return {
-        success: false,
-        error: blockedMsg,
-      };
+      return ownerSenderFailed
+        ? { success: false, error: "Sending through your connected email account failed.", errorCode: "SEND_FAILED" }
+        : { success: false, error: blockedMsg, errorCode: "NO_SENDER" };
     }
 
     // Platform Fallback (SocketLabs / default company SMTP for internal accounts)
@@ -323,37 +357,38 @@ export async function sendMail(
     });
 
     console.log(`[PLATFORM-ADMIN] Email sent:`, info.messageId, "to:", options.to, "for company staff:", resolvedOwner);
-    logEmailEvent(options, recipientClean, info.messageId);
+    await logEmailEvent(options, recipientClean, info.messageId);
     return { success: true, messageId: info.messageId };
   } catch (error: any) {
     console.error("[email] Email sending failed:", error);
     return {
       success: false,
       error: error?.message || "Failed to send email",
+      errorCode: "SEND_FAILED",
     };
   }
 }
 
-function logEmailEvent(options: SendMailOptions, recipientClean: string, messageId?: string) {
+// Awaited by sendMail: the sequence cron decides what was already sent from these events,
+// so a send must not report success before its event is stored.
+async function logEmailEvent(options: SendMailOptions, recipientClean: string, messageId?: string) {
   if (!options.tracking) return;
-  (async () => {
-    try {
-      const eventId = `ev_sent_${crypto.randomBytes(8).toString("hex")}`;
-      await EmailEventModel.create({
-        id: eventId,
-        userEmail: options.tracking?.userEmail || "",
-        leadId: options.tracking?.leadId || "",
-        pageId: options.tracking?.pageId || "",
-        sequenceId: options.tracking?.sequenceId || "",
-        stepId: options.tracking?.stepId || "",
-        eventType: "sent",
-        recipientEmail: recipientClean,
-        subject: options.subject,
-        messageId: messageId || "",
-        createdAt: new Date(),
-      });
-    } catch (dbErr) {
-      console.error("Failed to log sent email event:", dbErr);
-    }
-  })();
+  try {
+    const eventId = `ev_sent_${crypto.randomBytes(8).toString("hex")}`;
+    await EmailEventModel.create({
+      id: eventId,
+      userEmail: options.tracking?.userEmail || "",
+      leadId: options.tracking?.leadId || "",
+      pageId: options.tracking?.pageId || "",
+      sequenceId: options.tracking?.sequenceId || "",
+      stepId: options.tracking?.stepId || "",
+      eventType: "sent",
+      recipientEmail: recipientClean,
+      subject: options.subject,
+      messageId: messageId || "",
+      createdAt: new Date(),
+    });
+  } catch (dbErr) {
+    console.error("Failed to log sent email event:", dbErr);
+  }
 }

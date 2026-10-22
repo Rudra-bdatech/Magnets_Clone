@@ -2,7 +2,13 @@ import { NextResponse } from "next/server";
 import { getAuthenticatedUserEmail } from "@/lib/auth";
 import { dbConnect } from "@/lib/mongodb";
 import { AccountModel } from "@/lib/models";
-import { getChargebeeClient, PLAN_PRICING } from "@/lib/billing";
+import {
+  getChargebeeClient,
+  PLAN_PRICING,
+  hasActivePaidPlan,
+  isSimulatedBillingAllowed,
+  ALREADY_SUBSCRIBED_RESPONSE,
+} from "@/lib/billing";
 import crypto from "crypto";
 
 export const dynamic = "force-dynamic";
@@ -26,12 +32,22 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "User account not found" }, { status: 404 });
     }
 
+    if (hasActivePaidPlan(account)) {
+      return NextResponse.json(ALREADY_SUBSCRIBED_RESPONSE, { status: 409 });
+    }
+
     // 2. Get Chargebee client (replaces Razorpay)
     const cb = getChargebeeClient();
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
 
-    // 3. Graceful simulation if keys are not yet configured
+    // 3. Simulation only when explicitly enabled (see isSimulatedBillingAllowed)
     if (!cb) {
+      if (!isSimulatedBillingAllowed()) {
+        return NextResponse.json(
+          { error: "Payments are temporarily unavailable. Please try again later.", code: "BILLING_NOT_CONFIGURED" },
+          { status: 503 }
+        );
+      }
       const mockOrderId = `order_sim_${crypto.randomBytes(8).toString("hex")}`;
       return NextResponse.json({
         success: true,

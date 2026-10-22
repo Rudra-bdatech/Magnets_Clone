@@ -59,3 +59,24 @@ export const STAFF_COUPON_CODES = ["BDA1", "STAFF1"];
 export function isStaffCoupon(code: string): boolean {
   return STAFF_COUPON_CODES.includes(code);
 }
+
+// Plans a customer has paid for. Checkout is refused while one is active, so nobody pays twice.
+export const PAID_PLANS = ["Pro", "Growth", "Unlimited"];
+
+export function hasActivePaidPlan(account: { plan?: string | null } | null | undefined): boolean {
+  return PAID_PLANS.includes(String(account?.plan || ""));
+}
+
+export const ALREADY_SUBSCRIBED_RESPONSE = {
+  error: "Your account already has Pro. There's nothing more to pay.",
+  code: "ALREADY_SUBSCRIBED",
+} as const;
+
+/**
+ * Sandbox "payments" that grant Pro without charging. Only with an explicit opt-in
+ * (ALLOW_SIMULATED_BILLING=true) AND no real Chargebee keys - never just because NODE_ENV
+ * is not "production" (staging and preview servers are not production).
+ */
+export function isSimulatedBillingAllowed(): boolean {
+  return process.env.ALLOW_SIMULATED_BILLING === "true" && !getChargebeeClient();
+}

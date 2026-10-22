@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -39,10 +39,28 @@ export default function CheckoutPage() {
   const [isApplyingCoupon, setIsApplyingCoupon] = useState(false);
   const [couponError, setCouponError] = useState<string | null>(null);
 
+  // Blocks a second checkout request (double-click) while the first is in flight or redirecting
+  const checkoutInFlight = useRef(false);
+
   useEffect(() => {
     const acc = loadAccount();
     if (acc) setAccount(acc);
   }, []);
+
+  // Coming back from the payment page with the browser Back button restores this page from the
+  // back/forward cache with "Processing..." still showing; reset it so the user can act again.
+  useEffect(() => {
+    const onPageShow = (e: PageTransitionEvent) => {
+      if (e.persisted) {
+        checkoutInFlight.current = false;
+        setIsLoading(false);
+      }
+    };
+    window.addEventListener("pageshow", onPageShow);
+    return () => window.removeEventListener("pageshow", onPageShow);
+  }, []);
+
+  const alreadyPaid = ["Pro", "Growth", "Unlimited"].includes(String(account?.plan || ""));
 
   const handleApplyCoupon = async () => {
     const code = couponInput.trim().toUpperCase();
@@ -76,6 +94,8 @@ export default function CheckoutPage() {
   };
 
   const handleProceedToPayment = async () => {
+    if (checkoutInFlight.current || alreadyPaid) return;
+    checkoutInFlight.current = true;
     setIsLoading(true);
     setErrorMsg(null);
 
@@ -94,10 +114,11 @@ export default function CheckoutPage() {
           throw new Error(data.error || "Failed to initialize payment");
         }
 
-        if (data.checkoutUrl) {
-          window.location.href = data.checkoutUrl;
-          return;
+        if (!data.checkoutUrl) {
+          throw new Error("We couldn't open the payment page. Please try again.");
         }
+        window.location.href = data.checkoutUrl;
+        return;
       } else {
         const res = await fetch("/api/billing/stripe/create-checkout-session", {
           method: "POST",
@@ -107,14 +128,17 @@ export default function CheckoutPage() {
         if (!res.ok || !data.success) {
           throw new Error(data.error || "Failed to initialize Stripe checkout");
         }
-        if (data.url) {
-          window.location.href = data.url;
+        if (!data.url) {
+          throw new Error("We couldn't open the payment page. Please try again.");
         }
+        window.location.href = data.url;
+        return;
       }
     } catch (err: any) {
       console.error("Checkout Error:", err);
       setErrorMsg(err.message || "Something went wrong initiating checkout.");
       setIsLoading(false);
+      checkoutInFlight.current = false;
     }
   };
 
@@ -391,6 +415,13 @@ export default function CheckoutPage() {
                 </div>
               </div>
 
+              {alreadyPaid && (
+                <div className="mb-4 p-3 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900 text-xs text-emerald-700 dark:text-emerald-300">
+                  Your account already has Pro. There&apos;s nothing more to pay.{" "}
+                  <Link href="/dashboard" className="underline font-semibold">Go to dashboard</Link>
+                </div>
+              )}
+
               {errorMsg && (
                 <div className="mb-4 p-3 rounded-lg bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900 text-xs text-red-600 dark:text-red-400">
                   {errorMsg}
@@ -400,7 +431,7 @@ export default function CheckoutPage() {
               {/* Primary High-Contrast Checkout Button */}
               <button
                 type="button"
-                disabled={isLoading}
+                disabled={isLoading || alreadyPaid}
                 onClick={handleProceedToPayment}
                 className="w-full py-3.5 px-4 rounded-xl bg-zinc-900 hover:bg-zinc-800 dark:bg-white dark:hover:bg-zinc-100 text-white dark:text-zinc-900 font-bold text-sm transition active:scale-[0.99] flex items-center justify-center gap-2 cursor-pointer disabled:opacity-75 disabled:cursor-not-allowed shadow-sm"
               >

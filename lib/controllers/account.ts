@@ -10,6 +10,9 @@ import { cleanDomain as sanitizeDomain, formatSubdomain, removeDomainFromVercel 
 import { revokeGmailAccess } from "@/lib/gmail-oauth";
 import { isReservedUsername } from "@/lib/reserved-usernames";
 import { createHash, randomBytes } from "crypto";
+import { isMaskedSecret, maskSecret, maskWebhookUrl } from "@/lib/secret-mask";
+import { isValidEmailAddress } from "@/lib/email-guard";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 /** Generates a cryptographically random 64-char hex webhook secret. */
 function generateWebhookSecret(): string {
@@ -39,6 +42,14 @@ export function sanitizeAccount(accountDoc: any) {
   delete acc.linkedinJSessionId;
   delete acc.linkedinWebhookSecret; // served only via the dedicated webhook-secret endpoint
   delete acc.calendarToken; // calendar integration removed; never expose a leftover token
+  delete acc.notifyEmailTokenHash;
+  delete acc.notifyEmailTokenExpires;
+  delete acc.stripeCheckoutSessionId;
+  // Integration secrets stay on the server; the UI gets a masked placeholder (lib/secret-mask.ts)
+  acc.slackWebhookUrl = maskWebhookUrl(acc.slackWebhookUrl);
+  acc.zapierWebhookUrl = maskWebhookUrl(acc.zapierWebhookUrl);
+  acc.pipedriveApiToken = maskSecret(acc.pipedriveApiToken);
+  acc.kitApiKey = maskSecret(acc.kitApiKey);
   const computedRole = determineRoleForEmail(acc.email);
   acc.role = computedRole === "super_admin" ? "super_admin" : (acc.role || computedRole);
   // Strip encrypted secrets — never send raw credentials to the client
@@ -206,11 +217,50 @@ export async function handleSaveAccount(data: any, authEmail: string | null) {
     existing.logo = data.logo !== undefined ? data.logo : existing.logo;
     existing.avatar = data.avatar !== undefined ? data.avatar : existing.avatar;
     existing.leadAlertsEnabled = data.leadAlertsEnabled !== undefined ? data.leadAlertsEnabled : existing.leadAlertsEnabled;
-    existing.notifyEmail = data.notifyEmail !== undefined ? data.notifyEmail : existing.notifyEmail;
+    // A different alert inbox only takes effect once that inbox confirms it (handleConfirmNotifyEmail),
+    // so lead alerts cannot be pointed at someone else's address.
+    let notifyEmailToConfirm: { address: string; token: string } | null = null;
+    if (data.notifyEmail !== undefined && data.notifyEmail !== null) {
+      const requested = String(data.notifyEmail).trim().toLowerCase();
+      const current = String(existing.notifyEmail || "").trim().toLowerCase();
+      const pendingStillValid =
+        requested === String(existing.notifyEmailPending || "").toLowerCase() &&
+        existing.notifyEmailTokenExpires &&
+        new Date(existing.notifyEmailTokenExpires).getTime() > Date.now();
+
+      if (!requested || requested === existing.email) {
+        existing.notifyEmail = requested;
+        existing.notifyEmailPending = "";
+        existing.notifyEmailTokenHash = null;
+        existing.notifyEmailTokenExpires = null;
+      } else if (requested === current || pendingStillValid) {
+        // Unchanged, or already waiting for confirmation: nothing to do
+      } else if (!isValidEmailAddress(requested)) {
+        return NextResponse.json({ error: "Please enter a valid notification email address." }, { status: 400 });
+      } else if (!existing.emailVerified) {
+        return NextResponse.json(
+          { error: "Verify your account email before sending alerts to a different address." },
+          { status: 403 }
+        );
+      } else {
+        const rl = await checkRateLimit(existing.email, "notify_email_confirm", 5, 60 * 60 * 1000, { failClosed: true });
+        if (!rl.success) {
+          return NextResponse.json(
+            { error: "Too many confirmation emails requested. Please try again later." },
+            { status: rl.unavailable ? 503 : 429 }
+          );
+        }
+        const token = randomBytes(32).toString("hex");
+        existing.notifyEmailPending = requested;
+        existing.notifyEmailTokenHash = hashToken(token);
+        existing.notifyEmailTokenExpires = new Date(Date.now() + EMAIL_VERIFY_TTL_MS);
+        notifyEmailToConfirm = { address: requested, token };
+      }
+    }
     existing.themeMode = data.themeMode || existing.themeMode;
     existing.highlightIntensity = data.highlightIntensity ?? existing.highlightIntensity;
     existing.templateId = data.templateId || existing.templateId;
-    if (data.slackWebhookUrl !== undefined && data.slackWebhookUrl !== null) {
+    if (data.slackWebhookUrl !== undefined && data.slackWebhookUrl !== null && !isMaskedSecret(data.slackWebhookUrl)) {
       const rawSlack = String(data.slackWebhookUrl).trim();
       if (rawSlack && !isValidSlackWebhookUrl(rawSlack)) {
         return NextResponse.json(
@@ -220,7 +270,7 @@ export async function handleSaveAccount(data: any, authEmail: string | null) {
       }
       existing.slackWebhookUrl = rawSlack;
     }
-    if (data.zapierWebhookUrl !== undefined && data.zapierWebhookUrl !== null) {
+    if (data.zapierWebhookUrl !== undefined && data.zapierWebhookUrl !== null && !isMaskedSecret(data.zapierWebhookUrl)) {
       const rawZapier = String(data.zapierWebhookUrl).trim();
       if (rawZapier && !isValidZapierWebhookUrl(rawZapier)) {
         return NextResponse.json(
@@ -230,9 +280,14 @@ export async function handleSaveAccount(data: any, authEmail: string | null) {
       }
       existing.zapierWebhookUrl = rawZapier;
     }
-    existing.pipedriveApiToken = data.pipedriveApiToken !== undefined ? data.pipedriveApiToken : existing.pipedriveApiToken;
+    // Masked placeholders (see sanitizeAccount) come back unchanged from the UI: keep the stored secret
+    if (typeof data.pipedriveApiToken === "string" && !isMaskedSecret(data.pipedriveApiToken)) {
+      existing.pipedriveApiToken = data.pipedriveApiToken.trim();
+    }
     existing.kitConnected = data.kitConnected !== undefined ? data.kitConnected : existing.kitConnected;
-    existing.kitApiKey = data.kitApiKey !== undefined ? data.kitApiKey : existing.kitApiKey;
+    if (typeof data.kitApiKey === "string" && !isMaskedSecret(data.kitApiKey)) {
+      existing.kitApiKey = data.kitApiKey.trim();
+    }
     existing.senderDisplayName = data.senderDisplayName !== undefined ? data.senderDisplayName : existing.senderDisplayName;
     existing.senderAddress = data.senderAddress !== undefined ? data.senderAddress : existing.senderAddress;
     // Domain verification flags are owned by /api/domain/verify.
@@ -321,12 +376,30 @@ export async function handleSaveAccount(data: any, authEmail: string | null) {
     existing.privacyPolicy = data.privacyPolicy !== undefined ? data.privacyPolicy : existing.privacyPolicy;
     existing.termsOfService = data.termsOfService !== undefined ? data.termsOfService : existing.termsOfService;
     existing.substackPublication = data.substackPublication !== undefined ? data.substackPublication : existing.substackPublication;
-    existing.spfVerified = data.spfVerified !== undefined ? data.spfVerified : existing.spfVerified;
-    existing.dkimVerified = data.dkimVerified !== undefined ? data.dkimVerified : existing.dkimVerified;
+    // spfVerified / dkimVerified are verification results: only server-side DNS checks may set them,
+    // never the client.
 
     // Security: Existing accounts CANNOT update password through handleSaveAccount.
     // Password updates must strictly use handleUpdatePassword with verification.
     account = await existing.save();
+
+    if (notifyEmailToConfirm) {
+      const sent = await sendNotifyEmailConfirmation(account, notifyEmailToConfirm.address, notifyEmailToConfirm.token)
+        .catch((err) => ({ success: false, error: String(err) }));
+      if (!sent.success) {
+        console.error("[notify-email] Confirmation email failed:", sent.error);
+        // Clear the pending request so saving again sends a fresh link instead of waiting out the expiry
+        await AccountModel.updateOne(
+          { _id: account._id, notifyEmailPending: notifyEmailToConfirm.address },
+          { $set: { notifyEmailPending: "", notifyEmailTokenHash: null, notifyEmailTokenExpires: null } }
+        );
+        account.notifyEmailPending = "";
+        return NextResponse.json(
+          { error: "We couldn't send the confirmation email to that address. Please try again.", account: sanitizeAccount(account) },
+          { status: 502 }
+        );
+      }
+    }
   } else {
     let username = String(data.username || "user").toLowerCase().replace(/[^a-z0-9-]/g, "").slice(0, 15) || "user";
     let count = 0;
@@ -777,6 +850,61 @@ function escapeHtml(str: string): string {
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#39;");
+}
+
+/**
+ * Emails the confirmation link for a new lead-alert inbox. The link is the only way an address
+ * other than the account email becomes notifyEmail.
+ */
+async function sendNotifyEmailConfirmation(account: any, address: string, token: string) {
+  const origin = getAppOrigin();
+  const confirmUrl = `${origin}/api/account/notify-email/confirm?token=${token}`;
+  // Only the (verified) account email is shown: the display name is free text anyone can set
+  const safeAccountEmail = escapeHtml(String(account.email || ""));
+
+  // Platform sender (transactional): the owner's own Gmail must not be used to send this.
+  return sendMail({
+    to: address,
+    subject: "Confirm lead alerts for your inbox",
+    isTransactional: true,
+    html: `<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Confirm lead alerts</title></head>
+<body style="margin:0;padding:0;background-color:#f8fafc;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#0f172a;">
+  <div style="padding:48px 16px;">
+    <div style="max-width:500px;margin:0 auto;background:#ffffff;border:1px solid #e2e8f0;border-radius:12px;padding:32px;">
+      <h1 style="margin:0 0 16px;font-size:20px;">Confirm lead alerts</h1>
+      <p style="margin:0 0 16px;font-size:14px;line-height:1.6;color:#475569;">
+        The LeadMagnets account ${safeAccountEmail} asked to send its new-lead alerts to this address.
+      </p>
+      <p style="margin:0 0 24px;font-size:14px;line-height:1.6;color:#475569;">
+        If you expected this, confirm below. If not, ignore this email and nothing will be sent to you.
+      </p>
+      <a href="${confirmUrl}" target="_blank" style="display:inline-block;padding:12px 24px;background:#0066cc;color:#ffffff;text-decoration:none;border-radius:6px;font-size:14px;font-weight:600;">Confirm this inbox</a>
+      <p style="margin:24px 0 0;font-size:12px;color:#94a3b8;">This link expires in 24 hours.</p>
+    </div>
+  </div>
+</body>
+</html>`,
+  });
+}
+
+/** Consumes a notify-email confirmation token; the confirmed address becomes the alert inbox. */
+export async function handleConfirmNotifyEmail(token: string): Promise<{ success: boolean; address?: string }> {
+  if (!token || !/^[a-f0-9]{64}$/i.test(token.trim())) return { success: false };
+  const account: any = await AccountModel.findOne({
+    notifyEmailTokenHash: hashToken(token.trim().toLowerCase()),
+    notifyEmailTokenExpires: { $gt: new Date() },
+  });
+  if (!account || !account.notifyEmailPending) return { success: false };
+
+  const address = String(account.notifyEmailPending).trim().toLowerCase();
+  account.notifyEmail = address;
+  account.notifyEmailPending = "";
+  account.notifyEmailTokenHash = null;
+  account.notifyEmailTokenExpires = null;
+  await account.save();
+  return { success: true, address };
 }
 
 /**

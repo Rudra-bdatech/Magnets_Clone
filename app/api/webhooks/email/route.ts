@@ -15,6 +15,11 @@ function safeCompare(a: string, b: string): boolean {
 
 export const dynamic = "force-dynamic";
 
+const ALLOWED_EVENT_TYPES = new Set(["delivered", "opened", "clicked", "bounced", "complained"]);
+const MAX_EVENTS_PER_REQUEST = 1000;
+
+const clean = (v: unknown, max = 200) => (typeof v === "string" ? v.trim().slice(0, max) : "");
+
 /**
  * Universal ESP Webhook Endpoint (Resend, SendGrid, Postmark, Generic)
  * 
@@ -23,11 +28,18 @@ export const dynamic = "force-dynamic";
  */
 export async function POST(req: NextRequest) {
   try {
-    // 1. Optional security token verification
-    const querySecret = req.nextUrl.searchParams.get("secret");
+    // 1. Shared-secret verification. Fails closed: with no secret configured nothing is accepted,
+    // otherwise anyone could post events that mark leads bounced and stop their sequences.
     const configuredSecret = process.env.EMAIL_WEBHOOK_SECRET || process.env.CRON_SECRET;
-
-    if (configuredSecret && (!querySecret || !safeCompare(querySecret, configuredSecret))) {
+    if (!configuredSecret) {
+      console.error("[email-webhook] EMAIL_WEBHOOK_SECRET is not configured; rejecting request");
+      return NextResponse.json({ error: "Webhook not configured" }, { status: 503 });
+    }
+    const authHeader = req.headers.get("authorization") || "";
+    const providedSecret = authHeader.startsWith("Bearer ")
+      ? authHeader.slice(7)
+      : req.nextUrl.searchParams.get("secret") || "";
+    if (!providedSecret || !safeCompare(providedSecret, configuredSecret)) {
       return NextResponse.json({ error: "Unauthorized webhook" }, { status: 401 });
     }
 
@@ -41,8 +53,8 @@ export async function POST(req: NextRequest) {
     await dbConnect();
 
     // Standardize raw webhook events into a unified format
-    const rawEvents: any[] = Array.isArray(body) ? body : [body];
-    const processedEvents = [];
+    const rawEvents: any[] = (Array.isArray(body) ? body : [body]).slice(0, MAX_EVENTS_PER_REQUEST);
+    const processedEvents: any[] = [];
 
     for (const item of rawEvents) {
       // --- Case 1: Resend Webhook Payload ---
@@ -101,9 +113,24 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // Process & store all standardized events concurrently
-    await Promise.all(
-      processedEvents.map(async (ev) => {
+    // Keep only known event types with string fields (no operator objects reach a query)
+    const validEvents = processedEvents
+      .filter((ev) => typeof ev.eventType === "string" && ALLOWED_EVENT_TYPES.has(ev.eventType))
+      .map((ev) => ({
+        eventType: ev.eventType as string,
+        recipientEmail: clean(ev.recipientEmail, 254).toLowerCase(),
+        messageId: clean(ev.messageId),
+        linkUrl: clean(ev.linkUrl, 2000),
+        leadId: clean(ev.leadId),
+        pageId: clean(ev.pageId),
+        sequenceId: clean(ev.sequenceId),
+        stepId: clean(ev.stepId),
+        userEmail: clean(ev.userEmail, 254).toLowerCase(),
+      }));
+
+    // Process & store all standardized events concurrently; one bad event cannot fail the batch
+    await Promise.allSettled(
+      validEvents.map(async (ev) => {
         const eventId = `ev_wh_${crypto.randomBytes(8).toString("hex")}`;
         const createEventPromise = EmailEventModel.create({
           id: eventId,
@@ -119,22 +146,25 @@ export async function POST(req: NextRequest) {
           createdAt: new Date(),
         });
 
-        // Atomic Lead Status Update
+        // Atomic Lead Status Update — always scoped to the owning account, so an event can only
+        // ever touch that owner's leads. Events without an owner are stored but change nothing.
         let updateLeadPromise: Promise<any> | null = null;
-        if (ev.leadId) {
+        if (!ev.userEmail) {
+          // no-op
+        } else if (ev.leadId) {
           if (ev.eventType === "opened") {
             updateLeadPromise = LeadModel.updateOne(
-              { id: ev.leadId, status: { $in: ["new", "delivered"] } },
+              { id: ev.leadId, userEmail: ev.userEmail, status: { $in: ["new", "delivered"] } },
               { $set: { status: "opened" } }
             );
           } else if (ev.eventType === "bounced") {
             updateLeadPromise = LeadModel.updateOne(
-              { id: ev.leadId },
+              { id: ev.leadId, userEmail: ev.userEmail },
               { $set: { status: "stopped" } }
             );
           }
         } else if (ev.recipientEmail) {
-          const query: any = { email: ev.recipientEmail };
+          const query: any = { email: ev.recipientEmail, userEmail: ev.userEmail };
           if (ev.pageId) query.pageId = ev.pageId;
 
           if (ev.eventType === "opened") {
@@ -152,15 +182,15 @@ export async function POST(req: NextRequest) {
 
         // Atomic Sequence Stats Update
         let updateSequencePromise: Promise<any> | null = null;
-        if (ev.sequenceId) {
+        if (ev.sequenceId && ev.userEmail) {
           if (ev.eventType === "opened") {
             updateSequencePromise = SequenceModel.updateOne(
-              { id: ev.sequenceId },
+              { id: ev.sequenceId, userEmail: ev.userEmail },
               { $inc: { "stats.opened": 1 } }
             );
           } else if (ev.eventType === "delivered") {
             updateSequencePromise = SequenceModel.updateOne(
-              { id: ev.sequenceId },
+              { id: ev.sequenceId, userEmail: ev.userEmail },
               { $inc: { "stats.delivered": 1 } }
             );
           }
@@ -176,11 +206,11 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      processed: processedEvents.length,
+      processed: validEvents.length,
       timestamp: new Date().toISOString(),
     });
   } catch (error: any) {
     console.error("❌ [Email Webhook Processing Error]:", error);
-    return NextResponse.json({ error: error.message || "Webhook processing failed" }, { status: 500 });
+    return NextResponse.json({ error: "Webhook processing failed" }, { status: 500 });
   }
 }

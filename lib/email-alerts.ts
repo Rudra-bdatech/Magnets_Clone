@@ -1,7 +1,10 @@
 import { sendMail } from "@/lib/email";
 
 export interface LeadAlertPayload {
+  /** Inbox the alert is delivered to (the account email or its verified notifyEmail). */
   ownerEmail: string;
+  /** Account whose connected Gmail/SMTP sends the alert. Defaults to ownerEmail. */
+  senderEmail?: string;
   leadEmail: string;
   leadName?: string;
   pageTitle: string;
@@ -171,6 +174,6 @@ export async function sendInstantLeadAlert(payload: LeadAlertPayload): Promise<{
       subject: `New Lead: ${rawLeadDisplayName} on "${pageTitle || "LeadMagnet"}"`,
       html: htmlContent,
     },
-    ownerEmail.trim()
+    (payload.senderEmail || ownerEmail).trim()
   );
 }

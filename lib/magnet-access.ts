@@ -39,11 +39,26 @@ export function withMagnetAccess(url: string, id: string): string {
   return `${url}${sep}t=${signMagnetAccess(id)}`;
 }
 
+/**
+ * Base URL for signed links (downloads, thank-you pages, unsubscribe) put into emails.
+ * Tokens are signed with this server's JWT_SECRET, so in local development the links must
+ * come back to this server: pointing them at NEXT_PUBLIC_APP_URL (production) would hand
+ * production a token signed with the local secret, which it rejects.
+ */
+export function emailLinkBaseUrl(requestOrigin?: string | null): string {
+  const origin = (requestOrigin || "").replace(/\/$/, "");
+  if (process.env.NODE_ENV === "development") {
+    return origin || `http://localhost:${process.env.PORT || 3000}`;
+  }
+  return (process.env.NEXT_PUBLIC_APP_URL || origin || "https://magnets.bdatech.in").replace(/\/$/, "");
+}
+
 function isOwnHost(host: string): boolean {
   const h = host.toLowerCase();
   const configured = (process.env.NEXT_PUBLIC_APP_URL || "").replace(/^https?:\/\//i, "").split("/")[0].toLowerCase();
   return (
     h === "localhost:3000" ||
+    (process.env.NODE_ENV === "development" && h.startsWith("localhost:")) ||
     h === "localhost" ||
     h === "magnets.bdatech.in" ||
     h.endsWith(".vercel.app") || // preview deployments (uploads store the origin they were made on)

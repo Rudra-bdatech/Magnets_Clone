@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { IntegrationModel, ResourceModel, AccountModel } from "@/lib/models";
 import { type Resource } from "@/lib/data";
 import { deleteCloudinaryAsset, deleteCloudinaryAssets } from "@/lib/cloudinary";
+import { resolveSecretInput } from "@/lib/secret-mask";
 
 export async function handleSaveIntegrations(data: any, normEmail: string | null) {
   if (normEmail) {
@@ -110,7 +111,7 @@ export async function handleUpdateResource(data: any, normEmail: string | null) 
 }
 
 export async function handleSendTestKitAlert(data: any, normEmail: string | null) {
-  const apiKey = data?.apiKey || (await AccountModel.findOne({ email: normEmail }))?.kitApiKey;
+  const apiKey = resolveSecretInput(data?.apiKey, (await AccountModel.findOne({ email: normEmail }))?.kitApiKey);
   if (!apiKey || !apiKey.trim()) {
     return NextResponse.json({ error: "No Kit API key or secret provided." }, { status: 400 });
   }
@@ -160,7 +161,7 @@ export async function handleSendTestKitAlert(data: any, normEmail: string | null
 }
 
 export async function handleSendTestPipedriveAlert(data: any, normEmail: string | null) {
-  const apiToken = data?.apiToken || (await AccountModel.findOne({ email: normEmail }))?.pipedriveApiToken;
+  const apiToken = resolveSecretInput(data?.apiToken, (await AccountModel.findOne({ email: normEmail }))?.pipedriveApiToken);
   if (!apiToken || !apiToken.trim()) {
     return NextResponse.json({ error: "No Pipedrive API token provided." }, { status: 400 });
   }
@@ -179,7 +180,7 @@ export async function handleSendTestPipedriveAlert(data: any, normEmail: string 
 }
 
 export async function handleSendTestZapierAlert(data: any, normEmail: string | null) {
-  const rawUrl = (data?.webhookUrl || (await AccountModel.findOne({ email: normEmail }))?.zapierWebhookUrl || "").trim();
+  const rawUrl = resolveSecretInput(data?.webhookUrl, (await AccountModel.findOne({ email: normEmail }))?.zapierWebhookUrl);
   if (!rawUrl) {
     return NextResponse.json({ error: "No Zapier Catch Hook URL provided." }, { status: 400 });
   }
@@ -236,7 +237,7 @@ export async function handleSendTestZapierAlert(data: any, normEmail: string | n
 }
 
 export async function handleSendTestSlackAlert(data: any, normEmail: string | null) {
-  const rawUrl = (data?.webhookUrl || (await AccountModel.findOne({ email: normEmail }))?.slackWebhookUrl || "").trim();
+  const rawUrl = resolveSecretInput(data?.webhookUrl, (await AccountModel.findOne({ email: normEmail }))?.slackWebhookUrl);
   if (!rawUrl) {
     return NextResponse.json({ error: "No Slack Webhook URL provided." }, { status: 400 });
   }

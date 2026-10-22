@@ -19,6 +19,9 @@ const AccountSchema = new Schema({
   chargebeeCustomerId: { type: String, default: "" },
   chargebeeSubscriptionId: { type: String, default: "" },
   chargebeeInvoiceId: { type: String, default: "" },
+  // Last Stripe Checkout Session opened for this account, reused while it is still open
+  // so repeated clicks never create several payable sessions.
+  stripeCheckoutSessionId: { type: String, default: "" },
   brandColor: { type: String, default: "#0066B2" },
   logo: { type: String, default: null },
   joinedAt: { type: String, required: true },
@@ -41,6 +44,11 @@ const AccountSchema = new Schema({
   calendarConnected: { type: Boolean, default: false },
   leadAlertsEnabled: { type: Boolean, default: true },
   notifyEmail: { type: String, default: "" },
+  // An alert inbox other than the account email only becomes notifyEmail after its owner
+  // clicks the confirmation link sent to it (lib/notify-email.ts).
+  notifyEmailPending: { type: String, default: "" },
+  notifyEmailTokenHash: { type: String, default: null },
+  notifyEmailTokenExpires: { type: Date, default: null },
   avatar: { type: String, default: null },
   resetPasswordToken: { type: String, default: null },
   resetPasswordExpires: { type: Date, default: null },
@@ -113,6 +121,7 @@ const AccountSchema = new Schema({
 AccountSchema.index({ resetPasswordToken: 1 });
 AccountSchema.index({ emailVerifyTokenHash: 1 });
 AccountSchema.index({ linkedinWebhookSecret: 1 });
+AccountSchema.index({ notifyEmailTokenHash: 1 });
 AccountSchema.index({ customDomain: 1, domainVerified: 1, cnameVerified: 1 });
 AccountSchema.index({ customDomain: 1, customSubdomain: 1, domainVerified: 1, cnameVerified: 1 });
 
@@ -214,6 +223,16 @@ const LeadSchema = new Schema({
   // Set only by /api/unsubscribe. The sequence cron never emails a lead that has it,
   // whatever its status, so a dashboard save cannot re-subscribe someone.
   unsubscribedAt: { type: Date, default: null },
+  // Sequence engine state, owned by /api/cron/process-sequences.
+  // seqNextAt: earliest time the cron needs to look at this lead again (null = now).
+  // seqLockUntil: set while one cron run is sending to this lead, so overlapping runs skip it.
+  // seqSentSteps: step ids already delivered, written in the same update that advances the lead.
+  // seqFailCount / seqLastError: consecutive delivery failures; the lead is stopped after too many.
+  seqNextAt: { type: Date, default: null },
+  seqLockUntil: { type: Date, default: null },
+  seqSentSteps: { type: [String], default: [] },
+  seqFailCount: { type: Number, default: 0 },
+  seqLastError: { type: String, default: "" },
 });
 
 LeadSchema.index({ userEmail: 1, pageId: 1 });
@@ -221,6 +240,7 @@ LeadSchema.index({ userEmail: 1, page: 1 });
 LeadSchema.index({ userEmail: 1, email: 1 });
 LeadSchema.index({ userEmail: 1, signedUpAt: -1 });
 LeadSchema.index({ id: 1 });
+LeadSchema.index({ status: 1, seqNextAt: 1 });
 
 // Sequence Email Schema
 const SequenceEmailSchema = new Schema({
@@ -309,6 +329,8 @@ const EmailEventSchema = new Schema({
 EmailEventSchema.index({ userEmail: 1, sequenceId: 1, eventType: 1 });
 EmailEventSchema.index({ userEmail: 1, leadId: 1, eventType: 1 });
 EmailEventSchema.index({ pageId: 1, eventType: 1 });
+EmailEventSchema.index({ userEmail: 1, eventType: 1, createdAt: -1 });
+EmailEventSchema.index({ recipientEmail: 1, pageId: 1, eventType: 1 });
 
 export const EmailEventModel = mongoose.models.EmailEvent || mongoose.model("EmailEvent", EmailEventSchema);
 

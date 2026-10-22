@@ -161,6 +161,31 @@ export default function WorkspaceSetupPage() {
             accountRef.current = data.account;
           }
         });
+      } else if (paymentStatus === "pending" || paymentStatus === "stripe_success") {
+        // Paid, but the upgrade is applied by the payment webhook. Poll until the plan flips.
+        window.history.replaceState({}, "", window.location.pathname);
+        addToast("Payment received. Confirming your upgrade…", "info");
+        let attempts = 0;
+        const poll = async () => {
+          if (!isMountedRef.current) return;
+          attempts++;
+          const data = await syncWithDatabase().catch(() => null);
+          if (!isMountedRef.current) return;
+          if (data?.account && ["Pro", "Growth", "Unlimited"].includes(String(data.account.plan))) {
+            setAccount(data.account);
+            accountRef.current = data.account;
+            setShowSuccessModal(true);
+            addToast("🎉 Pro Plan Activated! Custom domains are now unlocked.", "success");
+          } else if (attempts < 12) {
+            setTimeout(poll, 5000);
+          } else {
+            addToast("Your payment is still being confirmed. Refresh in a few minutes. If Pro doesn't appear, contact support.", "info");
+          }
+        };
+        setTimeout(poll, 2000);
+      } else if (paymentStatus === "stripe_cancelled") {
+        addToast("Checkout was cancelled. You have not been charged.", "info");
+        window.history.replaceState({}, "", window.location.pathname);
       } else if (paymentStatus === "error") {
         addToast("Payment was cancelled or could not be completed.", "error");
         window.history.replaceState({}, "", window.location.pathname);

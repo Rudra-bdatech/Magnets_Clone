@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -49,10 +49,27 @@ export function UpgradeModal({
   const [sandboxMethod, setSandboxMethod] = useState<"upi" | "card" | "qr">("upi");
   const [simulatedUpiId, setSimulatedUpiId] = useState("user@okaxis");
 
+  // Blocks a second checkout request (double-click) while one is in flight or redirecting
+  const checkoutInFlight = useRef(false);
+
+  // Back button from the payment page restores this view from the bfcache; clear the spinner
+  useEffect(() => {
+    const onPageShow = (e: PageTransitionEvent) => {
+      if (e.persisted) {
+        checkoutInFlight.current = false;
+        setIsLoading(false);
+      }
+    };
+    window.addEventListener("pageshow", onPageShow);
+    return () => window.removeEventListener("pageshow", onPageShow);
+  }, []);
+
   if (!isOpen) return null;
 
   // ── 1. Handle Chargebee Hosted Checkout (White Checkout Page) ───────────
   const handleChargebeeCheckout = async () => {
+    if (checkoutInFlight.current) return;
+    checkoutInFlight.current = true;
     setIsLoading(true);
     setErrorMsg(null);
 
@@ -68,11 +85,15 @@ export function UpgradeModal({
       }
 
       // If simulated or keys missing, open sandbox modal
-      if (data.isSimulated || !data.checkoutUrl) {
+      if (data.isSimulated) {
         setSandboxOrder(data);
         setShowSandboxModal(true);
         setIsLoading(false);
+        checkoutInFlight.current = false;
         return;
+      }
+      if (!data.checkoutUrl) {
+        throw new Error("We couldn't open the payment page. Please try again.");
       }
 
       // Redirect directly to the official Chargebee Hosted Checkout page
@@ -81,6 +102,7 @@ export function UpgradeModal({
       console.error("Chargebee Error:", err);
       setErrorMsg(err.message || "Something went wrong initiating payment.");
       setIsLoading(false);
+      checkoutInFlight.current = false;
     }
   };
 
@@ -115,6 +137,8 @@ export function UpgradeModal({
 
   // ── 2. Handle Stripe Checkout ($29 USD) ───────────────────────────────────
   const handleStripeCheckout = async () => {
+    if (checkoutInFlight.current) return;
+    checkoutInFlight.current = true;
     setIsLoading(true);
     setErrorMsg(null);
 
@@ -129,14 +153,17 @@ export function UpgradeModal({
         throw new Error(data.error || "Failed to initialize Stripe checkout");
       }
 
-      if (data.url) {
-        window.location.href = data.url;
+      if (!data.url) {
+        throw new Error("We couldn't open the payment page. Please try again.");
       }
+      // Keep the button disabled until the browser leaves the page: re-enabling it here
+      // let a second click open another checkout session.
+      window.location.href = data.url;
     } catch (err: any) {
       console.error("Stripe Error:", err);
       setErrorMsg(err.message || "Something went wrong with Stripe checkout.");
-    } finally {
       setIsLoading(false);
+      checkoutInFlight.current = false;
     }
   };
 

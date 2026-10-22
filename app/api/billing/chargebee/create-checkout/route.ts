@@ -2,7 +2,14 @@ import { NextResponse } from "next/server";
 import { getAuthenticatedUserEmail } from "@/lib/auth";
 import { dbConnect } from "@/lib/mongodb";
 import { AccountModel } from "@/lib/models";
-import { getChargebeeClient, PLAN_PRICING, isStaffCoupon } from "@/lib/billing";
+import {
+  getChargebeeClient,
+  PLAN_PRICING,
+  isStaffCoupon,
+  hasActivePaidPlan,
+  isSimulatedBillingAllowed,
+  ALREADY_SUBSCRIBED_RESPONSE,
+} from "@/lib/billing";
 import { isCompanyAccount } from "@/lib/roles";
 import crypto from "crypto";
 
@@ -25,6 +32,10 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "User account not found" }, { status: 404 });
     }
 
+    if (hasActivePaidPlan(account)) {
+      return NextResponse.json(ALREADY_SUBSCRIBED_RESPONSE, { status: 409 });
+    }
+
     // Parse coupon code if provided
     const body = await req.json().catch(() => ({}));
     const rawCoupon = typeof body?.couponCode === "string" ? body.couponCode : "";
@@ -44,8 +55,16 @@ export async function POST(req: Request) {
     const proto = req.headers.get("x-forwarded-proto") || (reqHost.includes("localhost") ? "http" : "https");
     const appUrl = `${proto}://${reqHost}`;
 
-    // 3. Graceful sandbox simulation if keys are not yet configured
+    // 3. No Chargebee keys: sandbox simulation only when explicitly enabled, otherwise a clear error
+    // (a "success" without a checkout URL left the checkout page stuck on "Processing...").
     if (!cb) {
+      if (!isSimulatedBillingAllowed()) {
+        console.error("[Chargebee Checkout]: CHARGEBEE_SITE / CHARGEBEE_API_KEY are not configured");
+        return NextResponse.json(
+          { error: "Payments are temporarily unavailable. Please try again later.", code: "BILLING_NOT_CONFIGURED" },
+          { status: 503 }
+        );
+      }
       const isCoupon = isStaffCoupon(cleanCoupon);
       return NextResponse.json({
         success: true,

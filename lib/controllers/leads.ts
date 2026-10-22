@@ -3,9 +3,17 @@ import { waitUntil } from "@vercel/functions";
 import { LeadModel, MagnetPageModel, AccountModel, ResourceModel } from "@/lib/models";
 import { sendInstantLeadAlert } from "@/lib/email-alerts";
 import { sendMail } from "@/lib/email";
-import { signDownloadLinks, signMagnetAccess, withMagnetAccess } from "@/lib/magnet-access";
+import { emailLinkBaseUrl, signDownloadLinks, signMagnetAccess, withMagnetAccess } from "@/lib/magnet-access";
 import { parseFlexibleDate } from "@/lib/utils";
 import { isValidSlackWebhookUrl, isValidZapierWebhookUrl } from "./account";
+import { checkRateLimit } from "@/lib/rate-limit";
+import {
+  isValidEmailAddress,
+  nameContainsLink,
+  countOwnerLeadEmailsLast24h,
+  LEAD_EMAIL_DAILY_CAP,
+  LEAD_PAGE_DAILY_CAP,
+} from "@/lib/email-guard";
 
 function escapeHtml(str: string): string {
   if (!str) return "";
@@ -28,6 +36,9 @@ function cleanStr(val: any, maxLen = 300): string {
 }
 
 export async function handleAddLead(data: any, req: Request, normEmail: string | null, authEmail?: string | null) {
+  if (!data || typeof data !== "object") {
+    return NextResponse.json({ error: "Invalid lead submission." }, { status: 400 });
+  }
   // Auto-generate ID if missing or sanitize string
   const safeDataId = cleanStr(data.id, 100);
   data.id = safeDataId || `lead-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`;
@@ -35,9 +46,22 @@ export async function handleAddLead(data: any, req: Request, normEmail: string |
   // Sanitize name and email
   const rawInputName = cleanStr(data.name, 150);
   const safePlainName = stripHtmlTags(rawInputName);
+  // Names are merged into emails sent from the owner's inbox; a link in a name is spam bait.
+  if (safePlainName && nameContainsLink(safePlainName)) {
+    return NextResponse.json({ error: "Please enter your name without links or email addresses." }, { status: 400 });
+  }
   data.name = safePlainName || "LinkedIn Prospect";
 
-  const cleanEmail = cleanStr(data.email, 150).replace(/[\r\n]+/g, "").toLowerCase();
+  const isLinkedInPending =
+    data.source === "linkedin-comment" || data.status === "pending_email" || Boolean(data.customFields?.linkedinProfile);
+  const cleanEmail = cleanStr(data.email, 254).replace(/[\r\n]+/g, "").toLowerCase();
+  // Exactly one plain address. "a@x.com,b@y.com" would otherwise reach several inboxes per signup.
+  if (cleanEmail && !isValidEmailAddress(cleanEmail)) {
+    return NextResponse.json({ error: "Please enter a valid email address." }, { status: 400 });
+  }
+  if (!cleanEmail && !isLinkedInPending) {
+    return NextResponse.json({ error: "Please enter a valid email address." }, { status: 400 });
+  }
   if (!cleanEmail) {
     const slugName = data.name.toLowerCase().replace(/[^a-z0-9]/g, "") || "prospect";
     data.email = `${slugName}@linkedin-prospect.com`;
@@ -183,6 +207,18 @@ export async function handleAddLead(data: any, req: Request, normEmail: string |
     );
   }
 
+  // Per-page daily cap for submissions from anyone but the page owner, so one bot (rotating IPs and
+  // addresses) cannot flood a creator's lead list. Fails open: an outage must not drop real leads.
+  if (foundPageDoc?.id && verifiedSessionEmail !== ownerEmail) {
+    const pageRl = await checkRateLimit(foundPageDoc.id, "add_lead_page_daily", LEAD_PAGE_DAILY_CAP, 24 * 60 * 60 * 1000);
+    if (!pageRl.success) {
+      return NextResponse.json(
+        { error: "This page is not accepting more signups right now. Please try again later." },
+        { status: 429, headers: { "Retry-After": String(pageRl.reset) } }
+      );
+    }
+  }
+
   let isUpgradedFromPending = false;
   let createdOrUpdatedLead: any = null;
   let existingLeadDoc: any = null;
@@ -323,6 +359,10 @@ export async function handleAddLead(data: any, req: Request, normEmail: string |
       customAnswer: typeof data.customAnswer === "string" ? cleanStr(data.customAnswer, 1000) : "",
       customFields: sanitizedCustomFields,
       source: cleanStr(data.source, 50) || "leadmagnets",
+      // Set from the page above. The sequence cron only picks up leads with a sequenceStep,
+      // so leaving these out silently disables follow-up emails for every new signup.
+      sequence: cleanStr(data.sequence, 200),
+      sequenceStep: cleanStr(data.sequenceStep, 200),
       isVariantB: Boolean(data.isVariantB),
       signedUpAt: normalizedSignedUpAt,
       deviceType: cleanStr(data.deviceType, 20) || (isMobile ? "mobile" : "desktop"),
@@ -366,6 +406,7 @@ export async function handleAddLead(data: any, req: Request, normEmail: string |
             const hasRealSequence = Boolean(foundPageDoc?.sequenceEnabled && pageSeqList.length > 0);
             await sendInstantLeadAlert({
               ownerEmail: targetInbox,
+              senderEmail: ownerEmail,
               leadEmail: data.email,
               leadName: safePlainName,
               pageTitle: safePageTitle,
@@ -401,7 +442,7 @@ export async function handleAddLead(data: any, req: Request, normEmail: string |
           const reqHost = req.headers.get("x-forwarded-host") || req.headers.get("host") || "";
           const reqProto = req.headers.get("x-forwarded-proto") || "https";
           const dynamicOrigin = reqHost ? `${reqProto}://${reqHost}` : "http://localhost:3000";
-          const appUrl = process.env.NEXT_PUBLIC_APP_URL || dynamicOrigin;
+          const appUrl = emailLinkBaseUrl(dynamicOrigin);
 
           let targetResourceId = foundPageDoc?.resourceId || "";
           if (!targetResourceId && foundPageDoc?.emailBody) {
@@ -731,32 +772,37 @@ export async function handleAddLead(data: any, req: Request, normEmail: string |
 </html>
           `;
 
-          const defaultFrom = process.env.SMTP_FROM || "non-reply@bdatech.in";
-
-          try {
-            const res = await sendMail(
-              {
-                to: data.email.trim(),
-                subject: subject,
-                // Download links only work with an access token (lib/magnet-access.ts)
-                html: await signDownloadLinks(subscriberHtml, ownerEmail || ownerAccount?.email),
-                tracking: {
-                  leadId: data.id,
-                  pageId: foundPageDoc?.id || data.pageId || "",
-                  userEmail: ownerEmail || ownerAccount?.email || "",
-                  recipient: data.email.trim(),
+          // Owner-wide daily budget shared with sequence emails: protects the owner's Gmail quota
+          // even if a flood of signups gets past the per-IP / per-page limits.
+          const sentToday = await countOwnerLeadEmailsLast24h(ownerEmail).catch(() => 0);
+          if (sentToday >= LEAD_EMAIL_DAILY_CAP) {
+            console.warn(`[Deliverable] Daily email cap reached for owner ${ownerEmail}; deliverable not sent to lead ${data.id}`);
+          } else {
+            try {
+              const res = await sendMail(
+                {
+                  to: data.email.trim(),
+                  subject: subject,
+                  // Download links only work with an access token (lib/magnet-access.ts)
+                  html: await signDownloadLinks(subscriberHtml, ownerEmail || ownerAccount?.email),
+                  tracking: {
+                    leadId: data.id,
+                    pageId: foundPageDoc?.id || data.pageId || "",
+                    userEmail: ownerEmail || ownerAccount?.email || "",
+                    recipient: data.email.trim(),
+                  },
+                  unsubscribeLeadId: createdOrUpdatedLead?.id || data.id,
                 },
-                unsubscribeLeadId: createdOrUpdatedLead?.id || data.id,
-              },
-              ownerEmail || ownerAccount?.email
-            );
-            if (res.success) {
-              console.log(`✅ Deliverable email successfully sent to subscriber: ${data.email}`);
-            } else {
-              console.error(`❌ Deliverable email sending failed for subscriber ${data.email}:`, res.error);
+                ownerEmail || ownerAccount?.email
+              );
+              if (res.success) {
+                console.log(`✅ Deliverable email successfully sent to subscriber: ${data.email}`);
+              } else {
+                console.error(`❌ Deliverable email sending failed for subscriber ${data.email}:`, res.error);
+              }
+            } catch (err) {
+              console.error("Subscriber Email Dispatch Error:", err);
             }
-          } catch (err) {
-            console.error("Subscriber Email Dispatch Error:", err);
           }
         }
 
@@ -1101,6 +1147,7 @@ export async function handleSendTestLeadAlert(data: any, normEmail: string | nul
 
   const result = await sendInstantLeadAlert({
     ownerEmail: targetEmail,
+    senderEmail: normEmail,
     leadEmail: "sample.subscriber@example.com",
     leadName: "Sample Lead",
     pageTitle: "Test Lead Magnet Guide",

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { MagnetPageModel, SequenceModel, AccountModel } from "@/lib/models";
+import { MagnetPageModel, SequenceModel, AccountModel, LeadModel } from "@/lib/models";
 import { type MagnetPage, type Sequence } from "@/lib/data";
 import { deleteCloudinaryAssets } from "@/lib/cloudinary";
 
@@ -64,6 +64,31 @@ export async function handleSavePages(data: any, normEmail: string | null) {
       };
     });
     await MagnetPageModel.bulkWrite(ops);
+
+    // The sequence cron schedules each waiting lead for its step's due time. When steps or delays
+    // change, make those leads due now so the cron re-evaluates them against the new sequence.
+    const changedSequencePageIds = (data as MagnetPage[])
+      .filter((item) => {
+        if (!item?.id) return false;
+        const oldPage: any = existingMap.get(item.id);
+        return (
+          !oldPage ||
+          Boolean(oldPage.sequenceEnabled) !== Boolean((item as any).sequenceEnabled) ||
+          JSON.stringify(oldPage.sequenceEmails || []) !== JSON.stringify((item as any).sequenceEmails || [])
+        );
+      })
+      .map((item) => item.id);
+    if (changedSequencePageIds.length > 0) {
+      LeadModel.updateMany(
+        {
+          userEmail: normEmail,
+          pageId: { $in: changedSequencePageIds },
+          seqNextAt: { $gt: new Date() },
+          seqFailCount: { $in: [0, null] },
+        },
+        { $set: { seqNextAt: new Date() } }
+      ).catch((err: unknown) => console.error("Sequence reschedule error on savePages:", err));
+    }
 
     // After updating database, safely clean up replaced assets with tenant verification
     if (replacedAssets.length > 0) {
