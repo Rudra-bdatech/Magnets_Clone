@@ -26,6 +26,10 @@ import { Upload, Lock, Eye, Loader2, CheckCircle2, Trash2, HardDrive, FileText, 
 import { loadResources } from "@/lib/store";
 import DeleteModal from "@/components/leadmagnets/edit/DeleteModal";
 
+function settingsKey(freePages: number, name: string, slug: string) {
+  return JSON.stringify([freePages, name.trim(), slug.trim()]);
+}
+
 interface Props {
   magnetId: string;
   userEmail: string;
@@ -197,6 +201,15 @@ export default function LockedPdfSetup({
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  // Snapshot of the last persisted settings, used to detect unsaved edits.
+  const [savedKey, setSavedKey] = useState(() =>
+    settingsKey(
+      Math.min(initialFreePages ?? 2, Math.max(0, (initialPageCount || (initialPages || []).length || 1) - 1)),
+      pageName || initialTitle || "",
+      pageSlug || ""
+    )
+  );
+  const savedTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [showInternalAssetModal, setShowInternalAssetModal] = useState(false);
   const [showRemoveModal, setShowRemoveModal] = useState(false);
   const [internalAssetSearch, setInternalAssetSearch] = useState("");
@@ -206,7 +219,20 @@ export default function LockedPdfSetup({
 
   useEffect(() => {
     setMounted(true);
+    return () => {
+      if (savedTimerRef.current) clearTimeout(savedTimerRef.current);
+    };
   }, []);
+
+  const isDirty = pages.length > 0 && settingsKey(freePages, name, slug) !== savedKey;
+
+  // Record a successful save and flash "Saved!" briefly.
+  function markSaved(fp: number, nm: string, sl: string) {
+    setSavedKey(settingsKey(fp, nm, sl));
+    setSaved(true);
+    if (savedTimerRef.current) clearTimeout(savedTimerRef.current);
+    savedTimerRef.current = setTimeout(() => setSaved(false), 3000);
+  }
 
   const handleOpenAssetPicker = () => {
     if (onOpenAssetPicker) {
@@ -324,7 +350,7 @@ export default function LockedPdfSetup({
         pdfTitle: finalTitle,
         pdfPageCount: totalPages,
       });
-      setSaved(true);
+      markSaved(computedFree, name, slug);
     } catch (err: any) {
       console.error("[LockedPdfSetup] Processing hosted PDF error:", err);
       setError(err.message || "Failed to process hosted PDF asset. Please try again.");
@@ -393,7 +419,7 @@ export default function LockedPdfSetup({
         name: name || finalTitle,
         slug: slug || undefined,
       });
-      setSaved(true);
+      markSaved(computedFree, name || finalTitle, slug);
     } catch (err: any) {
       console.error("[LockedPdfSetup] Processing error:", err);
       setError(err.message || "Failed to process PDF. Please try again.");
@@ -439,8 +465,7 @@ export default function LockedPdfSetup({
         pdfPageCount: effectiveTotal,
         pdfUrl: pdfUrl,
       });
-      setSaved(true);
-      setTimeout(() => setSaved(false), 3000);
+      markSaved(safeFreePages, name.trim() || pdfTitle.trim(), slug.trim());
     } catch (err: any) {
       setError(err.message || "Failed to save. Please try again.");
     } finally {
@@ -468,8 +493,7 @@ export default function LockedPdfSetup({
         name: name.trim(),
         slug: slug.trim(),
       });
-      setSaved(true);
-      setTimeout(() => setSaved(false), 3000);
+      markSaved(0, name.trim(), slug.trim());
     } catch (err: any) {
       setError(err.message || "Failed to remove PDF. Please try again.");
     } finally {
@@ -796,17 +820,24 @@ export default function LockedPdfSetup({
         <button
           type="button"
           onClick={handleSave}
-          disabled={saving || pages.length === 0}
+          disabled={saving || pages.length === 0 || !isDirty}
           className="inline-flex items-center gap-2 rounded-xl bg-[#0066B2] hover:bg-[#005799] text-white text-xs font-bold px-5 py-2.5 transition disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {saving ? (
             <><Loader2 className="h-3.5 w-3.5 animate-spin" /> Saving…</>
           ) : saved ? (
             <><CheckCircle2 className="h-3.5 w-3.5" /> Saved!</>
-          ) : (
+          ) : isDirty ? (
             "Save PDF settings"
+          ) : (
+            <><CheckCircle2 className="h-3.5 w-3.5" /> All changes saved</>
           )}
         </button>
+        {isDirty && !saving && (
+          <span className="text-[11px] font-semibold text-amber-600 dark:text-amber-400">
+            Unsaved changes
+          </span>
+        )}
         {pages.length > 0 && (
           <button
             type="button"
