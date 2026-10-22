@@ -242,6 +242,8 @@ export interface Resource {
   size: number;
   uploadedAt: string;
   url: string;
+  /** `url` with its download access token; only on resources loaded for their owner, never stored */
+  shareUrl?: string;
   fileUrl?: string;
   fileExt?: string;
   isPageAsset?: boolean;

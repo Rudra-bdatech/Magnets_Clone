@@ -2,9 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { promises as fs } from "fs";
 import path from "path";
 import { dbConnect } from "@/lib/mongodb";
-import { ResourceModel, MagnetPageModel } from "@/lib/models";
+import { ResourceModel, MagnetPageModel, AccountModel } from "@/lib/models";
 import { v2 as cloudinary } from "cloudinary";
 import { isPrivateOrReservedUrl } from "@/lib/ssrf";
+import { getAuthenticatedUserEmail } from "@/lib/auth";
+import { verifyMagnetAccess, withMagnetAccess } from "@/lib/magnet-access";
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -57,6 +59,14 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   const resourceId = params.id;
+  // Links handed to leads carry ?t=<access token>; without it only the owner may download
+  const hasToken = verifyMagnetAccess(resourceId, req.nextUrl.searchParams.get("t"));
+  const isOwnerOf = async (ownerEmail?: string | null) => {
+    const owner = (ownerEmail || "").toLowerCase().trim();
+    if (!owner) return false;
+    return (await getAuthenticatedUserEmail()) === owner;
+  };
+  const denied = () => NextResponse.redirect(new URL("/", req.url), 302);
 
   try {
     await dbConnect();
@@ -74,6 +84,20 @@ export async function GET(
       }).sort({ _id: -1 }).lean();
 
       if (page) {
+        const unpublished = page.status === "draft" || page.status === "paused";
+        if ((!hasToken || unpublished) && !(await isOwnerOf(page.userEmail))) {
+          // Send visitors to the signup form instead of handing out the deliverable
+          const owner: any = page.userEmail
+            ? await AccountModel.findOne({ email: page.userEmail.toLowerCase().trim() }, { username: 1 }).lean()
+            : null;
+          if (owner?.username && !unpublished) {
+            return NextResponse.redirect(
+              new URL(`/${encodeURIComponent(owner.username)}/${encodeURIComponent(page.slug || page.id)}`, req.url),
+              302
+            );
+          }
+          return denied();
+        }
         linkedPage = page;
         let boundResId = (page.resourceId || "").trim();
         if (!boundResId && page.emailBody) {
@@ -82,7 +106,12 @@ export async function GET(
         }
 
         if (boundResId) {
-          resource = await ResourceModel.findOne({ id: boundResId, ...NOT_PAGE_ASSET }).lean();
+          // Only the page owner's own file, never another account's resource id
+          resource = await ResourceModel.findOne({
+            id: boundResId,
+            userEmail: (page.userEmail || "").toLowerCase().trim(),
+            ...NOT_PAGE_ASSET,
+          }).lean();
         }
 
         // Only redirect to our own storage, never to an arbitrary stored URL (open redirect)
@@ -97,6 +126,8 @@ export async function GET(
             .lean();
         }
       }
+    } else if (!hasToken && !(await isOwnerOf(resource.userEmail))) {
+      return denied();
     } else if (resource.userEmail) {
       linkedPage = await MagnetPageModel.findOne({
         $or: [{ resourceId: resource.id }, { userEmail: resource.userEmail }],
@@ -213,9 +244,13 @@ export async function GET(
 
     // If a linked page is found, redirect directly to the page's Thank-You page
     if (linkedPage) {
-      const username = linkedPage.userEmail ? linkedPage.userEmail.split("@")[0] : "u";
+      const owner: any = linkedPage.userEmail
+        ? await AccountModel.findOne({ email: linkedPage.userEmail.toLowerCase().trim() }, { username: 1 }).lean()
+        : null;
+      const username = owner?.username || "u";
       const targetSlug = linkedPage.slug || linkedPage.id;
-      return NextResponse.redirect(new URL(`/${encodeURIComponent(username)}/${encodeURIComponent(targetSlug)}/thank-you`, req.url), 302);
+      const thankYou = withMagnetAccess(`/${encodeURIComponent(username)}/${encodeURIComponent(targetSlug)}/thank-you`, linkedPage.id);
+      return NextResponse.redirect(new URL(thankYou, req.url), 302);
     }
   } catch (err) {
     console.error("Error in /r/[id] direct handler:", err);

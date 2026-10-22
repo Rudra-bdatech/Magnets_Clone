@@ -69,6 +69,32 @@ export async function POST(req: Request) {
         );
         break;
       }
+      case "customer.subscription.updated": {
+        const subscription = event.data.object;
+        // Payment retries exhausted or cancelled outright: no longer paying for Pro
+        if (subscription.status === "canceled" || subscription.status === "unpaid") {
+          await AccountModel.findOneAndUpdate(
+            { stripeSubscriptionId: subscription.id },
+            { $set: { plan: "Free", paymentStatus: subscription.status } }
+          );
+        }
+        break;
+      }
+      case "charge.refunded":
+      case "charge.dispute.created": {
+        // Full refunds and chargebacks take Pro away (a partial refund keeps it)
+        const obj = event.data.object;
+        if (event.type === "charge.refunded" && !obj.refunded) break;
+        // A Dispute only references its charge; the customer is on the charge
+        const charge = event.type === "charge.dispute.created" ? await stripe.charges.retrieve(obj.charge) : obj;
+        const customerId = typeof charge.customer === "string" ? charge.customer : charge.customer?.id || "";
+        if (!customerId) break;
+        await AccountModel.findOneAndUpdate(
+          { stripeCustomerId: customerId, paymentProvider: "stripe" },
+          { $set: { plan: "Free", paymentStatus: event.type === "charge.refunded" ? "refunded" : "disputed" } }
+        );
+        break;
+      }
       default:
         break;
     }

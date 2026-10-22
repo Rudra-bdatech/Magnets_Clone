@@ -1,8 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { dbConnect } from "@/lib/mongodb";
+import { isAuthorizedCronRequest } from "@/lib/cron-auth";
+import { signDownloadLinks, withMagnetAccess } from "@/lib/magnet-access";
 import { LeadModel, MagnetPageModel, SequenceModel, AccountModel, EmailEventModel } from "@/lib/models";
 import { sendMail } from "@/lib/email";
 import { parseFlexibleDate } from "@/lib/utils";
+import { getPlanLimits } from "@/lib/plan-limits";
 
 export const dynamic = "force-dynamic";
 
@@ -10,17 +13,12 @@ export const dynamic = "force-dynamic";
  * Vercel Cron Endpoint: Multi-Day Email Sequence Processing Engine
  * 
  * Scheduled trigger: Runs automatically via vercel.json (e.g., every 15 minutes).
- * Security: Verifies Authorization header with CRON_SECRET or Vercel Cron Header.
+ * Security: Requires CRON_SECRET (see lib/cron-auth.ts).
  */
 export async function GET(req: NextRequest) {
   try {
     // 1. Security Check: Protect cron endpoint against unauthorized external triggers
-    const authHeader = req.headers.get("authorization");
-    const vercelCronHeader = req.headers.get("x-vercel-cron");
-    const querySecret = req.nextUrl.searchParams.get("secret");
-    const cronSecret = process.env.CRON_SECRET;
-
-    if (cronSecret && authHeader !== `Bearer ${cronSecret}` && querySecret !== cronSecret && !vercelCronHeader) {
+    if (!isAuthorizedCronRequest(req)) {
       return NextResponse.json({ error: "Unauthorized cron execution" }, { status: 401 });
     }
 
@@ -76,6 +74,23 @@ export async function GET(req: NextRequest) {
       new Set(activeLeads.map((l) => (l.email || "").toLowerCase().trim()).filter(Boolean))
     );
 
+    // Plan limit: each owner's oldest `sequencesLimit` enabled sequences send; the rest wait for an upgrade
+    const enabledSeqPages = await MagnetPageModel.find(
+      { userEmail: { $in: Array.from(accountByEmail.keys()) }, sequenceEnabled: true },
+      { id: 1, userEmail: 1 }
+    ).sort({ _id: 1 }).lean();
+    const allowedSeqPageIds = new Set<string>();
+    const seqCountByOwner = new Map<string, number>();
+    for (const p of enabledSeqPages as any[]) {
+      const owner = (p.userEmail || "").toLowerCase().trim();
+      const acc: any = accountByEmail.get(owner);
+      const used = seqCountByOwner.get(owner) || 0;
+      if (used < getPlanLimits(acc?.plan, owner, acc?.role).sequencesLimit) {
+        allowedSeqPageIds.add(p.id);
+        seqCountByOwner.set(owner, used + 1);
+      }
+    }
+
     const sentEvents = await EmailEventModel.find({
       recipientEmail: { $in: uniqueRecipientEmails },
       eventType: "sent",
@@ -119,6 +134,11 @@ export async function GET(req: NextRequest) {
 
       const ownerEmail = (pageDoc.userEmail || lead.userEmail || "").toLowerCase().trim();
       const ownerAccount = accountByEmail.get(ownerEmail) || null;
+
+      if (!allowedSeqPageIds.has(pageDoc.id)) {
+        debugLogs.push({ email: lead.email, pageName: pageDoc.name, reason: "Sequence paused or over the plan's sequence limit" });
+        continue;
+      }
 
       if (!pageDoc.sequenceEmails || pageDoc.sequenceEmails.length === 0) {
         debugLogs.push({ email: lead.email, pageName: pageDoc.name, reason: "No sequenceEmails on page doc", sequenceEmailsCount: pageDoc.sequenceEmails?.length || 0 });
@@ -230,7 +250,7 @@ export async function GET(req: NextRequest) {
       const defaultFrom = process.env.SMTP_FROM || "non-reply@bdatech.in";
       const appUrl = (process.env.NEXT_PUBLIC_APP_URL || req.nextUrl.origin || "https://magnets.bdatech.in").replace(/\/$/, "");
       const logoUrl = `${appUrl}/brand/custom-logo-light.png`;
-      const accessUrl = `${appUrl}/r/${pageDoc.id}`;
+      const accessUrl = withMagnetAccess(`${appUrl}/r/${pageDoc.id}`, pageDoc.id);
 
       // Clean up localhost occurrences in body text
       formattedBodyHtml = formattedBodyHtml.replace(/http:\/\/localhost:3000/g, appUrl);
@@ -395,7 +415,8 @@ export async function GET(req: NextRequest) {
         {
           to: lead.email.trim(),
           subject: formattedSubject,
-          html: htmlBody,
+          // Download links only work with an access token (lib/magnet-access.ts)
+          html: await signDownloadLinks(htmlBody, ownerEmail || lead.userEmail),
           tracking: {
             leadId: lead.id,
             pageId: pageDoc.id || lead.pageId,
@@ -426,13 +447,16 @@ export async function GET(req: NextRequest) {
       debugLogs.push({ email: lead.email, status: "SUCCESS", emailSubject: nextEmail.subject });
     }
 
+    if (debugLogs.length > 0) console.log("[cron/process-sequences]", JSON.stringify(debugLogs));
+
     return NextResponse.json({
       success: true,
       timestamp: new Date().toISOString(),
       activeLeadsChecked: activeLeads.length,
       processedCount,
       deliveredCount,
-      debugLogs,
+      // Counts only: per-lead details (recipient emails) stay in the server log
+      skipped: debugLogs.filter((l) => l.status !== "SUCCESS").length,
     });
   } catch (error: any) {
     console.error("Sequence Cron Execution Error:", error);

@@ -24,11 +24,13 @@ export async function GET() {
     }
 
     let nextAuthImage: string | null = null;
+    let emailFromNextAuth = false;
     const nextAuthSession = await getServerSession(authOptions);
     if (nextAuthSession?.user?.email) {
       if (!email) {
         email = nextAuthSession.user.email.trim().toLowerCase();
         name = nextAuthSession.user.name || undefined;
+        emailFromNextAuth = true;
       }
       if (nextAuthSession.user.image) {
         let cleanImage = nextAuthSession.user.image;
@@ -79,10 +81,12 @@ export async function GET() {
     }
 
     // Security check: If password was changed or session was revoked, reject stale token
-    if (token) {
-      const session = verifySessionToken(token);
+    // (a Google session is checked too, or this route would re-issue a cookie for it)
+    if (token || emailFromNextAuth) {
       const expectedVersion = account.tokenVersion ?? 0;
-      const actualVersion = session?.tokenVersion ?? 0;
+      const actualVersion = emailFromNextAuth
+        ? (nextAuthSession as any)?.tokenVersion ?? 0
+        : verifySessionToken(token as string)?.tokenVersion ?? 0;
       if (actualVersion < expectedVersion) {
         const response = NextResponse.json({ authenticated: false, user: null }, { status: 401 });
         clearAuthCookie(response);

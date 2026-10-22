@@ -591,25 +591,19 @@ export async function handleGetAccountByEmail(authEmail: string | null) {
   return NextResponse.json({ account: sanitizeAccount(account) });
 }
 
-function getSafeAppUrl(reqHostOrigin?: string): string {
-  if (reqHostOrigin) {
-    try {
-      const parsed = new URL(reqHostOrigin);
-      if (
-        parsed.hostname === "localhost" ||
-        parsed.hostname === "127.0.0.1" ||
-        parsed.hostname === "magnets.bdatech.in" ||
-        parsed.hostname.endsWith(".bdatech.in") ||
-        parsed.hostname.endsWith(".vercel.app")
-      ) {
-        return parsed.origin;
-      }
-    } catch { }
-  }
-  return process.env.NEXT_PUBLIC_APP_URL || "https://magnets.bdatech.in";
+/**
+ * Origin for links in account emails. Local dev links back to the dev server; production always
+ * uses the canonical app URL, never a request header (Origin/Host), which an attacker controls.
+ */
+function getAppOrigin(): string {
+  const appUrl =
+    process.env.NODE_ENV !== "production" && process.env.NEXTAUTH_URL
+      ? process.env.NEXTAUTH_URL
+      : process.env.NEXT_PUBLIC_APP_URL || "https://magnets.bdatech.in";
+  return appUrl.replace(/\/$/, "");
 }
 
-export async function handleSendResetEmail(data: any, reqHostOrigin?: string) {
+export async function handleSendResetEmail(data: any) {
   const { email } = data || {};
   if (!email || typeof email !== "string" || !email.trim()) {
     return NextResponse.json({ error: "A valid email address is required." }, { status: 400 });
@@ -634,8 +628,7 @@ export async function handleSendResetEmail(data: any, reqHostOrigin?: string) {
   account.resetPasswordExpires = expires;
   await account.save();
 
-  const safeOrigin = getSafeAppUrl(reqHostOrigin);
-  const cleanOrigin = safeOrigin.replace(/\/$/, "");
+  const cleanOrigin = getAppOrigin();
   const resetUrl = `${cleanOrigin}/reset-password?token=${token}`;
 
   const sendResult = await sendMail({
@@ -796,13 +789,7 @@ async function issueEmailVerification(account: any): Promise<{ success: boolean;
   account.emailVerifyExpires = new Date(Date.now() + EMAIL_VERIFY_TTL_MS);
   await account.save();
 
-  // Local dev links back to the dev server; production always uses the canonical app URL
-  // (never the request's Host header, which an attacker could spoof).
-  const appUrl =
-    process.env.NODE_ENV !== "production" && process.env.NEXTAUTH_URL
-      ? process.env.NEXTAUTH_URL
-      : process.env.NEXT_PUBLIC_APP_URL || "https://magnets.bdatech.in";
-  const origin = appUrl.replace(/\/$/, "");
+  const origin = getAppOrigin();
   const confirmUrl = `${origin}/register/confirm?token=${token}`;
   const safeEmail = escapeHtml(account.email);
 
@@ -921,11 +908,25 @@ export async function handleVerifyEmailToken(data: any, sessionEmail: string | n
     return NextResponse.json({ error: "This verification link is invalid." }, { status: 400 });
   }
 
+  const tokenFilter = {
+    emailVerifyTokenHash: hashToken(token.trim().toLowerCase()),
+    emailVerifyExpires: { $gt: new Date() },
+  };
+
+  // The link alone must not verify: anyone can sign up with someone else's address, and
+  // verifying from the owner's click would keep the squatter's password on the account.
+  // Only the browser signed in to this account (i.e. someone who knows its password) may
+  // finish. The real owner who never signed up can take the account over via password reset.
+  const pending: any = await AccountModel.findOne(tokenFilter, { email: 1 }).lean();
+  if (pending && sessionEmail !== pending.email) {
+    return NextResponse.json(
+      { error: "Sign in to finish verifying your email.", code: "SIGN_IN_REQUIRED" },
+      { status: 401 }
+    );
+  }
+
   const account = await AccountModel.findOneAndUpdate(
-    {
-      emailVerifyTokenHash: hashToken(token.trim().toLowerCase()),
-      emailVerifyExpires: { $gt: new Date() },
-    },
+    { ...tokenFilter, email: sessionEmail },
     {
       $set: { emailVerified: new Date() },
       $unset: { emailVerifyTokenHash: 1, emailVerifyExpires: 1 },
@@ -940,11 +941,8 @@ export async function handleVerifyEmailToken(data: any, sessionEmail: string | n
     );
   }
 
-  const signedIn = sessionEmail === account.email;
-  const res = NextResponse.json({ success: true, signedIn });
-  if (signedIn) {
-    setAuthCookie(res, account.email, account.name, account.tokenVersion ?? 0, true);
-  }
+  const res = NextResponse.json({ success: true, signedIn: true });
+  setAuthCookie(res, account.email, account.name, account.tokenVersion ?? 0, true);
   return res;
 }
 

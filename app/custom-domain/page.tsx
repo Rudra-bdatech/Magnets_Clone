@@ -5,6 +5,7 @@ import Link from "next/link";
 import { dbConnect } from "@/lib/mongodb";
 import { AccountModel } from "@/lib/models";
 import { formatFullHost } from "@/lib/domain-verify";
+import { getPlanLimits } from "@/lib/plan-limits";
 import UserProfileRoute from "@/app/[username]/page";
 import MagnetPageRoute, { generateMetadata as generateMagnetMetadata } from "@/app/[username]/[slug]/page";
 
@@ -72,6 +73,11 @@ async function resolveAccountForHost(rawHost: string) {
   }).lean();
 
   if (!account) return null;
+
+  // A downgraded account (refund, cancellation) keeps its domain settings but stops serving on it
+  if (!getPlanLimits((account as any).plan, (account as any).email, (account as any).role).customDomainAllowed) {
+    return null;
+  }
 
   const expectedHost = formatFullHost(
     (account as any).customDomain,

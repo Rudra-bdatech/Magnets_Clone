@@ -18,8 +18,17 @@ export function parseCloudinaryUrl(url: string): {
   format: string;     // file extension, e.g. "pdf"
   resourceType: "image" | "raw" | "video";
 } | null {
-  const match = url.match(
-    /res\.cloudinary\.com\/([^/]+)\/(image|raw|video)\/upload\/(?:v\d+\/)?(.+)$/
+  // Parse rather than substring-match: "http://169.254.169.254/?res.cloudinary.com/..." must not count
+  let parsedUrl: URL;
+  try {
+    parsedUrl = new URL(url);
+  } catch {
+    return null;
+  }
+  if (parsedUrl.protocol !== "https:" || parsedUrl.hostname.toLowerCase() !== "res.cloudinary.com") return null;
+
+  const match = parsedUrl.pathname.match(
+    /^\/([^/]+)\/(image|raw|video)\/upload\/(?:v\d+\/)?(.+)$/
   );
   if (!match) return null;
 
@@ -51,12 +60,13 @@ export async function fetchStoredPdf(rawUrl: string, requestOrigin: string): Pro
   let resolvedUrl = rawUrl;
 
   // ── Cloudinary path ──────────────────────────────────────────────────────
-  if (resolvedUrl.includes("res.cloudinary.com")) {
-    const parsed = parseCloudinaryUrl(resolvedUrl);
+  // Only a real https://res.cloudinary.com/... URL takes this path, so every fetch below stays on Cloudinary
+  const parsed = parseCloudinaryUrl(resolvedUrl);
+  if (parsed) {
     const appCloudName = process.env.CLOUDINARY_CLOUD_NAME;
 
     // Only sign if configured and belongs to the app's own cloud name
-    if (parsed && process.env.CLOUDINARY_API_SECRET && (!appCloudName || parsed.cloudName === appCloudName)) {
+    if (process.env.CLOUDINARY_API_SECRET && (!appCloudName || parsed.cloudName === appCloudName)) {
       // Generate a server-signed private download URL using the Cloudinary SDK.
       const signedUrl: string = cloudinary.utils.private_download_url(
         parsed.publicId,

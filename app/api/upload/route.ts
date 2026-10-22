@@ -14,6 +14,8 @@ cloudinary.config({
 });
 
 import { getAuthenticatedUserEmail } from "@/lib/auth";
+import { checkStorageQuota } from "@/lib/plan-usage";
+import { withMagnetAccess } from "@/lib/magnet-access";
 import { getUserAssetFolder } from "@/lib/cloudinary";
 
 export const dynamic = "force-dynamic";
@@ -38,6 +40,11 @@ export async function POST(req: NextRequest) {
     const MAX_FILE_SIZE = 15 * 1024 * 1024;
     if (file.size > MAX_FILE_SIZE) {
       return NextResponse.json({ error: "File size exceeds maximum allowed limit of 15MB" }, { status: 400 });
+    }
+
+    const quotaError = await checkStorageQuota(normSessionEmail, file.size);
+    if (quotaError) {
+      return NextResponse.json({ error: quotaError }, { status: 403 });
     }
 
     // Prevent executable / hazardous script uploads
@@ -136,7 +143,8 @@ export async function POST(req: NextRequest) {
     // Save metadata in DB for all uploads so ownership is verified and audited
     await ResourceModel.create(newResource);
 
-    return NextResponse.json({ success: true, data: newResource });
+    // shareUrl: the download link with its access token, for the owner to copy (not stored)
+    return NextResponse.json({ success: true, data: { ...newResource, shareUrl: withMagnetAccess(downloadRouteUrl, id) } });
   } catch (error: any) {
     console.error("Upload error:", error);
     return NextResponse.json({ error: error.message }, { status: 500 });

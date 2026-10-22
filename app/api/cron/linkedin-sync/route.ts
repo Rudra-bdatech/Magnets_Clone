@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { dbConnect } from "@/lib/mongodb";
+import { isAuthorizedCronRequest } from "@/lib/cron-auth";
 import { AccountModel } from "@/lib/models";
 import { syncUserLinkedInComments } from "@/lib/linkedin-automation";
 
@@ -11,12 +12,7 @@ export const dynamic = "force-dynamic";
  */
 export async function GET(req: NextRequest) {
   try {
-    const authHeader = req.headers.get("authorization");
-    const vercelCronHeader = req.headers.get("x-vercel-cron");
-    const querySecret = req.nextUrl.searchParams.get("secret");
-    const cronSecret = process.env.CRON_SECRET;
-
-    if (cronSecret && authHeader !== `Bearer ${cronSecret}` && querySecret !== cronSecret && !vercelCronHeader) {
+    if (!isAuthorizedCronRequest(req)) {
       return NextResponse.json({ error: "Unauthorized cron execution" }, { status: 401 });
     }
 

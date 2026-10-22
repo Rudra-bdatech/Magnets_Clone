@@ -19,6 +19,41 @@ function safeEqual(a: string, b: string): boolean {
   return bufA.length === bufB.length && crypto.timingSafeEqual(bufA, bufB);
 }
 
+// Events after which the customer has not (or no longer) paid for Pro
+const REVOKING_EVENTS = new Set<string>([
+  "payment_refunded",
+  "refund_initiated",
+  "subscription_cancelled",
+  "subscription_deleted",
+]);
+
+function isRevokingEvent(eventType: string): boolean {
+  // Dispute/chargeback event names differ by gateway; match them by name
+  return REVOKING_EVENTS.has(eventType) || /dispute|chargeback/i.test(eventType);
+}
+
+/**
+ * Moves the Chargebee customer in `content` back to Free. Matches on the Chargebee
+ * customer id stored at upgrade time, falling back to the customer's email.
+ * Pro granted through another provider (or to staff by role) is left alone.
+ */
+async function downgradeChargebeeAccount(content: any): Promise<string> {
+  const customerId: string =
+    content.customer?.id || content.subscription?.customer_id || content.transaction?.customer_id || content.invoice?.customer_id || "";
+  const customerEmail: string = (content.customer?.email || "").trim().toLowerCase();
+
+  const match: Record<string, unknown>[] = [];
+  if (customerId) match.push({ chargebeeCustomerId: customerId });
+  if (customerEmail) match.push({ email: customerEmail, paymentProvider: "chargebee" });
+  if (match.length === 0) return "ignored (no customer in payload)";
+
+  const updated = await AccountModel.findOneAndUpdate(
+    { paymentProvider: "chargebee", plan: { $ne: "Free" }, $or: match },
+    { $set: { plan: "Free", paymentStatus: "revoked" } }
+  );
+  return updated ? `downgraded ${updated.email} to Free` : "no matching Pro account";
+}
+
 // Chargebee sends POST events here.
 // Configure this URL in Chargebee → Settings → Webhooks, with Basic Auth
 // matching CHARGEBEE_WEBHOOK_USERNAME / CHARGEBEE_WEBHOOK_PASSWORD:
@@ -44,6 +79,14 @@ export async function POST(req: NextRequest) {
     const eventType: string = event.event_type || "";
 
     console.log("[Chargebee Webhook Event]:", eventType);
+
+    // ── Refunds, cancellations and chargebacks take Pro away ───────────────
+    if (isRevokingEvent(eventType)) {
+      await dbConnect();
+      const result = await downgradeChargebeeAccount(event.content || {});
+      console.log(`[Chargebee Webhook]: ${eventType} → ${result}`);
+      return NextResponse.json({ status: "ok", received: true });
+    }
 
     // ── Only a completed payment for the Pro item grants Pro ───────────────
     if (eventType !== "payment_succeeded") {
@@ -76,6 +119,7 @@ export async function POST(req: NextRequest) {
           paymentStatus: "active",
           lastPaymentDate: new Date(),
           chargebeeCustomerId: customer?.id || "",
+          chargebeeSubscriptionId: invoice?.subscription_id || "",
           chargebeeInvoiceId: invoice?.id || "",
         },
       }

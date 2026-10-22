@@ -214,6 +214,8 @@ export default function MagnetSignupForm({
         if (customDeliverable && customDeliverable !== deliverable) {
           queryParams.set("aiOutput", customDeliverable);
         }
+        // Proves this visitor signed up; the thank-you page refuses to open without it
+        if (json?.accessToken) queryParams.set("t", json.accessToken);
 
         const thankYouRoute = `/${encodeURIComponent(targetUser)}/${encodeURIComponent(targetSlug)}/thank-you?${queryParams.toString()}`;
         

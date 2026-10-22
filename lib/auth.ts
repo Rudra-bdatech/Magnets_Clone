@@ -119,17 +119,20 @@ async function resolveSession(): Promise<ResolvedSession | null> {
     const nextAuthSession = await getServerSession(authOptions);
     if (nextAuthSession?.user?.email) {
       const cleanEmail = nextAuthSession.user.email.trim().toLowerCase();
-      let emailVerified = false;
+      let acc: any = null;
       try {
         const { dbConnect } = await import("@/lib/mongodb");
         const { AccountModel } = await import("@/lib/models");
         await dbConnect();
-        const acc = await AccountModel.findOne({ email: cleanEmail }, { emailVerified: 1 }).lean();
-        emailVerified = Boolean((acc as any)?.emailVerified);
+        acc = await AccountModel.findOne({ email: cleanEmail }, { emailVerified: 1, tokenVersion: 1 }).lean();
       } catch (dbErr) {
         // Without the DB we cannot confirm verification, so treat the session as unverified
+        return { email: cleanEmail, emailVerified: false };
       }
-      return { email: cleanEmail, emailVerified };
+      if (!acc) return null; // Account was deleted
+      // Revoked by a password reset/change after this Google sign-in
+      if (((nextAuthSession as any).tokenVersion ?? 0) < (acc.tokenVersion ?? 0)) return null;
+      return { email: cleanEmail, emailVerified: Boolean(acc.emailVerified) };
     }
   } catch (err: any) {
     // Silently ignore JWEDecryptionFailed (stale cookies from old NEXTAUTH_SECRET).

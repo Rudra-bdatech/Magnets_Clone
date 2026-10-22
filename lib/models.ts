@@ -9,6 +9,16 @@ const AccountSchema = new Schema({
   password: { type: String, default: "" },
   role: { type: String, enum: ["user", "admin", "super_admin"], default: "user" },
   plan: { type: String, default: "Free" },
+  // Billing, written by the Stripe/Chargebee webhooks. Must be declared here: mongoose drops
+  // undeclared paths from updates, and the cancel/refund handlers look accounts up by these ids.
+  paymentProvider: { type: String, default: "" },
+  paymentStatus: { type: String, default: "" },
+  lastPaymentDate: { type: Date, default: null },
+  stripeCustomerId: { type: String, default: "" },
+  stripeSubscriptionId: { type: String, default: "" },
+  chargebeeCustomerId: { type: String, default: "" },
+  chargebeeSubscriptionId: { type: String, default: "" },
+  chargebeeInvoiceId: { type: String, default: "" },
   brandColor: { type: String, default: "#0066B2" },
   logo: { type: String, default: null },
   joinedAt: { type: String, required: true },

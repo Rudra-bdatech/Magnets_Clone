@@ -6,7 +6,7 @@ import { Loader2 } from "lucide-react";
 import AuthShell from "@/components/auth-shell";
 import Button from "@/components/ui/button";
 
-type Status = "verifying" | "verified" | "verified_signed_out" | "error";
+type Status = "verifying" | "verified" | "verified_signed_out" | "sign_in_required" | "error";
 
 function ConfirmPageContent() {
   const searchParams = useSearchParams();
@@ -39,6 +39,8 @@ function ConfirmPageContent() {
           if (data.signedIn) {
             setTimeout(() => window.location.replace("/register/onboarding"), 1200);
           }
+        } else if (data?.code === "SIGN_IN_REQUIRED") {
+          setStatus("sign_in_required");
         } else {
           setError(data?.error || "This verification link is invalid or has expired.");
           setStatus("error");
@@ -56,6 +58,28 @@ function ConfirmPageContent() {
         <div className="flex h-14 items-center justify-center">
           <Loader2 className="h-6 w-6 animate-spin text-blue-500" />
         </div>
+      </AuthShell>
+    );
+  }
+
+  if (status === "sign_in_required") {
+    // Signing in returns here with the same (still unused) token to finish verification
+    const loginUrl = `/login?from=${encodeURIComponent(`/register/confirm?token=${token}`)}`;
+    return (
+      <AuthShell
+        title="Sign in to finish"
+        subtitle="For your security, open this link in the browser where you're signed in, or sign in now."
+      >
+        <Button type="button" onClick={() => window.location.assign(loginUrl)} className="w-full">
+          Sign in to verify
+        </Button>
+        <p className="text-center text-xs text-zinc-500 dark:text-zinc-400">
+          Didn&apos;t create this account?{" "}
+          <a href="/forgot-password" className="font-semibold text-blue-600 hover:underline dark:text-blue-400">
+            Reset the password
+          </a>{" "}
+          to take it over.
+        </p>
       </AuthShell>
     );
   }

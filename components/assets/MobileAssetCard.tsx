@@ -23,6 +23,8 @@ interface Resource {
   size: number;
   uploadedAt: string;
   url: string;
+  /** `url` with its download access token (see lib/magnet-access.ts) */
+  shareUrl?: string;
 }
 
 interface MobileAssetCardProps {
@@ -246,7 +248,7 @@ export const MobileAssetCard = memo(function MobileAssetCard({
         {/* Copy Link Primary Mobile CTA */}
         <button
           type="button"
-          onClick={() => onCopyLink(resource.url, resource.id)}
+          onClick={() => onCopyLink(resource.shareUrl || resource.url, resource.id)}
           className={`inline-flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-bold transition shadow-2xs cursor-pointer ${
             isCopied
               ? "bg-emerald-500 text-white"

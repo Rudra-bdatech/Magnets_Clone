@@ -55,6 +55,7 @@ import {
 } from "@/lib/controllers/integrations";
 import { checkRateLimit, getClientIp, rateLimitMessage, type RateLimitResult } from "@/lib/rate-limit";
 import { parseFlexibleDate } from "@/lib/utils";
+import { withMagnetAccess } from "@/lib/magnet-access";
 
 export const dynamic = "force-dynamic";
 
@@ -137,7 +138,8 @@ return NextResponse.json({
   leads,
   sequences,
   integrations,
-  resources,
+  // shareUrl: the download link with its access token, for the owner to copy (not stored)
+  resources: (resources as any[]).map((r) => (r.url && r.id ? { ...r, shareUrl: withMagnetAccess(r.url, r.id) } : r)),
 });
   } catch (error: any) {
   return NextResponse.json({ error: error.message }, { status: 500 });
@@ -253,8 +255,7 @@ export async function POST(req: Request) {
             return rateLimitedResponse(inboxRl, "A reset link was already sent to this email. Please check your inbox or wait 15 minutes.");
           }
         }
-        const reqHost = req.headers.get("origin") || req.headers.get("referer") || undefined;
-        return handleSendResetEmail(data, reqHost);
+        return handleSendResetEmail(data);
       }
       case "resetPassword": {
         const rl = await checkRateLimit(getClientIp(req.headers), "reset_password", 10, 60 * 1000, { failClosed: true });

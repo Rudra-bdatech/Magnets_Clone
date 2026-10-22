@@ -2,6 +2,8 @@ import { notFound, redirect } from "next/navigation";
 import { dbConnect } from "@/lib/mongodb";
 import { MagnetPageModel, AccountModel, ResourceModel } from "@/lib/models";
 import ThankYouAnimatedContent from "@/components/thank-you-animated-content";
+import { getAuthenticatedUserEmail } from "@/lib/auth";
+import { signedDownloadPath, verifyMagnetAccess } from "@/lib/magnet-access";
 
 export const dynamic = "force-dynamic";
 
@@ -10,7 +12,7 @@ export default async function ThankYouPage({
   searchParams,
 }: {
   params: { username: string; slug: string };
-  searchParams: { email?: string; name?: string; answer?: string; aiOutput?: string; res?: string };
+  searchParams: { email?: string; name?: string; answer?: string; aiOutput?: string; res?: string; t?: string };
 }) {
   const decodedUsername = decodeURIComponent(params.username || "");
   let accountDoc: any = null;
@@ -18,6 +20,8 @@ export default async function ThankYouPage({
   let downloadUrl: string | null = null;
   let resolvedDeliverableName = "Resource Access";
   let resolvedResources: Array<{ id: string; name: string; url: string; size?: string; type?: string }> = [];
+  let landingRedirect: string | null = null;
+  let accessGranted = false;
 
   try {
     await dbConnect();
@@ -38,12 +42,18 @@ export default async function ThankYouPage({
 
     const cleanUserEmail = pageDoc?.userEmail ? pageDoc.userEmail.trim().toLowerCase() : null;
 
-    if (!accountDoc && cleanUserEmail) {
-      accountDoc = await AccountModel.findOne({ email: cleanUserEmail }).lean();
+    if (!pageDoc) throw new Error("ACCESS_DENIED"); // rendered as 404 below
+
+    // Only visitors who submitted the signup form (they get an access token) or the owner
+    // may open this page. Unpublished pages stay closed to everyone but the owner.
+    const viewerEmail = await getAuthenticatedUserEmail();
+    const isOwner = Boolean(viewerEmail && viewerEmail === cleanUserEmail);
+    const isPublished = pageDoc.status !== "draft" && pageDoc.status !== "paused";
+    if (!isOwner && !(isPublished && verifyMagnetAccess(pageDoc.id, searchParams.t))) {
+      landingRedirect = `/${encodeURIComponent(decodedUsername)}/${encodeURIComponent(pageDoc.slug || pageDoc.id)}`;
+      throw new Error("ACCESS_DENIED");
     }
-    if (!accountDoc) {
-      accountDoc = await AccountModel.findOne({}).lean();
-    }
+    accessGranted = true;
 
     resolvedDeliverableName = pageDoc?.deliverable || pageDoc?.name || "Resource Access";
 
@@ -65,15 +75,24 @@ export default async function ThankYouPage({
     }
 
     if (extractedResIds.length > 0) {
-      const resDocs = await ResourceModel.find({ id: { $in: extractedResIds } }).lean();
+      // Only the page owner's own deliverables: `?res=` is visitor-controlled, so an id
+      // belonging to someone else must not be turned into a signed download link here.
+      const resDocs = await ResourceModel.find({
+        id: { $in: extractedResIds },
+        userEmail: cleanUserEmail,
+        isPageAsset: { $ne: true },
+      }).lean();
       const docMap = new Map(resDocs.map((d: any) => [d.id, d]));
-      
+
       for (const rId of extractedResIds) {
         const found = docMap.get(rId) as any;
+        // A /r/<this page> link in the email body resolves to the page's deliverable
+        const isThisPage = rId === pageDoc.id || rId === pageDoc.slug;
+        if (!found && !isThisPage) continue;
         resolvedResources.push({
           id: rId,
           name: found?.name || `Download Resource`,
-          url: `/r/${rId}`,
+          url: signedDownloadPath(rId),
           size: found?.size || "",
           type: found?.type || "pdf",
         });
@@ -97,12 +116,12 @@ export default async function ThankYouPage({
       // Page assets (e.g. a locked PDF's file) are never handed out as a deliverable
       const resourceDoc = await ResourceModel.findOne({ userEmail: cleanUserEmail, isPageAsset: { $ne: true } }).sort({ uploadedAt: -1 }).lean() as any;
       if (resourceDoc && resourceDoc.id) {
-        downloadUrl = `/r/${resourceDoc.id}`;
+        downloadUrl = signedDownloadPath(resourceDoc.id);
         if (resourceDoc.name) resolvedDeliverableName = resourceDoc.name;
         resolvedResources.push({
           id: resourceDoc.id,
           name: resourceDoc.name || resolvedDeliverableName,
-          url: `/r/${resourceDoc.id}`,
+          url: signedDownloadPath(resourceDoc.id),
           size: resourceDoc.size || "",
           type: resourceDoc.type || "pdf",
         });
@@ -116,18 +135,16 @@ export default async function ThankYouPage({
         });
       }
     }
-  } catch (err) {
-    console.warn("MongoDB connection fallback in ThankYouPage:", err);
+  } catch (err: any) {
+    if (err?.message !== "ACCESS_DENIED") console.warn("MongoDB connection fallback in ThankYouPage:", err);
   }
 
-  if (!pageDoc) {
-    pageDoc = {
-      id: params.slug,
-      name: "Resource Guide",
-      slug: params.slug,
-      deliverable: "Instant Access File",
-    };
-  }
+  if (landingRedirect) redirect(landingRedirect);
+  // Fail closed: never render a page we could not load and check
+  if (!pageDoc || !accessGranted) notFound();
+
+  // Nothing resolved above: /r/<page id> serves the page's deliverable
+  if (!downloadUrl) downloadUrl = signedDownloadPath(pageDoc.id);
 
   // If page is configured to "Send them elsewhere", redirect directly to destination URL
   if (pageDoc?.afterSignupOption === "elsewhere" && pageDoc?.destinationUrl && pageDoc.destinationUrl.trim()) {

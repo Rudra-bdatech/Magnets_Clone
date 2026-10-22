@@ -38,7 +38,7 @@ export async function POST(req: Request) {
           paymentProvider: "chargebee",
           paymentStatus: "simulated",
           lastPaymentDate: new Date(),
-          chargebeeHostedPageId: `sim_${Date.now()}`,
+          chargebeeInvoiceId: `sim_${Date.now()}`,
         },
       },
       { new: true }

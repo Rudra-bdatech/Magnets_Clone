@@ -43,6 +43,8 @@ interface Resource {
   size: number;
   uploadedAt: string;
   url: string;
+  /** `url` with its download access token (see lib/magnet-access.ts) */
+  shareUrl?: string;
 }
 
 interface Toast {
@@ -1380,7 +1382,7 @@ export default function ResourcesPage() {
                                     {/* Copy Link Button */}
                                     <button
                                       type="button"
-                                      onClick={() => copyToClipboard(resource.url, resource.id)}
+                                      onClick={() => copyToClipboard(resource.shareUrl || resource.url, resource.id)}
                                       title={isCopied ? "Link copied!" : "Copy shareable link"}
                                       className={`inline-flex h-8 w-8 items-center justify-center rounded-xl border transition-all duration-150 cursor-pointer shadow-2xs active:scale-95 ${isCopied
                                           ? "border-emerald-500/40 bg-emerald-500/15 text-emerald-600 dark:text-emerald-400"

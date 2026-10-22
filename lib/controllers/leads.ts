@@ -3,6 +3,7 @@ import { waitUntil } from "@vercel/functions";
 import { LeadModel, MagnetPageModel, AccountModel, ResourceModel } from "@/lib/models";
 import { sendInstantLeadAlert } from "@/lib/email-alerts";
 import { sendMail } from "@/lib/email";
+import { signDownloadLinks, signMagnetAccess, withMagnetAccess } from "@/lib/magnet-access";
 import { parseFlexibleDate } from "@/lib/utils";
 import { isValidSlackWebhookUrl, isValidZapierWebhookUrl } from "./account";
 
@@ -415,6 +416,7 @@ export async function handleAddLead(data: any, req: Request, normEmail: string |
 
           // 1. Look up the specific resource from emailBody or pageDoc first
           if (targetResourceId) {
+            // Signed below by signDownloadLinks, which only signs the owner's own ids
             directDownloadUrl = `${appUrl}/r/${targetResourceId}`;
           } else if (foundPageDoc?.assetUrl && foundPageDoc.assetUrl.trim()) {
             // 2. Direct assetUrl on the page doc
@@ -424,11 +426,12 @@ export async function handleAddLead(data: any, req: Request, normEmail: string |
           // 3. Fallback: latest resource for this account
           if (!directDownloadUrl && ownerEmail) {
             try {
-              const latestRes = await ResourceModel.findOne({ userEmail: ownerEmail.trim().toLowerCase() }).sort({ uploadedAt: -1 }).lean() as any;
+              // Page assets (e.g. a locked PDF's file) are never handed out as a deliverable
+              const latestRes = await ResourceModel.findOne({ userEmail: ownerEmail.trim().toLowerCase(), isPageAsset: { $ne: true } }).sort({ uploadedAt: -1 }).lean() as any;
               if (latestRes && latestRes.url) {
-                directDownloadUrl = latestRes.url;
+                directDownloadUrl = latestRes.id ? withMagnetAccess(latestRes.url, latestRes.id) : latestRes.url;
               } else if (latestRes) {
-                directDownloadUrl = `${appUrl}/r/${latestRes.id}`;
+                directDownloadUrl = withMagnetAccess(`${appUrl}/r/${latestRes.id}`, latestRes.id);
               }
             } catch (_) {}
           }
@@ -437,7 +440,8 @@ export async function handleAddLead(data: any, req: Request, normEmail: string |
           const targetSlug = data.pageSlug || data.pageId || "resource";
           const resParam = targetResourceId ? `&res=${encodeURIComponent(targetResourceId)}` : "";
           // Use the direct file URL if we could resolve one; otherwise fall back to the thank-you page
-          const thankYouUrl = `${appUrl}/${encodeURIComponent(targetUser)}/${encodeURIComponent(targetSlug)}/thank-you?email=${encodeURIComponent(data.email)}&name=${encodeURIComponent(data.name || "")}${resParam}`;
+          const accessParam = foundPageDoc?.id ? `&t=${signMagnetAccess(foundPageDoc.id)}` : "";
+          const thankYouUrl = `${appUrl}/${encodeURIComponent(targetUser)}/${encodeURIComponent(targetSlug)}/thank-you?email=${encodeURIComponent(data.email)}&name=${encodeURIComponent(data.name || "")}${resParam}${accessParam}`;
           const resourceAccessUrl = directDownloadUrl || thankYouUrl;
 
           const recipientDisplayName = escapeHtml(safePlainName);
@@ -734,7 +738,8 @@ export async function handleAddLead(data: any, req: Request, normEmail: string |
               {
                 to: data.email.trim(),
                 subject: subject,
-                html: subscriberHtml,
+                // Download links only work with an access token (lib/magnet-access.ts)
+                html: await signDownloadLinks(subscriberHtml, ownerEmail || ownerAccount?.email),
                 tracking: {
                   leadId: data.id,
                   pageId: foundPageDoc?.id || data.pageId || "",
@@ -851,6 +856,8 @@ export async function handleAddLead(data: any, req: Request, normEmail: string |
   return NextResponse.json({
     success: true,
     lead: safeLead,
+    // Opens the thank-you page and downloads for this page (lib/magnet-access.ts)
+    accessToken: foundPageDoc?.id ? signMagnetAccess(foundPageDoc.id) : undefined,
     afterSignupOption: foundPageDoc?.afterSignupOption || cleanStr(data.afterSignupOption, 50) || "standard",
     destinationUrl: foundPageDoc?.destinationUrl || cleanStr(data.destinationUrl, 500) || "",
   });

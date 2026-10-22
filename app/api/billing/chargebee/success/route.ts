@@ -54,7 +54,8 @@ export async function GET(req: NextRequest) {
             paymentProvider: "chargebee",
             paymentStatus: "paid",
             lastPaymentDate: new Date(),
-            chargebeeHostedPageId: page.id,
+            chargebeeCustomerId: page.content?.customer?.id || "",
+            chargebeeSubscriptionId: page.content?.subscription?.id || "",
             chargebeeInvoiceId: page.content?.invoice?.id || "",
           },
         }

@@ -182,10 +182,13 @@ export const authOptions: NextAuthOptions = {
         // Read by the middleware's email verification gate (signIn above has already updated the DB)
         try {
           await dbConnect();
-          const acc: any = await AccountModel.findOne({ email: token.email }, { emailVerified: 1 }).lean();
+          const acc: any = await AccountModel.findOne({ email: token.email }, { emailVerified: 1, tokenVersion: 1 }).lean();
           token.emailVerified = Boolean(acc?.emailVerified);
+          // Compared on every request, so a password reset/change revokes this session too
+          token.tokenVersion = acc?.tokenVersion ?? 0;
         } catch {
           token.emailVerified = false;
+          token.tokenVersion = 0;
         }
       }
       return token;
@@ -196,6 +199,7 @@ export const authOptions: NextAuthOptions = {
         session.user.name = token.name as string;
         session.user.image = token.picture as string;
         (session as any).authTime = token.authTime;
+        (session as any).tokenVersion = token.tokenVersion ?? 0;
       }
       return session;
     },
