@@ -35,6 +35,7 @@ export const EmailSenderSection = memo(function EmailSenderSection({
   const [saving, setSaving] = useState(false);
   const [disconnectingSmtp, setDisconnectingSmtp] = useState(false);
   const [disconnectingGmail, setDisconnectingGmail] = useState(false);
+  const [gmailConnectFailed, setGmailConnectFailed] = useState(false);
 
   const [smtpForm, setSmtpForm] = useState({
     host: "",
@@ -67,7 +68,8 @@ export const EmailSenderSection = memo(function EmailSenderSection({
       url.searchParams.delete("gmail");
       window.history.replaceState({}, "", url.toString());
     } else if (gmailError) {
-      addToast(`Gmail connection error: ${gmailError}`, "error");
+      // Shown inline on the Gmail card so it stays visible next to the retry button
+      setGmailConnectFailed(true);
       url.searchParams.delete("gmailError");
       window.history.replaceState({}, "", url.toString());
     }
@@ -171,6 +173,7 @@ export const EmailSenderSection = memo(function EmailSenderSection({
   };
 
   const handleConnectGmail = () => {
+    setGmailConnectFailed(false);
     window.location.href = "/api/account/gmail/connect";
   };
 
@@ -297,10 +300,18 @@ export const EmailSenderSection = memo(function EmailSenderSection({
                 </p>
               </div>
             )}
+            {!gmailConnected && gmailConnectFailed && (
+              <div className="mt-3 rounded-xl bg-amber-50 dark:bg-amber-900/15 border border-amber-200 dark:border-amber-700/40 px-3 py-2.5 flex gap-2">
+                <AlertCircle size={13} className="text-amber-500 shrink-0 mt-0.5" />
+                <p className="text-[11px] text-amber-700 dark:text-amber-300 leading-relaxed">
+                  Google sign-in didn&apos;t finish. Try again and allow the send permission.
+                </p>
+              </div>
+            )}
             {!gmailConnected && (
               <div className="mt-3 rounded-xl bg-blue-50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-800/30 px-3 py-2.5">
                 <p className="text-[11px] text-blue-600 dark:text-blue-300 leading-relaxed">
-                  <span className="font-bold">Recommended.</span> No passwords needed. Just sign in with Google — emails arrive from your Gmail address.
+                  <span className="font-bold">Recommended.</span> No passwords needed. Just sign in with Google. We only ask to send, never to read your inbox.
                 </p>
               </div>
             )}

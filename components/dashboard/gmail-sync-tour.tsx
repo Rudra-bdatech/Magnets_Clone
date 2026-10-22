@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, AlertCircle, CheckCircle2, ArrowRight } from "lucide-react";
+import { X, CheckCircle2, ArrowRight } from "lucide-react";
 import { loadAccount, syncWithDatabase } from "@/lib/store";
 import type { Account } from "@/lib/data";
 
@@ -56,7 +56,6 @@ export default function GmailSyncTour() {
   const [account, setAccount] = useState<Account | null>(null);
   const [ready, setReady] = useState(false);
   const [step, setStep] = useState<Step | null>(null);
-  const [hadError, setHadError] = useState(false);
 
   // Use server truth before deciding, so a stale cache never nags a connected user
   useEffect(() => {
@@ -99,7 +98,6 @@ export default function GmailSyncTour() {
     }
 
     if (pathname === "/dashboard/settings" && inTour) {
-      setHadError(params.has("gmailError"));
       setStoredStep("spotlight");
       setStep("spotlight");
       return;
@@ -138,11 +136,6 @@ export default function GmailSyncTour() {
     router.push("/dashboard/settings?tab=email&tour=gmail");
   }, [router]);
 
-  const connectGmail = useCallback(() => {
-    setStoredStep("spotlight");
-    window.location.href = "/api/account/gmail/connect";
-  }, []);
-
   useEffect(() => {
     if (!step) return;
     const onKey = (e: KeyboardEvent) => {
@@ -164,14 +157,17 @@ export default function GmailSyncTour() {
           ringPad={3}
           onClose={snooze}
         >
-          <p className="text-[10px] font-bold uppercase tracking-wider text-[#0066B2] dark:text-[#38BDF8]">
-            Email sending
-          </p>
-          <h4 className="mt-1 text-[14px] font-bold leading-snug">Connect Gmail to start sending</h4>
-          <p className="mt-1 text-[12px] leading-relaxed text-zinc-500 dark:text-[#9B9085]">
-            Leads won&apos;t get their resources or sequence emails until Gmail is connected. Takes about
-            30 seconds.
-          </p>
+          <div className="flex items-start gap-2.5">
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-zinc-200 bg-white dark:border-white/10 dark:bg-white/[0.06]">
+              <GmailLogo className="h-4 w-auto" />
+            </span>
+            <div className="min-w-0">
+              <h4 className="text-[14px] font-bold leading-snug">Connect your Gmail</h4>
+              <p className="mt-0.5 text-[12px] leading-normal text-zinc-500 dark:text-[#9B9085]">
+                Leads won&apos;t receive their resources or sequence emails until you do. ~30 sec.
+              </p>
+            </div>
+          </div>
           <Actions>
             <SecondaryButton onClick={snooze}>Later</SecondaryButton>
             <PrimaryButton onClick={startSpotlight}>
@@ -182,6 +178,7 @@ export default function GmailSyncTour() {
       )}
 
       {step === "spotlight" && (
+        // Ring only: the Gmail card already carries the button, privacy note and any error
         <Coachmark
           key="spotlight"
           selectors={['[data-tour="gmail-connect"]']}
@@ -189,25 +186,7 @@ export default function GmailSyncTour() {
           ringPad={6}
           scrollIntoView
           onClose={snooze}
-        >
-          {hadError && (
-            <div className="mb-2.5 flex items-start gap-1.5 rounded-lg border border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-900/20 px-2.5 py-1.5">
-              <AlertCircle className="h-3 w-3 mt-0.5 shrink-0 text-amber-600 dark:text-amber-400" />
-              <p className="text-[12px] leading-snug text-amber-700 dark:text-amber-300">
-                Google sign-in didn&apos;t finish. Try again and allow the send permission.
-              </p>
-            </div>
-          )}
-          <h4 className="text-[14px] font-bold leading-snug">Click &ldquo;Connect Gmail&rdquo;</h4>
-          <p className="mt-1 text-[12px] leading-relaxed text-zinc-500 dark:text-[#9B9085]">
-            Sign in with the Google account your leads should hear from. We only ask to send, never to
-            read your inbox.
-          </p>
-          <Actions>
-            <SecondaryButton onClick={snooze}>Not now</SecondaryButton>
-            <PrimaryButton onClick={connectGmail}>Connect Gmail</PrimaryButton>
-          </Actions>
-        </Coachmark>
+        />
       )}
 
       {step === "success" && (
@@ -253,6 +232,18 @@ export default function GmailSyncTour() {
   );
 }
 
+function GmailLogo({ className }: { className?: string }) {
+  return (
+    <svg viewBox="52 42 88 66" className={className} aria-hidden="true">
+      <path fill="#4285f4" d="M58 108h14V74L52 59v43c0 3.32 2.69 6 6 6" />
+      <path fill="#34a853" d="M120 108h14c3.32 0 6-2.69 6-6V59l-20 15" />
+      <path fill="#fbbc04" d="M120 48v26l20-15v-8c0-7.42-8.47-11.65-14.4-7.2" />
+      <path fill="#ea4335" d="M72 74V48l24 18 24-18v26L96 92" />
+      <path fill="#c5221f" d="M52 51v8l20 15V48l-5.6-4.2c-5.94-4.45-14.4-.22-14.4 7.2" />
+    </svg>
+  );
+}
+
 function Actions({ children }: { children: React.ReactNode }) {
   return <div className="mt-3 flex items-center justify-end gap-1.5">{children}</div>;
 }
@@ -262,7 +253,7 @@ function PrimaryButton({ onClick, children }: { onClick: () => void; children: R
     <button
       type="button"
       onClick={onClick}
-      className="inline-flex items-center gap-1 rounded-lg bg-[#0066B2] px-3 py-1.5 text-[12px] font-bold text-white hover:bg-[#005291] active:scale-95 transition-all cursor-pointer"
+      className="inline-flex items-center gap-1 rounded-lg bg-[#0066B2] px-3 py-1.5 text-[12px] font-bold text-white hover:bg-[#005291] dark:bg-[#1773C9] dark:hover:bg-[#1466B3] active:scale-95 transition-all cursor-pointer"
     >
       {children}
     </button>
@@ -281,7 +272,7 @@ function SecondaryButton({ onClick, children }: { onClick: () => void; children:
   );
 }
 
-type Box = { top: number; left: number; width: number; height: number };
+type Box = { top: number; left: number; width: number; height: number; radius: number };
 type Side = "right" | "bottom" | "top";
 
 // Follows the first visible match each frame, so it survives async loads, tab animations,
@@ -315,12 +306,13 @@ function useTargetBox(selectors: string[], scrollIntoView: boolean) {
       }
 
       const r = found?.getBoundingClientRect();
+      const radius = found ? parseFloat(getComputedStyle(found).borderTopLeftRadius) || 0 : 0;
       const key = r
-        ? `${Math.round(r.top)}|${Math.round(r.left)}|${Math.round(r.width)}|${Math.round(r.height)}|${window.innerWidth}|${window.innerHeight}`
+        ? `${Math.round(r.top)}|${Math.round(r.left)}|${Math.round(r.width)}|${Math.round(r.height)}|${radius}|${window.innerWidth}|${window.innerHeight}`
         : "none";
       if (key !== last) {
         last = key;
-        setBox(r ? { top: r.top, left: r.left, width: r.width, height: r.height } : null);
+        setBox(r ? { top: r.top, left: r.left, width: r.width, height: r.height, radius } : null);
       }
       raf = requestAnimationFrame(tick);
     };
@@ -346,7 +338,7 @@ function Coachmark({
   scrollIntoView?: boolean;
   tone?: "brand" | "success";
   onClose: () => void;
-  children: React.ReactNode;
+  children?: React.ReactNode;
 }) {
   const box = useTargetBox(selectors, scrollIntoView);
   const cardRef = useRef<HTMLDivElement>(null);
@@ -391,26 +383,29 @@ function Coachmark({
     side === "right" ? "border-l border-b" : side === "bottom" ? "border-l border-t" : "border-r border-b";
 
   const ringColor =
-    tone === "success" ? "ring-emerald-500" : "ring-[#0066B2] dark:ring-[#38BDF8]";
+    tone === "success" ? "ring-emerald-500" : "ring-[#0066B2] dark:ring-[#1773C9]";
   const pulseColor =
-    tone === "success" ? "text-emerald-500" : "text-[#0066B2] dark:text-[#38BDF8]";
+    tone === "success" ? "text-emerald-500" : "text-[#0066B2] dark:text-[#1773C9]";
   const offset = side === "right" ? { x: -6, y: 0 } : side === "bottom" ? { x: 0, y: -6 } : { x: 0, y: 6 };
 
   return (
     <>
       <div
         aria-hidden="true"
-        className={`fixed z-[200] pointer-events-none rounded-xl ring-2 ${ringColor}`}
+        className={`fixed z-[200] pointer-events-none ring-2 ${ringColor}`}
         style={{
           top: box.top - ringPad,
           left: box.left - ringPad,
           width: box.width + ringPad * 2,
           height: box.height + ringPad * 2,
+          // Concentric with the target so the gap stays even around the corners
+          borderRadius: box.radius + ringPad,
         }}
       >
-        <span className={`absolute inset-0 rounded-xl ${pulseColor} animate-coachmark-pulse motion-reduce:hidden`} />
+        <span style={{ borderRadius: "inherit" }} className={`absolute inset-0 ${pulseColor} animate-coachmark-pulse motion-reduce:hidden`} />
       </div>
 
+      {children && (
       <motion.div
         ref={cardRef}
         role="dialog"
@@ -437,6 +432,7 @@ function Coachmark({
         </button>
         <div className="relative">{children}</div>
       </motion.div>
+      )}
     </>
   );
 }
