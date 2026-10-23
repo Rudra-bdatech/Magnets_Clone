@@ -99,7 +99,7 @@ export default function SiteHeader() {
 
       {/* Mobile Drawer Dropdown */}
       {mobileMenuOpen && (
-        <div className="absolute top-full left-0 right-0 z-40 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-md border-b border-zinc-200 dark:border-zinc-800 p-5 shadow-xl md:hidden flex flex-col gap-4 animate-in fade-in slide-in-from-top-2 duration-200">
+        <div className="absolute top-full left-0 right-0 z-40 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-md border-b border-x border-zinc-200/80 dark:border-zinc-800/80 rounded-b-2xl p-5 pb-6 shadow-xl md:hidden flex flex-col gap-4 animate-in fade-in slide-in-from-top-2 duration-200">
           <nav className="flex flex-col gap-3 font-semibold text-zinc-700 dark:text-zinc-200">
             <a
               href="#how-it-works"
@@ -136,17 +136,17 @@ export default function SiteHeader() {
             </a>
           </nav>
 
-          <div className="flex flex-col gap-2.5 pt-2">
+          <div className="grid grid-cols-2 gap-2.5 pt-2">
             <a
               href="/login"
-              className="w-full text-center py-2.5 rounded-xl font-semibold border border-zinc-200 dark:border-zinc-700 text-zinc-800 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition"
+              className="w-full text-center py-2.5 px-3 rounded-xl font-semibold text-sm border border-zinc-200 dark:border-zinc-700 text-zinc-800 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition flex items-center justify-center"
               onClick={() => setMobileMenuOpen(false)}
             >
               Sign in
             </a>
             <a
               href="/register"
-              className="w-full text-center py-2.5 rounded-xl font-bold bg-[#0066B2] text-white hover:bg-[#005799] transition shadow-md"
+              className="w-full text-center py-2.5 px-3 rounded-xl font-bold text-sm bg-[#0066B2] text-white hover:bg-[#005799] transition shadow-md flex items-center justify-center whitespace-nowrap"
               onClick={() => setMobileMenuOpen(false)}
             >
               Start free
