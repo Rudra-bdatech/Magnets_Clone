@@ -107,6 +107,7 @@ function VerifyPageContent() {
 
   return (
     <AuthShell
+      showSidecar={false}
       title="Check your inbox"
       subtitle={
         email ? (

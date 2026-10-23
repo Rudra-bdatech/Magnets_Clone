@@ -101,6 +101,7 @@ export default function RegisterPage() {
     <AuthShell
       title="Create your account"
       subtitle="Free forever • No credit card required"
+      showSidecar={false}
       onSubmit={handleSubmit}
       footer={
         <div className="text-xs">

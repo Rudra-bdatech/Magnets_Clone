@@ -21,7 +21,7 @@ export default function AuthShell({
   children,
   footer,
   onSubmit,
-  showSidecar = true,
+  showSidecar = false,
 }: {
   title: string;
   subtitle: React.ReactNode;
