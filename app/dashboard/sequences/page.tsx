@@ -982,7 +982,7 @@ export default function SequencesPage() {
                 </div>
 
                 {/* Mobile Filter Dropdown Button */}
-                <div className="sm:hidden relative shrink-0">
+                <div className="sm:hidden relative min-w-0 flex-initial">
                   <button
                     type="button"
                     onClick={(e) => {
@@ -990,10 +990,10 @@ export default function SequencesPage() {
                       setIsSortOpen(false);
                       setIsStatusFilterOpen((v) => !v);
                     }}
-                    className="flex h-8 items-center gap-1.5 rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#18181B] px-2.5 text-[11px] font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-[#222226] transition shadow-2xs cursor-pointer select-none"
+                    className="flex h-8 w-full min-w-0 items-center gap-1.5 max-[380px]:gap-1 rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#18181B] px-2.5 max-[380px]:px-2 text-[11px] font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-[#222226] transition shadow-2xs cursor-pointer select-none"
                   >
-                    <Filter className="h-3 w-3 text-zinc-400 shrink-0" />
-                    <span className="truncate">
+                    <Filter className="h-3 w-3 text-zinc-400 shrink-0 max-[380px]:hidden" />
+                    <span className="truncate min-w-0">
                       {statusFilter === "all"
                         ? `Filter (${sequences.length})`
                         : statusFilter === "live"
@@ -1054,17 +1054,17 @@ export default function SequencesPage() {
                 </div>
 
                 {/* Custom Animated Sort Dropdown */}
-                <div className="relative shrink-0">
+                <div className="relative min-w-0 flex-initial">
                   <button
                     type="button"
                     onClick={(e) => {
                       e.stopPropagation();
                       setIsSortOpen((v) => !v);
                     }}
-                    className="flex h-8 items-center gap-1 sm:gap-2 rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#18181B] px-2 sm:px-3 text-[11px] sm:text-xs font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-[#222226] transition shadow-2xs cursor-pointer select-none"
+                    className="flex h-8 w-full sm:w-auto min-w-0 items-center gap-1 sm:gap-2 rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#18181B] px-2 sm:px-3 text-[11px] sm:text-xs font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-[#222226] transition shadow-2xs cursor-pointer select-none"
                   >
-                    <SlidersHorizontal className="h-3 w-3 text-zinc-400 shrink-0" />
-                    <span className="truncate max-w-[76px] sm:max-w-none">{sortOptions.find((o) => o.id === sortBy)?.label || "Sort"}</span>
+                    <SlidersHorizontal className="h-3 w-3 text-zinc-400 shrink-0 max-[380px]:hidden" />
+                    <span className="truncate min-w-0">{sortOptions.find((o) => o.id === sortBy)?.label || "Sort"}</span>
                     <ChevronDown
                       className={`h-3.5 w-3.5 text-zinc-400 shrink-0 transition-transform duration-200 ${
                         isSortOpen ? "rotate-180" : ""
@@ -1114,11 +1114,11 @@ export default function SequencesPage() {
                 {/* Semantic Zoom Mode & Selection Toggle Pod */}
                 <div className="flex items-center gap-1.5 shrink-0">
                   {/* Semantic Zoom Segmented Control (Icon Only) */}
-                  <div className="flex items-center p-1 bg-zinc-100 dark:bg-[#1C1C20] rounded-xl shrink-0">
+                  <div className="flex h-8 sm:h-auto items-center p-0.5 sm:p-1 bg-zinc-100 dark:bg-[#1C1C20] rounded-xl shrink-0">
                     <button
                       onClick={() => setViewMode("folders")}
                       title="Stage 1: Campaign Folders (Macro 25% Zoom)"
-                      className={`relative p-1.5 rounded-lg transition-colors duration-150 cursor-pointer ${
+                      className={`relative p-1.5 max-[380px]:px-1 rounded-lg transition-colors duration-150 cursor-pointer ${
                         viewMode === "folders"
                           ? "text-[#0066B2] dark:text-[#38BDF8]"
                           : "text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200"
@@ -1137,7 +1137,7 @@ export default function SequencesPage() {
                     <button
                       onClick={() => setViewMode("grid")}
                       title="Stage 2: Bento Cards (Normal 100% Zoom)"
-                      className={`relative p-1.5 rounded-lg transition-colors duration-150 cursor-pointer ${
+                      className={`relative p-1.5 max-[380px]:px-1 rounded-lg transition-colors duration-150 cursor-pointer ${
                         viewMode === "grid"
                           ? "text-[#0066B2] dark:text-[#38BDF8]"
                           : "text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200"
@@ -1156,7 +1156,7 @@ export default function SequencesPage() {
                     <button
                       onClick={() => setViewMode("table")}
                       title="Stage 3: Compact Table (Dense 150% Zoom)"
-                      className={`relative p-1.5 rounded-lg transition-colors duration-150 cursor-pointer ${
+                      className={`relative p-1.5 max-[380px]:px-1 rounded-lg transition-colors duration-150 cursor-pointer ${
                         viewMode === "table"
                           ? "text-[#0066B2] dark:text-[#38BDF8]"
                           : "text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200"
@@ -1183,7 +1183,7 @@ export default function SequencesPage() {
                           return next;
                         });
                       }}
-                      className={`relative p-1.5 rounded-lg transition-colors duration-150 cursor-pointer ${
+                      className={`relative p-1.5 max-[380px]:px-1 rounded-lg transition-colors duration-150 cursor-pointer ${
                         isSelectMode || checkedIds.length > 0
                           ? "bg-white dark:bg-[#2A2A30] text-[#0066B2] dark:text-[#38BDF8] shadow-xs"
                           : "text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200"

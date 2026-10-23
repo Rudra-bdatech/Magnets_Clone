@@ -78,18 +78,20 @@ export const BrandingSection = memo(function BrandingSection({
           onClick={() => toggle("legal-links")}
           className="flex w-full items-center justify-between p-4 text-left cursor-pointer"
         >
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 min-w-0 flex-1">
             <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#EFF6FF] text-[#0066B2] border border-[#DBEAFE] dark:bg-[#0066B2]/20 dark:border-[#0066B2]/40 dark:text-[#38BDF8]">
               <FileText className="h-4.5 w-4.5" />
             </div>
-            <div>
-              <h4 className="text-[14.2px] font-bold text-zinc-900 dark:text-white flex items-center gap-1.5">
-                Legal links
-                <InfoTooltip
-                  content="Optionally add your own privacy policy and terms to every page footer."
-                  title="Legal Links"
-                  align="start"
-                />
+            <div className="min-w-0 flex-1">
+              <h4 className="text-[14.2px] font-bold text-zinc-900 dark:text-white leading-snug">
+                Legal links{" "}
+                <span className="inline-block align-middle -translate-y-[1px] ml-1">
+                  <InfoTooltip
+                    content="Optionally add your own privacy policy and terms to every page footer."
+                    title="Legal Links"
+                    align="start"
+                  />
+                </span>
               </h4>
             </div>
           </div>
@@ -232,18 +234,20 @@ export const BrandingSection = memo(function BrandingSection({
           onClick={() => toggle("branding-preview")}
           className="flex w-full items-center justify-between p-4 text-left hover:bg-[#EFF6FF] dark:hover:bg-[#18181c] transition-colors cursor-pointer"
         >
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 min-w-0 flex-1">
             <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#EFF6FF] text-[#0066B2] border border-[#DBEAFE] dark:bg-[#1A2E40]">
               <Globe className="h-4.5 w-4.5" />
             </div>
-            <div>
-              <h4 className="text-[14.2px] font-bold text-zinc-900 dark:text-white flex items-center gap-1.5">
-                Social Sharing Thumbnail & Favicon
-                <InfoTooltip
-                  content="Upload your brand's tab icon and Open Graph thumbnail for social media sharing."
-                  title="Social Preview & Favicon"
-                  align="start"
-                />
+            <div className="min-w-0 flex-1">
+              <h4 className="text-[14.2px] font-bold text-zinc-900 dark:text-white leading-snug">
+                Social Sharing Thumbnail & Favicon{" "}
+                <span className="inline-block align-middle -translate-y-[1px] ml-1">
+                  <InfoTooltip
+                    content="Upload your brand's tab icon and Open Graph thumbnail for social media sharing."
+                    title="Social Preview & Favicon"
+                    align="start"
+                  />
+                </span>
               </h4>
             </div>
           </div>

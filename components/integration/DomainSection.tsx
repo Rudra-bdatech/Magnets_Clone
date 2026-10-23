@@ -436,7 +436,7 @@ export const DomainSection = memo(function DomainSection({
         <button
           type="button"
           onClick={onToggleCustomDomain}
-          className="flex items-center gap-2 min-w-0 flex-1 text-left cursor-pointer"
+          className="flex items-center flex-wrap gap-2 min-w-0 flex-1 text-left cursor-pointer"
         >
           <span className="text-[13px] font-medium text-zinc-900 dark:text-white flex items-center gap-1.5">
             Custom Domain
@@ -709,7 +709,68 @@ export const DomainSection = memo(function DomainSection({
                     </div>
                   )}
 
-                  <div className="rounded-md border border-zinc-200 dark:border-white/10 overflow-x-auto">
+                  {/* Mobile DNS Record Cards (< sm screens, e.g. Moto G4, iPhone) */}
+                  <div className="block sm:hidden space-y-3">
+                    {dnsRows.map((row) => (
+                      <div
+                        key={row.key}
+                        className="rounded-lg border border-zinc-200 dark:border-white/10 bg-zinc-50/60 dark:bg-white/[0.02] p-3.5 space-y-2.5"
+                      >
+                        {/* Top: Record Type & Verification status */}
+                        <div className="flex items-center justify-between pb-2 border-b border-zinc-200 dark:border-white/5">
+                          <div className="flex items-center gap-2">
+                            <span className="text-[11px] font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
+                              Record Type
+                            </span>
+                            <span className="inline-flex items-center px-2 py-0.5 rounded font-mono font-bold text-xs bg-zinc-200/80 text-zinc-900 dark:bg-white/10 dark:text-white">
+                              {row.type}
+                            </span>
+                          </div>
+                          {row.done ? (
+                            <span className="inline-flex items-center gap-1 text-xs font-medium text-emerald-600 dark:text-emerald-400">
+                              <CheckCircle2 className="h-3.5 w-3.5" aria-hidden="true" />
+                              Verified
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center gap-1 text-[11px] text-zinc-400 dark:text-zinc-500">
+                              Pending
+                            </span>
+                          )}
+                        </div>
+
+                        {/* Name / Host */}
+                        <div>
+                          <div className="flex items-center justify-between text-[11px] font-medium text-zinc-500 dark:text-zinc-400 mb-1">
+                            <span>Name</span>
+                            <span className="text-[10px] text-zinc-400">Copy</span>
+                          </div>
+                          <div className="flex items-center justify-between gap-2 rounded-md border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#0E0E10] px-2.5 py-1.5 min-w-0">
+                            <span className="font-mono text-xs text-zinc-900 dark:text-zinc-100 break-all select-all min-w-0" title={row.name}>
+                              {row.name}
+                            </span>
+                            {copyIcon(row.name, row.nameKey, row.nameToast, `Copy ${row.type} name`)}
+                          </div>
+                        </div>
+
+                        {/* Value / Target */}
+                        <div>
+                          <div className="flex items-center justify-between text-[11px] font-medium text-zinc-500 dark:text-zinc-400 mb-1">
+                            <span>Value</span>
+                            <span className="text-[10px] text-zinc-400">Copy</span>
+                          </div>
+                          <div className="flex items-center justify-between gap-2 rounded-md border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#0E0E10] px-2.5 py-1.5 min-w-0">
+                            <span className="font-mono text-xs text-zinc-900 dark:text-zinc-100 break-all select-all min-w-0">
+                              {row.value}
+                            </span>
+                            {copyIcon(row.value, row.valueKey, row.valueToast, `Copy ${row.type} value`)}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Desktop / Tablet DNS Table (>= sm screens) */}
+                  <div className="hidden sm:block rounded-md border border-zinc-200 dark:border-white/10 overflow-x-auto">
                     <table className="w-full min-w-[560px] text-left text-[13px]">
                       <thead>
                         <tr className="border-b border-zinc-200 dark:border-white/10 text-zinc-500 dark:text-zinc-400">

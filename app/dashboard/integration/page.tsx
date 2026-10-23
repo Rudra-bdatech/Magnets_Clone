@@ -355,18 +355,20 @@ export default function WorkspaceSetupPage() {
                 onClick={() => toggle("connections")}
                 className="flex w-full items-center justify-between p-4 text-left hover:bg-[#EFF6FF] dark:hover:bg-[#18181c] transition-colors cursor-pointer"
               >
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3 min-w-0 flex-1">
                   <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#EFF6FF] text-[#0066B2] border border-[#DBEAFE] dark:bg-[#0066B2]/20 dark:border-[#0066B2]/40 dark:text-[#38BDF8]">
                     <Plug className="h-4.5 w-4.5" />
                   </div>
-                  <div>
-                    <h4 className="text-[14.2px] font-bold text-zinc-900 dark:text-white flex items-center gap-1.5">
-                      Optional automations
-                      <InfoTooltip
-                        content="Sync new signups directly to your external tools (Slack, Zapier, Kit, Pipedrive, Substack)."
-                        title="Optional Automations"
-                        align="start"
-                      />
+                  <div className="min-w-0 flex-1">
+                    <h4 className="text-[14.2px] font-bold text-zinc-900 dark:text-white leading-snug">
+                      Optional automations{" "}
+                      <span className="inline-block align-middle -translate-y-[1px] ml-1">
+                        <InfoTooltip
+                          content="Sync new signups directly to your external tools (Slack, Zapier, Kit, Pipedrive, Substack)."
+                          title="Optional Automations"
+                          align="start"
+                        />
+                      </span>
                     </h4>
                   </div>
                 </div>
