@@ -229,6 +229,20 @@ export default function AccountSettingsPage() {
   // Tab Navigation State
   const [activeTab, setActiveTab] = useState<"profile" | "email" | "security" | "notifications" | "danger">("profile");
   const [hoveredTab, setHoveredTab] = useState<string | null>(null);
+  const tabContainerRef = useRef<HTMLDivElement>(null);
+  const tabButtonRefs = useRef<{ [key: string]: HTMLButtonElement | null }>({});
+
+  // Apple-style Centered Navigation: Keep active tab centered in view on mobile
+  useEffect(() => {
+    const btn = tabButtonRefs.current[activeTab];
+    if (btn && tabContainerRef.current) {
+      btn.scrollIntoView({
+        behavior: "smooth",
+        inline: "center",
+        block: "nearest",
+      });
+    }
+  }, [activeTab]);
 
   // Instant Lead Alerts State
   const [leadAlertsEnabled, setLeadAlertsEnabled] = useState(true);
@@ -632,65 +646,77 @@ export default function AccountSettingsPage() {
             </div>
           </div>
 
-          {/* Segmented Tab Navigation Bar (Swipeable on Mobile, Flex on Desktop) */}
-          <div
-            className="flex items-center gap-1.5 sm:gap-2 mb-5 sm:mb-6 relative overflow-x-auto scrollbar-none pb-1 -mx-2 px-2 sm:mx-0 sm:px-0 sm:overflow-visible sm:flex-wrap"
-            onMouseLeave={() => setHoveredTab(null)}
-          >
-            {[
-              { id: "profile", label: "Profile & Identity", icon: User },
-              { id: "email", label: "Email & Gmail Sync", icon: Mail },
-              { id: "security", label: "Security & Password", icon: KeyRound },
-              { id: "notifications", label: "Instant Lead Alerts", icon: Bell },
-              { id: "danger", label: "Danger Zone", icon: AlertTriangle, danger: true },
-            ].map((t) => {
-              const Icon = t.icon;
-              const isActive = activeTab === t.id;
-              const isHovered = hoveredTab === t.id;
+          {/* Segmented Tab Navigation Bar (Apple-style Centered Stage on Mobile, Flex on Desktop) */}
+          <div className="relative mb-5 sm:mb-6 -mx-4 px-4 sm:mx-0 sm:px-0">
+            {/* Left Vignette Fade on Mobile */}
+            <div className="pointer-events-none absolute left-0 top-0 bottom-0 w-8 sm:hidden z-20 bg-gradient-to-r from-[#EFF6FF] dark:from-[#0E0E10] to-transparent" />
 
-              return (
-                <motion.button
-                  key={t.id}
-                  type="button"
-                  whileTap={{ scale: 0.97 }}
-                  transition={{ type: "spring", stiffness: 600, damping: 28 }}
-                  onMouseEnter={() => setHoveredTab(t.id)}
-                  onClick={() => setActiveTab(t.id as any)}
-                  className={`relative shrink-0 flex items-center gap-1.5 sm:gap-2 px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl text-xs font-bold transition-colors cursor-pointer ${
-                    isActive
-                      ? "text-white"
-                      : t.danger
-                      ? "text-red-600 dark:text-red-400"
-                      : "text-zinc-600 dark:text-zinc-400 dark:hover:text-white"
-                  }`}
-                >
-                  {/* Active Tab Solid Pill */}
-                  {isActive && (
-                    <motion.div
-                      layoutId="activeTabPill"
-                      transition={{ type: "spring", stiffness: 500, damping: 32 }}
-                      className={`absolute inset-0 rounded-xl shadow-sm ${
-                        t.danger ? "bg-red-500" : "bg-[#0066B2]"
-                      }`}
-                    />
-                  )}
-                  {/* Hover Morphing Pill */}
-                  {!isActive && isHovered && (
-                    <motion.div
-                      layoutId="settingsHoverTabPill"
-                      transition={{ type: "spring", stiffness: 500, damping: 32 }}
-                      className={`absolute inset-0 rounded-xl ${
-                        t.danger
-                          ? "bg-red-50 dark:bg-red-950/40"
-                          : "bg-zinc-200/60 dark:bg-zinc-800/60"
-                      }`}
-                    />
-                  )}
-                  <Icon className="h-4 w-4 relative z-10 shrink-0" />
-                  <span className="relative z-10 whitespace-nowrap">{t.label}</span>
-                </motion.button>
-              );
-            })}
+            {/* Right Vignette Fade on Mobile */}
+            <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-8 sm:hidden z-20 bg-gradient-to-l from-[#EFF6FF] dark:from-[#0E0E10] to-transparent" />
+
+            <div
+              ref={tabContainerRef}
+              className="flex items-center gap-2 overflow-x-auto scrollbar-none pb-2 pt-1 px-[20vw] sm:px-0 snap-x snap-mandatory sm:snap-none sm:overflow-visible sm:flex-wrap"
+              onMouseLeave={() => setHoveredTab(null)}
+            >
+              {[
+                { id: "profile", label: "Profile & Identity", icon: User },
+                { id: "email", label: "Email & Gmail Sync", icon: Mail },
+                { id: "security", label: "Security & Password", icon: KeyRound },
+                { id: "notifications", label: "Instant Lead Alerts", icon: Bell },
+                { id: "danger", label: "Danger Zone", icon: AlertTriangle, danger: true },
+              ].map((t) => {
+                const Icon = t.icon;
+                const isActive = activeTab === t.id;
+                const isHovered = hoveredTab === t.id;
+
+                return (
+                  <motion.button
+                    key={t.id}
+                    ref={(el) => {
+                      tabButtonRefs.current[t.id] = el;
+                    }}
+                    type="button"
+                    whileTap={{ scale: 0.96 }}
+                    transition={{ type: "spring", stiffness: 600, damping: 28 }}
+                    onMouseEnter={() => setHoveredTab(t.id)}
+                    onClick={() => setActiveTab(t.id as any)}
+                    className={`relative shrink-0 snap-center flex items-center gap-1.5 sm:gap-2 px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl text-xs font-bold transition-all duration-300 cursor-pointer ${
+                      isActive
+                        ? "text-white opacity-100 scale-100 shadow-sm z-10"
+                        : t.danger
+                        ? "text-red-600 dark:text-red-400 opacity-40 hover:opacity-85 sm:opacity-100 scale-95 sm:scale-100"
+                        : "text-zinc-600 dark:text-zinc-400 dark:hover:text-white opacity-40 hover:opacity-85 sm:opacity-100 scale-95 sm:scale-100"
+                    }`}
+                  >
+                    {/* Active Tab Solid Pill */}
+                    {isActive && (
+                      <motion.div
+                        layoutId="activeTabPill"
+                        transition={{ type: "spring", stiffness: 500, damping: 32 }}
+                        className={`absolute inset-0 rounded-xl shadow-sm ${
+                          t.danger ? "bg-red-500" : "bg-[#0066B2]"
+                        }`}
+                      />
+                    )}
+                    {/* Hover Morphing Pill */}
+                    {!isActive && isHovered && (
+                      <motion.div
+                        layoutId="settingsHoverTabPill"
+                        transition={{ type: "spring", stiffness: 500, damping: 32 }}
+                        className={`absolute inset-0 rounded-xl ${
+                          t.danger
+                            ? "bg-red-50 dark:bg-red-950/40"
+                            : "bg-zinc-200/60 dark:bg-zinc-800/60"
+                        }`}
+                      />
+                    )}
+                    <Icon className="h-4 w-4 relative z-10 shrink-0" />
+                    <span className="relative z-10 whitespace-nowrap">{t.label}</span>
+                  </motion.button>
+                );
+              })}
+            </div>
           </div>
 
           <div className="overflow-hidden">
