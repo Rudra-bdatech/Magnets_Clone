@@ -284,9 +284,11 @@ export default function AuthShell({
                   <h1 className="text-xl font-bold tracking-tight text-zinc-900 dark:text-white sm:text-2xl">
                     {title}
                   </h1>
-                  <p className="mt-0.5 text-[11px] font-semibold uppercase tracking-wider text-blue-600 dark:text-blue-400">
-                    {subtitle}
-                  </p>
+                  {subtitle && (
+                    <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+                      {subtitle}
+                    </p>
+                  )}
                 </div>
 
                 {/* Form */}
@@ -300,16 +302,6 @@ export default function AuthShell({
                     {footer}
                   </div>
                 )}
-              </div>
-
-              {/* Trust Indicators */}
-              <div className="mt-3 flex items-center justify-center gap-5 text-[11px] text-zinc-500">
-                <span className="inline-flex items-center gap-1">
-                  <ShieldCheck className="h-3 w-3 text-emerald-500" /> 256-bit SSL
-                </span>
-                <span className="inline-flex items-center gap-1">
-                  <CheckCircle2 className="h-3 w-3 text-blue-500" /> Instant Access
-                </span>
               </div>
             </div>
           </div>

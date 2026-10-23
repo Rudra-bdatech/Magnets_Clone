@@ -100,7 +100,7 @@ export default function RegisterPage() {
   return (
     <AuthShell
       title="Create your account"
-      subtitle="Free forever • No credit card required"
+      subtitle="Sign up with Google or enter your details below."
       showSidecar={false}
       onSubmit={handleSubmit}
       footer={
