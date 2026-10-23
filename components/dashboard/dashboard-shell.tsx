@@ -975,7 +975,7 @@ export default function DashboardShell({
                 animate={{ x: 0 }}
                 exit={{ x: "-100%" }}
                 transition={{ type: "spring", stiffness: 380, damping: 34, mass: 0.85 }}
-                className="relative z-10 flex h-full w-72 max-w-[85vw] flex-col bg-[#F0F7FF] dark:bg-[#18181B] border-r border-[#E0EDFB] dark:border-white/10 p-4 text-zinc-900 dark:text-[#9B9085] shadow-2xl"
+                className="relative z-10 flex h-full w-72 max-w-[85vw] flex-col bg-[#F0F7FF] dark:bg-[#18181B] border-y border-r border-[#E0EDFB] dark:border-white/10 rounded-r-3xl p-4 text-zinc-900 dark:text-[#9B9085] shadow-2xl overflow-hidden"
                 onClick={(e) => e.stopPropagation()}
               >
               <div className="mb-4 flex items-center justify-between pb-3">
@@ -984,10 +984,10 @@ export default function DashboardShell({
                 </Link>
                 <button
                   aria-label="Close menu"
-                  className="flex h-9 w-9 items-center justify-center rounded-md border border-[#E0EDFB] dark:border-white/10 text-zinc-600 dark:text-[#9B9085] hover:bg-[#E2F0FD] dark:hover:bg-[#1C1613] hover:text-zinc-900 dark:hover:text-white transition cursor-pointer"
+                  className="flex h-8 w-8 items-center justify-center rounded-full bg-zinc-200/70 hover:bg-zinc-300/80 text-zinc-600 hover:text-zinc-900 dark:bg-white/10 dark:hover:bg-white/20 dark:text-zinc-300 dark:hover:text-white transition-all active:scale-90 cursor-pointer"
                   onClick={() => setMenuOpen(false)}
                 >
-                  <X className="h-4 w-4" aria-hidden="true" />
+                  <X className="h-4 w-4" strokeWidth={2.2} aria-hidden="true" />
                 </button>
               </div>
 
