@@ -95,9 +95,7 @@ export const BrandingSection = memo(function BrandingSection({
               </h4>
             </div>
           </div>
-          <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-[#E2E8F0] bg-white text-zinc-500 shadow-sm dark:border-[#2e2e38] dark:bg-[#18181B] dark:text-[#9B9085]">
-            <ChevronDown className={`h-3.5 w-3.5 transition-transform ${openSections["legal-links"] ? "rotate-180" : ""}`} />
-          </div>
+          <ChevronDown className={`h-4 w-4 text-zinc-400 dark:text-zinc-500 transition-transform duration-200 shrink-0 ${openSections["legal-links"] ? "rotate-180" : ""}`} />
         </button>
         {openSections["legal-links"] && (
           <div className="border-t border-[#E2E8F0] dark:border-[#2e2e38] px-5 py-5 space-y-4">
@@ -257,9 +255,7 @@ export const BrandingSection = memo(function BrandingSection({
                 Branding Active ✓
               </span>
             )}
-            <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-[#E2E8F0] bg-white text-zinc-500 shadow-sm dark:border-[#2e2e38] dark:bg-[#18181B] dark:text-[#9B9085]">
-              <ChevronDown className={`h-3.5 w-3.5 transition-transform ${openSections["branding-preview"] ? "rotate-180" : ""}`} />
-            </div>
+            <ChevronDown className={`h-4 w-4 text-zinc-400 dark:text-zinc-500 transition-transform duration-200 shrink-0 ${openSections["branding-preview"] ? "rotate-180" : ""}`} />
           </div>
         </button>
 
