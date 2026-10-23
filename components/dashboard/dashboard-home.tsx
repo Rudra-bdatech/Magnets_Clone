@@ -614,7 +614,7 @@ export default function DashboardHome({
                     >
                       <card.icon className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
                     </div>
-                    <ChevronRight className="h-3.5 w-3.5 text-zinc-300 dark:text-zinc-600 sm:hidden shrink-0" />
+                    <ArrowUpRight className="h-3.5 w-3.5 text-zinc-400 dark:text-zinc-500 sm:hidden shrink-0 group-active:translate-x-0.5 group-active:-translate-y-0.5 transition-transform" />
                   </div>
 
                   {/* Right: Label, Value & Subtext */}
@@ -623,7 +623,7 @@ export default function DashboardHome({
                       <p className="text-[10px] sm:text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-[#9B9085] leading-none whitespace-normal sm:truncate">
                         {card.label}
                       </p>
-                      <ChevronRight className="hidden sm:block h-3.5 w-3.5 text-zinc-300 dark:text-zinc-600 group-hover:text-[#0066B2] dark:group-hover:text-[#38BDF8] transition-all opacity-0 group-hover:opacity-100 group-hover:translate-x-0.5 shrink-0" />
+                      <ArrowUpRight className="hidden sm:block h-3.5 w-3.5 text-zinc-300 dark:text-zinc-600 group-hover:text-[#0066B2] dark:group-hover:text-[#38BDF8] transition-all opacity-0 group-hover:opacity-100 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 shrink-0" />
                     </div>
 
                     <p className="text-xl font-extrabold tabular-nums text-zinc-900 dark:text-white mt-1 leading-none tracking-tight">
