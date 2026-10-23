@@ -16,6 +16,7 @@ import {
   Search,
   SlidersHorizontal,
   ChevronDown,
+  ArrowUpDown,
   Copy,
   MoreVertical,
   TrendingUp,
@@ -68,12 +69,12 @@ type FilterStatus = "all" | "live" | "draft";
 type SortOption = "recent" | "name" | "subscribers" | "delivered" | "open_rate";
 type ViewMode = "folders" | "grid" | "table";
 
-const sortOptions: { id: SortOption; label: string }[] = [
-  { id: "recent", label: "Most Recent" },
-  { id: "name", label: "Name (A-Z)" },
-  { id: "subscribers", label: "Subscribers" },
-  { id: "delivered", label: "Most Delivered" },
-  { id: "open_rate", label: "Highest Open %" },
+const sortOptions: { id: SortOption; label: string; mobileLabel: string }[] = [
+  { id: "recent", label: "Most Recent", mobileLabel: "Recent" },
+  { id: "name", label: "Name (A-Z)", mobileLabel: "Name" },
+  { id: "subscribers", label: "Subscribers", mobileLabel: "Subs" },
+  { id: "delivered", label: "Most Delivered", mobileLabel: "Sent" },
+  { id: "open_rate", label: "Highest Open %", mobileLabel: "Open %" },
 ];
 
 export default function SequencesPage() {
@@ -982,7 +983,7 @@ export default function SequencesPage() {
                 </div>
 
                 {/* Mobile Filter Dropdown Button */}
-                <div className="sm:hidden relative min-w-0 flex-initial">
+                <div className="sm:hidden relative min-w-0 shrink-0">
                   <button
                     type="button"
                     onClick={(e) => {
@@ -990,18 +991,18 @@ export default function SequencesPage() {
                       setIsSortOpen(false);
                       setIsStatusFilterOpen((v) => !v);
                     }}
-                    className="flex h-8 w-full min-w-0 items-center gap-1.5 max-[380px]:gap-1 rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#18181B] px-2.5 max-[380px]:px-2 text-[11px] font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-[#222226] transition shadow-2xs cursor-pointer select-none"
+                    className="flex h-8 items-center gap-1 sm:gap-1.5 rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#18181B] px-2 sm:px-2.5 text-[11px] font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-[#222226] transition shadow-2xs cursor-pointer select-none whitespace-nowrap shrink-0"
                   >
-                    <Filter className="h-3 w-3 text-zinc-400 shrink-0 max-[380px]:hidden" />
-                    <span className="truncate min-w-0">
+                    <Filter className="h-3.5 w-3.5 text-zinc-500 dark:text-zinc-400 shrink-0" />
+                    <span className="whitespace-nowrap">
                       {statusFilter === "all"
-                        ? `Filter (${sequences.length})`
+                        ? `All (${sequences.length})`
                         : statusFilter === "live"
                         ? `Active (${metrics.liveCount})`
                         : `Paused (${metrics.pausedCount})`}
                     </span>
                     <ChevronDown
-                      className={`h-3.5 w-3.5 text-zinc-400 shrink-0 transition-transform duration-200 ${
+                      className={`h-3 w-3 text-zinc-400 shrink-0 transition-transform duration-200 ${
                         isStatusFilterOpen ? "rotate-180" : ""
                       }`}
                     />
@@ -1054,19 +1055,22 @@ export default function SequencesPage() {
                 </div>
 
                 {/* Custom Animated Sort Dropdown */}
-                <div className="relative min-w-0 flex-initial">
+                <div className="relative min-w-0 shrink-0">
                   <button
                     type="button"
                     onClick={(e) => {
                       e.stopPropagation();
                       setIsSortOpen((v) => !v);
                     }}
-                    className="flex h-8 w-full sm:w-auto min-w-0 items-center gap-1 sm:gap-2 rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#18181B] px-2 sm:px-3 text-[11px] sm:text-xs font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-[#222226] transition shadow-2xs cursor-pointer select-none"
+                    className="flex h-8 w-auto items-center gap-1 sm:gap-1.5 rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#18181B] px-2 sm:px-3 text-[11px] sm:text-xs font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-[#222226] transition shadow-2xs cursor-pointer select-none whitespace-nowrap shrink-0"
                   >
-                    <SlidersHorizontal className="h-3 w-3 text-zinc-400 shrink-0 max-[380px]:hidden" />
-                    <span className="truncate min-w-0">{sortOptions.find((o) => o.id === sortBy)?.label || "Sort"}</span>
+                    <ArrowUpDown className="h-3.5 w-3.5 text-zinc-500 dark:text-zinc-400 shrink-0" />
+                    <span className="whitespace-nowrap">
+                      <span className="sm:hidden">{sortOptions.find((o) => o.id === sortBy)?.mobileLabel || "Sort"}</span>
+                      <span className="hidden sm:inline">{sortOptions.find((o) => o.id === sortBy)?.label || "Sort"}</span>
+                    </span>
                     <ChevronDown
-                      className={`h-3.5 w-3.5 text-zinc-400 shrink-0 transition-transform duration-200 ${
+                      className={`h-3 w-3 text-zinc-400 shrink-0 transition-transform duration-200 ${
                         isSortOpen ? "rotate-180" : ""
                       }`}
                     />
