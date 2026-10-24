@@ -341,8 +341,10 @@ function AnalyticsDemo({ active }: { active: boolean }) {
 }
 
 export default function BentoFeatures() {
+  const [cascadeRef, cascadeInView] = useInView({ once: true, rootMargin: "0px 0px -10% 0px" });
+
   return (
-    <div className="mt-14 grid gap-4 md:grid-cols-2 lg:grid-cols-6">
+    <div ref={cascadeRef} className={`lm-cascade mt-14 grid gap-4 md:grid-cols-2 lg:grid-cols-6 ${cascadeInView ? "lm-visible" : ""}`}>
       <Tile
         n="01"
         title="Describe it. Get a page."

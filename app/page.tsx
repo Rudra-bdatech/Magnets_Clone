@@ -21,7 +21,6 @@ const Pricing = dynamic(() => import("@/components/landing/pricing"));
 const TryIt = dynamic(() => import("@/components/landing/try-it"));
 const LeadFeed = dynamic(() => import("@/components/landing/lead-feed"));
 const ProofStrip = dynamic(() => import("@/components/landing/proof-strip"));
-const ActivityToast = dynamic(() => import("@/components/landing/activity-toast"), { ssr: false });
 
 
 const jsonLd = {
@@ -279,7 +278,6 @@ export default function Home() {
 
       <CtaSection />
 
-      <ActivityToast />
       <SiteFooter />
     </main>
   );
