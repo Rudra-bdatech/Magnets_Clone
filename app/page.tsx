@@ -18,6 +18,9 @@ const BeforeAfter = dynamic(() => import("@/components/landing/before-after"));
 const BentoFeatures = dynamic(() => import("@/components/landing/bento-features"));
 const CompareStack = dynamic(() => import("@/components/landing/compare-stack"));
 const Pricing = dynamic(() => import("@/components/landing/pricing"));
+const TryIt = dynamic(() => import("@/components/landing/try-it"));
+const LeadFeed = dynamic(() => import("@/components/landing/lead-feed"));
+
 
 const jsonLd = {
   "@context": "https://schema.org",
@@ -98,11 +101,11 @@ export default function Home() {
               <span className="font-instrument italic font-normal tracking-normal">that buys.</span>
             </h1>
 
-            <p className="mx-auto mt-6 max-w-xl text-base sm:text-lg leading-relaxed text-zinc-600 dark:text-zinc-300">
+            <p className="lm-rise mx-auto mt-6 max-w-xl text-base sm:text-lg leading-relaxed text-zinc-600 dark:text-zinc-300">
               Describe your freebie and get an opt-in page in seconds. We host the file, deliver it the moment someone signs up, and send the follow-ups for you.
             </p>
 
-            <div className="mt-9 flex flex-col justify-center gap-3 sm:flex-row items-center">
+            <div className="lm-rise mt-9 flex flex-col justify-center gap-3 sm:flex-row items-center" style={{ animationDelay: "120ms" }}>
               <Link
                 className="group inline-flex h-12 w-full sm:w-auto items-center justify-center gap-2 rounded-xl bg-zinc-950 dark:bg-white px-7 text-[15px] font-semibold text-white dark:text-zinc-950 transition hover:bg-zinc-800 dark:hover:bg-zinc-200"
                 href="/register"
@@ -118,13 +121,15 @@ export default function Home() {
               </Link>
             </div>
 
-            <p className="mt-6 text-xs text-zinc-500 dark:text-zinc-500">
+            <p className="lm-rise mt-6 text-xs text-zinc-500 dark:text-zinc-500" style={{ animationDelay: "220ms" }}>
               Free plan · No card needed · Live on a free subdomain
             </p>
           </div>
 
           {/* INTERACTIVE WORKSPACE SHOWCASE DEMO — isolated client island */}
-          <ShowcaseTabs />
+          <div className="lm-rise" style={{ animationDelay: "320ms" }}>
+            <ShowcaseTabs />
+          </div>
         </div>
       </section>
 
@@ -179,18 +184,35 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 04 INTEGRATIONS */}
-      <section className="cv-auto bg-[#F0F7FF] dark:bg-[#0a0a0a] py-20 sm:py-24 border-b border-zinc-200/80 dark:border-zinc-800/80" id="integrations">
+      {/* 04 TRY IT */}
+      <section className="cv-auto bg-[#F0F7FF] dark:bg-[#0a0a0a] py-20 sm:py-28 border-b border-zinc-200/80 dark:border-zinc-800/80" id="try-it">
+        <div className="mx-auto max-w-6xl px-5 sm:px-8 lg:px-10">
+          <Reveal>
+            <SectionHeading
+              index="04"
+              eyebrow="Try it"
+              title="Type a topic."
+              accent="See your page."
+              description="No sign-up needed for this part."
+            />
+          </Reveal>
+          <TryIt />
+        </div>
+      </section>
+
+      {/* 05 INTEGRATIONS */}
+      <section className="cv-auto bg-white dark:bg-[#121215] py-20 sm:py-24 border-b border-zinc-200/80 dark:border-zinc-800/80" id="integrations">
         <div className="mx-auto grid max-w-6xl items-center gap-12 px-5 sm:px-8 lg:grid-cols-12 lg:px-10">
           <Reveal className="lg:col-span-5">
             <SectionHeading
               align="left"
-              index="04"
+              index="05"
               eyebrow="Integrations"
               title="Leads land where you"
               accent="already work."
               description="Every signup is pushed to your email tool, CRM or Slack the moment it happens. Failed syncs retry on their own."
             />
+            <LeadFeed />
           </Reveal>
           <div className="lg:col-span-7 space-y-3 overflow-hidden py-2 marquee-mask">
             <div className="animate-marquee-left">
@@ -207,12 +229,12 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 05 COMPARE */}
-      <section className="cv-auto bg-white dark:bg-[#121215] py-20 sm:py-28 border-b border-zinc-200/80 dark:border-zinc-800/80" id="compare">
+      {/* 06 COMPARE */}
+      <section className="cv-auto bg-[#F0F7FF] dark:bg-[#0a0a0a] py-20 sm:py-28 border-b border-zinc-200/80 dark:border-zinc-800/80" id="compare">
         <div className="mx-auto max-w-6xl px-5 sm:px-8 lg:px-10">
           <Reveal>
             <SectionHeading
-              index="05"
+              index="06"
               eyebrow="The alternative"
               title="You could glue five tools together."
               accent="Or not."
@@ -222,12 +244,12 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 06 PRICING */}
-      <section className="cv-auto bg-[#F0F7FF] dark:bg-[#0a0a0a] py-20 sm:py-28 border-b border-zinc-200/80 dark:border-zinc-800/80" id="pricing">
+      {/* 07 PRICING */}
+      <section className="cv-auto bg-white dark:bg-[#121215] py-20 sm:py-28 border-b border-zinc-200/80 dark:border-zinc-800/80" id="pricing">
         <div className="mx-auto max-w-6xl px-5 sm:px-8 lg:px-10">
           <Reveal>
             <SectionHeading
-              index="06"
+              index="07"
               eyebrow="Pricing"
               title="Start free."
               accent="Upgrade when it pays for itself."
@@ -237,11 +259,11 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 07 FAQ */}
+      {/* 08 FAQ */}
       <section id="faq" className="cv-auto bg-white dark:bg-[#121215] py-20 sm:py-28 px-5 sm:px-8 lg:px-10 border-b border-zinc-200/80 dark:border-zinc-800/80">
         <div className="mx-auto max-w-5xl">
           <Reveal className="mb-12 sm:mb-14">
-            <SectionHeading index="07" eyebrow="FAQ" title="Questions people" accent="usually ask." />
+            <SectionHeading index="08" eyebrow="FAQ" title="Questions people" accent="usually ask." />
           </Reveal>
           {/* FAQ Accordion — isolated client island */}
           <FaqAccordion />
