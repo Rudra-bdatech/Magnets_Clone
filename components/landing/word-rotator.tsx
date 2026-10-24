@@ -3,7 +3,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { usePrefersReducedMotion } from "./use-in-view";
 
-const WORDS = ["PDFs", "checklists", "templates", "guides", "swipe files"];
+const WORDS = ["PDFs", "Guides",];
 
 // Words are stacked in one grid cell. Once measured, the slot's width animates to the
 // current word so the headline never has a gap. The first word is server-rendered (LCP safe).

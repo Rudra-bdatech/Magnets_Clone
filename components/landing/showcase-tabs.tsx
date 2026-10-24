@@ -525,7 +525,7 @@ export default function ShowcaseTabs() {
       {/* APPLE-GRADE UNIFIED HARDWARE FRAME */}
       <div
         ref={showcaseRef}
-        className={`relative mt-12 sm:mt-16 w-full max-w-5xl mx-auto rounded-[28px] sm:rounded-[32px] border border-zinc-200/90 dark:border-white/10 bg-white/95 dark:bg-[#121215] shadow-[0_25px_60px_-15px_rgba(0,0,0,0.12)] dark:shadow-[0_35px_80px_-20px_rgba(0,0,0,0.85)] p-4 sm:p-7 text-zinc-900 dark:text-zinc-100 overflow-hidden font-sans select-none ring-1 ring-black/5 dark:ring-white/5 transition-opacity duration-700 ease-out min-h-[480px] sm:min-h-[510px] flex flex-col justify-between ${
+        className={`relative mt-12 sm:mt-16 w-full max-w-5xl mx-auto rounded-[28px] sm:rounded-[32px] border border-zinc-200/90 dark:border-white/10 bg-white/95 dark:bg-[#121215] shadow-[0_25px_60px_-15px_rgba(0,0,0,0.12)] dark:shadow-[0_35px_80px_-20px_rgba(0,0,0,0.85)] p-4 sm:p-7 text-zinc-900 dark:text-zinc-100 overflow-hidden font-sans select-none ring-1 ring-black/5 dark:ring-white/5 transition-opacity duration-700 ease-out h-[510px] sm:h-[520px] flex flex-col justify-between ${
           hasEnteredViewport ? "opacity-100" : "opacity-0"
         }`}
         style={{ willChange: "transform, opacity", transformOrigin: "center 30%" }}
@@ -609,7 +609,7 @@ export default function ShowcaseTabs() {
                   </div>
                 </div>
 
-                <div className="md:col-span-5 bg-gradient-to-b from-zinc-50 to-zinc-100/80 dark:from-[#18181c] dark:to-[#0e0e11] rounded-2xl border border-zinc-200/80 dark:border-white/10 p-5 shadow-md space-y-3.5 text-center">
+                <div className="hidden md:block md:col-span-5 bg-gradient-to-b from-zinc-50 to-zinc-100/80 dark:from-[#18181c] dark:to-[#0e0e11] rounded-2xl border border-zinc-200/80 dark:border-white/10 p-5 shadow-md space-y-3.5 text-center">
                   <div className="h-32 sm:h-36 rounded-xl bg-gradient-to-br from-[#0066B2]/15 via-purple-500/10 to-emerald-500/10 border border-blue-500/25 flex flex-col items-center justify-center p-3 relative overflow-hidden">
                     <FileText className="h-10 w-10 text-[#0066B2] dark:text-[#38BDF8] mb-1.5 drop-shadow-sm" />
                     <span className="text-xs sm:text-sm font-bold text-zinc-900 dark:text-white">
@@ -624,9 +624,9 @@ export default function ShowcaseTabs() {
                 </div>
               </div>
 
-              <div className="flex items-center justify-between border-t border-zinc-100 dark:border-zinc-800 pt-2.5 text-xs text-zinc-400">
-                <span>Instant tokenized resource delivery · 0s latency</span>
-                <span className="font-bold text-[#0066B2] dark:text-[#38BDF8]">51.2% Conversion Rate</span>
+              <div className="flex items-center justify-between border-t border-zinc-100 dark:border-zinc-800 pt-2.5 text-[11px] sm:text-xs text-zinc-400 gap-2 pr-12 sm:pr-0">
+                <span className="truncate">Instant tokenized resource delivery · 0s latency</span>
+                <span className="font-bold text-[#0066B2] dark:text-[#38BDF8] shrink-0">51.2% Conversion Rate</span>
               </div>
             </div>
           )}
@@ -701,46 +701,46 @@ export default function ShowcaseTabs() {
                 </div>
 
                 {/* 2 DNS Records (TXT Ownership & CNAME Routing) */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 min-[440px]:grid-cols-2 gap-2 sm:gap-3">
                   {/* Step 1: TXT Record */}
-                  <div className="p-3 rounded-xl bg-zinc-50/80 dark:bg-white/[0.03] border border-zinc-200/80 dark:border-white/5 space-y-2">
+                  <div className="p-2 sm:p-3 rounded-xl bg-zinc-50/80 dark:bg-white/[0.03] border border-zinc-200/80 dark:border-white/5 space-y-1 sm:space-y-2">
                     <div className="flex items-center justify-between">
-                      <span className="text-[10px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20">
-                        1. TXT Ownership Record
+                      <span className="text-[9px] sm:text-[10px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20">
+                        1. TXT Record
                       </span>
                       <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400">
                         Verified ✓
                       </span>
                     </div>
-                    <div className="font-mono text-[11px] text-zinc-600 dark:text-zinc-300 bg-white dark:bg-[#0e0e11] p-2 rounded-lg border border-zinc-200/60 dark:border-white/5 space-y-0.5">
-                      <div className="text-zinc-400 text-[10px]">Host: @</div>
+                    <div className="font-mono text-[10px] sm:text-[11px] text-zinc-600 dark:text-zinc-300 bg-white dark:bg-[#0e0e11] p-1.5 sm:p-2 rounded-lg border border-zinc-200/60 dark:border-white/5 space-y-0.5">
+                      <div className="text-zinc-400 text-[9px] sm:text-[10px]">Host: @</div>
                       <div className="truncate text-purple-600 dark:text-purple-300 font-bold">leadmagnets-verify=a8f9c2</div>
                     </div>
                   </div>
 
                   {/* Step 2: CNAME Record */}
-                  <div className={`p-3 rounded-xl border transition-all space-y-2 ${
+                  <div className={`p-2 sm:p-3 rounded-xl border transition-all space-y-1 sm:space-y-2 ${
                     isDnsVerified
                       ? "bg-emerald-500/5 border-emerald-500/30 ring-1 ring-emerald-500/20"
                       : "bg-zinc-50/80 dark:bg-white/[0.03] border-zinc-200/80 dark:border-white/5"
                   }`}>
                     <div className="flex items-center justify-between">
-                      <span className="text-[10px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20">
+                      <span className="text-[9px] sm:text-[10px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20">
                         2. CNAME Routing
                       </span>
                       <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400">
                         {isDnsVerified ? "Routed ✓" : "Ready"}
                       </span>
                     </div>
-                    <div className="font-mono text-[11px] text-zinc-600 dark:text-zinc-300 bg-white dark:bg-[#0e0e11] p-2 rounded-lg border border-zinc-200/60 dark:border-white/5 space-y-0.5">
-                      <div className="text-zinc-400 text-[10px]">Host: get ➔ Target:</div>
+                    <div className="font-mono text-[10px] sm:text-[11px] text-zinc-600 dark:text-zinc-300 bg-white dark:bg-[#0e0e11] p-1.5 sm:p-2 rounded-lg border border-zinc-200/60 dark:border-white/5 space-y-0.5">
+                      <div className="text-zinc-400 text-[9px] sm:text-[10px]">Host: get ➔ Target:</div>
                       <div className="truncate text-[#0066B2] dark:text-[#38BDF8] font-bold">cname.leadmagnets.io</div>
                     </div>
                   </div>
                 </div>
 
                 {/* Verification CTA Bar */}
-                <div className="p-2.5 rounded-xl bg-gradient-to-r from-[#0066B2]/10 via-purple-500/10 to-emerald-500/10 border border-[#0066B2]/20 flex items-center justify-between gap-2">
+                <div className="p-2 sm:p-2.5 rounded-xl bg-gradient-to-r from-[#0066B2]/10 via-purple-500/10 to-emerald-500/10 border border-[#0066B2]/20 flex items-center justify-between gap-2">
                   <div className="flex items-center gap-2 text-xs truncate">
                     <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0" />
                     <span className="font-semibold text-zinc-800 dark:text-zinc-200 text-xs truncate">
@@ -771,9 +771,9 @@ export default function ShowcaseTabs() {
                 </div>
               </div>
 
-              <div className="flex items-center justify-between border-t border-zinc-100 dark:border-zinc-800 pt-2.5 text-xs text-zinc-400">
-                <span>100% White-labeled on Pro Plans · Zero LeadMagnets Branding</span>
-                <span className="font-bold text-emerald-600 dark:text-emerald-400">Auto-SSL Provisioned ✓</span>
+              <div className="flex items-center justify-between border-t border-zinc-100 dark:border-zinc-800 pt-2.5 text-[11px] sm:text-xs text-zinc-400 gap-2 pr-12 sm:pr-0">
+                <span className="truncate">100% White-labeled on Pro Plans · Zero LeadMagnets Branding</span>
+                <span className="font-bold text-emerald-600 dark:text-emerald-400 shrink-0">Auto-SSL Provisioned ✓</span>
               </div>
             </div>
           )}
@@ -810,7 +810,7 @@ export default function ShowcaseTabs() {
               </div>
 
               {/* Reader Document Mockup with Interactive Blur Gating */}
-              <div className="relative rounded-2xl border border-zinc-200/80 dark:border-white/10 bg-zinc-50/80 dark:bg-white/[0.03] p-4 sm:p-5 overflow-hidden flex-1 flex flex-col justify-center">
+              <div className="relative rounded-2xl border border-zinc-200/80 dark:border-white/10 bg-zinc-50/80 dark:bg-white/[0.03] p-3.5 sm:p-5 overflow-hidden flex-1 flex flex-col justify-center my-auto">
                 {/* Visible Page 1 / 2 Header Text */}
                 <div className="space-y-2 mb-3">
                   <div className="h-3.5 w-3/4 rounded bg-zinc-300/80 dark:bg-zinc-700/80" />
@@ -819,7 +819,7 @@ export default function ShowcaseTabs() {
                 </div>
 
                 {/* Locked Page Overlay */}
-                <div className={`relative rounded-xl p-5 sm:p-6 border transition-all flex flex-col items-center justify-center text-center overflow-hidden ${
+                <div className={`relative rounded-xl p-4 sm:p-6 border transition-all flex flex-col items-center justify-center text-center overflow-hidden ${
                   isPdfUnlocked
                     ? "bg-emerald-500/5 border-emerald-500/20"
                     : "bg-zinc-900/60 backdrop-blur-md border-zinc-700/50 text-white"
@@ -864,9 +864,9 @@ export default function ShowcaseTabs() {
                 </div>
               </div>
 
-              <div className="flex items-center justify-between border-t border-zinc-100 dark:border-zinc-800 pt-2.5 text-xs text-zinc-400">
-                <span>Native PDF rendering · Zero Google Drive links</span>
-                <span className="font-bold text-[#0066B2] dark:text-[#38BDF8]">Instant Fulfillment (0.2s)</span>
+              <div className="flex items-center justify-between border-t border-zinc-100 dark:border-zinc-800 pt-2.5 text-[11px] sm:text-xs text-zinc-400 gap-2 pr-12 sm:pr-0">
+                <span className="truncate">Native PDF rendering · Zero Google Drive links</span>
+                <span className="font-bold text-[#0066B2] dark:text-[#38BDF8] shrink-0">Instant Fulfillment (0.2s)</span>
               </div>
             </div>
           )}
@@ -915,7 +915,7 @@ export default function ShowcaseTabs() {
               </div>
 
               {/* Template Cards Grid */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-3">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 mb-2 sm:mb-3">
                 {templatePresets.map((tmpl, idx) => {
                   const isSelected = selectedTemplate === idx;
                   return (
@@ -925,7 +925,7 @@ export default function ShowcaseTabs() {
                         setSelectedTemplate(idx);
                         setSelectedBrandColor(tmpl.color);
                       }}
-                      className={`p-3 rounded-2xl border transition-all cursor-pointer select-none relative overflow-hidden group ${
+                      className={`p-2 sm:p-3 rounded-2xl border transition-all cursor-pointer select-none relative overflow-hidden group ${
                         isSelected
                           ? "bg-white dark:bg-[#0e0e11] shadow-lg ring-2"
                           : "bg-zinc-50/80 dark:bg-white/[0.02] border-zinc-200/80 dark:border-white/5 opacity-80 hover:opacity-100"
@@ -937,10 +937,10 @@ export default function ShowcaseTabs() {
                     >
                       {/* Mini Template Preview Header */}
                       <div
-                        className="h-14 rounded-xl mb-2 flex items-center justify-center p-2 transition-transform group-hover:scale-[1.02]"
+                        className="h-10 sm:h-14 rounded-xl mb-1.5 sm:mb-2 flex items-center justify-center p-2 transition-transform group-hover:scale-[1.02]"
                         style={{ backgroundColor: `${tmpl.color}15`, border: `1px solid ${tmpl.color}30` }}
                       >
-                        <FileText className="h-6 w-6" style={{ color: tmpl.color }} />
+                        <FileText className="h-5 w-5 sm:h-6 sm:w-6" style={{ color: tmpl.color }} />
                       </div>
 
                       <div className="space-y-0.5">
@@ -963,9 +963,9 @@ export default function ShowcaseTabs() {
                 })}
               </div>
 
-              <div className="flex items-center justify-between border-t border-zinc-100 dark:border-zinc-800 pt-2.5 text-xs text-zinc-400">
-                <span>Fully responsive · Auto dark mode &amp; custom typography</span>
-                <span className="font-bold text-[#0066B2] dark:text-[#38BDF8]">1-Click Theme Switch</span>
+              <div className="flex items-center justify-between border-t border-zinc-100 dark:border-zinc-800 pt-2.5 text-[11px] sm:text-xs text-zinc-400 gap-2 pr-12 sm:pr-0">
+                <span className="truncate">Fully responsive · Auto dark mode &amp; custom typography</span>
+                <span className="font-bold text-[#0066B2] dark:text-[#38BDF8] shrink-0">1-Click Theme Switch</span>
               </div>
             </div>
           )}
@@ -1016,7 +1016,7 @@ export default function ShowcaseTabs() {
                 </div>
 
                 {/* 3 Step Cards */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                <div className="grid grid-cols-3 gap-1.5 sm:gap-2.5">
                   {workflowSteps.map((step, idx) => {
                     const isSelected = activeWorkflowStep === idx;
                     return (
@@ -1027,19 +1027,20 @@ export default function ShowcaseTabs() {
                           setActiveWorkflowStep(idx);
                           setIsPlaying(false);
                         }}
-                        className={`p-2.5 sm:p-3 rounded-xl transition-all cursor-pointer select-none border ${
+                        className={`p-2 sm:p-3 rounded-xl transition-all cursor-pointer select-none border ${
                           isSelected
                             ? "bg-white dark:bg-[#0e0e11] border-[#0066B2] shadow-md ring-2 ring-[#0066B2]/30"
                             : "bg-zinc-50/80 dark:bg-white/[0.02] border-zinc-200/80 dark:border-white/5 opacity-80 hover:opacity-100"
                         }`}
                       >
-                        <div className="flex items-center justify-between mb-1">
-                          <span className="text-[10px] font-extrabold text-[#0066B2] dark:text-[#38BDF8] uppercase">
-                            Step {step.stepNum} · {step.badge}
+                        <div className="flex items-center justify-between mb-0.5 sm:mb-1">
+                          <span className="text-[9px] sm:text-[10px] font-extrabold text-[#0066B2] dark:text-[#38BDF8] uppercase truncate">
+                            Step {step.stepNum}
+                            <span className="hidden min-[420px]:inline"> · {step.badge}</span>
                           </span>
-                          <span className="text-[10px] font-mono text-zinc-400">{step.delay}</span>
+                          <span className="text-[10px] font-mono text-zinc-400 hidden sm:inline">{step.delay}</span>
                         </div>
-                        <p className="text-xs sm:text-sm font-bold text-zinc-900 dark:text-white leading-tight">
+                        <p className="text-[11px] sm:text-sm font-bold text-zinc-900 dark:text-white leading-tight truncate sm:whitespace-normal">
                           {step.title}
                         </p>
                       </div>
@@ -1061,20 +1062,20 @@ export default function ShowcaseTabs() {
                       <div className="flex items-center justify-between gap-2 border-b border-zinc-200/60 dark:border-zinc-800 pb-2">
                         <div className="flex items-center gap-2">
                           <Mail className="h-4 w-4 text-[#0066B2] dark:text-[#38BDF8]" />
-                          <p className="text-xs font-bold text-zinc-900 dark:text-white truncate max-w-[280px] sm:max-w-md">
+                          <p className="text-xs font-bold text-zinc-900 dark:text-white truncate max-w-[240px] sm:max-w-md">
                             {workflowSteps[activeWorkflowStep].subject}
                           </p>
                         </div>
-                        <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
+                        <span className="text-[9px] sm:text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-1.5 sm:px-2 py-0.5 rounded border border-emerald-500/20 shrink-0">
                           {workflowSteps[activeWorkflowStep].stat}
                         </span>
                       </div>
 
-                      <div className="text-xs text-zinc-600 dark:text-zinc-300 leading-relaxed flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+                      <div className="text-xs text-zinc-600 dark:text-zinc-300 leading-relaxed flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                         <p className="text-xs flex-1 line-clamp-2">
                           {workflowSteps[activeWorkflowStep].preview}
                         </p>
-                        <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#0066B2] text-white text-[11px] font-bold shadow-xs shrink-0">
+                        <span className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg bg-[#0066B2] text-white text-[10px] sm:text-[11px] font-bold shadow-xs shrink-0 self-start sm:self-auto">
                           {workflowSteps[activeWorkflowStep].cta}
                         </span>
                       </div>
@@ -1083,9 +1084,9 @@ export default function ShowcaseTabs() {
                 </div>
               </div>
 
-              <div className="text-xs text-zinc-400 pt-2 border-t border-zinc-100 dark:border-zinc-800 flex items-center justify-between">
-                <span>Auto-stops remaining follow-ups when lead converts</span>
-                <span className="text-[#0066B2] dark:text-[#38BDF8] font-bold">100% Native Delivery</span>
+              <div className="text-[11px] sm:text-xs text-zinc-400 pt-2 border-t border-zinc-100 dark:border-zinc-800 flex items-center justify-between gap-2 pr-12 sm:pr-0">
+                <span className="truncate">Auto-stops remaining follow-ups when lead converts</span>
+                <span className="text-[#0066B2] dark:text-[#38BDF8] font-bold shrink-0">100% Native Delivery</span>
               </div>
             </div>
           )}
@@ -1150,9 +1151,9 @@ export default function ShowcaseTabs() {
                 </div>
               </div>
 
-              <div className="text-xs text-zinc-400 pt-2 border-t border-zinc-100 dark:border-zinc-800 flex items-center justify-between">
-                <span>Visitor analytics, exit-intent captures, and conversion tracking</span>
-                <span className="text-[#0066B2] dark:text-[#38BDF8] font-bold">Live Stream</span>
+              <div className="text-[11px] sm:text-xs text-zinc-400 pt-2 border-t border-zinc-100 dark:border-zinc-800 flex items-center justify-between gap-2 pr-12 sm:pr-0">
+                <span className="truncate">Visitor analytics, exit-intent captures, and conversion tracking</span>
+                <span className="text-[#0066B2] dark:text-[#38BDF8] font-bold shrink-0">Live Stream</span>
               </div>
             </div>
           )}
@@ -1234,12 +1235,12 @@ export default function ShowcaseTabs() {
           type="button"
           onClick={() => setIsPlaying(!isPlaying)}
           aria-label={isPlaying ? "Pause demo playback" : "Resume demo playback"}
-          className="absolute bottom-4 right-4 sm:bottom-6 sm:right-6 h-9 w-9 sm:h-10 sm:w-10 rounded-full bg-white dark:bg-zinc-800 text-zinc-800 dark:text-zinc-100 shadow-xl border border-zinc-200 dark:border-white/10 flex items-center justify-center hover:scale-105 active:scale-95 transition cursor-pointer z-30"
+          className="absolute bottom-3 right-3 sm:bottom-6 sm:right-6 h-8 w-8 sm:h-10 sm:w-10 rounded-full bg-white dark:bg-zinc-800 text-zinc-800 dark:text-zinc-100 shadow-xl border border-zinc-200 dark:border-white/10 flex items-center justify-center hover:scale-105 active:scale-95 transition cursor-pointer z-30"
         >
           {isPlaying ? (
-            <Pause className="h-4 w-4 fill-current text-zinc-800 dark:text-zinc-100" />
+            <Pause className="h-3.5 w-3.5 sm:h-4 sm:w-4 fill-current text-zinc-800 dark:text-zinc-100" />
           ) : (
-            <Play className="h-4 w-4 fill-current text-[#0066B2] dark:text-[#38BDF8] ml-0.5" />
+            <Play className="h-3.5 w-3.5 sm:h-4 sm:w-4 fill-current text-[#0066B2] dark:text-[#38BDF8] ml-0.5" />
           )}
         </button>
       </div>

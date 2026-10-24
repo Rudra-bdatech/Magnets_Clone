@@ -1328,6 +1328,49 @@ textarea {
 }
 @keyframes lmDraw { to { stroke-dashoffset: 0; } }
 
+/* Integrations flow: a short lit segment travels along a pathLength=1 path */
+.lm-comet {
+  stroke-dasharray: 0.14 1;
+  filter: drop-shadow(0 0 4px currentColor);
+  animation: lmComet var(--dur, 700ms) cubic-bezier(.55,0,.35,1) var(--delay, 0ms) both;
+}
+@keyframes lmComet { from { stroke-dashoffset: 0.14; } to { stroke-dashoffset: -1; } }
+/* Bright head riding the front 0.03 of the comet */
+.lm-comet-core {
+  stroke-dasharray: 0.03 1.11;
+  animation: lmCometCore var(--dur, 700ms) cubic-bezier(.55,0,.35,1) var(--delay, 0ms) both;
+}
+@keyframes lmCometCore { from { stroke-dashoffset: 0.03; } to { stroke-dashoffset: -1.11; } }
+.lm-trail {
+  stroke-dasharray: 1;
+  animation: lmTrail var(--dur, 700ms) cubic-bezier(.55,0,.35,1) var(--delay, 0ms) both;
+}
+@keyframes lmTrail { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+.lm-ripple {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: lmRipple 700ms ease-out both;
+}
+@keyframes lmRipple { from { transform: scale(.4); opacity: .9; } to { transform: scale(3.2); opacity: 0; } }
+.lm-hit {
+  position: absolute;
+  inset: -1px;
+  pointer-events: none;
+  border: 1px solid var(--c);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--c) 18%, transparent), 0 0 28px -6px var(--c);
+  animation: lmHit 900ms ease-out both;
+}
+@keyframes lmHit { from { opacity: 1; } to { opacity: 0; } }
+.lm-pop { animation: lmPop 420ms cubic-bezier(.34,1.56,.64,1) both; }
+@keyframes lmPop { from { transform: scale(.6); opacity: 0; } to { transform: none; opacity: 1; } }
+.lm-shake { animation: lmShake 420ms cubic-bezier(.36,.07,.19,.97) both; }
+@keyframes lmShake {
+  10%, 90% { transform: translateX(-1px); }
+  20%, 80% { transform: translateX(2px); }
+  30%, 50%, 70% { transform: translateX(-3px); }
+  40%, 60% { transform: translateX(3px); }
+}
+
 .lm-fade-in { animation: lmFadeIn 0.35s ease-out both; }
 @keyframes lmFadeIn { from { opacity: 0; transform: translateY(3px); } to { opacity: 1; transform: none; } }
 
@@ -1371,6 +1414,8 @@ textarea {
 @media (prefers-reduced-motion: reduce) {
   .lm-underline path { animation: none; stroke-dashoffset: 0; }
   .lm-fill, .lm-exit-cursor, .lm-fade-in { animation: none; }
+  .lm-comet, .lm-comet-core, .lm-trail, .lm-ripple, .lm-pop, .lm-shake { animation: none; }
+  .lm-hit { display: none; }
   .lm-exit-cursor { opacity: 0; }
   .lm-exit-popup { animation: none; opacity: 1; transform: translateY(-50%); }
 }

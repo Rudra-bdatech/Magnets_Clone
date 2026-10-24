@@ -3,14 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Check, ArrowRight } from "lucide-react";
-import { PLAN_LIMITS } from "@/lib/plan-limits";
-
 type Currency = "INR" | "USD";
-
-const free = PLAN_LIMITS.Free;
-const pro = PLAN_LIMITS.Pro;
-const fmt = (n: number) => n.toLocaleString("en-IN");
-const storage = (mb: number) => (mb >= 1024 ? `${mb / 1024} GB` : `${mb} MB`);
 
 // Mirrors PLAN_PRICING in lib/billing.ts (kept literal so this client file doesn't import the server billing module).
 const PRICES: Record<Currency, { free: string; pro: string; proNote: string }> = {
@@ -98,11 +91,11 @@ export default function Pricing() {
           </p>
           <p className="mt-2 text-sm text-zinc-500">forever, no card needed</p>
           <ul className="mt-7 flex-1 space-y-3 text-zinc-700 dark:text-zinc-300">
-            <Feature>{fmt(free.leadLimit)} leads</Feature>
-            <Feature>{storage(free.storageLimitMb)} file hosting</Feature>
-            <Feature>{free.sequencesLimit} email sequences</Feature>
+            <Feature>Create & publish lead magnets</Feature>
+            <Feature>Upload & host locked PDFs</Feature>
+            <Feature>Lead capture & email delivery</Feature>
             <Feature>AI page generator</Feature>
-            <Feature>Free LeadMagnets subdomain</Feature>
+            <Feature>Hosted on yourname.leadmagnets.app</Feature>
           </ul>
           <Link
             href="/register"
@@ -112,26 +105,31 @@ export default function Pricing() {
           </Link>
         </div>
 
-        {/* Pro */}
+        {/* Custom Domain / Pro */}
         <div className="relative flex flex-col overflow-hidden rounded-2xl bg-zinc-950 dark:bg-[#0b1a2b] p-7 text-white ring-1 ring-zinc-900 dark:ring-[#38BDF8]/30">
           <div aria-hidden="true" className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#38BDF8]/70 to-transparent" />
-          <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-[#38BDF8]">Pro</p>
+          <div className="flex items-center justify-between">
+            <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-[#38BDF8]">Custom Domain</p>
+            <span className="rounded-full bg-[#38BDF8]/15 px-2.5 py-0.5 text-[10px] font-semibold tracking-wide text-[#38BDF8]">
+              PRO
+            </span>
+          </div>
           <p className="mt-4 text-5xl font-extrabold tracking-tight">
             <RollingPrice value={p.pro} />
           </p>
           <p className="mt-2 text-sm text-zinc-400">{p.proNote}</p>
           <ul className="mt-7 flex-1 space-y-3 text-zinc-200">
-            <Feature dark>{fmt(pro.leadLimit)} leads</Feature>
-            <Feature dark>{storage(pro.storageLimitMb)} file hosting</Feature>
-            <Feature dark>{pro.sequencesLimit} email sequences</Feature>
-            <Feature dark>Custom domain with automatic SSL</Feature>
-            <Feature dark>No LeadMagnets branding</Feature>
+            <Feature dark>Connect your custom domain (e.g. resources.yourdomain.com)</Feature>
+            <Feature dark>All landing pages served under your domain</Feature>
+            <Feature dark>All locked PDF web pages served under your domain</Feature>
+            <Feature dark>Automatic SSL certificate & DNS routing</Feature>
+            <Feature dark>100% white-label (no LeadMagnets branding)</Feature>
           </ul>
           <Link
             href="/register"
             className="group mt-8 inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-white text-sm font-bold text-zinc-900 transition hover:bg-zinc-100"
           >
-            Start free, upgrade anytime
+            Get Custom Domain
             <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
           </Link>
         </div>

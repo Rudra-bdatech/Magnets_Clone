@@ -1,6 +1,6 @@
 import Link from "next/link";
 import dynamic from "next/dynamic";
-import { ArrowRight, Mail, BookOpen, MessageSquare, BarChart3, Webhook, Zap, Calendar, TrendingUp, Target } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import SiteFooter from "@/layout/site-footer";
 import SiteHeader from "@/layout/site-header";
 import SectionHeading from "@/components/landing/section-heading";
@@ -19,7 +19,7 @@ const BentoFeatures = dynamic(() => import("@/components/landing/bento-features"
 const CompareStack = dynamic(() => import("@/components/landing/compare-stack"));
 const Pricing = dynamic(() => import("@/components/landing/pricing"));
 const TryIt = dynamic(() => import("@/components/landing/try-it"));
-const LeadFeed = dynamic(() => import("@/components/landing/lead-feed"));
+const IntegrationsFlow = dynamic(() => import("@/components/landing/integrations-flow"));
 const ProofStrip = dynamic(() => import("@/components/landing/proof-strip"));
 
 
@@ -52,32 +52,6 @@ const jsonLd = {
     },
   ],
 };
-
-const integrationsTop = [
-  { name: "Kit", Icon: Mail, category: "Email" },
-  { name: "Substack", Icon: BookOpen, category: "Newsletter" },
-  { name: "Slack", Icon: MessageSquare, category: "Alerts" },
-  { name: "Pipedrive", Icon: BarChart3, category: "CRM" },
-  { name: "Webhooks", Icon: Webhook, category: "Developer" },
-];
-const integrationsBottom = [
-  { name: "Zapier", Icon: Zap, category: "Automation" },
-  { name: "Calendly", Icon: Calendar, category: "Stops sequences" },
-  { name: "Google Analytics 4", Icon: TrendingUp, category: "Analytics" },
-  { name: "Meta Pixel", Icon: Target, category: "Retargeting" },
-];
-
-function IntegrationChip({ name, Icon, category }: { name: string; Icon: typeof Mail; category: string }) {
-  return (
-    <div className="flex shrink-0 items-center gap-3 rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#18181C] px-4 py-2.5">
-      <Icon className="h-4 w-4 text-zinc-500 dark:text-zinc-400" aria-hidden="true" />
-      <div>
-        <p className="text-sm font-semibold leading-none text-zinc-900 dark:text-white">{name}</p>
-        <p className="mt-1 font-mono text-[10px] text-zinc-400">{category}</p>
-      </div>
-    </div>
-  );
-}
 
 export default function Home() {
   return (
@@ -208,8 +182,8 @@ export default function Home() {
 
       {/* 05 INTEGRATIONS */}
       <section className="cv-auto bg-white dark:bg-[#121215] py-20 sm:py-24 border-b border-zinc-200/80 dark:border-zinc-800/80" id="integrations">
-        <div className="mx-auto grid max-w-6xl items-center gap-12 px-5 sm:px-8 lg:grid-cols-12 lg:px-10">
-          <Reveal className="lg:col-span-5">
+        <div className="mx-auto max-w-6xl px-5 sm:px-8 lg:px-10">
+          <Reveal>
             <SectionHeading
               align="left"
               index="05"
@@ -218,20 +192,8 @@ export default function Home() {
               accent="already work."
               description="Every signup is pushed to your email tool, CRM or Slack the moment it happens. Failed syncs retry on their own."
             />
-            <LeadFeed />
           </Reveal>
-          <div className="lg:col-span-7 space-y-3 overflow-hidden py-2 marquee-mask">
-            <div className="animate-marquee-left">
-              {[...integrationsTop, ...integrationsTop, ...integrationsTop, ...integrationsTop].map((item, i) => (
-                <div key={`t-${i}`} className="pr-3"><IntegrationChip {...item} /></div>
-              ))}
-            </div>
-            <div className="animate-marquee-right">
-              {[...integrationsBottom, ...integrationsBottom, ...integrationsBottom, ...integrationsBottom].map((item, i) => (
-                <div key={`b-${i}`} className="pr-3"><IntegrationChip {...item} /></div>
-              ))}
-            </div>
-          </div>
+          <IntegrationsFlow />
         </div>
       </section>
 
@@ -258,7 +220,7 @@ export default function Home() {
               index="07"
               eyebrow="Pricing"
               title="Start free."
-              accent="Upgrade when it pays for itself."
+              accent="Add your custom domain anytime."
             />
           </Reveal>
           <Pricing />
