@@ -719,7 +719,7 @@ export default function AccountSettingsPage() {
             </div>
           </div>
 
-          <div className="overflow-hidden">
+          <div className="p-1 -m-1">
             <AnimatePresence mode="wait">
               {/* TAB 1: Profile & Identity */}
               {activeTab === "profile" && (
@@ -729,8 +729,10 @@ export default function AccountSettingsPage() {
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: -6, scale: 0.99 }}
                   transition={{ duration: 0.1, ease: [0.16, 1, 0.3, 1] }}
-                  className="rounded-2xl border border-zinc-200/80 bg-white dark:border-[#2e2e38] dark:bg-[#18181B] p-4 sm:p-6 shadow-sm"
+                  className="relative rounded-2xl border border-[#0066B2]/30 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 p-4 sm:p-6 shadow-md backdrop-blur-sm overflow-hidden"
                 >
+                  <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0066B2]/[0.03] to-transparent opacity-100" />
+                  <div className="relative z-10">
                   <div className="flex items-start gap-3">
                     <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-[#0066B2]/30 bg-[#EFF6FF] dark:border-[#0066B2]/30 dark:bg-[#1a2638] text-[#0066B2]">
                       <User className="h-4.5 w-4.5" />
@@ -888,7 +890,8 @@ export default function AccountSettingsPage() {
                       </button>
                     </div>
                   </div>
-                </motion.section>
+                </div>
+              </motion.section>
               )}
 
               {/* TAB 2: Email & Gmail Sync */}
@@ -899,13 +902,16 @@ export default function AccountSettingsPage() {
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: -6, scale: 0.99 }}
                   transition={{ duration: 0.1, ease: [0.16, 1, 0.3, 1] }}
-                  className="rounded-2xl border border-zinc-200/80 bg-white dark:border-[#2e2e38] dark:bg-[#18181B] p-4 sm:p-6 shadow-sm"
+                  className="relative rounded-2xl border border-[#0066B2]/30 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 p-4 sm:p-6 shadow-md backdrop-blur-sm overflow-hidden"
                 >
-                  <EmailSenderSection
-                    account={account}
-                    setAccount={setAccount}
-                    addToast={addToast}
-                  />
+                  <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0066B2]/[0.03] to-transparent opacity-100" />
+                  <div className="relative z-10">
+                    <EmailSenderSection
+                      account={account}
+                      setAccount={setAccount}
+                      addToast={addToast}
+                    />
+                  </div>
                 </motion.section>
               )}
 
@@ -917,8 +923,10 @@ export default function AccountSettingsPage() {
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: -6, scale: 0.99 }}
                   transition={{ duration: 0.1, ease: [0.16, 1, 0.3, 1] }}
-                  className="rounded-2xl border border-zinc-200/80 bg-white dark:border-[#2e2e38] dark:bg-[#18181B] p-4 sm:p-6 shadow-sm"
+                  className="relative rounded-2xl border border-[#0066B2]/30 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 p-4 sm:p-6 shadow-md backdrop-blur-sm overflow-hidden"
                 >
+                  <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0066B2]/[0.03] to-transparent opacity-100" />
+                  <div className="relative z-10">
                   <div className="flex items-start gap-3">
                     <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-[#0066B2]/30 bg-[#EFF6FF] dark:border-[#0066B2]/30 dark:bg-[#1a2638] text-[#0066B2]">
                       <KeyRound className="h-4.5 w-4.5" />
@@ -990,7 +998,8 @@ export default function AccountSettingsPage() {
                       </button>
                     </div>
                   </div>
-                </motion.section>
+                </div>
+              </motion.section>
               )}
 
               {/* TAB 3: Instant Lead Email Alerts */}
@@ -1001,8 +1010,10 @@ export default function AccountSettingsPage() {
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: -6, scale: 0.99 }}
                   transition={{ duration: 0.1, ease: [0.16, 1, 0.3, 1] }}
-                  className="rounded-2xl border border-zinc-200/80 bg-white dark:border-[#2e2e38] dark:bg-[#18181B] p-4 sm:p-6 shadow-sm"
+                  className="relative rounded-2xl border border-[#0066B2]/30 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 p-4 sm:p-6 shadow-md backdrop-blur-sm overflow-hidden"
                 >
+                  <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0066B2]/[0.03] to-transparent opacity-100" />
+                  <div className="relative z-10">
                   <div className="flex items-start gap-3">
                     <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-[#0066B2]/30 bg-[#EFF6FF] dark:border-[#0066B2]/30 dark:bg-[#1a2638] text-[#0066B2]">
                       <Bell className="h-4.5 w-4.5" />
@@ -1102,7 +1113,8 @@ export default function AccountSettingsPage() {
                       </div>
                     </div>
                   )}
-                </motion.section>
+                </div>
+              </motion.section>
               )}
 
               {/* TAB 4: Danger Zone */}
@@ -1113,8 +1125,10 @@ export default function AccountSettingsPage() {
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: -6, scale: 0.99 }}
                   transition={{ duration: 0.1, ease: [0.16, 1, 0.3, 1] }}
-                  className="rounded-2xl border border-red-200 dark:border-red-900/60 bg-white dark:bg-[#18181B] p-4 sm:p-6 transition-colors shadow-sm"
+                  className="relative rounded-2xl border border-red-300/50 bg-white/90 dark:border-red-900/60 dark:bg-[#18181B]/90 p-4 sm:p-6 transition-colors shadow-md backdrop-blur-sm overflow-hidden"
                 >
+                  <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-red-500/[0.03] to-transparent opacity-100" />
+                  <div className="relative z-10">
                   <div className="flex items-start gap-3">
                     <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-red-200 bg-red-50 dark:border-[#552e2e] dark:bg-[#2a1414] text-red-600 dark:text-[#FF8585]">
                       <AlertTriangle className="h-4.5 w-4.5" />
@@ -1218,7 +1232,8 @@ export default function AccountSettingsPage() {
                       )}
                     </div>
                   </div>
-                </motion.section>
+                </div>
+              </motion.section>
               )}
             </AnimatePresence>
           </div>

@@ -164,8 +164,8 @@ export const MobileSequenceCard = memo(function MobileSequenceCard({
       onClick={handleCardClick}
       className={`group relative rounded-2xl border transition-all duration-200 active:scale-[0.99] select-none cursor-pointer flex flex-col justify-between overflow-hidden ${
         isChecked
-          ? "border-[#0066B2] dark:border-[#38BDF8] bg-blue-50/50 dark:bg-[#0066B2]/15 ring-2 ring-[#0066B2]/30 shadow-sm"
-          : "border-zinc-200/80 bg-white dark:border-white/[0.08] dark:bg-[#141417] hover:border-zinc-300 dark:hover:border-white/20 shadow-2xs"
+          ? "border-[#0066B2] dark:border-[#38BDF8] bg-blue-50/50 dark:bg-[#0066B2]/15 ring-2 ring-[#0066B2]/30 shadow-[0_8px_30px_rgba(0,102,178,0.15)]"
+          : "border-zinc-200/80 bg-white dark:border-white/[0.08] dark:bg-[#141417] hover:border-zinc-300 dark:hover:border-white/20 shadow-[0_2px_8px_rgba(0,0,0,0.06),0_1px_2px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.09)] dark:shadow-[0_4px_16px_rgba(0,0,0,0.3)] dark:hover:shadow-[0_8px_24px_rgba(0,0,0,0.4)]"
       }`}
     >
       {/* Top Header Row: Animated Checkbox, Icon, Title, Status & 3-Dot Actions */}

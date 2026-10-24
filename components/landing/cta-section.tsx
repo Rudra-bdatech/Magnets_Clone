@@ -2,8 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { ArrowRightIcon } from "@/components/icons";
-import { CheckCircle2, ShieldCheck, Zap, Sparkles, ArrowRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import Reveal from "@/components/reveal";
 
 interface Particle {
@@ -41,14 +40,14 @@ export default function CtaSection() {
     const colorsDark = [
       "rgba(56, 189, 248, ",  // Sky cyan #38BDF8
       "rgba(96, 165, 250, ",  // Electric blue #60A5FA
-      "rgba(168, 85, 247, ",  // Aurora purple #A855F7
+      "rgba(100, 195, 255, ",  // Light sky #64C3FF
       "rgba(52, 211, 153, ",  // Emerald #34D399
     ];
 
     const colorsLight = [
       "rgba(0, 102, 178, ",   // Brand Blue #0066B2
       "rgba(2, 132, 199, ",   // Sky Blue #0284C7
-      "rgba(147, 51, 234, ",  // Purple #9333EA
+      "rgba(28, 131, 211, ",  // Mid blue #1C83D3
       "rgba(16, 185, 129, ",  // Emerald #10B981
     ];
 
@@ -226,61 +225,26 @@ export default function CtaSection() {
       {/* Content Container — Full-Bleed Modern Typography */}
       <div className="relative z-10 mx-auto max-w-5xl text-center">
         <Reveal>
-          {/* Sleek Pill Badge */}
-          <div className="inline-flex items-center gap-2.5 rounded-full border border-[#0066B2]/20 dark:border-white/15 bg-white/80 dark:bg-[#121218]/90 backdrop-blur-xl px-4 py-1.5 text-xs font-bold text-[#0066B2] dark:text-[#38BDF8] shadow-sm mb-8">
-            <Sparkles className="h-3.5 w-3.5 text-[#0066B2] dark:text-[#38BDF8] animate-pulse" aria-hidden="true" />
-            <span>Start Converting Visitors Today</span>
-            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-ping" />
-          </div>
-
-          {/* Main Headline */}
-          <h2 className="mx-auto text-3xl sm:text-5xl font-extrabold text-zinc-900 dark:text-white tracking-tight leading-tight max-w-3xl">
-            Ready to Build Lead Magnets That{" "}
-            <span className="bg-gradient-to-r from-[#0066B2] via-[#38BDF8] to-purple-500 bg-clip-text text-transparent drop-shadow-xs">
-              Actually Convert?
-            </span>
+          <h2 className="mx-auto max-w-3xl text-[2.4rem] sm:text-6xl font-extrabold leading-[1.04] tracking-[-0.04em] text-zinc-900 dark:text-white">
+            Your next freebie should{" "}
+            <span className="font-instrument italic font-normal tracking-normal text-[#0066B2] dark:text-[#38BDF8]">pay you back.</span>
           </h2>
 
-          {/* Subtitle */}
-          <p className="mx-auto mt-5 max-w-2xl text-base sm:text-lg leading-relaxed text-zinc-600 dark:text-zinc-300 font-normal">
-            Publish AI-powered opt-in pages, host resources natively, and automate multi-step nurture emails — in under 60 seconds.
+          <p className="mx-auto mt-5 max-w-xl text-base sm:text-lg leading-relaxed text-zinc-600 dark:text-zinc-300">
+            Build the page, upload the file, switch on follow-ups. It takes about as long as making a coffee.
           </p>
 
-          {/* Call to Action Buttons */}
-          <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3.5 w-full sm:w-auto">
+          <div className="mt-9 flex flex-col sm:flex-row items-center justify-center gap-3 w-full sm:w-auto">
             <Link
-              className="inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-[#0066B2] hover:bg-[#005799] px-7 text-sm font-semibold text-white shadow-lg shadow-[#0066B2]/20 border border-white/10 transition-colors duration-200 cursor-pointer w-full sm:w-auto"
+              className="group inline-flex h-12 w-full sm:w-auto items-center justify-center gap-2 rounded-xl bg-zinc-950 dark:bg-white px-7 text-[15px] font-semibold text-white dark:text-zinc-950 transition hover:bg-zinc-800 dark:hover:bg-zinc-200"
               href="/register"
             >
-              <span>Get Started Free</span>
-              <ArrowRight className="h-4 w-4 text-white/90" aria-hidden="true" />
-            </Link>
-
-            <Link
-              className="inline-flex h-12 items-center justify-center gap-2 rounded-xl border border-zinc-300/80 dark:border-white/10 bg-white/70 dark:bg-white/[0.05] backdrop-blur-md px-6 text-sm font-semibold text-zinc-800 dark:text-zinc-200 shadow-xs transition-colors duration-200 hover:bg-white dark:hover:bg-white/[0.1] hover:border-zinc-400 dark:hover:border-white/20 w-full sm:w-auto"
-              href="#how-it-works"
-            >
-              <span>Explore Features</span>
+              Build your first page free
+              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
             </Link>
           </div>
 
-          {/* Clean Trust Checklist Line */}
-          <div className="mt-8 flex flex-wrap justify-center items-center gap-x-8 gap-y-3 text-xs sm:text-sm font-semibold text-zinc-500 dark:text-zinc-400">
-            <span className="flex items-center gap-2">
-              <CheckCircle2 className="h-4 w-4 text-emerald-500" aria-hidden="true" />
-              <span>Free Forever Tier Included</span>
-            </span>
-            <span className="text-zinc-300 dark:text-zinc-700 hidden sm:inline">•</span>
-            <span className="flex items-center gap-2">
-              <ShieldCheck className="h-4 w-4 text-[#0066B2] dark:text-[#38BDF8]" aria-hidden="true" />
-              <span>No Credit Card Required</span>
-            </span>
-            <span className="text-zinc-300 dark:text-zinc-700 hidden sm:inline">•</span>
-            <span className="flex items-center gap-2">
-              <Zap className="h-4 w-4 text-amber-500" aria-hidden="true" />
-              <span>Instant 60-Second Setup</span>
-            </span>
-          </div>
+          <p className="mt-6 text-xs text-zinc-500">Free plan · No card needed · Live in minutes</p>
         </Reveal>
       </div>
     </section>

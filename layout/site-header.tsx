@@ -61,6 +61,7 @@ export default function SiteHeader() {
         <NavLink href="#how-it-works">How it works</NavLink>
         <NavLink href="#features">Features</NavLink>
         <NavLink href="#integrations">Integrations</NavLink>
+        <NavLink href="#pricing">Pricing</NavLink>
       </nav>
 
       <div className="flex items-center gap-1 sm:gap-2 shrink-0">
@@ -161,6 +162,17 @@ export default function SiteHeader() {
                 }}
               >
                 Integrations
+              </a>
+              <a
+                href="#pricing"
+                className="py-2 border-b border-zinc-100 dark:border-zinc-800/60 transition hover:text-[#0066B2]"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setMobileMenuOpen(false);
+                  smoothScrollTo("pricing");
+                }}
+              >
+                Pricing
               </a>
             </nav>
 

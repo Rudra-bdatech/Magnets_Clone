@@ -50,8 +50,8 @@ const STEPS: FunnelStep[] = [
       "Craft compelling headlines, benefit bullets, and opt-in forms tailored to your niche. Publish with your own CNAME subdomain and auto-SSL.",
     windowLabel: "AI PAGE BUILDER",
     metrics: [
-      { label: "Build Time", value: "30s" },
-      { label: "Opt-in Rate", value: "48.6%" },
+      { label: "AI writes", value: "Headline + bullets" },
+      { label: "Publish on", value: "Any subdomain" },
     ],
   },
   {
@@ -60,11 +60,11 @@ const STEPS: FunnelStep[] = [
     title: "Host and deliver assets without Google Drive",
     headline: "Host securely & dispatch instantly on opt-in",
     description:
-      "Store PDFs, Notion templates, checklists, or videos natively. The moment visitors submit their email, tokenized fulfillment fires in 0.2s.",
+      "Store PDFs, Notion templates and checklists natively. The moment visitors submit their email, the download link is sent automatically.",
     windowLabel: "SECURE ASSET VAULT",
     metrics: [
-      { label: "Fulfillment", value: "0.2s" },
-      { label: "Delivery", value: "99.4%" },
+      { label: "Delivery", value: "Automatic email" },
+      { label: "Files", value: "PDF, ZIP, docs" },
     ],
   },
   {
@@ -77,7 +77,7 @@ const STEPS: FunnelStep[] = [
     windowLabel: "CONVERSION TELEMETRY",
     metrics: [
       { label: "Tracking", value: "GA4 + Meta" },
-      { label: "Recovery", value: "+23%" },
+      { label: "Recovery", value: "Exit-intent" },
     ],
   },
   {
@@ -89,7 +89,7 @@ const STEPS: FunnelStep[] = [
       "Auto-send timed multi-step follow-ups that stop automatically when leads book a call on Calendly or convert in your CRM.",
     windowLabel: "DRIP WORKFLOW",
     metrics: [
-      { label: "Open Rate", value: "62.8%" },
+      { label: "Schedule", value: "Day 0, 2, 5…" },
       { label: "Auto-Stop", value: "Calendly/CRM" },
     ],
   },
@@ -102,8 +102,8 @@ const STEPS: FunnelStep[] = [
       "Connect your existing tools in 1 click. Instant webhook routing, auto-retry queues, and bi-directional contact syncing.",
     windowLabel: "ECOSYSTEM SYNC",
     metrics: [
-      { label: "Webhook Latency", value: "<150ms" },
-      { label: "Integrations", value: "10+ Native" },
+      { label: "Sync", value: "Real-time" },
+      { label: "Integrations", value: "9 tools" },
     ],
   },
 ];

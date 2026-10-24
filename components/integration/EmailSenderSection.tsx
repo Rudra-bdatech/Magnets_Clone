@@ -218,7 +218,7 @@ export const EmailSenderSection = memo(function EmailSenderSection({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3 items-stretch">
 
         {/* ─── Gmail OAuth2 Card ─────────────────────────────────────────────── */}
-        <div data-tour="gmail-connect" className="rounded-2xl border border-[#0066B2]/30 bg-white dark:border-[#0066B2]/35 dark:bg-[#121214] overflow-hidden shadow-sm flex flex-col justify-between h-full">
+        <div data-tour="gmail-connect" className="rounded-2xl border border-[#0066B2]/30 bg-white dark:border-[#0066B2]/35 dark:bg-[#121214] overflow-hidden shadow-md flex flex-col justify-between h-full">
           <div className="p-4 flex flex-col justify-between h-full">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
@@ -319,7 +319,7 @@ export const EmailSenderSection = memo(function EmailSenderSection({
         </div>
 
         {/* ─── Custom SMTP Card ─────────────────────────────────────────────── */}
-        <div className={`rounded-2xl border border-[#0066B2]/30 bg-white dark:border-[#0066B2]/35 dark:bg-[#121214] overflow-hidden shadow-sm transition-all duration-300 ease-in-out flex flex-col justify-between ${showSmtp ? "md:col-span-2" : "h-full"}`}>
+        <div className={`rounded-2xl border border-[#0066B2]/30 bg-white dark:border-[#0066B2]/35 dark:bg-[#121214] overflow-hidden shadow-md transition-all duration-300 ease-in-out flex flex-col justify-between ${showSmtp ? "md:col-span-2" : "h-full"}`}>
           <div
             onClick={() => setShowSmtp((v) => !v)}
             className="p-4 flex items-center justify-between hover:bg-[#EFF6FF] dark:hover:bg-[#18181c] transition-colors cursor-pointer"

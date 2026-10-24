@@ -1244,7 +1244,7 @@ export default function SequencesPage() {
                       setActiveFolderFilter(folder.id);
                       setViewMode("grid");
                     }}
-                    className="group relative flex flex-col justify-between rounded-2xl border border-zinc-200/80 dark:border-white/[0.08] bg-white dark:bg-[#141417] p-5 hover:border-[#0066B2]/50 dark:hover:border-[#38BDF8]/40 hover:shadow-xl dark:hover:bg-[#18181D] transition-all duration-200 cursor-pointer overflow-hidden"
+                    className="group relative flex flex-col justify-between rounded-2xl border border-zinc-200/80 dark:border-white/[0.08] bg-white dark:bg-[#141417] p-5 hover:border-zinc-300 dark:hover:border-white/20 shadow-[0_2px_8px_rgba(0,0,0,0.06),0_1px_2px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.09)] dark:shadow-[0_4px_16px_rgba(0,0,0,0.3)] dark:hover:shadow-[0_8px_24px_rgba(0,0,0,0.4)] dark:hover:bg-[#18181D] transition-all duration-200 cursor-pointer overflow-hidden"
                   >
                     <div>
                       {/* Top Header with Folder Icon and Badge */}
@@ -1389,8 +1389,8 @@ export default function SequencesPage() {
                             isMenuOpen ? "z-30" : "z-0"
                           } ${
                             isChecked
-                              ? "border-[#0066B2] dark:border-[#38BDF8] bg-blue-50/40 dark:bg-[#0066B2]/15 ring-2 ring-[#0066B2]/30 shadow-md"
-                              : "border-zinc-200/80 dark:border-white/[0.08] bg-white dark:bg-[#141417] hover:border-zinc-300 dark:hover:border-white/20 hover:shadow-md dark:hover:bg-[#18181D]"
+                              ? "border-[#0066B2] dark:border-[#38BDF8] bg-blue-50/40 dark:bg-[#0066B2]/15 ring-2 ring-[#0066B2]/30 shadow-[0_8px_30px_rgba(0,102,178,0.15)]"
+                              : "border-zinc-200/80 dark:border-white/[0.08] bg-white dark:bg-[#141417] hover:border-zinc-300 dark:hover:border-white/20 shadow-[0_2px_8px_rgba(0,0,0,0.06),0_1px_2px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.09)] dark:shadow-[0_4px_16px_rgba(0,0,0,0.3)] dark:hover:shadow-[0_8px_24px_rgba(0,0,0,0.4)] dark:hover:bg-[#18181D]"
                           }`}
                         >
                           {/* Top Section: Header & Step Pipeline */}
