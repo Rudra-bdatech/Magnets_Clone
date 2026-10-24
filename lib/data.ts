@@ -388,8 +388,6 @@ export const integrations: Integration[] = [
   { id: "slack", name: "Slack", category: "messaging", description: "Post a notification to a channel the moment someone signs up.", connected: true, trigger: "Signup" },
   { id: "pipedrive", name: "Pipedrive", category: "crm", description: "Create or update a person in Pipedrive for every signup.", connected: false, trigger: "Signup" },
   { id: "zapier", name: "Zapier", category: "automation", description: "Trigger your own automation with every new signup.", connected: true, trigger: "Signup" },
-  { id: "calendly", name: "Calendly", category: "calendar", description: "Stop a follow-up sequence when someone books a call.", connected: false, trigger: "Booking" },
-  { id: "calcom", name: "Cal.com", category: "calendar", description: "Stop a follow-up sequence when someone books a call.", connected: false, trigger: "Booking" },
 ];
 
 export const pageStats = [

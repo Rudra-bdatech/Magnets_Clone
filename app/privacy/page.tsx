@@ -112,8 +112,7 @@ export default function PrivacyPage() {
             <p>
               Optional integrations are activated by the account holder. Depending on what they connect, signup information may be
               sent to Substack or Kit for newsletter subscription, Slack for a notification, Pipedrive to create or update
-              a person, Zapier to trigger an account holder&apos;s automation, or Calendly or Cal.com to stop an enabled follow-up
-              sequence after a booking. Each third party processes information under its own terms and privacy notice.
+              a person, or Zapier to trigger an account holder&apos;s automation. Each third party processes information under its own terms and privacy notice.
             </p>
           </LegalSection>
 
@@ -176,7 +175,7 @@ export default function PrivacyPage() {
               <li><strong className="text-zinc-900 dark:text-white">SocketLabs</strong> for email delivery from LeadMagnets-managed sender addresses.</li>
               <li><strong className="text-zinc-900 dark:text-white">Google</strong> for sign-in with Google and, when an account holder connects Gmail, sending email through the Gmail API.</li>
               <li>
-                <strong className="text-zinc-900 dark:text-white">Substack, Kit, Slack, Pipedrive, Zapier, Calendly, and Cal.com</strong> when an account holder
+                <strong className="text-zinc-900 dark:text-white">Substack, Kit, Slack, Pipedrive, and Zapier</strong> when an account holder
                 elects to connect those services.
               </li>
             </ul>

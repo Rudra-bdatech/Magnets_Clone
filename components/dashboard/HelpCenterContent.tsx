@@ -1411,9 +1411,9 @@ export default function HelpCenterContent({
                       4
                     </span>
                     <div className="space-y-1">
-                      <h4 className="text-sm font-bold text-zinc-900 dark:text-white">Stop when someone books</h4>
+                      <h4 className="text-sm font-bold text-zinc-900 dark:text-white">Stop when someone converts</h4>
                       <p className="text-xs text-zinc-500 dark:text-[#9B9085] leading-relaxed">
-                        If Calendly or Cal.com is connected, you can stop this magnet's sequence when the same email books a call.
+                        Sequences automatically stop for a lead the moment they convert or unsubscribe.
                       </p>
                     </div>
                   </div>

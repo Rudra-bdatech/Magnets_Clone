@@ -1346,6 +1346,16 @@ textarea {
   animation: lmTrail var(--dur, 700ms) cubic-bezier(.55,0,.35,1) var(--delay, 0ms) both;
 }
 @keyframes lmTrail { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+/* Mobile rail: glowing head that rides the growing rail (hub centre → last card centre) */
+.lm-beam {
+  filter: drop-shadow(0 0 6px #38BDF8);
+  animation: lmBeam 1000ms linear both;
+}
+@keyframes lmBeam {
+  0% { top: 0; opacity: 0; }
+  8%, 92% { opacity: 1; }
+  100% { top: calc(100% - 68px); opacity: 0; }
+}
 .lm-ripple {
   transform-box: fill-box;
   transform-origin: center;
@@ -1415,6 +1425,7 @@ textarea {
   .lm-underline path { animation: none; stroke-dashoffset: 0; }
   .lm-fill, .lm-exit-cursor, .lm-fade-in { animation: none; }
   .lm-comet, .lm-comet-core, .lm-trail, .lm-ripple, .lm-pop, .lm-shake { animation: none; }
+  .lm-beam { display: none; }
   .lm-hit { display: none; }
   .lm-exit-cursor { opacity: 0; }
   .lm-exit-popup { animation: none; opacity: 1; transform: translateY(-50%); }

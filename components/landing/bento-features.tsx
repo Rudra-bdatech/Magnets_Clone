@@ -208,7 +208,7 @@ const DRIP = [
   { day: "Day 0", label: "Your checklist is here", Icon: Mail },
   { day: "Day 2", label: "The mistake most bakers make", Icon: Mail },
   { day: "Day 5", label: "Want me to look at your feed?", Icon: Mail },
-  { day: "Day 6", label: "Call booked · sequence stopped", Icon: CalendarCheck },
+  { day: "Day 6", label: "Lead converted · sequence stopped", Icon: Mail },
 ];
 function DripDemo({ active }: { active: boolean }) {
   const step = useLoopStep(DRIP.length + 2, 1000, active);
@@ -359,7 +359,7 @@ export default function BentoFeatures() {
       <Tile n="03" title="Host the file here" body="PDFs, templates, spreadsheets. No Drive links, no permission requests." className="lg:col-span-2">
         {() => <HostingDemo />}
       </Tile>
-      <Tile n="04" title="Follow-ups that know when to stop" body="Timed emails that pause the moment a lead books a call." className="lg:col-span-2">
+      <Tile n="04" title="Follow-ups that know when to stop" body="Timed emails that pause the moment a lead converts or opts out." className="lg:col-span-2">
         {(a) => <DripDemo active={a} />}
       </Tile>
       <Tile n="05" title="Catch people on the way out" body="An exit-intent popup on every page, no extra setup." className="lg:col-span-2">

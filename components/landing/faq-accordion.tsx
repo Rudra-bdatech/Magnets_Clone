@@ -26,7 +26,7 @@ const faqs: BouncyAccordionItem[] = [
     id: "email-automation",
     category: "EMAIL AUTOMATION",
     title: "Can I automatically sequence follow-up emails?",
-    description: "Yes! Set up automated email sequences with customized day delays (e.g. Day 1, Day 3, Day 7). You can also set smart stop conditions so sequences stop automatically when leads book a call on Calendly.",
+    description: "Yes! Set up automated email sequences with customized day delays (e.g. Day 1, Day 3, Day 7). Sequences automatically pause the moment a subscriber converts or opts out.",
     icon: <Workflow className="h-3 w-3" aria-hidden="true" />,
     badgeColor: "bg-emerald-500/10 text-emerald-500 border-emerald-500/20",
   },

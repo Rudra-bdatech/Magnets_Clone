@@ -42,10 +42,9 @@ const DESTS: Dest[] = [
   { key: "meta", name: "Meta Pixel", action: "Lead event for retargeting", color: "#0866FF", logo: <Target className="h-4 w-4 text-[#0866FF]" /> },
 ];
 
-const ALSO = [
+const ALSO: { name: string; Icon: typeof BookOpen; note?: string }[] = [
   { name: "Substack", Icon: BookOpen },
   { name: "Zapier", Icon: Zap },
-  { name: "Calendly", Icon: Calendar, note: "pauses sequences on booking" },
 ];
 
 const BRAND = "#0066B2";
@@ -262,31 +261,98 @@ export default function IntegrationsFlow() {
       </div>
 
       {/* Mobile / tablet stack */}
-      <div aria-hidden="true" className="relative lg:hidden">
+      <div aria-hidden="true" className="relative mx-auto max-w-xl lg:hidden">
         <SignupCard visible={signupVisible} />
-        <div className="flex items-center gap-3 py-3 pl-6">
-          <span className={`h-8 w-px transition-colors duration-500 ${signupVisible ? "bg-[#0066B2]/50" : "bg-zinc-300 dark:bg-white/10"}`} />
-          <span className="relative flex h-10 w-10 items-center justify-center">
-            {routing && (
-              <span
-                className="absolute -inset-[2px] animate-spin rounded-full"
-                style={{ background: "conic-gradient(from 0deg, transparent 0 55%, #38BDF8 85%, transparent 100%)" }}
-              />
-            )}
+
+        <div className="relative">
+          {/* Rail: base, lit segment into the hub, lit segment growing down to the cards */}
+          <span
+            className="absolute left-7 top-0 w-px -translate-x-1/2 bg-zinc-300 dark:bg-white/10"
+            style={{ bottom: 28 }}
+          />
+          <span
+            className={`absolute left-7 top-0 w-px -translate-x-1/2 origin-top bg-[#0066B2]/70 dark:bg-[#38BDF8]/70 ${
+              phase === 1 ? "transition-transform duration-500 ease-out" : ""
+            }`}
+            style={{ height: RAIL_START, transform: `translateX(-50%) scaleY(${signupVisible ? 1 : 0})` }}
+          />
+          <span
+            className={`absolute left-7 w-px origin-top bg-[#0066B2]/70 dark:bg-[#38BDF8]/70 ${
+              phase === 2 ? "transition-transform ease-linear" : ""
+            }`}
+            style={{
+              top: RAIL_START,
+              bottom: 28,
+              transitionDuration: `${RAIL_MS}ms`,
+              transform: `translateX(-50%) scaleY(${hubActive ? 1 : 0})`,
+            }}
+          />
+          {live && phase === 2 && (
             <span
-              className={`relative flex h-10 w-10 items-center justify-center rounded-full border bg-white transition-colors duration-500 dark:bg-[#18181C] ${
-                hubActive ? "border-[#0066B2]/40" : "border-zinc-200 dark:border-white/10"
-              }`}
-            >
-              <MagnetIcon className="h-5 w-5" />
+              key={`beam-${cycle}`}
+              className="lm-beam absolute left-7 h-10 w-[3px] -translate-x-1/2 rounded-full"
+              style={{ background: "linear-gradient(to bottom, transparent, #38BDF8 70%, #fff)" }}
+            />
+          )}
+
+          {/* Hub row */}
+          <div className="relative flex h-20 items-center pl-[64px]">
+            <span className="absolute left-7 top-1/2 flex h-11 w-11 -translate-x-1/2 -translate-y-1/2 items-center justify-center">
+              {live && phase === 2 && (
+                <span key={`mping-${cycle}`} className="absolute inset-0 animate-ping rounded-full bg-[#0066B2]/25" />
+              )}
+              {routing && (
+                <span
+                  className="absolute -inset-[3px] animate-spin rounded-full"
+                  style={{ background: "conic-gradient(from 0deg, transparent 0 55%, #38BDF8 85%, transparent 100%)" }}
+                />
+              )}
+              <span
+                className={`relative flex h-11 w-11 items-center justify-center rounded-full border bg-white shadow-md transition-colors duration-500 dark:bg-[#18181C] ${
+                  hubActive ? "border-[#0066B2]/40" : "border-zinc-200 dark:border-white/10"
+                }`}
+              >
+                <MagnetIcon className="h-6 w-6" />
+              </span>
             </span>
-          </span>
-          <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-zinc-500">Routed to 6 tools</span>
-        </div>
-        <div className="grid gap-2 sm:grid-cols-2">
-          {DESTS.map((d, i) => (
-            <DestCard key={d.key} d={d} status={statuses[i]} live={live} cycle={cycle} />
-          ))}
+            <div>
+              <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-zinc-500">LeadMagnets</p>
+              <p className="text-xs text-zinc-500 dark:text-zinc-400">
+                {phase <= 1 ? "Waiting for a signup…" : phase === 5 ? "Delivered everywhere" : "Routing to 6 tools…"}
+              </p>
+            </div>
+          </div>
+
+          {/* Destination rows */}
+          <div className="space-y-2">
+            {DESTS.map((d, i) => {
+              const s = statuses[i];
+              const lit = s === "ok" || s === "failed" || s === "retrying";
+              const c = statusColor(s, d);
+              return (
+                <div key={d.key} className="relative pl-[52px]">
+                  <span
+                    className={`absolute left-7 top-1/2 w-6 border-t ${lit ? "" : "border-zinc-300 dark:border-white/10"}`}
+                    style={lit ? { borderColor: c, borderStyle: s === "ok" ? "solid" : "dashed" } : undefined}
+                  />
+                  <span
+                    className={`absolute left-[49px] top-1/2 h-1.5 w-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full ${
+                      lit ? "" : "bg-zinc-300 dark:bg-zinc-700"
+                    }`}
+                    style={lit ? { background: c } : undefined}
+                  />
+                  {live && (s === "ok" || s === "failed") && (
+                    <span
+                      key={`mrp-${cycle}-${s}`}
+                      className="lm-ripple absolute left-[49px] top-1/2 -ml-1.5 -mt-1.5 h-3 w-3 rounded-full"
+                      style={{ background: c }}
+                    />
+                  )}
+                  <DestCard d={d} status={s} live={live} cycle={cycle} />
+                </div>
+              );
+            })}
+          </div>
         </div>
       </div>
 

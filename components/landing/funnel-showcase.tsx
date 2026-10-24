@@ -84,14 +84,14 @@ const STEPS: FunnelStep[] = [
   {
     id: "nurture-sequence",
     stepNum: "04",
-    title: "Automate follow-ups with smart booking stops",
+    title: "Automate follow-ups with smart auto-stops",
     headline: "Nurture subscribers with automated sequences",
     description:
-      "Auto-send timed multi-step follow-ups that stop automatically when leads book a call on Calendly or convert in your CRM.",
+      "Auto-send timed multi-step follow-ups that nurture leads and pause automatically when a subscriber converts or opts out.",
     windowLabel: "DRIP WORKFLOW",
     metrics: [
       { label: "Schedule", value: "Day 0, 2, 5…" },
-      { label: "Auto-Stop", value: "Calendly/CRM" },
+      { label: "Auto-Stop", value: "On Conversion" },
     ],
   },
   {
@@ -601,7 +601,7 @@ export default function FunnelShowcase() {
                           Email 3: Strategy Call Offer
                         </p>
                         <p className="text-[10px] text-zinc-500 dark:text-zinc-400 pl-3.5 sm:pl-4 truncate">
-                          Delay: 4 days · Auto-stops if booked
+                          Delay: 4 days · Auto-stops if converted
                         </p>
                       </div>
                       <span className="text-[9px] sm:text-[10px] font-bold text-[#0066B2] dark:text-[#38BDF8] bg-[#0066B2]/10 px-1.5 sm:px-2 py-0.5 rounded shrink-0 ml-1">
@@ -616,8 +616,8 @@ export default function FunnelShowcase() {
                       <span className="h-1.5 w-1.5 rounded-full bg-[#0066B2] dark:bg-[#38BDF8] shrink-0" />
                       Smart Auto-Stop Guard
                     </span>
-                    <span className="font-bold text-[#0066B2] dark:text-[#38BDF8] shrink-0 ml-1">
-                      Calendly Synced
+                    <span className="font-bold text-emerald-600 dark:text-emerald-400 shrink-0 ml-1">
+                      Active &amp; Guarded
                     </span>
                   </div>
                 </div>

@@ -51,20 +51,19 @@ export default function TermsPage() {
             </p>
           </LegalSection>
 
-          <LegalSection title="4. Follow-up sequences and calendar stops">
+          <LegalSection title="4. Follow-up sequences and auto-stops">
             <p>
               A follow-up sequence sends the schedule and content you configure after a person signs up. You may choose to stop an
-              enabled sequence when a connected Calendly or Cal.com booking webhook reports a booking for the same email address.
-              You are responsible for configuring and securing your calendar connection and for checking that the sequence content
-              and timing are appropriate for your audience.
+              enabled sequence when a subscriber converts or opts out. You are responsible for configuring your sequence and for
+              checking that the sequence content and timing are appropriate for your audience.
             </p>
           </LegalSection>
 
           <LegalSection title="5. Optional integrations">
             <p>
-              You may connect supported third-party services, including Substack, Kit, Slack, Pipedrive, Zapier, Calendly,
-              and Cal.com. If you do, you authorise LeadMagnets to send the information needed to perform the selected action, such as
-              adding a subscriber, posting a signup notification, creating or updating a contact, or stopping a sequence. Your use
+              You may connect supported third-party services, including Substack, Kit, Slack, Pipedrive, and Zapier.
+              If you do, you authorise LeadMagnets to send the information needed to perform the selected action, such as
+              adding a subscriber, posting a signup notification, or creating or updating a contact. Your use
               of those services is also governed by their terms, privacy notices, pricing, and limits.
             </p>
           </LegalSection>
