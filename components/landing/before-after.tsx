@@ -135,7 +135,7 @@ export default function BeforeAfter() {
           className={`pointer-events-none absolute inset-y-0 w-px bg-white shadow-[0_0_0_1px_rgba(0,0,0,0.08)] ${touched ? "" : "transition-[left] duration-[1600ms] ease-[cubic-bezier(.2,.8,.2,1)]"}`}
           style={{ left: `clamp(24px, ${pos}%, calc(100% - 24px))` }}
         >
-          <span className="absolute top-1/2 left-1/2 flex h-10 w-10 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-zinc-200 bg-white text-zinc-700 shadow-lg">
+          <span className="absolute top-1/2 left-1/2 flex h-10 w-10 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-zinc-200 dark:border-zinc-600 bg-white text-zinc-700 shadow-lg">
             <MoveHorizontal className="h-4 w-4" aria-hidden="true" />
           </span>
         </div>

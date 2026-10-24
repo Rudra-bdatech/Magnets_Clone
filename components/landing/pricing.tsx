@@ -37,7 +37,7 @@ function RollingPrice({ value }: { value: string }) {
           <span key={key} aria-hidden="true" className="relative inline-block h-[1em] overflow-hidden tabular-nums">
             <span className="invisible">0</span>
             <span
-              className="absolute left-0 top-0 flex flex-col transition-transform duration-700 ease-[cubic-bezier(.2,.8,.2,1)]"
+              className="lm-rolling-digit absolute left-0 top-0 flex flex-col transition-transform duration-700 ease-[cubic-bezier(.2,.8,.2,1)]"
               style={{ transform: `translateY(-${d * 10}%)`, transitionDelay: `${i * 50}ms` }}
             >
               {Array.from({ length: 10 }, (_, n) => (

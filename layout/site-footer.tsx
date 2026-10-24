@@ -64,6 +64,7 @@ export default function SiteFooter() {
       <p
         aria-hidden="true"
         className="pointer-events-none select-none whitespace-nowrap text-center font-extrabold leading-[0.8] tracking-[-0.06em] text-[17vw] -mb-[3vw] text-transparent [-webkit-text-stroke:1px_rgba(0,102,178,0.28)] dark:[-webkit-text-stroke:1px_rgba(56,189,248,0.2)]"
+        style={{ paintOrder: "stroke fill", WebkitTextFillColor: "transparent", color: "rgba(0,102,178,0.28)" }}
       >
         LeadMagnets
       </p>

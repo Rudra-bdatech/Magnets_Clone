@@ -92,30 +92,52 @@ export default function TryIt() {
             </button>
           ))}
         </div>
-        <button
-          type="submit"
-          disabled={!topic.trim() || state === "loading"}
-          className={`mt-6 inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl text-[15px] font-semibold text-white transition-all duration-300 disabled:cursor-not-allowed ${
-            state === "done" ? "bg-emerald-600" : "bg-zinc-950 dark:bg-white dark:text-zinc-950 hover:bg-zinc-800 dark:hover:bg-zinc-200 disabled:opacity-40"
-          }`}
-        >
-          {state === "loading" && (
-            <>
-              <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> Writing your page…
-            </>
-          )}
+        <div className="relative mt-6">
+          <button
+            type="submit"
+            disabled={!topic.trim() || state === "loading"}
+            className={`relative inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl text-[15px] font-semibold text-white transition-all duration-300 disabled:cursor-not-allowed ${
+              state === "done" ? "bg-emerald-600" : "bg-zinc-950 dark:bg-white dark:text-zinc-950 hover:bg-zinc-800 dark:hover:bg-zinc-200 disabled:opacity-40"
+            }`}
+          >
+            {state === "loading" && (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> Writing your page…
+              </>
+            )}
+            {state === "done" && (
+              <>
+                <Check className="lm-pop h-4 w-4" aria-hidden="true" /> Page ready
+              </>
+            )}
+            {state === "idle" && <>Preview my page</>}
+          </button>
           {state === "done" && (
-            <>
-              <Check className="lm-pop h-4 w-4" aria-hidden="true" /> Page ready
-            </>
+            <div className="pointer-events-none absolute inset-0" aria-hidden="true">
+              {[...Array(8)].map((_, i) => {
+                const angle = (i / 8) * 360;
+                const dist = 40 + Math.random() * 30;
+                const x = Math.cos((angle * Math.PI) / 180) * dist;
+                const y = Math.sin((angle * Math.PI) / 180) * dist - 20;
+                const colors = ["bg-emerald-400", "bg-[#0066B2]", "bg-[#38BDF8]", "bg-amber-400"];
+                return (
+                  <span
+                    key={i}
+                    className={`lm-confetti absolute left-1/2 top-1/2 h-1.5 w-1.5 rounded-full ${colors[i % colors.length]}`}
+                    style={{ ["--x" as string]: `${x}px`, ["--y" as string]: `${y}px`, animationDelay: `${i * 40}ms` }}
+                  />
+                );
+              })}
+            </div>
           )}
-          {state === "idle" && <>Preview my page</>}
-        </button>
+        </div>
         <p className="mt-3 text-xs text-zinc-500">Instant preview from a template. After sign-up, the AI writes copy specific to your niche.</p>
       </form>
 
       {/* Preview side */}
-      <div aria-live="polite" className="relative overflow-hidden rounded-2xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#0e0e11] shadow-[0_30px_80px_-40px_rgba(0,40,90,0.35)]">
+      <div aria-live="polite" className={`relative overflow-hidden rounded-2xl border bg-white dark:bg-[#0e0e11] shadow-[0_30px_80px_-40px_rgba(0,40,90,0.35)] dark:shadow-[0_30px_80px_-40px_rgba(0,100,178,0.25)] transition-all duration-500 ${
+        state === "done" ? "border-[#0066B2]/30 dark:border-[#38BDF8]/30 ring-2 ring-[#0066B2]/20 dark:ring-[#38BDF8]/20" : "border-zinc-200 dark:border-white/10"
+      }`}>
         <div className="flex items-center gap-3 border-b border-zinc-200 dark:border-white/10 bg-zinc-50 dark:bg-[#16161a] px-4 py-2.5">
           <div className="flex gap-1.5" aria-hidden="true">
             <span className="h-2.5 w-2.5 rounded-full bg-zinc-300 dark:bg-zinc-700" />

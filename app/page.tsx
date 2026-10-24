@@ -20,6 +20,8 @@ const CompareStack = dynamic(() => import("@/components/landing/compare-stack"))
 const Pricing = dynamic(() => import("@/components/landing/pricing"));
 const TryIt = dynamic(() => import("@/components/landing/try-it"));
 const LeadFeed = dynamic(() => import("@/components/landing/lead-feed"));
+const ProofStrip = dynamic(() => import("@/components/landing/proof-strip"));
+const ActivityToast = dynamic(() => import("@/components/landing/activity-toast"), { ssr: false });
 
 
 const jsonLd = {
@@ -80,15 +82,16 @@ function IntegrationChip({ name, Icon, category }: { name: string; Icon: typeof 
 
 export default function Home() {
   return (
-    <main className="overflow-hidden bg-[#F0F7FF] dark:bg-[#0a0a0a] text-zinc-900 dark:text-zinc-100 transition-colors duration-300">
+    <main className="overflow-x-clip bg-[#F0F7FF] dark:bg-[#0a0a0a] text-zinc-900 dark:text-zinc-100 transition-colors duration-300">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
+      <SiteHeader />
+
       {/* HERO */}
       <section className="relative bg-[#F0F7FF] dark:bg-[#0a0a0a] border-b border-zinc-200/80 dark:border-zinc-800/80">
-        <SiteHeader />
         <div aria-hidden="true" className="absolute inset-x-0 top-0 -z-0 h-[36rem] vercel-dot-bg opacity-30 dark:opacity-15" />
 
         <div className="relative mx-auto max-w-7xl px-5 pt-20 pb-20 sm:px-8 sm:pt-28 lg:px-10 lg:pt-32 lg:pb-28">
@@ -129,6 +132,10 @@ export default function Home() {
           {/* INTERACTIVE WORKSPACE SHOWCASE DEMO — isolated client island */}
           <div className="lm-rise" style={{ animationDelay: "320ms" }}>
             <ShowcaseTabs />
+          </div>
+
+          <div className="lm-rise" style={{ animationDelay: "420ms" }}>
+            <ProofStrip />
           </div>
         </div>
       </section>
@@ -260,7 +267,7 @@ export default function Home() {
       </section>
 
       {/* 08 FAQ */}
-      <section id="faq" className="cv-auto bg-white dark:bg-[#121215] py-20 sm:py-28 px-5 sm:px-8 lg:px-10 border-b border-zinc-200/80 dark:border-zinc-800/80">
+      <section id="faq" className="cv-auto bg-[#F0F7FF] dark:bg-[#0a0a0a] py-20 sm:py-28 px-5 sm:px-8 lg:px-10 border-b border-zinc-200/80 dark:border-zinc-800/80">
         <div className="mx-auto max-w-5xl">
           <Reveal className="mb-12 sm:mb-14">
             <SectionHeading index="08" eyebrow="FAQ" title="Questions people" accent="usually ask." />
@@ -272,6 +279,7 @@ export default function Home() {
 
       <CtaSection />
 
+      <ActivityToast />
       <SiteFooter />
     </main>
   );

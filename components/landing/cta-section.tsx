@@ -32,6 +32,8 @@ export default function CtaSection() {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
     let animationFrameId: number;
     let particles: Particle[] = [];
     const particleCount = 55;
@@ -213,7 +215,7 @@ export default function CtaSection() {
   return (
     <section
       ref={containerRef}
-      className="relative w-full bg-[#F0F7FF] dark:bg-[#0a0a0a] py-24 sm:py-32 lg:py-36 px-5 sm:px-8 lg:px-10 overflow-hidden transition-colors duration-300 border-t border-zinc-200/80 dark:border-zinc-800/80"
+      className="relative w-full bg-white dark:bg-[#121215] py-24 sm:py-32 lg:py-36 px-5 sm:px-8 lg:px-10 overflow-hidden transition-colors duration-300"
     >
       {/* Canvas Layer — Full Bleed Moving Ambient Particles */}
       <canvas

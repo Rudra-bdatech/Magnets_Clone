@@ -1382,6 +1382,19 @@ textarea {
 .lm-pop { animation: lmPop 0.4s cubic-bezier(.3,1.6,.5,1) both; }
 @keyframes lmPop { from { transform: scale(0.3); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
+.lm-confetti { animation: lmConfetti 0.7s cubic-bezier(.2,.8,.2,1) both; }
+@keyframes lmConfetti {
+  0% { transform: translate(-50%,-50%) scale(0); opacity: 1; }
+  40% { transform: translate(calc(-50% + var(--x, 0px)), calc(-50% + var(--y, 0px))) scale(1); opacity: 1; }
+  100% { transform: translate(calc(-50% + var(--x, 0px)), calc(-50% + var(--y, 0px) - 10px)) scale(0.5); opacity: 0; }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .lm-rise, .lm-pop { animation: none; }
+  .lm-rise, .lm-pop, .lm-confetti { animation: none; }
+  .animate-marquee-left, .animate-marquee-right { animation-duration: 0s; }
+}
+
+/* Rolling price odometer: disable transition for reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  .lm-rolling-digit { transition: none !important; }
 }

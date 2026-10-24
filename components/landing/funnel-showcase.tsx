@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { usePrefersReducedMotion } from "@/components/landing/use-in-view";
 import {
   Wand2,
   HardDrive,
@@ -111,6 +112,7 @@ const STEPS: FunnelStep[] = [
 const AUTO_ROTATE_INTERVAL = 5500; // 5.5s
 
 export default function FunnelShowcase() {
+  const reduced = usePrefersReducedMotion();
   const [activeIdx, setActiveIdx] = useState<number>(0);
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
   const [progress, setProgress] = useState<number>(0);
@@ -119,7 +121,7 @@ export default function FunnelShowcase() {
 
   // Auto-rotation timer and progress bar
   useEffect(() => {
-    if (!isPlaying) return;
+    if (!isPlaying || reduced) return;
 
     const intervalTime = 50;
     const totalTicks = AUTO_ROTATE_INTERVAL / intervalTime;
@@ -181,7 +183,7 @@ export default function FunnelShowcase() {
   }
 
   // Dynamic camera zoom follows the mouse onto the "Get PDF" button before click, then zooms out after click
-  const isZooming = activeIdx === 0 && progress >= 48 && progress <= 78;
+  const isZooming = !reduced && activeIdx === 0 && progress >= 48 && progress <= 78;
   const zoomOrigin = "76% 76%"; // Focuses directly on the Get PDF CTA button & mouse cursor
 
   // Calculate realistic mouse coordinates and click states for Stage 1
@@ -291,9 +293,9 @@ export default function FunnelShowcase() {
 
         {/* RIGHT COLUMN: Interactive Animated SaaS App Window */}
         <div className="lg:col-span-7 min-w-0 w-full">
-          <div className="rounded-2xl bg-white dark:bg-[#141822] border border-zinc-200/80 dark:border-white/10 shadow-xl overflow-hidden min-w-0">
+          <div className="rounded-2xl bg-white dark:bg-[#121215] border border-zinc-200/80 dark:border-white/10 shadow-xl overflow-hidden min-w-0">
             {/* Window Top Bar (Clean macOS style) */}
-            <div className="flex items-center justify-between px-3.5 sm:px-6 py-2.5 sm:py-3.5 border-b border-zinc-100 dark:border-white/5 bg-zinc-50/60 dark:bg-white/[0.02]">
+            <div className="flex items-center justify-between px-3.5 sm:px-6 py-2.5 sm:py-3.5 border-b border-zinc-100 dark:border-white/5 bg-zinc-50 dark:bg-white/[0.03]">
               <div className="flex items-center gap-1.5">
                 <span className="h-2.5 w-2.5 rounded-full bg-zinc-300 dark:bg-zinc-700 inline-block" />
                 <span className="h-2.5 w-2.5 rounded-full bg-zinc-300 dark:bg-zinc-700 inline-block" />
@@ -316,7 +318,7 @@ export default function FunnelShowcase() {
               {activeIdx === 0 && (
                 <div className="space-y-3.5 sm:space-y-4 animate-fadeIn min-w-0">
                   {/* Top Bar with CNAME & Auto-SSL */}
-                  <div className="flex items-center justify-between px-2.5 sm:px-3 py-1.5 rounded-lg bg-zinc-50 dark:bg-[#181D2A] border border-zinc-200/70 dark:border-white/5 text-[11px] font-mono text-zinc-500 dark:text-zinc-400 min-w-0">
+                  <div className="flex items-center justify-between px-2.5 sm:px-3 py-1.5 rounded-lg bg-zinc-50 dark:bg-white/[0.03] border border-zinc-200/70 dark:border-white/5 text-[11px] font-mono text-zinc-500 dark:text-zinc-400 min-w-0">
                     <div className="flex items-center gap-1.5 truncate min-w-0">
                       <Lock className="h-3 w-3 text-emerald-500 shrink-0" />
                       <span className="text-zinc-900 dark:text-white font-semibold truncate">playbook.acme.co</span>
@@ -329,7 +331,7 @@ export default function FunnelShowcase() {
                   </div>
 
                   {/* AI Generation Box */}
-                  <div className="p-2.5 sm:p-3 rounded-xl bg-zinc-50 dark:bg-[#181D2A] border border-zinc-200/70 dark:border-white/5 space-y-1.5 min-w-0">
+                  <div className="p-2.5 sm:p-3 rounded-xl bg-zinc-50 dark:bg-white/[0.03] border border-zinc-200/70 dark:border-white/5 space-y-1.5 min-w-0">
                     <div className="flex items-center justify-between text-xs">
                       <span className="font-bold text-zinc-800 dark:text-zinc-200 flex items-center gap-1.5">
                         <Wand2 className="h-3.5 w-3.5 text-[#0066B2] dark:text-[#38BDF8]" /> AI Magnet Generator
@@ -338,14 +340,14 @@ export default function FunnelShowcase() {
                         Ready in 1.4s
                       </span>
                     </div>
-                    <div className="p-2 rounded-lg bg-white dark:bg-[#12151E] border border-zinc-200/60 dark:border-white/5 text-xs text-zinc-700 dark:text-zinc-300 font-medium flex items-center justify-between min-w-0">
+                    <div className="p-2 rounded-lg bg-white dark:bg-[#0e0e11] border border-zinc-200/60 dark:border-white/5 text-xs text-zinc-700 dark:text-zinc-300 font-medium flex items-center justify-between min-w-0">
                       <span className="truncate">&quot;The 2026 SaaS Growth Playbook: 14 Cold-to-Close Templates&quot;</span>
                       <Check className="h-3.5 w-3.5 text-emerald-500 shrink-0 ml-2" />
                     </div>
                   </div>
 
                   {/* Live Visitor Opt-in Simulation */}
-                  <div className="p-3 sm:p-4 rounded-xl bg-zinc-50 dark:bg-[#181D2A] border border-zinc-200/70 dark:border-white/5 space-y-3 relative text-center min-w-0">
+                  <div className="p-3 sm:p-4 rounded-xl bg-zinc-50 dark:bg-white/[0.03] border border-zinc-200/70 dark:border-white/5 space-y-3 relative text-center min-w-0">
                     <div className="space-y-0.5">
                       <h5 className="text-xs font-extrabold text-zinc-900 dark:text-white">
                         Download Your Free SaaS Playbook
@@ -357,7 +359,7 @@ export default function FunnelShowcase() {
 
                     <div className="max-w-xs mx-auto flex items-center gap-1.5 relative min-w-0">
                       <div
-                        className={`flex-1 px-2.5 sm:px-3 py-2 rounded-lg bg-white dark:bg-[#12151E] border text-xs font-mono text-left flex items-center min-h-[38px] transition-all duration-200 min-w-0 ${
+                        className={`flex-1 px-2.5 sm:px-3 py-2 rounded-lg bg-white dark:bg-[#0e0e11] border text-xs font-mono text-left flex items-center min-h-[38px] transition-all duration-200 min-w-0 ${
                           isInputFocused
                             ? "border-[#0066B2] dark:border-[#38BDF8] ring-2 ring-[#0066B2]/20 shadow-xs"
                             : "border-zinc-200 dark:border-zinc-700"
@@ -423,7 +425,7 @@ export default function FunnelShowcase() {
               {activeIdx === 1 && (
                 <div className="space-y-3.5 animate-fadeIn min-w-0">
                   {/* File Asset Card */}
-                  <div className="p-3 sm:p-3.5 rounded-xl bg-zinc-50 dark:bg-[#181D2A] border border-zinc-200/70 dark:border-white/5 space-y-2.5 min-w-0">
+                  <div className="p-3 sm:p-3.5 rounded-xl bg-zinc-50 dark:bg-white/[0.03] border border-zinc-200/70 dark:border-white/5 space-y-2.5 min-w-0">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <HardDrive className="h-4 w-4 text-[#0066B2] dark:text-[#38BDF8]" />
@@ -436,7 +438,7 @@ export default function FunnelShowcase() {
                       </span>
                     </div>
 
-                    <div className="flex items-center justify-between p-2 sm:p-2.5 rounded-lg bg-white dark:bg-[#12151E] border border-zinc-200/60 dark:border-white/5 min-w-0">
+                    <div className="flex items-center justify-between p-2 sm:p-2.5 rounded-lg bg-white dark:bg-[#0e0e11] border border-zinc-200/60 dark:border-white/5 min-w-0">
                       <div className="flex items-center gap-2.5 min-w-0">
                         <div className="h-8 w-8 rounded-lg bg-[#0066B2]/10 text-[#0066B2] dark:text-[#38BDF8] flex items-center justify-center font-bold text-xs shrink-0">
                           PDF
@@ -455,7 +457,7 @@ export default function FunnelShowcase() {
                   </div>
 
                   {/* Instant Dispatch Timeline & Animation */}
-                  <div className="p-3 sm:p-3.5 rounded-xl bg-zinc-50 dark:bg-[#181D2A] border border-zinc-200/70 dark:border-white/5 space-y-2.5 min-w-0">
+                  <div className="p-3 sm:p-3.5 rounded-xl bg-zinc-50 dark:bg-white/[0.03] border border-zinc-200/70 dark:border-white/5 space-y-2.5 min-w-0">
                     <div className="flex items-center justify-between text-xs">
                       <span className="text-zinc-700 dark:text-zinc-200 font-semibold flex items-center gap-1.5">
                         <Send className="h-3.5 w-3.5 text-[#0066B2] dark:text-[#38BDF8]" /> Instant Dispatch Engine
@@ -488,7 +490,7 @@ export default function FunnelShowcase() {
                 <div className="space-y-3 sm:space-y-3.5 animate-fadeIn min-w-0">
                   {/* Dynamic Counting Rate Cards */}
                   <div className="grid grid-cols-2 gap-2 sm:gap-2.5 min-w-0">
-                    <div className="p-2.5 sm:p-3.5 rounded-xl bg-zinc-50 dark:bg-[#181D2A] border border-zinc-200/70 dark:border-white/5 space-y-1 min-w-0">
+                    <div className="p-2.5 sm:p-3.5 rounded-xl bg-zinc-50 dark:bg-white/[0.03] border border-zinc-200/70 dark:border-white/5 space-y-1 min-w-0">
                       <span className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider block truncate">
                         Opt-in Rate
                       </span>
@@ -501,7 +503,7 @@ export default function FunnelShowcase() {
                       </span>
                     </div>
 
-                    <div className="p-2.5 sm:p-3.5 rounded-xl bg-zinc-50 dark:bg-[#181D2A] border border-zinc-200/70 dark:border-white/5 space-y-1 min-w-0">
+                    <div className="p-2.5 sm:p-3.5 rounded-xl bg-zinc-50 dark:bg-white/[0.03] border border-zinc-200/70 dark:border-white/5 space-y-1 min-w-0">
                       <span className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider block truncate">
                         Exit Recovery
                       </span>
@@ -515,7 +517,7 @@ export default function FunnelShowcase() {
                   </div>
 
                   {/* Real-Time Telemetry Terminal Stream */}
-                  <div className="p-2.5 sm:p-3 rounded-xl bg-zinc-50 dark:bg-[#181D2A] border border-zinc-200/70 dark:border-white/5 space-y-2 font-mono text-[10px] sm:text-[11px] min-w-0">
+                  <div className="p-2.5 sm:p-3 rounded-xl bg-zinc-50 dark:bg-white/[0.03] border border-zinc-200/70 dark:border-white/5 space-y-2 font-mono text-[10px] sm:text-[11px] min-w-0">
                     <div className="flex items-center justify-between text-zinc-400 text-[9px] uppercase tracking-wider border-b border-zinc-200/60 dark:border-white/5 pb-1 font-sans font-bold">
                       <span className="flex items-center gap-1.5">
                         <Activity className="h-3 w-3 text-[#0066B2] dark:text-[#38BDF8]" />
@@ -547,7 +549,7 @@ export default function FunnelShowcase() {
               {activeIdx === 3 && (
                 <div className="space-y-2 sm:space-y-2.5 animate-fadeIn min-w-0">
                   {/* Sequence Header Bar */}
-                  <div className="flex items-center justify-between px-2.5 sm:px-3 py-1.5 rounded-lg bg-zinc-50 dark:bg-[#181D2A] border border-zinc-200/70 dark:border-white/5 text-xs">
+                  <div className="flex items-center justify-between px-2.5 sm:px-3 py-1.5 rounded-lg bg-zinc-50 dark:bg-white/[0.03] border border-zinc-200/70 dark:border-white/5 text-xs">
                     <div className="flex items-center gap-1.5">
                       <Workflow className="h-3.5 w-3.5 text-[#0066B2] dark:text-[#38BDF8]" />
                       <span className="font-bold text-zinc-900 dark:text-white truncate">SaaS Nurture Sequence</span>
@@ -560,7 +562,7 @@ export default function FunnelShowcase() {
                   {/* 3 Step Sequence Cards with Downward Flow */}
                   <div className="space-y-1.5 min-w-0">
                     {/* Step 1 */}
-                    <div className="p-2 sm:p-2.5 rounded-xl bg-zinc-50 dark:bg-[#181D2A] border border-zinc-200/70 dark:border-white/5 flex items-center justify-between text-xs min-w-0">
+                    <div className="p-2 sm:p-2.5 rounded-xl bg-zinc-50 dark:bg-white/[0.03] border border-zinc-200/70 dark:border-white/5 flex items-center justify-between text-xs min-w-0">
                       <div className="space-y-0.5 min-w-0">
                         <p className="font-bold text-zinc-900 dark:text-white flex items-center gap-1.5 sm:gap-2 truncate">
                           <span className="h-2 w-2 rounded-full bg-emerald-500 shrink-0" />
@@ -576,7 +578,7 @@ export default function FunnelShowcase() {
                     </div>
 
                     {/* Step 2 */}
-                    <div className="p-2 sm:p-2.5 rounded-xl bg-white dark:bg-[#12151E] border border-zinc-200/70 dark:border-white/5 flex items-center justify-between text-xs min-w-0">
+                    <div className="p-2 sm:p-2.5 rounded-xl bg-white dark:bg-[#0e0e11] border border-zinc-200/70 dark:border-white/5 flex items-center justify-between text-xs min-w-0">
                       <div className="space-y-0.5 min-w-0">
                         <p className="font-bold text-zinc-900 dark:text-white flex items-center gap-1.5 sm:gap-2 truncate">
                           <span className="h-2 w-2 rounded-full bg-[#0066B2] dark:bg-[#38BDF8] shrink-0" />
@@ -624,7 +626,7 @@ export default function FunnelShowcase() {
               {/* STAGE 05: Ecosystem Sync */}
               {activeIdx === 4 && (
                 <div className="space-y-2.5 sm:space-y-3 animate-fadeIn min-w-0">
-                  <div className="flex items-center justify-between px-2.5 sm:px-3 py-1.5 rounded-lg bg-zinc-50 dark:bg-[#181D2A] border border-zinc-200/70 dark:border-white/5 text-xs min-w-0">
+                  <div className="flex items-center justify-between px-2.5 sm:px-3 py-1.5 rounded-lg bg-zinc-50 dark:bg-white/[0.03] border border-zinc-200/70 dark:border-white/5 text-xs min-w-0">
                     <div className="flex items-center gap-1.5 min-w-0">
                       <Share2 className="h-3.5 w-3.5 text-[#0066B2] dark:text-[#38BDF8] shrink-0" />
                       <span className="font-bold text-zinc-900 dark:text-white truncate">Real-Time Stack Connectivity</span>
@@ -636,7 +638,7 @@ export default function FunnelShowcase() {
 
                   {/* 4 Connected Platform Nodes */}
                   <div className="grid grid-cols-2 gap-1.5 sm:gap-2 text-xs min-w-0">
-                    <div className="p-2 sm:p-2.5 rounded-xl bg-zinc-50 dark:bg-[#181D2A] border border-[#0066B2]/30 space-y-0.5 sm:space-y-1 min-w-0">
+                    <div className="p-2 sm:p-2.5 rounded-xl bg-zinc-50 dark:bg-white/[0.03] border border-[#0066B2]/30 space-y-0.5 sm:space-y-1 min-w-0">
                       <div className="flex items-center justify-between gap-1">
                         <span className="font-bold text-zinc-900 dark:text-white truncate text-[11px] sm:text-xs">Kit (ConvertKit)</span>
                         <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />
@@ -646,7 +648,7 @@ export default function FunnelShowcase() {
                       </p>
                     </div>
 
-                    <div className="p-2 sm:p-2.5 rounded-xl bg-zinc-50 dark:bg-[#181D2A] border border-[#0066B2]/30 space-y-0.5 sm:space-y-1 min-w-0">
+                    <div className="p-2 sm:p-2.5 rounded-xl bg-zinc-50 dark:bg-white/[0.03] border border-[#0066B2]/30 space-y-0.5 sm:space-y-1 min-w-0">
                       <div className="flex items-center justify-between gap-1">
                         <span className="font-bold text-zinc-900 dark:text-white truncate text-[11px] sm:text-xs">Substack</span>
                         <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />
@@ -656,7 +658,7 @@ export default function FunnelShowcase() {
                       </p>
                     </div>
 
-                    <div className="p-2 sm:p-2.5 rounded-xl bg-zinc-50 dark:bg-[#181D2A] border border-[#0066B2]/30 space-y-0.5 sm:space-y-1 min-w-0">
+                    <div className="p-2 sm:p-2.5 rounded-xl bg-zinc-50 dark:bg-white/[0.03] border border-[#0066B2]/30 space-y-0.5 sm:space-y-1 min-w-0">
                       <div className="flex items-center justify-between gap-1">
                         <span className="font-bold text-zinc-900 dark:text-white truncate text-[11px] sm:text-xs">Slack Alerts</span>
                         <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />
@@ -666,7 +668,7 @@ export default function FunnelShowcase() {
                       </p>
                     </div>
 
-                    <div className="p-2 sm:p-2.5 rounded-xl bg-zinc-50 dark:bg-[#181D2A] border border-[#0066B2]/30 space-y-0.5 sm:space-y-1 min-w-0">
+                    <div className="p-2 sm:p-2.5 rounded-xl bg-zinc-50 dark:bg-white/[0.03] border border-[#0066B2]/30 space-y-0.5 sm:space-y-1 min-w-0">
                       <div className="flex items-center justify-between gap-1">
                         <span className="font-bold text-zinc-900 dark:text-white truncate text-[11px] sm:text-xs">Zapier / CRM</span>
                         <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />
