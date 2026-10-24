@@ -25,7 +25,6 @@ import {
   Check,
   HardDrive,
   Lock,
-  Unlock,
   Download,
   Users,
   BarChart3,
@@ -49,10 +48,9 @@ import {
 } from "lucide-react";
 
 export default function ShowcaseTabs() {
-  // 7 Real Platform Feature Scenes:
+  // 6 Real Platform Feature Scenes:
   // 0: Opt-in Landing Page
   // 1: Real Custom Domain & CNAME DNS Configuration (PRO Feature)
-  // 2: Locked PDF Reader (Page-flip preview with frosted glass blur & email gate)
   // 3: 8 Designer Templates & Live Theme Engine
   // 4: Automated Drip Sequence Follow-Up Workflow
   // 5: Live Telemetry & Captured Leads CRM
@@ -64,7 +62,6 @@ export default function ShowcaseTabs() {
   const [typedDomain, setTypedDomain] = useState<string>("growthlab.io");
   const [isOptinBtnActive, setIsOptinBtnActive] = useState<boolean>(false);
   const [isDnsVerified, setIsDnsVerified] = useState<boolean>(false);
-  const [isPdfUnlocked, setIsPdfUnlocked] = useState<boolean>(false);
   const [selectedTemplate, setSelectedTemplate] = useState<number>(0);
   const [selectedBrandColor, setSelectedBrandColor] = useState<string>("#0066B2");
   const [activeWorkflowStep, setActiveWorkflowStep] = useState<number>(0);
@@ -81,7 +78,6 @@ export default function ShowcaseTabs() {
   const optinBtnRef = useRef<HTMLButtonElement>(null);
   const domainInputRef = useRef<HTMLInputElement>(null);
   const verifyDnsBtnRef = useRef<HTMLButtonElement>(null);
-  const unlockPdfBtnRef = useRef<HTMLButtonElement>(null);
   const templateSwatchRef = useRef<HTMLButtonElement>(null);
   const workflowStep2Ref = useRef<HTMLDivElement>(null);
   const deployBtnRef = useRef<HTMLButtonElement>(null);
@@ -313,40 +309,8 @@ export default function ShowcaseTabs() {
 
       timers.push(
         setTimeout(() => {
-          setPhase(2);
-        }, 2900)
-      );
-    } else if (phase === 2) {
-      // PHASE 2: Locked PDF Reader with Frosted Glass Gate
-      setIsPdfUnlocked(false);
-      setIsClicking(false);
-      setIsZooming(false);
-
-      timers.push(
-        setTimeout(() => {
-          moveCursorTo(unlockPdfBtnRef.current);
-          setIsZooming(true);
-        }, 300)
-      );
-
-      timers.push(
-        setTimeout(() => {
-          setIsClicking(true);
-          setIsPdfUnlocked(true);
-        }, 1250)
-      );
-
-      timers.push(
-        setTimeout(() => {
-          setIsClicking(false);
-          setIsZooming(false);
-        }, 1750)
-      );
-
-      timers.push(
-        setTimeout(() => {
           setPhase(3);
-        }, 2600)
+        }, 2900)
       );
     } else if (phase === 3) {
       // PHASE 3: 8 Brand Templates & Live Customizer
@@ -464,7 +428,6 @@ export default function ShowcaseTabs() {
   const platformTabs = [
     { label: "Landing Page", icon: FileText, phaseIdx: 0 },
     { label: "Custom Domain", icon: Globe, phaseIdx: 1 },
-    { label: "Locked PDF", icon: Lock, phaseIdx: 2 },
     { label: "Templates", icon: Layout, phaseIdx: 3 },
     { label: "Drip Sequences", icon: Workflow, phaseIdx: 4 },
     { label: "Telemetry & CRM", icon: BarChart3, phaseIdx: 5 },
@@ -774,99 +737,6 @@ export default function ShowcaseTabs() {
               <div className="flex items-center justify-between border-t border-zinc-100 dark:border-zinc-800 pt-2.5 text-[11px] sm:text-xs text-zinc-400 gap-2 pr-12 sm:pr-0">
                 <span className="truncate">100% White-labeled on Pro Plans · Zero LeadMagnets Branding</span>
                 <span className="font-bold text-emerald-600 dark:text-emerald-400 shrink-0">Auto-SSL Provisioned ✓</span>
-              </div>
-            </div>
-          )}
-
-          {/* ========================================================= */}
-          {/* PHASE 2: REAL LOCKED PDF READER & FROSTED BLUR GATE       */}
-          {/* ========================================================= */}
-          {phase === 2 && (
-            <div className="flex-1 flex flex-col justify-between animate-in zoom-in-98 duration-300">
-              {/* Document Reader Toolbar */}
-              <div className="flex items-center justify-between border-b border-zinc-200/70 dark:border-white/10 pb-2.5 mb-3.5">
-                <div className="flex items-center gap-3">
-                  <div className="h-8 w-8 rounded-xl bg-[#0066B2]/10 text-[#0066B2] dark:text-[#38BDF8] flex items-center justify-center">
-                    <FileText className="h-4 w-4" />
-                  </div>
-                  <div>
-                    <h4 className="text-xs sm:text-sm font-bold text-zinc-900 dark:text-white flex items-center gap-2">
-                      SaaS Growth Playbook (Native Reader)
-                      <span className="text-[10px] font-normal text-zinc-400 font-mono">Page 2 of 24</span>
-                    </h4>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-2">
-                  <span className={`px-2.5 py-1 rounded-full text-[11px] font-bold border transition-all flex items-center gap-1 ${
-                    isPdfUnlocked
-                      ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20"
-                      : "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20"
-                  }`}>
-                    {isPdfUnlocked ? <Unlock className="h-3 w-3" /> : <Lock className="h-3 w-3" />}
-                    {isPdfUnlocked ? "Document Unlocked" : "Page 3+ Locked"}
-                  </span>
-                </div>
-              </div>
-
-              {/* Reader Document Mockup with Interactive Blur Gating */}
-              <div className="relative rounded-2xl border border-zinc-200/80 dark:border-white/10 bg-zinc-50/80 dark:bg-white/[0.03] p-3.5 sm:p-5 overflow-hidden flex-1 flex flex-col justify-center my-auto">
-                {/* Visible Page 1 / 2 Header Text */}
-                <div className="space-y-2 mb-3">
-                  <div className="h-3.5 w-3/4 rounded bg-zinc-300/80 dark:bg-zinc-700/80" />
-                  <div className="h-2.5 w-full rounded bg-zinc-200 dark:bg-zinc-800" />
-                  <div className="h-2.5 w-5/6 rounded bg-zinc-200 dark:bg-zinc-800" />
-                </div>
-
-                {/* Locked Page Overlay */}
-                <div className={`relative rounded-xl p-4 sm:p-6 border transition-all flex flex-col items-center justify-center text-center overflow-hidden ${
-                  isPdfUnlocked
-                    ? "bg-emerald-500/5 border-emerald-500/20"
-                    : "bg-zinc-900/60 backdrop-blur-md border-zinc-700/50 text-white"
-                }`}>
-                  {isPdfUnlocked ? (
-                    <motion.div
-                      initial={{ scale: 0.9, opacity: 0 }}
-                      animate={{ scale: 1, opacity: 1 }}
-                      className="space-y-2 text-center"
-                    >
-                      <div className="h-10 w-10 mx-auto rounded-full bg-emerald-500/20 text-emerald-500 flex items-center justify-center">
-                        <Check className="h-5 w-5" />
-                      </div>
-                      <h4 className="text-sm font-bold text-zinc-900 dark:text-white">
-                        Full 24 Pages Unlocked &amp; Ready
-                      </h4>
-                      <p className="text-xs text-zinc-500 dark:text-zinc-400">
-                        Lead captured &amp; auto-enrolled in nurture workflow.
-                      </p>
-                    </motion.div>
-                  ) : (
-                    <div className="space-y-2.5 max-w-sm">
-                      <div className="h-9 w-9 mx-auto rounded-full bg-amber-500/20 text-amber-400 flex items-center justify-center">
-                        <Lock className="h-4 w-4" />
-                      </div>
-                      <h4 className="text-xs sm:text-sm font-bold text-white">
-                        Unlock Remaining 22 Pages
-                      </h4>
-                      <p className="text-[11px] sm:text-xs text-zinc-300">
-                        Readers preview first 2 pages free. The rest is protected by our zero-friction email gate.
-                      </p>
-                      <button
-                        ref={unlockPdfBtnRef}
-                        type="button"
-                        onClick={() => setIsPdfUnlocked(true)}
-                        className="px-4 py-1.5 rounded-xl bg-gradient-to-r from-[#0066B2] to-[#0088FF] text-white text-xs font-bold shadow-md hover:brightness-110 transition cursor-pointer"
-                      >
-                        ⚡ Unlock Document
-                      </button>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              <div className="flex items-center justify-between border-t border-zinc-100 dark:border-zinc-800 pt-2.5 text-[11px] sm:text-xs text-zinc-400 gap-2 pr-12 sm:pr-0">
-                <span className="truncate">Native PDF rendering · Zero Google Drive links</span>
-                <span className="font-bold text-[#0066B2] dark:text-[#38BDF8] shrink-0">Instant Fulfillment (0.2s)</span>
               </div>
             </div>
           )}

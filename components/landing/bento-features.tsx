@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, type ReactNode } from "react";
-import { Lock, Loader2, FileText, FileArchive, FileSpreadsheet, Mail, CalendarCheck, MousePointer2, Check } from "lucide-react";
+import { Lock, MousePointer2, Check } from "lucide-react";
 import { useInView, usePrefersReducedMotion } from "./use-in-view";
 
 // Advances 0..count-1 on a timer, only while the tile is on screen.
@@ -42,119 +42,6 @@ function Tile({
         <p className="mt-1.5 text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">{body}</p>
       </div>
       <div className="relative mt-6 flex-1 min-h-[200px]">{children(active)}</div>
-    </div>
-  );
-}
-
-/* ---------- AI generator ---------- */
-const PROMPT = "Checklist for bakers growing on Instagram";
-const OUTPUT = [
-  "Grow your bakery on Instagram without posting daily",
-  "The 3 post types that bring walk-ins",
-  "A 15-minute weekly content routine",
-  "Captions that sell without sounding salesy",
-];
-
-function AiDemo({ active }: { active: boolean }) {
-  // 0..PROMPT.length = typing, then generating, then lines revealed, then hold
-  const [tick, setTick] = useState(PROMPT.length + 14);
-  useEffect(() => {
-    if (!active) return;
-    setTick(0);
-    const id = window.setInterval(() => setTick((t) => (t > PROMPT.length + 40 ? 0 : t + 1)), 60);
-    return () => window.clearInterval(id);
-  }, [active]);
-
-  const typed = PROMPT.slice(0, Math.min(tick, PROMPT.length));
-  const after = tick - PROMPT.length;
-  const generating = after > 0 && after < 6;
-  const lines = after >= 6 ? Math.min(OUTPUT.length, Math.floor((after - 6) / 2) + 1) : 0;
-
-  return (
-    <div className="absolute inset-x-6 bottom-0 top-0 flex flex-col gap-3">
-      <div className="flex items-center gap-2 rounded-xl border border-zinc-200 dark:border-white/10 bg-zinc-50 dark:bg-white/[0.03] px-3 py-2.5">
-        <span className="font-mono text-[11px] text-zinc-400">topic</span>
-        <span className="min-w-0 flex-1 truncate text-sm text-zinc-800 dark:text-zinc-200">
-          {typed}
-          {tick < PROMPT.length && <span className="ml-px inline-block h-4 w-px translate-y-0.5 bg-zinc-800 dark:bg-zinc-200 animate-pulse" />}
-        </span>
-        <span className="flex h-7 items-center gap-1.5 rounded-lg bg-[#0066B2] px-2.5 text-[11px] font-bold text-white">
-          {generating ? <Loader2 className="h-3 w-3 animate-spin" aria-hidden="true" /> : null}
-          Generate
-        </span>
-      </div>
-      <div className="flex-1 rounded-t-xl border border-b-0 border-zinc-200 dark:border-white/10 bg-white dark:bg-[#0e0e11] p-4">
-        {OUTPUT.map((line, i) => (
-          <div key={line} className={i === 0 ? "mb-3" : "mb-1.5"}>
-            {i < lines ? (
-              <p className={`lm-fade-in ${i === 0 ? "text-base font-extrabold tracking-tight text-zinc-900 dark:text-white" : "text-xs text-zinc-600 dark:text-zinc-400"}`}>
-                {i === 0 ? line : `— ${line}`}
-              </p>
-            ) : (
-              <div className={`rounded bg-zinc-100 dark:bg-white/[0.06] ${i === 0 ? "h-5 w-4/5" : "h-3 w-3/5"} ${generating ? "animate-pulse" : ""}`} />
-            )}
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-/* ---------- Custom domain ---------- */
-const DOMAIN_STEPS = ["Checking DNS", "Issuing SSL", "Live"];
-function DomainDemo({ active }: { active: boolean }) {
-  const step = useLoopStep(DOMAIN_STEPS.length + 1, 1300, active);
-  const s = Math.min(step, DOMAIN_STEPS.length - 1);
-  const live = s === DOMAIN_STEPS.length - 1;
-  return (
-    <div className="absolute inset-x-6 top-2 space-y-3">
-      <div className="flex items-center gap-2 rounded-lg border border-zinc-200 dark:border-white/10 bg-zinc-50 dark:bg-white/[0.03] px-3 py-2 font-mono text-xs">
-        <Lock className={`h-3.5 w-3.5 transition-colors ${live ? "text-emerald-600" : "text-zinc-300 dark:text-zinc-600"}`} aria-hidden="true" />
-        <span className="text-zinc-800 dark:text-zinc-200">get.yourbrand.com</span>
-      </div>
-      <ol className="space-y-2">
-        {DOMAIN_STEPS.map((label, i) => (
-          <li key={label} className="flex items-center gap-2 text-xs">
-            <span
-              className={`flex h-4 w-4 items-center justify-center rounded-full border transition-colors ${
-                i < s || (live && i === s)
-                  ? "border-emerald-500 bg-emerald-500 text-white"
-                  : i === s
-                  ? "border-[#0066B2] text-[#0066B2]"
-                  : "border-zinc-300 dark:border-zinc-700 text-transparent"
-              }`}
-            >
-              {i < s || (live && i === s) ? <Check className="h-2.5 w-2.5" aria-hidden="true" /> : i === s ? <Loader2 className="h-2.5 w-2.5 animate-spin" aria-hidden="true" /> : null}
-            </span>
-            <span className={i <= s ? "text-zinc-800 dark:text-zinc-200" : "text-zinc-400 dark:text-zinc-600"}>{label}</span>
-          </li>
-        ))}
-      </ol>
-    </div>
-  );
-}
-
-/* ---------- Hosting ---------- */
-const FILES = [
-  { name: "checklist.pdf", size: "2.4 MB", Icon: FileText },
-  { name: "canva-templates.zip", size: "3.8 MB", Icon: FileArchive },
-  { name: "content-calendar.xlsx", size: "0.6 MB", Icon: FileSpreadsheet },
-];
-function HostingDemo() {
-  return (
-    <div className="absolute inset-x-6 top-2 space-y-2.5">
-      {FILES.map(({ name, size, Icon }, i) => (
-        <div key={name} className="rounded-lg border border-zinc-200 dark:border-white/10 px-3 py-2">
-          <div className="flex items-center gap-2 text-xs">
-            <Icon className="h-3.5 w-3.5 text-zinc-400" aria-hidden="true" />
-            <span className="flex-1 truncate text-zinc-800 dark:text-zinc-200">{name}</span>
-            <span className="font-mono text-[10px] text-zinc-400">{size}</span>
-          </div>
-          <div className="mt-2 h-1 overflow-hidden rounded-full bg-zinc-100 dark:bg-white/[0.06]">
-            <div className="lm-fill h-full origin-left rounded-full bg-[#0066B2] dark:bg-[#38BDF8]" style={{ animationDelay: `${i * 0.5}s` }} />
-          </div>
-        </div>
-      ))}
     </div>
   );
 }
@@ -200,45 +87,6 @@ function LockedPdfDemo({ active }: { active: boolean }) {
         )}
       </div>
     </div>
-  );
-}
-
-/* ---------- Drip ---------- */
-const DRIP = [
-  { day: "Day 0", label: "Your checklist is here", Icon: Mail },
-  { day: "Day 2", label: "The mistake most bakers make", Icon: Mail },
-  { day: "Day 5", label: "Want me to look at your feed?", Icon: Mail },
-  { day: "Day 6", label: "Lead converted · sequence stopped", Icon: Mail },
-];
-function DripDemo({ active }: { active: boolean }) {
-  const step = useLoopStep(DRIP.length + 2, 1000, active);
-  return (
-    <ol className="absolute inset-x-6 top-2 space-y-0">
-      {DRIP.map(({ day, label, Icon }, i) => {
-        const done = i < step;
-        const last = i === DRIP.length - 1;
-        return (
-          <li key={day} className="relative flex gap-3 pb-3">
-            {!last && <span className="absolute left-[11px] top-6 bottom-0 w-px bg-zinc-200 dark:bg-white/10" aria-hidden="true" />}
-            <span
-              className={`relative z-10 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border transition-colors duration-300 ${
-                done
-                  ? last
-                    ? "border-emerald-500 bg-emerald-500 text-white"
-                    : "border-[#0066B2] bg-[#0066B2] text-white"
-                  : "border-zinc-200 dark:border-white/10 bg-white dark:bg-[#121215] text-zinc-300 dark:text-zinc-600"
-              }`}
-            >
-              <Icon className="h-3 w-3" aria-hidden="true" />
-            </span>
-            <div className="min-w-0 pt-0.5">
-              <p className="font-mono text-[10px] text-zinc-400">{day}</p>
-              <p className={`truncate text-xs transition-colors ${done ? "text-zinc-800 dark:text-zinc-200" : "text-zinc-400 dark:text-zinc-600"}`}>{label}</p>
-            </div>
-          </li>
-        );
-      })}
-    </ol>
   );
 }
 
@@ -344,35 +192,18 @@ export default function BentoFeatures() {
   const [cascadeRef, cascadeInView] = useInView({ once: true, rootMargin: "0px 0px -10% 0px" });
 
   return (
-    <div ref={cascadeRef} className={`lm-cascade mt-14 grid gap-4 md:grid-cols-2 lg:grid-cols-6 ${cascadeInView ? "lm-visible" : ""}`}>
-      <Tile
-        n="01"
-        title="Describe it. Get a page."
-        body="Type your topic and AI writes the headline, bullets and opt-in page. Edit anything after."
-        className="md:col-span-2 lg:col-span-4 min-h-[380px]"
-      >
-        {(a) => <AiDemo active={a} />}
-      </Tile>
-      <Tile n="02" title="Let them read, then ask" body="Readers get the first pages free (you pick how many). The rest unlocks with an email." className="lg:col-span-2 min-h-[380px]">
+    <div ref={cascadeRef} className={`lm-cascade mt-14 grid gap-4 md:grid-cols-2 ${cascadeInView ? "lm-visible" : ""}`}>
+      <Tile n="01" title="Let them read, then ask" body="Readers get the first pages free (you pick how many). The rest unlocks with an email." className="min-h-[380px]">
         {(a) => <LockedPdfDemo active={a} />}
       </Tile>
-      <Tile n="03" title="Host the file here" body="PDFs, templates, spreadsheets. No Drive links, no permission requests." className="lg:col-span-2">
-        {() => <HostingDemo />}
-      </Tile>
-      <Tile n="04" title="Follow-ups that know when to stop" body="Timed emails that pause the moment a lead converts or opts out." className="lg:col-span-2">
-        {(a) => <DripDemo active={a} />}
-      </Tile>
-      <Tile n="05" title="Catch people on the way out" body="An exit-intent popup on every page, no extra setup." className="lg:col-span-2">
+      <Tile n="02" title="Catch people on the way out" body="An exit-intent popup on every page, no extra setup." className="min-h-[380px]">
         {() => <ExitDemo />}
       </Tile>
-      <Tile n="06" title="Your domain, with SSL" body="Point a subdomain at us. We handle DNS checks and certificates." className="md:col-span-2 lg:col-span-2">
-        {(a) => <DomainDemo active={a} />}
-      </Tile>
       <Tile
-        n="07"
+        n="03"
         title="Test two headlines, see which wins"
         body="Split traffic 50/50 between two headlines or cover images and compare opt-in rates. Sample numbers shown."
-        className="md:col-span-2 lg:col-span-4 min-h-[340px] sm:min-h-[300px]"
+        className="md:col-span-2 min-h-[340px] sm:min-h-[300px]"
       >
         {(a) => <AnalyticsDemo active={a} />}
       </Tile>

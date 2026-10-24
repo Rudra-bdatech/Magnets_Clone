@@ -140,7 +140,7 @@ export default function Home() {
               eyebrow="How it works"
               title="From stranger to subscriber"
               accent="on autopilot."
-              description="Five steps, one workspace. Set it up once and every new visitor goes through the same path."
+              description="Three steps, one workspace. Set it up once and every new visitor goes through the same path."
             />
           </Reveal>
           <Reveal delay={0.1}>
@@ -156,8 +156,8 @@ export default function Home() {
             <SectionHeading
               index="03"
               eyebrow="Features"
-              title="Everything between the click"
-              accent="and the sale."
+              title="Small touches that win"
+              accent="more signups."
             />
           </Reveal>
           <BentoFeatures />
