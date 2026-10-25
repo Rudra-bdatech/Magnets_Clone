@@ -256,66 +256,75 @@ export default function TryIt() {
         </form>
 
         {/* Canvas: the page being built */}
-        <div className="relative px-5 py-8 sm:px-10 sm:py-10">
+        <div className="relative px-5 py-8 sm:px-10 sm:py-10 min-h-[520px] md:min-h-[480px] flex items-center">
           <div
             aria-hidden="true"
             className="pointer-events-none absolute inset-x-0 top-0 h-40 transition-[background] duration-700"
             style={{ background: `radial-gradient(60% 100% at 50% 0%, ${theme.glow.replace(/[\d.]+\)$/, "0.10)")}, transparent)` }}
           />
-          <div className="relative grid items-center gap-10 md:grid-cols-[1.2fr_0.8fr] md:gap-12">
-            <div className="order-2 md:order-1">
+          <div className="relative grid items-center gap-10 md:grid-cols-[1.2fr_0.8fr] md:gap-12 w-full">
+            <div className="order-2 md:order-1 flex flex-col justify-between min-h-[410px] sm:min-h-[410px]">
               {/* Headline */}
-              <Block active={step === 1} label={STEPS[0].doing}>
+              <Block active={step === 1} label={STEPS[0].doing} className="min-h-[175px] sm:min-h-[175px] flex flex-col justify-start">
                 {step >= 1 ? (
                   <div key={`h-${build.run}`}>
                     <p className="lm-rise-in font-mono text-[10px] uppercase tracking-[0.2em] text-[var(--acc)] dark:text-[var(--acc-d)]">
                       Free {KINDS[v].toLowerCase()} · Instant download
                     </p>
-                    <h3 className="mt-3 text-[1.6rem] font-extrabold leading-[1.15] tracking-tight text-zinc-900 dark:text-white sm:text-3xl">
+                    <h3 className="mt-2.5 text-[1.4rem] font-extrabold leading-[1.2] tracking-tight text-zinc-900 dark:text-white sm:text-2xl lg:text-[1.7rem] line-clamp-3">
                       {headline.split(" ").map((w, i) => (
                         <span key={i} className="lm-word" style={{ animationDelay: `${i * 55}ms` }}>
                           {w}&nbsp;
                         </span>
                       ))}
                     </h3>
-                    <p className="lm-rise-in mt-3 text-sm text-zinc-500" style={{ animationDelay: "300ms" }}>
+                    <p className="lm-rise-in mt-2 text-sm text-zinc-500" style={{ animationDelay: "300ms" }}>
                       Get it free, straight to your inbox.
                     </p>
                   </div>
                 ) : (
-                  <div className="space-y-3">
+                  <div className="space-y-3 py-1">
                     <Bar className="h-2.5 w-36" />
                     <Bar className="h-7 w-11/12" />
                     <Bar className="h-7 w-2/3" />
-                    <Bar className="h-3 w-48" />
+                    <Bar className="h-3.5 w-48 mt-1" />
                   </div>
                 )}
               </Block>
 
               {/* Benefits */}
-              <Block active={step === 3} label={STEPS[2].doing} className="mt-10">
+              <Block active={step === 3} label={STEPS[2].doing} className="mt-6 sm:mt-7 min-h-[105px] sm:min-h-[105px] flex flex-col justify-center">
                 {step >= 3 ? (
                   <ul key={`b-${build.run}`} className="space-y-2.5 text-sm text-zinc-600 dark:text-zinc-400">
                     {BULLETS.map((b, i) => (
-                      <li key={i} className="lm-rise-in flex gap-2.5" style={{ animationDelay: `${i * 110}ms` }}>
+                      <li key={i} className="lm-rise-in flex gap-2.5 items-start" style={{ animationDelay: `${i * 110}ms` }}>
                         <span className="mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-[var(--acc-15)] text-[var(--acc)] dark:bg-[var(--accd-15)] dark:text-[var(--acc-d)]">
                           <Check className="h-3 w-3" aria-hidden="true" />
                         </span>
-                        {b(build.topic)}
+                        <span className="leading-snug line-clamp-2">{b(build.topic)}</span>
                       </li>
                     ))}
                   </ul>
                 ) : (
                   <div className="space-y-3">
-                    <Bar className="h-3 w-full" />
-                    <Bar className="h-3 w-5/6" />
-                    <Bar className="h-3 w-4/6" />
+                    <div className="flex items-center gap-2.5">
+                      <Bar className="h-4 w-4 rounded-full shrink-0" />
+                      <Bar className="h-3.5 w-11/12" />
+                    </div>
+                    <div className="flex items-center gap-2.5">
+                      <Bar className="h-4 w-4 rounded-full shrink-0" />
+                      <Bar className="h-3.5 w-4/5" />
+                    </div>
+                    <div className="flex items-center gap-2.5">
+                      <Bar className="h-4 w-4 rounded-full shrink-0" />
+                      <Bar className="h-3.5 w-3/5" />
+                    </div>
                   </div>
                 )}
               </Block>
 
               {/* Opt-in form */}
-              <Block active={step === 4} label={STEPS[3].doing} className="mt-10">
+              <Block active={step === 4} label={STEPS[3].doing} className="mt-6 sm:mt-7 min-h-[68px] max-sm:min-h-[110px] flex flex-col justify-center">
                 {step >= 4 ? (
                   <div key={`f-${build.run}`} className="lm-rise-in">
                     <div className="flex flex-col gap-2 sm:flex-row">
@@ -329,7 +338,13 @@ export default function TryIt() {
                     <p className="mt-2 text-[11px] text-zinc-400">No spam. Unsubscribe anytime.</p>
                   </div>
                 ) : (
-                  <Bar className="h-11 w-full" />
+                  <div>
+                    <div className="flex flex-col gap-2 sm:flex-row">
+                      <Bar className="h-10 flex-1 rounded-lg" />
+                      <Bar className="h-10 w-full sm:w-28 rounded-lg" />
+                    </div>
+                    <Bar className="mt-2 h-3 w-40" />
+                  </div>
                 )}
               </Block>
             </div>
@@ -340,8 +355,13 @@ export default function TryIt() {
                 {step >= 2 ? (
                   <Cover key={`c-${build.run}`} title={cap(build.topic)} kind={KINDS[v]} gradient={theme.cover} />
                 ) : (
-                  <div className="flex aspect-[4/5] items-center justify-center rounded-2xl border-2 border-dashed border-zinc-200 dark:border-white/10">
-                    <ImageIcon className="h-6 w-6 text-zinc-300 dark:text-zinc-700" aria-hidden="true" />
+                  <div className="relative mx-auto w-full max-w-[250px] sm:max-w-[260px]">
+                    <div className="flex aspect-[4/5] items-center justify-center rounded-2xl border-2 border-dashed border-zinc-200 bg-zinc-50/50 dark:border-white/10 dark:bg-white/[0.02]">
+                      <div className="flex flex-col items-center gap-2 text-zinc-300 dark:text-zinc-700">
+                        <ImageIcon className="h-8 w-8" aria-hidden="true" />
+                        <span className="font-mono text-[10px] uppercase tracking-wider text-zinc-400 dark:text-zinc-600">Cover preview</span>
+                      </div>
+                    </div>
                   </div>
                 )}
               </Block>
@@ -350,7 +370,7 @@ export default function TryIt() {
         </div>
 
         {/* Build checklist */}
-        <div className="flex items-center justify-between gap-4 border-t border-zinc-200 bg-zinc-50/80 px-4 py-3 dark:border-white/10 dark:bg-white/[0.02] sm:px-6">
+        <div className="flex h-[52px] items-center justify-between gap-4 border-t border-zinc-200 bg-zinc-50/80 px-4 dark:border-white/10 dark:bg-white/[0.02] sm:px-6">
           <ol className="flex items-center gap-3 sm:gap-5">
             {STEPS.map((s, i) => {
               const k = i + 1;
