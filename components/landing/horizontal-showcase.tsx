@@ -80,6 +80,7 @@ const SHOWCASE_ITEMS = [
 
 export default function HorizontalShowcase() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const frameRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
   const [scrollProgress, setScrollProgress] = useState(0);
   const reduced = usePrefersReducedMotion();
@@ -93,10 +94,14 @@ export default function HorizontalShowcase() {
 
     const handleScroll = () => {
       const container = containerRef.current;
-      if (!container || window.innerWidth < 1024) return;
+      if (!container) return;
 
       const rect = container.getBoundingClientRect();
-      const stickyTop = 80;
+      const frame = frameRef.current;
+      const stickyTop = frame
+        ? parseFloat(window.getComputedStyle(frame).top) || 0
+        : (window.innerWidth >= 1024 ? 80 : window.innerWidth >= 640 ? 56 : 32);
+
       const scrollDistance = rect.height - window.innerHeight;
 
       if (scrollDistance <= 0) return;
@@ -111,8 +116,9 @@ export default function HorizontalShowcase() {
       rafId = requestAnimationFrame(lerpLoop);
 
       const diff = targetProgressRef.current - currentProgressRef.current;
+      const lerpSpeed = window.innerWidth < 1024 ? 0.2 : 0.14;
       if (Math.abs(diff) > 0.0001) {
-        currentProgressRef.current += diff * 0.14;
+        currentProgressRef.current += diff * lerpSpeed;
       } else {
         currentProgressRef.current = targetProgressRef.current;
       }
@@ -120,7 +126,7 @@ export default function HorizontalShowcase() {
       const progress = currentProgressRef.current;
       const track = trackRef.current;
       if (track) {
-        const maxScrollX = track.scrollWidth - track.clientWidth;
+        const maxScrollX = Math.max(0, track.scrollWidth - track.clientWidth);
         track.style.transform = `translateX(-${progress * maxScrollX}px)`;
       }
 
@@ -146,18 +152,21 @@ export default function HorizontalShowcase() {
   return (
     <div
       ref={containerRef}
-      className="relative w-full lg:h-[260vh]"
+      className="relative w-full h-[300vh] sm:h-[280vh] lg:h-[260vh]"
     >
       {/* Sticky Frame */}
-      <div className="lg:sticky lg:top-20 w-full overflow-hidden py-14 sm:py-20">
+      <div
+        ref={frameRef}
+        className="sticky top-8 sm:top-14 lg:top-20 w-full overflow-hidden py-8 sm:py-14 lg:py-20"
+      >
         <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
           {/* Header & Horizontal Progress */}
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8 sm:mb-12">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 sm:gap-4 mb-6 sm:mb-12">
             <div>
               <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.2em] text-[#0066B2] dark:text-[#38BDF8]">
                 Growth Engine <span className="text-zinc-400 dark:text-zinc-600">/</span> Beyond Static Files
               </p>
-              <h3 className="mt-2 text-2xl sm:text-4xl font-extrabold tracking-tight text-zinc-900 dark:text-white">
+              <h3 className="mt-1.5 sm:mt-2 text-2xl sm:text-4xl font-extrabold tracking-tight text-zinc-900 dark:text-white">
                 More ways to capture & convert.{" "}
                 <span className="font-instrument italic font-normal text-[#0066B2] dark:text-[#38BDF8]">
                   Built in.
@@ -165,30 +174,32 @@ export default function HorizontalShowcase() {
               </h3>
             </div>
 
-            {/* Desktop Horizontal Scroll Progress Indicator */}
-            <div className="hidden lg:flex items-center gap-3 font-mono text-xs text-zinc-500 dark:text-zinc-400">
+            {/* Horizontal Scroll Progress Indicator (Desktop & Mobile) */}
+            <div className="flex items-center gap-2.5 sm:gap-3 font-mono text-[11px] sm:text-xs text-zinc-500 dark:text-zinc-400 self-start sm:self-auto">
               <span>Scroll to explore</span>
-              <div className="h-1.5 w-28 rounded-full bg-zinc-200 dark:bg-zinc-800 overflow-hidden">
+              <div className="h-1.5 w-20 sm:w-28 rounded-full bg-zinc-200 dark:bg-zinc-800 overflow-hidden">
                 <div
                   className="h-full bg-[#0066B2] dark:bg-[#38BDF8] rounded-full transition-all duration-75"
                   style={{ width: `${Math.round(scrollProgress * 100)}%` }}
                 />
               </div>
-              <span className="tabular-nums">{Math.round(scrollProgress * 100)}%</span>
+              <span className="tabular-nums font-semibold">{Math.round(scrollProgress * 100)}%</span>
             </div>
           </div>
 
-          {/* Cards Track: Slides horizontally on desktop scroll, touch swipeable on mobile */}
+          {/* Cards Track: Slides horizontally on page scroll */}
           <div
             ref={trackRef}
-            className="flex gap-5 sm:gap-6 will-change-transform overflow-x-auto lg:overflow-visible no-scrollbar pb-6 lg:pb-0"
+            className={`flex gap-4 sm:gap-6 will-change-transform touch-pan-y ${
+              reduced ? "overflow-x-auto no-scrollbar pb-6" : "overflow-visible"
+            }`}
           >
             {SHOWCASE_ITEMS.map((item) => {
               const Icon = item.icon;
               return (
                 <SpotlightCard
                   key={item.num}
-                  className="shrink-0 w-[290px] sm:w-[350px] p-6 sm:p-7 flex flex-col justify-between border-zinc-200 dark:border-white/10 bg-white dark:bg-[#121215]"
+                  className="shrink-0 w-[285px] sm:w-[350px] p-5 sm:p-7 flex flex-col justify-between border-zinc-200 dark:border-white/10 bg-white dark:bg-[#121215] select-none"
                   spotlightRadius={380}
                 >
                   <div>
@@ -203,21 +214,21 @@ export default function HorizontalShowcase() {
                     </div>
 
                     {/* Icon & Title */}
-                    <div className="mt-5 flex items-center gap-3">
-                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-zinc-100 dark:bg-white/5 border border-zinc-200/60 dark:border-white/10 text-[#0066B2] dark:text-[#38BDF8]">
-                        <Icon className="h-5 w-5" />
+                    <div className="mt-4 sm:mt-5 flex items-center gap-3">
+                      <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl bg-zinc-100 dark:bg-white/5 border border-zinc-200/60 dark:border-white/10 text-[#0066B2] dark:text-[#38BDF8]">
+                        <Icon className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
                       </div>
                       <h4 className="text-base sm:text-lg font-bold text-zinc-900 dark:text-white leading-snug">
                         {item.title}
                       </h4>
                     </div>
 
-                    <p className="mt-3.5 text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                    <p className="mt-3 sm:mt-3.5 text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
                       {item.description}
                     </p>
 
                     {/* Feature Bullets */}
-                    <ul className="mt-6 space-y-2">
+                    <ul className="mt-5 sm:mt-6 space-y-2">
                       {item.bullets.map((b) => (
                         <li key={b} className="flex items-center gap-2 text-xs text-zinc-700 dark:text-zinc-300">
                           <span className="h-1.5 w-1.5 rounded-full bg-[#0066B2] dark:bg-[#38BDF8]" />
@@ -227,7 +238,7 @@ export default function HorizontalShowcase() {
                     </ul>
                   </div>
 
-                  <div className="mt-8 pt-4 border-t border-zinc-100 dark:border-white/5 flex items-center justify-between text-xs">
+                  <div className="mt-6 sm:mt-8 pt-3.5 sm:pt-4 border-t border-zinc-100 dark:border-white/5 flex items-center justify-between text-xs">
                     <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400">
                       {item.badge}
                     </span>
