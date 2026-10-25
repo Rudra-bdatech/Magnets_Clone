@@ -172,7 +172,7 @@ export default function TryIt() {
 
       <div className="relative overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-[0_40px_100px_-50px_rgba(0,40,90,0.45)] dark:border-white/10 dark:bg-[#0E0E11] dark:shadow-[0_40px_100px_-50px_rgba(0,0,0,0.9)]">
         {/* Browser chrome */}
-        <div className="flex items-center gap-3 border-b border-zinc-200 bg-zinc-50 px-4 py-2.5 dark:border-white/10 dark:bg-[#141418]">
+        <div className="flex h-11 items-center gap-3 border-b border-zinc-200 bg-zinc-50 px-4 py-2.5 dark:border-white/10 dark:bg-[#141418]">
           <div className="hidden gap-1.5 sm:flex" aria-hidden="true">
             <span className="h-2.5 w-2.5 rounded-full bg-[#FF5F57]" />
             <span className="h-2.5 w-2.5 rounded-full bg-[#FEBC2E]" />
@@ -256,16 +256,16 @@ export default function TryIt() {
         </form>
 
         {/* Canvas: the page being built */}
-        <div className="relative px-5 py-8 sm:px-10 sm:py-10">
+        <div className="relative flex flex-col justify-center px-5 py-8 sm:px-10 sm:py-10 min-h-[660px] sm:min-h-[600px] md:min-h-[460px]">
           <div
             aria-hidden="true"
             className="pointer-events-none absolute inset-x-0 top-0 h-40 transition-[background] duration-700"
             style={{ background: `radial-gradient(60% 100% at 50% 0%, ${theme.glow.replace(/[\d.]+\)$/, "0.10)")}, transparent)` }}
           />
-          <div className="relative grid items-center gap-10 md:grid-cols-[1.2fr_0.8fr] md:gap-12">
+          <div className="relative grid items-start md:items-center gap-10 md:grid-cols-[1.2fr_0.8fr] md:gap-12">
             <div className="order-2 md:order-1">
               {/* Headline */}
-              <Block active={step === 1} label={STEPS[0].doing}>
+              <Block active={step === 1} label={STEPS[0].doing} className="min-h-[144px] sm:min-h-[156px] flex flex-col justify-start">
                 {step >= 1 ? (
                   <div key={`h-${build.run}`}>
                     <p className="lm-rise-in font-mono text-[10px] uppercase tracking-[0.2em] text-[var(--acc)] dark:text-[var(--acc-d)]">
@@ -283,17 +283,17 @@ export default function TryIt() {
                     </p>
                   </div>
                 ) : (
-                  <div className="space-y-3">
-                    <Bar className="h-2.5 w-36" />
-                    <Bar className="h-7 w-11/12" />
-                    <Bar className="h-7 w-2/3" />
-                    <Bar className="h-3 w-48" />
+                  <div className="space-y-3 py-0.5">
+                    <Bar className="h-3 w-36" />
+                    <Bar className="h-8 w-11/12" />
+                    <Bar className="h-8 w-2/3" />
+                    <Bar className="h-4 w-48" />
                   </div>
                 )}
               </Block>
 
               {/* Benefits */}
-              <Block active={step === 3} label={STEPS[2].doing} className="mt-10">
+              <Block active={step === 3} label={STEPS[2].doing} className="mt-8 sm:mt-10 min-h-[105px]">
                 {step >= 3 ? (
                   <ul key={`b-${build.run}`} className="space-y-2.5 text-sm text-zinc-600 dark:text-zinc-400">
                     {BULLETS.map((b, i) => (
@@ -306,16 +306,28 @@ export default function TryIt() {
                     ))}
                   </ul>
                 ) : (
-                  <div className="space-y-3">
-                    <Bar className="h-3 w-full" />
-                    <Bar className="h-3 w-5/6" />
-                    <Bar className="h-3 w-4/6" />
+                  <div className="space-y-3 py-1">
+                    <div className="flex items-start gap-2.5">
+                      <Bar className="mt-0.5 h-4 w-4 shrink-0 rounded-full" />
+                      <div className="flex-1 space-y-1.5">
+                        <Bar className="h-3.5 w-full" />
+                        <Bar className="h-3.5 w-4/5" />
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2.5">
+                      <Bar className="h-4 w-4 shrink-0 rounded-full" />
+                      <Bar className="h-3.5 w-3/4" />
+                    </div>
+                    <div className="flex items-center gap-2.5">
+                      <Bar className="h-4 w-4 shrink-0 rounded-full" />
+                      <Bar className="h-3.5 w-2/3" />
+                    </div>
                   </div>
                 )}
               </Block>
 
               {/* Opt-in form */}
-              <Block active={step === 4} label={STEPS[3].doing} className="mt-10">
+              <Block active={step === 4} label={STEPS[3].doing} className="mt-8 sm:mt-10 min-h-[110px] sm:min-h-[72px]">
                 {step >= 4 ? (
                   <div key={`f-${build.run}`} className="lm-rise-in">
                     <div className="flex flex-col gap-2 sm:flex-row">
@@ -329,19 +341,27 @@ export default function TryIt() {
                     <p className="mt-2 text-[11px] text-zinc-400">No spam. Unsubscribe anytime.</p>
                   </div>
                 ) : (
-                  <Bar className="h-11 w-full" />
+                  <div className="space-y-2">
+                    <div className="flex flex-col gap-2 sm:flex-row">
+                      <Bar className="h-10 flex-1 rounded-lg" />
+                      <Bar className="h-10 w-full sm:w-32 rounded-lg" />
+                    </div>
+                    <Bar className="h-3 w-44" />
+                  </div>
                 )}
               </Block>
             </div>
 
             {/* Cover */}
             <div className="order-1 md:order-2">
-              <Block active={step === 2} label={STEPS[1].doing} className="mx-auto w-44 sm:w-52 md:w-full md:max-w-[260px]">
+              <Block active={step === 2} label={STEPS[1].doing} className="mx-auto w-44 sm:w-52 md:w-full md:max-w-[260px] pb-4">
                 {step >= 2 ? (
                   <Cover key={`c-${build.run}`} title={cap(build.topic)} kind={KINDS[v]} gradient={theme.cover} />
                 ) : (
-                  <div className="flex aspect-[4/5] items-center justify-center rounded-2xl border-2 border-dashed border-zinc-200 dark:border-white/10">
-                    <ImageIcon className="h-6 w-6 text-zinc-300 dark:text-zinc-700" aria-hidden="true" />
+                  <div className="relative mx-auto w-full max-w-[250px] sm:max-w-[260px]">
+                    <div className="flex aspect-[4/5] items-center justify-center rounded-2xl border-2 border-dashed border-zinc-200 dark:border-white/10">
+                      <ImageIcon className="h-6 w-6 text-zinc-300 dark:text-zinc-700" aria-hidden="true" />
+                    </div>
                   </div>
                 )}
               </Block>
@@ -350,7 +370,7 @@ export default function TryIt() {
         </div>
 
         {/* Build checklist */}
-        <div className="flex items-center justify-between gap-4 border-t border-zinc-200 bg-zinc-50/80 px-4 py-3 dark:border-white/10 dark:bg-white/[0.02] sm:px-6">
+        <div className="flex h-12 min-h-[48px] items-center justify-between gap-4 border-t border-zinc-200 bg-zinc-50/80 px-4 py-3 dark:border-white/10 dark:bg-white/[0.02] sm:px-6">
           <ol className="flex items-center gap-3 sm:gap-5">
             {STEPS.map((s, i) => {
               const k = i + 1;
@@ -393,7 +413,7 @@ export default function TryIt() {
         </div>
       </div>
 
-      <p className="relative mt-4 text-center text-xs text-zinc-500">
+      <p className="relative mt-4 min-h-[20px] text-center text-xs text-zinc-500">
         {demoing ? "Running a demo. Click the box to try your own topic. " : ""}
         Instant preview from a template. After sign-up, the AI writes copy specific to your niche.
       </p>
