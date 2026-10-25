@@ -2,6 +2,7 @@
 
 import { type ReactNode } from "react";
 import { useInView } from "./use-in-view";
+import SplitText from "./split-text";
 
 export default function SectionHeading({
   index,
@@ -21,6 +22,10 @@ export default function SectionHeading({
   const [ref, inView] = useInView({ once: true });
   const centered = align === "center";
 
+  const isStringTitle = typeof title === "string";
+  const titleWordCount = isStringTitle ? title.trim().split(/\s+/).length : 2;
+  const accentDelay = 0.04 + titleWordCount * 0.032;
+
   return (
     <div
       ref={ref}
@@ -30,13 +35,27 @@ export default function SectionHeading({
         {index} <span className="text-zinc-400 dark:text-zinc-600">/</span> {eyebrow}
       </p>
       <h2 className="mt-4 text-balance text-[2rem] leading-[1.08] sm:text-5xl font-extrabold tracking-[-0.03em] text-zinc-900 dark:text-white">
-        <span className="lm-split-title inline">{title}</span>
+        {isStringTitle ? (
+          <SplitText
+            text={title}
+            inView={inView}
+            delay={0.04}
+            stagger={0.032}
+            className="inline"
+          />
+        ) : (
+          <span className="lm-split-title inline">{title}</span>
+        )}
         {accent && (
           <>
             {" "}
-            <span className="lm-split-accent font-instrument italic font-normal tracking-normal text-[#0066B2] dark:text-[#38BDF8] inline">
-              {accent}
-            </span>
+            <SplitText
+              text={accent}
+              inView={inView}
+              delay={accentDelay}
+              stagger={0.035}
+              className="font-instrument italic font-normal tracking-normal text-[#0066B2] dark:text-[#38BDF8] inline"
+            />
           </>
         )}
       </h2>
@@ -48,3 +67,4 @@ export default function SectionHeading({
     </div>
   );
 }
+

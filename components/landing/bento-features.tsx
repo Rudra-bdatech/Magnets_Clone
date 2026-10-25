@@ -3,6 +3,7 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { Lock, MousePointer2, Check } from "lucide-react";
 import { useInView, usePrefersReducedMotion } from "./use-in-view";
+import SpotlightCard from "./spotlight-card";
 
 // Advances 0..count-1 on a timer, only while the tile is on screen.
 function useLoopStep(count: number, ms: number, active: boolean) {
@@ -32,16 +33,18 @@ function Tile({
   const reduced = usePrefersReducedMotion();
   const active = inView && !reduced;
   return (
-    <div
-      ref={ref}
-      className={`group relative flex flex-col overflow-hidden rounded-2xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#121215] transition-colors hover:border-zinc-300 dark:hover:border-white/20 ${active ? "" : "lm-paused"} ${className}`}
-    >
-      <div className="p-6 pb-0">
-        <span className="font-mono text-[11px] text-zinc-400 dark:text-zinc-600">{n}</span>
-        <h3 className="mt-3 text-lg font-bold tracking-tight text-zinc-900 dark:text-white">{title}</h3>
-        <p className="mt-1.5 text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">{body}</p>
-      </div>
-      <div className="relative mt-6 flex-1 min-h-[200px]">{children(active)}</div>
+    <div ref={ref} className={`h-full ${active ? "" : "lm-paused"}`}>
+      <SpotlightCard
+        className={`flex flex-col h-full ${className}`}
+        spotlightRadius={420}
+      >
+        <div className="p-6 pb-0">
+          <span className="font-mono text-[11px] text-zinc-400 dark:text-zinc-600">{n}</span>
+          <h3 className="mt-3 text-lg font-bold tracking-tight text-zinc-900 dark:text-white">{title}</h3>
+          <p className="mt-1.5 text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">{body}</p>
+        </div>
+        <div className="relative mt-6 flex-1 min-h-[200px]">{children(active)}</div>
+      </SpotlightCard>
     </div>
   );
 }
