@@ -160,12 +160,12 @@ export default function HomeV2() {
       </section>
 
       {/* PINNED HORIZONTAL SHOWCASE */}
-      <section className="cv-auto bg-[#F0F7FF] dark:bg-[#0a0a0a] border-b border-zinc-200/80 dark:border-zinc-800/80" id="showcase">
+      <section className="cv-auto bg-white dark:bg-[#121215] border-b border-zinc-200/80 dark:border-zinc-800/80" id="showcase">
         <HorizontalShowcase />
       </section>
 
       {/* 03 FEATURES BENTO */}
-      <section className="cv-auto bg-white dark:bg-[#121215] py-20 sm:py-28 border-b border-zinc-200/80 dark:border-zinc-800/80" id="features">
+      <section className="cv-auto bg-[#F0F7FF] dark:bg-[#0a0a0a] py-20 sm:py-28 border-b border-zinc-200/80 dark:border-zinc-800/80" id="features">
         <div className="mx-auto max-w-6xl px-5 sm:px-8 lg:px-10">
           <Reveal>
             <SectionHeading
@@ -180,7 +180,7 @@ export default function HomeV2() {
       </section>
 
       {/* 04 TRY IT */}
-      <section className="cv-auto bg-[#F0F7FF] dark:bg-[#0a0a0a] py-20 sm:py-28 border-b border-zinc-200/80 dark:border-zinc-800/80" id="try-it">
+      <section className="cv-auto bg-white dark:bg-[#121215] py-20 sm:py-28 border-b border-zinc-200/80 dark:border-zinc-800/80" id="try-it">
         <div className="mx-auto max-w-6xl px-5 sm:px-8 lg:px-10">
           <Reveal>
             <SectionHeading
@@ -196,7 +196,7 @@ export default function HomeV2() {
       </section>
 
       {/* 05 INTEGRATIONS */}
-      <section className="cv-auto bg-white dark:bg-[#121215] py-20 sm:py-24 border-b border-zinc-200/80 dark:border-zinc-800/80" id="integrations">
+      <section className="cv-auto bg-[#F0F7FF] dark:bg-[#0a0a0a] py-20 sm:py-24 border-b border-zinc-200/80 dark:border-zinc-800/80" id="integrations">
         <div className="mx-auto max-w-6xl px-5 sm:px-8 lg:px-10">
           <Reveal>
             <SectionHeading
@@ -213,7 +213,7 @@ export default function HomeV2() {
       </section>
 
       {/* 06 COMPARE */}
-      <section className="cv-auto bg-[#F0F7FF] dark:bg-[#0a0a0a] py-20 sm:py-28 border-b border-zinc-200/80 dark:border-zinc-800/80" id="compare">
+      <section className="cv-auto bg-white dark:bg-[#121215] py-20 sm:py-28 border-b border-zinc-200/80 dark:border-zinc-800/80" id="compare">
         <div className="mx-auto max-w-6xl px-5 sm:px-8 lg:px-10">
           <Reveal>
             <SectionHeading
@@ -228,7 +228,7 @@ export default function HomeV2() {
       </section>
 
       {/* 07 PRICING */}
-      <section className="cv-auto bg-white dark:bg-[#121215] py-20 sm:py-28 border-b border-zinc-200/80 dark:border-zinc-800/80" id="pricing">
+      <section className="cv-auto bg-[#F0F7FF] dark:bg-[#0a0a0a] py-20 sm:py-28 border-b border-zinc-200/80 dark:border-zinc-800/80" id="pricing">
         <div className="mx-auto max-w-6xl px-5 sm:px-8 lg:px-10">
           <Reveal>
             <SectionHeading
@@ -243,7 +243,7 @@ export default function HomeV2() {
       </section>
 
       {/* 08 FAQ */}
-      <section id="faq" className="cv-auto bg-[#F0F7FF] dark:bg-[#0a0a0a] py-20 sm:py-28 px-5 sm:px-8 lg:px-10 border-b border-zinc-200/80 dark:border-zinc-800/80">
+      <section id="faq" className="cv-auto bg-white dark:bg-[#121215] py-20 sm:py-28 px-5 sm:px-8 lg:px-10 border-b border-zinc-200/80 dark:border-zinc-800/80">
         <div className="mx-auto max-w-5xl">
           <Reveal className="mb-12 sm:mb-14">
             <SectionHeading index="08" eyebrow="FAQ" title="Questions people" accent="usually ask." />

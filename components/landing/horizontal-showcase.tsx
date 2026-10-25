@@ -260,7 +260,7 @@ export default function HorizontalShowcase() {
               return (
                 <SpotlightCard
                   key={item.num}
-                  className="shrink-0 w-[285px] sm:w-[350px] p-5 sm:p-7 flex flex-col justify-between border-zinc-200 dark:border-white/10 bg-white dark:bg-[#121215] select-none"
+                  className="shrink-0 w-[285px] sm:w-[350px] p-5 sm:p-7 flex flex-col justify-between border-zinc-200/80 dark:border-white/10 bg-zinc-50/90 dark:bg-[#18181c] shadow-xs hover:shadow-md select-none"
                   spotlightRadius={380}
                 >
                   <div>
