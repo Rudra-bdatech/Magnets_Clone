@@ -38,3 +38,13 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# scratch and test scripts
+/scratch/
+scratch/
+scratch_*
+*.mjs
+
+# AI agent configuration and skills
+.agents/
+.claude/
