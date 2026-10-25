@@ -53,6 +53,74 @@ const STEPS: FunnelStep[] = [
 
 const AUTO_ROTATE_INTERVAL = 5500; // 5.5s step cycle
 
+const WAVE_PATH = (() => {
+  let p = "M -48 10";
+  for (let x = -48; x <= 1400; x += 24) {
+    p += " q 6 -3.5 12 0 t 12 0";
+  }
+  return p;
+})();
+
+function CurvyDeliveryBar({
+  progress,
+  active,
+}: {
+  progress: number;
+  active: boolean;
+}) {
+  const pct = Math.min(100, Math.max(0, progress));
+  return (
+    <div className="relative w-full h-5 flex items-center select-none" aria-hidden="true">
+      {/* Background track: straight rail + subtle curvy guide */}
+      <div className="absolute inset-x-0 h-1 rounded-full bg-zinc-200/70 dark:bg-white/[0.08]" />
+      <div className="absolute inset-x-0 h-5 overflow-hidden opacity-30 dark:opacity-20 pointer-events-none">
+        <svg
+          className="absolute top-0 left-0 h-5 text-zinc-400 dark:text-zinc-600"
+          style={{ width: "1200px" }}
+          viewBox="0 0 1200 20"
+          fill="none"
+        >
+          <path
+            d={WAVE_PATH}
+            stroke="currentColor"
+            strokeWidth="3"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      </div>
+
+      {/* Active filled progress with Google Play Store flowing curvy wave */}
+      <div
+        className="relative h-5 overflow-hidden rounded-full transition-[width] duration-75 ease-linear"
+        style={{
+          width: `${pct}%`,
+        }}
+      >
+        <div
+          className={`absolute top-0 left-0 h-5 pointer-events-none ${active ? "animate-m3-wave" : ""}`}
+          style={{ width: "1200px" }}
+        >
+          <svg
+            className="h-5 text-[#0066B2] dark:text-[#38BDF8]"
+            style={{ width: "1200px" }}
+            viewBox="0 0 1200 20"
+            fill="none"
+          >
+            <path
+              d={WAVE_PATH}
+              stroke="currentColor"
+              strokeWidth="3.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function FunnelShowcase() {
   const reduced = usePrefersReducedMotion();
 
@@ -411,13 +479,11 @@ export default function FunnelShowcase() {
                         </span>
                       </div>
 
-                      {/* Animated Delivery Speed Bar */}
-                      <div className="w-full h-2 bg-zinc-200 dark:bg-zinc-800 rounded-full overflow-hidden">
-                        <div
-                          className="h-full bg-[#0066B2] dark:bg-[#38BDF8] rounded-full will-change-[width]"
-                          style={{ width: `${Math.min(progress * 1.6, 100)}%` }}
-                        />
-                      </div>
+                      {/* Animated Delivery Speed Bar with Google Play Store Curvy Loading Wave */}
+                      <CurvyDeliveryBar
+                        progress={Math.min(progress * 1.6, 100)}
+                        active={!reduced && !isDelivered}
+                      />
 
                       <div className="flex items-center justify-between text-[10px] sm:text-[11px] text-zinc-500 dark:text-zinc-400 pt-0.5">
                         <span className="truncate">Recipient: alex@company.com</span>

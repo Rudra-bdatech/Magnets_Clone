@@ -33,9 +33,9 @@ function Tile({
   const reduced = usePrefersReducedMotion();
   const active = inView && !reduced;
   return (
-    <div ref={ref} className={`h-full ${active ? "" : "lm-paused"}`}>
+    <div ref={ref} className={`h-full ${className} ${active ? "" : "lm-paused"}`}>
       <SpotlightCard
-        className={`flex flex-col h-full ${className}`}
+        className="flex flex-col h-full"
         spotlightRadius={420}
       >
         <div className="p-6 pb-0">
@@ -140,6 +140,78 @@ const VARIANTS = [
   { id: "B", label: "Shorter headline", rate: 38.3 },
 ];
 
+const WAVE_PATH = (() => {
+  let p = "M -48 10";
+  for (let x = -48; x <= 1400; x += 24) {
+    p += " q 6 -3.5 12 0 t 12 0";
+  }
+  return p;
+})();
+
+function CurvyProgressBar({
+  progress,
+  active,
+  winner,
+  delayMs = 0,
+}: {
+  progress: number;
+  active: boolean;
+  winner: boolean;
+  delayMs?: number;
+}) {
+  return (
+    <div className="relative w-full h-5 flex items-center select-none" aria-hidden="true">
+      {/* Background track: straight rail + subtle curvy guide */}
+      <div className="absolute inset-x-0 h-1 rounded-full bg-zinc-200/70 dark:bg-white/[0.08]" />
+      <div className="absolute inset-x-0 h-5 overflow-hidden opacity-30 dark:opacity-20 pointer-events-none">
+        <svg
+          className="absolute top-0 left-0 h-5 text-zinc-400 dark:text-zinc-600"
+          style={{ width: "1400px" }}
+          viewBox="0 0 1400 20"
+          fill="none"
+        >
+          <path
+            d={WAVE_PATH}
+            stroke="currentColor"
+            strokeWidth="3"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      </div>
+
+      {/* Active filled progress with Google Play Store flowing curvy wave */}
+      <div
+        className="relative h-5 overflow-hidden rounded-full transition-[width] duration-1000 ease-out"
+        style={{
+          width: active ? `${Math.min(100, Math.max(0, progress))}%` : "0%",
+          transitionDelay: `${delayMs}ms`,
+        }}
+      >
+        <div
+          className={`absolute top-0 left-0 h-5 pointer-events-none ${active ? "animate-m3-wave" : ""}`}
+          style={{ width: "1400px" }}
+        >
+          <svg
+            className={`h-5 ${winner ? "text-[#0066B2] dark:text-[#38BDF8]" : "text-zinc-400 dark:text-zinc-500"}`}
+            style={{ width: "1400px" }}
+            viewBox="0 0 1400 20"
+            fill="none"
+          >
+            <path
+              d={WAVE_PATH}
+              stroke="currentColor"
+              strokeWidth="3.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function AnalyticsDemo({ active }: { active: boolean }) {
   const [seen, setSeen] = useState(false);
   useEffect(() => {
@@ -177,12 +249,12 @@ function AnalyticsDemo({ active }: { active: boolean }) {
                 )}
                 <span className="font-mono tabular-nums text-zinc-500">{v.rate}%</span>
               </div>
-              <div className="h-2 overflow-hidden rounded-full bg-zinc-100 dark:bg-white/[0.06]">
-                <div
-                  className={`h-full rounded-full transition-[width] duration-1000 ease-out ${winner ? "bg-[#0066B2] dark:bg-[#38BDF8]" : "bg-zinc-300 dark:bg-zinc-600"}`}
-                  style={{ width: seen ? `${v.rate * 2}%` : "0%", transitionDelay: `${200 + i * 150}ms` }}
-                />
-              </div>
+              <CurvyProgressBar
+                progress={v.rate * 2}
+                active={seen}
+                winner={winner}
+                delayMs={200 + i * 150}
+              />
             </div>
           );
         })}

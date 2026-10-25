@@ -1528,9 +1528,26 @@ textarea {
   .lm-wipe-row,
   .lm-split-title,
   .lm-split-accent,
-  .lm-split-desc {
+  .lm-split-desc,
+  .animate-m3-wave {
     opacity: 1 !important;
     transform: none !important;
     transition: none !important;
+    animation: none !important;
   }
+}
+
+/* Google Material 3 Expressive / Play Store Curvy Loading Wave */
+@keyframes m3-wave-flow {
+  0% {
+    transform: translate3d(-24px, 0, 0);
+  }
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.animate-m3-wave {
+  animation: m3-wave-flow 1.35s linear infinite;
+  will-change: transform;
 }
