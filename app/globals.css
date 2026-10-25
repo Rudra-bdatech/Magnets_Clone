@@ -61,6 +61,11 @@ html.lenis body {
   -ms-overflow-style: none !important;
   scrollbar-width: none !important;
 }
+.scrollbar-none,
+.no-scrollbar {
+  -ms-overflow-style: none !important;
+  scrollbar-width: none !important;
+}
 .scrollbar-none::-webkit-scrollbar,
 .no-scrollbar::-webkit-scrollbar {
   display: none !important;

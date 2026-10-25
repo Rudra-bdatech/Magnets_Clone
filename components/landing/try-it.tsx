@@ -170,9 +170,9 @@ export default function TryIt() {
         style={{ background: `radial-gradient(55% 50% at 50% 55%, ${theme.glow}, transparent 70%)` }}
       />
 
-      <div className="relative overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-[0_40px_100px_-50px_rgba(0,40,90,0.45)] dark:border-white/10 dark:bg-[#0E0E11] dark:shadow-[0_40px_100px_-50px_rgba(0,0,0,0.9)]">
+      <div className="relative overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-[0_40px_100px_-50px_rgba(0,40,90,0.45)] dark:border-white/10 dark:bg-[#0E0E11] dark:shadow-[0_40px_100px_-50px_rgba(0,0,0,0.9)] min-h-[1070px] md:min-h-[660px]">
         {/* Browser chrome */}
-        <div className="flex h-11 items-center gap-3 border-b border-zinc-200 bg-zinc-50 px-4 py-2.5 dark:border-white/10 dark:bg-[#141418]">
+        <div className="flex h-11 items-center gap-3 border-b border-zinc-200 bg-zinc-50 px-4 dark:border-white/10 dark:bg-[#141418]">
           <div className="hidden gap-1.5 sm:flex" aria-hidden="true">
             <span className="h-2.5 w-2.5 rounded-full bg-[#FF5F57]" />
             <span className="h-2.5 w-2.5 rounded-full bg-[#FEBC2E]" />
@@ -202,7 +202,7 @@ export default function TryIt() {
           </label>
           <div
             key={shake}
-            className={`flex items-center gap-2 rounded-xl border border-zinc-200 bg-zinc-50 py-1.5 pl-3.5 pr-1.5 transition focus-within:border-[var(--acc)] focus-within:bg-white focus-within:ring-4 focus-within:ring-[var(--acc-10)] dark:border-white/10 dark:bg-white/[0.04] dark:focus-within:bg-white/[0.06] ${
+            className={`flex h-12 items-center gap-2 rounded-xl border border-zinc-200 bg-zinc-50 pl-3.5 pr-1.5 transition focus-within:border-[var(--acc)] focus-within:bg-white focus-within:ring-4 focus-within:ring-[var(--acc-10)] dark:border-white/10 dark:bg-white/[0.04] dark:focus-within:bg-white/[0.06] ${
               shake ? "lm-shake" : ""
             }`}
           >
@@ -234,7 +234,7 @@ export default function TryIt() {
               {!building && <ArrowRight className="h-4 w-4" aria-hidden="true" />}
             </button>
           </div>
-          <div className="no-scrollbar -mx-4 mt-3 flex gap-2 overflow-x-auto px-4 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0">
+          <div className="no-scrollbar -mx-4 mt-3 flex h-8 items-center gap-2 overflow-x-auto px-4 [scrollbar-width:none] [-ms-overflow-style:none] sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0">
             {SUGGESTIONS.map((s) => {
               const active = s === build.topic;
               return (
@@ -242,7 +242,7 @@ export default function TryIt() {
                   key={s}
                   type="button"
                   onClick={() => run(s)}
-                  className={`shrink-0 rounded-full border px-3 py-1.5 text-xs transition ${
+                  className={`inline-flex h-7 shrink-0 items-center justify-center rounded-full border px-3 text-xs leading-none transition ${
                     active
                       ? "border-[var(--acc-40)] bg-[var(--acc-10)] text-zinc-900 dark:border-[var(--accd-40)] dark:bg-[var(--accd-10)] dark:text-white"
                       : "border-zinc-200 text-zinc-600 hover:border-zinc-400 hover:text-zinc-900 dark:border-white/10 dark:text-zinc-400 dark:hover:border-white/30 dark:hover:text-white"
@@ -256,78 +256,84 @@ export default function TryIt() {
         </form>
 
         {/* Canvas: the page being built */}
-        <div className="relative flex flex-col justify-center px-5 py-8 sm:px-10 sm:py-10 min-h-[660px] sm:min-h-[600px] md:min-h-[460px]">
+        <div className="relative px-5 py-8 sm:px-10 sm:py-10 min-h-[840px] md:min-h-[480px] flex items-center">
           <div
             aria-hidden="true"
             className="pointer-events-none absolute inset-x-0 top-0 h-40 transition-[background] duration-700"
             style={{ background: `radial-gradient(60% 100% at 50% 0%, ${theme.glow.replace(/[\d.]+\)$/, "0.10)")}, transparent)` }}
           />
-          <div className="relative grid items-start md:items-center gap-10 md:grid-cols-[1.2fr_0.8fr] md:gap-12">
-            <div className="order-2 md:order-1">
+          <div className="relative grid items-center gap-8 md:grid-cols-[1.2fr_0.8fr] md:gap-12 w-full">
+            <div className="order-2 md:order-1 flex flex-col justify-between min-h-[505px] md:min-h-[410px]">
               {/* Headline */}
-              <Block active={step === 1} label={STEPS[0].doing} className="min-h-[144px] sm:min-h-[156px] flex flex-col justify-start">
+              <Block active={step === 1} label={STEPS[0].doing} className="min-h-[185px] md:min-h-[175px] flex flex-col justify-start">
                 {step >= 1 ? (
                   <div key={`h-${build.run}`}>
                     <p className="lm-rise-in font-mono text-[10px] uppercase tracking-[0.2em] text-[var(--acc)] dark:text-[var(--acc-d)]">
                       Free {KINDS[v].toLowerCase()} · Instant download
                     </p>
-                    <h3 className="mt-3 text-[1.6rem] font-extrabold leading-[1.15] tracking-tight text-zinc-900 dark:text-white sm:text-3xl">
+                    <h3 className="mt-2.5 text-[1.4rem] font-extrabold leading-[1.2] tracking-tight text-zinc-900 dark:text-white sm:text-2xl lg:text-[1.7rem] line-clamp-3">
                       {headline.split(" ").map((w, i) => (
                         <span key={i} className="lm-word" style={{ animationDelay: `${i * 55}ms` }}>
                           {w}&nbsp;
                         </span>
                       ))}
                     </h3>
-                    <p className="lm-rise-in mt-3 text-sm text-zinc-500" style={{ animationDelay: "300ms" }}>
+                    <p className="lm-rise-in mt-2 text-sm text-zinc-500" style={{ animationDelay: "300ms" }}>
                       Get it free, straight to your inbox.
                     </p>
                   </div>
                 ) : (
-                  <div className="space-y-3 py-0.5">
-                    <Bar className="h-3 w-36" />
-                    <Bar className="h-8 w-11/12" />
-                    <Bar className="h-8 w-2/3" />
-                    <Bar className="h-4 w-48" />
+                  <div className="space-y-3 py-1">
+                    <Bar className="h-2.5 w-36" />
+                    <Bar className="h-7 w-11/12" />
+                    <Bar className="h-7 w-2/3" />
+                    <Bar className="h-3.5 w-48 mt-1" />
                   </div>
                 )}
               </Block>
 
               {/* Benefits */}
-              <Block active={step === 3} label={STEPS[2].doing} className="mt-8 sm:mt-10 min-h-[105px]">
+              <Block active={step === 3} label={STEPS[2].doing} className="mt-6 md:mt-7 min-h-[160px] md:min-h-[105px] flex flex-col justify-center">
                 {step >= 3 ? (
                   <ul key={`b-${build.run}`} className="space-y-2.5 text-sm text-zinc-600 dark:text-zinc-400">
                     {BULLETS.map((b, i) => (
-                      <li key={i} className="lm-rise-in flex gap-2.5" style={{ animationDelay: `${i * 110}ms` }}>
+                      <li key={i} className="lm-rise-in flex gap-2.5 items-start" style={{ animationDelay: `${i * 110}ms` }}>
                         <span className="mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-[var(--acc-15)] text-[var(--acc)] dark:bg-[var(--accd-15)] dark:text-[var(--acc-d)]">
                           <Check className="h-3 w-3" aria-hidden="true" />
                         </span>
-                        {b(build.topic)}
+                        <span className="leading-snug line-clamp-2">{b(build.topic)}</span>
                       </li>
                     ))}
                   </ul>
                 ) : (
-                  <div className="space-y-3 py-1">
+                  <div className="space-y-3.5 py-1">
                     <div className="flex items-start gap-2.5">
-                      <Bar className="mt-0.5 h-4 w-4 shrink-0 rounded-full" />
+                      <Bar className="mt-0.5 h-4 w-4 rounded-full shrink-0" />
                       <div className="flex-1 space-y-1.5">
-                        <Bar className="h-3.5 w-full" />
-                        <Bar className="h-3.5 w-4/5" />
+                        <Bar className="h-3.5 w-11/12" />
+                        <Bar className="h-3 w-4/5 md:hidden" />
                       </div>
                     </div>
-                    <div className="flex items-center gap-2.5">
-                      <Bar className="h-4 w-4 shrink-0 rounded-full" />
-                      <Bar className="h-3.5 w-3/4" />
+                    <div className="flex items-start gap-2.5">
+                      <Bar className="mt-0.5 h-4 w-4 rounded-full shrink-0" />
+                      <div className="flex-1 space-y-1.5">
+                        <Bar className="h-3.5 w-4/5" />
+                        <Bar className="h-3 w-3/5 md:hidden" />
+                      </div>
                     </div>
-                    <div className="flex items-center gap-2.5">
-                      <Bar className="h-4 w-4 shrink-0 rounded-full" />
-                      <Bar className="h-3.5 w-2/3" />
+                    <div className="flex items-start gap-2.5">
+                      <Bar className="mt-0.5 h-4 w-4 rounded-full shrink-0" />
+                      <div className="flex-1 space-y-1.5">
+                        <Bar className="h-3.5 w-3/5" />
+                        <Bar className="h-3 w-1/2 md:hidden" />
+                      </div>
                     </div>
                   </div>
                 )}
               </Block>
 
               {/* Opt-in form */}
-              <Block active={step === 4} label={STEPS[3].doing} className="mt-8 sm:mt-10 min-h-[110px] sm:min-h-[72px]">
+              <Block active={step === 4} label={STEPS[3].doing} className="mt-6 md:mt-7 min-h-[110px] md:min-h-[68px] flex flex-col justify-center">
                 {step >= 4 ? (
                   <div key={`f-${build.run}`} className="lm-rise-in">
                     <div className="flex flex-col gap-2 sm:flex-row">
@@ -341,12 +347,12 @@ export default function TryIt() {
                     <p className="mt-2 text-[11px] text-zinc-400">No spam. Unsubscribe anytime.</p>
                   </div>
                 ) : (
-                  <div className="space-y-2">
+                  <div>
                     <div className="flex flex-col gap-2 sm:flex-row">
                       <Bar className="h-10 flex-1 rounded-lg" />
-                      <Bar className="h-10 w-full sm:w-32 rounded-lg" />
+                      <Bar className="h-10 w-full sm:w-28 rounded-lg" />
                     </div>
-                    <Bar className="h-3 w-44" />
+                    <Bar className="mt-2 h-3 w-40" />
                   </div>
                 )}
               </Block>
@@ -354,13 +360,16 @@ export default function TryIt() {
 
             {/* Cover */}
             <div className="order-1 md:order-2">
-              <Block active={step === 2} label={STEPS[1].doing} className="mx-auto w-44 sm:w-52 md:w-full md:max-w-[260px] pb-4">
+              <Block active={step === 2} label={STEPS[1].doing} className="mx-auto w-44 sm:w-52 md:w-full md:max-w-[260px]">
                 {step >= 2 ? (
                   <Cover key={`c-${build.run}`} title={cap(build.topic)} kind={KINDS[v]} gradient={theme.cover} />
                 ) : (
                   <div className="relative mx-auto w-full max-w-[250px] sm:max-w-[260px]">
-                    <div className="flex aspect-[4/5] items-center justify-center rounded-2xl border-2 border-dashed border-zinc-200 dark:border-white/10">
-                      <ImageIcon className="h-6 w-6 text-zinc-300 dark:text-zinc-700" aria-hidden="true" />
+                    <div className="flex aspect-[4/5] items-center justify-center rounded-2xl border-2 border-dashed border-zinc-200 bg-zinc-50/50 dark:border-white/10 dark:bg-white/[0.02]">
+                      <div className="flex flex-col items-center gap-2 text-zinc-300 dark:text-zinc-700">
+                        <ImageIcon className="h-8 w-8" aria-hidden="true" />
+                        <span className="font-mono text-[10px] uppercase tracking-wider text-zinc-400 dark:text-zinc-600">Cover preview</span>
+                      </div>
                     </div>
                   </div>
                 )}
@@ -370,7 +379,7 @@ export default function TryIt() {
         </div>
 
         {/* Build checklist */}
-        <div className="flex h-12 min-h-[48px] items-center justify-between gap-4 border-t border-zinc-200 bg-zinc-50/80 px-4 py-3 dark:border-white/10 dark:bg-white/[0.02] sm:px-6">
+        <div className="flex h-[52px] items-center justify-between gap-4 border-t border-zinc-200 bg-zinc-50/80 px-4 dark:border-white/10 dark:bg-white/[0.02] sm:px-6">
           <ol className="flex items-center gap-3 sm:gap-5">
             {STEPS.map((s, i) => {
               const k = i + 1;
@@ -413,7 +422,7 @@ export default function TryIt() {
         </div>
       </div>
 
-      <p className="relative mt-4 min-h-[20px] text-center text-xs text-zinc-500">
+      <p className="relative mt-4 text-center text-xs text-zinc-500">
         {demoing ? "Running a demo. Click the box to try your own topic. " : ""}
         Instant preview from a template. After sign-up, the AI writes copy specific to your niche.
       </p>
