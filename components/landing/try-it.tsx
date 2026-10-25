@@ -170,9 +170,9 @@ export default function TryIt() {
         style={{ background: `radial-gradient(55% 50% at 50% 55%, ${theme.glow}, transparent 70%)` }}
       />
 
-      <div className="relative overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-[0_40px_100px_-50px_rgba(0,40,90,0.45)] dark:border-white/10 dark:bg-[#0E0E11] dark:shadow-[0_40px_100px_-50px_rgba(0,0,0,0.9)]">
+      <div className="relative overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-[0_40px_100px_-50px_rgba(0,40,90,0.45)] dark:border-white/10 dark:bg-[#0E0E11] dark:shadow-[0_40px_100px_-50px_rgba(0,0,0,0.9)] min-h-[1070px] md:min-h-[660px]">
         {/* Browser chrome */}
-        <div className="flex items-center gap-3 border-b border-zinc-200 bg-zinc-50 px-4 py-2.5 dark:border-white/10 dark:bg-[#141418]">
+        <div className="flex h-11 items-center gap-3 border-b border-zinc-200 bg-zinc-50 px-4 dark:border-white/10 dark:bg-[#141418]">
           <div className="hidden gap-1.5 sm:flex" aria-hidden="true">
             <span className="h-2.5 w-2.5 rounded-full bg-[#FF5F57]" />
             <span className="h-2.5 w-2.5 rounded-full bg-[#FEBC2E]" />
@@ -202,7 +202,7 @@ export default function TryIt() {
           </label>
           <div
             key={shake}
-            className={`flex items-center gap-2 rounded-xl border border-zinc-200 bg-zinc-50 py-1.5 pl-3.5 pr-1.5 transition focus-within:border-[var(--acc)] focus-within:bg-white focus-within:ring-4 focus-within:ring-[var(--acc-10)] dark:border-white/10 dark:bg-white/[0.04] dark:focus-within:bg-white/[0.06] ${
+            className={`flex h-12 items-center gap-2 rounded-xl border border-zinc-200 bg-zinc-50 pl-3.5 pr-1.5 transition focus-within:border-[var(--acc)] focus-within:bg-white focus-within:ring-4 focus-within:ring-[var(--acc-10)] dark:border-white/10 dark:bg-white/[0.04] dark:focus-within:bg-white/[0.06] ${
               shake ? "lm-shake" : ""
             }`}
           >
@@ -234,7 +234,7 @@ export default function TryIt() {
               {!building && <ArrowRight className="h-4 w-4" aria-hidden="true" />}
             </button>
           </div>
-          <div className="no-scrollbar -mx-4 mt-3 flex gap-2 overflow-x-auto px-4 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0">
+          <div className="no-scrollbar -mx-4 mt-3 flex h-8 items-center gap-2 overflow-x-auto px-4 [scrollbar-width:none] [-ms-overflow-style:none] sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0">
             {SUGGESTIONS.map((s) => {
               const active = s === build.topic;
               return (
@@ -242,7 +242,7 @@ export default function TryIt() {
                   key={s}
                   type="button"
                   onClick={() => run(s)}
-                  className={`shrink-0 rounded-full border px-3 py-1.5 text-xs transition ${
+                  className={`inline-flex h-7 shrink-0 items-center justify-center rounded-full border px-3 text-xs leading-none transition ${
                     active
                       ? "border-[var(--acc-40)] bg-[var(--acc-10)] text-zinc-900 dark:border-[var(--accd-40)] dark:bg-[var(--accd-10)] dark:text-white"
                       : "border-zinc-200 text-zinc-600 hover:border-zinc-400 hover:text-zinc-900 dark:border-white/10 dark:text-zinc-400 dark:hover:border-white/30 dark:hover:text-white"
@@ -256,16 +256,16 @@ export default function TryIt() {
         </form>
 
         {/* Canvas: the page being built */}
-        <div className="relative px-5 py-8 sm:px-10 sm:py-10 min-h-[520px] md:min-h-[480px] flex items-center">
+        <div className="relative px-5 py-8 sm:px-10 sm:py-10 min-h-[840px] md:min-h-[480px] flex items-center">
           <div
             aria-hidden="true"
             className="pointer-events-none absolute inset-x-0 top-0 h-40 transition-[background] duration-700"
             style={{ background: `radial-gradient(60% 100% at 50% 0%, ${theme.glow.replace(/[\d.]+\)$/, "0.10)")}, transparent)` }}
           />
-          <div className="relative grid items-center gap-10 md:grid-cols-[1.2fr_0.8fr] md:gap-12 w-full">
-            <div className="order-2 md:order-1 flex flex-col justify-between min-h-[410px] sm:min-h-[410px]">
+          <div className="relative grid items-center gap-8 md:grid-cols-[1.2fr_0.8fr] md:gap-12 w-full">
+            <div className="order-2 md:order-1 flex flex-col justify-between min-h-[505px] md:min-h-[410px]">
               {/* Headline */}
-              <Block active={step === 1} label={STEPS[0].doing} className="min-h-[175px] sm:min-h-[175px] flex flex-col justify-start">
+              <Block active={step === 1} label={STEPS[0].doing} className="min-h-[185px] md:min-h-[175px] flex flex-col justify-start">
                 {step >= 1 ? (
                   <div key={`h-${build.run}`}>
                     <p className="lm-rise-in font-mono text-[10px] uppercase tracking-[0.2em] text-[var(--acc)] dark:text-[var(--acc-d)]">
@@ -293,7 +293,7 @@ export default function TryIt() {
               </Block>
 
               {/* Benefits */}
-              <Block active={step === 3} label={STEPS[2].doing} className="mt-6 sm:mt-7 min-h-[105px] sm:min-h-[105px] flex flex-col justify-center">
+              <Block active={step === 3} label={STEPS[2].doing} className="mt-6 md:mt-7 min-h-[160px] md:min-h-[105px] flex flex-col justify-center">
                 {step >= 3 ? (
                   <ul key={`b-${build.run}`} className="space-y-2.5 text-sm text-zinc-600 dark:text-zinc-400">
                     {BULLETS.map((b, i) => (
@@ -306,25 +306,34 @@ export default function TryIt() {
                     ))}
                   </ul>
                 ) : (
-                  <div className="space-y-3">
-                    <div className="flex items-center gap-2.5">
-                      <Bar className="h-4 w-4 rounded-full shrink-0" />
-                      <Bar className="h-3.5 w-11/12" />
+                  <div className="space-y-3.5 py-1">
+                    <div className="flex items-start gap-2.5">
+                      <Bar className="mt-0.5 h-4 w-4 rounded-full shrink-0" />
+                      <div className="flex-1 space-y-1.5">
+                        <Bar className="h-3.5 w-11/12" />
+                        <Bar className="h-3 w-4/5 md:hidden" />
+                      </div>
                     </div>
-                    <div className="flex items-center gap-2.5">
-                      <Bar className="h-4 w-4 rounded-full shrink-0" />
-                      <Bar className="h-3.5 w-4/5" />
+                    <div className="flex items-start gap-2.5">
+                      <Bar className="mt-0.5 h-4 w-4 rounded-full shrink-0" />
+                      <div className="flex-1 space-y-1.5">
+                        <Bar className="h-3.5 w-4/5" />
+                        <Bar className="h-3 w-3/5 md:hidden" />
+                      </div>
                     </div>
-                    <div className="flex items-center gap-2.5">
-                      <Bar className="h-4 w-4 rounded-full shrink-0" />
-                      <Bar className="h-3.5 w-3/5" />
+                    <div className="flex items-start gap-2.5">
+                      <Bar className="mt-0.5 h-4 w-4 rounded-full shrink-0" />
+                      <div className="flex-1 space-y-1.5">
+                        <Bar className="h-3.5 w-3/5" />
+                        <Bar className="h-3 w-1/2 md:hidden" />
+                      </div>
                     </div>
                   </div>
                 )}
               </Block>
 
               {/* Opt-in form */}
-              <Block active={step === 4} label={STEPS[3].doing} className="mt-6 sm:mt-7 min-h-[68px] max-sm:min-h-[110px] flex flex-col justify-center">
+              <Block active={step === 4} label={STEPS[3].doing} className="mt-6 md:mt-7 min-h-[110px] md:min-h-[68px] flex flex-col justify-center">
                 {step >= 4 ? (
                   <div key={`f-${build.run}`} className="lm-rise-in">
                     <div className="flex flex-col gap-2 sm:flex-row">
