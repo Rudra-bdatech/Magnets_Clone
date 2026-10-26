@@ -216,6 +216,10 @@ export async function deleteCloudinaryAsset(
     return false;
   }
 
+  if (!url.includes("cloudinary.com")) {
+    return false;
+  }
+
   const check = await canUserDeleteAsset(url, userEmail, options);
   if (!check.allowed) {
     console.warn(`[Cloudinary delete blocked] ${check.reason} (URL: ${url})`);

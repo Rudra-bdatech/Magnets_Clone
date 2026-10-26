@@ -527,7 +527,7 @@ export async function handleDeleteAccount(data: any, authEmail: string | null) {
 
   // Uploaded media & resource deliverable files
   userResources.forEach((r) => {
-    const u = r.url || r.fileUrl;
+    const u = r.fileUrl || r.url;
     if (u) allUserAssets.push(u);
   });
 

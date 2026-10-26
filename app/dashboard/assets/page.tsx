@@ -33,6 +33,12 @@ import {
 import { syncWithDatabase, loadResources, loadAccount, loadPages, loadLeads } from "@/lib/store";
 import type { Account, MagnetPage, Lead } from "@/lib/data";
 import { MobileAssetCard } from "@/components/assets/MobileAssetCard";
+import { UndoDeleteToast } from "@/components/assets/UndoDeleteToast";
+import {
+  UploadProgressCard,
+  type UploadProgressState,
+  type UploadQueueItem,
+} from "@/components/assets/UploadProgressCard";
 import { AppleCheckbox } from "@/components/leads/AppleCheckbox";
 import { useSidebar } from "@/components/dashboard/dashboard-shell";
 import { useIsMobile } from "@/lib/use-mobile";
@@ -53,15 +59,18 @@ interface Toast {
   message: string;
 }
 
-interface UploadProgressState {
-  current: number;
-  total: number;
-  currentFileName: string;
-  loadedBytes: number;
-  totalBytes: number;
-  percent: number;
-  stage: "uploading" | "saving";
+interface PendingDelete {
+  key: string;
+  /** Removed resources with their original list position, for Undo */
+  items: { resource: Resource; index: number }[];
 }
+
+const UNDO_WINDOW_MS = 6000;
+
+// Share of the bar given to browser → server bytes; the rest covers the server → cloud storage hop,
+// which takes as long or longer but reports no progress of its own.
+const UPLOAD_WEIGHT = 55;
+const PROCESSING_CEILING = 95;
 
 export default function ResourcesPage() {
   const { isCollapsed } = useSidebar();
@@ -73,11 +82,21 @@ export default function ResourcesPage() {
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState<UploadProgressState | null>(null);
+  const [uploadQueue, setUploadQueue] = useState<UploadQueueItem[]>([]);
+  const [lastUploadShareUrl, setLastUploadShareUrl] = useState<string | undefined>(undefined);
   const [isDragOver, setIsDragOver] = useState(false);
 
   // Active XHR reference & cancellation tracking
   const activeXhrRef = useRef<XMLHttpRequest | null>(null);
   const isCancelledRef = useRef<boolean>(false);
+  const processingTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const stopProcessingTimer = () => {
+    if (processingTimerRef.current) {
+      clearInterval(processingTimerRef.current);
+      processingTimerRef.current = null;
+    }
+  };
 
   // UI State
   const [searchQuery, setSearchQuery] = useState("");
@@ -93,6 +112,8 @@ export default function ResourcesPage() {
   const [selectedResourceIds, setSelectedResourceIds] = useState<string[]>([]);
   const [showBulkDeleteModal, setShowBulkDeleteModal] = useState(false);
   const [isBulkDeleting, setIsBulkDeleting] = useState(false);
+  const [pendingDelete, setPendingDelete] = useState<PendingDelete | null>(null);
+  const pendingDeleteRef = useRef<PendingDelete | null>(null);
   const [resourceToDelete, setResourceToDelete] = useState<Resource | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [toasts, setToasts] = useState<Toast[]>([]);
@@ -223,6 +244,7 @@ export default function ResourcesPage() {
 
   const cancelUpload = () => {
     isCancelledRef.current = true;
+    stopProcessingTimer();
     if (activeXhrRef.current) {
       try {
         activeXhrRef.current.abort();
@@ -267,6 +289,8 @@ export default function ResourcesPage() {
     }
 
     setUploading(true);
+    setLastUploadShareUrl(undefined);
+    setUploadQueue(validFiles.map((f) => ({ name: f.name, size: f.size, status: "queued" })));
     isCancelledRef.current = false;
     const newlyUploaded: Resource[] = [];
     let failedCount = 0;
@@ -275,6 +299,7 @@ export default function ResourcesPage() {
       if (isCancelledRef.current) break;
 
       const file = validFiles[i];
+      setUploadQueue((prev) => prev.map((q, qi) => (qi === i ? { ...q, status: "active" } : q)));
       setUploadProgress({
         current: i + 1,
         total: validFiles.length,
@@ -283,7 +308,26 @@ export default function ResourcesPage() {
         totalBytes: file.size,
         percent: 0,
         stage: "uploading",
+        bytesPerSecond: 0,
       });
+
+      const startedAt = performance.now();
+
+      // Bytes are all sent but the server is still pushing them to cloud storage:
+      // ease the bar toward the ceiling so it keeps moving without claiming completion.
+      const startProcessing = () => {
+        if (processingTimerRef.current || isCancelledRef.current) return;
+        setUploadProgress((prev) =>
+          prev ? { ...prev, loadedBytes: file.size, percent: Math.max(prev.percent, UPLOAD_WEIGHT), stage: "processing" } : prev
+        );
+        processingTimerRef.current = setInterval(() => {
+          setUploadProgress((prev) => {
+            if (!prev || prev.stage !== "processing") return prev;
+            const next = prev.percent + (PROCESSING_CEILING - prev.percent) * 0.035;
+            return { ...prev, percent: Math.min(PROCESSING_CEILING, next) };
+          });
+        }, 120);
+      };
 
       try {
         const formData = new FormData();
@@ -300,34 +344,38 @@ export default function ResourcesPage() {
           xhr.open("POST", "/api/upload");
 
           xhr.upload.onprogress = (event) => {
-            if (event.lengthComputable && !isCancelledRef.current) {
-              const percent = Math.min(99, Math.round((event.loaded / event.total) * 100));
-              setUploadProgress({
-                current: i + 1,
-                total: validFiles.length,
-                currentFileName: file.name,
-                loadedBytes: event.loaded,
-                totalBytes: event.total,
-                percent,
-                stage: percent >= 99 ? "saving" : "uploading",
-              });
+            if (!event.lengthComputable || isCancelledRef.current) return;
+            if (event.loaded >= event.total) {
+              startProcessing();
+              return;
             }
+            const elapsed = (performance.now() - startedAt) / 1000;
+            // event.total includes multipart overhead; scale back to the file's own size for display
+            const loadedBytes = Math.round((event.loaded / event.total) * file.size);
+            setUploadProgress((prev) =>
+              prev
+                ? {
+                    ...prev,
+                    loadedBytes,
+                    percent: (event.loaded / event.total) * UPLOAD_WEIGHT,
+                    stage: "uploading",
+                    bytesPerSecond: elapsed > 0.25 ? loadedBytes / elapsed : prev.bytesPerSecond,
+                  }
+                : prev
+            );
           };
+          xhr.upload.onload = startProcessing;
 
           xhr.onload = () => {
             activeXhrRef.current = null;
+            stopProcessingTimer();
             if (xhr.status >= 200 && xhr.status < 300) {
               try {
-                setUploadProgress({
-                  current: i + 1,
-                  total: validFiles.length,
-                  currentFileName: file.name,
-                  loadedBytes: file.size,
-                  totalBytes: file.size,
-                  percent: 100,
-                  stage: "saving",
-                });
-                resolve(JSON.parse(xhr.responseText));
+                const parsed = JSON.parse(xhr.responseText);
+                setUploadProgress((prev) =>
+                  prev ? { ...prev, loadedBytes: file.size, percent: 100, stage: "done" } : prev
+                );
+                resolve(parsed);
               } catch (parseErr) {
                 reject(parseErr);
               }
@@ -343,11 +391,13 @@ export default function ResourcesPage() {
 
           xhr.onerror = () => {
             activeXhrRef.current = null;
+            stopProcessingTimer();
             reject(new Error("Network connection error"));
           };
 
           xhr.onabort = () => {
             activeXhrRef.current = null;
+            stopProcessingTimer();
             reject(new Error("Upload cancelled"));
           };
 
@@ -356,15 +406,25 @@ export default function ResourcesPage() {
 
         if (json && json.data) {
           newlyUploaded.unshift(json.data);
+          setUploadQueue((prev) => prev.map((q, qi) => (qi === i ? { ...q, status: "done" } : q)));
+          // For single file, store the share URL so the "done" card can offer Copy link
+          if (validFiles.length === 1 && json.data.shareUrl) {
+            setLastUploadShareUrl(json.data.shareUrl);
+          }
+          // Let the "Ready" state register before moving on or dismissing
+          await new Promise((r) => setTimeout(r, i === validFiles.length - 1 ? 2200 : 600));
         } else {
           failedCount++;
+          setUploadQueue((prev) => prev.map((q, qi) => (qi === i ? { ...q, status: "failed" } : q)));
         }
       } catch (err: any) {
         activeXhrRef.current = null;
+        stopProcessingTimer();
         if (err?.message === "Upload cancelled" || isCancelledRef.current) {
           break;
         }
         failedCount++;
+        setUploadQueue((prev) => prev.map((q, qi) => (qi === i ? { ...q, status: "failed" } : q)));
         console.error(`Error uploading ${file.name}:`, err);
       }
     }
@@ -378,17 +438,13 @@ export default function ResourcesPage() {
         return updated;
       });
 
-      if (!isCancelledRef.current) {
-        if (newlyUploaded.length === 1 && failedCount === 0) {
-          addToast("success", `"${newlyUploaded[0].name}" uploaded successfully and ready for delivery!`);
-        } else if (failedCount === 0) {
-          addToast("success", `All ${newlyUploaded.length} resources uploaded successfully!`);
-        } else {
-          addToast("info", `${newlyUploaded.length} uploaded successfully (${failedCount} failed).`);
-        }
+      // Success is shown in the upload card's "done" state — no separate toast needed.
+      // Only show a toast if some files failed.
+      if (!isCancelledRef.current && failedCount > 0) {
+        addToast("info", `${newlyUploaded.length} uploaded · ${failedCount} failed`);
       }
     } else if (failedCount > 0 && !isCancelledRef.current) {
-      addToast("error", "Failed to upload selected file(s). Please check network and try again.");
+      addToast("error", "Upload failed. Please check your connection and try again.");
     }
 
     setUploading(false);
@@ -425,71 +481,104 @@ export default function ResourcesPage() {
     setIsDragOver(false);
   };
 
-  const confirmDelete = async () => {
-    if (!resourceToDelete) return;
-    setIsDeleting(true);
-
-    try {
-      const res = await fetch("/api/data", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "deleteResource", data: { id: resourceToDelete.id } }),
-      });
-
-      if (res.ok) {
-        setResources((prev) => {
-          const updated = prev.filter((r) => r.id !== resourceToDelete.id);
-          if (typeof window !== "undefined") {
-            localStorage.setItem("currentUserResources", JSON.stringify(updated));
-          }
-          return updated;
-        });
-        setSelectedResourceIds((prev) => prev.filter((id) => id !== resourceToDelete.id));
-        addToast("info", `Resource "${resourceToDelete.name}" deleted.`);
-      } else {
-        addToast("error", "Failed to delete resource");
-      }
-    } catch (err) {
-      console.error("Failed to delete resource", err);
-      addToast("error", "Error deleting resource.");
-    } finally {
-      setIsDeleting(false);
-      setResourceToDelete(null);
+  const writeResources = (updated: Resource[]) => {
+    if (typeof window !== "undefined") {
+      localStorage.setItem("currentUserResources", JSON.stringify(updated));
     }
+    return updated;
   };
 
-  const confirmBulkDelete = async () => {
-    if (selectedResourceIds.length === 0) return;
-    setIsBulkDeleting(true);
-
-    try {
-      let successCount = 0;
-      for (const id of selectedResourceIds) {
-        const res = await fetch("/api/data", {
+  const sendDeletes = async (ids: string[], keepalive = false) => {
+    const results = await Promise.all(
+      ids.map((id) =>
+        fetch("/api/data", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ action: "deleteResource", data: { id } }),
+          keepalive,
+        })
+          .then((res) => res.ok)
+          .catch(() => false)
+      )
+    );
+    return ids.filter((_, i) => !results[i]);
+  };
+
+  // Put removed resources back where they were in the list
+  const restoreResources = (items: PendingDelete["items"]) => {
+    setResources((prev) => {
+      const next = [...prev];
+      [...items]
+        .sort((a, b) => a.index - b.index)
+        .forEach(({ resource, index }) => {
+          if (!next.some((r) => r.id === resource.id)) next.splice(Math.min(index, next.length), 0, resource);
         });
-        if (res.ok) successCount++;
-      }
+      return writeResources(next);
+    });
+  };
 
-      setResources((prev) => {
-        const updated = prev.filter((r) => !selectedResourceIds.includes(r.id));
-        if (typeof window !== "undefined") {
-          localStorage.setItem("currentUserResources", JSON.stringify(updated));
-        }
-        return updated;
-      });
-
-      addToast("info", `Deleted ${successCount} hosted resource(s).`);
-      setSelectedResourceIds([]);
-    } catch (err) {
-      console.error("Failed to bulk delete resources", err);
-      addToast("error", "Error deleting selected resources.");
-    } finally {
-      setIsBulkDeleting(false);
-      setShowBulkDeleteModal(false);
+  const commitPendingDelete = async (pending: PendingDelete) => {
+    if (pendingDeleteRef.current?.key === pending.key) {
+      pendingDeleteRef.current = null;
+      setPendingDelete(null);
     }
+    const failedIds = await sendDeletes(pending.items.map((it) => it.resource.id));
+    if (failedIds.length > 0) {
+      restoreResources(pending.items.filter((it) => failedIds.includes(it.resource.id)));
+      addToast(
+        "error",
+        failedIds.length === 1 ? "Couldn't delete that asset — it's been restored." : `Couldn't delete ${failedIds.length} assets — they've been restored.`
+      );
+    }
+  };
+
+  const undoPendingDelete = (pending: PendingDelete) => {
+    if (pendingDeleteRef.current?.key !== pending.key) return;
+    pendingDeleteRef.current = null;
+    setPendingDelete(null);
+    restoreResources(pending.items);
+  };
+
+  // Hide the resources immediately; the server delete runs when the Undo window closes
+  const scheduleDelete = (toDelete: Resource[]) => {
+    if (toDelete.length === 0) return;
+    if (pendingDeleteRef.current) void commitPendingDelete(pendingDeleteRef.current);
+
+    const ids = new Set(toDelete.map((r) => r.id));
+    const items = resources.flatMap((resource, index) => (ids.has(resource.id) ? [{ resource, index }] : []));
+    const pending: PendingDelete = { key: Math.random().toString(36).substring(2, 9), items };
+
+    pendingDeleteRef.current = pending;
+    setPendingDelete(pending);
+    setResources((prev) => writeResources(prev.filter((r) => !ids.has(r.id))));
+    setSelectedResourceIds((prev) => prev.filter((id) => !ids.has(id)));
+  };
+
+  // Leaving the page must not drop a delete the user already confirmed
+  useEffect(() => {
+    const flush = () => {
+      const pending = pendingDeleteRef.current;
+      if (!pending) return;
+      pendingDeleteRef.current = null;
+      void sendDeletes(pending.items.map((it) => it.resource.id), true);
+    };
+    window.addEventListener("pagehide", flush);
+    return () => {
+      window.removeEventListener("pagehide", flush);
+      flush();
+    };
+  }, []);
+
+  const confirmDelete = () => {
+    if (!resourceToDelete) return;
+    scheduleDelete([resourceToDelete]);
+    setResourceToDelete(null);
+  };
+
+  const confirmBulkDelete = () => {
+    if (selectedResourceIds.length === 0) return;
+    scheduleDelete(resources.filter((r) => selectedResourceIds.includes(r.id)));
+    setShowBulkDeleteModal(false);
   };
 
   const copyToClipboard = useCallback((url: string, id: string) => {
@@ -1641,66 +1730,37 @@ export default function ResourcesPage() {
       {/* Active Upload Live Progress Card */}
       <AnimatePresence>
         {uploading && uploadProgress && (
-          <motion.div
-            initial={{ opacity: 0, y: 30, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            transition={{ type: "spring", stiffness: 350, damping: 25 }}
-            className="fixed bottom-20 inset-x-3 sm:inset-x-auto sm:bottom-24 sm:right-5 z-50 w-auto sm:w-full sm:max-w-sm rounded-2xl border border-zinc-200/80 bg-white/95 p-4 shadow-2xl backdrop-blur-xl dark:border-zinc-800 dark:bg-[#18181B]/95 text-zinc-900 dark:text-white ring-1 ring-black/5 dark:ring-white/10"
-          >
-            <div className="flex items-center justify-between gap-3">
-              <div className="flex items-center gap-2.5">
-                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#0066B2]/10 text-[#0066B2] dark:bg-[#0066B2]/20 dark:text-[#38BDF8]">
-                  <UploadCloud className="h-4 w-4 animate-pulse" />
-                </div>
-                <div className="overflow-hidden">
-                  <h4 className="text-xs font-bold text-zinc-900 dark:text-white truncate">
-                    Uploading {uploadProgress.current} of {uploadProgress.total}
-                  </h4>
-                  <p className="text-[10px] font-medium text-zinc-500 dark:text-zinc-400 truncate max-w-[170px]">
-                    {uploadProgress.currentFileName}
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-1.5 shrink-0">
-                <span className="rounded-full bg-[#0066B2]/10 px-2 py-0.5 text-[10px] font-bold text-[#0066B2] dark:bg-[#0066B2]/20 dark:text-[#38BDF8]">
-                  {uploadProgress.stage === "saving" ? "Finalizing" : `${uploadProgress.percent}%`}
-                </span>
-                <button
-                  onClick={cancelUpload}
-                  title="Cancel upload"
-                  className="rounded-lg p-1 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-700 dark:hover:bg-zinc-800 dark:hover:text-zinc-200 transition cursor-pointer"
-                >
-                  <X className="h-3.5 w-3.5" />
-                </button>
-              </div>
-            </div>
-
-            {/* Progress Track */}
-            <div className="mt-3">
-              <div className="h-2 w-full overflow-hidden rounded-full bg-zinc-100 dark:bg-zinc-800">
-                <div
-                  className="h-full rounded-full bg-gradient-to-r from-[#0066B2] via-[#38BDF8] to-emerald-400 transition-all duration-150"
-                  style={{ width: `${Math.max(uploadProgress.percent, 4)}%` }}
-                />
-              </div>
-            </div>
-
-            <div className="mt-2 flex items-center justify-between text-[10px] font-medium text-zinc-500 dark:text-zinc-400">
-              <span>
-                {formatBytes(uploadProgress.loadedBytes)} of {formatBytes(uploadProgress.totalBytes)}
-              </span>
-              <span>
-                {uploadProgress.stage === "saving" ? "Optimizing & saving..." : "Uploading data..."}
-              </span>
-            </div>
-          </motion.div>
+          <UploadProgressCard
+            key="upload-card"
+            progress={uploadProgress}
+            queue={uploadQueue}
+            uploadWeight={UPLOAD_WEIGHT}
+            processingCeiling={PROCESSING_CEILING}
+            fileIcon={getFileBadge(uploadProgress.currentFileName).icon}
+            fileTileClass={getFileBadge(uploadProgress.currentFileName).bg}
+            formatBytes={formatBytes}
+            onCancel={cancelUpload}
+            shareUrl={lastUploadShareUrl}
+          />
         )}
       </AnimatePresence>
 
       {/* Floating Toast Notification Container — Mobile Responsive & Glassmorphic */}
       <div className="fixed bottom-4 inset-x-3 sm:inset-x-auto sm:bottom-5 sm:right-5 sm:max-w-sm z-50 pointer-events-none flex flex-col-reverse gap-2 items-center sm:items-end">
+        <AnimatePresence>
+          {pendingDelete && (
+            <UndoDeleteToast
+              key={pendingDelete.key}
+              title={
+                pendingDelete.items.length === 1 ? "Asset deleted" : `${pendingDelete.items.length} assets deleted`
+              }
+              subtitle={pendingDelete.items.map((it) => it.resource.name).join(", ")}
+              durationMs={UNDO_WINDOW_MS}
+              onUndo={() => undoPendingDelete(pendingDelete)}
+              onCommit={() => void commitPendingDelete(pendingDelete)}
+            />
+          )}
+        </AnimatePresence>
         {toasts.map((toast, idx) => {
           const reverseIdx = toasts.length - 1 - idx;
           const translateY = -reverseIdx * 6;

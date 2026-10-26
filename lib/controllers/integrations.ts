@@ -31,10 +31,10 @@ export async function handleSaveResources(data: any, normEmail: string | null) {
     isPageAsset: { $ne: true },
     type: { $ne: "page_asset" },
   }).lean();
-  const newUrls = new Set(Array.isArray(data) ? data.map((r: any) => r.url || r.fileUrl).filter(Boolean) : []);
+  const newUrls = new Set(Array.isArray(data) ? data.map((r: any) => r.fileUrl || r.url).filter(Boolean) : []);
   const removedAssets: string[] = [];
   existingRes.forEach((r: any) => {
-    const u = (r as any).url || (r as any).fileUrl;
+    const u = (r as any).fileUrl || (r as any).url;
     if (u && !newUrls.has(u)) {
       removedAssets.push(u);
     }
@@ -77,7 +77,7 @@ export async function handleDeleteResource(data: any, normEmail: string | null) 
   const cleanId = id.trim();
   const targetResource = await ResourceModel.findOne({ id: cleanId, userEmail: normEmail }).lean();
   if (targetResource) {
-    const u = (targetResource as any).url || (targetResource as any).fileUrl;
+    const u = (targetResource as any).fileUrl || (targetResource as any).url;
     await ResourceModel.deleteOne({ id: cleanId, userEmail: normEmail });
     if (u) {
       deleteCloudinaryAsset(u, normEmail, { excludeResourceIds: [cleanId] }).catch((err) =>
