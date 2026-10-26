@@ -1464,13 +1464,7 @@ function parseCsvLine(line: string): string[] {
                 >
                   <SlidersHorizontal className="h-3 w-3 text-zinc-400 shrink-0" />
                   <span className="truncate max-w-[85px] sm:max-w-none">
-                    {statusFilter === "in_progress"
-                      ? "In Progress"
-                      : statusFilter === "completed"
-                      ? "Completed"
-                      : statusFilter === "recent"
-                      ? "Most Recent"
-                      : sortBy === "oldest"
+                    {sortBy === "oldest"
                       ? "Oldest First"
                       : sortBy === "name"
                       ? "Name (A-Z)"
@@ -1493,52 +1487,13 @@ function parseCsvLine(line: string): string[] {
                       exit={{ opacity: 0, scale: 0.96, y: -4 }}
                       transition={{ type: "spring", damping: 28, stiffness: 400 }}
                       onClick={(e) => e.stopPropagation()}
-                      className="absolute right-0 top-full z-40 mt-1.5 w-56 rounded-xl border border-zinc-200/90 dark:border-white/10 bg-white/95 dark:bg-[#1C1C20]/95 p-1.5 shadow-xl backdrop-blur-xl dark:text-white"
+                      className="absolute right-0 top-full z-40 mt-1.5 w-48 rounded-xl border border-zinc-200/90 dark:border-white/10 bg-white/95 dark:bg-[#1C1C20]/95 p-1.5 shadow-xl backdrop-blur-xl dark:text-white"
                     >
-                      <div className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
-                        Filter by Status
-                      </div>
-                      {[
-                        { id: "all", label: "All Subscribers", count: leads.length },
-                        { id: "in_progress", label: "In Progress", count: inProgressCount },
-                        { id: "completed", label: "Completed", count: completedCount },
-                        { id: "recent", label: "Most Recent", count: recentCount },
-                      ].map((item) => {
-                        const isSelected = statusFilter === item.id;
-                        return (
-                          <button
-                            key={item.id}
-                            type="button"
-                            onClick={() => {
-                              setStatusFilter(item.id as any);
-                              if (item.id === "recent") {
-                                setSortBy("newest");
-                              }
-                              setIsSortOpen(false);
-                              setCurrentPage(1);
-                            }}
-                            className={`flex w-full items-center justify-between rounded-lg px-2.5 py-1.5 text-xs transition cursor-pointer text-left ${
-                              isSelected
-                                ? "bg-[#0066B2]/10 text-[#0066B2] font-bold dark:bg-[#38BDF8]/20 dark:text-[#38BDF8]"
-                                : "text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-white/5 font-medium"
-                            }`}
-                          >
-                            <span>{item.label}</span>
-                            <div className="flex items-center gap-1.5">
-                              <span className="text-[10px] text-zinc-400">({item.count})</span>
-                              {isSelected && <Check className="h-3.5 w-3.5 text-[#0066B2] dark:text-[#38BDF8]" />}
-                            </div>
-                          </button>
-                        );
-                      })}
-
-                      <div className="my-1 border-t border-zinc-100 dark:border-white/10" />
-
                       <div className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
                         Sort by
                       </div>
                       {sortOptions.map((opt) => {
-                        const isSelected = sortBy === opt.id && statusFilter === "all";
+                        const isSelected = sortBy === opt.id;
                         return (
                           <button
                             key={opt.id}
