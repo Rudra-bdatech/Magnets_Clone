@@ -261,6 +261,61 @@ export async function deleteCloudinaryAsset(
 }
 
 /**
+ * Deletes files that belong to one magnet page only (locked-PDF master file and its preview
+ * thumbnails). Unlike deleteCloudinaryAssets, it also drops the hidden `page_asset` Resource rows
+ * those uploads create, which would otherwise block deletion. It never touches a file that is in the
+ * user's Assets library or that another page still references.
+ */
+export async function deletePageOwnedAssets(
+  urls: (string | null | undefined)[],
+  userEmail: string | null | undefined,
+  options?: AssetDeleteOptions
+): Promise<void> {
+  if (!userEmail) {
+    console.warn("[Cloudinary page-asset cleanup] Missing userEmail, skipping deletion.");
+    return;
+  }
+  const normEmail = userEmail.trim().toLowerCase();
+  const validUrls = Array.from(new Set(urls.filter((u): u is string => Boolean(u && typeof u === "string"))));
+  if (validUrls.length === 0) return;
+
+  await dbConnect();
+  const excludePageIds = options?.excludePageIds?.filter(Boolean) || [];
+
+  await Promise.allSettled(
+    validUrls.map(async (url) => {
+      const urlMatch = { $or: [{ fileUrl: url }, { url: url }] };
+
+      // In the Assets library (a real file the user manages) → keep it
+      const libraryItem = await ResourceModel.exists({
+        $and: [
+          { userEmail: normEmail },
+          urlMatch,
+          { isPageAsset: { $ne: true } },
+          { type: { $ne: "page_asset" } },
+        ],
+      });
+      if (libraryItem) return;
+
+      // Another page still uses it → keep it
+      const otherPage = await MagnetPageModel.exists({
+        userEmail: normEmail,
+        ...(excludePageIds.length > 0 ? { id: { $nin: excludePageIds } } : {}),
+        $or: [{ imageUrl: url }, { variantBImage: url }, { pdfPages: url }, { assetUrl: url }, { pdfUrl: url }],
+      });
+      if (otherPage) return;
+
+      // Hidden page-asset rows only exist to track this upload; drop them so the delete isn't blocked
+      await ResourceModel.deleteMany({
+        $and: [{ userEmail: normEmail }, urlMatch, { $or: [{ isPageAsset: true }, { type: "page_asset" }] }],
+      });
+
+      await deleteCloudinaryAsset(url, normEmail, options);
+    })
+  );
+}
+
+/**
  * Permanently deletes multiple assets from Cloudinary in parallel.
  * REQUIRES userEmail for multi-tenant safety validation.
  */

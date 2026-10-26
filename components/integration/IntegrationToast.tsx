@@ -75,37 +75,37 @@ export function IntegrationToastContainer({
                   damping: 28,
                   mass: 0.8,
                 }}
-                className={`absolute bottom-0 right-0 w-full pointer-events-auto flex items-center gap-3 rounded-2xl p-3.5 sm:p-4 text-xs font-medium shadow-2xl backdrop-blur-2xl border transition-colors ${
+                className={`absolute bottom-0 right-0 w-full pointer-events-auto flex items-center gap-3 rounded-2xl p-3.5 sm:p-4 text-xs font-medium shadow-xl backdrop-blur-xl border transition-colors ${
                   toast.type === "success"
-                    ? "bg-emerald-950/50 border-emerald-500/35 text-emerald-100 shadow-emerald-950/30"
+                    ? "bg-white/95 dark:bg-emerald-950/80 border-emerald-500/25 dark:border-emerald-500/35 text-zinc-900 dark:text-emerald-100 shadow-zinc-950/5 dark:shadow-emerald-950/30"
                     : toast.type === "error"
-                    ? "bg-rose-950/50 border-rose-500/35 text-rose-100 shadow-rose-950/30"
-                    : "bg-zinc-900/55 border-white/20 text-zinc-100 shadow-black/40"
+                    ? "bg-white/95 dark:bg-rose-950/80 border-rose-500/25 dark:border-rose-500/35 text-zinc-900 dark:text-rose-100 shadow-zinc-950/5 dark:shadow-rose-950/30"
+                    : "bg-white/95 dark:bg-zinc-900/80 border-zinc-200/80 dark:border-white/20 text-zinc-900 dark:text-zinc-100 shadow-zinc-950/5 dark:shadow-black/40"
                 }`}
                 style={{
                   transformOrigin: "bottom center",
                 }}
               >
                 {toast.type === "success" && (
-                  <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-emerald-500/25 text-emerald-300 border border-emerald-500/40 backdrop-blur-sm shadow-2xs">
+                  <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-emerald-600 dark:bg-emerald-500/25 dark:text-emerald-300 border border-emerald-500/30 dark:border-emerald-500/40 backdrop-blur-sm shadow-2xs">
                     <Check className="h-3.5 w-3.5" />
                   </div>
                 )}
                 {toast.type === "error" && (
-                  <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-rose-500/25 text-rose-300 border border-rose-500/40 backdrop-blur-sm shadow-2xs">
+                  <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-rose-100 text-rose-600 dark:bg-rose-500/25 dark:text-rose-300 border border-rose-500/30 dark:border-rose-500/40 backdrop-blur-sm shadow-2xs">
                     <AlertCircle className="h-3.5 w-3.5" />
                   </div>
                 )}
                 {toast.type === "info" && (
-                  <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-amber-500/25 text-amber-300 border border-amber-500/40 backdrop-blur-sm shadow-2xs">
+                  <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-amber-100 text-amber-600 dark:bg-amber-500/25 dark:text-amber-300 border border-amber-500/30 dark:border-amber-500/40 backdrop-blur-sm shadow-2xs">
                     <Sparkles className="h-3.5 w-3.5" />
                   </div>
                 )}
 
-                <span className="flex-1 leading-snug break-words text-white/95">{toast.message}</span>
+                <span className="flex-1 leading-snug break-words text-zinc-900 dark:text-white/95">{toast.message}</span>
 
                 {!isHovered && index === 0 && toasts.length > 1 && (
-                  <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-white/15 text-white/80 shrink-0">
+                  <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-zinc-100 dark:bg-white/15 text-zinc-600 dark:text-white/80 shrink-0">
                     +{toasts.length - 1}
                   </span>
                 )}
@@ -116,7 +116,7 @@ export function IntegrationToastContainer({
                     e.stopPropagation();
                     onRemoveToast(toast.id);
                   }}
-                  className="text-zinc-400 hover:text-white transition p-1 rounded-lg hover:bg-white/10 cursor-pointer shrink-0"
+                  className="text-zinc-400 hover:text-zinc-700 dark:hover:text-white transition p-1 rounded-lg hover:bg-zinc-100 dark:hover:bg-white/10 cursor-pointer shrink-0"
                   aria-label="Dismiss notification"
                 >
                   <X className="h-3.5 w-3.5" />
