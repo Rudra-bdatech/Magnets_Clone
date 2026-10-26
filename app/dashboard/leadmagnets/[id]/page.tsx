@@ -126,8 +126,6 @@ export default function EditLeadMagnetPage() {
     return undefined;
   });
   const pageRef = useRef<MagnetPage | undefined>(page);
-  // Set when the owner removes the locked PDF so stale state/refs can't write the old pdfUrl back
-  const pdfRemovedRef = useRef(false);
   useEffect(() => {
     pageRef.current = page;
   }, [page]);
@@ -219,7 +217,7 @@ export default function EditLeadMagnetPage() {
           if (found.pdfTitle) {
             setLockedPdfTitle(found.pdfTitle);
           }
-          if (found.pdfUrl && !pdfRemovedRef.current) {
+          if (found.pdfUrl) {
             setLockedPdfUrl(found.pdfUrl);
           }
           if (found.pdfPageCount !== undefined) {
@@ -1123,7 +1121,7 @@ export default function EditLeadMagnetPage() {
           pdfPages: lockedPdfPages,
           pdfFreePages: lockedPdfFreePages,
           pdfTitle: lockedPdfTitle,
-          pdfUrl: pdfRemovedRef.current ? "" : (lockedPdfUrl || (current as any)?.pdfUrl || (page as any)?.pdfUrl || ""),
+          pdfUrl: lockedPdfUrl || (current as any)?.pdfUrl || (page as any)?.pdfUrl || "",
           pdfPageCount: lockedPdfPageCount || (current as any)?.pdfPageCount || (page as any)?.pdfPageCount || lockedPdfPages.length,
           template: (templateId as any),
           updatedAt: "Just now"
@@ -1206,7 +1204,7 @@ export default function EditLeadMagnetPage() {
         pdfPages: lockedPdfPages,
         pdfFreePages: lockedPdfFreePages,
         pdfTitle: lockedPdfTitle,
-        pdfUrl: pdfRemovedRef.current ? "" : (lockedPdfUrl || (current as any)?.pdfUrl || (page as any)?.pdfUrl || ""),
+        pdfUrl: lockedPdfUrl || (current as any)?.pdfUrl || (page as any)?.pdfUrl || "",
         pdfPageCount: lockedPdfPageCount || (current as any)?.pdfPageCount || (page as any)?.pdfPageCount || lockedPdfPages.length,
         template: (templateId as any),
         updatedAt: "Just now"
@@ -1289,7 +1287,7 @@ export default function EditLeadMagnetPage() {
       pdfPages: lockedPdfPages,
       pdfFreePages: lockedPdfFreePages,
       pdfTitle: lockedPdfTitle,
-      pdfUrl: pdfRemovedRef.current ? "" : (lockedPdfUrl || (current as any)?.pdfUrl || (page as any)?.pdfUrl || ""),
+      pdfUrl: lockedPdfUrl || (current as any)?.pdfUrl || (page as any)?.pdfUrl || "",
       pdfPageCount: lockedPdfPageCount || (current as any)?.pdfPageCount || (page as any)?.pdfPageCount || lockedPdfPages.length,
       template: (templateId as any),
       ...patch
@@ -1355,7 +1353,7 @@ export default function EditLeadMagnetPage() {
         pdfPages: lockedPdfPages,
         pdfFreePages: lockedPdfFreePages,
         pdfTitle: lockedPdfTitle,
-        pdfUrl: pdfRemovedRef.current ? "" : (lockedPdfUrl || (current as any)?.pdfUrl || (page as any)?.pdfUrl || ""),
+        pdfUrl: lockedPdfUrl || (current as any)?.pdfUrl || (page as any)?.pdfUrl || "",
         pdfPageCount: lockedPdfPageCount || (current as any)?.pdfPageCount || (page as any)?.pdfPageCount || lockedPdfPages.length,
         template: (templateId as any),
         updatedAt: "Just now"
@@ -1976,10 +1974,7 @@ export default function EditLeadMagnetPage() {
                   lockedPdfTitle={lockedPdfTitle}
                   setLockedPdfTitle={setLockedPdfTitle}
                   lockedPdfUrl={lockedPdfUrl}
-                  setLockedPdfUrl={(url: string) => {
-                    pdfRemovedRef.current = !url;
-                    setLockedPdfUrl(url);
-                  }}
+                  setLockedPdfUrl={setLockedPdfUrl}
                   lockedPdfPageCount={lockedPdfPageCount}
                   setLockedPdfPageCount={setLockedPdfPageCount}
                   setPage={setPage}

@@ -858,7 +858,7 @@ export default function LockedPdfSetup({
             <DeleteModal
               key="remove-pdf-modal"
               title="Remove this PDF?"
-              description="This removes the PDF from this page. Anyone you already shared the link with will lose access immediately until you upload a new PDF. Leads you've already collected are kept. PDFs picked from your Assets page stay in Assets."
+              description="This removes the PDF and all its uploaded pages from this page. Visitors will no longer be able to view it until you upload a new one."
               confirmLabel="Remove PDF"
               onConfirm={handleRemove}
               onClose={() => setShowRemoveModal(false)}

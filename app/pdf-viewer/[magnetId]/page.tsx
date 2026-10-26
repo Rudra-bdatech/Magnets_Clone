@@ -97,10 +97,8 @@ export default async function PdfViewerPage({ params, searchParams }: Props) {
   const pageImageCount = effectivePdfPages.length;
   const sentPdfPages = isUnlocked ? effectivePdfPages : effectivePdfPages.slice(0, Math.max(0, pdfFreePages));
 
-  // PDF removed or not uploaded yet — judge by what the magnet holds now, not by an old
-  // visitor token's page snapshot (that would show stale thumbnails of a removed PDF)
-  const hasCurrentPages = Array.isArray(pageDoc.pdfPages) && pageDoc.pdfPages.length > 0;
-  if (!hasCurrentPages && !pdfUrl) {
+  // PDF pages not uploaded yet — show a setup pending screen
+  if (effectivePdfPages.length === 0 && !pdfUrl) {
     return (
       <div
         style={{
@@ -121,10 +119,11 @@ export default async function PdfViewerPage({ params, searchParams }: Props) {
           <FileText className="h-8 w-8" />
         </div>
         <h1 style={{ fontSize: "1.2rem", fontWeight: 700, margin: 0 }}>
-          This document is not available
+          PDF not uploaded yet
         </h1>
         <p style={{ color: "#71717a", fontSize: "0.85rem", maxWidth: 420, margin: 0 }}>
-          This PDF has been removed or isn&apos;t published yet. Please contact the person who shared this link with you.
+          Go to your dashboard → edit this lead magnet → Landing page tab →
+          upload your PDF and click <strong>&quot;Save PDF settings&quot;</strong>.
         </p>
       </div>
     );

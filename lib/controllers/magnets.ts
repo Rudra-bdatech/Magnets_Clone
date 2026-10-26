@@ -1,17 +1,7 @@
 import { NextResponse } from "next/server";
 import { MagnetPageModel, SequenceModel, AccountModel, LeadModel } from "@/lib/models";
 import { type MagnetPage, type Sequence } from "@/lib/data";
-import { deleteCloudinaryAssets, deletePageOwnedAssets } from "@/lib/cloudinary";
-
-/** "Remove PDF" sends pdfUrl "" together with an empty pdfPages list; nothing else looks like that. */
-function isExplicitPdfRemoval(oldPage: any, incoming: any): boolean {
-  return (
-    oldPage?.template === "locked-pdf" &&
-    incoming?.pdfUrl === "" &&
-    Array.isArray(incoming?.pdfPages) &&
-    incoming.pdfPages.length === 0
-  );
-}
+import { deleteCloudinaryAssets } from "@/lib/cloudinary";
 
 export async function handleSavePages(data: any, normEmail: string | null) {
   if (!normEmail) {
@@ -44,7 +34,6 @@ export async function handleSavePages(data: any, normEmail: string | null) {
     const existingMap = new Map<string, MagnetPage>((existingPages as unknown as MagnetPage[]).map((p) => [p.id, p]));
 
     const replacedAssets: string[] = [];
-    const replacedPageOwned: string[] = [];
     (data as MagnetPage[]).forEach((item) => {
       const oldPage = existingMap.get(item.id);
       if (oldPage) {
@@ -61,12 +50,6 @@ export async function handleSavePages(data: any, normEmail: string | null) {
               replacedAssets.push(oldPdfUrl);
             }
           });
-        }
-        // Master PDF + thumbnails are deleted ONLY on an explicit "Remove PDF" (url and pages both empty).
-        // A stale autosave can carry an old/different value, so a mere change must never delete a live file.
-        if (isExplicitPdfRemoval(oldPage, item)) {
-          if (oldPage.pdfUrl) replacedPageOwned.push(oldPage.pdfUrl);
-          (oldPage.pdfPages || []).forEach((u: string) => u && replacedPageOwned.push(u));
         }
       }
     });
@@ -113,11 +96,6 @@ export async function handleSavePages(data: any, normEmail: string | null) {
         console.error("Cloudinary cleanup error on savePages:", err)
       );
     }
-    if (replacedPageOwned.length > 0) {
-      deletePageOwnedAssets(replacedPageOwned, normEmail, { excludePageIds: incomingIds }).catch((err) =>
-        console.error("Cloudinary page-asset cleanup error on savePages:", err)
-      );
-    }
   }
   return NextResponse.json({ success: true });
 }
@@ -148,7 +126,6 @@ export async function handleAddPage(data: any, normEmail: string | null) {
   }).lean()) as unknown as MagnetPage | null;
 
   const replacedAssets: string[] = [];
-  const replacedPageOwned: string[] = [];
   if (existingPage) {
     if (existingPage.imageUrl && data.imageUrl && existingPage.imageUrl !== data.imageUrl) {
       replacedAssets.push(existingPage.imageUrl);
@@ -164,11 +141,6 @@ export async function handleAddPage(data: any, normEmail: string | null) {
         }
       });
     }
-    // Only an explicit "Remove PDF" deletes the master PDF + thumbnails (see isExplicitPdfRemoval)
-    if (isExplicitPdfRemoval(existingPage, data)) {
-      if (existingPage.pdfUrl) replacedPageOwned.push(existingPage.pdfUrl);
-      (existingPage.pdfPages || []).forEach((u: string) => u && replacedPageOwned.push(u));
-    }
   }
 
   const pageToInsert = { ...data, userEmail: normEmail };
@@ -181,11 +153,6 @@ export async function handleAddPage(data: any, normEmail: string | null) {
   if (replacedAssets.length > 0) {
     deleteCloudinaryAssets(replacedAssets, normEmail, { excludePageIds: [data.id] }).catch((err) =>
       console.error("Cloudinary cleanup error on addPage:", err)
-    );
-  }
-  if (replacedPageOwned.length > 0) {
-    deletePageOwnedAssets(replacedPageOwned, normEmail, { excludePageIds: [data.id] }).catch((err) =>
-      console.error("Cloudinary page-asset cleanup error on addPage:", err)
     );
   }
 
@@ -212,24 +179,17 @@ export async function handleDeletePage(data: any, normEmail: string | null) {
   const assetsToDelete: string[] = [];
   if (targetPage.imageUrl) assetsToDelete.push(targetPage.imageUrl);
   if (targetPage.variantBImage) assetsToDelete.push(targetPage.variantBImage);
-  const pageOwnedToDelete: string[] = [];
   if (Array.isArray(targetPage.pdfPages)) {
     targetPage.pdfPages.forEach((url: string) => {
-      if (url) pageOwnedToDelete.push(url);
+      if (url) assetsToDelete.push(url);
     });
   }
-  if (targetPage.pdfUrl) pageOwnedToDelete.push(targetPage.pdfUrl);
 
   await MagnetPageModel.deleteOne(filter);
 
   if (assetsToDelete.length > 0) {
     deleteCloudinaryAssets(assetsToDelete, normEmail, { excludePageIds: [cleanId] }).catch((err) =>
       console.error("Cloudinary cleanup error on deletePage:", err)
-    );
-  }
-  if (pageOwnedToDelete.length > 0) {
-    deletePageOwnedAssets(pageOwnedToDelete, normEmail, { excludePageIds: [cleanId] }).catch((err) =>
-      console.error("Cloudinary page-asset cleanup error on deletePage:", err)
     );
   }
 

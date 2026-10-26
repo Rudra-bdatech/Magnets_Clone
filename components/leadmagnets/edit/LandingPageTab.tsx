@@ -161,7 +161,7 @@ export default function LandingPageTab({
             setLockedPdfPages(updates.pdfPages);
             setLockedPdfFreePages(updates.pdfFreePages);
             setLockedPdfTitle(updates.pdfTitle);
-            if (updates.pdfUrl !== undefined && setLockedPdfUrl) setLockedPdfUrl(updates.pdfUrl);
+            if (updates.pdfUrl && setLockedPdfUrl) setLockedPdfUrl(updates.pdfUrl);
             if (updates.pdfPageCount !== undefined && setLockedPdfPageCount) setLockedPdfPageCount(updates.pdfPageCount);
             setTemplateId("locked-pdf");
             const next = {
@@ -172,7 +172,7 @@ export default function LandingPageTab({
               pdfFreePages: updates.pdfFreePages,
               pdfTitle: updates.pdfTitle,
               pdfPageCount: updates.pdfPageCount,
-              pdfUrl: updates.pdfUrl !== undefined ? updates.pdfUrl : page.pdfUrl,
+              pdfUrl: updates.pdfUrl || page.pdfUrl,
               template: "locked-pdf" as any,
               updatedAt: "Just now",
             };
