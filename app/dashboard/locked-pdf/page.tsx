@@ -318,6 +318,10 @@ export default function LockedPdfPage() {
     }, 3500);
   };
 
+  const removeToast = (id: string) => {
+    setToasts((prev) => prev.filter((t) => t.id !== id));
+  };
+
   // Close sort & filter menus on outside click
   useEffect(() => {
     const handleClickOutside = () => {
@@ -892,26 +896,56 @@ export default function LockedPdfPage() {
 
   return (
     <>
-      {/* Toasts */}
-      <div className="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none">
-        <AnimatePresence>
+      {/* Modern Theme-Adaptive Toast Notification */}
+      <div className="fixed bottom-4 inset-x-4 sm:inset-x-auto sm:bottom-6 sm:right-6 z-[100] flex flex-col gap-2.5 pointer-events-none items-center sm:items-end">
+        <AnimatePresence mode="popLayout">
           {toasts.map((toast) => (
             <motion.div
               key={toast.id}
-              initial={{ opacity: 0, y: 20, scale: 0.95 }}
+              layout
+              initial={{ opacity: 0, y: 24, scale: 0.94 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.15 } }}
-              className={`pointer-events-auto flex items-center gap-3 px-4 py-3 rounded-xl shadow-lg border text-sm font-medium ${toast.type === "error"
-                  ? "bg-rose-900/90 text-rose-100 border-rose-700/50"
-                  : "bg-zinc-900/95 text-white border-zinc-700/60 dark:bg-zinc-800/95"
-                }`}
+              exit={{ opacity: 0, y: 12, scale: 0.94, transition: { duration: 0.16 } }}
+              transition={{ type: "spring", stiffness: 420, damping: 28, mass: 0.8 }}
+              className={`pointer-events-auto flex items-center gap-3.5 pl-3.5 pr-3 py-3 rounded-2xl shadow-[0_16px_40px_-4px_rgba(0,0,0,0.14),0_6px_16px_-2px_rgba(0,0,0,0.06)] dark:shadow-[0_20px_48px_-6px_rgba(0,0,0,0.8)] backdrop-blur-2xl backdrop-saturate-150 border ring-1 ring-inset transition-all max-w-sm sm:max-w-md w-full sm:w-auto ${
+                toast.type === "error"
+                  ? "bg-white/75 dark:bg-[#18181B]/75 border-rose-300/60 dark:border-rose-500/30 ring-rose-500/15 dark:ring-rose-500/20 text-zinc-900 dark:text-zinc-100"
+                  : toast.type === "info"
+                  ? "bg-white/75 dark:bg-[#18181B]/75 border-sky-300/60 dark:border-sky-500/30 ring-sky-500/15 dark:ring-sky-500/20 text-zinc-900 dark:text-zinc-100"
+                  : "bg-white/75 dark:bg-[#18181B]/75 border-emerald-300/60 dark:border-emerald-500/30 ring-emerald-500/15 dark:ring-emerald-500/20 text-zinc-900 dark:text-zinc-100"
+              }`}
             >
+              {/* Dynamic Status Icon with Ambient Tint & Glow */}
               {toast.type === "error" ? (
-                <AlertCircle className="h-4 w-4 text-rose-400 shrink-0" />
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-rose-50 dark:bg-rose-500/15 border border-rose-200/80 dark:border-rose-500/30 text-rose-600 dark:text-rose-400 dark:shadow-[0_0_12px_rgba(244,63,94,0.2)]">
+                  <AlertCircle className="h-4 w-4" />
+                </div>
+              ) : toast.type === "info" ? (
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-sky-50 dark:bg-sky-500/15 border border-sky-200/80 dark:border-sky-500/30 text-[#0066B2] dark:text-sky-400 dark:shadow-[0_0_12px_rgba(56,189,248,0.2)]">
+                  <Sparkles className="h-4 w-4" />
+                </div>
               ) : (
-                <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0" />
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-emerald-50 dark:bg-emerald-500/15 border border-emerald-200/80 dark:border-emerald-500/30 text-emerald-600 dark:text-emerald-400 dark:shadow-[0_0_12px_rgba(16,185,129,0.2)]">
+                  <Check className="h-4 w-4 stroke-[2.5]" />
+                </div>
               )}
-              <span>{toast.message}</span>
+
+              {/* Message Typography */}
+              <div className="flex-1 min-w-0 pr-1">
+                <p className="text-[13px] font-semibold tracking-[-0.01em] leading-snug">
+                  {toast.message}
+                </p>
+              </div>
+
+              {/* Dismiss Button */}
+              <button
+                type="button"
+                onClick={() => removeToast(toast.id)}
+                className="shrink-0 p-1.5 rounded-lg text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-white/10 transition-colors cursor-pointer"
+                aria-label="Dismiss notification"
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
             </motion.div>
           ))}
         </AnimatePresence>
