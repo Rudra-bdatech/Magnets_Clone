@@ -829,25 +829,27 @@ export default function SequencesPage() {
               </h2>
             </div>
 
-            <div className="flex items-center gap-2 shrink-0">
-              {/* Desktop Link */}
-              <Link
-                href="/dashboard/sequences/new"
-                className="hidden sm:flex items-center gap-1.5 rounded-xl bg-[#0066B2] px-3.5 sm:px-4 py-2 sm:py-2.5 text-xs font-bold text-white hover:bg-[#005291] transition shadow-md cursor-pointer active:scale-95"
-              >
-                <Plus className="h-4 w-4 stroke-[2.5px]" aria-hidden="true" />
-                <span>New sequence</span>
-              </Link>
-              {/* Mobile Drawer Trigger */}
-              <button
-                type="button"
-                onClick={() => setShowNewSequenceModal(true)}
-                className="sm:hidden flex items-center gap-1 rounded-lg bg-[#0066B2] px-2.5 py-1.5 text-xs font-bold text-white hover:bg-[#005291] transition shadow-md cursor-pointer active:scale-95"
-              >
-                <Plus className="h-3.5 w-3.5 stroke-[2.5px]" aria-hidden="true" />
-                <span>New</span>
-              </button>
-            </div>
+            {sequences.length > 0 && (
+              <div className="flex items-center gap-2 shrink-0">
+                {/* Desktop Link */}
+                <Link
+                  href="/dashboard/sequences/new"
+                  className="hidden sm:flex items-center gap-1.5 rounded-xl bg-[#0066B2] px-3.5 sm:px-4 py-2 sm:py-2.5 text-xs font-bold text-white hover:bg-[#005291] transition shadow-md cursor-pointer active:scale-95"
+                >
+                  <Plus className="h-4 w-4 stroke-[2.5px]" aria-hidden="true" />
+                  <span>New sequence</span>
+                </Link>
+                {/* Mobile Drawer Trigger */}
+                <button
+                  type="button"
+                  onClick={() => setShowNewSequenceModal(true)}
+                  className="sm:hidden flex items-center gap-1 rounded-lg bg-[#0066B2] px-2.5 py-1.5 text-xs font-bold text-white hover:bg-[#005291] transition shadow-md cursor-pointer active:scale-95"
+                >
+                  <Plus className="h-3.5 w-3.5 stroke-[2.5px]" aria-hidden="true" />
+                  <span>New</span>
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Top Executive KPI Performance Cards (2-cols on mobile, 4-cols on desktop) */}

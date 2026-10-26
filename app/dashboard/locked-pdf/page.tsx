@@ -928,21 +928,23 @@ export default function LockedPdfPage() {
             </div>
 
             {/* Actions: Create Locked PDF */}
-            <div className="flex items-center gap-2 shrink-0">
-              <button
-                onClick={() => {
-                  setCreateMagnetName("");
-                  setCustomSlug("");
-                  setIsCustomSlugEdited(false);
-                  setShowCreateModal(true);
-                }}
-                className="flex items-center gap-1.5 rounded-xl bg-[#0066B2] px-4 py-2.5 text-xs font-bold text-white hover:bg-[#005799] transition shadow-md shadow-[#0066B2]/20 cursor-pointer active:scale-95"
-              >
-                <Plus className="h-4 w-4 stroke-[2.5px]" />
-                <span className="hidden sm:inline">Create Locked PDF</span>
-                <span className="sm:hidden">New</span>
-              </button>
-            </div>
+            {total > 0 && (
+              <div className="flex items-center gap-2 shrink-0">
+                <button
+                  onClick={() => {
+                    setCreateMagnetName("");
+                    setCustomSlug("");
+                    setIsCustomSlugEdited(false);
+                    setShowCreateModal(true);
+                  }}
+                  className="flex items-center gap-1.5 rounded-xl bg-[#0066B2] px-4 py-2.5 text-xs font-bold text-white hover:bg-[#005799] transition shadow-md shadow-[#0066B2]/20 cursor-pointer active:scale-95"
+                >
+                  <Plus className="h-4 w-4 stroke-[2.5px]" />
+                  <span className="hidden sm:inline">Create Locked PDF</span>
+                  <span className="sm:hidden">New</span>
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Quick Metrics 4 Stat Cards */}

@@ -713,36 +713,38 @@ export default function ResourcesPage() {
             </h2>
           </div>
 
-          <div className="relative group shrink-0">
-            <input
-              type="file"
-              id="resource-upload-header"
-              multiple
-              className="absolute inset-0 w-full h-full cursor-pointer opacity-0 z-20"
-              onChange={handleSimulatedUpload}
-              disabled={uploading}
-            />
-            <button
-              disabled={uploading}
-              className="inline-flex items-center gap-2 rounded-xl bg-[#0066B2] group-hover:bg-[#004A85] px-4 py-2.5 text-xs font-semibold text-white shadow-sm group-hover:shadow-md group-hover:shadow-[#0066B2]/30 disabled:opacity-60 transition-colors duration-200 cursor-pointer border border-white/20 group-hover:border-white/40 dark:border-white/10"
-            >
-              {uploading ? (
-                <>
-                  <Loader2 className="h-4 w-4 animate-spin text-white" />
-                  <span>
-                    {uploadProgress
-                      ? `Uploading (${uploadProgress.current}/${uploadProgress.total})...`
-                      : "Uploading files..."}
-                  </span>
-                </>
-              ) : (
-                <>
-                  <Plus className="h-4 w-4 stroke-[2.25] transition-transform duration-300 group-hover:rotate-90" />
-                  <span className="tracking-tight">Upload Resources</span>
-                </>
-              )}
-            </button>
-          </div>
+          {resources.length > 0 && (
+            <div className="relative group shrink-0">
+              <input
+                type="file"
+                id="resource-upload-header"
+                multiple
+                className="absolute inset-0 w-full h-full cursor-pointer opacity-0 z-20"
+                onChange={handleSimulatedUpload}
+                disabled={uploading}
+              />
+              <button
+                disabled={uploading}
+                className="inline-flex items-center gap-2 rounded-xl bg-[#0066B2] group-hover:bg-[#004A85] px-4 py-2.5 text-xs font-semibold text-white shadow-sm group-hover:shadow-md group-hover:shadow-[#0066B2]/30 disabled:opacity-60 transition-colors duration-200 cursor-pointer border border-white/20 group-hover:border-white/40 dark:border-white/10"
+              >
+                {uploading ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin text-white" />
+                    <span>
+                      {uploadProgress
+                        ? `Uploading (${uploadProgress.current}/${uploadProgress.total})...`
+                        : "Uploading files..."}
+                    </span>
+                  </>
+                ) : (
+                  <>
+                    <Plus className="h-4 w-4 stroke-[2.25] transition-transform duration-300 group-hover:rotate-90" />
+                    <span className="tracking-tight">Upload Resources</span>
+                  </>
+                )}
+              </button>
+            </div>
+          )}
         </div>
 
         {/* ========================================================================= */}
@@ -754,32 +756,34 @@ export default function ResourcesPage() {
               Assets
             </h2>
 
-            <div className="relative shrink-0">
-              <input
-                type="file"
-                id="resource-upload-mobile-header"
-                multiple
-                className="absolute inset-0 w-full h-full cursor-pointer opacity-0 z-20"
-                onChange={handleSimulatedUpload}
-                disabled={uploading}
-              />
-              <button
-                disabled={uploading}
-                className="flex items-center gap-1.5 rounded-xl bg-[#0066B2] hover:bg-[#005291] px-3.5 py-2 text-xs font-bold text-white shadow-sm active:scale-95 transition cursor-pointer disabled:opacity-60"
-              >
-                {uploading ? (
-                  <>
-                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                    <span>Uploading...</span>
-                  </>
-                ) : (
-                  <>
-                    <Plus className="h-3.5 w-3.5 stroke-[2.5]" />
-                    <span>Upload</span>
-                  </>
-                )}
-              </button>
-            </div>
+            {resources.length > 0 && (
+              <div className="relative shrink-0">
+                <input
+                  type="file"
+                  id="resource-upload-mobile-header"
+                  multiple
+                  className="absolute inset-0 w-full h-full cursor-pointer opacity-0 z-20"
+                  onChange={handleSimulatedUpload}
+                  disabled={uploading}
+                />
+                <button
+                  disabled={uploading}
+                  className="flex items-center gap-1.5 rounded-xl bg-[#0066B2] hover:bg-[#005291] px-3.5 py-2 text-xs font-bold text-white shadow-sm active:scale-95 transition cursor-pointer disabled:opacity-60"
+                >
+                  {uploading ? (
+                    <>
+                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                      <span>Uploading...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Plus className="h-3.5 w-3.5 stroke-[2.5]" />
+                      <span>Upload</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            )}
           </div>
         </div>
 
