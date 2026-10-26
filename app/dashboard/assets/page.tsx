@@ -1726,16 +1726,32 @@ export default function ResourcesPage() {
               className="pointer-events-auto w-full sm:w-auto sm:min-w-[260px] sm:max-w-[340px] animate-in fade-in slide-in-from-bottom-3 duration-200"
             >
               {isDeleted ? (
-                /* ── Delete toast: glassmorphic ── */
-                <div className="flex items-center gap-3 rounded-2xl border border-white/[0.08] bg-zinc-900/50 px-4 py-3 shadow-2xl shadow-black/40 backdrop-blur-2xl backdrop-saturate-150 dark:border-white/[0.07] dark:bg-black/50">
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-white/[0.08] bg-white/[0.06]">
-                    <Trash2 className="h-3.5 w-3.5 text-zinc-300" />
+                /* ── Delete toast: OLED dark, rose accent ── */
+                <div className="flex items-center gap-3.5 rounded-2xl px-4 py-3.5
+                  shadow-[0_8px_32px_rgba(0,0,0,0.18)] dark:shadow-[0_8px_40px_rgba(0,0,0,0.65)]
+                  backdrop-blur-2xl backdrop-saturate-150
+                  bg-white/70 dark:bg-white/[0.06]
+                  border border-black/[0.08] dark:border-white/[0.09]
+                  ring-1 ring-inset ring-white/60 dark:ring-white/[0.04]">
+                  {/* Rose icon tile */}
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl
+                    bg-rose-50 border border-rose-200/80
+                    dark:bg-rose-500/10 dark:border-rose-500/20
+                    shadow-[0_0_12px_rgba(239,68,68,0.08)] dark:shadow-[0_0_14px_rgba(239,68,68,0.14)]">
+                    <Trash2 className="h-4 w-4 text-rose-500 dark:text-rose-400" />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <p className="text-[13px] font-semibold leading-[18px] text-white">{toast.message}</p>
+                    <p className="text-[13px] font-semibold leading-5 tracking-[-0.01em]
+                      text-zinc-900 dark:text-white">{toast.message}</p>
                     {toast.subtitle && (
-                      <p className="truncate text-[11px] leading-[16px] text-zinc-400 mt-0.5" title={toast.subtitle}>{toast.subtitle}</p>
+                      <p className="truncate text-[11.5px] leading-4 mt-0.5
+                        text-zinc-400 dark:text-zinc-500" title={toast.subtitle}>{toast.subtitle}</p>
                     )}
+                  </div>
+                  {/* Done check */}
+                  <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full
+                    bg-zinc-100 dark:bg-white/[0.06]">
+                    <Check className="h-3 w-3 text-zinc-400 dark:text-zinc-500" />
                   </div>
                 </div>
               ) : (
