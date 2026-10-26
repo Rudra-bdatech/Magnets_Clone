@@ -80,7 +80,7 @@ export async function handleDeleteResource(data: any, normEmail: string | null) 
     const u = (targetResource as any).fileUrl || (targetResource as any).url;
     await ResourceModel.deleteOne({ id: cleanId, userEmail: normEmail });
     if (u) {
-      deleteCloudinaryAsset(u, normEmail, { excludeResourceIds: [cleanId] }).catch((err) =>
+      await deleteCloudinaryAsset(u, normEmail, { excludeResourceIds: [cleanId] }).catch((err) =>
         console.error("Cloudinary cleanup error on deleteResource:", err)
       );
     }

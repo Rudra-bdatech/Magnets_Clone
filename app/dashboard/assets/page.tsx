@@ -33,7 +33,6 @@ import {
 import { syncWithDatabase, loadResources, loadAccount, loadPages, loadLeads } from "@/lib/store";
 import type { Account, MagnetPage, Lead } from "@/lib/data";
 import { MobileAssetCard } from "@/components/assets/MobileAssetCard";
-import { UndoDeleteToast } from "@/components/assets/UndoDeleteToast";
 import {
   UploadProgressCard,
   type UploadProgressState,
@@ -55,17 +54,10 @@ interface Resource {
 
 interface Toast {
   id: string;
-  type: "success" | "error" | "info";
+  type: "success" | "error" | "info" | "deleted";
   message: string;
+  subtitle?: string;
 }
-
-interface PendingDelete {
-  key: string;
-  /** Removed resources with their original list position, for Undo */
-  items: { resource: Resource; index: number }[];
-}
-
-const UNDO_WINDOW_MS = 6000;
 
 // Share of the bar given to browser → server bytes; the rest covers the server → cloud storage hop,
 // which takes as long or longer but reports no progress of its own.
@@ -112,8 +104,6 @@ export default function ResourcesPage() {
   const [selectedResourceIds, setSelectedResourceIds] = useState<string[]>([]);
   const [showBulkDeleteModal, setShowBulkDeleteModal] = useState(false);
   const [isBulkDeleting, setIsBulkDeleting] = useState(false);
-  const [pendingDelete, setPendingDelete] = useState<PendingDelete | null>(null);
-  const pendingDeleteRef = useRef<PendingDelete | null>(null);
   const [resourceToDelete, setResourceToDelete] = useState<Resource | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [toasts, setToasts] = useState<Toast[]>([]);
@@ -171,12 +161,12 @@ export default function ResourcesPage() {
     });
   }, []);
 
-  const addToast = (type: "success" | "error" | "info", message: string) => {
+  const addToast = (type: "success" | "error" | "info" | "deleted", message: string, subtitle?: string) => {
     const id = Math.random().toString(36).substring(2, 9);
-    setToasts((prev) => [...prev, { id, type, message }]);
+    setToasts((prev) => [...prev, { id, type, message, subtitle }]);
     setTimeout(() => {
       setToasts((prev) => prev.filter((t) => t.id !== id));
-    }, 4000);
+    }, 3500);
   };
 
   const removeToast = (id: string) => {
@@ -505,7 +495,7 @@ export default function ResourcesPage() {
   };
 
   // Put removed resources back where they were in the list
-  const restoreResources = (items: PendingDelete["items"]) => {
+  const restoreResources = (items: { resource: Resource; index: number }[]) => {
     setResources((prev) => {
       const next = [...prev];
       [...items]
@@ -517,14 +507,23 @@ export default function ResourcesPage() {
     });
   };
 
-  const commitPendingDelete = async (pending: PendingDelete) => {
-    if (pendingDeleteRef.current?.key === pending.key) {
-      pendingDeleteRef.current = null;
-      setPendingDelete(null);
-    }
-    const failedIds = await sendDeletes(pending.items.map((it) => it.resource.id));
+  // Hide the resources right away, delete on the server, and put back any the server couldn't delete
+  const deleteResources = async (toDelete: Resource[]) => {
+    if (toDelete.length === 0) return;
+
+    const ids = new Set(toDelete.map((r) => r.id));
+    const items = resources.flatMap((resource, index) => (ids.has(resource.id) ? [{ resource, index }] : []));
+
+    setResources((prev) => writeResources(prev.filter((r) => !ids.has(r.id))));
+    setSelectedResourceIds((prev) => prev.filter((id) => !ids.has(id)));
+
+    // Show the toast immediately — don't wait for the server
+    const label = items.length === 1 ? items[0].resource.name : `${items.length} files`;
+    addToast("deleted", items.length === 1 ? "File deleted" : `${items.length} files deleted`, label);
+
+    const failedIds = await sendDeletes(items.map((it) => it.resource.id));
     if (failedIds.length > 0) {
-      restoreResources(pending.items.filter((it) => failedIds.includes(it.resource.id)));
+      restoreResources(items.filter((it) => failedIds.includes(it.resource.id)));
       addToast(
         "error",
         failedIds.length === 1 ? "Couldn't delete that asset — it's been restored." : `Couldn't delete ${failedIds.length} assets — they've been restored.`
@@ -532,52 +531,15 @@ export default function ResourcesPage() {
     }
   };
 
-  const undoPendingDelete = (pending: PendingDelete) => {
-    if (pendingDeleteRef.current?.key !== pending.key) return;
-    pendingDeleteRef.current = null;
-    setPendingDelete(null);
-    restoreResources(pending.items);
-  };
-
-  // Hide the resources immediately; the server delete runs when the Undo window closes
-  const scheduleDelete = (toDelete: Resource[]) => {
-    if (toDelete.length === 0) return;
-    if (pendingDeleteRef.current) void commitPendingDelete(pendingDeleteRef.current);
-
-    const ids = new Set(toDelete.map((r) => r.id));
-    const items = resources.flatMap((resource, index) => (ids.has(resource.id) ? [{ resource, index }] : []));
-    const pending: PendingDelete = { key: Math.random().toString(36).substring(2, 9), items };
-
-    pendingDeleteRef.current = pending;
-    setPendingDelete(pending);
-    setResources((prev) => writeResources(prev.filter((r) => !ids.has(r.id))));
-    setSelectedResourceIds((prev) => prev.filter((id) => !ids.has(id)));
-  };
-
-  // Leaving the page must not drop a delete the user already confirmed
-  useEffect(() => {
-    const flush = () => {
-      const pending = pendingDeleteRef.current;
-      if (!pending) return;
-      pendingDeleteRef.current = null;
-      void sendDeletes(pending.items.map((it) => it.resource.id), true);
-    };
-    window.addEventListener("pagehide", flush);
-    return () => {
-      window.removeEventListener("pagehide", flush);
-      flush();
-    };
-  }, []);
-
   const confirmDelete = () => {
     if (!resourceToDelete) return;
-    scheduleDelete([resourceToDelete]);
+    void deleteResources([resourceToDelete]);
     setResourceToDelete(null);
   };
 
   const confirmBulkDelete = () => {
     if (selectedResourceIds.length === 0) return;
-    scheduleDelete(resources.filter((r) => selectedResourceIds.includes(r.id)));
+    void deleteResources(resources.filter((r) => selectedResourceIds.includes(r.id)));
     setShowBulkDeleteModal(false);
   };
 
@@ -1745,26 +1707,13 @@ export default function ResourcesPage() {
         )}
       </AnimatePresence>
 
-      {/* Floating Toast Notification Container — Mobile Responsive & Glassmorphic */}
-      <div className="fixed bottom-4 inset-x-3 sm:inset-x-auto sm:bottom-5 sm:right-5 sm:max-w-sm z-50 pointer-events-none flex flex-col-reverse gap-2 items-center sm:items-end">
-        <AnimatePresence>
-          {pendingDelete && (
-            <UndoDeleteToast
-              key={pendingDelete.key}
-              title={
-                pendingDelete.items.length === 1 ? "Asset deleted" : `${pendingDelete.items.length} assets deleted`
-              }
-              subtitle={pendingDelete.items.map((it) => it.resource.name).join(", ")}
-              durationMs={UNDO_WINDOW_MS}
-              onUndo={() => undoPendingDelete(pendingDelete)}
-              onCommit={() => void commitPendingDelete(pendingDelete)}
-            />
-          )}
-        </AnimatePresence>
+      {/* Floating Toast Notification Container */}
+      <div className="fixed bottom-5 inset-x-3 sm:inset-x-auto sm:bottom-6 sm:right-6 z-50 pointer-events-none flex flex-col gap-2 items-center sm:items-end">
         {toasts.map((toast, idx) => {
           const reverseIdx = toasts.length - 1 - idx;
-          const translateY = -reverseIdx * 6;
-          const scale = Math.max(0.88, 1 - reverseIdx * 0.04);
+          const translateY = -reverseIdx * 8;
+          const scale = Math.max(0.9, 1 - reverseIdx * 0.04);
+          const isDeleted = toast.type === "deleted";
 
           return (
             <div
@@ -1774,24 +1723,44 @@ export default function ResourcesPage() {
                 transformOrigin: "bottom center",
                 zIndex: 100 - reverseIdx,
               }}
-              className={`w-full pointer-events-auto flex items-center gap-2.5 sm:gap-3 rounded-2xl p-3.5 sm:p-4 text-xs font-bold shadow-xl backdrop-blur-xl border transition-all duration-300 ease-out animate-in fade-in slide-in-from-bottom-4 ring-1 ring-white/10 ${toast.type === "success"
-                ? "bg-emerald-950/30 dark:bg-emerald-950/40 border-emerald-500/35 text-emerald-100"
-                : toast.type === "error"
-                  ? "bg-rose-950/30 dark:bg-rose-950/40 border-rose-500/35 text-rose-100"
-                  : "bg-zinc-900/35 dark:bg-black/40 border-white/15 text-white"
-                }`}
+              className="pointer-events-auto w-full sm:w-auto sm:min-w-[260px] sm:max-w-[340px] animate-in fade-in slide-in-from-bottom-3 duration-200"
             >
-              {toast.type === "success" && <Check className="h-4 w-4 shrink-0 text-emerald-400" />}
-              {toast.type === "error" && <AlertCircle className="h-4 w-4 shrink-0 text-rose-400" />}
-              {toast.type === "info" && <Sparkles className="h-4 w-4 shrink-0 text-amber-400" />}
-              <span className="flex-1 leading-snug">{toast.message}</span>
-              <button
-                type="button"
-                onClick={() => removeToast(toast.id)}
-                className="text-zinc-400 hover:text-white transition cursor-pointer p-0.5 rounded-md hover:bg-white/10 shrink-0"
-              >
-                <X className="h-3.5 w-3.5" />
-              </button>
+              {isDeleted ? (
+                /* ── Delete toast: glassmorphic ── */
+                <div className="flex items-center gap-3 rounded-2xl border border-white/[0.08] bg-zinc-900/50 px-4 py-3 shadow-2xl shadow-black/40 backdrop-blur-2xl backdrop-saturate-150 dark:border-white/[0.07] dark:bg-black/50">
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-white/[0.08] bg-white/[0.06]">
+                    <Trash2 className="h-3.5 w-3.5 text-zinc-300" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-[13px] font-semibold leading-[18px] text-white">{toast.message}</p>
+                    {toast.subtitle && (
+                      <p className="truncate text-[11px] leading-[16px] text-zinc-400 mt-0.5" title={toast.subtitle}>{toast.subtitle}</p>
+                    )}
+                  </div>
+                </div>
+              ) : (
+                /* ── Generic success / error / info toast ── */
+                <div className={`flex items-center gap-2.5 rounded-xl px-3.5 py-2.5 text-[12.5px] font-semibold shadow-2xl border backdrop-blur-xl
+                  ${toast.type === "success"
+                    ? "bg-emerald-950/60 border-emerald-500/30 text-emerald-100"
+                    : toast.type === "error"
+                      ? "bg-rose-950/60 border-rose-500/30 text-rose-100"
+                      : "bg-zinc-900/80 border-white/10 text-white"
+                  }`}
+                >
+                  {toast.type === "success" && <Check className="h-3.5 w-3.5 shrink-0 text-emerald-400" />}
+                  {toast.type === "error" && <AlertCircle className="h-3.5 w-3.5 shrink-0 text-rose-400" />}
+                  {toast.type === "info" && <Sparkles className="h-3.5 w-3.5 shrink-0 text-amber-400" />}
+                  <span className="flex-1 leading-snug">{toast.message}</span>
+                  <button
+                    type="button"
+                    onClick={() => removeToast(toast.id)}
+                    className="text-zinc-500 hover:text-white transition cursor-pointer p-0.5 rounded hover:bg-white/10 shrink-0 ml-1"
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                </div>
+              )}
             </div>
           );
         })}

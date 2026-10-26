@@ -242,7 +242,8 @@ export async function deleteCloudinaryAsset(
       return true;
     }
 
-    if (resImage?.result === "not_found") {
+    // Cloudinary reports a missing image as "not found" (with a space); PDFs/docs are stored as "raw"
+    if (resImage?.result !== "ok") {
       let resRaw = await cloudinary.uploader.destroy(publicId, { resource_type: "raw", invalidate: true });
       if (resRaw?.result !== "ok" && rawPublicId && rawPublicId !== publicId) {
         resRaw = await cloudinary.uploader.destroy(rawPublicId, { resource_type: "raw", invalidate: true });
