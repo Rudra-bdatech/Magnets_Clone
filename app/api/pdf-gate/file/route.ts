@@ -38,13 +38,12 @@ export async function GET(req: NextRequest) {
   try {
     await dbConnect();
     const pageDoc: any = await MagnetPageModel.findOne({
-      template: "locked-pdf",
       $or: [
         { id: magnetId },
         ...(mongoose.Types.ObjectId.isValid(magnetId) ? [{ _id: magnetId }] : []),
       ],
     })
-      .select("pdfUrl pdfFreePages")
+      .select("id pdfUrl pdfFreePages")
       .lean();
 
     const pdfUrl = (pageDoc?.pdfUrl || "").trim();
@@ -55,9 +54,15 @@ export async function GET(req: NextRequest) {
     const rawToken =
       (req.headers.get("x-pdf-unlock-token") || "").trim() ||
       req.cookies.get(cookieName(magnetId))?.value ||
+      (pageDoc?.id ? req.cookies.get(cookieName(pageDoc.id))?.value : "") ||
       "";
     const payload = rawToken ? verifyPdfUnlockToken(rawToken) : null;
-    const unlocked = !!(payload && payload.magnetId === magnetId);
+    const unlocked = !!(
+      payload &&
+      (payload.magnetId === magnetId ||
+        (pageDoc?.id && payload.magnetId === pageDoc.id) ||
+        !payload.magnetId)
+    );
 
     const headers = {
       "Content-Type": "application/pdf",

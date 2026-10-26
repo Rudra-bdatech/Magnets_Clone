@@ -1127,8 +1127,9 @@ export default function EditLeadMagnetPage() {
           updatedAt: "Just now"
         };
         pageRef.current = next;
-        setPage(next);
-        const all = loadPages().map((p) => (p.id === next.id ? next : p));
+        const allPages = loadPages();
+        const exists = allPages.some((p) => p.id === next.id);
+        const all = exists ? allPages.map((p) => (p.id === next.id ? next : p)) : [next, ...allPages];
         savePages(all);
         if (typeof window !== "undefined") window.dispatchEvent(new Event("storage"));
 

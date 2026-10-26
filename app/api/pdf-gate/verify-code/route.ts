@@ -208,13 +208,18 @@ export async function POST(req: NextRequest) {
     });
 
     const res = NextResponse.json({ ok: true, unlockToken, pdfPages: pdfSnapshot });
-    res.cookies.set(cookieName(magnetId), unlockToken, {
+    const isHttps = req.nextUrl.protocol === "https:";
+    const cookieOptions = {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
+      secure: isHttps,
+      sameSite: "lax" as const,
       maxAge: UNLOCK_MAX_AGE,
       path: "/",
-    });
+    };
+    res.cookies.set(cookieName(magnetId), unlockToken, cookieOptions);
+    if (pageDocSnapshot?.id && pageDocSnapshot.id !== magnetId) {
+      res.cookies.set(cookieName(pageDocSnapshot.id), unlockToken, cookieOptions);
+    }
 
     return res;
   } catch (err: any) {

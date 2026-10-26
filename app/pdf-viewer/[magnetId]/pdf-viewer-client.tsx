@@ -445,6 +445,10 @@ export default function PdfViewerClient({
         isReset = urlParams.get("reset") === "1";
         if (isReset) {
           localStorage.removeItem(`pdf_unlock_token_${magnetId}`);
+          // Remove ?reset=1 from the URL bar immediately so subsequent page refreshes do not re-wipe the session
+          const cleanUrl = new URL(window.location.href);
+          cleanUrl.searchParams.delete("reset");
+          window.history.replaceState({}, "", cleanUrl.pathname + (cleanUrl.searchParams.toString() ? `?${cleanUrl.searchParams.toString()}` : "") + cleanUrl.hash);
         } else {
           localToken = localStorage.getItem(`pdf_unlock_token_${magnetId}`) || "";
           unlockTokenRef.current = localToken;
@@ -636,6 +640,11 @@ export default function PdfViewerClient({
         if (data.unlockToken && typeof window !== "undefined") {
           try {
             localStorage.setItem(`pdf_unlock_token_${magnetId}`, data.unlockToken);
+            const cleanUrl = new URL(window.location.href);
+            if (cleanUrl.searchParams.has("reset")) {
+              cleanUrl.searchParams.delete("reset");
+              window.history.replaceState({}, "", cleanUrl.pathname + (cleanUrl.searchParams.toString() ? `?${cleanUrl.searchParams.toString()}` : "") + cleanUrl.hash);
+            }
           } catch (e) {}
         }
         if (data.unlockToken) unlockTokenRef.current = data.unlockToken;
@@ -827,7 +836,7 @@ export default function PdfViewerClient({
 
         {/* Document View Canvas */}
         <main className="adobe-doc-viewport" ref={docRef} data-lenis-prevent>
-          {pdfLoadError && (
+          {pdfLoadError && pdfPages.length === 0 && (
             <div className="mx-auto my-6 max-w-md rounded-lg bg-red-500/10 px-4 py-3 text-center text-sm text-red-300">
               {pdfLoadError}
             </div>
@@ -837,7 +846,7 @@ export default function PdfViewerClient({
               <div className="w-8 h-8 border-2 border-white/20 border-t-white rounded-full animate-spin" />
               <p className="text-sm font-medium opacity-80">Streaming document…</p>
             </div>
-          ) : isStreamingPdf ? (
+          ) : isStreamingPdf && pdfDoc ? (
             Array.from({ length: totalPages }, (_, idx) => {
               const isLocked = !unlocked && idx >= pdfFreePages;
               const computedWidth = Math.round(860 * (zoomScale / 100));

@@ -19,20 +19,37 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ unlocked: false, error: "Missing magnetId." }, { status: 400 });
     }
 
+    await dbConnect();
+    const pageDoc: any = await MagnetPageModel.findOne({
+      $or: [
+        { id: magnetId },
+        ...(mongoose.Types.ObjectId.isValid(magnetId) ? [{ _id: magnetId }] : []),
+      ],
+    })
+      .select("id pdfPages")
+      .lean();
+
     const resetParam = searchParams.get("reset") === "1";
     if (resetParam) {
       const res = NextResponse.json({ unlocked: false });
-      res.cookies.set(cookieName(magnetId), "", {
+      const isHttps = req.nextUrl.protocol === "https:";
+      const clearCookie = {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
+        secure: isHttps,
+        sameSite: "lax" as const,
         maxAge: 0,
         path: "/",
-      });
+      };
+      res.cookies.set(cookieName(magnetId), "", clearCookie);
+      if (pageDoc?.id && pageDoc.id !== magnetId) {
+        res.cookies.set(cookieName(pageDoc.id), "", clearCookie);
+      }
       return res;
     }
 
-    const cookieValue = req.cookies.get(cookieName(magnetId))?.value;
+    const cookieValue =
+      req.cookies.get(cookieName(magnetId))?.value ||
+      (pageDoc?.id ? req.cookies.get(cookieName(pageDoc.id))?.value : undefined);
     const tokenToVerify = queryToken || cookieValue || "";
 
     if (!tokenToVerify) {
@@ -40,7 +57,12 @@ export async function GET(req: NextRequest) {
     }
 
     const payload = verifyPdfUnlockToken(tokenToVerify);
-    const unlocked = !!(payload && (payload.magnetId === magnetId || !payload.magnetId));
+    const unlocked = !!(
+      payload &&
+      (payload.magnetId === magnetId ||
+        (pageDoc?.id && payload.magnetId === pageDoc.id) ||
+        !payload.magnetId)
+    );
 
     if (!unlocked) {
       return NextResponse.json({ unlocked: false });
@@ -51,15 +73,6 @@ export async function GET(req: NextRequest) {
     const snapshot = payload?.pdfPages;
     let pdfPages: string[] = Array.isArray(snapshot) ? snapshot : [];
     if (pdfPages.length === 0) {
-      await dbConnect();
-      const pageDoc: any = await MagnetPageModel.findOne({
-        $or: [
-          { id: magnetId },
-          ...(mongoose.Types.ObjectId.isValid(magnetId) ? [{ _id: magnetId }] : []),
-        ],
-      })
-        .select("pdfPages")
-        .lean();
       pdfPages = Array.isArray(pageDoc?.pdfPages) ? pageDoc.pdfPages : [];
     }
 

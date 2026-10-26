@@ -177,7 +177,18 @@ export default function LandingPageTab({
               updatedAt: "Just now",
             };
             setPage(next);
-            savePages(loadPages().map((p) => (p.id === next.id ? next : p)));
+            const allPages = loadPages();
+            const exists = allPages.some((p) => p.id === next.id);
+            const updated = exists ? allPages.map((p) => (p.id === next.id ? next : p)) : [next, ...allPages];
+            savePages(updated);
+            const userEmail = account?.email || (typeof window !== "undefined" ? localStorage.getItem("currentUserEmail") : null);
+            if (userEmail && next.id) {
+              fetch("/api/data", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ action: "addPage", data: next, email: userEmail }),
+              }).catch(console.error);
+            }
             update(next);
           }}
         />

@@ -25,12 +25,11 @@ export default async function PdfViewerPage({ params, searchParams }: Props) {
     await dbConnect();
 
     // Try lookup by custom `id` field first, then by MongoDB _id
-    // Only locked PDFs open here — landing pages live at /<username>/<slug>
-    pageDoc = await MagnetPageModel.findOne({ id: magnetId, template: "locked-pdf" }).lean();
+    pageDoc = await MagnetPageModel.findOne({ id: magnetId }).lean();
 
     if (!pageDoc && mongoose.Types.ObjectId.isValid(magnetId)) {
       // Fallback: try by MongoDB _id in case the id field differs
-      pageDoc = await MagnetPageModel.findOne({ _id: magnetId, template: "locked-pdf" }).lean();
+      pageDoc = await MagnetPageModel.findOne({ _id: magnetId }).lean();
     }
 
     if (pageDoc?.userEmail) {
@@ -49,7 +48,9 @@ export default async function PdfViewerPage({ params, searchParams }: Props) {
 
   // Check for signed per-subscriber access token from query param or cookie
   const cookieStore = cookies();
-  const tokenFromCookie = cookieStore.get(`pdf_unlocked_${magnetId}`)?.value;
+  const tokenFromCookie =
+    cookieStore.get(`pdf_unlocked_${magnetId}`)?.value ||
+    (pageDoc?.id ? cookieStore.get(`pdf_unlocked_${pageDoc.id}`)?.value : undefined);
   const tokenFromQuery = searchParams?.token;
   // ?reset=1 is the owner's "view as a new visitor" link — always start locked
   const rawToken = searchParams?.reset === "1" ? undefined : tokenFromQuery || tokenFromCookie;
@@ -63,7 +64,12 @@ export default async function PdfViewerPage({ params, searchParams }: Props) {
   let isUnlocked = false;
   if (rawToken) {
     const verifiedPayload = verifyPdfUnlockToken(rawToken);
-    if (verifiedPayload && (verifiedPayload.magnetId === magnetId || !verifiedPayload.magnetId)) {
+    if (
+      verifiedPayload &&
+      (verifiedPayload.magnetId === magnetId ||
+        (pageDoc?.id && verifiedPayload.magnetId === pageDoc.id) ||
+        !verifiedPayload.magnetId)
+    ) {
       isUnlocked = true;
       if (Array.isArray(verifiedPayload.pdfPages) && verifiedPayload.pdfPages.length > 0) {
         effectivePdfPages = verifiedPayload.pdfPages;

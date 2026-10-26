@@ -802,7 +802,7 @@ export default function LockedPdfSetup({
                 </button>
               </div>
               <a
-                href={`${viewerUrl}?reset=1`}
+                href={viewerUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-zinc-100 dark:hover:bg-white dark:text-zinc-950 text-xs font-bold transition-all shadow-xs shrink-0 cursor-pointer"
