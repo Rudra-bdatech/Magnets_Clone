@@ -93,12 +93,6 @@ const SequencePreviewModal = dynamic(() => import("@/components/leadmagnets/edit
   ssr: false,
 });
 
-interface Toast {
-  id: string;
-  type: "success" | "error" | "info";
-  message: string;
-}
-
 type SortOption = "recent" | "name" | "views" | "signups" | "conversion";
 
 const sortOptions: { id: SortOption; label: string }[] = [
@@ -128,8 +122,7 @@ export default function LockedPdfPage() {
   const [activeTab, setActiveTab] = useState<"locked" | "email" | "sequence" | "after">("locked");
   const [hoveredTab, setHoveredTab] = useState<string | null>(null);
 
-  // Toasts & Modal States
-  const [toasts, setToasts] = useState<Toast[]>([]);
+  // Modal States
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [pageToDeleteId, setPageToDeleteId] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -309,18 +302,6 @@ export default function LockedPdfPage() {
       }
     };
   }, []);
-
-  const addToast = (message: string, type: "success" | "error" | "info" = "success") => {
-    const id = Math.random().toString(36).substring(2, 9);
-    setToasts((prev) => [...prev, { id, type, message }]);
-    setTimeout(() => {
-      setToasts((prev) => prev.filter((t) => t.id !== id));
-    }, 3500);
-  };
-
-  const removeToast = (id: string) => {
-    setToasts((prev) => prev.filter((t) => t.id !== id));
-  };
 
   // Close sort & filter menus on outside click
   useEffect(() => {
@@ -789,7 +770,6 @@ export default function LockedPdfPage() {
     setCreateMagnetName("");
     setCustomSlug("");
     setIsCustomSlugEdited(false);
-    addToast(`Created "${name}". Ready for PDF upload!`);
   };
 
   const handleCreateLandingPage = () => {
@@ -851,7 +831,6 @@ export default function LockedPdfPage() {
       const remainingLocked = remaining.filter((p) => p.template === "locked-pdf");
       setSelectedPageId(remainingLocked[0]?.id || remaining[0]?.id || null);
     }
-    addToast(`Deleted ${checkedIds.length} locked PDF${checkedIds.length > 1 ? "s" : ""}.`);
     setCheckedIds([]);
     setIsSelectMode(false);
     setShowBulkDeleteModal(false);
@@ -880,11 +859,10 @@ export default function LockedPdfPage() {
         setSelectedPageId(null);
       }
 
-      addToast(`Deleted "${target.name}".`);
       setShowDeleteModal(false);
       setPageToDeleteId(null);
     } catch (e) {
-      addToast("Failed to delete document.", "error");
+      console.error("Failed to delete document:", e);
     } finally {
       setIsDeleting(false);
     }
@@ -896,61 +874,6 @@ export default function LockedPdfPage() {
 
   return (
     <>
-      {/* Modern Theme-Adaptive Toast Notification */}
-      <div className="fixed bottom-4 inset-x-4 sm:inset-x-auto sm:bottom-6 sm:right-6 z-[100] flex flex-col gap-2.5 pointer-events-none items-center sm:items-end">
-        <AnimatePresence mode="popLayout">
-          {toasts.map((toast) => (
-            <motion.div
-              key={toast.id}
-              layout
-              initial={{ opacity: 0, y: 24, scale: 0.94 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 12, scale: 0.94, transition: { duration: 0.16 } }}
-              transition={{ type: "spring", stiffness: 420, damping: 28, mass: 0.8 }}
-              className={`pointer-events-auto flex items-center gap-3.5 pl-3.5 pr-3 py-3 rounded-2xl shadow-[0_16px_40px_-4px_rgba(0,0,0,0.14),0_6px_16px_-2px_rgba(0,0,0,0.06)] dark:shadow-[0_20px_48px_-6px_rgba(0,0,0,0.8)] backdrop-blur-2xl backdrop-saturate-150 border ring-1 ring-inset transition-all max-w-sm sm:max-w-md w-full sm:w-auto ${
-                toast.type === "error"
-                  ? "bg-white/75 dark:bg-[#18181B]/75 border-rose-300/60 dark:border-rose-500/30 ring-rose-500/15 dark:ring-rose-500/20 text-zinc-900 dark:text-zinc-100"
-                  : toast.type === "info"
-                  ? "bg-white/75 dark:bg-[#18181B]/75 border-sky-300/60 dark:border-sky-500/30 ring-sky-500/15 dark:ring-sky-500/20 text-zinc-900 dark:text-zinc-100"
-                  : "bg-white/75 dark:bg-[#18181B]/75 border-emerald-300/60 dark:border-emerald-500/30 ring-emerald-500/15 dark:ring-emerald-500/20 text-zinc-900 dark:text-zinc-100"
-              }`}
-            >
-              {/* Dynamic Status Icon with Ambient Tint & Glow */}
-              {toast.type === "error" ? (
-                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-rose-50 dark:bg-rose-500/15 border border-rose-200/80 dark:border-rose-500/30 text-rose-600 dark:text-rose-400 dark:shadow-[0_0_12px_rgba(244,63,94,0.2)]">
-                  <AlertCircle className="h-4 w-4" />
-                </div>
-              ) : toast.type === "info" ? (
-                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-sky-50 dark:bg-sky-500/15 border border-sky-200/80 dark:border-sky-500/30 text-[#0066B2] dark:text-sky-400 dark:shadow-[0_0_12px_rgba(56,189,248,0.2)]">
-                  <Sparkles className="h-4 w-4" />
-                </div>
-              ) : (
-                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-emerald-50 dark:bg-emerald-500/15 border border-emerald-200/80 dark:border-emerald-500/30 text-emerald-600 dark:text-emerald-400 dark:shadow-[0_0_12px_rgba(16,185,129,0.2)]">
-                  <Check className="h-4 w-4 stroke-[2.5]" />
-                </div>
-              )}
-
-              {/* Message Typography */}
-              <div className="flex-1 min-w-0 pr-1">
-                <p className="text-[13px] font-semibold tracking-[-0.01em] leading-snug">
-                  {toast.message}
-                </p>
-              </div>
-
-              {/* Dismiss Button */}
-              <button
-                type="button"
-                onClick={() => removeToast(toast.id)}
-                className="shrink-0 p-1.5 rounded-lg text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-white/10 transition-colors cursor-pointer"
-                aria-label="Dismiss notification"
-              >
-                <X className="h-3.5 w-3.5" />
-              </button>
-            </motion.div>
-          ))}
-        </AnimatePresence>
-      </div>
-
       <div className="flex flex-col min-h-[calc(100vh-3.5rem)] bg-gradient-to-b from-[#EFF6FF]/40 via-[#F8FBFF] to-[#F8FBFF] dark:bg-none dark:bg-[#0B0B0D] w-full">
         {/* Top Executive Header & Stat Cards */}
         <div className={`mx-auto w-full px-3.5 sm:px-6 pt-4 sm:pt-6 lg:px-8 space-y-4 transition-[max-width] duration-[220ms] ease-[cubic-bezier(0.16,1,0.3,1)] will-change-[max-width] ${isCollapsed ? "max-w-[1440px]" : "max-w-7xl"}`}>
@@ -1522,12 +1445,13 @@ export default function LockedPdfPage() {
                               onClick={(e) => {
                                 e.stopPropagation();
                                 navigator.clipboard.writeText(shareUrl);
-                                addToast(`Copied share link for "${pdf.name}"!`);
+                                setCopiedId(pdf.id);
+                                setTimeout(() => setCopiedId(null), 2000);
                               }}
                               className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#0066B2] hover:bg-[#005799] text-white font-extrabold text-[11px] shadow-xs hover:shadow-[#0066B2]/20 active:scale-95 transition-all cursor-pointer"
                             >
-                              <Copy className="h-3 w-3" />
-                              <span>Share Link</span>
+                              {copiedId === pdf.id ? <Check className="h-3 w-3 text-emerald-300" /> : <Copy className="h-3 w-3" />}
+                              <span>{copiedId === pdf.id ? "Copied!" : "Share Link"}</span>
                             </button>
 
                             <Link
@@ -1701,12 +1625,13 @@ export default function LockedPdfPage() {
                                     onClick={(e) => {
                                       e.stopPropagation();
                                       navigator.clipboard.writeText(shareUrl);
-                                      addToast(`Copied viewer URL!`);
+                                      setCopiedId(pdf.id);
+                                      setTimeout(() => setCopiedId(null), 2000);
                                     }}
                                     className="p-1.5 rounded-lg text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-white/5 transition cursor-pointer"
-                                    title="Copy URL"
+                                    title={copiedId === pdf.id ? "Copied!" : "Copy URL"}
                                   >
-                                    <Copy className="h-3.5 w-3.5" />
+                                    {copiedId === pdf.id ? <Check className="h-3.5 w-3.5 text-emerald-500" /> : <Copy className="h-3.5 w-3.5" />}
                                   </button>
                                   <Link
                                     href={`/dashboard/leadmagnets/${pdf.id}?type=locked-pdf`}
@@ -1871,12 +1796,13 @@ export default function LockedPdfPage() {
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   navigator.clipboard.writeText(shareUrl);
-                                  addToast("Copied viewer URL!");
+                                  setCopiedId(pdf.id);
+                                  setTimeout(() => setCopiedId(null), 2000);
                                 }}
                                 className="inline-flex h-8 w-8 items-center justify-center rounded-xl border border-zinc-200/90 bg-white dark:border-[#2e2e38] dark:bg-[#202026] text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-[#282830] hover:text-[#0066B2] dark:hover:text-[#38BDF8] transition-all duration-150 cursor-pointer shadow-2xs active:scale-95"
-                                title="Copy URL"
+                                title={copiedId === pdf.id ? "Copied!" : "Copy URL"}
                               >
-                                <Copy className="h-3.5 w-3.5" />
+                                {copiedId === pdf.id ? <Check className="h-3.5 w-3.5 text-emerald-500" /> : <Copy className="h-3.5 w-3.5" />}
                               </button>
 
                               <Link
@@ -1959,7 +1885,6 @@ export default function LockedPdfPage() {
                             const fullUrl = `${window.location.origin}/pdf-viewer/${activePage.id}`;
                             navigator.clipboard.writeText(fullUrl);
                             setCopiedId(activePage.id);
-                            addToast("Copied viewer link!");
                             setTimeout(() => setCopiedId(null), 2000);
                           }}
                           className="flex items-center gap-1 rounded-lg bg-white dark:bg-[#25252A] px-2.5 py-1 text-xs font-bold text-zinc-700 dark:text-zinc-200 border border-zinc-200 dark:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition shrink-0 cursor-pointer"
@@ -2382,7 +2307,6 @@ export default function LockedPdfPage() {
                                 setSelectedHostedPdf({ url: pdfUrl, name: asset.name, timestamp: Date.now() });
                                 setShowAssetPickerModal(false);
                                 setActiveTab("locked");
-                                addToast(`Selected "${asset.name}" from Assets! Loading into setup card...`);
                               }}
                               className="flex items-center gap-1 rounded-lg bg-[#0066B2] px-3 py-1.5 text-xs font-bold text-white hover:bg-[#005291] transition shrink-0 cursor-pointer"
                             >
@@ -2395,7 +2319,6 @@ export default function LockedPdfPage() {
                               onClick={() => {
                                 navigator.clipboard.writeText(asset.url);
                                 setShowAssetPickerModal(false);
-                                addToast(`Link copied for "${asset.name}"!`);
                               }}
                               className="flex items-center gap-1 rounded-lg border border-zinc-200 dark:border-zinc-700 px-3 py-1.5 text-xs font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition shrink-0 cursor-pointer"
                             >
@@ -2578,7 +2501,6 @@ export default function LockedPdfPage() {
                       const fullUrl = `${window.location.origin}/pdf-viewer/${activePage.id}`;
                       navigator.clipboard.writeText(fullUrl);
                       setCopiedId(activePage.id);
-                      addToast("Copied viewer link!");
                       setTimeout(() => setCopiedId(null), 2000);
                     }}
                     className="flex items-center gap-1 rounded-lg bg-white dark:bg-[#25252A] px-2.5 py-1.5 text-xs font-bold text-zinc-700 dark:text-zinc-200 border border-zinc-200 dark:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition shrink-0 cursor-pointer"
