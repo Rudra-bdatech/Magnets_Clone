@@ -44,10 +44,10 @@ function BrandSettingsForm({
   handleSave,
 }: BrandSettingsFormProps) {
   return (
-    <div className="rounded-2xl border border-[#0066B2]/35 bg-white dark:border-[#0066B2]/30 dark:bg-[#18181B] p-4 sm:p-6 shadow-sm dark:shadow-xl h-full flex flex-col justify-between transition-colors">
+    <div className="rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 p-4 sm:p-6 shadow-md backdrop-blur-sm h-full flex flex-col justify-between transition-colors">
       {/* Heading */}
       <div className="flex items-center gap-3 mb-4">
-        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-[#0066B2]/30 bg-[#EFF6FF] dark:border-[#0066B2]/30 dark:bg-[#1a2638] text-[#0066B2]">
+        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-[#0066B2]/30 bg-[#EFF6FF] dark:border-[#0066B2]/30 dark:bg-[#1a2638] text-[#0066B2]">
           <Palette className="h-4.5 w-4.5 text-[#0066B2]" />
         </div>
         <div className="flex items-center gap-1.5">
@@ -266,7 +266,7 @@ function BrandSettingsForm({
       </div>
 
       {/* Action Bar */}
-      <div className="mt-6 border-t border-[#0066B2]/20 dark:border-[#0066B2]/20 pt-4 sm:pt-5 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+      <div className="mt-6 border-t border-[#0066B2]/10 dark:border-[#38BDF8]/20 pt-4 sm:pt-5 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
         <span className="text-[11px] sm:text-[10px] text-zinc-500 dark:text-[#9B9085] leading-tight text-center sm:text-left">
           {hasUnsavedChanges ? "Unsaved changes stay local until saved." : "All changes saved to database."}
         </span>

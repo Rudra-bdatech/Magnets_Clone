@@ -403,7 +403,7 @@ export default function TemplatesPage() {
               <div className="relative mb-3 lg:mb-0 lg:absolute lg:-top-12 lg:left-0 lg:right-0 z-10 flex justify-end w-full">
                 <div
                   ref={tabsContainerRef}
-                  className="w-full flex items-center gap-1 bg-zinc-100/90 dark:bg-[#111113]/90 backdrop-blur-md p-1 sm:p-1.5 rounded-xl border border-zinc-200 dark:border-[#2b2b32] shadow-xs overflow-x-auto no-scrollbar scroll-smooth touch-pan-x"
+                  className="w-full flex items-center gap-1 bg-white/90 dark:bg-[#111113]/90 backdrop-blur-md p-1 sm:p-1.5 rounded-xl border border-[#0066B2]/15 dark:border-[#38BDF8]/25 shadow-sm overflow-x-auto no-scrollbar scroll-smooth touch-pan-x"
                   onMouseLeave={() => setHoveredTemplateTab(null)}
                 >
                   {TEMPLATE_TABS.map((t) => {
@@ -452,8 +452,8 @@ export default function TemplatesPage() {
               </div>
 
               {/* Main Preview Card Box (Top aligns EXACTLY with Left Card on desktop) */}
-              <div className="rounded-2xl border border-[#0066B2]/35 bg-white dark:border-[#0066B2]/30 dark:bg-[#18181B] p-3.5 sm:p-5 shadow-sm dark:shadow-2xl h-full flex flex-col transition-colors">
-                <div className="flex flex-col gap-1 mb-3 sm:mb-4 pb-2.5 sm:pb-3 border-b border-zinc-200 dark:border-[#2e2e38]/50">
+              <div className="rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 p-3.5 sm:p-5 shadow-md backdrop-blur-sm h-full flex flex-col transition-colors">
+                <div className="flex flex-col gap-1 mb-3 sm:mb-4 pb-2.5 sm:pb-3 border-b border-[#0066B2]/10 dark:border-[#38BDF8]/20">
                   <span className="text-xs sm:text-sm font-bold text-zinc-900 dark:text-zinc-200 uppercase tracking-wider">Preview</span>
                   <span className="text-[11px] sm:text-xs text-zinc-500 dark:text-[#9B9085] block">How your brand appears on a full magnet page.</span>
                 </div>
