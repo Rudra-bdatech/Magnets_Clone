@@ -188,6 +188,8 @@ export async function canUserDeleteAsset(
   const excludeResIds = options?.excludeResourceIds?.filter(Boolean) || [];
   const activeResource = await ResourceModel.findOne({
     userEmail: normEmail,
+    isPageAsset: { $ne: true },
+    type: { $ne: "page_asset" },
     ...(excludeResIds.length > 0 ? { id: { $nin: excludeResIds } } : {}),
     $or: [{ fileUrl: url }, { url: url }],
   }).select("id").lean();

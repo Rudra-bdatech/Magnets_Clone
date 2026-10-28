@@ -51,6 +51,9 @@ export async function handleSavePages(data: any, normEmail: string | null) {
             }
           });
         }
+        if (oldPage.pdfUrl && oldPage.pdfUrl !== item.pdfUrl) {
+          replacedAssets.push(oldPage.pdfUrl);
+        }
       }
     });
 
@@ -140,6 +143,9 @@ export async function handleAddPage(data: any, normEmail: string | null) {
           replacedAssets.push(oldPdfUrl);
         }
       });
+    }
+    if (existingPage.pdfUrl && existingPage.pdfUrl !== data.pdfUrl) {
+      replacedAssets.push(existingPage.pdfUrl);
     }
   }
 
