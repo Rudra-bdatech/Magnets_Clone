@@ -47,7 +47,7 @@ export default function DeleteModal({
             ? { type: "spring", stiffness: 450, damping: 32, mass: 0.4 }
             : { type: "spring", stiffness: 650, damping: 36, mass: 0.3 }
         }
-        className="relative z-10 w-full sm:max-w-[440px] max-h-[85vh] overflow-y-auto rounded-t-[28px] sm:rounded-3xl border-t sm:border border-zinc-200 dark:border-white/10 bg-white/95 dark:bg-[#141417]/95 backdrop-blur-xl p-5 sm:p-6 text-zinc-900 dark:text-white shadow-2xl space-y-4 transform-gpu will-change-transform"
+        className="relative z-10 w-full sm:max-w-[440px] max-h-[85vh] overflow-y-auto rounded-t-[28px] sm:rounded-3xl border-t sm:border border-zinc-200 dark:border-white/10 bg-white/95 dark:bg-[#171717]/95 backdrop-blur-xl p-5 sm:p-6 text-zinc-900 dark:text-white shadow-2xl space-y-4 transform-gpu will-change-transform"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Mobile Grab Handle */}
@@ -83,7 +83,7 @@ export default function DeleteModal({
           <button
             type="button"
             onClick={onClose}
-            className="flex-1 sm:flex-none rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-[#25252A] px-4 py-2.5 text-xs font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white transition-all cursor-pointer text-center"
+            className="flex-1 sm:flex-none rounded-xl border border-zinc-200 dark:border-white/10 bg-zinc-100 dark:bg-white/5 dark:hover:bg-white/10 px-4 py-2.5 text-xs font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white transition-all cursor-pointer text-center"
           >
             Cancel
           </button>

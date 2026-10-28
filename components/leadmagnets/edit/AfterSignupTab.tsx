@@ -115,12 +115,12 @@ export default function AfterSignupTab({
   // ── Styles ─────────────────────────────────────────────────────────────────
 
   const cardBg = isDark
-    ? "border-[#27272A] bg-[#18181B] text-white"
+    ? "border-white/10 bg-[#171717] text-white"
     : "border-zinc-200 bg-white text-zinc-900";
 
   const inputCls = `w-full rounded-xl border px-3.5 py-2 text-xs outline-none transition ${
     isDark
-      ? "border-[#27272A] bg-[#121216] text-white placeholder:text-zinc-500 focus:border-[#0066B2]"
+      ? "border-white/10 bg-[#121212] text-white placeholder:text-zinc-500 focus:border-[#0066B2]"
       : "border-zinc-200 bg-white text-zinc-900 placeholder:text-zinc-400 focus:border-[#0066B2]"
   }`;
 
@@ -132,7 +132,7 @@ export default function AfterSignupTab({
       <div
         className={`rounded-2xl border p-3 sm:p-5 transition-colors duration-200 ${
           isDark
-            ? "border-[#1F1F24] bg-[#0E0E10] text-white"
+            ? "border-white/10 bg-[#121212] text-white"
             : "border-zinc-200/70 bg-[#F9F9FB] text-zinc-900"
         }`}
       >
@@ -144,7 +144,7 @@ export default function AfterSignupTab({
               <div
                 className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border shadow-xs ${
                   isDark
-                    ? "border-[#27272A] bg-[#121216] text-white"
+                    ? "border-white/10 bg-[#121212] text-white"
                     : "border-zinc-200 bg-white text-zinc-700"
                 }`}
               >
@@ -172,7 +172,7 @@ export default function AfterSignupTab({
                   afterSignupOption === "standard"
                     ? "bg-[#0066B2] text-white border border-transparent shadow-md"
                     : isDark
-                    ? "bg-[#121216] border border-[#27272A] text-white hover:border-[#0066B2]"
+                    ? "bg-[#121212] border border-white/10 text-white hover:border-[#0066B2]"
                     : "bg-white border border-zinc-200 text-zinc-900 hover:border-[#0066B2]"
                 }`}
               >
@@ -200,7 +200,7 @@ export default function AfterSignupTab({
                   afterSignupOption === "elsewhere"
                     ? "bg-[#0066B2] text-white border border-transparent shadow-md"
                     : isDark
-                    ? "bg-[#121216] border border-[#27272A] text-white hover:border-[#0066B2]"
+                    ? "bg-[#121212] border border-white/10 text-white hover:border-[#0066B2]"
                     : "bg-white border border-zinc-200 text-zinc-900 hover:border-[#0066B2]"
                 }`}
               >
@@ -228,7 +228,7 @@ export default function AfterSignupTab({
                   afterSignupOption === "custom"
                     ? "bg-[#0066B2] text-white border border-transparent shadow-md"
                     : isDark
-                    ? "bg-[#121216] border border-[#27272A] text-white hover:border-[#0066B2]"
+                    ? "bg-[#121212] border border-white/10 text-white hover:border-[#0066B2]"
                     : "bg-white border border-zinc-200 text-zinc-900 hover:border-[#0066B2]"
                 }`}
               >
@@ -255,7 +255,7 @@ export default function AfterSignupTab({
 
             {/* Dynamic: elsewhere URL */}
             {afterSignupOption === "elsewhere" && (
-              <div className={`pt-3 space-y-1.5 border-t ${isDark ? "border-[#27272A]" : "border-zinc-100"}`}>
+              <div className={`pt-3 space-y-1.5 border-t ${isDark ? "border-white/10" : "border-zinc-100"}`}>
                 <label className={`text-xs font-bold flex items-center gap-1.5 ${isDark ? "text-zinc-200" : "text-zinc-700"}`}>
                   <ExternalLink className="h-3.5 w-3.5 text-[#0066B2]" />
                   <span>Destination URL</span>
@@ -275,7 +275,7 @@ export default function AfterSignupTab({
 
             {/* Dynamic: custom fields */}
             {afterSignupOption === "custom" && (
-              <div className={`pt-3 space-y-3 border-t ${isDark ? "border-[#27272A]" : "border-zinc-100"}`}>
+              <div className={`pt-3 space-y-3 border-t ${isDark ? "border-white/10" : "border-zinc-100"}`}>
                 <div>
                   <label className={labelCls}>Heading</label>
                   <input
@@ -295,7 +295,7 @@ export default function AfterSignupTab({
                     placeholder="Set expectations, introduce an offer, or explain the next step."
                     className={`w-full rounded-xl border p-2.5 text-xs outline-none resize-none transition ${
                       isDark
-                        ? "border-[#27272A] bg-[#121216] text-white placeholder:text-zinc-500 focus:border-[#0066B2]"
+                        ? "border-white/10 bg-[#121212] text-white placeholder:text-zinc-500 focus:border-[#0066B2]"
                         : "border-zinc-200 bg-white text-zinc-900 placeholder:text-zinc-400 focus:border-[#0066B2]"
                     }`}
                   />
@@ -346,7 +346,7 @@ export default function AfterSignupTab({
               <div className="flex items-center gap-3">
                 <div
                   className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${
-                    isDark ? "bg-[#121216] text-zinc-200" : "bg-zinc-100 text-zinc-700"
+                    isDark ? "bg-[#121212] text-zinc-200" : "bg-zinc-100 text-zinc-700"
                   }`}
                 >
                   <FileText className="h-4 w-4" />
@@ -369,7 +369,7 @@ export default function AfterSignupTab({
                 className={`flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-bold transition cursor-pointer shrink-0 border ${
                   quizFunnelEnabled
                     ? "bg-emerald-50 text-emerald-700 border-emerald-300 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-700/60"
-                    : "bg-zinc-100 text-zinc-600 border-zinc-200 dark:bg-[#25252B] dark:text-zinc-300 dark:border-[#27272A]"
+                    : "bg-zinc-100 text-zinc-600 border-zinc-200 dark:bg-white/5 dark:text-zinc-300 dark:border-white/10"
                 }`}
               >
                 <span className={`h-2.5 w-2.5 rounded-full ${quizFunnelEnabled ? "bg-emerald-500" : "bg-zinc-400"}`} />
@@ -379,7 +379,7 @@ export default function AfterSignupTab({
 
             {/* ── Question Builder (only when On) ──────────────────────── */}
             {quizFunnelEnabled && (
-              <div className={`border-t px-4 pb-5 pt-4 space-y-4 ${isDark ? "border-[#27272A]" : "border-zinc-100"}`}>
+              <div className={`border-t px-4 pb-5 pt-4 space-y-4 ${isDark ? "border-white/10" : "border-zinc-100"}`}>
 
                 {quizQuestions.length === 0 && (
                   <p className="text-xs text-zinc-400 text-center py-2">
@@ -391,7 +391,7 @@ export default function AfterSignupTab({
                   <div
                     key={q.id}
                     className={`rounded-xl border p-3 sm:p-4 space-y-3 ${
-                      isDark ? "border-[#27272A] bg-[#121216]" : "border-zinc-200 bg-zinc-50"
+                      isDark ? "border-white/10 bg-[#121212]" : "border-zinc-200 bg-zinc-50"
                     }`}
                   >
                     {/* Question header */}
@@ -407,7 +407,7 @@ export default function AfterSignupTab({
                         placeholder="e.g. What is your biggest challenge right now?"
                         className={`flex-1 rounded-lg border px-3 py-1.5 text-xs outline-none transition ${
                           isDark
-                            ? "border-[#27272A] bg-[#0E0E10] text-white placeholder:text-zinc-600 focus:border-[#0066B2]"
+                            ? "border-white/10 bg-[#121212] text-white placeholder:text-zinc-600 focus:border-[#0066B2]"
                             : "border-zinc-200 bg-white text-zinc-900 placeholder:text-zinc-400 focus:border-[#0066B2]"
                         }`}
                       />
@@ -435,7 +435,7 @@ export default function AfterSignupTab({
                             placeholder={`Option ${String.fromCharCode(65 + oIdx)}`}
                             className={`flex-1 rounded-lg border px-2.5 py-1.5 text-xs outline-none transition ${
                               isDark
-                                ? "border-[#27272A] bg-[#0E0E10] text-white placeholder:text-zinc-600 focus:border-[#0066B2]"
+                                ? "border-white/10 bg-[#121212] text-white placeholder:text-zinc-600 focus:border-[#0066B2]"
                                 : "border-zinc-200 bg-white text-zinc-900 placeholder:text-zinc-400 focus:border-[#0066B2]"
                             }`}
                           />
@@ -446,7 +446,7 @@ export default function AfterSignupTab({
                             placeholder="Route URL (optional)"
                             className={`w-36 rounded-lg border px-2.5 py-1.5 text-xs outline-none transition hidden sm:block ${
                               isDark
-                                ? "border-[#27272A] bg-[#0E0E10] text-white placeholder:text-zinc-600 focus:border-[#0066B2]"
+                                ? "border-white/10 bg-[#121212] text-white placeholder:text-zinc-600 focus:border-[#0066B2]"
                                 : "border-zinc-200 bg-white text-zinc-900 placeholder:text-zinc-400 focus:border-[#0066B2]"
                             }`}
                           />
@@ -485,7 +485,7 @@ export default function AfterSignupTab({
                     onClick={addQuestion}
                     className={`flex w-full items-center justify-center gap-2 rounded-xl border py-2.5 text-xs font-bold transition cursor-pointer ${
                       isDark
-                        ? "border-[#27272A] text-zinc-300 hover:border-[#0066B2] hover:text-white"
+                        ? "border-white/10 text-zinc-300 hover:border-[#0066B2] hover:text-white"
                         : "border-zinc-200 text-zinc-600 hover:border-[#0066B2] hover:text-zinc-900"
                     }`}
                   >

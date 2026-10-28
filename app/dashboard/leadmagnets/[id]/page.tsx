@@ -1566,7 +1566,7 @@ export default function EditLeadMagnetPage() {
 
   return (
     <>
-      <div className="flex flex-col min-h-[calc(100vh-3rem)] bg-gradient-to-b from-[#EFF6FF]/60 via-[#F8FBFF] to-[#F8FBFF] dark:bg-none dark:bg-[#0E0E10] text-zinc-900 dark:text-white transition-colors duration-200">
+      <div className="flex flex-col min-h-[calc(100vh-3rem)] bg-gradient-to-b from-[#EFF6FF]/60 via-[#F8FBFF] to-[#F8FBFF] dark:bg-none dark:bg-[#0a0a0a] text-zinc-900 dark:text-white transition-colors duration-200">
         <div className="flex-1 px-4 py-6 sm:px-6 lg:px-8 w-full max-w-7xl mx-auto">
 
           {/* Page Top Title Header */}
@@ -1574,16 +1574,16 @@ export default function EditLeadMagnetPage() {
             <div>
               <h2 className="flex items-center gap-2 text-xl sm:text-2xl lg:text-3xl font-extrabold text-zinc-900 dark:text-white">
                 {isLockedPdf ? "Edit Locked PDF" : "Edit lead magnet"}
-                <span className="shrink-0 cursor-help inline-flex h-5 w-5 items-center justify-center rounded-full border border-zinc-200 dark:border-[#2e2e38] text-[11px] font-semibold text-zinc-500 dark:text-[#9B9085] hover:bg-zinc-100 dark:hover:bg-[#18181B] leading-none select-none" title={isLockedPdf ? "Edit the PDF, delivery emails, and post-signup flow" : "Edit the page copy, design, emails, and post-signup flow"}>?</span>
+                <span className="shrink-0 cursor-help inline-flex h-5 w-5 items-center justify-center rounded-full border border-zinc-200 dark:border-white/10 text-[11px] font-semibold text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-white/10 leading-none select-none" title={isLockedPdf ? "Edit the PDF, delivery emails, and post-signup flow" : "Edit the page copy, design, emails, and post-signup flow"}>?</span>
               </h2>
             </div>
           </div>
 
           {/* Main Editor Card Frame - Background matches Left Panel in Dark Mode */}
-          <div className={`rounded-2xl border text-zinc-900 dark:text-zinc-100 shadow-2xl overflow-hidden transition-colors duration-200 ${(account?.themeMode || "light") === "dark" ? "border-[#1F1F24] bg-[#18181B]" : "border-zinc-200 bg-white"}`}>
+          <div className={`rounded-2xl border text-zinc-900 dark:text-zinc-100 shadow-2xl overflow-hidden transition-colors duration-200 ${(account?.themeMode || "light") === "dark" ? "border-white/10 bg-[#171717]" : "border-zinc-200 bg-white"}`}>
 
             {/* Inner Header Bar */}
-            <div className={`border-b px-3.5 py-2.5 sm:py-3 sm:px-6 transition-colors duration-200 ${(account?.themeMode || "light") === "dark" ? "border-[#1F1F24] bg-[#18181B] text-white" : "border-zinc-200 bg-zinc-50/80 text-zinc-900"}`}>
+            <div className={`border-b px-3.5 py-2.5 sm:py-3 sm:px-6 transition-colors duration-200 ${(account?.themeMode || "light") === "dark" ? "border-white/10 bg-[#171717] text-white" : "border-zinc-200 bg-zinc-50/80 text-zinc-900"}`}>
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-4">
                 {/* Row 1 (Mobile): Back link & Page Name/Slug + Top-Right Mobile Actions */}
                 <div className="flex items-center justify-between gap-2.5 sm:gap-3 min-w-0 flex-1">
@@ -1592,7 +1592,7 @@ export default function EditLeadMagnetPage() {
                       href={isLockedPdf ? "/dashboard/locked-pdf" : "/dashboard/landing-page"}
                       prefetch={true}
                       className={`shrink-0 flex items-center gap-1.5 rounded-lg border px-2.5 sm:px-3 py-1.5 text-xs font-bold active:scale-95 transition-all shadow-xs cursor-pointer ${(account?.themeMode || "light") === "dark"
-                        ? "border-[#27272A] bg-[#1E1E24] text-zinc-200 hover:bg-[#27272A]"
+                        ? "border-white/10 bg-white/5 text-zinc-200 hover:bg-white/10"
                         : "border-zinc-300 bg-white text-zinc-900 hover:bg-zinc-100"
                         }`}
                     >
@@ -1632,7 +1632,7 @@ export default function EditLeadMagnetPage() {
                       target="_blank"
                       rel="noopener noreferrer"
                       className={`p-1.5 rounded-lg transition cursor-pointer ${(account?.themeMode || "light") === "dark"
-                        ? "text-zinc-400 hover:text-white hover:bg-[#27272A]"
+                        ? "text-zinc-400 hover:text-white hover:bg-white/10"
                         : "text-zinc-700 hover:text-zinc-900 hover:bg-zinc-200/70"
                         }`}
                       title="Open live page in new tab"
@@ -1645,7 +1645,7 @@ export default function EditLeadMagnetPage() {
                         type="button"
                         onClick={() => setShowMenu(!showMenu)}
                         className={`p-1.5 rounded-lg transition cursor-pointer ${(account?.themeMode || "light") === "dark"
-                          ? "text-zinc-400 hover:text-white hover:bg-[#27272A]"
+                          ? "text-zinc-400 hover:text-white hover:bg-white/10"
                           : "text-zinc-700 hover:text-zinc-900 hover:bg-zinc-200/70"
                           }`}
                         title="More actions"
@@ -1654,13 +1654,13 @@ export default function EditLeadMagnetPage() {
                       </button>
 
                       {showMenu && (
-                        <div className="absolute right-0 top-9 w-48 rounded-2xl border p-1.5 shadow-xl z-50 animate-in fade-in slide-in-from-top-2 duration-150 border-zinc-200 bg-white text-zinc-900 dark:border-[#27272A] dark:bg-[#18181C] dark:text-zinc-200">
+                        <div className="absolute right-0 top-9 w-48 rounded-2xl border p-1.5 shadow-xl z-50 animate-in fade-in slide-in-from-top-2 duration-150 border-zinc-200 bg-white text-zinc-900 dark:border-white/10 dark:bg-[#171717] dark:text-zinc-200">
                           <button
                             onClick={() => {
                               setShowMenu(false);
                               handleAnalytics();
                             }}
-                            className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-semibold transition cursor-pointer text-zinc-700 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-300 dark:hover:bg-[#27272A] dark:hover:text-white"
+                            className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-semibold transition cursor-pointer text-zinc-700 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-300 dark:hover:bg-white/10 dark:hover:text-white"
                           >
                             <BarChart2 className="h-4 w-4 text-zinc-400" />
                             <span>Analytics</span>
@@ -1671,13 +1671,13 @@ export default function EditLeadMagnetPage() {
                               setShowMenu(false);
                               handleDownloadQR();
                             }}
-                            className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-semibold transition cursor-pointer text-zinc-700 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-300 dark:hover:bg-[#27272A] dark:hover:text-white"
+                            className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-semibold transition cursor-pointer text-zinc-700 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-300 dark:hover:bg-white/10 dark:hover:text-white"
                           >
                             <QrCode className="h-4 w-4 text-zinc-400" />
                             <span>Download QR code</span>
                           </button>
 
-                          <div className="my-1 h-px bg-zinc-200 dark:bg-[#27272A]" />
+                          <div className="my-1 h-px bg-zinc-200 dark:bg-white/10" />
 
                           <button
                             onClick={() => {
@@ -1730,19 +1730,19 @@ export default function EditLeadMagnetPage() {
                           <span className="sm:hidden">Social</span>
                         </button>
 
-                        <div className="hidden sm:block h-4 w-px bg-zinc-200 dark:bg-[#27272A] mx-0.5" />
+                        <div className="hidden sm:block h-4 w-px bg-zinc-200 dark:bg-white/10 mx-0.5" />
                       </>
                     )}
 
                     {/* Undo / Redo Pod */}
-                    <div className="flex items-center rounded-lg border border-zinc-200/80 dark:border-[#27272A] p-0.5 shrink-0 bg-white/50 dark:bg-[#1E1E24]/50">
+                    <div className="flex items-center rounded-lg border border-zinc-200/80 dark:border-white/10 p-0.5 shrink-0 bg-white/50 dark:bg-white/5">
                       <button
                         type="button"
                         onClick={handleUndo}
                         disabled={!canUndo}
                         className={`p-1 rounded-md transition ${canUndo
                           ? ((account?.themeMode || "light") === "dark"
-                            ? "text-zinc-300 hover:text-white hover:bg-[#27272A] cursor-pointer"
+                            ? "text-zinc-300 hover:text-white hover:bg-white/10 cursor-pointer"
                             : "text-zinc-700 hover:text-zinc-900 hover:bg-zinc-200/70 cursor-pointer")
                           : ((account?.themeMode || "light") === "dark"
                             ? "text-zinc-600 cursor-not-allowed opacity-30"
@@ -1758,7 +1758,7 @@ export default function EditLeadMagnetPage() {
                         disabled={!canRedo}
                         className={`p-1 rounded-md transition ${canRedo
                           ? ((account?.themeMode || "light") === "dark"
-                            ? "text-zinc-300 hover:text-white hover:bg-[#27272A] cursor-pointer"
+                            ? "text-zinc-300 hover:text-white hover:bg-white/10 cursor-pointer"
                             : "text-zinc-700 hover:text-zinc-900 hover:bg-zinc-200/70 cursor-pointer")
                           : ((account?.themeMode || "light") === "dark"
                             ? "text-zinc-600 cursor-not-allowed opacity-30"
@@ -1777,7 +1777,7 @@ export default function EditLeadMagnetPage() {
                         target="_blank"
                         rel="noopener noreferrer"
                         className={`p-1.5 rounded-lg transition cursor-pointer ${(account?.themeMode || "light") === "dark"
-                          ? "text-zinc-400 hover:text-white hover:bg-[#27272A]"
+                          ? "text-zinc-400 hover:text-white hover:bg-white/10"
                           : "text-zinc-700 hover:text-zinc-900 hover:bg-zinc-200/70"
                           }`}
                         title="Open live page in new tab"
@@ -1800,13 +1800,13 @@ export default function EditLeadMagnetPage() {
                         </button>
 
                         {showMenu && (
-                          <div className="absolute right-0 top-9 w-48 rounded-2xl border p-1.5 shadow-xl z-50 animate-in fade-in slide-in-from-top-2 duration-150 border-zinc-200 bg-white text-zinc-900 dark:border-[#27272A] dark:bg-[#18181C] dark:text-zinc-200">
+                          <div className="absolute right-0 top-9 w-48 rounded-2xl border p-1.5 shadow-xl z-50 animate-in fade-in slide-in-from-top-2 duration-150 border-zinc-200 bg-white text-zinc-900 dark:border-white/10 dark:bg-[#171717] dark:text-zinc-200">
                             <button
                               onClick={() => {
                                 setShowMenu(false);
                                 handleAnalytics();
                               }}
-                              className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-semibold transition cursor-pointer text-zinc-700 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-300 dark:hover:bg-[#27272A] dark:hover:text-white"
+                              className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-semibold transition cursor-pointer text-zinc-700 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-300 dark:hover:bg-white/10 dark:hover:text-white"
                             >
                               <BarChart2 className="h-4 w-4 text-zinc-400" />
                               <span>Analytics</span>
@@ -1817,13 +1817,13 @@ export default function EditLeadMagnetPage() {
                                 setShowMenu(false);
                                 handleDownloadQR();
                               }}
-                              className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-semibold transition cursor-pointer text-zinc-700 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-300 dark:hover:bg-[#27272A] dark:hover:text-white"
+                              className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-semibold transition cursor-pointer text-zinc-700 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-300 dark:hover:bg-white/10 dark:hover:text-white"
                             >
                               <QrCode className="h-4 w-4 text-zinc-400" />
                               <span>Download QR code</span>
                             </button>
 
-                            <div className="my-1 h-px bg-zinc-200 dark:bg-[#27272A]" />
+                            <div className="my-1 h-px bg-zinc-200 dark:bg-white/10" />
 
                             <button
                               onClick={() => {
@@ -1847,7 +1847,7 @@ export default function EditLeadMagnetPage() {
                           className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-bold transition cursor-pointer shadow-xs ${
                             live
                               ? "bg-emerald-50 text-emerald-700 border border-emerald-300 hover:bg-emerald-100 dark:bg-emerald-950/80 dark:text-emerald-300 dark:border-emerald-700/60"
-                              : "bg-zinc-100 text-zinc-700 border border-zinc-300 hover:bg-zinc-200 dark:bg-[#1E1E24] dark:text-zinc-300 dark:border-[#27272A] dark:hover:bg-[#27272A]"
+                              : "bg-zinc-100 text-zinc-700 border border-zinc-300 hover:bg-zinc-200 dark:bg-white/5 dark:text-zinc-300 dark:border-white/10 dark:hover:bg-white/10"
                           }`}
                         >
                           <span className={`h-2 w-2 rounded-full ${live ? "bg-emerald-500" : "bg-zinc-400"}`} />
@@ -1862,7 +1862,7 @@ export default function EditLeadMagnetPage() {
 
             {/* 4 Tabs Bar - Adapts dynamically to Light & Dark Mode */}
             <div
-              className="grid grid-cols-2 lg:grid-cols-4 rounded-2xl border border-zinc-200/80 bg-zinc-100/80 dark:border-[#1F1F24] dark:bg-[#0E0E11] p-2.5 sm:p-3 gap-2.5 sm:gap-4 w-full transition-colors duration-200"
+              className="grid grid-cols-2 lg:grid-cols-4 rounded-2xl border border-zinc-200/80 bg-zinc-100/80 dark:border-white/[0.08] dark:bg-[#121212] p-2.5 sm:p-3 gap-2.5 sm:gap-4 w-full transition-colors duration-200"
               onMouseLeave={() => setHoveredTab(null)}
             >
               {[
@@ -1890,7 +1890,7 @@ export default function EditLeadMagnetPage() {
                     onClick={() => setActiveTab(tab.id as any)}
                     className={`relative flex items-center justify-center gap-3 px-4 py-2 sm:py-2.5 rounded-xl text-xs font-bold transition-colors w-full cursor-pointer border ${
                       isActive
-                        ? "border-zinc-200/80 dark:border-[#27272A] text-zinc-900 dark:text-white shadow-sm"
+                        ? "border-zinc-200/80 dark:border-white/10 text-zinc-900 dark:text-white shadow-sm"
                         : "border-transparent text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white"
                     }`}
                   >
@@ -1899,7 +1899,7 @@ export default function EditLeadMagnetPage() {
                       <motion.div
                         layoutId="activeEditTabPill"
                         transition={{ type: "spring", stiffness: 500, damping: 32 }}
-                        className="absolute inset-0 rounded-xl bg-white dark:bg-[#1E1E24] shadow-sm border border-zinc-200/60 dark:border-[#27272A]"
+                        className="absolute inset-0 rounded-xl bg-white dark:bg-white/10 shadow-sm border border-zinc-200/60 dark:border-white/10"
                       />
                     )}
                     {/* Hover Morphing Pill */}
@@ -1907,13 +1907,13 @@ export default function EditLeadMagnetPage() {
                       <motion.div
                         layoutId="hoverEditTabPill"
                         transition={{ type: "spring", stiffness: 500, damping: 32 }}
-                        className="absolute inset-0 rounded-xl bg-zinc-200/70 dark:bg-[#18181C]"
+                        className="absolute inset-0 rounded-xl bg-zinc-200/70 dark:bg-white/5"
                       />
                     )}
                     <div className={`relative z-10 flex h-7 w-7 items-center justify-center rounded-lg transition-colors ${
                       isActive
                         ? "bg-[#0066B2]/10 text-[#0066B2] dark:bg-[#0066B2]/20 dark:text-[#38BDF8]"
-                        : "bg-zinc-200/60 text-zinc-600 dark:bg-[#27272A] dark:text-zinc-400"
+                        : "bg-zinc-200/60 text-zinc-600 dark:bg-white/10 dark:text-zinc-400"
                     }`}>
                       <Icon className="h-4 w-4" />
                     </div>
@@ -1927,7 +1927,7 @@ export default function EditLeadMagnetPage() {
             </div>
 
             {/* Editor Body Tab Content */}
-            <div className={`p-4 sm:p-6 text-zinc-900 dark:text-zinc-100 transition-colors duration-200 ${(account?.themeMode || "light") === "dark" ? "bg-[#18181B]" : "bg-[#F8FBFF]"}`}>
+            <div className={`p-4 sm:p-6 text-zinc-900 dark:text-zinc-100 transition-colors duration-200 ${(account?.themeMode || "light") === "dark" ? "bg-[#121212]" : "bg-[#F8FBFF]"}`}>
 
               {/* TAB 1: LANDING PAGE EDITOR */}
               {activeTab === "landing" && (

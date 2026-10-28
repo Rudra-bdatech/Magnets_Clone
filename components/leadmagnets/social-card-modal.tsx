@@ -522,15 +522,15 @@ export default function SocialCardModal({
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: 120 }}
         transition={{ type: "spring", damping: 30, stiffness: 360, mass: 0.8 }}
-        className="relative w-full max-w-4xl h-[96vh] sm:h-[88vh] max-h-[96vh] flex flex-col overflow-hidden rounded-t-3xl sm:rounded-2xl border-t sm:border border-zinc-200 bg-white shadow-2xl dark:border-[#27272A] dark:bg-[#121215] overscroll-contain mt-auto sm:mt-0"
+        className="relative w-full max-w-4xl h-[96vh] sm:h-[88vh] max-h-[96vh] flex flex-col overflow-hidden rounded-t-3xl sm:rounded-2xl border-t sm:border border-zinc-200 bg-white shadow-2xl dark:border-white/10 dark:bg-[#171717] overscroll-contain mt-auto sm:mt-0"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Mobile Bottom Sheet Grab Handle */}
-        <div className="sm:hidden flex justify-center pb-0.5 pt-1.5 shrink-0 bg-white dark:bg-[#121215]">
+        <div className="sm:hidden flex justify-center pb-0.5 pt-1.5 shrink-0 bg-white dark:bg-[#171717]">
           <div className="h-1 w-10 rounded-full bg-zinc-300 dark:bg-zinc-700/80" />
         </div>
         {/* Header Bar */}
-        <div className="flex items-center justify-between border-b border-zinc-200 dark:border-[#27272A] px-3.5 py-2 sm:px-5 sm:py-3.5 bg-white dark:bg-[#121215] shrink-0">
+        <div className="flex items-center justify-between border-b border-zinc-200 dark:border-white/10 px-3.5 py-2 sm:px-5 sm:py-3.5 bg-white dark:bg-[#171717] shrink-0">
           <div className="flex items-center gap-2 sm:gap-3 min-w-0">
             <span className="flex h-7 w-7 sm:h-9 sm:w-9 items-center justify-center rounded-xl bg-indigo-500/10 text-indigo-500 border border-indigo-500/20 dark:bg-indigo-950/50 shrink-0">
               <ImageIcon className="h-3.5 w-3.5 sm:h-5 sm:w-5" />
@@ -557,7 +557,7 @@ export default function SocialCardModal({
         </div>
 
         {/* Studio Sub-Navigation Tabs & Format Selector */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 sm:gap-2 border-b border-zinc-200 dark:border-[#27272A] bg-zinc-50/80 dark:bg-[#18181C] px-3 sm:px-5 py-1.5 sm:py-2 shrink-0">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 sm:gap-2 border-b border-zinc-200 dark:border-white/10 bg-zinc-50/80 dark:bg-[#121212] px-3 sm:px-5 py-1.5 sm:py-2 shrink-0">
           {/* Category Tabs */}
           <div className="flex items-center gap-1 overflow-x-auto scrollbar-none">
             {[
@@ -571,7 +571,7 @@ export default function SocialCardModal({
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id as any)}
                   className={`flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-semibold whitespace-nowrap transition cursor-pointer ${activeTab === tab.id
-                    ? "bg-white text-zinc-900 shadow-xs dark:bg-[#27272A] dark:text-white font-bold"
+                    ? "bg-white text-zinc-900 shadow-xs dark:bg-white/10 dark:text-white font-bold"
                     : "text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-200"
                     }`}
                 >
@@ -606,7 +606,7 @@ export default function SocialCardModal({
         </div>
 
         {/* Tab Controls Bar */}
-        <div className="border-b border-zinc-200 dark:border-[#27272A] bg-white px-3 sm:px-5 py-2 sm:py-2.5 dark:bg-[#121215] overflow-x-auto shrink-0">
+        <div className="border-b border-zinc-200 dark:border-white/10 bg-white px-3 sm:px-5 py-2 sm:py-2.5 dark:bg-[#171717] overflow-x-auto shrink-0">
           {activeTab === "styles" && (
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 text-xs">
               {/* Mobile: Clean Side-by-Side Dropdowns for Theme & Font (sm:hidden) */}
@@ -908,7 +908,7 @@ export default function SocialCardModal({
         </div>
 
         {/* Footer Action & Distribution Bar */}
-        <div className="border-t border-zinc-200 dark:border-[#27272A] bg-zinc-50/90 dark:bg-[#18181C] p-3 sm:p-4 flex flex-col gap-2.5 shrink-0">
+        <div className="border-t border-zinc-200 dark:border-white/10 bg-zinc-50/90 dark:bg-[#121212] p-3 sm:p-4 flex flex-col gap-2.5 shrink-0">
           {/* Top Actions: Export Buttons & Resolution */}
           <div className="flex items-center justify-between gap-2 flex-wrap sm:flex-nowrap">
             <div className="flex items-center gap-1.5 flex-1 sm:flex-initial">

@@ -156,13 +156,13 @@ export default function DeliveryEmailTab({
   return (
     <div className="space-y-6">
       {/* Canvas Outer Wrapper - Adapts dynamically to Brand Theme Mode */}
-      <div className={`rounded-2xl border p-4 sm:p-8 transition-colors duration-200 ${(account?.themeMode || "light") === "dark" ? "border-[#1F1F24] bg-[#0E0E10] text-white" : "border-zinc-200/70 bg-[#F9F9FB] text-zinc-900"}`}>
+      <div className={`rounded-2xl border p-4 sm:p-8 transition-colors duration-200 ${(account?.themeMode || "light") === "dark" ? "border-white/10 bg-[#121212] text-white" : "border-zinc-200/70 bg-[#F9F9FB] text-zinc-900"}`}>
 
         {/* Inner Card Container */}
-        <div className={`mx-auto max-w-4xl rounded-2xl border p-6 sm:p-8 shadow-xs space-y-6 transition-colors duration-200 ${(account?.themeMode || "light") === "dark" ? "border-[#27272A] bg-[#18181B] text-white" : "border-zinc-200 bg-white text-zinc-900"}`}>
+        <div className={`mx-auto max-w-4xl rounded-2xl border p-6 sm:p-8 shadow-xs space-y-6 transition-colors duration-200 ${(account?.themeMode || "light") === "dark" ? "border-white/10 bg-[#171717] text-white" : "border-zinc-200 bg-white text-zinc-900"}`}>
 
           {/* Top Header Bar inside Card */}
-          <div className={`flex flex-wrap items-center justify-between gap-3 border-b pb-4 ${(account?.themeMode || "light") === "dark" ? "border-[#27272A]" : "border-zinc-200"}`}>
+          <div className={`flex flex-wrap items-center justify-between gap-3 border-b pb-4 ${(account?.themeMode || "light") === "dark" ? "border-white/10" : "border-zinc-200"}`}>
             <div className={`flex items-center gap-2 text-sm font-bold ${(account?.themeMode || "light") === "dark" ? "text-white" : "text-zinc-800"}`}>
               <Mail className="h-4 w-4 text-zinc-400" />
               <span>Delivery email</span>
@@ -175,7 +175,7 @@ export default function DeliveryEmailTab({
               <button
                 type="button"
                 onClick={() => setShowEmailPreviewModal(true)}
-                className={`flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-bold transition shadow-xs cursor-pointer ${(account?.themeMode || "light") === "dark" ? "border-[#27272A] bg-[#1E1E24] text-white hover:bg-[#27272A]" : "border-zinc-200 bg-white text-zinc-800 hover:bg-zinc-50"}`}
+                className={`flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-bold transition shadow-xs cursor-pointer ${(account?.themeMode || "light") === "dark" ? "border-white/10 bg-white/5 text-white hover:bg-white/10" : "border-zinc-200 bg-white text-zinc-800 hover:bg-zinc-50"}`}
               >
                 <Eye className="h-3.5 w-3.5" />
                 <span>Preview</span>
@@ -208,7 +208,7 @@ export default function DeliveryEmailTab({
           </div>
 
           {/* Divider */}
-          <div className={`h-px w-full my-4 ${(account?.themeMode || "light") === "dark" ? "bg-[#27272A]" : "bg-zinc-200/80"}`} />
+          <div className={`h-px w-full my-4 ${(account?.themeMode || "light") === "dark" ? "bg-white/10" : "bg-zinc-200/80"}`} />
 
           {/* Body Section */}
           <div className="space-y-2">
@@ -217,7 +217,7 @@ export default function DeliveryEmailTab({
             {/* Rich Text Editor Container */}
             <div className={`rounded-2xl border shadow-xs ${(account?.themeMode || "light") === "dark" ? "border-[#27272A] bg-[#18181B]" : "border-zinc-200/90 bg-white"}`}>
               {/* Toolbar matching exact screenshot design */}
-              <div ref={toolbarRef} className={`flex flex-wrap items-center gap-1.5 border-b px-3 py-2 text-xs font-semibold ${(account?.themeMode || "light") === "dark" ? "border-[#27272A] bg-[#18181B] text-zinc-300" : "border-zinc-200 bg-[#F9F9FB] text-zinc-600"}`}>
+              <div ref={toolbarRef} className={`flex flex-wrap items-center gap-1.5 border-b px-3 py-2 text-xs font-semibold ${(account?.themeMode || "light") === "dark" ? "border-white/10 bg-[#151515] text-zinc-300" : "border-zinc-200 bg-[#F9F9FB] text-zinc-600"}`}>
                 {/* Headings Dropdown: T ⌄ */}
                 <div className="relative">
                   <button
@@ -231,7 +231,7 @@ export default function DeliveryEmailTab({
                   </button>
                   {activeMenu === "headings" && (
                     <div className="absolute left-0 top-full pt-1 z-50">
-                      <div className={`w-32 rounded-lg border shadow-lg p-1 flex flex-col ${(account?.themeMode || "light") === "dark" ? "border-[#27272A] bg-[#1E1E24] text-white" : "border-zinc-200 bg-white text-zinc-800"}`}>
+                      <div className={`w-32 rounded-lg border shadow-lg p-1 flex flex-col ${(account?.themeMode || "light") === "dark" ? "border-white/10 dark:bg-[#171717] text-white" : "border-zinc-200 bg-white text-zinc-800"}`}>
                         <button type="button" onClick={() => { editor?.chain().focus().setParagraph().run(); setActiveMenu(null); }} className="text-left px-2.5 py-1.5 text-xs rounded hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer">Paragraph</button>
                         <button type="button" onClick={() => { editor?.chain().focus().toggleHeading({ level: 1 }).run(); setActiveMenu(null); }} className="text-left px-2.5 py-1.5 text-xs font-bold rounded hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer">Heading 1</button>
                         <button type="button" onClick={() => { editor?.chain().focus().toggleHeading({ level: 2 }).run(); setActiveMenu(null); }} className="text-left px-2.5 py-1.5 text-xs font-semibold rounded hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer">Heading 2</button>
@@ -241,7 +241,7 @@ export default function DeliveryEmailTab({
                   )}
                 </div>
 
-                <div className={`h-4 w-px mx-0.5 ${(account?.themeMode || "light") === "dark" ? "bg-[#27272A]" : "bg-zinc-300"}`} />
+                <div className={`h-4 w-px mx-0.5 ${(account?.themeMode || "light") === "dark" ? "bg-white/10" : "bg-zinc-300"}`} />
 
                 {/* Bold: B */}
                 <button
@@ -285,7 +285,7 @@ export default function DeliveryEmailTab({
                   </button>
                   {activeMenu === "color" && (
                     <div className="absolute left-0 top-full pt-1 z-50">
-                      <div className={`flex gap-1.5 p-2 rounded-lg border shadow-lg ${(account?.themeMode || "light") === "dark" ? "border-[#27272A] bg-[#1E1E24]" : "border-zinc-200 bg-white"}`}>
+                      <div className={`flex gap-1.5 p-2 rounded-lg border shadow-lg ${(account?.themeMode || "light") === "dark" ? "border-white/10 bg-[#171717]" : "border-zinc-200 bg-white"}`}>
                         {["#18181b", "#0066B2", "#2563eb", "#059669", "#dc2626", "#d97706", "#7c3aed"].map((color) => (
                           <button
                             key={color}
@@ -313,7 +313,7 @@ export default function DeliveryEmailTab({
                   <Eraser className="h-3.5 w-3.5" />
                 </button>
 
-                <div className={`h-4 w-px mx-0.5 ${(account?.themeMode || "light") === "dark" ? "bg-[#27272A]" : "bg-zinc-300"}`} />
+                <div className={`h-4 w-px mx-0.5 ${(account?.themeMode || "light") === "dark" ? "bg-white/10" : "bg-zinc-300"}`} />
 
                 {/* Lists: ⋮= ⌄ */}
                 <div className="relative">
@@ -328,7 +328,7 @@ export default function DeliveryEmailTab({
                   </button>
                   {activeMenu === "lists" && (
                     <div className="absolute left-0 top-full pt-1 z-50">
-                      <div className={`w-36 rounded-lg border shadow-lg p-1 flex flex-col ${(account?.themeMode || "light") === "dark" ? "border-[#27272A] bg-[#1E1E24] text-white" : "border-zinc-200 bg-white text-zinc-800"}`}>
+                      <div className={`w-36 rounded-lg border shadow-lg p-1 flex flex-col ${(account?.themeMode || "light") === "dark" ? "border-white/10 dark:bg-[#171717] text-white" : "border-zinc-200 bg-white text-zinc-800"}`}>
                         <button
                           type="button"
                           onClick={() => { editor?.chain().focus().toggleBulletList().run(); setActiveMenu(null); }}
@@ -615,8 +615,8 @@ export default function DeliveryEmailTab({
         </div>
 
         {/* Bottom Banner Card */}
-        <div className={`mt-6 mx-auto max-w-4xl rounded-2xl p-6 flex items-center justify-center shadow-lg transition-colors duration-200 ${(account?.themeMode || "light") === "dark" ? "bg-[#080B12]" : "bg-zinc-100/90 border border-zinc-200"}`}>
-          <button className={`flex items-center gap-2.5 rounded-xl px-4 py-2.5 text-xs font-bold shadow-md transition cursor-pointer ${(account?.themeMode || "light") === "dark" ? "bg-[#181C26] text-white border border-[#272D3C] hover:bg-[#202534]" : "bg-white text-zinc-900 border border-zinc-200 hover:bg-zinc-50"}`}>
+        <div className={`mt-6 mx-auto max-w-4xl rounded-2xl p-6 flex items-center justify-center shadow-lg transition-colors duration-200 ${(account?.themeMode || "light") === "dark" ? "bg-[#121212]" : "bg-zinc-100/90 border border-zinc-200"}`}>
+          <button className={`flex items-center gap-2.5 rounded-xl px-4 py-2.5 text-xs font-bold shadow-md transition cursor-pointer ${(account?.themeMode || "light") === "dark" ? "bg-white/5 text-white border border-white/10 hover:bg-white/10" : "bg-white text-zinc-900 border border-zinc-200 hover:bg-zinc-50"}`}>
             <img
               key={(account?.themeMode || "light")}
               src={(account?.themeMode || "light") === "dark" ? "/brand/gemini-logo-dark.png" : "/brand/gemini-logo.png"}

@@ -80,10 +80,10 @@ const MagnetCard = React.memo(
         whileTap={{ scale: 0.985 }}
         onClick={() => onSelect(page.id)}
         className={`group relative rounded-2xl border cursor-pointer overflow-hidden flex flex-col will-change-transform transition-all duration-200 ${isChecked
-          ? "border-[#0066B2] dark:border-blue-500 bg-white dark:bg-[#141417] ring-2 ring-[#0066B2]/40 dark:ring-blue-500/40 shadow-[0_8px_30px_rgba(0,102,178,0.12)]"
+          ? "border-[#0066B2] dark:border-blue-500 bg-white dark:bg-[#171717] ring-2 ring-[#0066B2]/40 dark:ring-blue-500/40 shadow-[0_8px_30px_rgba(0,102,178,0.12)]"
           : isSelected
-            ? "border-[#0066B2] dark:border-white/20 bg-white dark:bg-[#141417] shadow-[0_8px_30px_rgba(0,102,178,0.15)] ring-1 ring-[#0066B2]/30"
-            : "border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#141417] shadow-md dark:shadow-none backdrop-blur-sm hover:border-[#0066B2]/30 dark:hover:border-white/20 hover:shadow-lg"
+            ? "border-[#0066B2] dark:border-white/20 bg-white dark:bg-[#171717] shadow-[0_8px_30px_rgba(0,102,178,0.15)] ring-1 ring-[#0066B2]/30"
+            : "border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#171717] shadow-md dark:shadow-none backdrop-blur-sm hover:border-[#0066B2]/30 dark:hover:border-white/20 hover:shadow-lg"
           }`}
       >
         <div className="relative h-[124px] sm:h-[134px] w-full bg-zinc-100 dark:bg-[#111114] rounded-b-2xl border-b border-zinc-200/80 dark:border-white/[0.06] overflow-hidden">
@@ -103,7 +103,7 @@ const MagnetCard = React.memo(
               <div className="absolute inset-0 bg-[radial-gradient(#0066B2_1px,transparent_1px)] [background-size:16px_16px] opacity-[0.06] dark:opacity-[0.12]" />
 
               {/* Mini Sleek Landing Page Mockup Skeleton */}
-              <div className="relative z-0 w-36 rounded-lg border border-zinc-200/80 dark:border-white/10 bg-white/95 dark:bg-[#1C1C22]/95 p-3 shadow-2xs backdrop-blur-xs flex flex-col gap-2 pointer-events-none">
+              <div className="relative z-0 w-36 rounded-lg border border-zinc-200/80 dark:border-white/10 bg-white/95 dark:bg-[#171717]/95 p-3 shadow-2xs backdrop-blur-xs flex flex-col gap-2 pointer-events-none">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-1.5">
                     <div className="h-2 w-2 rounded-full bg-[#0066B2]/60 dark:bg-[#38BDF8]/60" />
@@ -126,7 +126,7 @@ const MagnetCard = React.memo(
             <span
               className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider border backdrop-blur-xs ${page.status === "live"
                 ? "bg-emerald-500 text-white border-emerald-400/30 shadow-xs"
-                : "bg-white/95 text-zinc-600 border-zinc-200/90 dark:bg-zinc-900/80 dark:text-zinc-300 dark:border-zinc-700/50 shadow-2xs"
+                : "bg-white/95 text-zinc-600 border-zinc-200/90 dark:bg-zinc-900/80 dark:text-zinc-300 dark:border-white/10 shadow-2xs"
                 }`}
             >
               <span className={`h-1.5 w-1.5 rounded-full ${page.status === "live" ? "bg-white animate-pulse" : "bg-zinc-400"}`} />
@@ -140,8 +140,8 @@ const MagnetCard = React.memo(
             className={`absolute top-3 right-3 flex h-6 w-6 items-center justify-center rounded-lg border transition-all z-10 cursor-pointer ${isChecked
               ? "bg-[#0066B2] border-[#0066B2] text-white shadow-md scale-105 opacity-100"
               : showCheckbox
-                ? "bg-white/90 dark:bg-black/70 border-zinc-300 dark:border-zinc-700 text-transparent hover:border-[#0066B2] dark:hover:border-[#38BDF8] opacity-100 shadow-xs active:scale-95"
-                : "bg-white/90 dark:bg-black/70 border-zinc-300 dark:border-zinc-700 text-transparent hover:border-[#0066B2] dark:hover:border-[#38BDF8] opacity-0 md:group-hover:opacity-100 shadow-xs"
+                ? "bg-white/90 dark:bg-black/70 border-zinc-300 dark:border-white/10 text-transparent hover:border-[#0066B2] dark:hover:border-[#38BDF8] opacity-100 shadow-xs active:scale-95"
+                : "bg-white/90 dark:bg-black/70 border-zinc-300 dark:border-white/10 text-transparent hover:border-[#0066B2] dark:hover:border-[#38BDF8] opacity-0 md:group-hover:opacity-100 shadow-xs"
               }`}
             title={isChecked ? "Deselect magnet" : "Select magnet"}
           >
@@ -172,7 +172,7 @@ const MagnetCard = React.memo(
               <button
                 type="button"
                 onClick={(e) => onOpenMobileDetails(page.id, e)}
-                className="lg:hidden inline-flex items-center gap-1 rounded-lg border border-zinc-200 dark:border-zinc-700/80 bg-zinc-50 hover:bg-zinc-100 dark:bg-zinc-800/80 dark:hover:bg-zinc-700 px-2 sm:px-2.5 py-1 text-[10.5px] sm:text-[11px] font-semibold text-zinc-700 dark:text-zinc-200 transition cursor-pointer active:scale-95"
+                className="lg:hidden inline-flex items-center gap-1 rounded-lg border border-zinc-200 bg-zinc-50 hover:bg-zinc-100 dark:border-white/10 dark:bg-white/5 dark:hover:bg-white/10 px-2 sm:px-2.5 py-1 text-[10.5px] sm:text-[11px] font-semibold text-zinc-700 dark:text-zinc-200 transition cursor-pointer active:scale-95"
                 title="Open Details Sheet"
               >
                 <Eye className="h-3 w-3 text-[#0066B2] dark:text-[#38BDF8]" />
@@ -451,7 +451,7 @@ export default function PagesPage() {
 
   return (
     <>
-      <div className="flex flex-col min-h-[calc(100vh-3.5rem)] bg-gradient-to-b from-[#EFF6FF]/40 via-[#F8FBFF] to-[#F8FBFF] dark:bg-none dark:bg-[#09090B] w-full">
+      <div className="flex flex-col min-h-[calc(100vh-3.5rem)] bg-gradient-to-b from-[#EFF6FF]/40 via-[#F8FBFF] to-[#F8FBFF] dark:bg-none dark:bg-[#0a0a0a] w-full">
         {/* Top Executive Header & Stat Cards */}
         <div className={`mx-auto w-full px-3.5 sm:px-6 pt-4 sm:pt-6 lg:px-8 space-y-4 transition-[max-width] duration-[220ms] ease-[cubic-bezier(0.16,1,0.3,1)] will-change-[max-width] ${isCollapsed ? "max-w-[1440px]" : "max-w-7xl"}`}>
           <div className="flex items-center justify-between gap-3">
@@ -478,7 +478,7 @@ export default function PagesPage() {
           {/* Quick Metrics 4 Stat Cards */}
           <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
             {/* Active Pages */}
-            <div className="relative h-full rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#141417] dark:shadow-none p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
+            <div className="relative h-full rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#171717] dark:shadow-none p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
               <div className="flex items-center justify-between sm:justify-start w-full sm:w-auto">
                 <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl border border-[#0066B2]/30 bg-[#EFF6FF] text-[#0066B2] dark:border-white/10 dark:bg-white/5 dark:text-zinc-200">
                   <Globe className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
@@ -496,7 +496,7 @@ export default function PagesPage() {
             </div>
 
             {/* Total Traffic */}
-            <div className="relative h-full rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#141417] dark:shadow-none p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
+            <div className="relative h-full rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#171717] dark:shadow-none p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
               <div className="flex items-center justify-between sm:justify-start w-full sm:w-auto">
                 <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl border border-emerald-500/30 bg-emerald-50 text-emerald-600 dark:border-white/10 dark:bg-white/5 dark:text-zinc-200">
                   <Eye className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
@@ -514,7 +514,7 @@ export default function PagesPage() {
             </div>
 
             {/* Leads Collected */}
-            <div className="relative h-full rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#141417] dark:shadow-none p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
+            <div className="relative h-full rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#171717] dark:shadow-none p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
               <div className="flex items-center justify-between sm:justify-start w-full sm:w-auto">
                 <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl border border-purple-500/30 bg-purple-50 text-purple-600 dark:border-white/10 dark:bg-white/5 dark:text-zinc-200">
                   <MousePointerClick className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
@@ -532,7 +532,7 @@ export default function PagesPage() {
             </div>
 
             {/* Avg Conv. Rate */}
-            <div className="relative h-full rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#141417] dark:shadow-none p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
+            <div className="relative h-full rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#171717] dark:shadow-none p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
               <div className="flex items-center justify-between sm:justify-start w-full sm:w-auto">
                 <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl border border-amber-500/30 bg-amber-50 text-amber-600 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-400">
                   <TrendingUp className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
@@ -561,7 +561,7 @@ export default function PagesPage() {
                 }`}
             >
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3 w-full max-w-full min-w-0">
-                <div className="flex items-center gap-2 flex-1 rounded-xl bg-zinc-50 dark:bg-[#16161a] px-3.5 py-2 border border-zinc-200/60 dark:border-white/[0.08] focus-within:border-[#0066B2] dark:focus-within:border-[#0066B2] min-w-0">
+                <div className="flex items-center gap-2 flex-1 rounded-xl bg-zinc-50 dark:bg-[#1a1a1a] px-3.5 py-2 border border-zinc-200/60 dark:border-white/[0.08] focus-within:border-[#0066B2] dark:focus-within:border-[#0066B2] min-w-0">
                   <Search className="h-4 w-4 text-zinc-400 shrink-0" />
                   <input
                     type="text"
@@ -579,7 +579,7 @@ export default function PagesPage() {
 
                 <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 justify-between sm:justify-end w-full sm:w-auto min-w-0">
                   {/* Desktop Status Tabs Pod (Preserved untouched) */}
-                  <div className="hidden sm:flex items-center p-1 bg-zinc-100 dark:bg-[#16161a] dark:border dark:border-white/[0.06] rounded-xl text-xs font-semibold min-w-0">
+                  <div className="hidden sm:flex items-center p-1 bg-zinc-100 dark:bg-[#1a1a1a] dark:border dark:border-white/[0.06] rounded-xl text-xs font-semibold min-w-0">
                     {[
                       { id: "all", label: `All (${total})` },
                       { id: "live", label: `Live (${liveCount})` },
@@ -598,7 +598,7 @@ export default function PagesPage() {
                         {statusFilter === tab.id && (
                           <motion.div
                             layoutId="activeStatusFilterTab"
-                            className="absolute inset-0 bg-white dark:bg-[#222226] rounded-lg shadow-xs"
+                            className="absolute inset-0 bg-white dark:bg-white/10 rounded-lg shadow-xs"
                             transition={{ type: "spring", stiffness: 500, damping: 32 }}
                           />
                         )}
@@ -616,7 +616,7 @@ export default function PagesPage() {
                         setIsSortOpen(false);
                         setIsStatusFilterOpen((v) => !v);
                       }}
-                      className="flex h-8 items-center gap-1.5 rounded-xl border border-zinc-200 dark:border-white/[0.08] bg-white dark:bg-[#16161a] px-2.5 text-[11px] font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-[#222226] transition shadow-2xs cursor-pointer select-none"
+                      className="flex h-8 items-center gap-1.5 rounded-xl border border-zinc-200 dark:border-white/[0.08] bg-white dark:bg-[#1a1a1a] px-2.5 text-[11px] font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-white/10 transition shadow-2xs cursor-pointer select-none"
                     >
                       <Filter className="h-3 w-3 text-zinc-400 shrink-0" />
                       <span className="truncate">
@@ -640,7 +640,7 @@ export default function PagesPage() {
                           exit={{ opacity: 0, scale: 0.96, y: -4 }}
                           transition={{ type: "spring", damping: 28, stiffness: 400 }}
                           onClick={(e) => e.stopPropagation()}
-                          className="absolute left-0 top-full z-40 mt-1.5 w-48 rounded-xl border border-zinc-200/90 dark:border-white/[0.08] bg-white/95 dark:bg-[#16161a]/95 p-1.5 shadow-xl backdrop-blur-xl dark:text-white"
+                          className="absolute left-0 top-full z-40 mt-1.5 w-48 rounded-xl border border-zinc-200/90 dark:border-white/[0.08] bg-white/95 dark:bg-[#1a1a1a]/95 p-1.5 shadow-xl backdrop-blur-xl dark:text-white"
                         >
                           <div className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
                             Filter Status
@@ -685,7 +685,7 @@ export default function PagesPage() {
                         e.stopPropagation();
                         setIsSortOpen((v) => !v);
                       }}
-                      className="flex h-8 items-center gap-1 sm:gap-2 rounded-xl border border-zinc-200 dark:border-white/[0.08] bg-white dark:bg-[#16161a] px-2 sm:px-3 text-[11px] sm:text-xs font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-[#222226] transition shadow-2xs cursor-pointer select-none"
+                      className="flex h-8 items-center gap-1 sm:gap-2 rounded-xl border border-zinc-200 dark:border-white/[0.08] bg-white dark:bg-[#1a1a1a] px-2 sm:px-3 text-[11px] sm:text-xs font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-white/10 transition shadow-2xs cursor-pointer select-none"
                     >
                       <SlidersHorizontal className="h-3 w-3 text-zinc-400 shrink-0" />
                       <span className="truncate max-w-[76px] sm:max-w-none">{sortOptions.find((o) => o.id === sortBy)?.label || "Sort"}</span>
@@ -703,7 +703,7 @@ export default function PagesPage() {
                           exit={{ opacity: 0, scale: 0.96, y: -4 }}
                           transition={{ type: "spring", damping: 28, stiffness: 400 }}
                           onClick={(e) => e.stopPropagation()}
-                          className="absolute right-0 top-full z-40 mt-1.5 w-48 rounded-xl border border-zinc-200/90 dark:border-white/10 bg-white/95 dark:bg-[#1C1C20]/95 p-1.5 shadow-xl backdrop-blur-xl dark:text-white"
+                          className="absolute right-0 top-full z-40 mt-1.5 w-48 rounded-xl border border-zinc-200/90 dark:border-white/10 bg-white/95 dark:bg-[#171717]/95 p-1.5 shadow-xl backdrop-blur-xl dark:text-white"
                         >
                           <div className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
                             Sort by
@@ -733,7 +733,7 @@ export default function PagesPage() {
                     </AnimatePresence>
                   </div>
 
-                  <div className="flex items-center p-1 bg-zinc-100 dark:bg-[#16161a] dark:border dark:border-white/[0.06] rounded-xl">
+                  <div className="flex items-center p-1 bg-zinc-100 dark:bg-[#1a1a1a] dark:border dark:border-white/[0.06] rounded-xl">
                     <button
                       onClick={() => setViewMode("grid")}
                       className={`relative p-1.5 rounded-lg transition-colors duration-150 cursor-pointer ${viewMode === "grid" ? "text-[#0066B2] dark:text-[#38BDF8]" : "text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200"
@@ -743,7 +743,7 @@ export default function PagesPage() {
                       {viewMode === "grid" && (
                         <motion.div
                           layoutId="activeViewModeTab"
-                          className="absolute inset-0 bg-white dark:bg-[#222226] rounded-lg shadow-xs"
+                          className="absolute inset-0 bg-white dark:bg-white/10 rounded-lg shadow-xs"
                           transition={{ type: "spring", stiffness: 500, damping: 32 }}
                         />
                       )}
@@ -759,7 +759,7 @@ export default function PagesPage() {
                       {viewMode === "table" && (
                         <motion.div
                           layoutId="activeViewModeTab"
-                          className="absolute inset-0 bg-white dark:bg-[#222226] rounded-lg shadow-xs"
+                          className="absolute inset-0 bg-white dark:bg-white/10 rounded-lg shadow-xs"
                           transition={{ type: "spring", stiffness: 500, damping: 32 }}
                         />
                       )}
@@ -778,7 +778,7 @@ export default function PagesPage() {
                         });
                       }}
                       className={`relative p-1.5 rounded-lg transition-colors duration-150 cursor-pointer ${isSelectMode || checkedIds.length > 0
-                        ? "bg-white dark:bg-[#222226] text-[#0066B2] dark:text-[#38BDF8] shadow-xs"
+                        ? "bg-white dark:bg-white/10 text-[#0066B2] dark:text-[#38BDF8] shadow-xs"
                         : "text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200"
                         }`}
                       title={isSelectMode || checkedIds.length > 0 ? "Exit Select Mode" : "Select Lead Magnets"}
@@ -797,7 +797,7 @@ export default function PagesPage() {
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.98 }}
                     transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
-                    className="rounded-2xl border border-dashed border-zinc-300 dark:border-zinc-800 bg-white dark:bg-[#141417] p-12 text-center flex flex-col items-center justify-center"
+                    className="rounded-2xl border border-dashed border-zinc-300 dark:border-white/10 bg-white dark:bg-[#171717] p-12 text-center flex flex-col items-center justify-center"
                   >
                     <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#EFF6FF] dark:bg-[#0066B2]/20 text-[#0066B2] dark:text-[#38BDF8] mb-3">
                       <Sparkles className="h-6 w-6" />
@@ -854,12 +854,12 @@ export default function PagesPage() {
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: -6, scale: 0.995 }}
                     transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-                    className="rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#131316] overflow-hidden shadow-md dark:shadow-none backdrop-blur-sm"
+                    className="rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#171717] overflow-hidden shadow-md dark:shadow-none backdrop-blur-sm"
                   >
                     {/* DESKTOP Table View (hidden md:block) - Preserved exactly as original */}
                     <div className="hidden md:block overflow-x-auto">
                       <table className="w-full text-left text-xs">
-                        <thead className="bg-[#F8FBFF] dark:bg-[#151518] text-zinc-500 dark:text-zinc-400 uppercase text-[11px] font-semibold tracking-wider border-b border-[#0066B2]/10 dark:border-[#38BDF8]/20">
+                        <thead className="bg-[#F8FBFF] dark:bg-[#151515] text-zinc-500 dark:text-zinc-400 uppercase text-[11px] font-semibold tracking-wider border-b border-[#0066B2]/10 dark:border-white/[0.06]">
                           <tr>
                             <th className="px-6 py-3.5 text-left">
                               <div className="flex items-center">
@@ -894,7 +894,7 @@ export default function PagesPage() {
                             <th className="px-6 py-3.5 text-right">Actions</th>
                           </tr>
                         </thead>
-                        <tbody className="divide-y divide-[#0066B2]/8 bg-white dark:divide-white/[0.05] dark:bg-[#131316]">
+                        <tbody className="divide-y divide-[#0066B2]/8 bg-white dark:divide-white/[0.05] dark:bg-[#171717]">
                           {paginatedItems.map((page) => {
                             const isSelected = activePage?.id === page.id;
                             const isChecked = checkedIds.includes(page.id);
@@ -1016,8 +1016,8 @@ export default function PagesPage() {
                             className={`group relative rounded-2xl border p-3.5 transition-all duration-200 cursor-pointer active:scale-[0.99] select-none ${isChecked
                               ? "border-[#0066B2] dark:border-[#38BDF8] bg-blue-50/50 dark:bg-[#0066B2]/15 ring-2 ring-[#0066B2]/30 shadow-sm"
                               : isSelected
-                                ? "border-[#0066B2] dark:border-white/20 bg-white dark:bg-[#141417] ring-1 ring-[#0066B2]/30 shadow-xs"
-                                : "border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#141417] shadow-sm dark:shadow-none backdrop-blur-sm"
+                                ? "border-[#0066B2] dark:border-white/20 bg-white dark:bg-[#171717] ring-1 ring-[#0066B2]/30 shadow-xs"
+                                : "border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#171717] shadow-sm dark:shadow-none backdrop-blur-sm"
                               }`}
                           >
                             {/* Top Row: Checkbox, Thumbnail, Title/Slug & Status Badge */}
@@ -1047,7 +1047,7 @@ export default function PagesPage() {
                                 </AnimatePresence>
 
                                 {/* Thumbnail */}
-                                <div className="relative h-9 w-9 rounded-xl bg-zinc-100 dark:bg-zinc-800 shrink-0 overflow-hidden flex items-center justify-center border border-zinc-200/70 dark:border-zinc-700/60">
+                                <div className="relative h-9 w-9 rounded-xl bg-zinc-100 dark:bg-zinc-800 shrink-0 overflow-hidden flex items-center justify-center border border-zinc-200/70 dark:border-white/10">
                                   {page.imageUrl ? (
                                     <Image
                                       src={page.imageUrl}
@@ -1078,7 +1078,7 @@ export default function PagesPage() {
                                 <span
                                   className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase ${page.status === "live"
                                     ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 border border-emerald-200/60 dark:border-emerald-900/40"
-                                    : "bg-zinc-100 dark:bg-zinc-800 text-zinc-500 border border-zinc-200/60 dark:border-zinc-700/40"
+                                    : "bg-zinc-100 dark:bg-zinc-800 text-zinc-500 border border-zinc-200/60 dark:border-white/10"
                                     }`}
                                 >
                                   <span className={`h-1.5 w-1.5 rounded-full ${page.status === "live" ? "bg-emerald-500 animate-pulse" : "bg-zinc-400"}`} />
@@ -1105,7 +1105,7 @@ export default function PagesPage() {
                                 <button
                                   type="button"
                                   onClick={(e) => handleOpenMobileDetails(page.id, e)}
-                                  className="inline-flex h-8 w-8 items-center justify-center rounded-xl border border-zinc-200/90 bg-white dark:border-[#2e2e38] dark:bg-[#202026] text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-[#282830] hover:text-[#0066B2] dark:hover:text-[#38BDF8] transition-all duration-150 cursor-pointer shadow-2xs active:scale-95"
+                                  className="inline-flex h-8 w-8 items-center justify-center rounded-xl border border-zinc-200/90 bg-white dark:border-white/10 dark:bg-[#121212] text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-[#282830] hover:text-[#0066B2] dark:hover:text-[#38BDF8] transition-all duration-150 cursor-pointer shadow-2xs active:scale-95"
                                   title="Open details"
                                 >
                                   <Eye className="h-3.5 w-3.5" />
@@ -1116,7 +1116,7 @@ export default function PagesPage() {
                                   onClick={(e) => handleCopyLink(page, e)}
                                   className={`inline-flex h-8 w-8 items-center justify-center rounded-xl border transition-all duration-150 cursor-pointer shadow-2xs active:scale-95 ${copiedId === page.id
                                     ? "border-emerald-500/40 bg-emerald-500/15 text-emerald-600 dark:text-emerald-400"
-                                    : "border-zinc-200/90 bg-white dark:border-[#2e2e38] dark:bg-[#202026] text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-[#282830] hover:text-[#0066B2] dark:hover:text-[#38BDF8]"
+                                    : "border-zinc-200/90 bg-white dark:border-white/10 dark:bg-[#121212] text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-[#282830] hover:text-[#0066B2] dark:hover:text-[#38BDF8]"
                                     }`}
                                   title="Copy link"
                                 >
@@ -1146,8 +1146,8 @@ export default function PagesPage() {
               </AnimatePresence>
 
               {filtered.length > 0 && (
-                <div className="flex flex-col sm:flex-row items-center justify-between gap-3 sm:bg-white sm:dark:bg-[#141417] px-2 sm:px-4 py-2 sm:py-3 rounded-2xl sm:border sm:border-zinc-200/80 sm:dark:border-zinc-800/80 text-xs sm:shadow-xs">
-                  <p className="text-zinc-500 dark:text-zinc-400 text-[11px] font-medium text-center sm:text-left">
+                <div className={`flex flex-col sm:flex-row items-center ${filtered.length > 10 ? "justify-between" : "justify-center"} gap-3 px-2 py-3 text-xs`}>
+                  <p className="text-zinc-500 dark:text-zinc-400 text-[11px] font-medium text-center">
                     {itemsPerPage === "all" || filtered.length <= (itemsPerPage as number) ? (
                       <>
                         Showing <span className="font-bold text-zinc-900 dark:text-white">{filtered.length}</span> {filtered.length === 1 ? "lead magnet" : "lead magnets"}
@@ -1176,7 +1176,7 @@ export default function PagesPage() {
                             key={size}
                             onClick={() => setItemsPerPage(size)}
                             className={`px-2 py-0.5 rounded-lg font-semibold transition ${itemsPerPage === size
-                              ? "bg-white dark:bg-[#1C1C20] text-[#0066B2] dark:text-[#38BDF8] shadow-xs"
+                              ? "bg-white dark:bg-[#171717] text-[#0066B2] dark:text-[#38BDF8] shadow-xs"
                               : "text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200"
                               }`}
                           >
@@ -1190,7 +1190,7 @@ export default function PagesPage() {
                           <button
                             disabled={currentPage === 1}
                             onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
-                            className="px-2.5 py-1 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-[#1C1C20] text-zinc-700 dark:text-zinc-300 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-zinc-100 dark:hover:bg-zinc-800 font-semibold transition text-[11px]"
+                            className="px-2.5 py-1 rounded-xl border border-zinc-200 dark:border-white/10 bg-zinc-50 dark:bg-[#171717] text-zinc-700 dark:text-zinc-300 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-zinc-100 dark:hover:bg-zinc-800 font-semibold transition text-[11px]"
                           >
                             Previous
                           </button>
@@ -1200,7 +1200,7 @@ export default function PagesPage() {
                           <button
                             disabled={currentPage === totalPagesCount}
                             onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPagesCount))}
-                            className="px-2.5 py-1 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-[#1C1C20] text-zinc-700 dark:text-zinc-300 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-zinc-100 dark:hover:bg-zinc-800 font-semibold transition text-[11px]"
+                            className="px-2.5 py-1 rounded-xl border border-zinc-200 dark:border-white/10 bg-zinc-50 dark:bg-[#171717] text-zinc-700 dark:text-zinc-300 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-zinc-100 dark:hover:bg-zinc-800 font-semibold transition text-[11px]"
                           >
                             Next
                           </button>
@@ -1235,7 +1235,7 @@ export default function PagesPage() {
                   }}
                   className="hidden lg:block lg:w-[35%] sticky top-6 z-20 space-y-4 shrink-0"
                 >
-                  <div className="rounded-2xl border border-[#0066B2]/15 dark:border-white/[0.08] bg-white/90 dark:bg-[#141417] dark:shadow-none p-5 shadow-md backdrop-blur-sm space-y-5">
+                  <div className="rounded-2xl border border-[#0066B2]/15 dark:border-white/[0.08] bg-white/90 dark:bg-[#171717] dark:shadow-none p-5 shadow-md backdrop-blur-sm space-y-5">
                     <motion.div
                       key={activePage.id}
                       initial={{ opacity: 0, y: 3 }}
@@ -1272,7 +1272,7 @@ export default function PagesPage() {
                         </div>
                       </div>
 
-                      <div className="rounded-xl bg-zinc-50 dark:bg-[#16161a] p-3 border border-zinc-200/60 dark:border-white/[0.06] space-y-2">
+                      <div className="rounded-xl bg-zinc-50 dark:bg-[#1a1a1a] p-3 border border-zinc-200/60 dark:border-white/[0.06] space-y-2">
                         <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Public Share URL</p>
                         <div className="flex items-center justify-between gap-2">
                           <span className="text-xs font-mono text-zinc-800 dark:text-zinc-200 truncate">
@@ -1280,7 +1280,7 @@ export default function PagesPage() {
                           </span>
                           <button
                             onClick={() => handleCopyLink(activePage)}
-                            className="flex items-center gap-1 rounded-lg bg-white dark:bg-[#25252A] px-2.5 py-1 text-xs font-bold text-zinc-700 dark:text-zinc-200 border border-zinc-200 dark:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition shrink-0"
+                            className="flex items-center gap-1 rounded-lg bg-white dark:bg-white/5 px-2.5 py-1 text-xs font-bold text-zinc-700 dark:text-zinc-200 border border-zinc-200 dark:border-white/10 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition shrink-0"
                           >
                             {copiedId === activePage.id ? <Check className="h-3 w-3 text-emerald-500" /> : <Copy className="h-3 w-3" />}
                             <span>{copiedId === activePage.id ? "Copied" : "Copy"}</span>
@@ -1316,7 +1316,7 @@ export default function PagesPage() {
                         <div className="grid grid-cols-2 gap-2">
                           <Link
                             href={`/dashboard/leadmagnets/${activePage.id}/analytics`}
-                            className="flex items-center justify-center gap-1.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#1C1C20] px-3 py-2 text-xs font-bold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition"
+                            className="flex items-center justify-center gap-1.5 rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#171717] px-3 py-2 text-xs font-bold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition"
                           >
                             <BarChart2 className="h-3.5 w-3.5 text-[#0066B2] dark:text-[#38BDF8]" /> Analytics
                           </Link>
@@ -1325,7 +1325,7 @@ export default function PagesPage() {
                             href={`/${account?.username || "demo"}/${activePage.slug}`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="flex items-center justify-center gap-1.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#1C1C20] px-3 py-2 text-xs font-bold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition"
+                            className="flex items-center justify-center gap-1.5 rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#171717] px-3 py-2 text-xs font-bold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition"
                           >
                             <ExternalLink className="h-3.5 w-3.5 text-zinc-400" /> Preview
                           </a>
@@ -1364,7 +1364,7 @@ export default function PagesPage() {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 80, scale: 0.98 }}
               transition={{ type: "spring", damping: 28, stiffness: 340 }}
-              className="relative w-full sm:max-w-[460px] rounded-t-[28px] sm:rounded-2xl border-t sm:border border-[#0066B2]/30 bg-white p-5 sm:p-6 text-zinc-900 shadow-2xl space-y-4 sm:space-y-5 dark:border-[#0066B2]/35 dark:bg-[#18181c] dark:text-white max-h-[90vh] overflow-y-auto pb-8 sm:pb-6"
+              className="relative w-full sm:max-w-[460px] rounded-t-[28px] sm:rounded-2xl border-t sm:border border-[#0066B2]/30 bg-white p-5 sm:p-6 text-zinc-900 shadow-2xl space-y-4 sm:space-y-5 dark:border-[#0066B2]/35 dark:bg-[#171717] dark:text-white max-h-[90vh] overflow-y-auto pb-8 sm:pb-6"
               onClick={(e) => e.stopPropagation()}
             >
               {/* Mobile Bottom Sheet Grab Handle */}
@@ -1379,7 +1379,7 @@ export default function PagesPage() {
                 </div>
                 <button
                   onClick={() => { setShowCreateModal(false); setNewName(""); }}
-                  className="rounded-lg p-1.5 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-[#25252b] dark:hover:text-white transition-colors cursor-pointer"
+                  className="rounded-lg p-1.5 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-white/10 dark:hover:text-white transition-colors cursor-pointer"
                 >
                   <X className="h-4 w-4" />
                 </button>
@@ -1420,25 +1420,25 @@ export default function PagesPage() {
                 className="space-y-4"
               >
                 <div className="space-y-1.5">
-                  <label className="block text-xs font-semibold text-zinc-700 dark:text-[#d4c8bc]">Page name</label>
+                  <label className="block text-xs font-semibold text-zinc-700 dark:text-zinc-300">Page name</label>
                   <input
                     type="text"
                     autoFocus
                     value={newName}
                     onChange={(e) => setNewName(e.target.value)}
                     placeholder="AI Pipeline Playbook"
-                    className="w-full rounded-xl border border-[#0066B2]/30 bg-white px-3.5 py-2.5 text-xs text-zinc-900 placeholder:text-zinc-400 outline-none focus:border-[#0066B2] focus:ring-1 focus:ring-[#0066B2] dark:border-[#0066B2]/60 dark:bg-[#121214] dark:text-white dark:placeholder:text-[#52525b] dark:focus:border-[#0066B2] dark:focus:ring-[#0066B2] transition-all"
+                    className="w-full rounded-xl border border-[#0066B2]/30 bg-white px-3.5 py-2.5 text-xs text-zinc-900 placeholder:text-zinc-400 outline-none focus:border-[#0066B2] focus:ring-1 focus:ring-[#0066B2] dark:border-[#0066B2]/60 dark:bg-[#121212] dark:text-white dark:placeholder:text-zinc-500 dark:focus:border-[#0066B2] dark:focus:ring-[#0066B2] transition-all"
                     required
                   />
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-zinc-700 dark:text-[#d4c8bc]">URL slug</label>
-                  <div className="flex items-center rounded-xl border border-[#0066B2]/30 bg-zinc-50 px-3.5 py-2.5 text-xs text-zinc-600 dark:border-[#0066B2]/35 dark:bg-[#121214] dark:text-zinc-400">
-                    <span className="text-zinc-400 dark:text-[#666675] shrink-0 mr-1.5">/</span>
-                    <span className="font-mono text-zinc-800 dark:text-[#d4c8bc] truncate">{newSlug}</span>
+                  <label className="text-xs font-semibold text-zinc-700 dark:text-zinc-300">URL slug</label>
+                  <div className="flex items-center rounded-xl border border-[#0066B2]/30 bg-zinc-50 px-3.5 py-2.5 text-xs text-zinc-600 dark:border-[#0066B2]/35 dark:bg-[#121212] dark:text-zinc-400">
+                    <span className="text-zinc-400 dark:text-zinc-500 shrink-0 mr-1.5">/</span>
+                    <span className="font-mono text-zinc-800 dark:text-zinc-300 truncate">{newSlug}</span>
                   </div>
-                  <p className="text-[11px] text-zinc-500 dark:text-[#666675]">The path of the page. Lowercase, digits, and hyphens only.</p>
+                  <p className="text-[11px] text-zinc-500 dark:text-zinc-500">The path of the page. Lowercase, digits, and hyphens only.</p>
                 </div>
 
                 <div className="pt-3 flex items-center justify-end gap-2.5 w-full">
@@ -1446,7 +1446,7 @@ export default function PagesPage() {
                     type="button"
                     disabled={isCreating}
                     onClick={() => setShowCreateModal(false)}
-                    className="flex-1 sm:flex-initial rounded-xl border border-zinc-200 dark:border-[#2e2e38] bg-white dark:bg-[#222228] px-4 py-2.5 text-xs font-semibold text-zinc-700 dark:text-white hover:bg-zinc-100 dark:hover:bg-[#2c2c34] transition-all cursor-pointer disabled:opacity-50 text-center"
+                    className="flex-1 sm:flex-initial rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-white/5 px-4 py-2.5 text-xs font-semibold text-zinc-700 dark:text-white hover:bg-zinc-100 dark:hover:bg-white/10 transition-all cursor-pointer disabled:opacity-50 text-center"
                   >
                     Cancel
                   </button>
@@ -1533,7 +1533,7 @@ export default function PagesPage() {
                   ? { type: "spring", stiffness: 450, damping: 32, mass: 0.4 }
                   : { type: "spring", stiffness: 650, damping: 36, mass: 0.3 }
               }
-              className="relative z-10 w-full sm:max-w-[440px] max-h-[85vh] overflow-y-auto rounded-t-[28px] sm:rounded-3xl border-t sm:border border-zinc-200 dark:border-white/10 bg-white/95 dark:bg-[#141417]/95 backdrop-blur-xl p-5 sm:p-6 text-zinc-900 dark:text-white shadow-2xl space-y-4 transform-gpu will-change-transform"
+              className="relative z-10 w-full sm:max-w-[440px] max-h-[85vh] overflow-y-auto rounded-t-[28px] sm:rounded-3xl border-t sm:border border-zinc-200 dark:border-white/10 bg-white/95 dark:bg-[#171717]/95 backdrop-blur-xl p-5 sm:p-6 text-zinc-900 dark:text-white shadow-2xl space-y-4 transform-gpu will-change-transform"
               onClick={(e) => e.stopPropagation()}
             >
               {/* Grab Handle */}
@@ -1567,7 +1567,7 @@ export default function PagesPage() {
                 <button
                   type="button"
                   onClick={() => setPageToDeleteId(null)}
-                  className="flex-1 sm:flex-none rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-[#25252A] px-4 py-2.5 text-xs font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white transition-all cursor-pointer text-center"
+                  className="flex-1 sm:flex-none rounded-xl border border-zinc-200 dark:border-white/10 bg-zinc-100 dark:bg-white/5 px-4 py-2.5 text-xs font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white transition-all cursor-pointer text-center"
                 >
                   Cancel
                 </button>
@@ -1618,7 +1618,7 @@ export default function PagesPage() {
                   ? { type: "spring", stiffness: 450, damping: 32, mass: 0.4 }
                   : { type: "spring", stiffness: 650, damping: 36, mass: 0.3 }
               }
-              className="relative z-10 w-full sm:max-w-[440px] max-h-[85vh] overflow-y-auto rounded-t-[28px] sm:rounded-3xl border-t sm:border border-zinc-200 dark:border-white/10 bg-white/95 dark:bg-[#141417]/95 backdrop-blur-xl p-5 sm:p-6 text-zinc-900 dark:text-white shadow-2xl space-y-4 transform-gpu will-change-transform"
+              className="relative z-10 w-full sm:max-w-[440px] max-h-[85vh] overflow-y-auto rounded-t-[28px] sm:rounded-3xl border-t sm:border border-zinc-200 dark:border-white/10 bg-white/95 dark:bg-[#171717]/95 backdrop-blur-xl p-5 sm:p-6 text-zinc-900 dark:text-white shadow-2xl space-y-4 transform-gpu will-change-transform"
               onClick={(e) => e.stopPropagation()}
             >
               {/* Grab Handle */}
@@ -1654,7 +1654,7 @@ export default function PagesPage() {
                 <button
                   type="button"
                   onClick={() => setShowBulkDeleteModal(false)}
-                  className="flex-1 sm:flex-none rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-[#25252A] px-4 py-2.5 text-xs font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white transition-all cursor-pointer text-center"
+                  className="flex-1 sm:flex-none rounded-xl border border-zinc-200 dark:border-white/10 bg-zinc-100 dark:bg-white/5 px-4 py-2.5 text-xs font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white transition-all cursor-pointer text-center"
                 >
                   Cancel
                 </button>
@@ -1691,7 +1691,7 @@ export default function PagesPage() {
               animate={{ y: 0 }}
               exit={{ y: "100%" }}
               transition={{ type: "spring", damping: 30, stiffness: 320 }}
-              className="relative z-10 w-full max-w-full max-h-[85vh] overflow-y-auto overflow-x-hidden rounded-t-[28px] border-t border-zinc-200 dark:border-white/10 bg-white/95 dark:bg-[#141417]/95 backdrop-blur-xl p-4 sm:p-5 shadow-2xl space-y-4 sm:space-y-5"
+              className="relative z-10 w-full max-w-full max-h-[85vh] overflow-y-auto overflow-x-hidden rounded-t-[28px] border-t border-zinc-200 dark:border-white/10 bg-white/95 dark:bg-[#171717]/95 backdrop-blur-xl p-4 sm:p-5 shadow-2xl space-y-4 sm:space-y-5"
               onClick={(e) => e.stopPropagation()}
             >
               {/* Grab Handle */}
@@ -1719,7 +1719,7 @@ export default function PagesPage() {
               </div>
 
               {/* Public Share URL */}
-              <div className="rounded-xl bg-zinc-50 dark:bg-[#1A1A1E] p-3 border border-zinc-200/60 dark:border-zinc-800/60 space-y-2">
+              <div className="rounded-xl bg-zinc-50 dark:bg-[#121212] p-3 border border-zinc-200/60 dark:border-white/[0.06] space-y-2">
                 <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Public Share URL</p>
                 <div className="flex items-center justify-between gap-2">
                   <span className="text-xs font-mono text-zinc-800 dark:text-zinc-200 truncate">
@@ -1728,7 +1728,7 @@ export default function PagesPage() {
                   <button
                     type="button"
                     onClick={() => handleCopyLink(activePage)}
-                    className="flex items-center gap-1 rounded-lg bg-white dark:bg-[#25252A] px-2.5 py-1.5 text-xs font-bold text-zinc-700 dark:text-zinc-200 border border-zinc-200 dark:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition shrink-0 cursor-pointer"
+                    className="flex items-center gap-1 rounded-lg bg-white dark:bg-white/5 px-2.5 py-1.5 text-xs font-bold text-zinc-700 dark:text-zinc-200 border border-zinc-200 dark:border-white/10 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition shrink-0 cursor-pointer"
                   >
                     {copiedId === activePage.id ? <Check className="h-3 w-3 text-emerald-500" /> : <Copy className="h-3 w-3" />}
                     <span>{copiedId === activePage.id ? "Copied" : "Copy"}</span>
@@ -1766,7 +1766,7 @@ export default function PagesPage() {
                 <div className="grid grid-cols-2 gap-2">
                   <Link
                     href={`/dashboard/leadmagnets/${activePage.id}/analytics`}
-                    className="flex items-center justify-center gap-1.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#1C1C20] px-3 py-2.5 text-xs font-bold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition"
+                    className="flex items-center justify-center gap-1.5 rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#171717] px-3 py-2.5 text-xs font-bold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition"
                   >
                     <BarChart2 className="h-3.5 w-3.5 text-[#0066B2] dark:text-[#38BDF8]" /> Analytics
                   </Link>
@@ -1775,7 +1775,7 @@ export default function PagesPage() {
                     href={`/${account?.username || "demo"}/${activePage.slug}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center justify-center gap-1.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#1C1C20] px-3 py-2.5 text-xs font-bold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition"
+                    className="flex items-center justify-center gap-1.5 rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#171717] px-3 py-2.5 text-xs font-bold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition"
                   >
                     <ExternalLink className="h-3.5 w-3.5 text-zinc-400" /> Preview
                   </a>
@@ -1815,7 +1815,7 @@ export default function PagesPage() {
               animate={{ opacity: 1, y: 0, x: "-50%" }}
               exit={{ opacity: 0, y: 40, x: "-50%" }}
               transition={{ type: "spring", stiffness: 450, damping: 30 }}
-              className="fixed bottom-6 left-1/2 z-[100] flex items-center gap-2.5 sm:gap-3 rounded-2xl bg-white/90 dark:bg-[#16161a]/95 border border-zinc-200/90 dark:border-white/[0.08] text-zinc-900 dark:text-white px-3.5 sm:px-5 py-2.5 shadow-[0_16px_40px_rgba(0,0,0,0.2)] dark:shadow-[0_16px_40px_rgba(0,0,0,0.6)] backdrop-blur-xl ring-1 ring-black/5 dark:ring-white/10 max-w-[calc(100vw-24px)] overflow-x-auto scrollbar-none"
+              className="fixed bottom-6 left-1/2 z-[100] flex items-center gap-2.5 sm:gap-3 rounded-2xl bg-white/90 dark:bg-[#1a1a1a]/95 border border-zinc-200/90 dark:border-white/[0.08] text-zinc-900 dark:text-white px-3.5 sm:px-5 py-2.5 shadow-[0_16px_40px_rgba(0,0,0,0.2)] dark:shadow-[0_16px_40px_rgba(0,0,0,0.6)] backdrop-blur-xl ring-1 ring-black/5 dark:ring-white/10 max-w-[calc(100vw-24px)] overflow-x-auto scrollbar-none"
             >
               <span className="text-xs font-bold whitespace-nowrap text-zinc-900 dark:text-white">
                 <span className="text-[#0066B2] dark:text-[#38BDF8] font-black">{checkedIds.length}</span> selected

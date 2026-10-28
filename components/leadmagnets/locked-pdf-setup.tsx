@@ -534,7 +534,7 @@ export default function LockedPdfSetup({
     document.documentElement.classList.contains("dark");
 
   return (
-    <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#141417] p-4 sm:p-6 space-y-4 sm:space-y-6">
+    <div className="rounded-2xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#171717] p-4 sm:p-6 space-y-4 sm:space-y-6">
       {/* Header */}
       <div className="flex items-center gap-3">
         <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#0066B2]/10 text-[#0066B2] dark:bg-[#0066B2]/20 dark:text-[#38BDF8] border border-[#0066B2]/20">
@@ -910,7 +910,7 @@ export default function LockedPdfSetup({
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 120 }}
                 transition={{ type: "spring", damping: 30, stiffness: 360, mass: 0.8 }}
-                className="w-full max-w-xl sm:max-w-2xl rounded-t-3xl sm:rounded-2xl border-t sm:border border-zinc-200/80 bg-white dark:border-[#27272A] dark:bg-[#18181B] p-5 sm:p-6 shadow-2xl relative space-y-4 max-h-[88vh] overflow-y-auto scrollbar-thin pb-8 sm:pb-6 mt-auto sm:mt-0"
+                className="w-full max-w-xl sm:max-w-2xl rounded-t-3xl sm:rounded-2xl border-t sm:border border-zinc-200/80 bg-white dark:border-white/10 dark:bg-[#171717] p-5 sm:p-6 shadow-2xl relative space-y-4 max-h-[88vh] overflow-y-auto scrollbar-thin pb-8 sm:pb-6 mt-auto sm:mt-0"
                 onClick={(e) => e.stopPropagation()}
               >
                 {/* Mobile Bottom Sheet Grab Handle */}
@@ -945,7 +945,7 @@ export default function LockedPdfSetup({
                     placeholder="Search hosted PDF assets by name..."
                     value={internalAssetSearch}
                     onChange={(e) => setInternalAssetSearch(e.target.value)}
-                    className="w-full rounded-xl border border-zinc-200 dark:border-[#27272A] bg-zinc-50 dark:bg-[#121216] px-3.5 py-2.5 text-xs text-zinc-900 dark:text-white outline-none focus:border-[#0066B2]"
+                    className="w-full rounded-xl border border-zinc-200 dark:border-white/10 bg-zinc-50 dark:bg-[#121212] px-3.5 py-2.5 text-xs text-zinc-900 dark:text-white outline-none focus:border-[#0066B2]"
                   />
                 </div>
 
@@ -972,7 +972,7 @@ export default function LockedPdfSetup({
                       return (
                         <div
                           key={asset.id}
-                          className="flex items-center justify-between gap-3 p-3 rounded-xl border border-zinc-200 dark:border-[#27272A] bg-zinc-50/50 dark:bg-[#121216] hover:bg-zinc-100 dark:hover:bg-[#1C1C22] transition"
+                          className="flex items-center justify-between gap-3 p-3 rounded-xl border border-zinc-200 dark:border-white/10 bg-zinc-50/50 dark:bg-[#121212] hover:bg-zinc-100 dark:hover:bg-white/10 transition"
                         >
                           <div className="flex items-center gap-3 min-w-0 flex-1">
                             <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-[#0066B2]/20 bg-[#0066B2]/[0.08] text-[#0066B2] dark:border-[#38BDF8]/20 dark:bg-[#38BDF8]/10 dark:text-[#38BDF8] shadow-2xs">

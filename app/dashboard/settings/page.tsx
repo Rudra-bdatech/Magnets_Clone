@@ -615,13 +615,13 @@ export default function AccountSettingsPage() {
   );
 
   const inputClass =
-    "w-full max-w-lg rounded-xl border border-[#E2E8F0] bg-white dark:border-[#2e2e38] dark:bg-[#18181B] px-3.5 py-2.5 text-sm sm:text-[14.2px] text-zinc-900 dark:text-white outline-none placeholder:text-zinc-400 dark:placeholder:text-[#9B9085] focus:border-[#0066B2] transition";
+    "w-full max-w-lg rounded-xl border border-[#E2E8F0] bg-white dark:border-white/10 dark:bg-[#121212] px-3.5 py-2.5 text-sm sm:text-[14.2px] text-zinc-900 dark:text-white outline-none placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:border-[#0066B2] transition";
 
-  const labelClass = "block text-xs sm:text-[12.2px] font-semibold text-zinc-700 dark:text-[#9B9085] mb-1.5";
+  const labelClass = "block text-xs sm:text-[12.2px] font-semibold text-zinc-700 dark:text-zinc-400 mb-1.5";
 
   return (
     <>
-      <div className="flex flex-col min-h-full bg-gradient-to-b from-[#EFF6FF]/60 via-[#F8FBFF] to-[#F8FBFF] dark:bg-none dark:bg-[#0E0E10]">
+      <div className="flex flex-col min-h-full bg-gradient-to-b from-[#EFF6FF]/60 via-[#F8FBFF] to-[#F8FBFF] dark:bg-none dark:bg-[#0a0a0a]">
         <div className="flex-1 px-4 py-5 sm:px-6 sm:py-6 lg:px-8 w-full max-w-5xl">
           {/* Page heading */}
           <div className="mb-4 sm:mb-6 flex flex-wrap items-center justify-between gap-4">
@@ -637,7 +637,7 @@ export default function AccountSettingsPage() {
                       );
                     }
                   }}
-                  className="cursor-pointer flex h-5 w-5 items-center justify-center rounded-full border border-zinc-200 dark:border-[#2e2e38] text-xs font-normal text-zinc-500 dark:text-[#9B9085] hover:bg-zinc-100 dark:hover:bg-[#18181B] transition-colors"
+                  className="cursor-pointer flex h-5 w-5 items-center justify-center rounded-full border border-zinc-200 dark:border-white/10 text-xs font-normal text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-white/10 transition-colors"
                   title="View Account Settings Help"
                 >
                   ?
@@ -649,10 +649,10 @@ export default function AccountSettingsPage() {
           {/* Segmented Tab Navigation Bar (Apple-style Centered Stage on Mobile, Flex on Desktop) */}
           <div className="relative mb-5 sm:mb-6 -mx-4 px-4 sm:mx-0 sm:px-0">
             {/* Left Vignette Fade on Mobile */}
-            <div className="pointer-events-none absolute left-0 top-0 bottom-0 w-8 sm:hidden z-20 bg-gradient-to-r from-[#EFF6FF] dark:from-[#0E0E10] to-transparent" />
+            <div className="pointer-events-none absolute left-0 top-0 bottom-0 w-8 sm:hidden z-20 bg-gradient-to-r from-[#EFF6FF] dark:from-[#0a0a0a] to-transparent" />
 
             {/* Right Vignette Fade on Mobile */}
-            <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-8 sm:hidden z-20 bg-gradient-to-l from-[#EFF6FF] dark:from-[#0E0E10] to-transparent" />
+            <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-8 sm:hidden z-20 bg-gradient-to-l from-[#EFF6FF] dark:from-[#0a0a0a] to-transparent" />
 
             <div
               ref={tabContainerRef}
@@ -729,17 +729,17 @@ export default function AccountSettingsPage() {
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: -6, scale: 0.99 }}
                   transition={{ duration: 0.1, ease: [0.16, 1, 0.3, 1] }}
-                  className="relative rounded-2xl border border-[#0066B2]/30 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 p-4 sm:p-6 shadow-md backdrop-blur-sm overflow-hidden"
+                  className="relative rounded-2xl border border-[#0066B2]/30 bg-white/90 dark:border-white/[0.08] dark:bg-[#171717] dark:shadow-none p-4 sm:p-6 shadow-md backdrop-blur-sm overflow-hidden"
                 >
                   <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0066B2]/[0.03] to-transparent opacity-100" />
                   <div className="relative z-10">
                   <div className="flex items-start gap-3">
-                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-[#0066B2]/30 bg-[#EFF6FF] dark:border-[#0066B2]/30 dark:bg-[#1a2638] text-[#0066B2]">
+                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-[#0066B2]/30 bg-[#EFF6FF] dark:border-white/10 dark:bg-white/5 dark:text-zinc-200">
                       <User className="h-4.5 w-4.5" />
                     </div>
                     <div>
                       <h4 className="text-sm sm:text-[14.2px] font-bold text-zinc-900 dark:text-white">Who you are</h4>
-                      <p className="text-xs sm:text-[12.2px] text-[#71717a] dark:text-[#9B9085] mt-0.5">{email}</p>
+                      <p className="text-xs sm:text-[12.2px] text-[#71717a] dark:text-zinc-400 mt-0.5">{email}</p>
                     </div>
                   </div>
 
@@ -809,7 +809,7 @@ export default function AccountSettingsPage() {
                             type="button"
                             onClick={() => avatarInputRef.current?.click()}
                             disabled={uploadingAvatar || syncingGoogle}
-                            className="flex items-center gap-1.5 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-[#121214] px-3 py-1.5 text-xs font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition cursor-pointer disabled:opacity-50 shadow-2xs"
+                            className="flex items-center gap-1.5 rounded-lg border border-zinc-300 dark:border-white/10 bg-white dark:bg-white/5 px-3 py-1.5 text-xs font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-white/10 transition cursor-pointer disabled:opacity-50 shadow-2xs"
                           >
                             <Upload className="h-3.5 w-3.5 text-[#0066B2]" />
                             <span>{uploadingAvatar ? "Uploading..." : "Upload Photo"}</span>
@@ -819,7 +819,7 @@ export default function AccountSettingsPage() {
                             type="button"
                             onClick={handleSyncGoogle}
                             disabled={syncingGoogle || uploadingAvatar}
-                            className="flex items-center gap-1.5 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-[#121214] px-3 py-1.5 text-xs font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition cursor-pointer disabled:opacity-50 shadow-2xs"
+                            className="flex items-center gap-1.5 rounded-lg border border-zinc-300 dark:border-white/10 bg-white dark:bg-white/5 px-3 py-1.5 text-xs font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-white/10 transition cursor-pointer disabled:opacity-50 shadow-2xs"
                             title="Sync avatar from your Google account"
                           >
                             {syncingGoogle ? (
@@ -849,7 +849,7 @@ export default function AccountSettingsPage() {
                     </div>
 
                     <div>
-                      <label className="block text-xs sm:text-[12.2px] font-semibold text-[#71717a] dark:text-[#9B9085] mb-1.5">
+                      <label className="block text-xs sm:text-[12.2px] font-semibold text-[#71717a] dark:text-zinc-400 mb-1.5">
                         Full Name
                       </label>
                       <input
@@ -861,14 +861,14 @@ export default function AccountSettingsPage() {
                       />
                     </div>
                     <div>
-                      <label className="block text-xs sm:text-[12.2px] font-semibold text-[#71717a] dark:text-[#9B9085] mb-1.5">
+                      <label className="block text-xs sm:text-[12.2px] font-semibold text-[#71717a] dark:text-zinc-400 mb-1.5">
                         Email Address
                       </label>
                       <input
                         type="email"
                         value={email}
                         disabled
-                        className="w-full max-w-lg rounded-xl border border-[#E2E8F0] bg-zinc-50 dark:border-[#2e2e38] dark:bg-[#18181B] px-3.5 py-2.5 text-sm sm:text-[14.2px] text-zinc-500 dark:text-white outline-none opacity-60 cursor-not-allowed transition"
+                        className="w-full max-w-lg rounded-xl border border-[#E2E8F0] bg-zinc-50 dark:border-white/10 dark:bg-[#121212] px-3.5 py-2.5 text-sm sm:text-[14.2px] text-zinc-500 dark:text-white outline-none opacity-60 cursor-not-allowed transition"
                       />
                       <p className="text-[11px] text-zinc-400 dark:text-zinc-500 mt-1">
                         Primary account identifier. Contact support to change your account email.
@@ -902,7 +902,7 @@ export default function AccountSettingsPage() {
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: -6, scale: 0.99 }}
                   transition={{ duration: 0.1, ease: [0.16, 1, 0.3, 1] }}
-                  className="relative rounded-2xl border border-[#0066B2]/30 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 p-4 sm:p-6 shadow-md backdrop-blur-sm overflow-hidden"
+                  className="relative rounded-2xl border border-[#0066B2]/30 bg-white/90 dark:border-white/[0.08] dark:bg-[#171717] dark:shadow-none p-4 sm:p-6 shadow-md backdrop-blur-sm overflow-hidden"
                 >
                   <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0066B2]/[0.03] to-transparent opacity-100" />
                   <div className="relative z-10">
@@ -923,19 +923,19 @@ export default function AccountSettingsPage() {
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: -6, scale: 0.99 }}
                   transition={{ duration: 0.1, ease: [0.16, 1, 0.3, 1] }}
-                  className="relative rounded-2xl border border-[#0066B2]/30 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 p-4 sm:p-6 shadow-md backdrop-blur-sm overflow-hidden"
+                  className="relative rounded-2xl border border-[#0066B2]/30 bg-white/90 dark:border-white/[0.08] dark:bg-[#171717] dark:shadow-none p-4 sm:p-6 shadow-md backdrop-blur-sm overflow-hidden"
                 >
                   <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0066B2]/[0.03] to-transparent opacity-100" />
                   <div className="relative z-10">
                   <div className="flex items-start gap-3">
-                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-[#0066B2]/30 bg-[#EFF6FF] dark:border-[#0066B2]/30 dark:bg-[#1a2638] text-[#0066B2]">
+                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-[#0066B2]/30 bg-[#EFF6FF] dark:border-white/10 dark:bg-white/5 dark:text-zinc-200">
                       <KeyRound className="h-4.5 w-4.5" />
                     </div>
                     <div>
                       <h4 className="text-sm sm:text-[14.2px] font-bold text-zinc-900 dark:text-white">
                         {hasPassword ? "Change password" : "Set a password"}
                       </h4>
-                      <p className="text-xs sm:text-[12.2px] text-[#71717a] dark:text-[#9B9085] mt-0.5">
+                      <p className="text-xs sm:text-[12.2px] text-[#71717a] dark:text-zinc-400 mt-0.5">
                         {hasPassword
                           ? "Use at least 8 characters with numbers and symbols."
                           : "You sign in with Google, so your account has no password yet. Add one to also log in with your email. You may be asked to confirm with Google first."}
@@ -946,7 +946,7 @@ export default function AccountSettingsPage() {
                   <div className="mt-5 pl-0 sm:pl-12 space-y-4 max-w-lg">
                     {hasPassword && (
                       <div>
-                        <label className="block text-xs sm:text-[12.2px] font-semibold text-[#71717a] dark:text-[#9B9085] mb-1.5">
+                        <label className="block text-xs sm:text-[12.2px] font-semibold text-[#71717a] dark:text-zinc-400 mb-1.5">
                           Current password
                         </label>
                         <PasswordInputWithStrength
@@ -959,7 +959,7 @@ export default function AccountSettingsPage() {
                       </div>
                     )}
                     <div>
-                      <label className="block text-xs sm:text-[12.2px] font-semibold text-[#71717a] dark:text-[#9B9085] mb-1.5">
+                      <label className="block text-xs sm:text-[12.2px] font-semibold text-[#71717a] dark:text-zinc-400 mb-1.5">
                         New password
                       </label>
                       <PasswordInputWithStrength
@@ -971,7 +971,7 @@ export default function AccountSettingsPage() {
                       />
                     </div>
                     <div>
-                      <label className="block text-xs sm:text-[12.2px] font-semibold text-[#71717a] dark:text-[#9B9085] mb-1.5">
+                      <label className="block text-xs sm:text-[12.2px] font-semibold text-[#71717a] dark:text-zinc-400 mb-1.5">
                         Confirm new password
                       </label>
                       <PasswordInputWithStrength
@@ -1010,12 +1010,12 @@ export default function AccountSettingsPage() {
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: -6, scale: 0.99 }}
                   transition={{ duration: 0.1, ease: [0.16, 1, 0.3, 1] }}
-                  className="relative rounded-2xl border border-[#0066B2]/30 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 p-4 sm:p-6 shadow-md backdrop-blur-sm overflow-hidden"
+                  className="relative rounded-2xl border border-[#0066B2]/30 bg-white/90 dark:border-white/[0.08] dark:bg-[#171717] dark:shadow-none p-4 sm:p-6 shadow-md backdrop-blur-sm overflow-hidden"
                 >
                   <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0066B2]/[0.03] to-transparent opacity-100" />
                   <div className="relative z-10">
                   <div className="flex items-start gap-3">
-                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-[#0066B2]/30 bg-[#EFF6FF] dark:border-[#0066B2]/30 dark:bg-[#1a2638] text-[#0066B2]">
+                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-[#0066B2]/30 bg-[#EFF6FF] dark:border-white/10 dark:bg-white/5 dark:text-zinc-200">
                       <Bell className="h-4.5 w-4.5" />
                     </div>
                     <div className="flex-1">
@@ -1027,7 +1027,7 @@ export default function AccountSettingsPage() {
                               Active
                             </span>
                           </h4>
-                          <p className="text-xs sm:text-[12.2px] text-[#71717a] dark:text-[#9B9085] mt-0.5">
+                          <p className="text-xs sm:text-[12.2px] text-[#71717a] dark:text-zinc-400 mt-0.5">
                             Receive instant email notifications as soon as a new visitor submits their email on any lead magnet.
                           </p>
                         </div>
@@ -1053,7 +1053,7 @@ export default function AccountSettingsPage() {
                   {leadAlertsEnabled && (
                     <div className="mt-5 pl-0 sm:pl-12 space-y-4 max-w-lg">
                       <div>
-                        <label className="block text-xs sm:text-[12.2px] font-semibold text-[#71717a] dark:text-[#9B9085] mb-1.5">
+                        <label className="block text-xs sm:text-[12.2px] font-semibold text-[#71717a] dark:text-zinc-400 mb-1.5">
                           Target Notification Inbox Email
                         </label>
                         <div className="flex items-center gap-2">
@@ -1062,7 +1062,7 @@ export default function AccountSettingsPage() {
                             value={notifyEmail}
                             onChange={(e) => setNotifyEmail(e.target.value)}
                             placeholder={email || "your-email@example.com"}
-                            className="w-full rounded-xl border border-[#E2E8F0] bg-white dark:border-[#2e2e38] dark:bg-[#18181B] px-3.5 py-2.5 text-sm sm:text-[14.2px] text-zinc-900 dark:text-white outline-none placeholder:text-[#9B9085] focus:border-[#0066B2] transition"
+                            className="w-full rounded-xl border border-[#E2E8F0] bg-white dark:border-white/10 dark:bg-[#121212] px-3.5 py-2.5 text-sm sm:text-[14.2px] text-zinc-900 dark:text-white outline-none placeholder:text-zinc-500 focus:border-[#0066B2] transition"
                           />
                         </div>
                         <p className="text-[11px] text-zinc-500 dark:text-zinc-400 mt-1">
@@ -1087,7 +1087,7 @@ export default function AccountSettingsPage() {
                           type="button"
                           onClick={handleSendTestAlert}
                           disabled={sendingTestAlert}
-                          className="w-full sm:w-auto flex items-center justify-center gap-1.5 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-[#121214] px-4 py-2.5 sm:py-2 text-xs sm:text-[12px] font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition cursor-pointer"
+                          className="w-full sm:w-auto flex items-center justify-center gap-1.5 rounded-lg border border-zinc-300 dark:border-white/10 bg-white dark:bg-white/5 px-4 py-2.5 sm:py-2 text-xs sm:text-[12px] font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-white/10 transition cursor-pointer"
                         >
                           {sendingTestAlert ? (
                             <Loader2 className="h-3.5 w-3.5 animate-spin text-[#0066B2]" />
@@ -1125,16 +1125,16 @@ export default function AccountSettingsPage() {
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: -6, scale: 0.99 }}
                   transition={{ duration: 0.1, ease: [0.16, 1, 0.3, 1] }}
-                  className="relative rounded-2xl border border-red-300/50 bg-white/90 dark:border-red-900/60 dark:bg-[#18181B]/90 p-4 sm:p-6 transition-colors shadow-md backdrop-blur-sm overflow-hidden"
+                  className="relative rounded-2xl border border-red-300/50 bg-white/90 dark:border-red-900/40 dark:bg-[#171717] dark:shadow-none p-4 sm:p-6 transition-colors shadow-md backdrop-blur-sm overflow-hidden"
                 >
                   <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-red-500/[0.03] to-transparent opacity-100" />
                   <div className="relative z-10">
                   <div className="flex items-start gap-3">
-                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-red-200 bg-red-50 dark:border-[#552e2e] dark:bg-[#2a1414] text-red-600 dark:text-[#FF8585]">
+                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-red-200 bg-red-50 dark:border-red-900/40 dark:bg-red-950/30 text-red-600 dark:text-red-400">
                       <AlertTriangle className="h-4.5 w-4.5" />
                     </div>
                     <div className="flex-1">
-                      <h4 className="text-sm sm:text-[14.2px] font-bold text-red-600 dark:text-[#FF8585]">Danger zone</h4>
+                      <h4 className="text-sm sm:text-[14.2px] font-bold text-red-600 dark:text-red-400">Danger zone</h4>
                       <p className="text-xs sm:text-[12.2px] text-[#9B9085] leading-relaxed mt-1">
                         Deleting your account removes your magnets, signups, integrations, and any custom domains attached to your account. This is permanent. There is no recovery.
                       </p>
@@ -1149,7 +1149,7 @@ export default function AccountSettingsPage() {
                         <div className="mt-5 flex justify-start">
                           <button
                             onClick={() => setShowDeleteConfirm(true)}
-                            className="w-full sm:w-auto flex items-center justify-center gap-1.5 rounded-md border border-red-200 bg-white dark:border-[#2e2e38] dark:bg-[#18181B] px-[14px] py-[8px] text-xs sm:text-sm font-extrabold text-red-600 dark:text-[#FF8585] hover:border-red-400 dark:hover:border-red-800 transition cursor-pointer"
+                            className="w-full sm:w-auto flex items-center justify-center gap-1.5 rounded-md border border-red-200 bg-white dark:border-red-900/50 dark:bg-red-950/20 px-[14px] py-[8px] text-xs sm:text-sm font-extrabold text-red-600 dark:text-red-400 hover:border-red-400 dark:hover:border-red-800 transition cursor-pointer"
                           >
                             <Trash2 className="h-4 w-4 stroke-[3px]" />
                             Delete account
@@ -1211,14 +1211,14 @@ export default function AccountSettingsPage() {
                                 setDeleteConfirmText("");
                                 setDeleteError("");
                               }}
-                              className="rounded-md border border-[#E2E8F0] bg-white dark:border-[#2e2e38] dark:bg-[#18181B] px-[14px] py-[8px] text-xs sm:text-sm font-semibold text-zinc-700 dark:text-white hover:bg-zinc-100 dark:hover:bg-[#2e2e38] transition cursor-pointer"
+                              className="rounded-md border border-[#E2E8F0] bg-white dark:border-white/10 dark:bg-white/5 px-[14px] py-[8px] text-xs sm:text-sm font-semibold text-zinc-700 dark:text-white hover:bg-zinc-100 dark:hover:bg-white/10 transition cursor-pointer"
                             >
                               Cancel
                             </button>
                             <button
                               type="submit"
                               disabled={deleting}
-                              className="flex items-center gap-1.5 rounded-md border border-red-200 bg-white dark:border-[#2e2e38] dark:bg-[#18181B] px-[14px] py-[8px] text-xs sm:text-sm font-extrabold text-red-600 dark:text-[#FF8585] hover:border-red-400 dark:hover:border-red-800 disabled:opacity-60 transition cursor-pointer"
+                              className="flex items-center gap-1.5 rounded-md border border-red-200 bg-white dark:border-red-900/50 dark:bg-red-950/30 px-[14px] py-[8px] text-xs sm:text-sm font-extrabold text-red-600 dark:text-red-400 hover:border-red-400 dark:hover:border-red-800 disabled:opacity-60 transition cursor-pointer"
                             >
                               {deleting ? (
                                 <Loader2 className="h-4 w-4 animate-spin text-red-600" />

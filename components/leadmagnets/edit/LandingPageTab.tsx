@@ -318,11 +318,11 @@ export default function LandingPageTab({
         {/* A/B Testing Section */}
         <div className={`space-y-4 transition-colors duration-200 ${(account?.themeMode || "light") === "dark" ? "text-zinc-100" : "text-zinc-900"}`}>
           {/* Top Header Bar */}
-          <div className={`border-t border-b py-4 my-4 ${(account?.themeMode || "light") === "dark" ? "border-[#27272A]" : "border-zinc-200"}`}>
+          <div className={`border-t border-b py-4 my-4 ${(account?.themeMode || "light") === "dark" ? "border-white/10" : "border-zinc-200"}`}>
             <div className="flex flex-wrap items-center justify-between gap-4 px-1">
               <div>
                 <div className="flex items-center gap-2.5">
-                  <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${(account?.themeMode || "light") === "dark" ? "bg-[#25252B] text-zinc-400" : "bg-zinc-100 text-zinc-600"}`}>
+                  <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${(account?.themeMode || "light") === "dark" ? "bg-white/5 text-zinc-400" : "bg-zinc-100 text-zinc-600"}`}>
                     <BarChart2 className="h-4 w-4" />
                   </div>
                   <h4 className={`text-sm sm:text-base font-bold ${(account?.themeMode || "light") === "dark" ? "text-white" : "text-zinc-900"}`}>
@@ -340,7 +340,7 @@ export default function LandingPageTab({
                   setTestStarted(nextVal);
                   update({ testStarted: nextVal });
                 }}
-                className={`flex items-center gap-2 rounded-xl border px-3.5 py-1.5 text-xs font-semibold transition cursor-pointer shadow-2xs ${(account?.themeMode || "light") === "dark" ? "border-[#2E2E35] bg-[#222228] text-zinc-300 hover:bg-[#2A2A32]" : "border-zinc-200 bg-white text-zinc-700 hover:bg-zinc-50"}`}
+                className={`flex items-center gap-2 rounded-xl border px-3.5 py-1.5 text-xs font-semibold transition cursor-pointer shadow-2xs ${(account?.themeMode || "light") === "dark" ? "border-white/10 bg-white/5 text-zinc-300 hover:bg-white/10" : "border-zinc-200 bg-white text-zinc-700 hover:bg-zinc-50"}`}
               >
                 <span className={`h-2 w-2 rounded-full ${testStarted ? "bg-emerald-500" : "bg-zinc-400"}`} />
                 <span>{testStarted ? "Pause test" : "Start test"}</span>
@@ -351,9 +351,9 @@ export default function LandingPageTab({
           {/* A/B Versions Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Control Variant Card */}
-            <div className={`rounded-2xl border overflow-hidden shadow-xs transition-colors duration-200 ${(account?.themeMode || "light") === "dark" ? "border-[#2E2E35] bg-[#1D1D22]" : "border-zinc-200 bg-white"}`}>
+            <div className={`rounded-2xl border overflow-hidden shadow-xs transition-colors duration-200 ${(account?.themeMode || "light") === "dark" ? "border-white/10 bg-[#171717]" : "border-zinc-200 bg-white"}`}>
               {/* Top Media Area */}
-              <div className={`relative h-64 sm:h-72 w-full flex flex-col items-center justify-center border-b ${(account?.themeMode || "light") === "dark" ? "bg-[#141418] border-[#27272C]" : "bg-zinc-50 border-zinc-100"}`}>
+              <div className={`relative h-64 sm:h-72 w-full flex flex-col items-center justify-center border-b ${(account?.themeMode || "light") === "dark" ? "bg-[#121212] border-white/[0.08]" : "bg-zinc-50 border-zinc-100"}`}>
                 <div className="absolute top-4 left-4 z-10">
                   <span className={`inline-flex items-center rounded-full px-3.5 py-1 text-[11px] font-extrabold uppercase tracking-wider ${(account?.themeMode || "light") === "dark" ? "bg-white text-black" : "bg-black text-white"}`}>
                     {hasVariantB ? "CONTROL · 50%" : "CONTROL · 100%"}
@@ -375,7 +375,7 @@ export default function LandingPageTab({
               </div>
 
               {/* Bottom Section */}
-              <div className={`p-5 space-y-3 ${(account?.themeMode || "light") === "dark" ? "bg-[#1D1D22]" : "bg-white"}`}>
+              <div className={`p-5 space-y-3 ${(account?.themeMode || "light") === "dark" ? "bg-[#171717]" : "bg-white"}`}>
                 <div>
                   <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 block mb-1">
                     CURRENT PAGE
@@ -385,7 +385,7 @@ export default function LandingPageTab({
                   </h5>
                 </div>
 
-                <div className={`h-px w-full ${(account?.themeMode || "light") === "dark" ? "bg-[#27272C]" : "bg-zinc-100"}`} />
+                <div className={`h-px w-full ${(account?.themeMode || "light") === "dark" ? "bg-white/10" : "bg-zinc-100"}`} />
 
                 {testStarted ? (
                   <div className="flex items-center justify-between text-xs pt-0.5 font-medium">
@@ -406,11 +406,11 @@ export default function LandingPageTab({
 
             {/* Variant B Card if created */}
             {hasVariantB && (
-              <div className={`group animate-card-pop-in rounded-2xl border overflow-hidden shadow-xs transition-all duration-300 ${(account?.themeMode || "light") === "dark" ? "border-[#2E2E35] bg-[#1D1D22] hover:border-zinc-600" : "border-zinc-200 bg-white hover:border-zinc-300"}`}>
+              <div className={`group animate-card-pop-in rounded-2xl border overflow-hidden shadow-xs transition-all duration-300 ${(account?.themeMode || "light") === "dark" ? "border-white/10 bg-[#171717] hover:border-white/20" : "border-zinc-200 bg-white hover:border-zinc-300"}`}>
                 {/* Top Media Area */}
-                <div className={`relative h-64 sm:h-72 w-full flex flex-col items-center justify-center border-b overflow-hidden ${(account?.themeMode || "light") === "dark" ? "bg-[#141418] border-[#27272C]" : "bg-zinc-50 border-zinc-100"}`}>
+                <div className={`relative h-64 sm:h-72 w-full flex flex-col items-center justify-center border-b overflow-hidden ${(account?.themeMode || "light") === "dark" ? "bg-[#121212] border-white/[0.08]" : "bg-zinc-50 border-zinc-100"}`}>
                   <div className="absolute top-4 left-4 z-10">
-                    <span className={`inline-flex items-center rounded-full px-3.5 py-1 text-[11px] font-extrabold uppercase tracking-wider ${(account?.themeMode || "light") === "dark" ? "bg-[#27272D] text-zinc-200" : "bg-zinc-200 text-zinc-800"}`}>
+                    <span className={`inline-flex items-center rounded-full px-3.5 py-1 text-[11px] font-extrabold uppercase tracking-wider ${(account?.themeMode || "light") === "dark" ? "bg-white/10 text-zinc-200" : "bg-zinc-200 text-zinc-800"}`}>
                       VERSION B · 50%
                     </span>
                   </div>
@@ -466,7 +466,7 @@ export default function LandingPageTab({
                         e.stopPropagation();
                         variantBFileInputRef.current?.click();
                       }}
-                      className={`flex items-center gap-1.5 rounded-xl px-3.5 py-2 text-xs font-bold shadow-md border transition cursor-pointer pointer-events-auto active:scale-95 disabled:opacity-75 ${(account?.themeMode || "light") === "dark" ? "bg-[#25252B] hover:bg-[#2E2E36] text-zinc-200 border-[#2E2E35]" : "bg-white hover:bg-zinc-50 text-zinc-800 border-zinc-200"}`}
+                      className={`flex items-center gap-1.5 rounded-xl px-3.5 py-2 text-xs font-bold shadow-md border transition cursor-pointer pointer-events-auto active:scale-95 disabled:opacity-75 ${(account?.themeMode || "light") === "dark" ? "bg-white/5 hover:bg-white/10 text-zinc-200 border-white/10" : "bg-white hover:bg-zinc-50 text-zinc-800 border-zinc-200"}`}
                     >
                       {uploadingVariantB ? (
                         <Loader2 className="h-4 w-4 animate-spin text-sky-400" />
@@ -484,7 +484,7 @@ export default function LandingPageTab({
                         setVariantBImage(null);
                         setVariantBTitle("");
                       }}
-                      className={`flex items-center gap-1.5 rounded-xl px-3.5 py-2 text-xs font-bold text-red-500 shadow-md border transition cursor-pointer pointer-events-auto active:scale-95 disabled:opacity-50 ${(account?.themeMode || "light") === "dark" ? "bg-[#25252B] hover:bg-red-950/40 border-[#2E2E35]" : "bg-white hover:bg-red-50 border-zinc-200"}`}
+                      className={`flex items-center gap-1.5 rounded-xl px-3.5 py-2 text-xs font-bold text-red-500 shadow-md border transition cursor-pointer pointer-events-auto active:scale-95 disabled:opacity-50 ${(account?.themeMode || "light") === "dark" ? "bg-white/5 hover:bg-red-950/40 border-white/10" : "bg-white hover:bg-red-50 border-zinc-200"}`}
                       title="Remove Version B split test"
                     >
                       <Trash2 className="h-4 w-4 text-red-400" />
@@ -494,7 +494,7 @@ export default function LandingPageTab({
                 </div>
 
                 {/* Bottom Section */}
-                <div className={`p-5 space-y-3 ${(account?.themeMode || "light") === "dark" ? "bg-[#1D1D22]" : "bg-white"}`}>
+                <div className={`p-5 space-y-3 ${(account?.themeMode || "light") === "dark" ? "bg-[#171717]" : "bg-white"}`}>
                   <div>
                     <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 block mb-1">
                       VERSION TITLE
@@ -514,7 +514,7 @@ export default function LandingPageTab({
                     />
                   </div>
 
-                  <div className={`h-px w-full ${(account?.themeMode || "light") === "dark" ? "bg-[#27272C]" : "bg-zinc-100"}`} />
+                  <div className={`h-px w-full ${(account?.themeMode || "light") === "dark" ? "bg-white/10" : "bg-zinc-100"}`} />
 
                   {testStarted ? (
                     <div className="flex items-center justify-between text-xs pt-0.5 font-medium">
@@ -546,7 +546,7 @@ export default function LandingPageTab({
                   savePages(loadPages().map((p) => (p.id === next.id ? next : p)));
                 }
               }}
-              className={`mt-4 flex w-full items-center justify-center gap-1.5 rounded-xl border border-dashed p-3.5 text-xs font-bold transition-all duration-200 active:scale-[0.99] cursor-pointer shadow-2xs ${(account?.themeMode || "light") === "dark" ? "border-[#2E2E35] bg-[#1D1D22] hover:bg-[#25252B] text-zinc-300" : "border-zinc-300 bg-zinc-50 hover:bg-zinc-100 text-zinc-700"}`}
+              className={`mt-4 flex w-full items-center justify-center gap-1.5 rounded-xl border border-dashed p-3.5 text-xs font-bold transition-all duration-200 active:scale-[0.99] cursor-pointer shadow-2xs ${(account?.themeMode || "light") === "dark" ? "border-white/10 bg-[#171717] hover:bg-white/5 text-zinc-300" : "border-zinc-300 bg-zinc-50 hover:bg-zinc-100 text-zinc-700"}`}
             >
               <Plus className="h-4 w-4 transition-transform duration-200 group-hover:scale-110" />
               <span>Create version B</span>

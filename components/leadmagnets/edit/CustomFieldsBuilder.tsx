@@ -20,7 +20,7 @@ export default function CustomFieldsBuilder({
   const fieldsList = customFormFields || [];
 
   return (
-    <div className={`mt-6 max-w-6xl mx-auto rounded-2xl border p-5 transition ${isDark ? "border-white/10 bg-black/40 text-white" : "border-zinc-200 bg-zinc-50 text-zinc-900"}`}>
+    <div className={`mt-6 max-w-6xl mx-auto rounded-2xl border p-5 transition ${isDark ? "border-white/10 bg-[#171717] text-white" : "border-zinc-200 bg-zinc-50 text-zinc-900"}`}>
       <div className="flex items-center justify-between mb-3">
         <h4 className="text-xs font-bold uppercase tracking-wider text-indigo-400 flex items-center gap-1.5">
           <Sparkles className="h-3.5 w-3.5 text-indigo-400" />

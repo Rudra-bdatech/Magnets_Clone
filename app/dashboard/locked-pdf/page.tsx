@@ -61,7 +61,7 @@ import { useIsMobile } from "@/lib/use-mobile";
 const DeliveryEmailTab = dynamic(() => import("@/components/leadmagnets/edit/DeliveryEmailTab"), {
   ssr: false,
   loading: () => (
-    <div className="flex h-64 items-center justify-center rounded-2xl border border-dashed border-zinc-200 dark:border-zinc-800">
+    <div className="flex h-64 items-center justify-center rounded-2xl border border-dashed border-zinc-200 dark:border-white/10">
       <Loader2 className="h-6 w-6 animate-spin text-[#0066B2]" />
     </div>
   ),
@@ -70,7 +70,7 @@ const DeliveryEmailTab = dynamic(() => import("@/components/leadmagnets/edit/Del
 const SequenceTab = dynamic(() => import("@/components/leadmagnets/edit/SequenceTab"), {
   ssr: false,
   loading: () => (
-    <div className="flex h-64 items-center justify-center rounded-2xl border border-dashed border-zinc-200 dark:border-zinc-800">
+    <div className="flex h-64 items-center justify-center rounded-2xl border border-dashed border-zinc-200 dark:border-white/10">
       <Loader2 className="h-6 w-6 animate-spin text-[#0066B2]" />
     </div>
   ),
@@ -79,7 +79,7 @@ const SequenceTab = dynamic(() => import("@/components/leadmagnets/edit/Sequence
 const AfterSignupTab = dynamic(() => import("@/components/leadmagnets/edit/AfterSignupTab"), {
   ssr: false,
   loading: () => (
-    <div className="flex h-64 items-center justify-center rounded-2xl border border-dashed border-zinc-200 dark:border-zinc-800">
+    <div className="flex h-64 items-center justify-center rounded-2xl border border-dashed border-zinc-200 dark:border-white/10">
       <Loader2 className="h-6 w-6 animate-spin text-[#0066B2]" />
     </div>
   ),
@@ -874,7 +874,7 @@ export default function LockedPdfPage() {
 
   return (
     <>
-      <div className="flex flex-col min-h-[calc(100vh-3.5rem)] bg-gradient-to-b from-[#EFF6FF]/40 via-[#F8FBFF] to-[#F8FBFF] dark:bg-none dark:bg-[#09090B] w-full">
+      <div className="flex flex-col min-h-[calc(100vh-3.5rem)] bg-gradient-to-b from-[#EFF6FF]/40 via-[#F8FBFF] to-[#F8FBFF] dark:bg-none dark:bg-[#0a0a0a] w-full">
         {/* Top Executive Header & Stat Cards */}
         <div className={`mx-auto w-full px-3.5 sm:px-6 pt-4 sm:pt-6 lg:px-8 space-y-4 transition-[max-width] duration-[220ms] ease-[cubic-bezier(0.16,1,0.3,1)] will-change-[max-width] ${isCollapsed ? "max-w-[1440px]" : "max-w-7xl"}`}>
           <div className="flex items-center justify-between gap-3">
@@ -907,7 +907,7 @@ export default function LockedPdfPage() {
           {/* Quick Metrics 4 Stat Cards */}
           <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
             {/* Active Pages */}
-            <div className="relative h-full rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#141417] dark:shadow-none p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
+            <div className="relative h-full rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#171717] dark:shadow-none p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
               <div className="flex items-center justify-between sm:justify-start w-full sm:w-auto">
                 <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl border border-[#0066B2]/30 bg-[#EFF6FF] text-[#0066B2] dark:border-white/10 dark:bg-white/5 dark:text-zinc-200">
                   <Globe className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
@@ -925,7 +925,7 @@ export default function LockedPdfPage() {
             </div>
 
             {/* Total Traffic */}
-            <div className="relative h-full rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#141417] dark:shadow-none p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
+            <div className="relative h-full rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#171717] dark:shadow-none p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
               <div className="flex items-center justify-between sm:justify-start w-full sm:w-auto">
                 <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl border border-emerald-500/30 bg-emerald-50 text-emerald-600 dark:border-white/10 dark:bg-white/5 dark:text-zinc-200">
                   <Eye className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
@@ -943,7 +943,7 @@ export default function LockedPdfPage() {
             </div>
 
             {/* Leads Collected */}
-            <div className="relative h-full rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#141417] dark:shadow-none p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
+            <div className="relative h-full rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#171717] dark:shadow-none p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
               <div className="flex items-center justify-between sm:justify-start w-full sm:w-auto">
                 <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl border border-purple-500/30 bg-purple-50 text-purple-600 dark:border-white/10 dark:bg-white/5 dark:text-zinc-200">
                   <MousePointer className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
@@ -961,7 +961,7 @@ export default function LockedPdfPage() {
             </div>
 
             {/* Avg Conv. Rate */}
-            <div className="relative h-full rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#141417] dark:shadow-none p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
+            <div className="relative h-full rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#171717] dark:shadow-none p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
               <div className="flex items-center justify-between sm:justify-start w-full sm:w-auto">
                 <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl border border-amber-500/30 bg-amber-50 text-amber-600 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-400">
                   <TrendingUp className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
@@ -992,7 +992,7 @@ export default function LockedPdfPage() {
             >
               {/* Search & Filter Bar */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3 w-full max-w-full min-w-0">
-              <div className="flex items-center gap-2 flex-1 rounded-xl bg-zinc-50 dark:bg-[#16161a] px-3.5 py-2 border border-zinc-200/60 dark:border-white/[0.08] focus-within:border-[#0066B2] dark:focus-within:border-[#0066B2] min-w-0">
+              <div className="flex items-center gap-2 flex-1 rounded-xl bg-zinc-50 dark:bg-[#1a1a1a] px-3.5 py-2 border border-zinc-200/60 dark:border-white/[0.08] focus-within:border-[#0066B2] dark:focus-within:border-[#0066B2] min-w-0">
                 <Search className="h-4 w-4 text-zinc-400 shrink-0" />
                 <input
                   type="text"
@@ -1010,7 +1010,7 @@ export default function LockedPdfPage() {
 
               <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 justify-between sm:justify-end w-full sm:w-auto min-w-0">
                 {/* Desktop Status Tabs Pod (Preserved untouched) */}
-                <div className="hidden sm:flex items-center p-1 bg-zinc-100 dark:bg-[#16161a] dark:border dark:border-white/[0.06] rounded-xl text-xs min-w-0">
+                <div className="hidden sm:flex items-center p-1 bg-zinc-100 dark:bg-[#1a1a1a] dark:border dark:border-white/[0.06] rounded-xl text-xs min-w-0">
                   {[
                     { id: "all", label: `All (${total})` },
                     { id: "live", label: `Live (${liveCount})` },
@@ -1028,7 +1028,7 @@ export default function LockedPdfPage() {
                       {statusFilter === tab.id && (
                         <motion.div
                           layoutId="activeStatusFilterTabLockedPdf"
-                          className="absolute inset-0 bg-white dark:bg-[#222226] rounded-lg shadow-xs"
+                          className="absolute inset-0 bg-white dark:bg-white/10 rounded-lg shadow-xs"
                           transition={{ type: "spring", stiffness: 500, damping: 32 }}
                         />
                       )}
@@ -1046,7 +1046,7 @@ export default function LockedPdfPage() {
                       setIsSortOpen(false);
                       setIsStatusFilterOpen((v) => !v);
                     }}
-                    className="flex h-8 items-center gap-1.5 rounded-xl border border-zinc-200 dark:border-white/[0.08] bg-white dark:bg-[#16161a] px-2.5 text-[11px] font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-[#222226] transition shadow-2xs cursor-pointer select-none"
+                    className="flex h-8 items-center gap-1.5 rounded-xl border border-zinc-200 dark:border-white/[0.08] bg-white dark:bg-[#1a1a1a] px-2.5 text-[11px] font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-white/10 transition shadow-2xs cursor-pointer select-none"
                   >
                     <Filter className="h-3 w-3 text-zinc-400 shrink-0" />
                     <span className="truncate">
@@ -1071,7 +1071,7 @@ export default function LockedPdfPage() {
                         exit={{ opacity: 0, scale: 0.96, y: -4 }}
                         transition={{ type: "spring", damping: 28, stiffness: 400 }}
                         onClick={(e) => e.stopPropagation()}
-                        className="absolute left-0 top-full z-40 mt-1.5 w-48 rounded-xl border border-zinc-200/90 dark:border-white/[0.08] bg-white/95 dark:bg-[#16161a]/95 p-1.5 shadow-xl backdrop-blur-xl dark:text-white"
+                        className="absolute left-0 top-full z-40 mt-1.5 w-48 rounded-xl border border-zinc-200/90 dark:border-white/[0.08] bg-white/95 dark:bg-[#1a1a1a]/95 p-1.5 shadow-xl backdrop-blur-xl dark:text-white"
                       >
                         <div className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
                           Filter Status
@@ -1117,7 +1117,7 @@ export default function LockedPdfPage() {
                       e.stopPropagation();
                       setIsSortOpen((v) => !v);
                     }}
-                    className="flex h-8 items-center gap-1 sm:gap-2 rounded-xl border border-zinc-200 dark:border-white/[0.08] bg-white dark:bg-[#16161a] px-2 sm:px-3 text-[11px] sm:text-xs font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-[#222226] transition shadow-2xs cursor-pointer select-none"
+                    className="flex h-8 items-center gap-1 sm:gap-2 rounded-xl border border-zinc-200 dark:border-white/[0.08] bg-white dark:bg-[#1a1a1a] px-2 sm:px-3 text-[11px] sm:text-xs font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-white/10 transition shadow-2xs cursor-pointer select-none"
                   >
                     <SlidersHorizontal className="h-3 w-3 text-zinc-400 shrink-0" />
                     <span className="truncate max-w-[76px] sm:max-w-none">{sortOptions.find((o) => o.id === sortBy)?.label || "Sort"}</span>
@@ -1136,7 +1136,7 @@ export default function LockedPdfPage() {
                         exit={{ opacity: 0, scale: 0.96, y: -4 }}
                         transition={{ type: "spring", damping: 28, stiffness: 400 }}
                         onClick={(e) => e.stopPropagation()}
-                        className="absolute right-0 top-full z-40 mt-1.5 w-48 rounded-xl border border-zinc-200/90 dark:border-white/10 bg-white/95 dark:bg-[#1C1C20]/95 p-1.5 shadow-xl backdrop-blur-xl dark:text-white"
+                        className="absolute right-0 top-full z-40 mt-1.5 w-48 rounded-xl border border-zinc-200/90 dark:border-white/10 bg-white/95 dark:bg-[#171717]/95 p-1.5 shadow-xl backdrop-blur-xl dark:text-white"
                       >
                         <div className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
                           Sort by
@@ -1167,7 +1167,7 @@ export default function LockedPdfPage() {
                   </AnimatePresence>
                 </div>
 
-                <div className="flex items-center p-1 bg-zinc-100 dark:bg-[#1C1C20] rounded-xl">
+                <div className="flex items-center p-1 bg-zinc-100 dark:bg-[#171717] rounded-xl">
                   <button
                     onClick={() => setViewMode("grid")}
                     className={`relative p-1.5 rounded-lg transition-colors duration-150 cursor-pointer ${
@@ -1178,7 +1178,7 @@ export default function LockedPdfPage() {
                     {viewMode === "grid" && (
                       <motion.div
                         layoutId="activeViewModeTabLockedPdf"
-                        className="absolute inset-0 bg-white dark:bg-[#222226] rounded-lg shadow-xs"
+                        className="absolute inset-0 bg-white dark:bg-white/10 rounded-lg shadow-xs"
                         transition={{ type: "spring", stiffness: 500, damping: 32 }}
                       />
                     )}
@@ -1195,7 +1195,7 @@ export default function LockedPdfPage() {
                     {viewMode === "table" && (
                       <motion.div
                         layoutId="activeViewModeTabLockedPdf"
-                        className="absolute inset-0 bg-white dark:bg-[#222226] rounded-lg shadow-xs"
+                        className="absolute inset-0 bg-white dark:bg-white/10 rounded-lg shadow-xs"
                         transition={{ type: "spring", stiffness: 500, damping: 32 }}
                       />
                     )}
@@ -1215,7 +1215,7 @@ export default function LockedPdfPage() {
                     }}
                     className={`relative p-1.5 rounded-lg transition-colors duration-150 cursor-pointer ${
                       isSelectMode || checkedIds.length > 0
-                        ? "bg-white dark:bg-[#222226] text-[#0066B2] dark:text-[#38BDF8] shadow-xs"
+                        ? "bg-white dark:bg-white/10 text-[#0066B2] dark:text-[#38BDF8] shadow-xs"
                         : "text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200"
                     }`}
                     title={isSelectMode || checkedIds.length > 0 ? "Exit Select Mode" : "Select Locked PDFs"}
@@ -1235,7 +1235,7 @@ export default function LockedPdfPage() {
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.98 }}
                   transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
-                  className="rounded-2xl border border-dashed border-zinc-300 dark:border-zinc-800 bg-white dark:bg-[#141417] p-12 text-center flex flex-col items-center justify-center"
+                  className="rounded-2xl border border-dashed border-zinc-300 dark:border-white/10 bg-white dark:bg-[#171717] p-12 text-center flex flex-col items-center justify-center"
                 >
                   <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#EFF6FF] dark:bg-[#0066B2]/20 text-[#0066B2] dark:text-[#38BDF8] mb-3">
                     <Lock className="h-6 w-6" />
@@ -1288,10 +1288,10 @@ export default function LockedPdfPage() {
                           }}
                           className={`group relative rounded-2xl border cursor-pointer overflow-hidden flex flex-col justify-between will-change-transform transition-all duration-200 ${
                             isChecked
-                              ? "border-[#0066B2] dark:border-blue-500 bg-white dark:bg-[#141417] ring-2 ring-[#0066B2]/40 dark:ring-blue-500/40 shadow-[0_8px_30px_rgba(0,102,178,0.12)]"
+                              ? "border-[#0066B2] dark:border-blue-500 bg-white dark:bg-[#171717] ring-2 ring-[#0066B2]/40 dark:ring-blue-500/40 shadow-[0_8px_30px_rgba(0,102,178,0.12)]"
                               : isSelected
                                 ? "border-[#0066B2] dark:border-white/20 bg-gradient-to-b from-[#0066B2]/[0.08] via-[#0066B2]/[0.02] to-transparent dark:from-white/[0.04] dark:via-transparent dark:to-transparent ring-1 ring-[#0066B2]/30 dark:ring-white/10 shadow-[0_8px_30px_rgba(0,102,178,0.15)]"
-                                : "border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#141417] shadow-md dark:shadow-none backdrop-blur-sm hover:border-[#0066B2]/30 dark:hover:border-white/20 hover:shadow-lg"
+                                : "border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#171717] shadow-md dark:shadow-none backdrop-blur-sm hover:border-[#0066B2]/30 dark:hover:border-white/20 hover:shadow-lg"
                           }`}
                         >
 
@@ -1306,8 +1306,8 @@ export default function LockedPdfPage() {
                               isChecked
                                 ? "bg-[#0066B2] border-[#0066B2] text-white shadow-md scale-105 opacity-100"
                                 : isSelectMode || checkedIds.length > 0
-                                  ? "bg-white/90 dark:bg-[#18181D]/90 border-zinc-300 dark:border-zinc-700 text-transparent hover:border-[#0066B2] dark:hover:border-[#38BDF8] opacity-100 shadow-xs active:scale-95"
-                                  : "bg-white/90 dark:bg-[#18181D]/90 border-zinc-300 dark:border-zinc-700 text-transparent hover:border-[#0066B2] dark:hover:border-[#38BDF8] opacity-0 md:group-hover:opacity-100 shadow-xs"
+                                  ? "bg-white/90 dark:bg-[#171717]/90 border-zinc-300 dark:border-white/10 text-transparent hover:border-[#0066B2] dark:hover:border-[#38BDF8] opacity-100 shadow-xs active:scale-95"
+                                  : "bg-white/90 dark:bg-[#171717]/90 border-zinc-300 dark:border-white/10 text-transparent hover:border-[#0066B2] dark:hover:border-[#38BDF8] opacity-0 md:group-hover:opacity-100 shadow-xs"
                             }`}
                             title={isChecked ? "Deselect PDF" : "Select PDF"}
                           >
@@ -1315,13 +1315,13 @@ export default function LockedPdfPage() {
                           </button>
 
                           {/* Stacked Paper Pages Background (depth effect) */}
-                          <div className="absolute inset-x-10 top-2.5 h-[102px] bg-zinc-200/70 dark:bg-zinc-800/50 rounded-t-lg transform scale-95 border border-zinc-300/40 dark:border-zinc-700/40 shadow-xs pointer-events-none" />
-                          <div className="absolute inset-x-8 top-3 h-[104px] bg-zinc-100/90 dark:bg-zinc-800/80 rounded-t-lg transform scale-[0.98] border border-zinc-300/60 dark:border-zinc-700/60 shadow-xs pointer-events-none" />
+                          <div className="absolute inset-x-10 top-2.5 h-[102px] bg-zinc-200/70 dark:bg-zinc-800/50 rounded-t-lg transform scale-95 border border-zinc-300/40 dark:border-white/10 shadow-xs pointer-events-none" />
+                          <div className="absolute inset-x-8 top-3 h-[104px] bg-zinc-100/90 dark:bg-zinc-800/80 rounded-t-lg transform scale-[0.98] border border-zinc-300/60 dark:border-white/10 shadow-xs pointer-events-none" />
 
                           {/* Main PDF Paper Document Sheet */}
-                          <div className="relative z-0 w-full max-w-[94px] sm:max-w-[100px] aspect-[1/1.24] bg-white dark:bg-[#1A1A20] rounded-t-lg rounded-b-sm border border-zinc-300/80 dark:border-zinc-700/80 shadow-[0_8px_18px_rgba(0,0,0,0.13)] dark:shadow-[0_10px_22px_rgba(0,0,0,0.58)] group-hover:scale-[1.03] transition-transform duration-300 overflow-hidden flex flex-col pointer-events-none">
+                          <div className="relative z-0 w-full max-w-[94px] sm:max-w-[100px] aspect-[1/1.24] bg-white dark:bg-[#171717] rounded-t-lg rounded-b-sm border border-zinc-300/80 dark:border-white/10 shadow-[0_8px_18px_rgba(0,0,0,0.13)] dark:shadow-[0_10px_22px_rgba(0,0,0,0.58)] group-hover:scale-[1.03] transition-transform duration-300 overflow-hidden flex flex-col pointer-events-none">
                             {pdf.pdfPages && pdf.pdfPages.length > 0 ? (
-                              <div className="relative flex-1 w-full h-full bg-white dark:bg-[#1A1A20]">
+                              <div className="relative flex-1 w-full h-full bg-white dark:bg-[#171717]">
                                 <Image
                                   src={pdf.pdfPages[0]}
                                   alt={pdf.name}
@@ -1332,7 +1332,7 @@ export default function LockedPdfPage() {
                                 />
                               </div>
                             ) : (
-                              <div className="p-2.5 flex-1 flex flex-col justify-between bg-zinc-50/90 dark:bg-[#141418]/90">
+                              <div className="p-2.5 flex-1 flex flex-col justify-between bg-zinc-50/90 dark:bg-[#151515]/90">
                                 <div className="flex items-center justify-between">
                                   <div className="flex items-center gap-1">
                                     <div className="w-3.5 h-3.5 rounded bg-[#0066B2]/10 text-[#0066B2] dark:text-[#38BDF8] flex items-center justify-center">
@@ -1352,7 +1352,7 @@ export default function LockedPdfPage() {
                                   <div className="h-1 w-2/3 bg-zinc-200 dark:bg-zinc-800 rounded-full" />
                                 </div>
 
-                                <div className="text-[7.5px] font-mono font-bold text-zinc-400 dark:text-zinc-500 text-center pt-1 border-t border-zinc-200/50 dark:border-zinc-800/50">
+                                <div className="text-[7.5px] font-mono font-bold text-zinc-400 dark:text-zinc-500 text-center pt-1 border-t border-zinc-200/50 dark:border-white/10">
                                   {pdf.pdfPageCount || 1} {pdf.pdfPageCount === 1 ? "Page" : "Pages"}
                                 </div>
                               </div>
@@ -1392,7 +1392,7 @@ export default function LockedPdfPage() {
                                 setSelectedPageId(pdf.id);
                                 setMobileInspectorOpen(true);
                               }}
-                              className="flex-1 inline-flex items-center justify-center gap-1.5 h-[30px] rounded-[10px] border border-zinc-200 dark:border-zinc-700/80 bg-zinc-50 hover:bg-zinc-100 dark:bg-zinc-800/80 dark:hover:bg-zinc-700 px-2 text-[10.5px] font-semibold text-zinc-700 dark:text-zinc-200 transition cursor-pointer active:scale-95 shadow-2xs"
+                              className="flex-1 inline-flex items-center justify-center gap-1.5 h-[30px] rounded-[10px] border border-zinc-200 bg-zinc-50 hover:bg-zinc-100 dark:border-white/10 dark:bg-white/5 dark:hover:bg-white/10 px-2 text-[10.5px] font-semibold text-zinc-700 dark:text-zinc-200 transition cursor-pointer active:scale-95 shadow-2xs"
                               title="View Details"
                             >
                               <Eye className="h-3 w-3 text-[#0066B2] dark:text-[#38BDF8]" />
@@ -1417,7 +1417,7 @@ export default function LockedPdfPage() {
                               target="_blank"
                               rel="noopener noreferrer"
                               onClick={(e) => e.stopPropagation()}
-                              className="flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-[10px] border border-zinc-200/80 dark:border-zinc-700/80 bg-zinc-50 dark:bg-zinc-800/80 text-zinc-600 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white transition-all cursor-pointer active:scale-95 shadow-2xs"
+                              className="flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-[10px] border border-zinc-200/80 bg-zinc-50 dark:border-white/10 dark:bg-white/5 text-zinc-600 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white transition-all cursor-pointer active:scale-95 shadow-2xs"
                               title="Open Viewer in New Tab"
                             >
                               <ExternalLink className="h-3.5 w-3.5" />
@@ -1502,12 +1502,12 @@ export default function LockedPdfPage() {
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: -6, scale: 0.995 }}
                   transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-                  className="rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#131316] overflow-hidden shadow-md dark:shadow-none backdrop-blur-sm"
+                  className="rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#171717] overflow-hidden shadow-md dark:shadow-none backdrop-blur-sm"
                 >
                   {/* DESKTOP Table View (hidden md:block) - Preserved exactly as original */}
                   <div className="hidden md:block overflow-x-auto">
                     <table className="w-full text-left text-xs">
-                      <thead className="bg-[#F8FBFF] dark:bg-[#151518] text-zinc-500 dark:text-zinc-400 uppercase text-[11px] font-semibold tracking-wider border-b border-[#0066B2]/10 dark:border-[#38BDF8]/20">
+                      <thead className="bg-[#F8FBFF] dark:bg-[#151515] text-zinc-500 dark:text-zinc-400 uppercase text-[11px] font-semibold tracking-wider border-b border-[#0066B2]/10 dark:border-[#38BDF8]/20">
                         <tr>
                           <th className="px-6 py-3.5 text-left">
                             <div className="flex items-center">
@@ -1542,7 +1542,7 @@ export default function LockedPdfPage() {
                           <th className="px-6 py-3.5 text-right">Actions</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-[#0066B2]/8 bg-white dark:divide-white/[0.05] dark:bg-[#131316]">
+                      <tbody className="divide-y divide-[#0066B2]/8 bg-white dark:divide-white/[0.05] dark:bg-[#171717]">
                         {filtered.map((pdf) => {
                           const isSelected = activePage?.id === pdf.id;
                           const isChecked = checkedIds.includes(pdf.id);
@@ -1687,8 +1687,8 @@ export default function LockedPdfPage() {
                             isChecked
                               ? "border-[#0066B2] dark:border-[#38BDF8] bg-blue-50/50 dark:bg-[#0066B2]/15 ring-2 ring-[#0066B2]/30 shadow-sm"
                               : isSelected
-                              ? "border-[#0066B2] dark:border-white/20 bg-white dark:bg-[#141417] ring-1 ring-[#0066B2]/30 shadow-xs"
-                              : "border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#141417] shadow-sm dark:shadow-none backdrop-blur-sm"
+                              ? "border-[#0066B2] dark:border-white/20 bg-white dark:bg-[#171717] ring-1 ring-[#0066B2]/30 shadow-xs"
+                              : "border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#171717] shadow-sm dark:shadow-none backdrop-blur-sm"
                           }`}
                         >
                           {/* Top Row: Checkbox, Thumbnail, Title/Slug, Page Count & Status Badge */}
@@ -1718,7 +1718,7 @@ export default function LockedPdfPage() {
                               </AnimatePresence>
 
                               {/* Thumbnail */}
-                              <div className="relative h-9 w-9 rounded-xl bg-zinc-100 dark:bg-zinc-800 shrink-0 overflow-hidden flex items-center justify-center border border-zinc-200/70 dark:border-zinc-700/60">
+                              <div className="relative h-9 w-9 rounded-xl bg-zinc-100 dark:bg-zinc-800 shrink-0 overflow-hidden flex items-center justify-center border border-zinc-200/70 dark:border-white/10">
                                 {pdf.pdfPages && pdf.pdfPages.length > 0 ? (
                                   <Image
                                     src={pdf.pdfPages[0]}
@@ -1754,7 +1754,7 @@ export default function LockedPdfPage() {
                                 className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase ${
                                   pdf.status === "live"
                                     ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 border border-emerald-200/60 dark:border-emerald-900/40"
-                                    : "bg-zinc-100 dark:bg-zinc-800 text-zinc-500 border border-zinc-200/60 dark:border-zinc-700/40"
+                                    : "bg-zinc-100 dark:bg-zinc-800 text-zinc-500 border border-zinc-200/60 dark:border-white/10"
                                 }`}
                               >
                                 <span className={`h-1.5 w-1.5 rounded-full ${pdf.status === "live" ? "bg-emerald-500 animate-pulse" : "bg-zinc-400"}`} />
@@ -1785,7 +1785,7 @@ export default function LockedPdfPage() {
                                   setSelectedPageId(pdf.id);
                                   setMobileInspectorOpen(true);
                                 }}
-                                className="inline-flex h-8 w-8 items-center justify-center rounded-xl border border-zinc-200/90 bg-white dark:border-[#2e2e38] dark:bg-[#202026] text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-[#282830] hover:text-[#0066B2] dark:hover:text-[#38BDF8] transition-all duration-150 cursor-pointer shadow-2xs active:scale-95"
+                                className="inline-flex h-8 w-8 items-center justify-center rounded-xl border border-zinc-200/90 bg-white dark:border-white/10 dark:bg-[#121212] text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-[#282830] hover:text-[#0066B2] dark:hover:text-[#38BDF8] transition-all duration-150 cursor-pointer shadow-2xs active:scale-95"
                                 title="Open details"
                               >
                                 <Eye className="h-3.5 w-3.5" />
@@ -1799,7 +1799,7 @@ export default function LockedPdfPage() {
                                   setCopiedId(pdf.id);
                                   setTimeout(() => setCopiedId(null), 2000);
                                 }}
-                                className="inline-flex h-8 w-8 items-center justify-center rounded-xl border border-zinc-200/90 bg-white dark:border-[#2e2e38] dark:bg-[#202026] text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-[#282830] hover:text-[#0066B2] dark:hover:text-[#38BDF8] transition-all duration-150 cursor-pointer shadow-2xs active:scale-95"
+                                className="inline-flex h-8 w-8 items-center justify-center rounded-xl border border-zinc-200/90 bg-white dark:border-white/10 dark:bg-[#121212] text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-[#282830] hover:text-[#0066B2] dark:hover:text-[#38BDF8] transition-all duration-150 cursor-pointer shadow-2xs active:scale-95"
                                 title={copiedId === pdf.id ? "Copied!" : "Copy URL"}
                               >
                                 {copiedId === pdf.id ? <Check className="h-3.5 w-3.5 text-emerald-500" /> : <Copy className="h-3.5 w-3.5" />}
@@ -1847,7 +1847,7 @@ export default function LockedPdfPage() {
                 }}
                 className="hidden lg:block lg:w-[35%] sticky top-6 z-20 space-y-4 shrink-0"
               >
-                <div className="rounded-2xl border border-[#0066B2]/15 dark:border-white/[0.08] bg-white/90 dark:bg-[#141417] dark:shadow-none p-5 shadow-md backdrop-blur-sm space-y-5">
+                <div className="rounded-2xl border border-[#0066B2]/15 dark:border-white/[0.08] bg-white/90 dark:bg-[#171717] dark:shadow-none p-5 shadow-md backdrop-blur-sm space-y-5">
                   <motion.div
                     key={activePage.id}
                     initial={{ opacity: 0, y: 3 }}
@@ -1874,7 +1874,7 @@ export default function LockedPdfPage() {
                       </button>
                     </div>
 
-                    <div className="rounded-xl bg-zinc-50 dark:bg-[#16161a] p-3 border border-zinc-200/60 dark:border-white/[0.06] space-y-2">
+                    <div className="rounded-xl bg-zinc-50 dark:bg-[#1a1a1a] p-3 border border-zinc-200/60 dark:border-white/[0.06] space-y-2">
                       <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Public Share URL</p>
                       <div className="flex items-center justify-between gap-2">
                         <span className="text-xs font-mono text-zinc-800 dark:text-zinc-200 truncate">
@@ -1887,7 +1887,7 @@ export default function LockedPdfPage() {
                             setCopiedId(activePage.id);
                             setTimeout(() => setCopiedId(null), 2000);
                           }}
-                          className="flex items-center gap-1 rounded-lg bg-white dark:bg-[#25252A] px-2.5 py-1 text-xs font-bold text-zinc-700 dark:text-zinc-200 border border-zinc-200 dark:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition shrink-0 cursor-pointer"
+                          className="flex items-center gap-1 rounded-lg bg-white dark:bg-white/5 px-2.5 py-1 text-xs font-bold text-zinc-700 dark:text-zinc-200 border border-zinc-200 dark:border-white/10 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition shrink-0 cursor-pointer"
                         >
                           {copiedId === activePage.id ? <Check className="h-3 w-3 text-emerald-500" /> : <Copy className="h-3 w-3" />}
                           <span>{copiedId === activePage.id ? "Copied" : "Copy"}</span>
@@ -1923,7 +1923,7 @@ export default function LockedPdfPage() {
                       <div className="grid grid-cols-2 gap-2">
                         <Link
                           href={`/dashboard/leadmagnets/${activePage.id}/analytics`}
-                          className="flex items-center justify-center gap-1.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#1C1C20] px-3 py-2 text-xs font-bold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition"
+                          className="flex items-center justify-center gap-1.5 rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#171717] px-3 py-2 text-xs font-bold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition"
                         >
                           <BarChart2 className="h-3.5 w-3.5 text-[#0066B2] dark:text-[#38BDF8]" /> Analytics
                         </Link>
@@ -1932,7 +1932,7 @@ export default function LockedPdfPage() {
                           href={`/pdf-viewer/${activePage.id}`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex items-center justify-center gap-1.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#1C1C20] px-3 py-2 text-xs font-bold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition"
+                          className="flex items-center justify-center gap-1.5 rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#171717] px-3 py-2 text-xs font-bold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition"
                         >
                           <ExternalLink className="h-3.5 w-3.5 text-zinc-400" /> Preview
                         </a>
@@ -2023,7 +2023,7 @@ export default function LockedPdfPage() {
                   ? { type: "spring", stiffness: 450, damping: 32, mass: 0.4 }
                   : { type: "spring", stiffness: 650, damping: 36, mass: 0.3 }
               }
-              className="relative z-10 w-full sm:max-w-[440px] max-h-[85vh] overflow-y-auto rounded-t-[28px] sm:rounded-3xl border-t sm:border border-zinc-200 dark:border-white/10 bg-white/95 dark:bg-[#141417]/95 backdrop-blur-xl p-5 sm:p-6 text-zinc-900 dark:text-white shadow-2xl space-y-4 transform-gpu will-change-transform"
+              className="relative z-10 w-full sm:max-w-[440px] max-h-[85vh] overflow-y-auto rounded-t-[28px] sm:rounded-3xl border-t sm:border border-zinc-200 dark:border-white/10 bg-white/95 dark:bg-[#171717]/95 backdrop-blur-xl p-5 sm:p-6 text-zinc-900 dark:text-white shadow-2xl space-y-4 transform-gpu will-change-transform"
               onClick={(e) => e.stopPropagation()}
             >
               {/* Grab Handle */}
@@ -2063,7 +2063,7 @@ export default function LockedPdfPage() {
                     setShowDeleteModal(false);
                     setPageToDeleteId(null);
                   }}
-                  className="flex-1 sm:flex-none rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-[#25252A] px-4 py-2.5 text-xs font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white transition-all cursor-pointer text-center"
+                  className="flex-1 sm:flex-none rounded-xl border border-zinc-200 dark:border-white/10 bg-zinc-100 dark:bg-white/5 px-4 py-2.5 text-xs font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white transition-all cursor-pointer text-center"
                 >
                   Cancel
                 </button>
@@ -2097,7 +2097,7 @@ export default function LockedPdfPage() {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 60, scale: 0.98 }}
               transition={{ type: "spring", damping: 28, stiffness: 340 }}
-              className="relative w-full sm:max-w-[460px] rounded-t-[28px] sm:rounded-2xl border-t sm:border border-zinc-200 dark:border-[#2e2e38] bg-white dark:bg-[#18181c] p-5 sm:p-6 text-zinc-900 dark:text-white shadow-2xl space-y-4 sm:space-y-5 max-h-[90vh] overflow-y-auto pb-8 sm:pb-6"
+              className="relative w-full sm:max-w-[460px] rounded-t-[28px] sm:rounded-2xl border-t sm:border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#171717] p-5 sm:p-6 text-zinc-900 dark:text-white shadow-2xl space-y-4 sm:space-y-5 max-h-[90vh] overflow-y-auto pb-8 sm:pb-6"
               onClick={(e) => e.stopPropagation()}
             >
               {/* Mobile Bottom Sheet Grab Handle */}
@@ -2117,7 +2117,7 @@ export default function LockedPdfPage() {
                     setShowCreateModal(false);
                     setCreateMagnetName("");
                   }}
-                  className="rounded-lg p-1.5 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-[#25252b] dark:hover:text-white transition-colors cursor-pointer"
+                  className="rounded-lg p-1.5 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-white/10 dark:hover:text-white transition-colors cursor-pointer"
                 >
                   <X className="h-4 w-4" />
                 </button>
@@ -2127,7 +2127,7 @@ export default function LockedPdfPage() {
               <div className="space-y-4">
                 {/* Page Name Field */}
                 <div className="space-y-1.5">
-                  <label className="block text-xs font-semibold text-zinc-700 dark:text-[#d4c8bc]">Page name</label>
+                  <label className="block text-xs font-semibold text-zinc-700 dark:text-zinc-300">Page name</label>
                   <input
                     type="text"
                     autoFocus
@@ -2145,15 +2145,15 @@ export default function LockedPdfPage() {
                       }
                     }}
                     placeholder="e.g. 2026 SaaS Growth Playbook"
-                    className="w-full rounded-xl border border-[#0066B2]/40 bg-zinc-50 dark:bg-[#121214] px-3.5 py-2.5 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-[#52525b] outline-none focus:border-[#0066B2] focus:ring-1 focus:ring-[#0066B2] dark:border-[#0066B2]/60 dark:focus:border-[#0066B2] dark:focus:ring-[#0066B2] transition-all"
+                    className="w-full rounded-xl border border-[#0066B2]/40 bg-zinc-50 dark:bg-[#121212] px-3.5 py-2.5 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 outline-none focus:border-[#0066B2] focus:ring-1 focus:ring-[#0066B2] dark:border-[#0066B2]/60 dark:focus:border-[#0066B2] dark:focus:ring-[#0066B2] transition-all"
                   />
                 </div>
 
                 {/* URL Slug Field */}
                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-zinc-700 dark:text-[#d4c8bc]">URL slug</label>
-                  <div className="flex items-center rounded-xl border border-zinc-200 dark:border-[#2e2e38] bg-zinc-50 dark:bg-[#121214] px-3 py-2 text-xs text-zinc-500 dark:text-zinc-400 focus-within:border-[#0066B2] focus-within:ring-1 focus-within:ring-[#0066B2] transition-all">
-                    <span className="text-zinc-400 dark:text-[#666675] shrink-0 mr-1.5 font-mono">/</span>
+                  <label className="text-xs font-semibold text-zinc-700 dark:text-zinc-300">URL slug</label>
+                  <div className="flex items-center rounded-xl border border-zinc-200 dark:border-white/10 bg-zinc-50 dark:bg-[#121212] px-3 py-2 text-xs text-zinc-500 dark:text-zinc-400 focus-within:border-[#0066B2] focus-within:ring-1 focus-within:ring-[#0066B2] transition-all">
+                    <span className="text-zinc-400 dark:text-zinc-500 shrink-0 mr-1.5 font-mono">/</span>
                     <input
                       type="text"
                       value={isCustomSlugEdited ? customSlug : (customSlug || derivedSlug)}
@@ -2169,7 +2169,7 @@ export default function LockedPdfPage() {
                       className="w-full bg-transparent font-mono text-xs text-zinc-900 dark:text-white outline-none"
                     />
                   </div>
-                  <p className="text-[11px] text-zinc-500 dark:text-[#666675]">The path of the page. Lowercase, digits, and hyphens only.</p>
+                  <p className="text-[11px] text-zinc-500 dark:text-zinc-500">The path of the page. Lowercase, digits, and hyphens only.</p>
                 </div>
 
                 {/* Action Buttons */}
@@ -2182,7 +2182,7 @@ export default function LockedPdfPage() {
                       setCustomSlug("");
                       setIsCustomSlugEdited(false);
                     }}
-                    className="flex-1 sm:flex-initial rounded-xl border border-zinc-200 dark:border-[#2e2e38] bg-white dark:bg-[#222228] px-4 py-2.5 text-xs font-semibold text-zinc-700 dark:text-white hover:bg-zinc-100 dark:hover:bg-[#2c2c34] transition-all cursor-pointer text-center"
+                    className="flex-1 sm:flex-initial rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-white/5 px-4 py-2.5 text-xs font-semibold text-zinc-700 dark:text-white hover:bg-zinc-100 dark:hover:bg-white/10 transition-all cursor-pointer text-center"
                   >
                     Cancel
                   </button>
@@ -2221,7 +2221,7 @@ export default function LockedPdfPage() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 120 }}
                 transition={{ type: "spring", damping: 30, stiffness: 360, mass: 0.8 }}
-                className="w-full max-w-xl sm:max-w-2xl rounded-t-3xl sm:rounded-2xl border-t sm:border border-zinc-200/80 bg-white dark:border-[#27272A] dark:bg-[#18181B] p-5 sm:p-6 shadow-2xl relative space-y-4 max-h-[88vh] overflow-y-auto scrollbar-thin pb-8 sm:pb-6 mt-auto sm:mt-0"
+                className="w-full max-w-xl sm:max-w-2xl rounded-t-3xl sm:rounded-2xl border-t sm:border border-zinc-200/80 bg-white dark:border-white/10 dark:bg-[#171717] p-5 sm:p-6 shadow-2xl relative space-y-4 max-h-[88vh] overflow-y-auto scrollbar-thin pb-8 sm:pb-6 mt-auto sm:mt-0"
                 onClick={(e) => e.stopPropagation()}
               >
                 {/* Mobile Bottom Sheet Grab Handle */}
@@ -2256,7 +2256,7 @@ export default function LockedPdfPage() {
                     placeholder="Search hosted assets by name..."
                     value={assetSearchQuery}
                     onChange={(e) => setAssetSearchQuery(e.target.value)}
-                    className="w-full rounded-xl border border-zinc-200 dark:border-[#27272A] bg-zinc-50 dark:bg-[#121216] px-3.5 py-2.5 text-xs text-zinc-900 dark:text-white outline-none focus:border-[#0066B2]"
+                    className="w-full rounded-xl border border-zinc-200 dark:border-white/10 bg-zinc-50 dark:bg-[#121212] px-3.5 py-2.5 text-xs text-zinc-900 dark:text-white outline-none focus:border-[#0066B2]"
                   />
                 </div>
 
@@ -2287,7 +2287,7 @@ export default function LockedPdfPage() {
                       return (
                         <div
                           key={asset.id}
-                          className="flex items-center justify-between gap-3 p-3 rounded-xl border border-zinc-200 dark:border-[#27272A] bg-zinc-50/50 dark:bg-[#121216] hover:bg-zinc-100 dark:hover:bg-[#1C1C22] transition"
+                          className="flex items-center justify-between gap-3 p-3 rounded-xl border border-zinc-200 dark:border-white/10 bg-zinc-50/50 dark:bg-[#121212] hover:bg-zinc-100 dark:hover:bg-[#1C1C22] transition"
                         >
                           <div className="flex items-center gap-3 min-w-0 flex-1">
                             <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-[#0066B2]/20 bg-[#0066B2]/[0.08] text-[#0066B2] dark:border-[#38BDF8]/20 dark:bg-[#38BDF8]/10 dark:text-[#38BDF8] shadow-2xs">
@@ -2320,7 +2320,7 @@ export default function LockedPdfPage() {
                                 navigator.clipboard.writeText(asset.url);
                                 setShowAssetPickerModal(false);
                               }}
-                              className="flex items-center gap-1 rounded-lg border border-zinc-200 dark:border-zinc-700 px-3 py-1.5 text-xs font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition shrink-0 cursor-pointer"
+                              className="flex items-center gap-1 rounded-lg border border-zinc-200 dark:border-white/10 px-3 py-1.5 text-xs font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition shrink-0 cursor-pointer"
                             >
                               <span>Copy Link</span>
                             </button>
@@ -2341,7 +2341,7 @@ export default function LockedPdfPage() {
                   <button
                     type="button"
                     onClick={() => setShowAssetPickerModal(false)}
-                    className="rounded-xl border border-zinc-200 dark:border-zinc-700 px-4 py-2 text-xs font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition cursor-pointer"
+                    className="rounded-xl border border-zinc-200 dark:border-white/10 px-4 py-2 text-xs font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition cursor-pointer"
                   >
                     Close
                   </button>
@@ -2388,7 +2388,7 @@ export default function LockedPdfPage() {
                   ? { type: "spring", stiffness: 450, damping: 32, mass: 0.4 }
                   : { type: "spring", stiffness: 650, damping: 36, mass: 0.3 }
               }
-              className="relative z-10 w-full sm:max-w-[440px] max-h-[85vh] overflow-y-auto rounded-t-[28px] sm:rounded-3xl border-t sm:border border-zinc-200 dark:border-white/10 bg-white/95 dark:bg-[#141417]/95 backdrop-blur-xl p-5 sm:p-6 text-zinc-900 dark:text-white shadow-2xl space-y-4 transform-gpu will-change-transform"
+              className="relative z-10 w-full sm:max-w-[440px] max-h-[85vh] overflow-y-auto rounded-t-[28px] sm:rounded-3xl border-t sm:border border-zinc-200 dark:border-white/10 bg-white/95 dark:bg-[#171717]/95 backdrop-blur-xl p-5 sm:p-6 text-zinc-900 dark:text-white shadow-2xl space-y-4 transform-gpu will-change-transform"
               onClick={(e) => e.stopPropagation()}
             >
               {/* Grab Handle */}
@@ -2423,7 +2423,7 @@ export default function LockedPdfPage() {
                 <button
                   type="button"
                   onClick={() => setShowBulkDeleteModal(false)}
-                  className="flex-1 sm:flex-none rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-[#25252A] px-4 py-2.5 text-xs font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white transition-all cursor-pointer text-center"
+                  className="flex-1 sm:flex-none rounded-xl border border-zinc-200 dark:border-white/10 bg-zinc-100 dark:bg-white/5 px-4 py-2.5 text-xs font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white transition-all cursor-pointer text-center"
                 >
                   Cancel
                 </button>
@@ -2460,7 +2460,7 @@ export default function LockedPdfPage() {
               animate={{ y: 0 }}
               exit={{ y: "100%" }}
               transition={{ type: "spring", damping: 30, stiffness: 320 }}
-              className="relative z-10 w-full max-w-full max-h-[85vh] overflow-y-auto overflow-x-hidden rounded-t-[28px] border-t border-zinc-200 dark:border-white/10 bg-white/95 dark:bg-[#141417]/95 backdrop-blur-xl p-4 sm:p-5 shadow-2xl space-y-4 sm:space-y-5"
+              className="relative z-10 w-full max-w-full max-h-[85vh] overflow-y-auto overflow-x-hidden rounded-t-[28px] border-t border-zinc-200 dark:border-white/10 bg-white/95 dark:bg-[#171717]/95 backdrop-blur-xl p-4 sm:p-5 shadow-2xl space-y-4 sm:space-y-5"
               onClick={(e) => e.stopPropagation()}
             >
               {/* Grab Handle */}
@@ -2489,7 +2489,7 @@ export default function LockedPdfPage() {
               </div>
 
               {/* Public Share URL */}
-              <div className="rounded-xl bg-zinc-50 dark:bg-[#1A1A1E] p-3 border border-zinc-200/60 dark:border-zinc-800/60 space-y-2">
+              <div className="rounded-xl bg-zinc-50 dark:bg-[#121212] p-3 border border-zinc-200/60 dark:border-white/[0.06] space-y-2">
                 <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Public Share URL</p>
                 <div className="flex items-center justify-between gap-2">
                   <span className="text-xs font-mono text-zinc-800 dark:text-zinc-200 truncate">
@@ -2503,7 +2503,7 @@ export default function LockedPdfPage() {
                       setCopiedId(activePage.id);
                       setTimeout(() => setCopiedId(null), 2000);
                     }}
-                    className="flex items-center gap-1 rounded-lg bg-white dark:bg-[#25252A] px-2.5 py-1.5 text-xs font-bold text-zinc-700 dark:text-zinc-200 border border-zinc-200 dark:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition shrink-0 cursor-pointer"
+                    className="flex items-center gap-1 rounded-lg bg-white dark:bg-white/5 px-2.5 py-1.5 text-xs font-bold text-zinc-700 dark:text-zinc-200 border border-zinc-200 dark:border-white/10 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition shrink-0 cursor-pointer"
                   >
                     {copiedId === activePage.id ? <Check className="h-3 w-3 text-emerald-500" /> : <Copy className="h-3 w-3" />}
                     <span>{copiedId === activePage.id ? "Copied" : "Copy"}</span>
@@ -2541,7 +2541,7 @@ export default function LockedPdfPage() {
                 <div className="grid grid-cols-2 gap-2">
                   <Link
                     href={`/dashboard/leadmagnets/${activePage.id}/analytics`}
-                    className="flex items-center justify-center gap-1.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#1C1C20] px-3 py-2.5 text-xs font-bold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition"
+                    className="flex items-center justify-center gap-1.5 rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#171717] px-3 py-2.5 text-xs font-bold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition"
                   >
                     <BarChart2 className="h-3.5 w-3.5 text-[#0066B2] dark:text-[#38BDF8]" /> Analytics
                   </Link>
@@ -2550,7 +2550,7 @@ export default function LockedPdfPage() {
                     href={`/pdf-viewer/${activePage.id}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center justify-center gap-1.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#1C1C20] px-3 py-2.5 text-xs font-bold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition"
+                    className="flex items-center justify-center gap-1.5 rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#171717] px-3 py-2.5 text-xs font-bold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition"
                   >
                     <ExternalLink className="h-3.5 w-3.5 text-zinc-400" /> Preview
                   </a>

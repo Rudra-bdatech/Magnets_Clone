@@ -180,11 +180,11 @@ export default function SequenceTab({
   return (
     <div className="space-y-6">
       {/* Canvas Outer Wrapper - Adapts dynamically to Brand Theme Mode */}
-      <div className={`rounded-2xl border p-4 sm:p-6 transition-colors duration-200 ${(account?.themeMode || "light") === "dark" ? "border-[#1F1F24] bg-[#0E0E10] text-white" : "border-zinc-200/70 bg-[#F9F9FB] text-zinc-900"}`}>
+      <div className={`rounded-2xl border p-4 sm:p-6 transition-colors duration-200 ${(account?.themeMode || "light") === "dark" ? "border-white/10 bg-[#121212] text-white" : "border-zinc-200/70 bg-[#F9F9FB] text-zinc-900"}`}>
         <div className="mx-auto max-w-7xl space-y-6">
 
           {/* Top Control Card - Left Panel Background (#18181B) in Dark Mode */}
-          <div className={`rounded-2xl border p-5 sm:p-6 shadow-xs space-y-4 transition-colors duration-200 ${(account?.themeMode || "light") === "dark" ? "border-[#27272A] bg-[#18181B] text-white" : "border-zinc-200 bg-white text-zinc-900"}`}>
+          <div className={`rounded-2xl border p-5 sm:p-6 shadow-xs space-y-4 transition-colors duration-200 ${(account?.themeMode || "light") === "dark" ? "border-white/10 bg-[#171717] text-white" : "border-zinc-200 bg-white text-zinc-900"}`}>
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div>
                 <h3 className={`text-base font-extrabold ${(account?.themeMode || "light") === "dark" ? "text-white" : "text-zinc-900"}`}>Follow-up sequence</h3>
@@ -202,7 +202,7 @@ export default function SequenceTab({
                 onClick={() => setSequenceEnabled(!sequenceEnabled)}
                 className={`flex items-center gap-2 rounded-full px-3.5 py-1.5 text-xs font-bold transition cursor-pointer shrink-0 border ${sequenceEnabled
                   ? "bg-emerald-50 text-emerald-700 border-emerald-300 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-700/60"
-                  : "bg-zinc-100 text-zinc-600 border-zinc-200 dark:bg-[#25252B] dark:text-zinc-300 dark:border-[#27272A]"
+                  : "bg-zinc-100 text-zinc-600 border-zinc-200 dark:bg-white/5 dark:text-zinc-300 dark:border-white/10"
                   }`}
               >
                 <span className={`h-2.5 w-2.5 rounded-full ${sequenceEnabled ? "bg-emerald-500" : "bg-zinc-400"}`} />
@@ -215,7 +215,7 @@ export default function SequenceTab({
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
 
             {/* Left Sidebar List of Sequence Emails */}
-            <div className={`lg:col-span-4 rounded-2xl border p-4 space-y-3 transition-colors duration-200 ${(account?.themeMode || "light") === "dark" ? "border-[#27272A] bg-[#18181B] text-white" : "border-zinc-200 bg-white text-zinc-900"}`}>
+            <div className={`lg:col-span-4 rounded-2xl border p-4 space-y-3 transition-colors duration-200 ${(account?.themeMode || "light") === "dark" ? "border-white/10 bg-[#171717] text-white" : "border-zinc-200 bg-white text-zinc-900"}`}>
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold uppercase tracking-wider text-zinc-600 dark:text-zinc-400">
                   Sequence emails ({sequenceEmails.length})
@@ -261,7 +261,7 @@ export default function SequenceTab({
                       className={`rounded-xl p-3 border transition cursor-pointer flex items-center justify-between gap-2 ${isSelected
                         ? "border-[#0066B2] bg-[#0066B2]/10 dark:bg-[#0066B2]/20 text-[#0066B2] dark:text-[#38BDF8] font-bold"
                         : (account?.themeMode || "light") === "dark"
-                          ? "border-[#27272A] bg-[#121216] text-zinc-300 hover:bg-[#1C1C22]"
+                          ? "border-white/10 bg-[#121212] text-zinc-300 hover:bg-white/5"
                           : "border-zinc-200 bg-zinc-50 text-zinc-700 hover:bg-zinc-100"
                         }`}
                     >
@@ -310,7 +310,7 @@ export default function SequenceTab({
 
             {/* Right Main Email Detail Form */}
             {!activeEmail && (
-              <div className={`lg:col-span-8 rounded-2xl border p-8 text-center space-y-3.5 transition-colors duration-200 ${(account?.themeMode || "light") === "dark" ? "border-[#27272A] bg-[#18181B] text-white" : "border-zinc-200 bg-white text-zinc-900"}`}>
+              <div className={`lg:col-span-8 rounded-2xl border p-8 text-center space-y-3.5 transition-colors duration-200 ${(account?.themeMode || "light") === "dark" ? "border-white/10 bg-[#171717] text-white" : "border-zinc-200 bg-white text-zinc-900"}`}>
                 <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-50 dark:bg-blue-950/40 text-[#0066B2] dark:text-[#38BDF8] mx-auto shadow-xs">
                   <Mail className="h-6 w-6" />
                 </div>
@@ -331,8 +331,8 @@ export default function SequenceTab({
               </div>
             )}
             {activeEmail && (
-              <div className={`lg:col-span-8 rounded-2xl border p-5 sm:p-6 space-y-5 transition-colors duration-200 ${(account?.themeMode || "light") === "dark" ? "border-[#27272A] bg-[#18181B] text-white" : "border-zinc-200 bg-white text-zinc-900"}`}>
-                <div className="flex items-center justify-between border-b pb-3 border-zinc-100 dark:border-[#27272A]">
+              <div className={`lg:col-span-8 rounded-2xl border p-5 sm:p-6 space-y-5 transition-colors duration-200 ${(account?.themeMode || "light") === "dark" ? "border-white/10 bg-[#171717] text-white" : "border-zinc-200 bg-white text-zinc-900"}`}>
+                <div className="flex items-center justify-between border-b pb-3 border-zinc-100 dark:border-white/10">
                   <div>
                     <h4 className="text-sm font-bold">
                       Editing Email {selectedSequenceIndex + 1}
@@ -386,7 +386,7 @@ export default function SequenceTab({
 
                   <div ref={wheelCardRef} className="w-full max-w-[300px]">
                     {/* Compact Apple iOS Drum Picker */}
-                    <div className="relative flex items-stretch rounded-2xl border border-zinc-200 dark:border-[#27272A] bg-zinc-100/70 dark:bg-[#141418] p-1 shadow-xs overflow-hidden">
+                    <div className="relative flex items-stretch rounded-2xl border border-zinc-200 dark:border-white/10 bg-zinc-100/70 dark:bg-[#171717] p-1 shadow-xs overflow-hidden">
                       {/* Shared Apple iOS Glass Selection Lens */}
                       <div className="pointer-events-none absolute inset-x-2 top-1/2 -translate-y-1/2 h-[36px] rounded-xl bg-zinc-900/[0.04] dark:bg-white/[0.08] backdrop-blur-md border border-zinc-900/10 dark:border-white/10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.12)] z-0" />
 
@@ -435,7 +435,7 @@ export default function SequenceTab({
                       setSequenceEmails(sequenceEmails.map((item, idx) => idx === selectedSequenceIndex ? { ...item, subject: val } : item));
                     }}
                     placeholder="Quick follow-up"
-                    className={`w-full rounded-xl border px-3.5 py-2.5 text-xs outline-none transition disabled:cursor-not-allowed ${(account?.themeMode || "light") === "dark" ? "border-[#27272A] bg-[#121216] text-white placeholder:text-zinc-600 focus:border-[#0066B2]" : "border-zinc-200 bg-white text-zinc-900 placeholder:text-zinc-400 focus:border-[#0066B2]"}`}
+                    className={`w-full rounded-xl border px-3.5 py-2.5 text-xs outline-none transition disabled:cursor-not-allowed ${(account?.themeMode || "light") === "dark" ? "border-white/10 bg-[#121212] text-white placeholder:text-zinc-500 focus:border-[#0066B2]" : "border-zinc-200 bg-white text-zinc-900 placeholder:text-zinc-400 focus:border-[#0066B2]"}`}
                   />
                 </div>
 
@@ -460,7 +460,7 @@ export default function SequenceTab({
                   <label className={`text-xs font-semibold block mb-1.5 ${(account?.themeMode || "light") === "dark" ? "text-zinc-300" : "text-zinc-700"}`}>Body</label>
                   <div className={`rounded-2xl border shadow-xs ${(account?.themeMode || "light") === "dark" ? "border-[#27272A] bg-[#18181B]" : "border-zinc-200/90 bg-white"}`}>
                     {/* Toolbar matching DeliveryEmailTab exact screenshot design + Insert {name} */}
-                    <div ref={toolbarRef} className={`flex flex-wrap items-center gap-1.5 border-b px-3 py-2 text-xs font-semibold ${(account?.themeMode || "light") === "dark" ? "border-[#27272A] bg-[#18181B] text-zinc-300" : "border-zinc-200 bg-[#F9F9FB] text-zinc-600"}`}>
+                    <div ref={toolbarRef} className={`flex flex-wrap items-center gap-1.5 border-b px-3 py-2 text-xs font-semibold ${(account?.themeMode || "light") === "dark" ? "border-white/10 bg-[#151515] text-zinc-300" : "border-zinc-200 bg-[#F9F9FB] text-zinc-600"}`}>
 
                       {/* Headings Dropdown: T ⌄ */}
                       <div className="relative">
@@ -476,7 +476,7 @@ export default function SequenceTab({
                         </button>
                         {activeMenu === "headings" && (
                           <div className="absolute left-0 top-full pt-1 z-50">
-                            <div className={`w-32 rounded-lg border shadow-lg p-1 flex flex-col ${(account?.themeMode || "light") === "dark" ? "border-[#27272A] bg-[#1E1E24] text-white" : "border-zinc-200 bg-white text-zinc-800"}`}>
+                            <div className={`w-32 rounded-lg border shadow-lg p-1 flex flex-col ${(account?.themeMode || "light") === "dark" ? "border-white/10 bg-[#171717] text-white" : "border-zinc-200 bg-white text-zinc-800"}`}>
                               <button type="button" onClick={() => { editor?.chain().focus().setParagraph().run(); setActiveMenu(null); }} className="text-left px-2.5 py-1.5 text-xs rounded hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer">Paragraph</button>
                               <button type="button" onClick={() => { editor?.chain().focus().toggleHeading({ level: 1 }).run(); setActiveMenu(null); }} className="text-left px-2.5 py-1.5 text-xs font-bold rounded hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer">Heading 1</button>
                               <button type="button" onClick={() => { editor?.chain().focus().toggleHeading({ level: 2 }).run(); setActiveMenu(null); }} className="text-left px-2.5 py-1.5 text-xs font-semibold rounded hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer">Heading 2</button>
@@ -486,7 +486,7 @@ export default function SequenceTab({
                         )}
                       </div>
 
-                      <div className={`h-4 w-px mx-0.5 ${(account?.themeMode || "light") === "dark" ? "bg-[#27272A]" : "bg-zinc-300"}`} />
+                      <div className={`h-4 w-px mx-0.5 ${(account?.themeMode || "light") === "dark" ? "bg-white/10" : "bg-zinc-300"}`} />
 
                       {/* Bold: B */}
                       <button
@@ -534,7 +534,7 @@ export default function SequenceTab({
                         </button>
                         {activeMenu === "color" && (
                           <div className="absolute left-0 top-full pt-1 z-50">
-                            <div className={`flex gap-1.5 p-2 rounded-lg border shadow-lg ${(account?.themeMode || "light") === "dark" ? "border-[#27272A] bg-[#1E1E24]" : "border-zinc-200 bg-white"}`}>
+                            <div className={`flex gap-1.5 p-2 rounded-lg border shadow-lg ${(account?.themeMode || "light") === "dark" ? "border-white/10 bg-[#171717]" : "border-zinc-200 bg-white"}`}>
                               {["#18181b", "#0066B2", "#2563eb", "#059669", "#dc2626", "#d97706", "#7c3aed"].map((color) => (
                                 <button
                                   key={color}
@@ -563,7 +563,7 @@ export default function SequenceTab({
                         <Eraser className="h-3.5 w-3.5" />
                       </button>
 
-                      <div className={`h-4 w-px mx-0.5 ${(account?.themeMode || "light") === "dark" ? "bg-[#27272A]" : "bg-zinc-300"}`} />
+                      <div className={`h-4 w-px mx-0.5 ${(account?.themeMode || "light") === "dark" ? "bg-white/10" : "bg-zinc-300"}`} />
 
                       {/* Lists: ⋮= ⌄ */}
                       <div className="relative">
@@ -579,7 +579,7 @@ export default function SequenceTab({
                         </button>
                         {activeMenu === "lists" && (
                           <div className="absolute left-0 top-full pt-1 z-50">
-                            <div className={`w-36 rounded-lg border shadow-lg p-1 flex flex-col ${(account?.themeMode || "light") === "dark" ? "border-[#27272A] bg-[#1E1E24] text-white" : "border-zinc-200 bg-white text-zinc-800"}`}>
+                            <div className={`w-36 rounded-lg border shadow-lg p-1 flex flex-col ${(account?.themeMode || "light") === "dark" ? "border-white/10 bg-[#171717] text-white" : "border-zinc-200 bg-white text-zinc-800"}`}>
                               <button
                                 type="button"
                                 onClick={() => { editor?.chain().focus().toggleBulletList().run(); setActiveMenu(null); }}

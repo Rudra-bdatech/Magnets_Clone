@@ -435,7 +435,7 @@ export default function DashboardShell({
 
   if (isAuthenticated === null) {
     return (
-      <div className="flex h-screen w-screen items-center justify-center bg-white dark:bg-[#18181B]">
+      <div className="flex h-screen w-screen items-center justify-center bg-white dark:bg-[#0a0a0a]">
         <div className="h-6 w-6 animate-spin rounded-full border-2 border-[#0066B2] border-t-transparent" />
       </div>
     );
@@ -458,7 +458,7 @@ export default function DashboardShell({
         <motion.aside
           animate={{ width: isCollapsed ? 68 : 232 }}
           transition={{ type: "spring", stiffness: 520, damping: 38, mass: 0.5 }}
-          className="shadow-sm hidden h-screen shrink-0 flex-col border-r border-[#E0EDFB] bg-[#F0F7FF] text-zinc-900 sticky top-0 md:flex z-50 dark:border-white/10 dark:bg-[#18181B] dark:text-[#9B9085] overflow-visible select-none"
+          className="shadow-sm hidden h-screen shrink-0 flex-col border-r border-[#E0EDFB] bg-[#F0F7FF] text-zinc-900 sticky top-0 md:flex z-50 dark:border-white/[0.08] dark:bg-[#171717] dark:text-zinc-400 overflow-visible select-none"
         >
           {/* Header & Logo Area */}
           <div className="flex shrink-0 items-center justify-between px-3.5 pt-3 pb-1 h-14 relative">
@@ -521,7 +521,7 @@ export default function DashboardShell({
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ type: "spring", stiffness: 500, damping: 28 }}
-                className="absolute -right-3.5 top-3.5 z-[70] flex h-7 w-7 items-center justify-center rounded-full bg-white dark:bg-[#202024] border border-zinc-200/90 dark:border-white/20 shadow-[0_2px_8px_rgba(0,0,0,0.12)] dark:shadow-[0_2px_12px_rgba(0,0,0,0.5)] text-zinc-500 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-white hover:bg-[#E2F0FD] dark:hover:bg-zinc-700 transition-colors cursor-pointer"
+                className="absolute -right-3.5 top-3.5 z-[70] flex h-7 w-7 items-center justify-center rounded-full bg-white dark:bg-[#171717] border border-zinc-200/90 dark:border-white/10 shadow-[0_2px_8px_rgba(0,0,0,0.12)] dark:shadow-[0_2px_12px_rgba(0,0,0,0.5)] text-zinc-500 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-white hover:bg-[#E2F0FD] dark:hover:bg-white/10 transition-colors cursor-pointer"
                 aria-label="Expand sidebar"
               >
                 <PanelLeftOpen className="h-3.5 w-3.5" />
@@ -559,7 +559,7 @@ export default function DashboardShell({
                         type="button"
                         whileTap={{ scale: 0.95 }}
                         transition={{ type: "spring", stiffness: 600, damping: 28 }}
-                        className={`relative flex items-center rounded-xl font-medium transition-colors cursor-pointer text-zinc-600 dark:text-[#9B9085] dark:hover:text-white ${
+                        className={`relative flex items-center rounded-xl font-medium transition-colors cursor-pointer text-zinc-600 dark:text-zinc-400 dark:hover:text-white ${
                           isCollapsed
                             ? "h-10 w-10 mx-auto justify-center"
                             : "w-full gap-2.5 px-2.5 py-2 text-sm"
@@ -569,11 +569,11 @@ export default function DashboardShell({
                           <motion.div
                             layoutId="leftPanelHoverPill"
                             transition={{ type: "spring", stiffness: 800, damping: 38, mass: 0.2 }}
-                            className="absolute inset-0 rounded-xl bg-[#E2F0FD] dark:bg-[#25252a]"
+                            className="absolute inset-0 rounded-xl bg-[#E2F0FD] dark:bg-white/5"
                           />
                         )}
                         <item.icon
-                          className={`shrink-0 relative z-10 text-zinc-500 group-hover:text-zinc-900 dark:text-[#9B9085] dark:group-hover:text-white ${
+                          className={`shrink-0 relative z-10 text-zinc-500 group-hover:text-zinc-900 dark:text-zinc-400 dark:group-hover:text-white ${
                             isCollapsed ? "h-4.5 w-4.5" : "h-4 w-4"
                           }`}
                           aria-hidden="true"
@@ -601,10 +601,10 @@ export default function DashboardShell({
                             animate={{ opacity: 1, x: 0, scale: 1 }}
                             exit={{ opacity: 0, x: -4, scale: 0.95, transition: { duration: 0.06 } }}
                             transition={{ type: "spring", stiffness: 850, damping: 38, mass: 0.2 }}
-                            className="relative flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/80 text-zinc-900 text-xs font-semibold border border-zinc-200/90 shadow-[0_10px_25px_-4px_rgba(0,0,0,0.15)] dark:bg-[#18181B]/75 dark:text-zinc-100 dark:border-white/15 dark:shadow-[0_12px_32px_-4px_rgba(0,0,0,0.6)] whitespace-nowrap backdrop-blur-xl transform-gpu will-change-transform"
+                            className="relative flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/80 text-zinc-900 text-xs font-semibold border border-zinc-200/90 shadow-[0_10px_25px_-4px_rgba(0,0,0,0.15)] dark:bg-[#171717]/95 dark:text-zinc-100 dark:border-white/10 dark:shadow-[0_12px_32px_-4px_rgba(0,0,0,0.6)] whitespace-nowrap backdrop-blur-xl transform-gpu will-change-transform"
                           >
                             {/* Micro Arrow Pointer */}
-                            <div className="absolute -left-1 top-1/2 -translate-y-1/2 w-2 h-2 rotate-45 bg-white/80 border-l border-b border-zinc-200/90 dark:bg-[#18181B]/75 dark:border-white/15" />
+                            <div className="absolute -left-1 top-1/2 -translate-y-1/2 w-2 h-2 rotate-45 bg-white/80 border-l border-b border-zinc-200/90 dark:bg-[#171717]/95 dark:border-white/10" />
                             <motion.div
                               key={item.label}
                               initial={{ opacity: 0.5, y: 1 }}
@@ -648,7 +648,7 @@ export default function DashboardShell({
                       } ${
                         active
                           ? "text-white font-bold dark:text-white"
-                          : "text-zinc-600 dark:text-[#9B9085] dark:hover:text-white"
+                          : "text-zinc-600 dark:text-zinc-400 dark:hover:text-white"
                       }`}
                       onClick={(e) => {
                         if (pathname !== item.href) {
@@ -670,14 +670,14 @@ export default function DashboardShell({
                         <motion.div
                           layoutId="leftPanelHoverPill"
                           transition={{ type: "spring", stiffness: 800, damping: 38, mass: 0.2 }}
-                          className="absolute inset-0 rounded-xl bg-[#E2F0FD] dark:bg-[#25252a]"
+                          className="absolute inset-0 rounded-xl bg-[#E2F0FD] dark:bg-white/5"
                         />
                       )}
                       <item.icon
                         className={`shrink-0 relative z-10 ${
                           active
                             ? "text-white"
-                            : "text-zinc-500 group-hover:text-zinc-900 dark:text-[#9B9085] dark:group-hover:text-white"
+                            : "text-zinc-500 group-hover:text-zinc-900 dark:text-zinc-400 dark:group-hover:text-white"
                         } ${isCollapsed ? "h-4.5 w-4.5" : "h-4 w-4"}`}
                         aria-hidden="true"
                       />
@@ -699,7 +699,7 @@ export default function DashboardShell({
                       )}
                       {/* Collapsed badge dot */}
                       {isCollapsed && item.badge && !active && (
-                        <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-[#0066B2] dark:bg-[#38BDF8] ring-2 ring-white dark:ring-[#18181B]" />
+                        <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-[#0066B2] dark:bg-[#38BDF8] ring-2 ring-white dark:ring-[#171717]" />
                       )}
                     </Link>
                   </motion.div>
@@ -714,10 +714,10 @@ export default function DashboardShell({
                           animate={{ opacity: 1, x: 0, scale: 1 }}
                           exit={{ opacity: 0, x: -4, scale: 0.95, transition: { duration: 0.06 } }}
                           transition={{ type: "spring", stiffness: 850, damping: 38, mass: 0.2 }}
-                          className="relative flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/80 text-zinc-900 text-xs font-semibold border border-zinc-200/90 shadow-[0_10px_25px_-4px_rgba(0,0,0,0.15)] dark:bg-[#18181B]/75 dark:text-zinc-100 dark:border-white/15 dark:shadow-[0_12px_32px_-4px_rgba(0,0,0,0.6)] whitespace-nowrap backdrop-blur-xl transform-gpu will-change-transform"
+                          className="relative flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/80 text-zinc-900 text-xs font-semibold border border-zinc-200/90 shadow-[0_10px_25px_-4px_rgba(0,0,0,0.15)] dark:bg-[#171717]/95 dark:text-zinc-100 dark:border-white/10 dark:shadow-[0_12px_32px_-4px_rgba(0,0,0,0.6)] whitespace-nowrap backdrop-blur-xl transform-gpu will-change-transform"
                         >
                           {/* Micro Arrow Pointer */}
-                          <div className="absolute -left-1 top-1/2 -translate-y-1/2 w-2 h-2 rotate-45 bg-white/80 border-l border-b border-zinc-200/90 dark:bg-[#18181B]/75 dark:border-white/15" />
+                          <div className="absolute -left-1 top-1/2 -translate-y-1/2 w-2 h-2 rotate-45 bg-white/80 border-l border-b border-zinc-200/90 dark:bg-[#171717]/95 dark:border-white/10" />
                           <motion.div
                             key={item.label}
                             initial={{ opacity: 0.5, y: 1 }}
@@ -754,7 +754,7 @@ export default function DashboardShell({
                     exit={isCollapsed ? { opacity: 0, scale: 0.95, x: -8 } : { opacity: 0, scale: 0.95, y: 4 }}
                     transition={{ duration: 0.15, ease: [0.16, 1, 0.3, 1] }}
                     style={{ transformOrigin: isCollapsed ? "bottom left" : "bottom left" }}
-                    className={`absolute rounded-2xl border border-zinc-200/80 bg-white/95 p-1.5 shadow-2xl backdrop-blur-md z-[100] text-zinc-900 flex flex-col gap-0.5 dark:border-zinc-800/90 dark:bg-[#18181b]/95 dark:text-white dark:shadow-[0_12px_36px_-6px_rgba(0,0,0,0.6),0_0_0_1px_rgba(255,255,255,0.06)] ${
+                    className={`absolute rounded-2xl border border-zinc-200/80 bg-white/95 p-1.5 shadow-2xl backdrop-blur-md z-[100] text-zinc-900 flex flex-col gap-0.5 dark:border-white/10 dark:bg-[#171717]/95 dark:text-white dark:shadow-[0_12px_36px_-6px_rgba(0,0,0,0.6),0_0_0_1px_rgba(255,255,255,0.06)] ${
                       isCollapsed ? "w-56 left-full bottom-0 ml-3.5" : "w-full bottom-full mb-2 left-0"
                     }`}
                     onClick={(e) => e.stopPropagation()}
@@ -779,7 +779,7 @@ export default function DashboardShell({
                               <motion.div
                                 layoutId="activeThemePillSidebar"
                                 transition={{ type: "spring", stiffness: 450, damping: 35 }}
-                                className="absolute inset-0.5 bg-white dark:bg-zinc-800/90 rounded-[9px] shadow-sm border border-black/[0.04] dark:border-white/[0.08]"
+                                className="absolute inset-0.5 bg-white dark:bg-white/10 rounded-[9px] shadow-sm border border-black/[0.04] dark:border-white/[0.08]"
                               />
                             )}
                             <span className="relative z-10 flex items-center justify-center">
@@ -924,7 +924,7 @@ export default function DashboardShell({
                 data-tour="account-menu"
                 onClick={() => setShowProfileMenu(!showProfileMenu)}
                 title={isCollapsed ? `${displayAccount.name}` : undefined}
-                className={`flex items-center rounded-xl transition cursor-pointer hover:bg-[#E2F0FD] dark:hover:bg-[#25252A] ${
+                className={`flex items-center rounded-xl transition cursor-pointer hover:bg-[#E2F0FD] dark:hover:bg-white/5 ${
                   isCollapsed
                     ? "h-10 w-10 mx-auto justify-center p-0"
                     : "w-full justify-between gap-2.5 p-2 text-left"
@@ -948,7 +948,7 @@ export default function DashboardShell({
                 {!isCollapsed && (
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-xs font-bold text-zinc-900 leading-tight dark:text-white" suppressHydrationWarning>{displayAccount.name}</p>
-                    <p className="truncate text-[10px] text-zinc-500 leading-tight mt-0.5 dark:text-[#9B9085]" suppressHydrationWarning>{displayAccount.email}</p>
+                    <p className="truncate text-[10px] text-zinc-500 leading-tight mt-0.5 dark:text-zinc-400" suppressHydrationWarning>{displayAccount.email}</p>
                   </div>
                 )}
               </button>
@@ -975,7 +975,7 @@ export default function DashboardShell({
                 animate={{ x: 0 }}
                 exit={{ x: "-100%" }}
                 transition={{ type: "spring", stiffness: 380, damping: 34, mass: 0.85 }}
-                className="relative z-10 flex h-full w-72 max-w-[85vw] flex-col bg-[#F0F7FF] dark:bg-[#18181B] border-y border-r border-[#E0EDFB] dark:border-white/10 rounded-r-3xl p-4 text-zinc-900 dark:text-[#9B9085] shadow-2xl overflow-hidden"
+                className="relative z-10 flex h-full w-72 max-w-[85vw] flex-col bg-[#F0F7FF] dark:bg-[#171717] border-y border-r border-[#E0EDFB] dark:border-white/[0.08] rounded-r-3xl p-4 text-zinc-900 dark:text-zinc-400 shadow-2xl overflow-hidden"
                 onClick={(e) => e.stopPropagation()}
               >
               <div className="mb-4 flex items-center justify-between pb-3">
@@ -1011,9 +1011,9 @@ export default function DashboardShell({
                           setMenuOpen(false);
                           setShowHelp(true);
                         }}
-                        className="flex w-full items-center gap-2 rounded-lg px-2 py-2 text-sm font-medium transition text-zinc-600 hover:bg-[#E2F0FD] hover:text-zinc-900 dark:text-[#9B9085] dark:hover:bg-[#0066B2]/15 dark:hover:text-white cursor-pointer"
+                        className="flex w-full items-center gap-2 rounded-lg px-2 py-2 text-sm font-medium transition text-zinc-600 hover:bg-[#E2F0FD] hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-[#0066B2]/15 dark:hover:text-white cursor-pointer"
                       >
-                        <item.icon className="h-4 w-4 shrink-0 text-zinc-500 dark:text-[#9B9085]" aria-hidden="true" />
+                        <item.icon className="h-4 w-4 shrink-0 text-zinc-500 dark:text-zinc-400" aria-hidden="true" />
                         <span className="flex-1 text-left flex items-center justify-between">
                           <span>{item.label}</span>
                           {item.badge && (
@@ -1038,10 +1038,10 @@ export default function DashboardShell({
                         }}
                         className={`flex items-center gap-2 rounded-lg px-2 py-2 text-sm font-medium transition cursor-pointer ${active
                           ? "bg-[#0066B2] text-white font-bold dark:bg-[#0066B2]/20 dark:text-[#38BDF8]"
-                          : "text-zinc-600 hover:bg-[#E2F0FD] hover:text-zinc-900 dark:text-[#9B9085] dark:hover:bg-[#0066B2]/15 dark:hover:text-white"
+                          : "text-zinc-600 hover:bg-[#E2F0FD] hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-[#0066B2]/15 dark:hover:text-white"
                           }`}
                       >
-                        <item.icon className={`h-4 w-4 shrink-0 ${active ? "text-white dark:text-[#38BDF8]" : "text-zinc-500 dark:text-[#9B9085]"}`} aria-hidden="true" />
+                        <item.icon className={`h-4 w-4 shrink-0 ${active ? "text-white dark:text-[#38BDF8]" : "text-zinc-500 dark:text-zinc-400"}`} aria-hidden="true" />
                         <span className="flex-1 flex items-center justify-between">
                           <span>{item.label}</span>
                           {item.badge && (
@@ -1070,7 +1070,7 @@ export default function DashboardShell({
                       exit={{ opacity: 0, scale: 0.95, y: 4 }}
                       transition={{ duration: 0.15, ease: [0.16, 1, 0.3, 1] }}
                       style={{ transformOrigin: "bottom left" }}
-                      className="absolute bottom-full mb-2 left-0 w-full rounded-2xl border border-zinc-200/80 bg-white/95 p-1.5 shadow-2xl backdrop-blur-md z-50 text-zinc-900 flex flex-col gap-0.5 dark:border-zinc-800/90 dark:bg-[#18181b]/95 dark:text-white dark:shadow-[0_12px_36px_-6px_rgba(0,0,0,0.6),0_0_0_1px_rgba(255,255,255,0.06)]"
+                      className="absolute bottom-full mb-2 left-0 w-full rounded-2xl border border-zinc-200/80 bg-white/95 p-1.5 shadow-2xl backdrop-blur-md z-50 text-zinc-900 flex flex-col gap-0.5 dark:border-white/10 dark:bg-[#171717]/95 dark:text-white dark:shadow-[0_12px_36px_-6px_rgba(0,0,0,0.6),0_0_0_1px_rgba(255,255,255,0.06)]"
                       onClick={(e) => e.stopPropagation()}
                     >
                       {/* Theme Switcher Segmented Control */}
@@ -1093,7 +1093,7 @@ export default function DashboardShell({
                                 <motion.div
                                   layoutId="activeThemePillDrawer"
                                   transition={{ type: "spring", stiffness: 450, damping: 35 }}
-                                  className="absolute inset-0.5 bg-white dark:bg-zinc-800/90 rounded-[9px] shadow-sm border border-black/[0.04] dark:border-white/[0.08]"
+                                  className="absolute inset-0.5 bg-white dark:bg-white/10 rounded-[9px] shadow-sm border border-black/[0.04] dark:border-white/[0.08]"
                                 />
                               )}
                               <span className="relative z-10 flex items-center justify-center">
@@ -1217,7 +1217,7 @@ export default function DashboardShell({
                   )}
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-xs font-bold text-zinc-900 leading-tight dark:text-white">{displayAccount.name}</p>
-                    <p className="truncate text-[10px] text-zinc-500 leading-tight mt-0.5 dark:text-[#9B9085]">{displayAccount.email}</p>
+                    <p className="truncate text-[10px] text-zinc-500 leading-tight mt-0.5 dark:text-zinc-400">{displayAccount.email}</p>
                   </div>
                 </button>
               </div>
@@ -1406,7 +1406,7 @@ export default function DashboardShell({
                         <span className="text-xs font-bold text-zinc-900 dark:text-white">
                           Locked PDF
                         </span>
-                        <p className="text-[11px] text-zinc-500 dark:text-[#9B9085] mt-0.5 leading-snug">
+                        <p className="text-[11px] text-zinc-500 dark:text-zinc-400 mt-0.5 leading-snug">
                           OTP verification gate with live interactive preview.
                         </p>
                       </div>
@@ -1435,7 +1435,7 @@ export default function DashboardShell({
                         <span className="text-xs font-bold text-zinc-900 dark:text-white">
                           Landing Page
                         </span>
-                        <p className="text-[11px] text-zinc-500 dark:text-[#9B9085] mt-0.5 leading-snug">
+                        <p className="text-[11px] text-zinc-500 dark:text-zinc-400 mt-0.5 leading-snug">
                           Opt-in landing page with automated lead delivery.
                         </p>
                       </div>
@@ -1462,7 +1462,7 @@ export default function DashboardShell({
                 {/* URL Slug */}
                 <div className="space-y-1.5">
                   <label className="text-xs font-semibold text-zinc-700 dark:text-[#d4c8bc]">URL slug</label>
-                  <div className="flex items-center rounded-xl border border-zinc-200 dark:border-[#2e2e38] bg-zinc-50 dark:bg-[#121214] px-3.5 py-2.5 text-xs text-zinc-500 dark:text-[#9B9085]">
+                  <div className="flex items-center rounded-xl border border-zinc-200 dark:border-[#2e2e38] bg-zinc-50 dark:bg-[#121214] px-3.5 py-2.5 text-xs text-zinc-500 dark:text-zinc-400">
                     <span className="text-zinc-400 dark:text-[#666675] shrink-0 mr-1.5 font-mono">/</span>
                     <span className="font-mono text-zinc-800 dark:text-[#d4c8bc] truncate">
                       {createMagnetName
