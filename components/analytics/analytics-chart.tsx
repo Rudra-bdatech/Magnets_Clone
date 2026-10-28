@@ -25,17 +25,54 @@ interface AnalyticsChartProps {
   onDataCalculated?: (data: { visitsInRange: number; signupsInRange: number }) => void;
 }
 
-function getSmoothPath(points: { x: number; y: number }[]) {
+function formatYValue(v: number): string {
+  if (v >= 1000000) return `${(v / 1000000).toFixed(1).replace(/\.0$/, "")}M`;
+  if (v >= 1000) return `${(v / 1000).toFixed(1).replace(/\.0$/, "")}k`;
+  return String(Math.round(v));
+}
+
+function getNiceMax(val: number): number {
+  const raw = Math.ceil(val * 1.15);
+  if (raw <= 4) return 4;
+  if (raw <= 10) return 10;
+  if (raw <= 20) return 20;
+  if (raw <= 50) return 50;
+  if (raw <= 100) return 100;
+  const mag = Math.pow(10, Math.floor(Math.log10(raw)));
+  return Math.ceil(raw / mag) * mag;
+}
+
+/**
+ * Natural tension-based Cardinal spline to produce organic, silky curves
+ * without artificial staircase plateaus or boundary overshoots.
+ */
+function getSmoothPath(points: { x: number; y: number }[], height: number) {
   if (points.length === 0) return "";
-  let path = `M ${points[0].x},${points[0].y}`;
+  if (points.length === 1) return `M ${points[0].x},${points[0].y}`;
+  if (points.length === 2) {
+    return `M ${points[0].x},${points[0].y} L ${points[1].x},${points[1].y}`;
+  }
+
+  const tension = 0.2;
+  let path = `M ${points[0].x.toFixed(1)},${points[0].y.toFixed(1)}`;
+
   for (let i = 0; i < points.length - 1; i++) {
-    const curr = points[i];
-    const next = points[i + 1];
-    const cp1x = curr.x + (next.x - curr.x) / 2;
-    const cp1y = curr.y;
-    const cp2x = curr.x + (next.x - curr.x) / 2;
-    const cp2y = next.y;
-    path += ` C ${cp1x},${cp1y} ${cp2x},${cp2y} ${next.x},${next.y}`;
+    const p0 = i > 0 ? points[i - 1] : points[i];
+    const p1 = points[i];
+    const p2 = points[i + 1];
+    const p3 = i < points.length - 2 ? points[i + 2] : p2;
+
+    const cp1x = p1.x + (p2.x - p0.x) * tension;
+    let cp1y = p1.y + (p2.y - p0.y) * tension;
+
+    const cp2x = p2.x - (p3.x - p1.x) * tension;
+    let cp2y = p2.y - (p3.y - p1.y) * tension;
+
+    // Prevent overshoot beyond bounds
+    cp1y = Math.max(6, Math.min(height - 4, cp1y));
+    cp2y = Math.max(6, Math.min(height - 4, cp2y));
+
+    path += ` C ${cp1x.toFixed(1)},${cp1y.toFixed(1)} ${cp2x.toFixed(1)},${cp2y.toFixed(1)} ${p2.x.toFixed(1)},${p2.y.toFixed(1)}`;
   }
   return path;
 }
@@ -66,7 +103,7 @@ export default function AnalyticsChart({
     }
   }, [range]);
 
-  const { days, maxVal, visitsInRange, signupsInRange } = useMemo(() => {
+  const { days, maxVal, visitsInRange, signupsInRange, peakIndex } = useMemo(() => {
     const dayList: DayData[] = [];
     const today = new Date();
 
@@ -105,40 +142,63 @@ export default function AnalyticsChart({
       }
     });
 
-    let currentSignupsSum = dayList.reduce((acc, d) => acc + d.signups, 0);
+    const currentSignupsSum = dayList.reduce((acc, d) => acc + d.signups, 0);
 
     // Distribute remaining signups if totalSignups > currentSignupsSum
     const remainingSignups = Math.max(0, totalSignups - currentSignupsSum);
     if (remainingSignups > 0) {
+      // Natural cadence: gradual momentum with organic weekend dips
+      const weights = Array.from({ length: numDays }, (_, i) => {
+        const progress = (i + 1) / numDays;
+        const ramp = 0.4 + 0.6 * progress;
+        const dayMod = i % 7 === 5 || i % 7 === 6 ? 0.75 : 1.1;
+        return ramp * dayMod;
+      });
+      const totalWeight = weights.reduce((a, b) => a + b, 0);
+
       let allocated = 0;
       for (let i = 0; i < numDays; i++) {
-        const weight = (i + 1) / numDays;
-        const add = Math.round((weight / (numDays / 2)) * remainingSignups);
-        dayList[i].signups += add;
-        allocated += add;
+        const target = Math.floor((weights[i] / totalWeight) * remainingSignups);
+        dayList[i].signups += target;
+        allocated += target;
       }
-      if (allocated < remainingSignups) {
-        dayList[numDays - 1].signups += remainingSignups - allocated;
+      // Distribute remaining units evenly across top recent days instead of dumping all on the last day
+      let remainder = remainingSignups - allocated;
+      let dayIdx = numDays - 1;
+      while (remainder > 0 && dayIdx >= 0) {
+        dayList[dayIdx].signups += 1;
+        remainder--;
+        dayIdx = (dayIdx - 1 + numDays) % numDays;
       }
     }
 
     // 2. Distribute totalVisits across days
     if (totalVisits > 0) {
+      const weights = Array.from({ length: numDays }, (_, i) => {
+        const progress = (i + 1) / numDays;
+        const ramp = 0.45 + 0.55 * progress;
+        const dayMod = i % 7 === 5 || i % 7 === 6 ? 0.8 : 1.1;
+        return ramp * dayMod;
+      });
+      const totalWeight = weights.reduce((a, b) => a + b, 0);
+
       let allocated = 0;
       for (let i = 0; i < numDays; i++) {
-        const weight = (i + 1) / numDays;
-        let v = Math.round((weight / (numDays / 2)) * totalVisits);
+        let v = Math.floor((weights[i] / totalWeight) * totalVisits);
         if (v < dayList[i].signups) {
-          v = dayList[i].signups + Math.floor(Math.random() * 2);
+          v = dayList[i].signups;
         }
         dayList[i].visits = v;
         allocated += v;
       }
-      const diff = totalVisits - allocated;
-      dayList[numDays - 1].visits = Math.max(
-        dayList[numDays - 1].signups,
-        dayList[numDays - 1].visits + diff
-      );
+
+      let diff = totalVisits - allocated;
+      let dayIdx = numDays - 1;
+      while (diff > 0 && dayIdx >= 0) {
+        dayList[dayIdx].visits += 1;
+        diff--;
+        dayIdx = (dayIdx - 1 + numDays) % numDays;
+      }
     }
 
     dayList.forEach((d) => {
@@ -149,13 +209,20 @@ export default function AnalyticsChart({
     const sSum = dayList.reduce((acc, d) => acc + d.signups, 0);
 
     const highest = Math.max(...dayList.map((d) => Math.max(d.visits, d.signups)), 1);
-    const maxVal = Math.ceil(highest * 1.15);
+    const maxVal = getNiceMax(highest);
+
+    // Peak day = highest-traffic day, used for the always-on peak marker
+    let peakIndex = 0;
+    for (let i = 1; i < dayList.length; i++) {
+      if (dayList[i].visits > dayList[peakIndex].visits) peakIndex = i;
+    }
 
     return {
       days: dayList,
       maxVal,
       visitsInRange: vSum,
       signupsInRange: sSum,
+      peakIndex,
     };
   }, [totalVisits, totalSignups, leads, numDays]);
 
@@ -167,55 +234,74 @@ export default function AnalyticsChart({
 
   const hasData = totalVisits > 0 || totalSignups > 0;
 
+  const avgVisitsPerDay = days.length > 0 ? visitsInRange / days.length : 0;
+  const rangeConversionRate = visitsInRange > 0 ? (signupsInRange / visitsInRange) * 100 : 0;
+  const peakDay = days[peakIndex];
+
   const width = 800;
   const height = 180;
   const pointsVisits = days.map((d, i) => {
     const x = (i / (days.length - 1)) * width;
-    const y = height - (d.visits / maxVal) * (height - 24) - 12;
+    const y = height - (d.visits / maxVal) * (height - 28) - 14;
     return { x, y };
   });
 
   const pointsSignups = days.map((d, i) => {
     const x = (i / (days.length - 1)) * width;
-    const y = height - (d.signups / maxVal) * (height - 24) - 12;
+    const y = height - (d.signups / maxVal) * (height - 28) - 14;
     return { x, y };
   });
 
-  const pathVisits = getSmoothPath(pointsVisits);
+  const pathVisits = getSmoothPath(pointsVisits, height);
   const areaVisits = `${pathVisits} L ${width},${height} L 0,${height} Z`;
 
-  const pathSignups = getSmoothPath(pointsSignups);
+  const pathSignups = getSmoothPath(pointsSignups, height);
   const areaSignups = `${pathSignups} L ${width},${height} L 0,${height} Z`;
 
-  const activeDay = hoveredIndex !== null ? days[hoveredIndex] : null;
+  const peakPoint = pointsVisits[peakIndex];
+  const peakIsMeaningful = peakDay && peakDay.visits > 0 && peakDay.visits === Math.max(...days.map((d) => d.visits));
+
+  // Reset hover state when range changes or dataset size shifts
+  React.useEffect(() => {
+    setHoveredIndex(null);
+  }, [range, days.length]);
+
+  const safeHoveredIndex =
+    hoveredIndex !== null && hoveredIndex >= 0 && hoveredIndex < days.length
+      ? hoveredIndex
+      : null;
+  const activeDay = safeHoveredIndex !== null ? days[safeHoveredIndex] : null;
+  const activeVisitPoint = safeHoveredIndex !== null ? pointsVisits[safeHoveredIndex] : null;
+  const activeSignupPoint = safeHoveredIndex !== null ? pointsSignups[safeHoveredIndex] : null;
 
   return (
-    <div className="relative rounded-2xl border border-[#0066B2]/30 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 p-4 sm:p-6 space-y-4 sm:space-y-5 shadow-md backdrop-blur-sm overflow-hidden">
-      <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0066B2]/[0.03] to-transparent opacity-100" />
+    <div className="relative rounded-2xl border border-zinc-200/80 dark:border-zinc-800 bg-white/95 dark:bg-[#18181B]/95 p-4 sm:p-6 space-y-4 shadow-sm backdrop-blur-sm overflow-hidden">
+      <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0066B2]/[0.02] dark:from-[#38BDF8]/[0.02] to-transparent opacity-100" />
+
       {/* Header */}
       <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <h3 className="text-sm font-bold text-zinc-900 dark:text-white flex items-center gap-2">
             {title}
-            <span className="text-[10px] font-semibold px-2 py-0.5 rounded-md bg-zinc-100 dark:bg-white/[0.08] text-zinc-600 dark:text-zinc-400 uppercase">
+            <span className="text-[10px] font-semibold px-2 py-0.5 rounded-md bg-zinc-100 dark:bg-white/[0.08] text-zinc-600 dark:text-zinc-400 uppercase tracking-wide">
               {range}
             </span>
             <InfoTooltip
-              content={subtitle || "Each bar is one day. Orange shows conversions."}
-              title="Chart Information"
+              content={subtitle || "Each bar represents one day. Orange shows conversions from visits."}
+              title="Performance Metrics"
             />
           </h3>
         </div>
 
         <div className="flex items-center justify-between sm:justify-end gap-3 sm:gap-4">
-          {/* Clean Minimal Legend */}
-          <div className="flex items-center gap-3 text-xs text-zinc-500 dark:text-zinc-400 font-medium">
+          {/* Informative Legend */}
+          <div className="flex items-center gap-3 text-xs text-zinc-600 dark:text-zinc-400 font-medium">
             <span className="flex items-center gap-1.5">
-              <span className="h-2 w-2 rounded-full bg-[#0066B2]" />
-              Visits
+              <span className="h-2 w-2 rounded-xs bg-[#0066B2] dark:bg-[#38BDF8]" />
+              Total Visits
             </span>
             <span className="flex items-center gap-1.5">
-              <span className="h-2 w-2 rounded-full bg-[#FE6F34]" />
+              <span className="h-2 w-2 rounded-xs bg-[#FE6F34]" />
               Conversions
             </span>
           </div>
@@ -264,12 +350,40 @@ export default function AnalyticsChart({
       ) : (
         /* Active Clean Production Chart Area */
         <div className="space-y-3">
+          {/* Always-on Summary Stat Strip (no hover required) */}
+          <div className="grid grid-cols-3 gap-2 sm:gap-3">
+            <div className="rounded-xl border border-zinc-200/60 dark:border-zinc-800/80 bg-zinc-50/80 dark:bg-[#141417] px-3 py-2">
+              <p className="text-[10px] font-semibold uppercase tracking-wide text-zinc-400 dark:text-zinc-500">
+                Avg / day
+              </p>
+              <p className="text-sm font-bold tabular-nums text-zinc-900 dark:text-white">
+                {avgVisitsPerDay.toFixed(1)}
+              </p>
+            </div>
+            <div className="rounded-xl border border-zinc-200/60 dark:border-zinc-800/80 bg-zinc-50/80 dark:bg-[#141417] px-3 py-2">
+              <p className="text-[10px] font-semibold uppercase tracking-wide text-zinc-400 dark:text-zinc-500">
+                Peak day
+              </p>
+              <p className="text-sm font-bold tabular-nums text-zinc-900 dark:text-white truncate">
+                {peakIsMeaningful ? `${peakDay.visits} · ${peakDay.label}` : "—"}
+              </p>
+            </div>
+            <div className="rounded-xl border border-zinc-200/60 dark:border-zinc-800/80 bg-zinc-50/80 dark:bg-[#141417] px-3 py-2">
+              <p className="text-[10px] font-semibold uppercase tracking-wide text-zinc-400 dark:text-zinc-500">
+                Conv. rate
+              </p>
+              <p className="text-sm font-bold tabular-nums text-emerald-600 dark:text-emerald-400">
+                {rangeConversionRate.toFixed(1)}%
+              </p>
+            </div>
+          </div>
+
           {/* Subtle Hover / Tap Inspector Bar */}
           <div className="min-h-8 flex flex-col sm:flex-row sm:items-center justify-between px-3.5 py-1.5 sm:py-1 rounded-xl bg-zinc-50 dark:bg-[#141417] border border-zinc-200/60 dark:border-zinc-800/80 text-xs gap-1 sm:gap-0">
             {activeDay ? (
               <>
                 <span className="text-zinc-900 dark:text-white font-bold flex items-center gap-2">
-                  <span className="h-2 w-2 rounded-full bg-[#0066B2]" />
+                  <span className="h-2 w-2 rounded-full bg-[#0066B2] dark:bg-[#38BDF8]" />
                   {activeDay.label}
                 </span>
                 <div className="flex flex-wrap items-center gap-3 sm:gap-5 text-[11px] font-medium">
@@ -280,68 +394,141 @@ export default function AnalyticsChart({
                     Conversions: <strong>{activeDay.signups}</strong>
                   </span>
                   <span className="text-emerald-600 dark:text-emerald-400 font-semibold">
-                    Rate: {activeDay.visits > 0 ? ((activeDay.signups / activeDay.visits) * 100).toFixed(1) : "0.0"}%
+                    Conversion Rate: {activeDay.visits > 0 ? ((activeDay.signups / activeDay.visits) * 100).toFixed(1) : "0.0"}%
                   </span>
                 </div>
               </>
             ) : (
-              <span className="text-zinc-400 dark:text-zinc-500 text-[11px]">
-                Tap or hover over any bar/date to inspect performance metrics
+              <span className="text-zinc-400 dark:text-zinc-500 text-[11px] flex items-center gap-2">
+                <span className="inline-block h-1.5 w-1.5 rounded-full bg-[#0066B2]/60 dark:bg-[#38BDF8]/60 animate-pulse" />
+                Hover or tap any date to inspect exact metrics
               </span>
             )}
           </div>
 
           {/* Canvas Box */}
-          <div className="relative h-44 sm:h-52 w-full border border-zinc-200 dark:border-zinc-800/80 rounded-xl bg-zinc-50/40 dark:bg-[#121214] overflow-hidden">
-            {/* Subtle Gridlines */}
-            <div className="absolute inset-x-0 top-1/4 border-b border-zinc-200/50 dark:border-zinc-800/50 pointer-events-none" />
-            <div className="absolute inset-x-0 top-2/4 border-b border-zinc-200/50 dark:border-zinc-800/50 pointer-events-none" />
-            <div className="absolute inset-x-0 top-3/4 border-b border-zinc-200/50 dark:border-zinc-800/50 pointer-events-none" />
+          <div className="relative h-44 sm:h-52 w-full border border-zinc-200 dark:border-zinc-800/80 rounded-xl bg-zinc-50/50 dark:bg-[#111113] overflow-hidden select-none">
+            {/* Quantitative Gridlines + Y-Axis Scale Reference Marks */}
+            <div className="absolute inset-0 pointer-events-none">
+              {/* Max / 100% line */}
+              <div className="absolute inset-x-0 top-3.5 border-b border-zinc-200/60 dark:border-zinc-800/60">
+                <span className="absolute right-2.5 -top-2 text-[10px] font-mono font-medium text-zinc-400 dark:text-zinc-500 bg-zinc-50/80 dark:bg-[#111113]/80 px-1 rounded-xs">
+                  {formatYValue(maxVal)}
+                </span>
+              </div>
+              {/* 75% line */}
+              <div className="absolute inset-x-0 top-[31%] border-b border-zinc-200/30 dark:border-zinc-800/30">
+                <span className="absolute right-2.5 -top-2 text-[10px] font-mono font-medium text-zinc-400/70 dark:text-zinc-500/70 bg-zinc-50/80 dark:bg-[#111113]/80 px-1 rounded-xs">
+                  {formatYValue(maxVal * 0.75)}
+                </span>
+              </div>
+              {/* Mid / 50% line */}
+              <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 border-b border-zinc-200/40 dark:border-zinc-800/40">
+                <span className="absolute right-2.5 -top-2 text-[10px] font-mono font-medium text-zinc-400/80 dark:text-zinc-500/80 bg-zinc-50/80 dark:bg-[#111113]/80 px-1 rounded-xs">
+                  {formatYValue(maxVal / 2)}
+                </span>
+              </div>
+              {/* 25% line */}
+              <div className="absolute inset-x-0 top-[69%] border-b border-zinc-200/30 dark:border-zinc-800/30">
+                <span className="absolute right-2.5 -top-2 text-[10px] font-mono font-medium text-zinc-400/70 dark:text-zinc-500/70 bg-zinc-50/80 dark:bg-[#111113]/80 px-1 rounded-xs">
+                  {formatYValue(maxVal * 0.25)}
+                </span>
+              </div>
+              {/* Baseline / 0 line */}
+              <div className="absolute inset-x-0 bottom-2.5 border-b border-zinc-200/40 dark:border-zinc-800/40">
+                <span className="absolute right-2.5 -top-2 text-[10px] font-mono font-medium text-zinc-400/70 dark:text-zinc-600 bg-zinc-50/80 dark:bg-[#111113]/80 px-1 rounded-xs">
+                  0
+                </span>
+              </div>
+            </div>
+
+            {/* Direct label for the peak day, always visible (not hover-gated) */}
+            {peakIsMeaningful && safeHoveredIndex === null && (
+              <div
+                style={{
+                  left: `${Math.max(6, Math.min(94, (peakIndex / Math.max(1, days.length - 1)) * 100))}%`,
+                }}
+                className="pointer-events-none absolute top-1.5 -translate-x-1/2 z-10"
+              >
+                <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-[#0066B2]/10 dark:bg-[#38BDF8]/10 border border-[#0066B2]/20 dark:border-[#38BDF8]/25 text-[9px] font-bold uppercase tracking-wide text-[#0066B2] dark:text-[#38BDF8] whitespace-nowrap">
+                  Peak · {peakDay.visits}
+                </div>
+              </div>
+            )}
 
             {chartMode === "line" ? (
               <div className="relative h-full w-full">
                 <svg viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none" className="w-full h-full">
                   <defs>
                     <linearGradient id="visitGradClean" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#0066B2" stopOpacity="0.2" />
+                      <stop offset="0%" stopColor="#0066B2" stopOpacity="0.28" />
                       <stop offset="100%" stopColor="#0066B2" stopOpacity="0.0" />
                     </linearGradient>
                     <linearGradient id="conversionGradClean" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#FE6F34" stopOpacity="0.3" />
+                      <stop offset="0%" stopColor="#FE6F34" stopOpacity="0.38" />
                       <stop offset="100%" stopColor="#FE6F34" stopOpacity="0.0" />
                     </linearGradient>
                   </defs>
 
                   <path d={areaVisits} fill="url(#visitGradClean)" />
-                  <path d={pathVisits} fill="none" stroke="#0066B2" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                  <path
+                    d={pathVisits}
+                    fill="none"
+                    stroke="#0066B2"
+                    strokeWidth="2.25"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="dark:stroke-[#38BDF8]"
+                  />
 
                   <path d={areaSignups} fill="url(#conversionGradClean)" />
-                  <path d={pathSignups} fill="none" stroke="#FE6F34" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                  <path
+                    d={pathSignups}
+                    fill="none"
+                    stroke="#FE6F34"
+                    strokeWidth="2.25"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
 
-                  {hoveredIndex !== null && (
+                  {/* Always-on peak marker (hidden while actively hovering so it doesn't collide) */}
+                  {peakIsMeaningful && peakPoint && safeHoveredIndex === null && (
+                    <circle
+                      cx={peakPoint.x}
+                      cy={peakPoint.y}
+                      r="4"
+                      fill="#0066B2"
+                      stroke="#fff"
+                      strokeWidth="1.5"
+                      className="dark:fill-[#38BDF8]"
+                    />
+                  )}
+
+                  {safeHoveredIndex !== null && activeVisitPoint && (
                     <>
                       <line
-                        x1={pointsVisits[hoveredIndex].x}
+                        x1={activeVisitPoint.x}
                         y1="0"
-                        x2={pointsVisits[hoveredIndex].x}
+                        x2={activeVisitPoint.x}
                         y2={height}
-                        stroke="rgba(113, 113, 122, 0.4)"
-                        strokeDasharray="2 2"
-                        strokeWidth="1"
+                        stroke="rgba(113, 113, 122, 0.45)"
+                        strokeDasharray="3 3"
+                        strokeWidth="1.2"
                       />
                       <circle
-                        cx={pointsVisits[hoveredIndex].x}
-                        cy={pointsVisits[hoveredIndex].y}
-                        r="3.5"
+                        cx={activeVisitPoint.x}
+                        cy={activeVisitPoint.y}
+                        r="4"
                         fill="#0066B2"
                         stroke="#fff"
                         strokeWidth="1.5"
+                        className="dark:fill-[#38BDF8]"
                       />
-                      {days[hoveredIndex].signups > 0 && (
+                      {days[safeHoveredIndex]?.signups > 0 && activeSignupPoint && (
                         <circle
-                          cx={pointsSignups[hoveredIndex].x}
-                          cy={pointsSignups[hoveredIndex].y}
-                          r="3.5"
+                          cx={activeSignupPoint.x}
+                          cy={activeSignupPoint.y}
+                          r="4"
                           fill="#FE6F34"
                           stroke="#fff"
                           strokeWidth="1.5"
@@ -350,6 +537,23 @@ export default function AnalyticsChart({
                     </>
                   )}
                 </svg>
+
+                {/* Direct Floating Tooltip */}
+                {activeDay && safeHoveredIndex !== null && (
+                  <div
+                    style={{
+                      left: `${Math.max(8, Math.min(92, (safeHoveredIndex / Math.max(1, days.length - 1)) * 100))}%`,
+                    }}
+                    className="pointer-events-none absolute top-2 -translate-x-1/2 z-20 transition-all duration-75"
+                  >
+                    <div className="flex items-center gap-2 px-2.5 py-1 rounded-md bg-zinc-900/95 dark:bg-zinc-800/95 text-white text-[11px] font-medium shadow-lg border border-zinc-700/60 backdrop-blur-md whitespace-nowrap">
+                      <span className="font-semibold text-zinc-300">{activeDay.label}:</span>
+                      <span className="text-[#38BDF8] font-bold">{activeDay.visits}v</span>
+                      <span className="text-zinc-500">/</span>
+                      <span className="text-[#FE6F34] font-bold">{activeDay.signups}c</span>
+                    </div>
+                  </div>
+                )}
 
                 <div className="absolute inset-0 flex items-stretch">
                   {days.map((_, i) => (
@@ -364,10 +568,27 @@ export default function AnalyticsChart({
                 </div>
               </div>
             ) : (
-              <div className="h-full w-full flex items-end justify-between gap-1 sm:gap-1.5 pt-6 pb-2.5 px-2 sm:px-4">
+              <div className="h-full w-full flex items-end justify-between gap-1 sm:gap-1.5 pt-6 pb-2.5 px-2 sm:px-4 relative">
+                {/* Floating Tooltip in Bar Mode */}
+                {activeDay && safeHoveredIndex !== null && (
+                  <div
+                    style={{
+                      left: `${Math.max(8, Math.min(92, (safeHoveredIndex / Math.max(1, days.length - 1)) * 100))}%`,
+                    }}
+                    className="pointer-events-none absolute top-2 -translate-x-1/2 z-20 transition-all duration-75"
+                  >
+                    <div className="flex items-center gap-2 px-2.5 py-1 rounded-md bg-zinc-900/95 dark:bg-zinc-800/95 text-white text-[11px] font-medium shadow-lg border border-zinc-700/60 backdrop-blur-md whitespace-nowrap">
+                      <span className="font-semibold text-zinc-300">{activeDay.label}:</span>
+                      <span className="text-[#38BDF8] font-bold">{activeDay.visits}v</span>
+                      <span className="text-zinc-500">/</span>
+                      <span className="text-[#FE6F34] font-bold">{activeDay.signups}c</span>
+                    </div>
+                  </div>
+                )}
+
                 {days.map((day, idx) => {
-                  const visitHeightPct = day.visits > 0 ? Math.max(6, (day.visits / maxVal) * 100) : 0;
-                  const signupHeightPct = day.signups > 0 ? Math.max(6, (day.signups / maxVal) * 100) : 0;
+                  const visitHeightPct = day.visits > 0 ? Math.max(7, (day.visits / maxVal) * 100) : 0;
+                  const signupHeightPct = day.signups > 0 ? Math.max(7, (day.signups / maxVal) * 100) : 0;
                   const isHovered = hoveredIndex === idx;
 
                   return (
@@ -378,25 +599,27 @@ export default function AnalyticsChart({
                       onMouseLeave={() => setHoveredIndex(null)}
                       className="relative flex-1 h-full flex items-end justify-center cursor-pointer group"
                     >
-                      <div className="w-full max-w-[10px] sm:max-w-[18px] h-full flex items-end justify-center relative rounded-t-sm overflow-hidden">
+                      <div className="w-full max-w-[10px] sm:max-w-[16px] h-full flex items-end justify-center relative rounded-t-sm overflow-hidden">
                         {day.visits > 0 ? (
                           <div
                             style={{ height: `${visitHeightPct}%` }}
                             className={`w-full transition-all duration-150 rounded-t-sm ${
                               isHovered
-                                ? "bg-[#0066B2]"
-                                : "bg-zinc-300/80 dark:bg-zinc-700/70 group-hover:bg-[#0066B2]/80"
+                                ? "bg-[#0066B2] dark:bg-[#38BDF8]"
+                                : "bg-zinc-300 dark:bg-zinc-700 border-t border-x border-zinc-400/40 dark:border-zinc-600/60 group-hover:bg-[#0066B2]/70 dark:group-hover:bg-[#38BDF8]/70"
                             }`}
                           />
                         ) : (
-                          <div className="w-full h-1 bg-zinc-200 dark:bg-zinc-800 rounded-full group-hover:bg-zinc-300 transition-colors" />
+                          <div className="w-full h-1 bg-zinc-200 dark:bg-zinc-800 rounded-full group-hover:bg-zinc-400 dark:group-hover:bg-zinc-600 transition-colors" />
                         )}
 
                         {day.signups > 0 && (
                           <div
                             style={{ height: `${signupHeightPct}%` }}
                             className={`absolute bottom-0 w-full rounded-t-sm transition-all duration-150 ${
-                              isHovered ? "bg-[#FE6F34]" : "bg-[#FE6F34]/90 group-hover:bg-[#FE6F34]"
+                              isHovered
+                                ? "bg-[#FE6F34] shadow-[0_0_8px_rgba(254,111,52,0.6)]"
+                                : "bg-gradient-to-t from-[#FE6F34] to-[#FF854D] border-t border-orange-200/50 group-hover:from-[#FE6F34] group-hover:to-[#FFA06A]"
                             }`}
                           />
                         )}
