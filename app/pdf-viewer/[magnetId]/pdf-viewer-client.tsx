@@ -12,19 +12,9 @@ import {
   Lock,
   Menu,
 } from "lucide-react";
+import { getScrollParent, loadPdfJs } from "@/lib/pdfjs-client";
+import PdfPageThumbnail from "@/components/pdf/PdfPageThumbnail";
 import "./pdf-viewer.css";
-
-// ─── PDF.js loader ────────────────────────────────────────────────────────────
-async function loadPdfJs(): Promise<any> {
-  const pdfjs = await import(/* webpackChunkName: "pdfjs-dist" */ "pdfjs-dist");
-  if (typeof window !== "undefined") {
-    pdfjs.GlobalWorkerOptions.workerSrc = new URL(
-      "/pdf.worker.min.mjs",
-      window.location.origin
-    ).toString();
-  }
-  return pdfjs;
-}
 
 // ─── Unlock token saved by an earlier visit (or passed as ?token=) ────────────
 function readStoredUnlockToken(magnetId: string): string {
@@ -137,23 +127,31 @@ function PdfPageCanvas({
   const [rendered, setRendered] = useState(false);
   const [aspectRatio, setAspectRatio] = useState(612 / 792);
 
-  // Lazy visibility observer — only render when page is near the screen viewport
+  // Render pages near the viewport and free the canvas of pages far away, so
+  // long documents don't hold hundreds of full-size bitmaps in memory.
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
     const observer = new IntersectionObserver(
       (entries) => {
-        entries.forEach((e) => {
-          if (e.isIntersecting) {
-            setIsVisible(true);
-          }
-        });
+        entries.forEach((e) => setIsVisible(e.isIntersecting));
       },
-      { rootMargin: "450px 0px" }
+      { root: getScrollParent(el), rootMargin: "1200px 0px" }
     );
     observer.observe(el);
     return () => observer.disconnect();
   }, []);
+
+  useEffect(() => {
+    if (!isVisible) {
+      const canvas = canvasRef.current;
+      if (canvas) {
+        canvas.width = 0;
+        canvas.height = 0;
+      }
+      setRendered(false);
+    }
+  }, [isVisible]);
 
   useEffect(() => {
     if (!pdfDoc || !isVisible || isLocked || pageNum > pdfDoc.numPages) return;
@@ -164,15 +162,19 @@ function PdfPageCanvas({
       try {
         const page = await pdfDoc.getPage(pageNum);
         if (cancel) return;
-        const viewport = page.getViewport({ scale: 1.5, rotation });
-        setAspectRatio(viewport.width / viewport.height);
+        const base = page.getViewport({ scale: 1, rotation });
+        setAspectRatio(base.width / base.height);
+
+        // Match the on-screen size (zoom included) × screen density so text stays crisp
+        const displayWidth = containerRef.current?.clientWidth || 860;
+        const dpr = Math.min(window.devicePixelRatio || 1, 2.5);
+        const viewport = page.getViewport({ scale: (displayWidth * dpr) / base.width, rotation });
 
         const canvas = canvasRef.current;
-        if (!canvas) return;
-        canvas.width = viewport.width;
-        canvas.height = viewport.height;
-        const ctx = canvas.getContext("2d");
-        if (!ctx) return;
+        const ctx = canvas?.getContext("2d");
+        if (!canvas || !ctx) return;
+        canvas.width = Math.floor(viewport.width);
+        canvas.height = Math.floor(viewport.height);
 
         renderTask = page.render({ canvasContext: ctx, viewport });
         await renderTask.promise;
@@ -184,12 +186,14 @@ function PdfPageCanvas({
       }
     }
 
-    renderPage();
+    // Debounce so dragging through zoom levels doesn't re-render every step
+    const timer = setTimeout(renderPage, canvasRef.current?.width ? 150 : 0);
     return () => {
       cancel = true;
+      clearTimeout(timer);
       if (renderTask) renderTask.cancel();
     };
-  }, [pdfDoc, pageNum, rotation, isVisible, isLocked]);
+  }, [pdfDoc, pageNum, rotation, isVisible, isLocked, zoomScale]);
 
   return (
     <div
@@ -204,6 +208,9 @@ function PdfPageCanvas({
         boxShadow: "0 4px 20px rgba(0,0,0,0.25)",
       }}
     >
+      {!isLocked && !rendered && (
+        <div className="absolute inset-0 animate-pulse bg-zinc-200" aria-hidden="true" />
+      )}
       {isLocked ? (
         <LockedPageOverlay pageNum={pageNum} />
       ) : (
@@ -262,6 +269,8 @@ export default function PdfViewerClient({
   const [pdfDocIsFull, setPdfDocIsFull] = useState(false);
   const [loadingPdf, setLoadingPdf] = useState(isStreamingPdf);
   const [pdfLoadError, setPdfLoadError] = useState<string | null>(null);
+  // Bumped by the "Try again" button to re-run the document load
+  const [loadAttempt, setLoadAttempt] = useState(0);
   // Read before the first file request so it carries the visitor's token
   const unlockTokenRef = useRef<string | null>(null);
   if (unlockTokenRef.current === null) unlockTokenRef.current = readStoredUnlockToken(magnetId);
@@ -294,25 +303,39 @@ export default function PdfViewerClient({
         if (cancel) return;
 
         const fileUrl = `/api/pdf-gate/file?magnetId=${encodeURIComponent(magnetId)}&v=${wantFull ? "full" : "preview"}`;
-        loadingTask = pdfjs.getDocument({
-          url: fileUrl,
-          httpHeaders: unlockTokenRef.current ? { "X-Pdf-Unlock-Token": unlockTokenRef.current } : undefined,
-          rangeChunkSize: 65536,
-        });
-        const doc = await loadingTask.promise;
+        // Retry transient failures (cold starts, dropped connections) before giving up
+        const MAX_ATTEMPTS = 3;
+        let doc: any = null;
+        for (let attempt = 1; ; attempt++) {
+          loadingTask = pdfjs.getDocument({
+            url: fileUrl,
+            httpHeaders: unlockTokenRef.current ? { "X-Pdf-Unlock-Token": unlockTokenRef.current } : undefined,
+            rangeChunkSize: 65536,
+          });
+          try {
+            doc = await loadingTask.promise;
+            break;
+          } catch (err) {
+            if (cancel || attempt >= MAX_ATTEMPTS) throw err;
+            console.warn(`[pdf-viewer] Load attempt ${attempt} failed, retrying:`, err);
+            await new Promise((r) => setTimeout(r, 1000 * attempt));
+            if (cancel) return;
+          }
+        }
 
         if (!cancel) {
           const previous = pdfDocRef.current;
           pdfDocRef.current = doc;
           setPdfDoc(doc);
           setPdfDocIsFull(wantFull);
-          if (previous && previous !== doc) previous.destroy?.();
+          // Let pages still drawing from the preview finish before freeing it
+          if (previous && previous !== doc) setTimeout(() => previous.destroy?.(), 5000);
           setLoadingPdf(false);
         }
       } catch (err: any) {
         if (!cancel) {
           console.warn("[pdf-viewer] Failed to load PDF:", err);
-          setPdfLoadError("Failed to load PDF document. Please refresh the page.");
+          setPdfLoadError("We couldn't load this document.");
           setLoadingPdf(false);
         }
       }
@@ -323,7 +346,7 @@ export default function PdfViewerClient({
       cancel = true;
       loadingTask?.destroy?.();
     };
-  }, [isStreamingPdf, magnetId, unlocked, pdfFreePages]);
+  }, [isStreamingPdf, magnetId, unlocked, pdfFreePages, loadAttempt]);
 
   // ── State ──────────────────────────────────────────────────────────────────
   const [currentPage, setCurrentPage] = useState(1);
@@ -450,7 +473,8 @@ export default function PdfViewerClient({
           cleanUrl.searchParams.delete("reset");
           window.history.replaceState({}, "", cleanUrl.pathname + (cleanUrl.searchParams.toString() ? `?${cleanUrl.searchParams.toString()}` : "") + cleanUrl.hash);
         } else {
-          localToken = localStorage.getItem(`pdf_unlock_token_${magnetId}`) || "";
+          // Same source as the first file request: ?token= first, then the saved token
+          localToken = readStoredUnlockToken(magnetId);
           unlockTokenRef.current = localToken;
         }
       } catch (e) {}
@@ -793,8 +817,8 @@ export default function PdfViewerClient({
               <div className="adobe-thumb-list" data-lenis-prevent>
                 {Array.from({ length: totalPages }, (_, idx) => {
                   const isLocked = !unlocked && idx >= pdfFreePages;
-                  const thumbImgUrl = pdfPages[idx] || (idx === 0 ? pdfPages[0] : null);
-                  const displayUrl = thumbImgUrl;
+                  // Legacy image-only magnets have one stored image per page
+                  const displayUrl = isStreamingPdf ? null : pdfPages[idx];
                   return (
                     <button
                       key={idx}
@@ -807,9 +831,13 @@ export default function PdfViewerClient({
                     >
                       <div className="adobe-thumb-frame">
                         {isLocked ? (
-                          <div className="w-full h-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
+                          <div className="w-full aspect-[612/792] bg-zinc-100 flex items-center justify-center">
                             <Lock size={14} className="text-amber-500" />
                           </div>
+                        ) : isStreamingPdf ? (
+                          // Drawn from the loaded PDF: the free preview while locked,
+                          // the full document once unlocked
+                          <PdfPageThumbnail pdfDoc={pdfDoc} pageNum={idx + 1} width={170} rotation={rotation} />
                         ) : displayUrl ? (
                           <img
                             src={displayUrl}
@@ -836,12 +864,18 @@ export default function PdfViewerClient({
 
         {/* Document View Canvas */}
         <main className="adobe-doc-viewport" ref={docRef} data-lenis-prevent>
-          {pdfLoadError && pdfPages.length === 0 && (
-            <div className="mx-auto my-6 max-w-md rounded-lg bg-red-500/10 px-4 py-3 text-center text-sm text-red-300">
-              {pdfLoadError}
+          {pdfLoadError && (isStreamingPdf ? !pdfDoc : pdfPages.length === 0) ? (
+            <div className="mx-auto my-24 flex max-w-md flex-col items-center gap-3 rounded-lg bg-red-500/10 px-6 py-5 text-center text-sm text-red-300">
+              <p>{pdfLoadError}</p>
+              <button
+                type="button"
+                onClick={() => setLoadAttempt((n) => n + 1)}
+                className="rounded-md bg-white/10 px-4 py-1.5 text-xs font-semibold text-white hover:bg-white/20"
+              >
+                Try again
+              </button>
             </div>
-          )}
-          {loadingPdf ? (
+          ) : loadingPdf ? (
             <div className="flex flex-col items-center justify-center py-36 text-white gap-3">
               <div className="w-8 h-8 border-2 border-white/20 border-t-white rounded-full animate-spin" />
               <p className="text-sm font-medium opacity-80">Streaming document…</p>
@@ -862,7 +896,7 @@ export default function PdfViewerClient({
                   style={{
                     width: `${computedWidth}px`,
                     maxWidth: zoomScale === 100 ? "min(860px, 92vw)" : undefined,
-                    ...(rotation !== 0 ? { transform: `rotate(${rotation}deg)` } : {}),
+                    // No CSS rotate here: PdfPageCanvas already renders with `rotation`
                   }}
                 >
                   <PdfPageCanvas

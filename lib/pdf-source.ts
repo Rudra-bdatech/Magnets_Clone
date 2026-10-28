@@ -79,7 +79,7 @@ export async function fetchStoredPdf(rawUrl: string, requestOrigin: string): Pro
         }
       );
 
-      const upstream = await fetch(signedUrl, { headers: { Accept: PDF_ACCEPT } });
+      const upstream = await fetch(signedUrl, { headers: { Accept: PDF_ACCEPT }, cache: "no-store" });
       if (upstream.ok && upstream.body) return upstream;
 
       // Signed URL failed — try the raw resource type variant as a last resort
@@ -91,11 +91,11 @@ export async function fetchStoredPdf(rawUrl: string, requestOrigin: string): Pro
       .replace("/image/upload/", "/raw/upload/")
       .replace("/video/upload/", "/raw/upload/");
 
-    const fallback = await fetch(rawFallbackUrl, { headers: { Accept: PDF_ACCEPT } });
+    const fallback = await fetch(rawFallbackUrl, { headers: { Accept: PDF_ACCEPT }, cache: "no-store" });
     if (fallback.ok && fallback.body) return fallback;
 
     // Also try the original URL as-is (sometimes image/upload works for PDFs)
-    const originalFetch = await fetch(resolvedUrl, { headers: { Accept: PDF_ACCEPT } });
+    const originalFetch = await fetch(resolvedUrl, { headers: { Accept: PDF_ACCEPT }, cache: "no-store" });
     if (originalFetch.ok && originalFetch.body) return originalFetch;
 
     throw new PdfSourceError(
@@ -140,6 +140,7 @@ export async function fetchStoredPdf(rawUrl: string, requestOrigin: string): Pro
   }
 
   const upstream = await fetch(resolvedUrl, {
+    cache: "no-store",
     headers: {
       "User-Agent": "Mozilla/5.0 (compatible; MagnetsApp/1.0; PDF Proxy)",
       Accept: "application/pdf,*/*",

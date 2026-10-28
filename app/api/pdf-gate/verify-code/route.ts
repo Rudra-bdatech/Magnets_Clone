@@ -201,11 +201,9 @@ export async function POST(req: NextRequest) {
     }
     const pdfSnapshot: string[] = Array.isArray(pageDocSnapshot?.pdfPages) ? pageDocSnapshot.pdfPages : [];
 
-    const unlockToken = createPdfUnlockToken({
-      magnetId,
-      email: email,
-      pdfPages: pdfSnapshot,
-    });
+    // No page list in the token: it would grow with the PDF and push the cookie
+    // past the browser's ~4 KB limit. The streamed file always comes from pdfUrl.
+    const unlockToken = createPdfUnlockToken({ magnetId, email });
 
     const res = NextResponse.json({ ok: true, unlockToken, pdfPages: pdfSnapshot });
     const isHttps = req.nextUrl.protocol === "https:";

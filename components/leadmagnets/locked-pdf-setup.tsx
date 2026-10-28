@@ -24,7 +24,11 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { Upload, Lock, Eye, Loader2, CheckCircle2, Trash2, HardDrive, FileText, Copy, ExternalLink, X, Plus, AlertCircle } from "lucide-react";
 import { loadResources } from "@/lib/store";
+import { loadPdfJs } from "@/lib/pdfjs-client";
 import DeleteModal from "@/components/leadmagnets/edit/DeleteModal";
+import PdfPageThumbnail from "@/components/pdf/PdfPageThumbnail";
+
+const MAX_PDF_MB = 60;
 
 function settingsKey(freePages: number, name: string, slug: string) {
   return JSON.stringify([freePages, name.trim(), slug.trim()]);
@@ -55,20 +59,7 @@ interface Props {
   selectedHostedPdf?: { url: string; name: string; timestamp?: number } | null;
 }
 
-// ─── PDF.js helpers (npm, worker served from /public/pdf.worker.min.mjs) ────
-async function loadPdfJs(): Promise<any> {
-  // Dynamic import so Next.js code-splits this large module.
-  const pdfjs = await import(/* webpackChunkName: "pdfjs-dist" */ "pdfjs-dist");
-  if (typeof window !== "undefined") {
-    // Use same-origin local worker file from public/ to avoid browser CORS/cross-origin worker blocking
-    pdfjs.GlobalWorkerOptions.workerSrc = new URL(
-      "/pdf.worker.min.mjs",
-      window.location.origin
-    ).toString();
-  }
-  return pdfjs;
-}
-
+// ─── PDF.js helpers ──────────────────────────────────────────────────────────
 async function pdfPageToJpegBlob(
   pdfjs: any,
   pdfDoc: any,
@@ -162,15 +153,6 @@ async function uploadPdfDirect(file: File, userEmail: string): Promise<string> {
   return data.data.fileUrl as string;
 }
 
-// Cloudinary blur helper — no extra storage needed
-function getBlurPreviewUrl(url: string): string {
-  if (!url) return url;
-  if (url.includes("/image/upload/")) {
-    return url.replace("/image/upload/", "/image/upload/e_blur:900,q_30/");
-  }
-  return url;
-}
-
 export default function LockedPdfSetup({
   magnetId,
   userEmail,
@@ -197,7 +179,11 @@ export default function LockedPdfSetup({
   const [name, setName] = useState(pageName || initialTitle || "");
   const [slug, setSlug] = useState(pageSlug || "");
   const [processing, setProcessing] = useState(false);
-  const [progress, setProgress] = useState<{ done: number; total: number } | null>(null);
+  const [progress, setProgress] = useState<{ done: number; total: number; label: string } | null>(null);
+  // Parsed PDF used to draw the real page thumbnails in the preview grid
+  const [pdfDoc, setPdfDoc] = useState<any>(null);
+  const [previewError, setPreviewError] = useState(false);
+  const pdfDocRef = useRef<any>(null);
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -221,8 +207,49 @@ export default function LockedPdfSetup({
     setMounted(true);
     return () => {
       if (savedTimerRef.current) clearTimeout(savedTimerRef.current);
+      pdfDocRef.current?.destroy?.();
+      pdfDocRef.current = null;
     };
   }, []);
+
+  // Swap the preview document, freeing the previous one's worker memory
+  function replacePdfDoc(doc: any) {
+    const previous = pdfDocRef.current;
+    pdfDocRef.current = doc;
+    setPdfDoc(doc);
+    setPreviewError(false);
+    if (previous && previous !== doc) previous.destroy?.();
+  }
+
+  // Saved PDF without a parsed document yet (e.g. editor reload): fetch it
+  // through the owner-only proxy so the grid can show every real page.
+  useEffect(() => {
+    if (!pdfUrl || pdfDocRef.current || processing) return;
+    let cancel = false;
+    (async () => {
+      try {
+        const res = await fetch(
+          `/api/pdf-proxy?url=${encodeURIComponent(pdfUrl)}&magnetId=${encodeURIComponent(magnetId)}`
+        );
+        if (!res.ok) throw new Error(`PDF fetch failed (${res.status})`);
+        const data = await res.arrayBuffer();
+        const pdfjs = await loadPdfJs();
+        const doc = await pdfjs.getDocument({ data }).promise;
+        if (cancel) {
+          doc.destroy?.();
+          return;
+        }
+        replacePdfDoc(doc);
+        if (doc.numPages && doc.numPages !== pageCount) setPageCount(doc.numPages);
+      } catch (err) {
+        console.warn("[LockedPdfSetup] Could not load page previews:", err);
+        if (!cancel) setPreviewError(true);
+      }
+    })();
+    return () => {
+      cancel = true;
+    };
+  }, [pdfUrl, magnetId, processing]);
 
   const isDirty = pages.length > 0 && settingsKey(freePages, name, slug) !== savedKey;
 
@@ -289,7 +316,7 @@ export default function LockedPdfSetup({
   async function processPdfFromUrl(url: string, title?: string) {
     setError(null);
     setProcessing(true);
-    setProgress({ done: 0, total: 2 });
+    setProgress({ done: 0, total: 2, label: "Loading PDF…" });
     const finalTitle = title || pdfTitle || "Locked PDF Document";
     setPdfTitle(finalTitle);
 
@@ -327,16 +354,18 @@ export default function LockedPdfSetup({
       const pdfDoc = await pdfjs.getDocument({ data: arrayBuffer }).promise;
       const totalPages = pdfDoc.numPages;
 
-      // Render thumbnail for page 1 for card & social preview
-      setProgress({ done: 1, total: 2 });
+      // Render page 1 as the cover image for cards & social previews
+      setProgress({ done: 1, total: 2, label: "Creating cover image…" });
       const thumbBlob = await pdfPageToJpegBlob(pdfjs, pdfDoc, 1, 1.2);
       const thumbFilename = `pdf-${magnetId}-thumb.jpg`;
       const thumbUrl = await uploadBlob(thumbBlob, thumbFilename, userEmail);
 
-      setProgress({ done: 2, total: 2 });
+      setProgress({ done: 2, total: 2, label: "Finishing…" });
 
-      const pdfPagesArray = [thumbUrl, ...Array(Math.max(0, totalPages - 1)).fill(thumbUrl)];
+      // Only the cover is stored; the grid and viewer draw pages from the PDF itself
+      const pdfPagesArray = [thumbUrl];
       const computedFree = Math.min(initialFreePages ?? 2, Math.max(0, totalPages - 1));
+      replacePdfDoc(pdfDoc);
       setPdfUrl(targetUrl);
       setPageCount(totalPages);
       setPages(pdfPagesArray);
@@ -371,15 +400,14 @@ export default function LockedPdfSetup({
       setError("Please upload a valid PDF file.");
       return;
     }
-    const MAX = 60 * 1024 * 1024; // 60 MB
-    if (file.size > MAX) {
-      setError("PDF must be under 60 MB.");
+    if (file.size > MAX_PDF_MB * 1024 * 1024) {
+      setError(`PDF must be under ${MAX_PDF_MB} MB.`);
       return;
     }
 
     setError(null);
     setProcessing(true);
-    setProgress({ done: 0, total: 3 });
+    setProgress({ done: 0, total: 3, label: "Reading PDF…" });
 
     try {
       const pdfjs = await loadPdfJs();
@@ -387,22 +415,24 @@ export default function LockedPdfSetup({
       const pdfDoc = await pdfjs.getDocument({ data: arrayBuffer }).promise;
       const totalPages = pdfDoc.numPages;
 
-      // Step 1: Render Page 1 thumbnail for card/dashboard preview (takes ~0.2s)
-      setProgress({ done: 1, total: 3 });
+      // Step 1: Render page 1 as the cover image for cards & social previews
+      setProgress({ done: 1, total: 3, label: "Creating cover image…" });
       const thumbBlob = await pdfPageToJpegBlob(pdfjs, pdfDoc, 1, 1.2);
       const thumbFilename = `pdf-${magnetId}-thumb.jpg`;
       const thumbUrl = await uploadBlob(thumbBlob, thumbFilename, userEmail);
 
-      // Step 2: Upload the master PDF directly (takes ~2s, bypasses Vercel 4.5MB limit)
-      setProgress({ done: 2, total: 3 });
+      // Step 2: Upload the master PDF directly (bypasses Vercel's 4.5MB limit)
+      setProgress({ done: 2, total: 3, label: "Uploading PDF…" });
       const uploadedPdfUrl = await uploadPdfDirect(file, userEmail);
 
-      setProgress({ done: 3, total: 3 });
+      setProgress({ done: 3, total: 3, label: "Finishing…" });
 
       const finalTitle = pdfTitle || file.name.replace(/\.pdf$/i, "") || "Locked PDF Document";
-      const pdfPagesArray = [thumbUrl, ...Array(Math.max(0, totalPages - 1)).fill(thumbUrl)];
+      // Only the cover is stored; the grid and viewer draw pages from the PDF itself
+      const pdfPagesArray = [thumbUrl];
       const computedFree = Math.min(freePages, Math.max(0, totalPages - 1));
 
+      replacePdfDoc(pdfDoc);
       setPdfUrl(uploadedPdfUrl);
       setPageCount(totalPages);
       setPages(pdfPagesArray);
@@ -438,10 +468,8 @@ export default function LockedPdfSetup({
     const effectiveTotal = pageCount || pages.length;
     // Clamp freePages to safe range before saving
     const safeFreePages = Math.min(freePages, Math.max(0, effectiveTotal - 1));
-    let pagesToSave = pages;
-    if (effectiveTotal > pages.length && pages.length > 0) {
-      pagesToSave = [pages[0], ...Array(Math.max(0, effectiveTotal - 1)).fill(pages[0])];
-    }
+    // Streamed PDFs only need the cover image; legacy image-only magnets keep every page
+    const pagesToSave = pdfUrl ? pages.slice(0, 1) : pages;
     setSaving(true);
     setSaved(false);
     try {
@@ -480,6 +508,7 @@ export default function LockedPdfSetup({
     setSaved(false);
     try {
       setPages([]);
+      replacePdfDoc(null);
       setPdfUrl("");
       setPageCount(0);
       setFreePages(0);
@@ -544,9 +573,7 @@ export default function LockedPdfSetup({
             <div className="flex flex-col items-center gap-3">
               <Loader2 className="h-8 w-8 text-[#0066B2] dark:text-[#38BDF8] animate-spin" />
               <p className="text-sm font-semibold text-zinc-800 dark:text-zinc-200">
-                {progress
-                  ? `Processing page ${progress.done} of ${progress.total}…`
-                  : "Loading PDF renderer…"}
+                {progress ? progress.label : "Loading PDF renderer…"}
               </p>
               {progress && progress.total > 0 && (
                 <div className="w-full max-w-xs bg-zinc-200 dark:bg-zinc-800 rounded-full h-1.5 overflow-hidden">
@@ -567,7 +594,7 @@ export default function LockedPdfSetup({
                 </div>
                 <div className="min-w-0 flex-1">
                   <p className="text-sm font-bold text-zinc-900 dark:text-white truncate">
-                    {pages.length} page{pages.length !== 1 ? "s" : ""} uploaded
+                    {pageCount || pages.length} page{(pageCount || pages.length) !== 1 ? "s" : ""} uploaded
                   </p>
                   <p className="text-xs text-zinc-500 dark:text-zinc-400 truncate max-w-full" title={pdfTitle || ""}>
                     {pdfTitle || "PDF document is ready for lead generation"}
@@ -611,7 +638,7 @@ export default function LockedPdfSetup({
                   Click to upload PDF from device
                 </p>
                 <p className="text-xs text-zinc-400 dark:text-zinc-500 mt-1 max-w-[220px]">
-                  Max 30 MB · Each page is converted to an image automatically
+                  Max {MAX_PDF_MB} MB · Pages after the free preview stay locked
                 </p>
               </div>
             </button>
@@ -722,53 +749,56 @@ export default function LockedPdfSetup({
             </p>
             {(() => {
               const effectiveTotal = pageCount || pages.length;
+              // Streamed PDFs draw each real page; legacy image-only magnets use their stored images
+              const usePdf = Boolean(pdfUrl) && !previewError;
+              const tileCount = usePdf ? effectiveTotal : pages.length;
               return (
-                <div className="grid grid-cols-4 sm:grid-cols-6 gap-2">
-                  {pages.slice(0, 12).map((url, i) => {
-                    const isLocked = i >= freePages;
-                    return (
-                      <div
-                        key={i}
-                        className="relative aspect-[612/792] rounded overflow-hidden border border-zinc-200 dark:border-zinc-700 bg-zinc-200 dark:bg-zinc-800 animate-pulse"
-                        title={`Page ${i + 1} — ${isLocked ? "locked" : "free preview"}`}
-                      >
-                        <img
-                          src={isLocked ? getBlurPreviewUrl(url) : url}
-                          alt={`Page ${i + 1}`}
-                          className="w-full h-full object-cover transition-opacity duration-300 opacity-0"
-                          onLoad={(e) => {
-                            e.currentTarget.classList.remove("opacity-0");
-                            e.currentTarget.parentElement?.classList.remove("animate-pulse");
-                          }}
-                          loading="lazy"
-                          decoding="async"
-                        />
-                        <div className="absolute bottom-0.5 inset-x-0 flex items-center justify-center">
-                          {isLocked ? (
-                            <Lock className="h-2.5 w-2.5 text-white drop-shadow" />
-                          ) : (
-                            <Eye className="h-2.5 w-2.5 text-white drop-shadow" />
+                <div className="max-h-[560px] overflow-y-auto pr-1">
+                  <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2">
+                    {Array.from({ length: tileCount }, (_, i) => {
+                      const isLocked = i >= freePages;
+                      return (
+                        <div
+                          key={i}
+                          className={`relative rounded overflow-hidden border ${
+                            isLocked
+                              ? "border-amber-500/40"
+                              : "border-emerald-500/40"
+                          } bg-white`}
+                          title={`Page ${i + 1} — ${isLocked ? "locked" : "free preview"}`}
+                        >
+                          <div className={isLocked ? "blur-[3px] opacity-70" : ""}>
+                            {usePdf ? (
+                              pdfDoc ? (
+                                <PdfPageThumbnail pdfDoc={pdfDoc} pageNum={i + 1} width={140} />
+                              ) : (
+                                <div className="aspect-[612/792] animate-pulse bg-zinc-200 dark:bg-zinc-800" />
+                              )
+                            ) : (
+                              <img
+                                src={pages[i]}
+                                alt={`Page ${i + 1}`}
+                                className="block w-full aspect-[612/792] object-cover"
+                                loading="lazy"
+                                decoding="async"
+                              />
+                            )}
+                          </div>
+                          {isLocked && (
+                            <div className="absolute inset-0 flex items-center justify-center">
+                              <span className="flex h-7 w-7 items-center justify-center rounded-full bg-zinc-900/75 shadow">
+                                <Lock className="h-3.5 w-3.5 text-amber-400" />
+                              </span>
+                            </div>
                           )}
+                          <div className="absolute bottom-1 left-1 flex items-center gap-1 rounded bg-zinc-900/75 px-1.5 py-0.5 text-[10px] font-semibold text-white">
+                            {isLocked ? <Lock className="h-2.5 w-2.5" /> : <Eye className="h-2.5 w-2.5" />}
+                            {i + 1}
+                          </div>
                         </div>
-                      </div>
-                    );
-                  })}
-                  {pages.length === 1 && effectiveTotal > 1 && (
-                    <div
-                      className="relative aspect-[612/792] rounded overflow-hidden border border-zinc-200 dark:border-zinc-700 bg-zinc-100 dark:bg-zinc-800 flex flex-col items-center justify-center text-center p-1.5"
-                      title="Page 2 preview"
-                    >
-                      <div className="text-[10px] font-bold text-zinc-500 mb-1">Page 2</div>
-                      <div className="h-5 w-5 rounded-full bg-zinc-200 dark:bg-zinc-700 flex items-center justify-center">
-                        {1 >= freePages ? <Lock className="h-3 w-3 text-amber-500" /> : <Eye className="h-3 w-3 text-emerald-500" />}
-                      </div>
-                    </div>
-                  )}
-                  {effectiveTotal > (pages.length === 1 ? 2 : 12) && (
-                    <div className="aspect-[612/792] rounded border border-zinc-200 dark:border-zinc-700 bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-[11px] text-zinc-500 font-semibold">
-                      +{effectiveTotal - (pages.length === 1 ? 2 : 12)}
-                    </div>
-                  )}
+                      );
+                    })}
+                  </div>
                 </div>
               );
             })()}
