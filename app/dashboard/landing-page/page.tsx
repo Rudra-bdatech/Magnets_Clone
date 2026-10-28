@@ -83,7 +83,7 @@ const MagnetCard = React.memo(
           ? "border-[#0066B2] dark:border-[#38BDF8] bg-white dark:bg-[#18181C] ring-2 ring-[#0066B2]/40 dark:ring-[#38BDF8]/40 shadow-[0_8px_30px_rgba(0,102,178,0.12)]"
           : isSelected
             ? "border-[#0066B2] dark:border-[#38BDF8] bg-white dark:bg-[#18181C] shadow-[0_8px_30px_rgba(0,102,178,0.15)] ring-1 ring-[#0066B2]/30"
-            : "border-zinc-200 dark:border-zinc-800/80 bg-white dark:bg-[#141417] hover:border-zinc-300 dark:hover:border-zinc-700 shadow-[0_2px_8px_rgba(0,0,0,0.06),0_1px_2px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.09)] dark:shadow-[0_4px_16px_rgba(0,0,0,0.3)] dark:hover:shadow-[0_8px_24px_rgba(0,0,0,0.4)]"
+            : "border-[#0066B2]/15 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 shadow-md backdrop-blur-sm hover:border-[#0066B2]/30 dark:hover:border-[#38BDF8]/40 hover:shadow-lg"
           }`}
       >
         <div className="relative h-[124px] sm:h-[134px] w-full bg-zinc-100 dark:bg-[#0F0F12] rounded-b-2xl border-b border-zinc-200/80 dark:border-zinc-800/60 overflow-hidden">
@@ -478,7 +478,7 @@ export default function PagesPage() {
           {/* Quick Metrics 4 Stat Cards */}
           <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
             {/* Active Pages */}
-            <div className="relative h-full rounded-2xl border border-[#0066B2]/35 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
+            <div className="relative h-full rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
               <div className="flex items-center justify-between sm:justify-start w-full sm:w-auto">
                 <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl border border-[#0066B2]/30 bg-[#EFF6FF] text-[#0066B2] dark:border-[#0066B2]/30 dark:bg-[#0066B2]/20 dark:text-[#38BDF8]">
                   <Globe className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
@@ -496,7 +496,7 @@ export default function PagesPage() {
             </div>
 
             {/* Total Traffic */}
-            <div className="relative h-full rounded-2xl border border-[#0066B2]/35 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
+            <div className="relative h-full rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
               <div className="flex items-center justify-between sm:justify-start w-full sm:w-auto">
                 <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl border border-emerald-500/30 bg-emerald-50 text-emerald-600 dark:border-emerald-500/30 dark:bg-emerald-500/20 dark:text-emerald-400">
                   <Eye className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
@@ -514,7 +514,7 @@ export default function PagesPage() {
             </div>
 
             {/* Leads Collected */}
-            <div className="relative h-full rounded-2xl border border-[#0066B2]/35 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
+            <div className="relative h-full rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
               <div className="flex items-center justify-between sm:justify-start w-full sm:w-auto">
                 <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl border border-purple-500/30 bg-purple-50 text-purple-600 dark:border-purple-500/30 dark:bg-purple-500/20 dark:text-purple-400">
                   <MousePointerClick className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
@@ -532,7 +532,7 @@ export default function PagesPage() {
             </div>
 
             {/* Avg Conv. Rate */}
-            <div className="relative h-full rounded-2xl border border-[#0066B2]/35 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
+            <div className="relative h-full rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
               <div className="flex items-center justify-between sm:justify-start w-full sm:w-auto">
                 <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl border border-amber-500/30 bg-amber-50 text-amber-600 dark:border-amber-500/30 dark:bg-amber-500/20 dark:text-amber-400">
                   <TrendingUp className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
@@ -854,12 +854,12 @@ export default function PagesPage() {
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: -6, scale: 0.995 }}
                     transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-                    className="rounded-2xl border border-zinc-200/80 dark:border-[#2e2e38] bg-white dark:bg-[#18181B] overflow-hidden shadow-xs"
+                    className="rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 overflow-hidden shadow-md backdrop-blur-sm"
                   >
                     {/* DESKTOP Table View (hidden md:block) - Preserved exactly as original */}
                     <div className="hidden md:block overflow-x-auto">
                       <table className="w-full text-left text-xs">
-                        <thead className="bg-[#F8FBFF] dark:bg-[#151518] text-zinc-500 dark:text-[#9B9085] uppercase text-[11px] font-semibold tracking-wider border-b border-zinc-200/80 dark:border-[#2e2e38]">
+                        <thead className="bg-[#F8FBFF] dark:bg-[#151518] text-zinc-500 dark:text-[#9B9085] uppercase text-[11px] font-semibold tracking-wider border-b border-[#0066B2]/10 dark:border-[#38BDF8]/20">
                           <tr>
                             <th className="px-6 py-3.5 text-left">
                               <div className="flex items-center">
@@ -894,7 +894,7 @@ export default function PagesPage() {
                             <th className="px-6 py-3.5 text-right">Actions</th>
                           </tr>
                         </thead>
-                        <tbody className="divide-y divide-zinc-100 bg-white dark:divide-[#222228] dark:bg-[#18181B]">
+                        <tbody className="divide-y divide-[#0066B2]/8 bg-white dark:divide-[#222228] dark:bg-[#18181B]">
                           {paginatedItems.map((page) => {
                             const isSelected = activePage?.id === page.id;
                             const isChecked = checkedIds.includes(page.id);
@@ -1017,7 +1017,7 @@ export default function PagesPage() {
                               ? "border-[#0066B2] dark:border-[#38BDF8] bg-blue-50/50 dark:bg-[#0066B2]/15 ring-2 ring-[#0066B2]/30 shadow-sm"
                               : isSelected
                                 ? "border-[#0066B2] dark:border-[#38BDF8] bg-white dark:bg-[#18181C] ring-1 ring-[#0066B2]/30 shadow-xs"
-                                : "border-zinc-200/80 bg-white dark:border-[#282832] dark:bg-[#18181C] hover:border-zinc-300 dark:hover:border-zinc-700 shadow-2xs"
+                                : "border-[#0066B2]/15 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181C] shadow-sm backdrop-blur-sm"
                               }`}
                           >
                             {/* Top Row: Checkbox, Thumbnail, Title/Slug & Status Badge */}
@@ -1235,7 +1235,7 @@ export default function PagesPage() {
                   }}
                   className="hidden lg:block lg:w-[35%] sticky top-6 z-20 space-y-4 shrink-0"
                 >
-                  <div className="rounded-2xl border border-zinc-200/80 dark:border-white/[0.08] bg-white/95 dark:bg-[#141417]/95 p-5 shadow-[0_16px_40px_rgba(0,0,0,0.08)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.4)] backdrop-blur-xl space-y-5">
+                  <div className="rounded-2xl border border-[#0066B2]/15 dark:border-[#38BDF8]/25 bg-white/90 dark:bg-[#18181B]/90 p-5 shadow-md backdrop-blur-sm space-y-5">
                     <motion.div
                       key={activePage.id}
                       initial={{ opacity: 0, y: 3 }}
