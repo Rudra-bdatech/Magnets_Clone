@@ -275,14 +275,14 @@ export default function AnalyticsChart({
   const activeSignupPoint = safeHoveredIndex !== null ? pointsSignups[safeHoveredIndex] : null;
 
   return (
-    <div className="relative rounded-2xl border border-[#0066B2]/15 dark:border-[#38BDF8]/25 bg-white/90 dark:bg-[#18181B]/90 p-4 sm:p-6 space-y-4 shadow-md backdrop-blur-sm overflow-hidden">
-      <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0066B2]/[0.02] dark:from-[#38BDF8]/[0.02] to-transparent opacity-100" />
+    <div className="relative rounded-2xl border border-[#0066B2]/15 dark:border-white/[0.08] bg-white/90 dark:bg-[#141417] dark:shadow-none p-4 sm:p-6 space-y-4 shadow-md backdrop-blur-sm overflow-hidden">
+      <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0066B2]/[0.02] to-transparent dark:hidden" />
 
       {/* Header */}
       <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div className="flex items-center gap-2.5">
-          <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-[#0066B2]/30 bg-[#EFF6FF] dark:bg-[#0066B2]/20">
-            <BarChart2 className="h-4 w-4 text-[#0066B2] dark:text-[#38BDF8]" />
+          <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-[#0066B2]/30 bg-[#EFF6FF] dark:border-white/10 dark:bg-white/5">
+            <BarChart2 className="h-4 w-4 text-[#0066B2] dark:text-zinc-200" />
           </div>
           <h3 className="text-sm font-bold text-zinc-900 dark:text-white flex items-center gap-2">
             {title}
@@ -300,7 +300,7 @@ export default function AnalyticsChart({
           {/* Informative Legend */}
           <div className="flex items-center gap-3 text-xs text-zinc-600 dark:text-zinc-400 font-medium">
             <span className="flex items-center gap-1.5">
-              <span className="h-2 w-2 rounded-xs bg-[#0066B2] dark:bg-[#38BDF8]" />
+              <span className="h-2 w-2 rounded-xs bg-[#0066B2] dark:bg-sky-400" />
               Total Visits
             </span>
             <span className="flex items-center gap-1.5">
@@ -355,7 +355,7 @@ export default function AnalyticsChart({
         <div className="space-y-3">
           {/* Always-on Summary Stat Strip (no hover required) */}
           <div className="grid grid-cols-3 gap-2 sm:gap-3">
-            <div className="rounded-xl border border-[#0066B2]/10 dark:border-[#38BDF8]/15 bg-[#F8FBFF] dark:bg-white/[0.03] px-3 py-2 shadow-xs">
+            <div className="rounded-xl border border-[#0066B2]/10 dark:border-white/[0.06] bg-[#F8FBFF] dark:bg-white/[0.02] px-3 py-2 shadow-xs">
               <p className="text-[10px] font-semibold uppercase tracking-wide text-zinc-400 dark:text-zinc-500">
                 Avg / day
               </p>
@@ -363,7 +363,7 @@ export default function AnalyticsChart({
                 {avgVisitsPerDay.toFixed(1)}
               </p>
             </div>
-            <div className="rounded-xl border border-[#0066B2]/10 dark:border-[#38BDF8]/15 bg-[#F8FBFF] dark:bg-white/[0.03] px-3 py-2 shadow-xs">
+            <div className="rounded-xl border border-[#0066B2]/10 dark:border-white/[0.06] bg-[#F8FBFF] dark:bg-white/[0.02] px-3 py-2 shadow-xs">
               <p className="text-[10px] font-semibold uppercase tracking-wide text-zinc-400 dark:text-zinc-500">
                 Peak day
               </p>
@@ -371,7 +371,7 @@ export default function AnalyticsChart({
                 {peakIsMeaningful ? `${peakDay.visits} · ${peakDay.label}` : "—"}
               </p>
             </div>
-            <div className="rounded-xl border border-[#0066B2]/10 dark:border-[#38BDF8]/15 bg-[#F8FBFF] dark:bg-white/[0.03] px-3 py-2 shadow-xs">
+            <div className="rounded-xl border border-[#0066B2]/10 dark:border-white/[0.06] bg-[#F8FBFF] dark:bg-white/[0.02] px-3 py-2 shadow-xs">
               <p className="text-[10px] font-semibold uppercase tracking-wide text-zinc-400 dark:text-zinc-500">
                 Conv. rate
               </p>

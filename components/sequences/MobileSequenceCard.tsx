@@ -78,7 +78,7 @@ export const MobileSequenceCard = memo(function MobileSequenceCard({
         className={`group relative rounded-xl border p-3 transition-all duration-200 active:scale-[0.99] select-none cursor-pointer flex items-center justify-between gap-2.5 ${
           isChecked
             ? "border-[#0066B2] dark:border-[#38BDF8] bg-blue-50/60 dark:bg-[#0066B2]/15 ring-1 ring-[#0066B2]/30 shadow-xs"
-            : "border-[#0066B2]/15 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181C] shadow-sm backdrop-blur-sm"
+            : "border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#141417] shadow-sm backdrop-blur-sm"
         }`}
       >
         {/* Left: Checkbox (if in select mode), Icon & Sequence Info */}
@@ -103,7 +103,7 @@ export const MobileSequenceCard = memo(function MobileSequenceCard({
             )}
           </AnimatePresence>
 
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#EFF6FF] text-[#0066B2] dark:bg-[#0066B2]/20 dark:text-[#38BDF8] border border-blue-100 dark:border-blue-900/30">
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#EFF6FF] text-[#0066B2] dark:bg-white/5 dark:text-zinc-200 border border-blue-100 dark:border-white/10">
             <Rocket className="h-4 w-4" />
           </div>
 
@@ -165,7 +165,7 @@ export const MobileSequenceCard = memo(function MobileSequenceCard({
       className={`group relative rounded-2xl border transition-all duration-200 active:scale-[0.99] select-none cursor-pointer flex flex-col justify-between overflow-hidden ${
         isChecked
           ? "border-[#0066B2] dark:border-[#38BDF8] bg-blue-50/50 dark:bg-[#0066B2]/15 ring-2 ring-[#0066B2]/30 shadow-[0_8px_30px_rgba(0,102,178,0.15)]"
-          : "border-[#0066B2]/15 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 shadow-md backdrop-blur-sm hover:border-[#0066B2]/30 dark:hover:border-[#38BDF8]/40 hover:shadow-lg"
+          : "border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#141417] shadow-md dark:shadow-none backdrop-blur-sm hover:border-[#0066B2]/30 dark:hover:border-white/20 hover:shadow-lg"
       }`}
     >
       {/* Top Header Row: Animated Checkbox, Icon, Title, Status & 3-Dot Actions */}
@@ -193,7 +193,7 @@ export const MobileSequenceCard = memo(function MobileSequenceCard({
             </AnimatePresence>
 
             {/* Rocket Icon */}
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#EFF6FF] to-blue-50 text-[#0066B2] dark:from-[#0066B2]/20 dark:to-blue-950/40 dark:text-[#38BDF8] border border-blue-100/60 dark:border-blue-900/40">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#EFF6FF] text-[#0066B2] dark:bg-white/5 dark:text-zinc-200 border border-blue-100/60 dark:border-white/10">
               <Rocket className="h-4 w-4" />
             </div>
 

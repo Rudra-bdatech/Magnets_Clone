@@ -206,7 +206,7 @@ function UsageBar({
   return (
     <div className="flex flex-col gap-1.5">
       <div className="flex items-center justify-between">
-        <span className="text-[11px] font-semibold text-zinc-500 dark:text-[#9B9085]">{label}</span>
+        <span className="text-[11px] font-semibold text-zinc-500 dark:text-zinc-400">{label}</span>
         <span
           className={`text-[11px] font-bold tabular-nums ${
             isHigh
@@ -237,7 +237,7 @@ function UsageBar({
 // ─────────────────────────────────────────────
 
 const AVATAR_PALETTES = [
-  "bg-[#0066B2]/10 text-[#0066B2] border-[#0066B2]/20 dark:bg-[#38BDF8]/20 dark:text-[#38BDF8] dark:border-[#38BDF8]/30",
+  "bg-[#0066B2]/10 text-[#0066B2] border-[#0066B2]/20 dark:bg-sky-500/15 dark:text-sky-300 dark:border-sky-500/25",
   "bg-purple-500/10 text-purple-600 border-purple-500/20 dark:bg-purple-500/20 dark:text-purple-400 dark:border-purple-500/30",
   "bg-emerald-500/10 text-emerald-600 border-emerald-500/20 dark:bg-emerald-500/20 dark:text-emerald-400 dark:border-emerald-500/30",
   "bg-amber-500/10 text-amber-600 border-amber-500/20 dark:bg-amber-500/20 dark:text-amber-400 dark:border-amber-500/30",
@@ -505,7 +505,7 @@ export default function DashboardHome({
       value: countLeads.toLocaleString(),
       rawValue: totalLeads,
       icon: Users,
-      iconBadge: "border border-[#0066B2]/30 bg-[#EFF6FF] text-[#0066B2] dark:border-[#0066B2]/30 dark:bg-[#0066B2]/20 dark:text-[#38BDF8]",
+      iconBadge: "border border-[#0066B2]/30 bg-[#EFF6FF] text-[#0066B2] dark:border-white/10 dark:bg-white/5 dark:text-zinc-200",
       sparkData: leadsSparkline,
       sparkColor: "#0066B2",
       href: "/dashboard/leads",
@@ -520,7 +520,7 @@ export default function DashboardHome({
           : countViews.toLocaleString(),
       rawValue: totalViews,
       icon: Eye,
-      iconBadge: "border border-violet-500/30 bg-violet-50 text-violet-600 dark:border-violet-500/30 dark:bg-violet-500/20 dark:text-violet-400",
+      iconBadge: "border border-violet-500/30 bg-violet-50 text-violet-600 dark:border-white/10 dark:bg-white/5 dark:text-zinc-200",
       sparkData: viewsSparkline,
       sparkColor: "#7C3AED",
       href: "/dashboard/analytics",
@@ -532,7 +532,7 @@ export default function DashboardHome({
       value: `${avgConversion.toFixed(1)}%`,
       rawValue: avgConversion,
       icon: TrendingUp,
-      iconBadge: "border border-emerald-500/30 bg-emerald-50 text-emerald-600 dark:border-emerald-500/30 dark:bg-emerald-500/20 dark:text-emerald-400",
+      iconBadge: "border border-emerald-500/30 bg-emerald-50 text-emerald-600 dark:border-white/10 dark:bg-white/5 dark:text-emerald-400",
       sparkData: conversionSparkline,
       sparkColor: "#10B981",
       href: "/dashboard/analytics",
@@ -544,7 +544,7 @@ export default function DashboardHome({
       value: activeMagnets.toString(),
       rawValue: activeMagnets,
       icon: Zap,
-      iconBadge: "border border-amber-500/30 bg-amber-50 text-amber-600 dark:border-amber-500/30 dark:bg-amber-500/20 dark:text-amber-400",
+      iconBadge: "border border-amber-500/30 bg-amber-50 text-amber-600 dark:border-white/10 dark:bg-white/5 dark:text-amber-400",
       sparkData: activeSparkline,
       sparkColor: "#F59E0B",
       href: "/dashboard/landing-page",
@@ -553,7 +553,7 @@ export default function DashboardHome({
   ];
 
   return (
-    <div className="flex flex-col min-h-[calc(100vh-3.5rem)] bg-gradient-to-b from-[#EFF6FF]/40 via-[#F8FBFF] to-[#F8FBFF] dark:bg-none dark:bg-[#0B0B0D]">
+    <div className="flex flex-col min-h-[calc(100vh-3.5rem)] bg-gradient-to-b from-[#EFF6FF]/40 via-[#F8FBFF] to-[#F8FBFF] dark:bg-none dark:bg-[#09090B]">
       <div className={`flex-1 px-3.5 py-6 sm:px-6 sm:py-7 lg:px-8 mx-auto w-full transition-[max-width] duration-[220ms] ease-[cubic-bezier(0.16,1,0.3,1)] will-change-[max-width] ${isCollapsed ? "max-w-[1440px]" : "max-w-7xl"}`}>
         <motion.div
           variants={container}
@@ -606,7 +606,7 @@ export default function DashboardHome({
                 href={card.href}
                 className="group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0066B2] rounded-2xl h-full flex flex-col"
               >
-                <div className="relative h-full rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 p-3.5 sm:p-4 shadow-md backdrop-blur-sm hover:border-[#0066B2]/30 dark:hover:border-[#38BDF8]/40 hover:shadow-lg transition-all duration-200 overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
+                <div className="relative h-full rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#141417] dark:shadow-none p-3.5 sm:p-4 shadow-md backdrop-blur-sm hover:border-[#0066B2]/30 dark:hover:border-white/20 hover:shadow-lg transition-all duration-200 overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
                   {/* Top on mobile / Left on desktop: Icon Badge */}
                   <div className="flex items-center justify-between sm:justify-start w-full sm:w-auto">
                     <div
@@ -620,7 +620,7 @@ export default function DashboardHome({
                   {/* Right: Label, Value & Subtext */}
                   <div className="flex-1 min-w-0 w-full">
                     <div className="flex items-center justify-between gap-1">
-                      <p className="text-[10px] sm:text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-[#9B9085] leading-none whitespace-normal sm:truncate">
+                      <p className="text-[10px] sm:text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-400 leading-none whitespace-normal sm:truncate">
                         {card.label}
                       </p>
                       <ArrowUpRight className="hidden sm:block h-3.5 w-3.5 text-zinc-300 dark:text-zinc-600 group-hover:text-[#0066B2] dark:group-hover:text-[#38BDF8] transition-all opacity-0 group-hover:opacity-100 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 shrink-0" />
@@ -630,7 +630,7 @@ export default function DashboardHome({
                       {card.value}
                     </p>
 
-                    <p className="mt-1 text-[10px] text-zinc-400 dark:text-[#9B9085] truncate">
+                    <p className="mt-1 text-[10px] text-zinc-400 dark:text-zinc-400 truncate">
                       {card.sub}
                     </p>
                   </div>
@@ -650,11 +650,11 @@ export default function DashboardHome({
             className="grid grid-cols-1 md:grid-cols-2 gap-4"
           >
             {/* 🌐 LANDING PAGES ENGINE CARD */}
-            <div className="relative rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 p-4 sm:p-5 shadow-md backdrop-blur-sm flex flex-col justify-between overflow-hidden group">
+            <div className="relative rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#141417] dark:shadow-none p-4 sm:p-5 shadow-md backdrop-blur-sm flex flex-col justify-between overflow-hidden group">
               <div>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-xl bg-[#0066B2]/10 dark:bg-[#38BDF8]/15 text-[#0066B2] dark:text-[#38BDF8] border border-[#0066B2]/20 dark:border-[#38BDF8]/30">
+                    <div className="flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-xl bg-[#0066B2]/10 dark:bg-white/5 text-[#0066B2] dark:text-zinc-200 border border-[#0066B2]/20 dark:border-white/10">
                       <FileText className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
                     </div>
                     <div>
@@ -678,24 +678,24 @@ export default function DashboardHome({
 
                 {/* Performance stats grid */}
                 <div className="grid grid-cols-3 gap-1.5 sm:gap-2 mt-3 sm:mt-4">
-                  <div className="p-2 sm:p-2.5 rounded-xl bg-[#F8FBFF] dark:bg-white/[0.03] border border-[#0066B2]/10 dark:border-[#38BDF8]/15 shadow-xs">
-                    <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-[#9B9085]">
+                  <div className="p-2 sm:p-2.5 rounded-xl bg-[#F8FBFF] dark:bg-white/[0.02] border border-[#0066B2]/10 dark:border-white/[0.06] shadow-xs">
+                    <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-400">
                       Views
                     </span>
                     <p className="text-base sm:text-lg font-extrabold text-zinc-900 dark:text-white mt-0.5 tabular-nums">
                       {landingPageViews.toLocaleString()}
                     </p>
                   </div>
-                  <div className="p-2 sm:p-2.5 rounded-xl bg-[#F8FBFF] dark:bg-white/[0.03] border border-[#0066B2]/10 dark:border-[#38BDF8]/15 shadow-xs">
-                    <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-[#9B9085]">
+                  <div className="p-2 sm:p-2.5 rounded-xl bg-[#F8FBFF] dark:bg-white/[0.02] border border-[#0066B2]/10 dark:border-white/[0.06] shadow-xs">
+                    <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-400">
                       Leads
                     </span>
                     <p className="text-base sm:text-lg font-extrabold text-[#0066B2] dark:text-[#38BDF8] mt-0.5 tabular-nums">
                       {landingPageLeads.toLocaleString()}
                     </p>
                   </div>
-                  <div className="p-2 sm:p-2.5 rounded-xl bg-[#F8FBFF] dark:bg-white/[0.03] border border-[#0066B2]/10 dark:border-[#38BDF8]/15 shadow-xs">
-                    <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-[#9B9085]">
+                  <div className="p-2 sm:p-2.5 rounded-xl bg-[#F8FBFF] dark:bg-white/[0.02] border border-[#0066B2]/10 dark:border-white/[0.06] shadow-xs">
+                    <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-400">
                       Conv. Rate
                     </span>
                     <p className="text-base sm:text-lg font-extrabold text-emerald-600 dark:text-emerald-400 mt-0.5 tabular-nums">
@@ -707,7 +707,7 @@ export default function DashboardHome({
 
               {/* Bottom Action */}
               <div className="mt-4 pt-3 flex items-center justify-between gap-2">
-                <span className="text-[11px] font-semibold text-zinc-500 dark:text-[#9B9085] truncate">
+                <span className="text-[11px] font-semibold text-zinc-500 dark:text-zinc-400 truncate">
                   {landingPageCount} total magnet{landingPageCount !== 1 ? "s" : ""}
                 </span>
                 <button
@@ -727,7 +727,7 @@ export default function DashboardHome({
             </div>
 
             {/* 🔒 LOCKED PDF ENGINE CARD */}
-            <div className="relative rounded-2xl border border-amber-500/20 bg-white/90 dark:border-amber-500/30 dark:bg-[#18181B]/90 p-4 sm:p-5 shadow-md backdrop-blur-sm flex flex-col justify-between overflow-hidden group">
+            <div className="relative rounded-2xl border border-amber-500/20 bg-white/90 dark:border-white/[0.08] dark:bg-[#141417] dark:shadow-none p-4 sm:p-5 shadow-md backdrop-blur-sm flex flex-col justify-between overflow-hidden group">
               <div>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
@@ -755,24 +755,24 @@ export default function DashboardHome({
 
                 {/* Performance stats grid */}
                 <div className="grid grid-cols-3 gap-1.5 sm:gap-2 mt-3 sm:mt-4">
-                  <div className="p-2 sm:p-2.5 rounded-xl bg-amber-50/40 dark:bg-white/[0.03] border border-amber-500/15 dark:border-amber-500/20 shadow-xs">
-                    <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-[#9B9085]">
+                  <div className="p-2 sm:p-2.5 rounded-xl bg-amber-50/40 dark:bg-white/[0.02] border border-amber-500/15 dark:border-amber-500/20 shadow-xs">
+                    <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-400">
                       Views
                     </span>
                     <p className="text-base sm:text-lg font-extrabold text-zinc-900 dark:text-white mt-0.5 tabular-nums">
                       {lockedPdfViews.toLocaleString()}
                     </p>
                   </div>
-                  <div className="p-2 sm:p-2.5 rounded-xl bg-amber-50/40 dark:bg-white/[0.03] border border-amber-500/15 dark:border-amber-500/20 shadow-xs">
-                    <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-[#9B9085]">
+                  <div className="p-2 sm:p-2.5 rounded-xl bg-amber-50/40 dark:bg-white/[0.02] border border-amber-500/15 dark:border-amber-500/20 shadow-xs">
+                    <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-400">
                       Unlocks
                     </span>
                     <p className="text-base sm:text-lg font-extrabold text-amber-600 dark:text-amber-400 mt-0.5 tabular-nums">
                       {lockedPdfLeadsCount.toLocaleString()}
                     </p>
                   </div>
-                  <div className="p-2 sm:p-2.5 rounded-xl bg-amber-50/40 dark:bg-white/[0.03] border border-amber-500/15 dark:border-amber-500/20 shadow-xs">
-                    <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-[#9B9085]">
+                  <div className="p-2 sm:p-2.5 rounded-xl bg-amber-50/40 dark:bg-white/[0.02] border border-amber-500/15 dark:border-amber-500/20 shadow-xs">
+                    <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-400">
                       Unlock Rate
                     </span>
                     <p className="text-base sm:text-lg font-extrabold text-emerald-600 dark:text-emerald-400 mt-0.5 tabular-nums">
@@ -784,7 +784,7 @@ export default function DashboardHome({
 
               {/* Bottom Action */}
               <div className="mt-4 pt-3 flex items-center justify-between gap-2">
-                <span className="text-[11px] font-semibold text-zinc-500 dark:text-[#9B9085] truncate">
+                <span className="text-[11px] font-semibold text-zinc-500 dark:text-zinc-400 truncate">
                   {lockedPdfCount} total magnet{lockedPdfCount !== 1 ? "s" : ""}
                 </span>
                 <button
@@ -812,8 +812,8 @@ export default function DashboardHome({
             className="grid grid-cols-1 gap-4 lg:grid-cols-2"
           >
             {/* ── Recent Leads ── */}
-            <div className="rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 shadow-md backdrop-blur-sm overflow-hidden">
-              <div className="flex items-center justify-between px-4 py-2.5 border-b border-[#0066B2]/10 dark:border-[#38BDF8]/15">
+            <div className="rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#131316] shadow-md dark:shadow-none backdrop-blur-sm overflow-hidden">
+              <div className="flex items-center justify-between px-4 py-2.5 border-b border-[#0066B2]/10 dark:border-white/[0.06] dark:bg-[#161619]">
                 <div className="flex items-center gap-2.5">
                   <div className="flex h-7 w-7 items-center justify-center rounded-lg border border-[#0066B2]/30 bg-[#EFF6FF] text-[#0066B2] dark:border-[#0066B2]/30 dark:bg-[#0066B2]/20 dark:text-[#38BDF8]">
                     <Users className="h-4 w-4" />
@@ -824,7 +824,7 @@ export default function DashboardHome({
                 </div>
                 <Link
                   href="/dashboard/leads"
-                  className="inline-flex items-center gap-1 text-xs sm:text-sm font-semibold text-[#0066B2] dark:text-[#38BDF8] hover:opacity-80 transition-opacity"
+                  className="inline-flex items-center gap-1 text-xs sm:text-sm font-semibold text-[#0066B2] dark:text-zinc-300 dark:hover:text-white transition-colors"
                 >
                   View all
                   <ArrowUpRight className="h-3.5 w-3.5" />
@@ -843,11 +843,11 @@ export default function DashboardHome({
                         <p className="text-xs font-semibold text-zinc-800 dark:text-white truncate">
                           {lead.name || lead.email}
                         </p>
-                        <p className="text-[10px] text-zinc-400 dark:text-[#9B9085] truncate mt-0.5">
+                        <p className="text-[10px] text-zinc-400 dark:text-zinc-400 truncate mt-0.5">
                           {lead.page}
                         </p>
                       </div>
-                      <span className="shrink-0 text-[10px] text-zinc-400 dark:text-[#9B9085]">
+                      <span className="shrink-0 text-[10px] text-zinc-400 dark:text-zinc-400">
                         {relativeTime(lead.signedUpAt)}
                       </span>
                     </div>
@@ -856,7 +856,7 @@ export default function DashboardHome({
               ) : (
                 <div className="flex flex-col items-center py-8 text-center">
                   <Users className="h-7 w-7 text-zinc-200 dark:text-zinc-800 mb-2" />
-                  <p className="text-xs text-zinc-400 dark:text-[#9B9085] max-w-[220px] leading-relaxed">
+                  <p className="text-xs text-zinc-400 dark:text-zinc-400 max-w-[220px] leading-relaxed">
                     No leads yet. Share your magnet link to start growing your list.
                   </p>
                 </div>
@@ -866,8 +866,8 @@ export default function DashboardHome({
             {/* ── Right Column (50% Width): Stacked 50% Active Sequences (Top) + 50% Integrations Status (Bottom) ── */}
             <div className="flex flex-col gap-4 h-full">
               {/* Top 50%: Active Sequences */}
-              <div className="rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 shadow-md backdrop-blur-sm overflow-hidden flex-1 flex flex-col justify-between">
-                <div className="flex items-center justify-between px-4 py-2.5 border-b border-[#0066B2]/10 dark:border-[#38BDF8]/15">
+              <div className="rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#131316] shadow-md dark:shadow-none backdrop-blur-sm overflow-hidden flex-1 flex flex-col justify-between">
+                <div className="flex items-center justify-between px-4 py-2.5 border-b border-[#0066B2]/10 dark:border-white/[0.06] dark:bg-[#161619]">
                   <div className="flex items-center gap-2.5">
                     <div className="flex h-7 w-7 items-center justify-center rounded-lg border border-emerald-500/30 bg-emerald-50 text-emerald-600 dark:border-emerald-500/30 dark:bg-emerald-500/20 dark:text-emerald-400">
                       <Mail className="h-4 w-4" />
@@ -878,7 +878,7 @@ export default function DashboardHome({
                   </div>
                   <Link
                     href="/dashboard/sequences"
-                    className="inline-flex items-center gap-1 text-xs sm:text-sm font-semibold text-[#0066B2] dark:text-[#38BDF8] hover:opacity-80 transition-opacity"
+                    className="inline-flex items-center gap-1 text-xs sm:text-sm font-semibold text-[#0066B2] dark:text-zinc-300 dark:hover:text-white transition-colors"
                   >
                     View all
                     <ArrowUpRight className="h-3.5 w-3.5" />
@@ -921,7 +921,7 @@ export default function DashboardHome({
                             <p className="text-xs font-bold text-zinc-700 dark:text-zinc-300 tabular-nums">
                               {seq.stats.signedUp.toLocaleString()}
                             </p>
-                            <p className="text-[9px] text-zinc-400 dark:text-[#9B9085]">
+                            <p className="text-[9px] text-zinc-400 dark:text-zinc-400">
                               enrolled
                             </p>
                           </div>
@@ -932,12 +932,12 @@ export default function DashboardHome({
                 ) : (
                   <div className="flex flex-col items-center py-5 text-center">
                     <Mail className="h-6 w-6 text-zinc-300 dark:text-zinc-700 mb-1" />
-                    <p className="text-xs text-zinc-500 dark:text-[#9B9085]">
+                    <p className="text-xs text-zinc-500 dark:text-zinc-400">
                       No active sequences yet.
                     </p>
                     <Link
                       href="/dashboard/sequences/new"
-                      className="mt-1.5 text-xs font-bold text-[#0066B2] dark:text-[#38BDF8] hover:opacity-80 transition-opacity"
+                      className="mt-1.5 text-xs font-bold text-[#0066B2] dark:text-zinc-300 dark:hover:text-white transition-colors"
                     >
                       Create a sequence →
                     </Link>
@@ -946,8 +946,8 @@ export default function DashboardHome({
               </div>
 
               {/* Bottom 50%: Integrations Status */}
-              <div className="rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 shadow-md backdrop-blur-sm overflow-hidden flex flex-col justify-between">
-                <div className="flex items-center justify-between px-4 py-2.5 border-b border-[#0066B2]/10 dark:border-[#38BDF8]/15">
+              <div className="rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#131316] shadow-md dark:shadow-none backdrop-blur-sm overflow-hidden flex flex-col justify-between">
+                <div className="flex items-center justify-between px-4 py-2.5 border-b border-[#0066B2]/10 dark:border-white/[0.06] dark:bg-[#161619]">
                   <div className="flex items-center gap-2.5">
                     <div className="flex h-7 w-7 items-center justify-center rounded-lg border border-rose-500/30 bg-rose-50 text-rose-600 dark:border-rose-500/30 dark:bg-rose-500/20 dark:text-rose-400">
                       <Zap className="h-4 w-4" />
@@ -958,7 +958,7 @@ export default function DashboardHome({
                   </div>
                   <Link
                     href="/dashboard/integration"
-                    className="inline-flex items-center gap-1 text-xs sm:text-sm font-semibold text-[#0066B2] dark:text-[#38BDF8] hover:opacity-80 transition-opacity"
+                    className="inline-flex items-center gap-1 text-xs sm:text-sm font-semibold text-[#0066B2] dark:text-zinc-300 dark:hover:text-white transition-colors"
                   >
                     Manage
                     <ArrowUpRight className="h-3.5 w-3.5" />
@@ -968,7 +968,7 @@ export default function DashboardHome({
                 <div className="grid grid-cols-3 gap-2 p-4">
                   {/* ConvertKit */}
                   <div className="p-2.5 rounded-xl bg-[#F8FBFF] dark:bg-white/[0.03] border border-[#0066B2]/10 dark:border-white/[0.08] shadow-xs">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-[#9B9085]">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-400">
                       ConvertKit / Kit
                     </span>
                     <div className="flex items-center gap-1.5 mt-1">
@@ -981,7 +981,7 @@ export default function DashboardHome({
 
                   {/* Webhooks */}
                   <div className="p-2.5 rounded-xl bg-[#F8FBFF] dark:bg-white/[0.03] border border-[#0066B2]/10 dark:border-white/[0.08] shadow-xs">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-[#9B9085]">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-400">
                       Webhooks
                     </span>
                     <div className="flex items-center gap-1.5 mt-1">
@@ -994,7 +994,7 @@ export default function DashboardHome({
 
                   {/* GA4 / Pixel */}
                   <div className="p-2.5 rounded-xl bg-[#F8FBFF] dark:bg-white/[0.03] border border-[#0066B2]/10 dark:border-white/[0.08] shadow-xs">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-[#9B9085]">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-400">
                       GA4 / Pixel
                     </span>
                     <div className="flex items-center gap-1.5 mt-1">
@@ -1030,7 +1030,7 @@ export default function DashboardHome({
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: "100%", scale: 1 }}
               transition={{ type: "spring", stiffness: 400, damping: 32, mass: 0.8 }}
-              className="relative w-full max-w-[480px] rounded-t-3xl sm:rounded-2xl border-t sm:border border-zinc-200/80 dark:border-[#2e2e38] bg-white dark:bg-[#18181c] p-5 sm:p-6 text-zinc-900 dark:text-white shadow-2xl space-y-4 sm:space-y-5 max-h-[92vh] overflow-y-auto"
+              className="relative w-full max-w-[480px] rounded-t-3xl sm:rounded-2xl border-t sm:border border-zinc-200/80 dark:border-white/10 bg-white dark:bg-[#141417] p-5 sm:p-6 text-zinc-900 dark:text-white shadow-2xl space-y-4 sm:space-y-5 max-h-[92vh] overflow-y-auto"
               onClick={(e) => e.stopPropagation()}
             >
               {/* Mobile Drag Indicator */}
@@ -1045,7 +1045,7 @@ export default function DashboardHome({
                     <h3 className="text-base font-bold text-zinc-900 dark:text-white">
                       Create a magnet
                     </h3>
-                    <p className="text-[11px] text-zinc-500 dark:text-[#9B9085] mt-0.5">
+                    <p className="text-[11px] text-zinc-500 dark:text-zinc-400 mt-0.5">
                       Choose the type of lead magnet you want to build.
                     </p>
                   </div>
@@ -1058,7 +1058,7 @@ export default function DashboardHome({
                       <h3 className="text-base font-bold text-zinc-900 dark:text-white leading-tight">
                         Create Landing Page
                       </h3>
-                      <p className="text-[11px] text-zinc-500 dark:text-[#9B9085] mt-0.5">
+                      <p className="text-[11px] text-zinc-500 dark:text-zinc-400 mt-0.5">
                         Opt-in landing page with automated lead delivery.
                       </p>
                     </div>
@@ -1072,7 +1072,7 @@ export default function DashboardHome({
                       <h3 className="text-base font-bold text-zinc-900 dark:text-white leading-tight">
                         Create Locked PDF
                       </h3>
-                      <p className="text-[11px] text-zinc-500 dark:text-[#9B9085] mt-0.5">
+                      <p className="text-[11px] text-zinc-500 dark:text-zinc-400 mt-0.5">
                         OTP verification gate with live interactive preview.
                       </p>
                     </div>
@@ -1115,7 +1115,7 @@ export default function DashboardHome({
                         <span className="text-xs font-bold text-zinc-900 dark:text-white">
                           Locked PDF
                         </span>
-                        <p className="text-[11px] text-zinc-500 dark:text-[#9B9085] mt-0.5 leading-snug">
+                        <p className="text-[11px] text-zinc-500 dark:text-zinc-400 mt-0.5 leading-snug">
                           OTP verification gate with live interactive preview.
                         </p>
                       </div>
@@ -1144,7 +1144,7 @@ export default function DashboardHome({
                         <span className="text-xs font-bold text-zinc-900 dark:text-white">
                           Landing Page
                         </span>
-                        <p className="text-[11px] text-zinc-500 dark:text-[#9B9085] mt-0.5 leading-snug">
+                        <p className="text-[11px] text-zinc-500 dark:text-zinc-400 mt-0.5 leading-snug">
                           Opt-in landing page with automated lead delivery.
                         </p>
                       </div>
@@ -1186,7 +1186,7 @@ export default function DashboardHome({
                   <label className="text-xs font-semibold text-zinc-700 dark:text-[#d4c8bc]">
                     URL slug
                   </label>
-                  <div className="flex items-center rounded-xl border border-zinc-200 dark:border-[#2e2e38] bg-zinc-50 dark:bg-[#121214] px-3.5 py-2.5 text-xs text-zinc-500 dark:text-[#9B9085]">
+                  <div className="flex items-center rounded-xl border border-zinc-200 dark:border-[#2e2e38] bg-zinc-50 dark:bg-[#121214] px-3.5 py-2.5 text-xs text-zinc-500 dark:text-zinc-400">
                     <span className="text-zinc-400 dark:text-[#666675] shrink-0 mr-1.5 font-mono">/</span>
                     <span className="font-mono text-zinc-800 dark:text-[#d4c8bc] truncate">
                       {createMagnetName

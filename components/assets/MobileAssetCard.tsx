@@ -96,7 +96,7 @@ export const MobileAssetCard = memo(function MobileAssetCard({
       className={`group relative rounded-2xl border p-3.5 transition-all duration-200 cursor-pointer select-none overflow-hidden ${
         isSelected
           ? "border-[#0066B2] bg-[#EFF6FF] dark:border-[#38BDF8] dark:bg-[#0066B2]/15 shadow-sm"
-          : "border-[#0066B2]/15 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181C] shadow-sm backdrop-blur-sm"
+          : "border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#141417] shadow-sm"
       }`}
     >
       {/* Background Watermark Icon */}

@@ -575,8 +575,8 @@ export default function ResourcesPage() {
     const ext = filename.split(".").pop()?.toLowerCase() || "file";
     const category = getFileCategory(filename);
 
-    const brandBg = "bg-[#0066B2]/[0.08] dark:bg-[#38BDF8]/10 border-[#0066B2]/20 dark:border-[#38BDF8]/20 shadow-2xs backdrop-blur-md";
-    const brandTag = "bg-[#0066B2]/10 text-[#0066B2] dark:bg-[#38BDF8]/20 dark:text-[#38BDF8] border-[#0066B2]/20 dark:border-[#38BDF8]/30";
+    const brandBg = "bg-[#0066B2]/[0.08] dark:bg-white/[0.05] border-[#0066B2]/20 dark:border-white/10 shadow-2xs backdrop-blur-md";
+    const brandTag = "bg-[#0066B2]/10 text-[#0066B2] dark:bg-white/10 dark:text-zinc-200 border-[#0066B2]/20 dark:border-white/10";
 
     switch (category) {
       case "images":
@@ -738,7 +738,7 @@ export default function ResourcesPage() {
       onDrop={handleDrop}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
-      className="relative flex flex-col min-h-[calc(100vh-3.5rem)] bg-gradient-to-b from-[#EFF6FF]/40 via-[#F8FBFF] to-[#F8FBFF] dark:bg-none dark:bg-[#0B0B0D]"
+      className="relative flex flex-col min-h-[calc(100vh-3.5rem)] bg-gradient-to-b from-[#EFF6FF]/40 via-[#F8FBFF] to-[#F8FBFF] dark:bg-none dark:bg-[#09090B]"
     >
 
       {/* Global Drag Overlay when dragging files anywhere onto the page */}
@@ -843,75 +843,75 @@ export default function ResourcesPage() {
         {/* ========================================================================= */}
         <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
           {/* Total Resources */}
-          <div className="relative h-full rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
+          <div className="relative h-full rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#141417] dark:shadow-none p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
             <div className="flex items-center justify-between sm:justify-start w-full sm:w-auto">
-              <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl border border-indigo-500/30 bg-indigo-50 text-indigo-600 dark:border-indigo-500/30 dark:bg-indigo-500/20 dark:text-indigo-400">
+              <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl border border-indigo-500/30 bg-indigo-50 text-indigo-600 dark:border-white/10 dark:bg-white/5 dark:text-zinc-200">
                 <Layers className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
               </div>
             </div>
             <div className="flex-1 min-w-0 w-full">
-              <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-[#9B9085] leading-none truncate">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-400 leading-none truncate">
                 Total Resources
               </p>
               <p className="text-xl font-extrabold tabular-nums text-zinc-900 dark:text-white mt-1 leading-none tracking-tight">
                 {resources.length}
               </p>
             </div>
-            <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0066B2]/[0.05] to-transparent opacity-100" />
+            <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0066B2]/[0.05] to-transparent dark:hidden" />
           </div>
 
           {/* Storage Used */}
-          <div className="relative h-full rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
+          <div className="relative h-full rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#141417] dark:shadow-none p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
             <div className="flex items-center justify-between sm:justify-start w-full sm:w-auto">
-              <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl border border-[#0066B2]/30 bg-[#EFF6FF] text-[#0066B2] dark:border-[#0066B2]/30 dark:bg-[#0066B2]/20 dark:text-[#38BDF8]">
+              <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl border border-[#0066B2]/30 bg-[#EFF6FF] text-[#0066B2] dark:border-white/10 dark:bg-white/5 dark:text-zinc-200">
                 <HardDrive className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
               </div>
             </div>
             <div className="flex-1 min-w-0 w-full">
-              <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-[#9B9085] leading-none truncate">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-400 leading-none truncate">
                 Storage Used
               </p>
               <p className="text-xl font-extrabold tabular-nums text-zinc-900 dark:text-white mt-1 leading-none tracking-tight truncate">
                 {formatBytes(totalSizeBytes)}
               </p>
             </div>
-            <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0066B2]/[0.05] to-transparent opacity-100" />
+            <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0066B2]/[0.05] to-transparent dark:hidden" />
           </div>
 
           {/* Active in Magnets */}
-          <div className="relative h-full rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
+          <div className="relative h-full rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#141417] dark:shadow-none p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
             <div className="flex items-center justify-between sm:justify-start w-full sm:w-auto">
-              <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl border border-sky-500/30 bg-sky-50 text-sky-600 dark:border-sky-500/30 dark:bg-sky-500/20 dark:text-sky-400">
+              <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl border border-sky-500/30 bg-sky-50 text-sky-600 dark:border-white/10 dark:bg-white/5 dark:text-zinc-200">
                 <Link2 className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
               </div>
             </div>
             <div className="flex-1 min-w-0 w-full">
-              <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-[#9B9085] leading-none truncate">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-400 leading-none truncate">
                 Active in Magnets
               </p>
               <p className="text-xl font-extrabold tabular-nums text-zinc-900 dark:text-white mt-1 leading-none tracking-tight">
                 {linkedStats.linkedCount}
               </p>
             </div>
-            <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0066B2]/[0.05] to-transparent opacity-100" />
+            <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0066B2]/[0.05] to-transparent dark:hidden" />
           </div>
 
           {/* Total Deliveries */}
-          <div className="relative h-full rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
+          <div className="relative h-full rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#141417] dark:shadow-none p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
             <div className="flex items-center justify-between sm:justify-start w-full sm:w-auto">
               <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl border border-emerald-500/30 bg-emerald-50 text-emerald-600 dark:border-emerald-500/30 dark:bg-emerald-500/20 dark:text-emerald-400">
                 <Send className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
               </div>
             </div>
             <div className="flex-1 min-w-0 w-full">
-              <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-[#9B9085] leading-none truncate">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-400 leading-none truncate">
                 Total Deliveries
               </p>
               <p className="text-xl font-extrabold tabular-nums text-zinc-900 dark:text-white mt-1 leading-none tracking-tight">
                 {totalDeliveries}
               </p>
             </div>
-            <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0066B2]/[0.05] to-transparent opacity-100" />
+            <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0066B2]/[0.05] to-transparent dark:hidden" />
           </div>
         </div>
 
@@ -951,7 +951,7 @@ export default function ResourcesPage() {
             {/* ===================================================================== */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3 w-full max-w-full min-w-0">
               {/* Search Bar */}
-              <div className="flex items-center gap-2 flex-1 rounded-xl bg-zinc-50 dark:bg-[#1C1C20] px-3.5 py-2 border border-zinc-200/60 dark:border-zinc-800 focus-within:border-[#0066B2] dark:focus-within:border-[#0066B2] min-w-0">
+              <div className="flex items-center gap-2 flex-1 rounded-xl bg-zinc-50 dark:bg-[#16161a] px-3.5 py-2 border border-zinc-200/60 dark:border-white/[0.08] focus-within:border-[#0066B2] dark:focus-within:border-white/20 min-w-0">
                 <Search className="h-4 w-4 text-zinc-400 shrink-0" />
                 <input
                   type="text"
@@ -973,7 +973,7 @@ export default function ResourcesPage() {
 
               <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 justify-between sm:justify-end w-full sm:w-auto min-w-0">
                 {/* Desktop Category Tabs Pod */}
-                <div className="hidden sm:flex items-center p-1 bg-zinc-100 dark:bg-[#1C1C20] rounded-xl text-xs font-semibold min-w-0">
+                <div className="hidden sm:flex items-center p-1 bg-zinc-100 dark:bg-[#16161a] rounded-xl text-xs font-semibold min-w-0">
                   {[
                     { id: "all", label: `All (${categoryCounts.all})` },
                     { id: "docs", label: `Docs (${categoryCounts.docs})` },
@@ -993,7 +993,7 @@ export default function ResourcesPage() {
                       {activeCategory === tab.id && (
                         <motion.div
                           layoutId="activeAssetCategoryTab"
-                          className="absolute inset-0 bg-white dark:bg-[#2A2A30] rounded-lg shadow-xs"
+                          className="absolute inset-0 bg-white dark:bg-[#222226] rounded-lg shadow-xs"
                           transition={{ type: "spring", stiffness: 500, damping: 32 }}
                         />
                       )}
@@ -1039,7 +1039,7 @@ export default function ResourcesPage() {
                         exit={{ opacity: 0, scale: 0.96, y: -4 }}
                         transition={{ type: "spring", damping: 28, stiffness: 400 }}
                         onClick={(e) => e.stopPropagation()}
-                        className="absolute left-0 top-full z-40 mt-1.5 w-48 rounded-xl border border-zinc-200/90 dark:border-white/10 bg-white/95 dark:bg-[#1C1C20]/95 p-1.5 shadow-xl backdrop-blur-xl dark:text-white"
+                        className="absolute left-0 top-full z-40 mt-1.5 w-48 rounded-xl border border-zinc-200/90 dark:border-white/10 bg-white/95 dark:bg-[#16161a]/95 p-1.5 shadow-xl backdrop-blur-xl dark:text-white"
                       >
                         <div className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
                           Filter Category
@@ -1113,7 +1113,7 @@ export default function ResourcesPage() {
                         exit={{ opacity: 0, scale: 0.96, y: -4 }}
                         transition={{ type: "spring", damping: 28, stiffness: 400 }}
                         onClick={(e) => e.stopPropagation()}
-                        className="absolute right-0 top-full z-40 mt-1.5 w-48 rounded-xl border border-zinc-200/90 dark:border-white/10 bg-white/95 dark:bg-[#1C1C20]/95 p-1.5 shadow-xl backdrop-blur-xl dark:text-white"
+                        className="absolute right-0 top-full z-40 mt-1.5 w-48 rounded-xl border border-zinc-200/90 dark:border-white/10 bg-white/95 dark:bg-[#16161a]/95 p-1.5 shadow-xl backdrop-blur-xl dark:text-white"
                       >
                         <div className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
                           Sort by
@@ -1149,7 +1149,7 @@ export default function ResourcesPage() {
                 </div>
 
                 {/* Select Mode Toggle Pod with CheckSquare icon */}
-                <div className="flex items-center p-1 bg-zinc-100 dark:bg-[#1C1C20] rounded-xl shrink-0">
+                <div className="flex items-center p-1 bg-zinc-100 dark:bg-[#16161a] rounded-xl shrink-0">
                   <button
                     type="button"
                     onClick={() => {
@@ -1160,7 +1160,7 @@ export default function ResourcesPage() {
                       });
                     }}
                     className={`relative p-1.5 rounded-lg transition-colors duration-150 cursor-pointer ${isMobileSelectionMode || selectedResourceIds.length > 0
-                        ? "bg-white dark:bg-[#2A2A30] text-[#0066B2] dark:text-[#38BDF8] shadow-xs"
+                        ? "bg-white dark:bg-[#222226] text-[#0066B2] dark:text-[#38BDF8] shadow-xs"
                         : "text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200"
                       }`}
                     title={isMobileSelectionMode || selectedResourceIds.length > 0 ? "Exit Select Mode" : "Select Files"}
@@ -1174,7 +1174,7 @@ export default function ResourcesPage() {
             {/* ========================================================================= */}
             {/* 4. Table & Cards Data Container (Standalone Separated Card)               */}
             {/* ========================================================================= */}
-            <div className="rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 shadow-md backdrop-blur-sm relative overflow-hidden">
+            <div className="rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#131316] shadow-md dark:shadow-none backdrop-blur-sm relative overflow-hidden">
               {/* Mobile Select All Strip when in selection mode */}
               <AnimatePresence>
                 {isMobileSelectionMode && (
@@ -1229,8 +1229,8 @@ export default function ResourcesPage() {
                     {/* 4. DESKTOP Table View (hidden md:block) - Preserved 100% Unchanged        */}
                     {/* ========================================================================= */}
                     <div className="hidden md:block overflow-x-auto">
-                      <table className="min-w-full divide-y divide-[#0066B2]/8 dark:divide-[#38BDF8]/15">
-                        <thead className="bg-[#F8FBFF] dark:bg-[#151518] border-b border-[#0066B2]/10 dark:border-[#38BDF8]/20">
+                      <table className="min-w-full divide-y divide-zinc-200/60 dark:divide-white/[0.05]">
+                        <thead className="bg-zinc-50/70 dark:bg-[#161619] border-b border-zinc-200/80 dark:border-white/[0.06]">
                           <tr>
                             <th className="px-6 py-3.5 text-left text-[11px] font-semibold tracking-wider text-zinc-500 dark:text-[#9B9085] uppercase">
                               <div className="flex items-center">
@@ -1270,7 +1270,7 @@ export default function ResourcesPage() {
                             <th className="px-6 py-3.5 text-right text-[11px] font-semibold tracking-wider text-zinc-500 dark:text-[#9B9085] uppercase">Actions</th>
                           </tr>
                         </thead>
-                        <tbody className="divide-y divide-[#0066B2]/8 bg-white dark:divide-[#222228] dark:bg-[#18181B]">
+                        <tbody className="divide-y divide-zinc-200/60 bg-white dark:divide-white/[0.05] dark:bg-[#131316]">
                           {filteredResources.map((resource) => {
                             const badge = getFileBadge(resource.name);
                             const isCopied = copiedId === resource.id;
@@ -1281,8 +1281,8 @@ export default function ResourcesPage() {
                               <tr
                                 key={resource.id}
                                 className={`group transition-all duration-200 ${isSelected
-                                    ? "bg-gradient-to-r from-[#0066B2]/[0.08] via-[#0066B2]/[0.04] to-transparent dark:from-[#38BDF8]/15 dark:via-[#38BDF8]/[0.06] dark:to-transparent"
-                                    : "hover:bg-zinc-50/80 dark:hover:bg-[#1F1F24]/70"
+                                    ? "bg-gradient-to-r from-[#0066B2]/[0.08] via-[#0066B2]/[0.04] to-transparent dark:from-[#38BDF8]/10 dark:via-[#38BDF8]/[0.03] dark:to-transparent"
+                                    : "hover:bg-zinc-50/80 dark:hover:bg-white/[0.03]"
                                   }`}
                               >
                                 <td className="whitespace-nowrap px-6 py-4">

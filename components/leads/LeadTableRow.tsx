@@ -56,8 +56,8 @@ export const LeadTableRow = memo(function LeadTableRow({
     <tr
       className={`group transition-all duration-200 ${
         isSelected
-          ? "bg-gradient-to-r from-[#0066B2]/[0.08] via-[#0066B2]/[0.04] to-transparent dark:from-[#38BDF8]/15 dark:via-[#38BDF8]/[0.06] dark:to-transparent"
-          : "hover:bg-zinc-50/80 dark:hover:bg-[#1F1F24]/70"
+          ? "bg-gradient-to-r from-[#0066B2]/[0.08] via-[#0066B2]/[0.04] to-transparent dark:from-[#38BDF8]/10 dark:via-[#38BDF8]/[0.03] dark:to-transparent"
+          : "hover:bg-zinc-50/70 dark:hover:bg-white/[0.03]"
       }`}
     >
       {/* Subscriber Column with Framer Motion Spring Shift */}
@@ -165,7 +165,7 @@ export const LeadTableRow = memo(function LeadTableRow({
           <button
             type="button"
             onClick={() => onViewDetails(lead)}
-            className="flex items-center gap-1.5 rounded-lg border border-[#0066B2]/20 bg-[#0066B2]/[0.06] px-2.5 py-1.5 text-xs font-semibold text-[#0066B2] hover:bg-[#0066B2]/10 dark:border-[#38BDF8]/25 dark:bg-[#38BDF8]/10 dark:text-[#38BDF8] dark:hover:bg-[#38BDF8]/15 transition-all duration-150 cursor-pointer shadow-xs active:scale-[0.97]"
+            className="flex items-center gap-1.5 rounded-lg border border-transparent bg-transparent hover:bg-zinc-100 px-2.5 py-1.5 text-xs font-medium text-zinc-600 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-white dark:hover:bg-white/[0.08] dark:active:bg-white/[0.12] transition-all duration-150 cursor-pointer active:scale-[0.97]"
           >
             <Eye className="h-3.5 w-3.5" />{" "}
             View Details

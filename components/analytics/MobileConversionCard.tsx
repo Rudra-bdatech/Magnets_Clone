@@ -55,7 +55,7 @@ export default function MobileConversionCard({ lead, isPerMagnet = false }: Mobi
   return (
     <motion.div
       whileTap={{ scale: 0.99 }}
-      className="p-3.5 rounded-2xl bg-white dark:bg-[#121215] border border-zinc-200/80 dark:border-white/[0.08] shadow-xs space-y-2.5 transition-all"
+      className="p-3.5 rounded-2xl bg-white dark:bg-[#141417] border border-zinc-200/80 dark:border-white/[0.08] shadow-xs space-y-2.5 transition-all"
     >
       {/* Top row: Name, Status & Device */}
       <div className="flex items-start justify-between gap-2">

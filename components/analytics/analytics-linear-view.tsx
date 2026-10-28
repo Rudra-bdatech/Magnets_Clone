@@ -330,28 +330,28 @@ export default function AnalyticsLinearView({
       label: "Total Signups",
       value: signupsCount.toLocaleString(),
       icon: Users,
-      iconBadge: "border border-[#0066B2]/30 bg-[#EFF6FF] text-[#0066B2] dark:border-[#0066B2]/30 dark:bg-[#0066B2]/20 dark:text-[#38BDF8]",
+      iconBadge: "border border-[#0066B2]/30 bg-[#EFF6FF] text-[#0066B2] dark:border-white/10 dark:bg-white/5 dark:text-zinc-200",
     },
     {
       id: "visits",
       label: "Total Visits",
       value: visitsCount.toLocaleString(),
       icon: Eye,
-      iconBadge: "border border-violet-500/30 bg-violet-50 text-violet-600 dark:border-violet-500/30 dark:bg-violet-500/20 dark:text-violet-400",
+      iconBadge: "border border-violet-500/30 bg-violet-50 text-violet-600 dark:border-white/10 dark:bg-white/5 dark:text-zinc-200",
     },
     {
       id: "conversion",
       label: "Conversion Rate",
       value: conversionRate,
       icon: TrendingUp,
-      iconBadge: "border border-emerald-500/30 bg-emerald-50 text-emerald-600 dark:border-emerald-500/30 dark:bg-emerald-500/20 dark:text-emerald-400",
+      iconBadge: "border border-emerald-500/30 bg-emerald-50 text-emerald-600 dark:border-white/10 dark:bg-white/5 dark:text-emerald-400",
     },
     {
       id: "tracked",
       label: "Conversions",
       value: signupsCount.toLocaleString(),
       icon: CheckCircle2,
-      iconBadge: "border border-amber-500/30 bg-amber-50 text-amber-600 dark:border-amber-500/30 dark:bg-amber-500/20 dark:text-amber-400",
+      iconBadge: "border border-amber-500/30 bg-amber-50 text-amber-600 dark:border-white/10 dark:bg-white/5 dark:text-amber-400",
     },
   ];
 
@@ -360,7 +360,7 @@ export default function AnalyticsLinearView({
       variants={containerVariants}
       initial="hidden"
       animate="visible"
-      className="min-h-[calc(100vh-3.5rem)] bg-gradient-to-b from-[#EFF6FF]/40 via-[#F8FBFF] to-[#F8FBFF] dark:bg-none dark:bg-[#0B0B0D] text-zinc-900 dark:text-zinc-100 font-sans selection:bg-[#0066B2]/10 dark:selection:bg-white/10"
+      className="min-h-[calc(100vh-3.5rem)] bg-gradient-to-b from-[#EFF6FF]/40 via-[#F8FBFF] to-[#F8FBFF] dark:bg-none dark:bg-[#09090B] text-zinc-900 dark:text-zinc-100 font-sans selection:bg-[#0066B2]/10 dark:selection:bg-white/10"
     >
       <div className={`flex-1 px-3.5 py-6 sm:px-6 sm:py-7 lg:px-8 mx-auto w-full flex flex-col gap-4 transition-[max-width] duration-[220ms] ease-[cubic-bezier(0.16,1,0.3,1)] will-change-[max-width] ${isCollapsed ? "max-w-[1440px]" : "max-w-7xl"}`}>
 
@@ -377,7 +377,7 @@ export default function AnalyticsLinearView({
               <button
                 type="button"
                 onClick={onOpenHelp}
-                className="cursor-pointer flex h-5 w-5 items-center justify-center rounded-full border border-zinc-200 dark:border-white/[0.12] bg-white dark:bg-[#121215] text-[11px] font-mono text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white hover:border-zinc-400 dark:hover:border-white/30 transition-all"
+                className="cursor-pointer flex h-5 w-5 items-center justify-center rounded-full border border-zinc-200 dark:border-white/[0.12] bg-white dark:bg-[#16161a] text-[11px] font-mono text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white hover:border-zinc-400 dark:hover:border-white/30 transition-all"
                 title="Analytics Help"
               >
                 ?
@@ -392,7 +392,7 @@ export default function AnalyticsLinearView({
 
           <div className="flex flex-wrap items-center gap-3">
             {/* Timeframe Segmented Control (Apple / Linear Smooth Sliding Pill) */}
-            <div className="relative flex items-center p-1 rounded-xl bg-white/80 dark:bg-[#121215] border border-zinc-200/80 dark:border-white/[0.08] text-xs shadow-xs backdrop-blur-sm">
+            <div className="relative flex items-center p-1 rounded-xl bg-white/80 dark:bg-[#16161a] border border-zinc-200/80 dark:border-white/[0.08] text-xs shadow-xs backdrop-blur-sm">
               {(["7d", "30d", "90d", "all"] as TimeRange[]).map((r) => {
                 const isActive = timeRange === r;
                 return (
@@ -424,7 +424,7 @@ export default function AnalyticsLinearView({
               whileTap={{ scale: 0.98 }}
               type="button"
               onClick={exportToCSV}
-              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-white dark:bg-[#121215] border border-zinc-200/80 dark:border-white/[0.08] hover:bg-zinc-50 dark:hover:border-white/[0.2] text-xs font-semibold text-zinc-700 dark:text-zinc-200 transition-all shadow-xs cursor-pointer"
+              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-white dark:bg-[#16161a] border border-zinc-200/80 dark:border-white/[0.08] hover:bg-zinc-50 dark:hover:border-white/[0.2] text-xs font-semibold text-zinc-700 dark:text-zinc-200 transition-all shadow-xs cursor-pointer"
             >
               <Download className="h-3.5 w-3.5 text-zinc-400" />
               <span>Export CSV</span>
@@ -436,7 +436,7 @@ export default function AnalyticsLinearView({
                 e.preventDefault();
                 window.location.href = backHref;
               }}
-              className="relative z-20 flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-white dark:bg-[#121215] border border-zinc-200/80 dark:border-white/[0.08] hover:bg-zinc-50 dark:hover:border-white/[0.2] dark:hover:bg-zinc-800/60 text-xs font-semibold text-zinc-700 dark:text-zinc-200 transition-all shadow-xs cursor-pointer select-none"
+              className="relative z-20 flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-white dark:bg-[#16161a] border border-zinc-200/80 dark:border-white/[0.08] hover:bg-zinc-50 dark:hover:border-white/[0.2] dark:hover:bg-zinc-800/60 text-xs font-semibold text-zinc-700 dark:text-zinc-200 transition-all shadow-xs cursor-pointer select-none"
             >
               <ArrowLeft className="h-3.5 w-3.5 text-zinc-400" />
               <span>{isLockedPdf ? "Locked PDFs" : "Landing Page"}</span>
@@ -471,7 +471,7 @@ export default function AnalyticsLinearView({
               <button
                 type="button"
                 onClick={onOpenHelp}
-                className="cursor-pointer flex h-5 w-5 items-center justify-center rounded-full border border-zinc-200 dark:border-white/[0.12] bg-white dark:bg-[#121215] text-[11px] font-mono text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-all"
+                className="cursor-pointer flex h-5 w-5 items-center justify-center rounded-full border border-zinc-200 dark:border-white/[0.12] bg-white dark:bg-[#16161a] text-[11px] font-mono text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-all"
                 title="Analytics Help"
               >
                 ?
@@ -486,7 +486,7 @@ export default function AnalyticsLinearView({
                   e.preventDefault();
                   window.location.href = backHref;
                 }}
-                className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-white dark:bg-[#121215] border border-zinc-200/80 dark:border-white/[0.08] text-xs font-semibold text-zinc-700 dark:text-zinc-200 shadow-xs"
+                className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-white dark:bg-[#16161a] border border-zinc-200/80 dark:border-white/[0.08] text-xs font-semibold text-zinc-700 dark:text-zinc-200 shadow-xs"
               >
                 <ArrowLeft className="h-3 w-3 text-zinc-400" />
                 <span>{isLockedPdf ? "Locked PDFs" : "Landing Page"}</span>
@@ -515,7 +515,7 @@ export default function AnalyticsLinearView({
 
           {/* Timeframe & Export on Mobile */}
           <div className="flex items-center gap-2 pt-0.5">
-            <div className="relative flex-1 flex items-center p-1 rounded-xl bg-white/80 dark:bg-[#121215] border border-zinc-200/80 dark:border-white/[0.08] text-xs shadow-xs backdrop-blur-sm">
+            <div className="relative flex-1 flex items-center p-1 rounded-xl bg-white/80 dark:bg-[#16161a] border border-zinc-200/80 dark:border-white/[0.08] text-xs shadow-xs backdrop-blur-sm">
               {(["7d", "30d", "90d", "all"] as TimeRange[]).map((r) => {
                 const isActive = timeRange === r;
                 return (
@@ -546,7 +546,7 @@ export default function AnalyticsLinearView({
               whileTap={{ scale: 0.96 }}
               type="button"
               onClick={exportToCSV}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white dark:bg-[#121215] border border-zinc-200/80 dark:border-white/[0.08] text-xs font-semibold text-zinc-700 dark:text-zinc-200 shadow-xs cursor-pointer shrink-0"
+              className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white dark:bg-[#16161a] border border-zinc-200/80 dark:border-white/[0.08] text-xs font-semibold text-zinc-700 dark:text-zinc-200 shadow-xs cursor-pointer shrink-0"
             >
               <Download className="h-3.5 w-3.5 text-zinc-400" />
               <span>Export</span>
@@ -562,7 +562,7 @@ export default function AnalyticsLinearView({
           {analyticsKpiCards.map((card) => (
             <div
               key={card.id}
-              className="relative h-full rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5"
+              className="relative h-full rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#141417] dark:shadow-none p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5"
             >
               {/* Left on desktop / Top on mobile: Icon Badge */}
               <div className="flex items-center justify-between sm:justify-start w-full sm:w-auto">
@@ -576,7 +576,7 @@ export default function AnalyticsLinearView({
               {/* Right: Label & Value */}
               <div className="flex-1 min-w-0 w-full">
                 <div className="flex items-center justify-between gap-1">
-                  <p className="text-[10px] sm:text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-[#9B9085] leading-none whitespace-normal sm:truncate">
+                  <p className="text-[10px] sm:text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-400 leading-none whitespace-normal sm:truncate">
                     {card.label}
                   </p>
                 </div>
@@ -587,7 +587,7 @@ export default function AnalyticsLinearView({
               </div>
 
               {/* Ambient gradient overlay */}
-              <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0066B2]/[0.05] to-transparent opacity-100" />
+              <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0066B2]/[0.05] to-transparent dark:hidden" />
             </div>
           ))}
         </motion.div>
@@ -609,10 +609,10 @@ export default function AnalyticsLinearView({
         {isPerMagnet && (page?.hasVariantB || page?.testStarted) && (
           <motion.div
             variants={itemVariants}
-            className="relative rounded-2xl bg-white/90 dark:bg-[#18181B]/90 border border-[#0066B2]/15 dark:border-[#38BDF8]/25 p-4 sm:p-6 space-y-4 shadow-md backdrop-blur-sm overflow-hidden"
+            className="relative rounded-2xl bg-white/90 dark:bg-[#141417] border border-[#0066B2]/15 dark:border-white/[0.08] dark:shadow-none p-4 sm:p-6 space-y-4 shadow-md backdrop-blur-sm overflow-hidden"
           >
-            <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0066B2]/[0.03] to-transparent opacity-100" />
-            <div className="relative z-10 flex items-center justify-between border-b border-[#0066B2]/10 dark:border-[#38BDF8]/15 pb-3">
+            <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0066B2]/[0.03] to-transparent dark:hidden" />
+            <div className="relative z-10 flex items-center justify-between border-b border-[#0066B2]/10 dark:border-white/[0.06] pb-3">
               <div className="flex items-center gap-2">
                 <Trophy className="h-4 w-4 text-amber-500 dark:text-amber-400" />
                 <h3 className="text-sm font-bold text-zinc-900 dark:text-white">
@@ -629,7 +629,7 @@ export default function AnalyticsLinearView({
               <div
                 className={`p-4 rounded-xl border space-y-2 transition-all ${!isBWinning
                     ? "border-emerald-500/40 bg-emerald-50/60 dark:bg-emerald-950/10"
-                    : "border-zinc-200/80 bg-zinc-50/60 dark:border-white/[0.08] dark:bg-[#121215]"
+                    : "border-zinc-200/80 bg-zinc-50/60 dark:border-white/[0.08] dark:bg-[#16161a]"
                   }`}
               >
                 <div className="flex items-center justify-between">
@@ -663,7 +663,7 @@ export default function AnalyticsLinearView({
               <div
                 className={`p-4 rounded-xl border space-y-2 transition-all ${isBWinning
                     ? "border-emerald-500/40 bg-emerald-50/60 dark:bg-emerald-950/10"
-                    : "border-zinc-200/80 bg-zinc-50/60 dark:border-white/[0.08] dark:bg-[#121215]"
+                    : "border-zinc-200/80 bg-zinc-50/60 dark:border-white/[0.08] dark:bg-[#16161a]"
                   }`}
               >
                 <div className="flex items-center justify-between">
@@ -699,12 +699,12 @@ export default function AnalyticsLinearView({
         {/* 5. BREAKDOWN CARDS (DESKTOP & MOBILE) */}
         <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
           {/* Device Breakdown Card */}
-          <div className="relative rounded-2xl bg-white/90 dark:bg-[#18181B]/90 border border-[#0066B2]/15 dark:border-[#38BDF8]/25 p-4 sm:p-5 space-y-3.5 sm:space-y-4 shadow-md backdrop-blur-sm overflow-hidden">
-            <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0066B2]/[0.03] to-transparent opacity-100" />
-            <div className="relative z-10 flex items-center justify-between border-b border-[#0066B2]/10 dark:border-[#38BDF8]/15 pb-3">
+          <div className="relative rounded-2xl bg-white/90 dark:bg-[#141417] border border-[#0066B2]/15 dark:border-white/[0.08] dark:shadow-none p-4 sm:p-5 space-y-3.5 sm:space-y-4 shadow-md backdrop-blur-sm overflow-hidden">
+            <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0066B2]/[0.03] to-transparent dark:hidden" />
+            <div className="relative z-10 flex items-center justify-between border-b border-[#0066B2]/10 dark:border-white/[0.06] pb-3">
               <div className="flex items-center gap-2.5">
-                <div className="flex h-7 w-7 items-center justify-center rounded-lg border border-[#0066B2]/30 bg-[#EFF6FF] dark:bg-[#0066B2]/20">
-                  <Laptop className="h-4 w-4 text-[#0066B2] dark:text-[#38BDF8]" />
+                <div className="flex h-7 w-7 items-center justify-center rounded-lg border border-[#0066B2]/30 bg-[#EFF6FF] dark:border-white/10 dark:bg-white/5">
+                  <Laptop className="h-4 w-4 text-[#0066B2] dark:text-zinc-200" />
                 </div>
                 <h3 className="text-sm font-bold text-zinc-900 dark:text-white flex items-center gap-2">
                   <span>Device Breakdown</span>
@@ -746,9 +746,9 @@ export default function AnalyticsLinearView({
           </div>
 
           {/* Top Traffic Referrers Card */}
-          <div className="relative rounded-2xl bg-white/90 dark:bg-[#18181B]/90 border border-[#0066B2]/15 dark:border-[#38BDF8]/25 p-4 sm:p-5 space-y-3.5 sm:space-y-4 shadow-md backdrop-blur-sm overflow-hidden">
-            <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0066B2]/[0.03] to-transparent opacity-100" />
-            <div className="relative z-10 flex items-center justify-between border-b border-[#0066B2]/10 dark:border-[#38BDF8]/15 pb-3">
+          <div className="relative rounded-2xl bg-white/90 dark:bg-[#141417] border border-[#0066B2]/15 dark:border-white/[0.08] dark:shadow-none p-4 sm:p-5 space-y-3.5 sm:space-y-4 shadow-md backdrop-blur-sm overflow-hidden">
+            <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0066B2]/[0.03] to-transparent dark:hidden" />
+            <div className="relative z-10 flex items-center justify-between border-b border-[#0066B2]/10 dark:border-white/[0.06] pb-3">
               <div className="flex items-center gap-2.5">
                 <div className="flex h-7 w-7 items-center justify-center rounded-lg border border-emerald-500/30 bg-emerald-50 dark:bg-emerald-500/20">
                   <Globe className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
@@ -766,10 +766,10 @@ export default function AnalyticsLinearView({
             <div className="relative z-10 space-y-2 pt-1 text-xs">
               <div className="flex items-center justify-between p-2.5 rounded-xl bg-[#F8FBFF] dark:bg-white/[0.03] border border-[#0066B2]/10 dark:border-white/[0.08] shadow-xs">
                 <span className="text-zinc-800 dark:text-zinc-200 font-semibold flex items-center gap-2">
-                  <Share2 className="h-3.5 w-3.5 text-[#0066B2] dark:text-[#38BDF8]" />
+                  <Share2 className="h-3.5 w-3.5 text-[#0066B2] dark:text-zinc-200" />
                   Direct / Social Links
                 </span>
-                <span className="font-mono font-bold text-[#0066B2] dark:text-[#38BDF8]">{directPct}%</span>
+                <span className="font-mono font-bold text-[#0066B2] dark:text-zinc-200">{directPct}%</span>
               </div>
 
               <div className="flex items-center justify-between p-2.5 rounded-xl bg-[#F8FBFF] dark:bg-white/[0.03] border border-[#0066B2]/10 dark:border-white/[0.08] shadow-xs">
