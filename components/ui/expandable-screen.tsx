@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
+import { useIsMobile } from "@/lib/use-mobile";
 
 interface ExpandableScreenContextType {
   isOpen: boolean;
@@ -100,6 +101,7 @@ export function ExpandableScreenContent({
 }) {
   const { isOpen, setIsOpen, layoutId, contentRadius } = useExpandableScreen();
   const [mounted, setMounted] = useState(false);
+  const isMobile = useIsMobile(768);
 
   useEffect(() => {
     setMounted(true);
@@ -125,25 +127,56 @@ export function ExpandableScreenContent({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.15, ease: "easeOut" }}
+            transition={{ duration: isMobile ? 0.25 : 0.15, ease: "easeOut" }}
             className="fixed inset-0 z-[99998] bg-black/60 backdrop-blur-sm will-change-[opacity]"
             onClick={() => setIsOpen(false)}
           />
 
           {/* Morphing Screen Content */}
-          <div className="fixed inset-0 z-[99999] flex items-center justify-center p-3 md:p-6 pointer-events-none">
+          <div
+            className={`fixed inset-0 z-[99999] flex ${
+              isMobile
+                ? "items-end justify-center p-0"
+                : "items-center justify-center p-3 md:p-6"
+            } pointer-events-none`}
+          >
             <motion.div
-              layoutId={layoutId}
-              style={{ borderRadius: contentRadius }}
-              transition={{
-                type: "spring",
-                stiffness: 380,
-                damping: 32,
-                mass: 0.7,
-              }}
+              {...(!isMobile ? { layoutId } : {})}
+              initial={isMobile ? { y: "100%", opacity: 0 } : undefined}
+              animate={isMobile ? { y: 0, opacity: 1 } : undefined}
+              exit={isMobile ? { y: "100%", opacity: 0 } : undefined}
+              transition={
+                isMobile
+                  ? {
+                      type: "spring",
+                      damping: 32,
+                      stiffness: 340,
+                      mass: 0.8,
+                    }
+                  : {
+                      type: "spring",
+                      stiffness: 380,
+                      damping: 32,
+                      mass: 0.7,
+                    }
+              }
+              style={
+                isMobile
+                  ? {
+                      borderTopLeftRadius: "24px",
+                      borderTopRightRadius: "24px",
+                      borderBottomLeftRadius: 0,
+                      borderBottomRightRadius: 0,
+                    }
+                  : { borderRadius: contentRadius }
+              }
               onWheel={(e) => e.stopPropagation()}
               onTouchMove={(e) => e.stopPropagation()}
-              className={`pointer-events-auto relative w-full max-w-4xl h-[92vh] max-h-[96vh] overflow-hidden shadow-2xl flex flex-col transform-gpu will-change-transform ${className}`}
+              className={`pointer-events-auto relative w-full ${
+                isMobile
+                  ? "max-w-full h-[90vh] max-h-[92vh]"
+                  : "max-w-4xl h-[92vh] max-h-[96vh]"
+              } overflow-hidden shadow-2xl flex flex-col transform-gpu will-change-transform ${className}`}
               onClick={(e) => e.stopPropagation()}
             >
               {children}

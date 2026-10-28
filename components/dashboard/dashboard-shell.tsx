@@ -64,7 +64,14 @@ export default function DashboardShell({
   const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
+  const [hasOpenedHelp, setHasOpenedHelp] = useState(false);
   const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (showHelp) {
+      setHasOpenedHelp(true);
+    }
+  }, [showHelp]);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showDrawerProfileMenu, setShowDrawerProfileMenu] = useState(false);
   const [hoveredNavHref, setHoveredNavHref] = useState<string | null>(null);
@@ -447,7 +454,7 @@ export default function DashboardShell({
         isOpen={showHelp}
         onOpenChange={(open) => {
           setShowHelp(open);
-          if (!open) setSelectedTopic(null);
+          if (!open) setTimeout(() => setSelectedTopic(null), 320);
         }}
         layoutId="sidebar-help-card"
         triggerRadius="8px"
@@ -1267,11 +1274,11 @@ export default function DashboardShell({
 
 
         {/* Help Centre Expandable Content (Dynamically Loaded) */}
-        {showHelp && (
+        {hasOpenedHelp && (
           <HelpCenterContent
             onClose={() => {
               setShowHelp(false);
-              setSelectedTopic(null);
+              setTimeout(() => setSelectedTopic(null), 320);
             }}
             selectedTopic={selectedTopic}
             setSelectedTopic={setSelectedTopic}
