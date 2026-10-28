@@ -731,7 +731,7 @@ export default function AccountSettingsPage() {
                   transition={{ duration: 0.1, ease: [0.16, 1, 0.3, 1] }}
                   className="relative rounded-2xl border border-[#0066B2]/30 bg-white/90 dark:border-white/[0.08] dark:bg-[#171717] dark:shadow-none p-4 sm:p-6 shadow-md backdrop-blur-sm overflow-hidden"
                 >
-                  <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0066B2]/[0.03] to-transparent opacity-100" />
+                  <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0066B2]/[0.03] to-transparent opacity-100 dark:hidden" />
                   <div className="relative z-10">
                   <div className="flex items-start gap-3">
                     <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-[#0066B2]/30 bg-[#EFF6FF] dark:border-white/10 dark:bg-white/5 dark:text-zinc-200">
@@ -904,7 +904,7 @@ export default function AccountSettingsPage() {
                   transition={{ duration: 0.1, ease: [0.16, 1, 0.3, 1] }}
                   className="relative rounded-2xl border border-[#0066B2]/30 bg-white/90 dark:border-white/[0.08] dark:bg-[#171717] dark:shadow-none p-4 sm:p-6 shadow-md backdrop-blur-sm overflow-hidden"
                 >
-                  <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0066B2]/[0.03] to-transparent opacity-100" />
+                  <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0066B2]/[0.03] to-transparent opacity-100 dark:hidden" />
                   <div className="relative z-10">
                     <EmailSenderSection
                       account={account}
@@ -925,7 +925,7 @@ export default function AccountSettingsPage() {
                   transition={{ duration: 0.1, ease: [0.16, 1, 0.3, 1] }}
                   className="relative rounded-2xl border border-[#0066B2]/30 bg-white/90 dark:border-white/[0.08] dark:bg-[#171717] dark:shadow-none p-4 sm:p-6 shadow-md backdrop-blur-sm overflow-hidden"
                 >
-                  <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0066B2]/[0.03] to-transparent opacity-100" />
+                  <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0066B2]/[0.03] to-transparent opacity-100 dark:hidden" />
                   <div className="relative z-10">
                   <div className="flex items-start gap-3">
                     <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-[#0066B2]/30 bg-[#EFF6FF] dark:border-white/10 dark:bg-white/5 dark:text-zinc-200">
@@ -1012,7 +1012,7 @@ export default function AccountSettingsPage() {
                   transition={{ duration: 0.1, ease: [0.16, 1, 0.3, 1] }}
                   className="relative rounded-2xl border border-[#0066B2]/30 bg-white/90 dark:border-white/[0.08] dark:bg-[#171717] dark:shadow-none p-4 sm:p-6 shadow-md backdrop-blur-sm overflow-hidden"
                 >
-                  <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0066B2]/[0.03] to-transparent opacity-100" />
+                  <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0066B2]/[0.03] to-transparent opacity-100 dark:hidden" />
                   <div className="relative z-10">
                   <div className="flex items-start gap-3">
                     <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-[#0066B2]/30 bg-[#EFF6FF] dark:border-white/10 dark:bg-white/5 dark:text-zinc-200">
@@ -1127,7 +1127,7 @@ export default function AccountSettingsPage() {
                   transition={{ duration: 0.1, ease: [0.16, 1, 0.3, 1] }}
                   className="relative rounded-2xl border border-red-300/50 bg-white/90 dark:border-red-900/40 dark:bg-[#171717] dark:shadow-none p-4 sm:p-6 transition-colors shadow-md backdrop-blur-sm overflow-hidden"
                 >
-                  <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-red-500/[0.03] to-transparent opacity-100" />
+                  <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-red-500/[0.03] to-transparent opacity-100 dark:hidden" />
                   <div className="relative z-10">
                   <div className="flex items-start gap-3">
                     <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-red-200 bg-red-50 dark:border-red-900/40 dark:bg-red-950/30 text-red-600 dark:text-red-400">
