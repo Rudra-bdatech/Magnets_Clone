@@ -974,15 +974,9 @@ function parseCsvLine(line: string): string[] {
         {/* ========================================================================= */}
         <div className="flex md:hidden flex-col gap-3">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <h2 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-white">
-                Leads
-              </h2>
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                Live
-              </span>
-            </div>
+            <h2 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-white">
+              Leads
+            </h2>
 
             <button
               type="button"

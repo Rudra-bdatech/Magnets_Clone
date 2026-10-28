@@ -4,6 +4,7 @@ import React, { memo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { AlertTriangle, X, Loader2 } from "lucide-react";
 import { useIsMobile } from "@/lib/use-mobile";
+import { useBodyScrollLock } from "@/lib/use-body-scroll-lock";
 
 interface BulkDeleteModalProps {
   isOpen: boolean;
@@ -21,6 +22,7 @@ export const BulkDeleteModal = memo(function BulkDeleteModal({
   onConfirmBulkDelete,
 }: BulkDeleteModalProps) {
   const isMobile = useIsMobile();
+  useBodyScrollLock(isOpen);
 
   return (
     <AnimatePresence>
@@ -50,7 +52,8 @@ export const BulkDeleteModal = memo(function BulkDeleteModal({
                 ? { type: "spring", stiffness: 450, damping: 32, mass: 0.4 }
                 : { type: "spring", stiffness: 650, damping: 36, mass: 0.3 }
             }
-            className="relative z-10 w-full sm:max-w-[440px] max-h-[85vh] overflow-y-auto rounded-t-[28px] sm:rounded-3xl border-t sm:border border-zinc-200 dark:border-white/10 bg-white/95 dark:bg-[#141417]/95 backdrop-blur-xl p-5 sm:p-6 text-zinc-900 dark:text-white shadow-2xl space-y-4 transform-gpu will-change-transform"
+            className="relative z-10 w-full sm:max-w-[440px] max-h-[85vh] overflow-y-auto overscroll-contain rounded-t-[28px] sm:rounded-3xl border-t sm:border border-zinc-200 dark:border-white/10 bg-white/95 dark:bg-[#141417]/95 backdrop-blur-xl p-5 sm:p-6 text-zinc-900 dark:text-white shadow-2xl space-y-4 transform-gpu will-change-transform"
+            data-lenis-prevent
             onClick={(e) => e.stopPropagation()}
           >
             {/* Mobile Grab Handle */}

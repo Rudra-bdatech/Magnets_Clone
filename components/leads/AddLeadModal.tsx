@@ -4,6 +4,7 @@ import React, { memo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { UserPlus, X, Loader2 } from "lucide-react";
 import type { MagnetPage } from "@/lib/data";
+import { useBodyScrollLock } from "@/lib/use-body-scroll-lock";
 
 interface AddLeadModalProps {
   isOpen: boolean;
@@ -32,6 +33,7 @@ export const AddLeadModal = memo(function AddLeadModal({
   magnetPages,
   isAdding,
 }: AddLeadModalProps) {
+  useBodyScrollLock(isOpen);
   return (
     <AnimatePresence>
       {isOpen && (
@@ -52,7 +54,8 @@ export const AddLeadModal = memo(function AddLeadModal({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 120 }}
             transition={{ type: "spring", damping: 30, stiffness: 360, mass: 0.8 }}
-            className="w-full max-w-md rounded-t-3xl sm:rounded-2xl border-t sm:border border-zinc-200/80 bg-white dark:border-[#2e2e38] dark:bg-[#18181B] p-5 sm:p-6 shadow-2xl relative space-y-4 max-h-[88vh] overflow-y-auto scrollbar-thin pb-8 sm:pb-6 mt-auto sm:mt-0"
+            className="w-full max-w-md rounded-t-3xl sm:rounded-2xl border-t sm:border border-zinc-200/80 bg-white dark:border-[#2e2e38] dark:bg-[#18181B] p-5 sm:p-6 shadow-2xl relative space-y-4 max-h-[88vh] overflow-y-auto overscroll-contain scrollbar-thin pb-8 sm:pb-6 mt-auto sm:mt-0"
+            data-lenis-prevent
             onClick={(e) => e.stopPropagation()}
           >
             {/* Mobile Bottom Sheet Grab Handle */}

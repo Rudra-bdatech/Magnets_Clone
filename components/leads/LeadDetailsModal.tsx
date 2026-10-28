@@ -22,6 +22,7 @@ import {
 import type { Lead, MagnetPage, Sequence, Account } from "@/lib/data";
 import { formatDateTime } from "@/lib/utils";
 import { useIsMobile } from "@/lib/use-mobile";
+import { useBodyScrollLock } from "@/lib/use-body-scroll-lock";
 
 interface LeadDetailsModalProps {
   selectedLead: Lead | null;
@@ -170,7 +171,7 @@ export const LeadDetailsModal = memo(function LeadDetailsModal({
   );
   const isEnabled = page
     ? page.sequenceEnabled ||
-      (page.sequenceEmails && page.sequenceEmails.length > 0)
+    (page.sequenceEmails && page.sequenceEmails.length > 0)
     : false;
   const isSeqLive = foundSeq ? foundSeq.status === "live" : isEnabled;
   const totalSteps =
@@ -185,6 +186,9 @@ export const LeadDetailsModal = memo(function LeadDetailsModal({
   ];
 
   const isMobile = useIsMobile();
+
+  // Prevent background page from scrolling while modal is open
+  useBodyScrollLock(true);
 
   // Escape key handler for desktop
   React.useEffect(() => {
@@ -229,7 +233,8 @@ export const LeadDetailsModal = memo(function LeadDetailsModal({
             ? { type: "spring", damping: 30, stiffness: 360, mass: 0.8 }
             : { type: "spring", stiffness: 440, damping: 32, mass: 0.7 }
         }
-        className="w-full max-w-xl sm:max-w-2xl rounded-t-3xl sm:rounded-2xl border-t sm:border border-zinc-200/80 bg-white dark:border-[#2e2e38] dark:bg-[#18181B] p-5 sm:p-6 shadow-2xl relative space-y-4 max-h-[88vh] overflow-y-auto scrollbar-thin pb-8 sm:pb-6 mt-auto sm:mt-0 transform-gpu will-change-[transform,opacity]"
+        className="w-full max-w-xl sm:max-w-2xl rounded-t-3xl sm:rounded-2xl border-t sm:border border-zinc-200/80 bg-white dark:border-[#2e2e38] dark:bg-[#18181B] p-5 sm:p-6 shadow-2xl relative space-y-4 max-h-[88vh] overflow-y-auto overscroll-contain scrollbar-thin pb-8 sm:pb-6 mt-auto sm:mt-0 transform-gpu will-change-[transform,opacity]"
+        data-lenis-prevent
         onClick={(e) => e.stopPropagation()}
       >
         {/* Mobile Bottom Sheet Grab Handle */}
@@ -252,15 +257,14 @@ export const LeadDetailsModal = memo(function LeadDetailsModal({
                   {selectedLead.email}
                 </p>
                 <span
-                  className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold border shrink-0 ${
-                    !selectedLead.email.endsWith("@gmail.com") &&
-                    !selectedLead.email.endsWith("@yahoo.com")
+                  className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold border shrink-0 ${!selectedLead.email.endsWith("@gmail.com") &&
+                      !selectedLead.email.endsWith("@yahoo.com")
                       ? "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20"
                       : "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20"
-                  }`}
+                    }`}
                 >
                   {!selectedLead.email.endsWith("@gmail.com") &&
-                  !selectedLead.email.endsWith("@yahoo.com") ? (
+                    !selectedLead.email.endsWith("@yahoo.com") ? (
                     <>
                       <Flame className="h-3 w-3 text-amber-500" />
                       <span>Hot Prospect (80 pts)</span>
@@ -291,233 +295,233 @@ export const LeadDetailsModal = memo(function LeadDetailsModal({
           transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
           className="space-y-4 text-xs"
         >
-            {/* Top Grid Info */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3.5 py-1">
-              <div>
-                <span className="block text-[11px] font-medium text-zinc-500 dark:text-[#9B9085]">
-                  Signup Method / Gate
-                </span>
-                <div className="mt-1">
-                  {isLinkedIn ? (
-                    <span className="inline-flex items-center gap-1.5 rounded-lg bg-[#0A66C2]/10 px-2.5 py-1 text-xs font-bold text-[#0A66C2] dark:text-[#38BDF8] border border-[#0A66C2]/20">
-                      <Linkedin className="h-3.5 w-3.5 text-[#0A66C2] dark:text-[#38BDF8] shrink-0" />
-                      <span>LinkedIn Auto-DM</span>
-                    </span>
-                  ) : isLockedPdf ? (
-                    <span className="inline-flex items-center gap-1.5 rounded-lg bg-amber-500/10 px-2.5 py-1 text-xs font-bold text-amber-600 dark:text-amber-400 border border-amber-500/20">
-                      <Lock className="h-3.5 w-3.5 text-amber-500 shrink-0" />
-                      <span>Locked PDF Gate (OTP)</span>
-                    </span>
-                  ) : isManual ? (
-                    <span className="inline-flex items-center gap-1.5 rounded-lg bg-purple-500/10 px-2.5 py-1 text-xs font-bold text-purple-600 dark:text-purple-400 border border-purple-500/20">
-                      <Upload className="h-3.5 w-3.5 text-purple-500 shrink-0" />
-                      <span>Manual Import</span>
-                    </span>
-                  ) : (
-                    <span className="inline-flex items-center gap-1.5 rounded-lg bg-sky-500/10 px-2.5 py-1 text-xs font-bold text-sky-600 dark:text-sky-400 border border-sky-500/20">
-                      <Sparkles className="h-3.5 w-3.5 text-sky-500 shrink-0" />
-                      <span>Landing Page Form</span>
-                    </span>
-                  )}
-                </div>
-              </div>
-              <div>
-                <span className="block text-[11px] font-medium text-zinc-500 dark:text-[#9B9085]">
-                  Subscribed On Magnet
-                </span>
-                <strong className="font-semibold text-zinc-900 dark:text-white block truncate mt-1 text-xs">
-                  {selectedLead.page}
-                </strong>
-              </div>
-              <div>
-                <span className="block text-[11px] font-medium text-zinc-500 dark:text-[#9B9085]">
-                  Signup Date & Time
-                </span>
-                <strong className="font-semibold text-zinc-900 dark:text-white block mt-1 text-xs">
-                  {formatDateTime(selectedLead.signedUpAt)}
-                </strong>
-              </div>
-              <div>
-                <span className="block text-[11px] font-medium text-zinc-500 dark:text-[#9B9085]">
-                  Traffic Source / Referrer
-                </span>
-                <strong className="font-semibold text-zinc-900 dark:text-white block capitalize mt-1 text-xs">
-                  {selectedLead.referrer || "Direct Link"}{" "}
-                  <span className="text-zinc-400 font-normal text-[11px]">
-                    ({selectedLead.deviceType || "Desktop"})
+          {/* Top Grid Info */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3.5 py-1">
+            <div>
+              <span className="block text-[11px] font-medium text-zinc-500 dark:text-[#9B9085]">
+                Signup Method / Gate
+              </span>
+              <div className="mt-1">
+                {isLinkedIn ? (
+                  <span className="inline-flex items-center gap-1.5 rounded-lg bg-[#0A66C2]/10 px-2.5 py-1 text-xs font-bold text-[#0A66C2] dark:text-[#38BDF8] border border-[#0A66C2]/20">
+                    <Linkedin className="h-3.5 w-3.5 text-[#0A66C2] dark:text-[#38BDF8] shrink-0" />
+                    <span>LinkedIn Auto-DM</span>
                   </span>
-                </strong>
-              </div>
-            </div>
-
-            {/* Custom Fields / LinkedIn Data */}
-            {(() => {
-              const HIDDEN_INTERNAL_KEYS = new Set([
-                "lileadid",
-                "liauthorid",
-                "commentid",
-                "postid",
-                "unipilecommentid",
-                "unipilepostid",
-                "id",
-                "leadid",
-              ]);
-              const validCustomFields = Object.entries(selectedLead.customFields || {}).filter(
-                ([key, val]) => {
-                  const norm = key.toLowerCase().replace(/[^a-z0-9]/g, "");
-                  if (HIDDEN_INTERNAL_KEYS.has(norm)) return false;
-                  return val !== undefined && val !== null && String(val).trim() !== "";
-                }
-              );
-              if (validCustomFields.length === 0) return null;
-              return (
-                <div className="space-y-2.5">
-                  <div className="flex items-center justify-between">
-                    <span className="font-bold text-zinc-900 dark:text-white block text-xs">
-                      {isLinkedIn ? "LinkedIn Interaction & Prospect Data" : "Form Submissions"}
-                    </span>
-                    <span className="text-[10px] text-zinc-400 font-medium">
-                      {validCustomFields.length} field{validCustomFields.length === 1 ? "" : "s"} recorded
-                    </span>
-                  </div>
-                  <div className="space-y-2">
-                    {validCustomFields.map(([key, val]) => (
-                      <div
-                        key={key}
-                        className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-2.5 rounded-xl bg-zinc-50 dark:bg-[#121214] border border-zinc-100 dark:border-white/5 overflow-hidden"
-                      >
-                        <span className="text-[11px] font-semibold text-zinc-500 dark:text-[#9B9085] shrink-0">
-                          {formatFieldKey(key)}
-                        </span>
-                        <div className="min-w-0 max-w-full flex items-center sm:justify-end overflow-hidden">
-                          {renderFieldValue(key, val)}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              );
-            })()}
-
-            {/* Visitor Prompt Answer */}
-            {selectedLead.customAnswer && (
-              <div className="space-y-1.5">
-                <span className="flex items-center gap-1.5 text-[11px] font-bold text-amber-500 dark:text-amber-400">
-                  <Sparkles className="h-3.5 w-3.5" /> Visitor Prompt Answer
-                </span>
-                <p className="text-xs italic text-zinc-800 dark:text-zinc-200 bg-amber-500/5 p-3 rounded-xl border border-amber-500/15 leading-relaxed">
-                  "{selectedLead.customAnswer}"
-                </p>
-              </div>
-            )}
-
-            {/* Sequence Delivery Breakdown Card */}
-            <div className="p-3.5 rounded-xl bg-zinc-50 dark:bg-[#121214] border border-zinc-200/80 dark:border-white/10 space-y-2.5">
-              <div className="flex items-center justify-between">
-                <span className="font-bold text-zinc-900 dark:text-white flex items-center gap-1.5 text-xs">
-                  <Mail className="h-3.5 w-3.5 text-[#0066B2] dark:text-[#38BDF8]" />
-                  Follow-up Funnel Progress
-                </span>
-                {!isSeqLive ? (
-                  <span className="text-[10px] font-bold text-zinc-400 bg-zinc-200 dark:bg-zinc-800 px-2 py-0.5 rounded-full">
-                    Sequence Ended
+                ) : isLockedPdf ? (
+                  <span className="inline-flex items-center gap-1.5 rounded-lg bg-amber-500/10 px-2.5 py-1 text-xs font-bold text-amber-600 dark:text-amber-400 border border-amber-500/20">
+                    <Lock className="h-3.5 w-3.5 text-amber-500 shrink-0" />
+                    <span>Locked PDF Gate (OTP)</span>
                   </span>
-                ) : selectedLead.status === "stopped" ? (
-                  <span className="inline-flex items-center gap-1 text-[10px] font-bold text-rose-500 bg-rose-500/10 px-2 py-0.5 rounded-full">
-                    <StopCircle className="h-3 w-3" /> Stopped
-                  </span>
-                ) : selectedLead.status === "completed" ||
-                  selectedLead.status === "delivered" ? (
-                  <span className="text-[10px] font-bold text-purple-600 dark:text-purple-400 bg-purple-500/10 px-2 py-0.5 rounded-full">
-                    {totalSteps}/{totalSteps} Steps Completed
+                ) : isManual ? (
+                  <span className="inline-flex items-center gap-1.5 rounded-lg bg-purple-500/10 px-2.5 py-1 text-xs font-bold text-purple-600 dark:text-purple-400 border border-purple-500/20">
+                    <Upload className="h-3.5 w-3.5 text-purple-500 shrink-0" />
+                    <span>Manual Import</span>
                   </span>
                 ) : (
-                  <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full">
-                    1/{totalSteps} Steps Delivered
+                  <span className="inline-flex items-center gap-1.5 rounded-lg bg-sky-500/10 px-2.5 py-1 text-xs font-bold text-sky-600 dark:text-sky-400 border border-sky-500/20">
+                    <Sparkles className="h-3.5 w-3.5 text-sky-500 shrink-0" />
+                    <span>Landing Page Form</span>
                   </span>
                 )}
               </div>
+            </div>
+            <div>
+              <span className="block text-[11px] font-medium text-zinc-500 dark:text-[#9B9085]">
+                Subscribed On Magnet
+              </span>
+              <strong className="font-semibold text-zinc-900 dark:text-white block truncate mt-1 text-xs">
+                {selectedLead.page}
+              </strong>
+            </div>
+            <div>
+              <span className="block text-[11px] font-medium text-zinc-500 dark:text-[#9B9085]">
+                Signup Date & Time
+              </span>
+              <strong className="font-semibold text-zinc-900 dark:text-white block mt-1 text-xs">
+                {formatDateTime(selectedLead.signedUpAt)}
+              </strong>
+            </div>
+            <div>
+              <span className="block text-[11px] font-medium text-zinc-500 dark:text-[#9B9085]">
+                Traffic Source / Referrer
+              </span>
+              <strong className="font-semibold text-zinc-900 dark:text-white block capitalize mt-1 text-xs">
+                {selectedLead.referrer || "Direct Link"}{" "}
+                <span className="text-zinc-400 font-normal text-[11px]">
+                  ({selectedLead.deviceType || "Desktop"})
+                </span>
+              </strong>
+            </div>
+          </div>
 
-              {/* Step Items List */}
-              <div className="space-y-1.5 pt-1">
-                {stepsList.map((step: any, idx: number) => {
-                  const isDone = !isSeqLive
-                    ? false
-                    : selectedLead.status === "completed" ||
-                      selectedLead.status === "delivered" ||
-                      idx === 0;
-                  return (
+          {/* Custom Fields / LinkedIn Data */}
+          {(() => {
+            const HIDDEN_INTERNAL_KEYS = new Set([
+              "lileadid",
+              "liauthorid",
+              "commentid",
+              "postid",
+              "unipilecommentid",
+              "unipilepostid",
+              "id",
+              "leadid",
+            ]);
+            const validCustomFields = Object.entries(selectedLead.customFields || {}).filter(
+              ([key, val]) => {
+                const norm = key.toLowerCase().replace(/[^a-z0-9]/g, "");
+                if (HIDDEN_INTERNAL_KEYS.has(norm)) return false;
+                return val !== undefined && val !== null && String(val).trim() !== "";
+              }
+            );
+            if (validCustomFields.length === 0) return null;
+            return (
+              <div className="space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-zinc-900 dark:text-white block text-xs">
+                    {isLinkedIn ? "LinkedIn Interaction & Prospect Data" : "Form Submissions"}
+                  </span>
+                  <span className="text-[10px] text-zinc-400 font-medium">
+                    {validCustomFields.length} field{validCustomFields.length === 1 ? "" : "s"} recorded
+                  </span>
+                </div>
+                <div className="space-y-2">
+                  {validCustomFields.map(([key, val]) => (
                     <div
-                      key={idx}
-                      className="flex items-center justify-between text-[11px] bg-white dark:bg-[#18181B] p-2 rounded-lg border border-zinc-100 dark:border-white/5 gap-2"
+                      key={key}
+                      className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-2.5 rounded-xl bg-zinc-50 dark:bg-[#121214] border border-zinc-100 dark:border-white/5 overflow-hidden"
                     >
-                      <span className="flex items-center gap-2 text-zinc-700 dark:text-zinc-300 min-w-0">
-                        {isDone ? (
-                          <Check className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
-                        ) : (
-                          <span className="h-3.5 w-3.5 rounded-full border border-zinc-300 dark:border-zinc-700 flex items-center justify-center text-[9px] font-bold text-zinc-400 shrink-0">
-                            {idx + 1}
-                          </span>
-                        )}
-                        <span className="font-semibold truncate">
-                          {step.subject || `Step #${idx + 1}`}
-                        </span>
+                      <span className="text-[11px] font-semibold text-zinc-500 dark:text-[#9B9085] shrink-0">
+                        {formatFieldKey(key)}
                       </span>
-                      <span className="text-[10px] text-zinc-400 font-mono shrink-0">
-                        {step.delayLabel ||
-                          (step.delayDays !== undefined
-                            ? step.delayUnit === "minutes"
-                              ? `${step.delayDays} min${step.delayDays > 1 ? "s" : ""} later`
-                              : step.delayUnit === "hours"
+                      <div className="min-w-0 max-w-full flex items-center sm:justify-end overflow-hidden">
+                        {renderFieldValue(key, val)}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          })()}
+
+          {/* Visitor Prompt Answer */}
+          {selectedLead.customAnswer && (
+            <div className="space-y-1.5">
+              <span className="flex items-center gap-1.5 text-[11px] font-bold text-amber-500 dark:text-amber-400">
+                <Sparkles className="h-3.5 w-3.5" /> Visitor Prompt Answer
+              </span>
+              <p className="text-xs italic text-zinc-800 dark:text-zinc-200 bg-amber-500/5 p-3 rounded-xl border border-amber-500/15 leading-relaxed">
+                "{selectedLead.customAnswer}"
+              </p>
+            </div>
+          )}
+
+          {/* Sequence Delivery Breakdown Card */}
+          <div className="p-3.5 rounded-xl bg-zinc-50 dark:bg-[#121214] border border-zinc-200/80 dark:border-white/10 space-y-2.5">
+            <div className="flex items-center justify-between">
+              <span className="font-bold text-zinc-900 dark:text-white flex items-center gap-1.5 text-xs">
+                <Mail className="h-3.5 w-3.5 text-[#0066B2] dark:text-[#38BDF8]" />
+                Follow-up Funnel Progress
+              </span>
+              {!isSeqLive ? (
+                <span className="text-[10px] font-bold text-zinc-400 bg-zinc-200 dark:bg-zinc-800 px-2 py-0.5 rounded-full">
+                  Sequence Ended
+                </span>
+              ) : selectedLead.status === "stopped" ? (
+                <span className="inline-flex items-center gap-1 text-[10px] font-bold text-rose-500 bg-rose-500/10 px-2 py-0.5 rounded-full">
+                  <StopCircle className="h-3 w-3" /> Stopped
+                </span>
+              ) : selectedLead.status === "completed" ||
+                selectedLead.status === "delivered" ? (
+                <span className="text-[10px] font-bold text-purple-600 dark:text-purple-400 bg-purple-500/10 px-2 py-0.5 rounded-full">
+                  {totalSteps}/{totalSteps} Steps Completed
+                </span>
+              ) : (
+                <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full">
+                  1/{totalSteps} Steps Delivered
+                </span>
+              )}
+            </div>
+
+            {/* Step Items List */}
+            <div className="space-y-1.5 pt-1">
+              {stepsList.map((step: any, idx: number) => {
+                const isDone = !isSeqLive
+                  ? false
+                  : selectedLead.status === "completed" ||
+                  selectedLead.status === "delivered" ||
+                  idx === 0;
+                return (
+                  <div
+                    key={idx}
+                    className="flex items-center justify-between text-[11px] bg-white dark:bg-[#18181B] p-2 rounded-lg border border-zinc-100 dark:border-white/5 gap-2"
+                  >
+                    <span className="flex items-center gap-2 text-zinc-700 dark:text-zinc-300 min-w-0">
+                      {isDone ? (
+                        <Check className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
+                      ) : (
+                        <span className="h-3.5 w-3.5 rounded-full border border-zinc-300 dark:border-zinc-700 flex items-center justify-center text-[9px] font-bold text-zinc-400 shrink-0">
+                          {idx + 1}
+                        </span>
+                      )}
+                      <span className="font-semibold truncate">
+                        {step.subject || `Step #${idx + 1}`}
+                      </span>
+                    </span>
+                    <span className="text-[10px] text-zinc-400 font-mono shrink-0">
+                      {step.delayLabel ||
+                        (step.delayDays !== undefined
+                          ? step.delayUnit === "minutes"
+                            ? `${step.delayDays} min${step.delayDays > 1 ? "s" : ""} later`
+                            : step.delayUnit === "hours"
                               ? `${step.delayDays} hr${step.delayDays > 1 ? "s" : ""} later`
                               : `${step.delayDays} day${step.delayDays > 1 ? "s" : ""} later`
-                            : step.delayMinutes !== undefined
+                          : step.delayMinutes !== undefined
                             ? step.delayMinutes === 0
                               ? "Instantly"
                               : step.delayMinutes < 60
-                              ? `${step.delayMinutes} min${step.delayMinutes > 1 ? "s" : ""} later`
-                              : step.delayMinutes < 1440
-                              ? `${Math.round(step.delayMinutes / 60)} hr${Math.round(step.delayMinutes / 60) > 1 ? "s" : ""} later`
-                              : `${Math.round(step.delayMinutes / 1440)} day${Math.round(step.delayMinutes / 1440) > 1 ? "s" : ""} later`
+                                ? `${step.delayMinutes} min${step.delayMinutes > 1 ? "s" : ""} later`
+                                : step.delayMinutes < 1440
+                                  ? `${Math.round(step.delayMinutes / 60)} hr${Math.round(step.delayMinutes / 60) > 1 ? "s" : ""} later`
+                                  : `${Math.round(step.delayMinutes / 1440)} day${Math.round(step.delayMinutes / 1440) > 1 ? "s" : ""} later`
                             : idx === 0
-                            ? "Instantly"
-                            : `${idx} day later`)}
-                      </span>
-                    </div>
-                  );
-                })}
-              </div>
+                              ? "Instantly"
+                              : `${idx} day later`)}
+                    </span>
+                  </div>
+                );
+              })}
             </div>
-          </motion.div>
-
-          {/* Bottom Actions */}
-          <div className="pt-2 flex flex-col-reverse sm:flex-row gap-2.5 sm:justify-between sm:items-center mt-2">
-            <div className="flex items-center gap-2 w-full sm:w-auto">
-              <button
-                type="button"
-                onClick={() => onResendEmail(selectedLead)}
-                className="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-3.5 py-2.5 sm:py-2 rounded-xl text-xs font-semibold border border-zinc-200 dark:border-[#2e2e38] bg-white dark:bg-[#202026] text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-[#282830] transition cursor-pointer"
-              >
-                <Send className="h-3.5 w-3.5 text-emerald-500" /> Resend Email
-              </button>
-              <button
-                type="button"
-                onClick={() => onDelete(selectedLead)}
-                className="flex items-center justify-center gap-1.5 px-3.5 py-2.5 sm:py-2 rounded-xl text-xs font-semibold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 transition cursor-pointer"
-              >
-                <Trash2 className="h-3.5 w-3.5" />
-                Delete
-              </button>
-            </div>
-            <button
-              type="button"
-              onClick={onClose}
-              className="w-full sm:w-auto px-5 py-2.5 sm:py-2 rounded-xl bg-[#0066B2] text-xs font-semibold text-white hover:bg-[#005799] transition cursor-pointer text-center"
-            >
-              Close
-            </button>
           </div>
         </motion.div>
+
+        {/* Bottom Actions */}
+        <div className="pt-2 flex flex-col-reverse sm:flex-row gap-2.5 sm:justify-between sm:items-center mt-2">
+          <div className="flex items-center gap-2 w-full sm:w-auto">
+            <button
+              type="button"
+              onClick={() => onResendEmail(selectedLead)}
+              className="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-3.5 py-2.5 sm:py-2 rounded-xl text-xs font-semibold border border-zinc-200 dark:border-[#2e2e38] bg-white dark:bg-[#202026] text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-[#282830] transition cursor-pointer"
+            >
+              <Send className="h-3.5 w-3.5 text-emerald-500" /> Resend Email
+            </button>
+            <button
+              type="button"
+              onClick={() => onDelete(selectedLead)}
+              className="flex items-center justify-center gap-1.5 px-3.5 py-2.5 sm:py-2 rounded-xl text-xs font-semibold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 transition cursor-pointer"
+            >
+              <Trash2 className="h-3.5 w-3.5" />
+              Delete
+            </button>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="w-full sm:w-auto px-5 py-2.5 sm:py-2 rounded-xl bg-[#0066B2] text-xs font-semibold text-white hover:bg-[#005799] transition cursor-pointer text-center"
+          >
+            Close
+          </button>
+        </div>
       </motion.div>
-    );
-  });
+    </motion.div>
+  );
+});
