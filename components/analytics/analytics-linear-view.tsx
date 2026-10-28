@@ -330,32 +330,28 @@ export default function AnalyticsLinearView({
       label: "Total Signups",
       value: signupsCount.toLocaleString(),
       icon: Users,
-      iconBg: "bg-[#EFF6FF] dark:bg-[#0066B2]/20",
-      iconColor: "text-[#0066B2] dark:text-[#38BDF8]",
+      iconBadge: "border border-[#0066B2]/30 bg-[#EFF6FF] text-[#0066B2] dark:border-[#0066B2]/30 dark:bg-[#0066B2]/20 dark:text-[#38BDF8]",
     },
     {
       id: "visits",
       label: "Total Visits",
       value: visitsCount.toLocaleString(),
       icon: Eye,
-      iconBg: "bg-violet-50 dark:bg-violet-500/20",
-      iconColor: "text-violet-600 dark:text-violet-400",
+      iconBadge: "border border-violet-500/30 bg-violet-50 text-violet-600 dark:border-violet-500/30 dark:bg-violet-500/20 dark:text-violet-400",
     },
     {
       id: "conversion",
       label: "Conversion Rate",
       value: conversionRate,
       icon: TrendingUp,
-      iconBg: "bg-emerald-50 dark:bg-emerald-500/20",
-      iconColor: "text-emerald-600 dark:text-emerald-400",
+      iconBadge: "border border-emerald-500/30 bg-emerald-50 text-emerald-600 dark:border-emerald-500/30 dark:bg-emerald-500/20 dark:text-emerald-400",
     },
     {
       id: "tracked",
       label: "Conversions",
       value: signupsCount.toLocaleString(),
       icon: CheckCircle2,
-      iconBg: "bg-amber-50 dark:bg-amber-500/20",
-      iconColor: "text-amber-600 dark:text-amber-400",
+      iconBadge: "border border-amber-500/30 bg-amber-50 text-amber-600 dark:border-amber-500/30 dark:bg-amber-500/20 dark:text-amber-400",
     },
   ];
 
@@ -566,12 +562,12 @@ export default function AnalyticsLinearView({
           {analyticsKpiCards.map((card) => (
             <div
               key={card.id}
-              className="relative h-full rounded-2xl border border-[#0066B2]/30 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5"
+              className="relative h-full rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5"
             >
               {/* Left on desktop / Top on mobile: Icon Badge */}
               <div className="flex items-center justify-between sm:justify-start w-full sm:w-auto">
                 <div
-                  className={`flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl ${card.iconBg} ${card.iconColor}`}
+                  className={`flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl ${card.iconBadge}`}
                 >
                   <card.icon className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
                 </div>
@@ -613,10 +609,10 @@ export default function AnalyticsLinearView({
         {isPerMagnet && (page?.hasVariantB || page?.testStarted) && (
           <motion.div
             variants={itemVariants}
-            className="relative rounded-2xl bg-white/90 dark:bg-[#18181B]/90 border border-[#0066B2]/30 dark:border-[#38BDF8]/25 p-4 sm:p-6 space-y-4 shadow-md backdrop-blur-sm overflow-hidden"
+            className="relative rounded-2xl bg-white/90 dark:bg-[#18181B]/90 border border-[#0066B2]/15 dark:border-[#38BDF8]/25 p-4 sm:p-6 space-y-4 shadow-md backdrop-blur-sm overflow-hidden"
           >
             <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0066B2]/[0.03] to-transparent opacity-100" />
-            <div className="relative z-10 flex items-center justify-between border-b border-zinc-200/80 dark:border-white/[0.08] pb-3">
+            <div className="relative z-10 flex items-center justify-between border-b border-[#0066B2]/10 dark:border-[#38BDF8]/15 pb-3">
               <div className="flex items-center gap-2">
                 <Trophy className="h-4 w-4 text-amber-500 dark:text-amber-400" />
                 <h3 className="text-sm font-bold text-zinc-900 dark:text-white">
@@ -703,12 +699,14 @@ export default function AnalyticsLinearView({
         {/* 5. BREAKDOWN CARDS (DESKTOP & MOBILE) */}
         <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
           {/* Device Breakdown Card */}
-          <div className="relative rounded-2xl bg-white/90 dark:bg-[#18181B]/90 border border-[#0066B2]/30 dark:border-[#38BDF8]/25 p-4 sm:p-5 space-y-3.5 sm:space-y-4 shadow-md backdrop-blur-sm overflow-hidden">
+          <div className="relative rounded-2xl bg-white/90 dark:bg-[#18181B]/90 border border-[#0066B2]/15 dark:border-[#38BDF8]/25 p-4 sm:p-5 space-y-3.5 sm:space-y-4 shadow-md backdrop-blur-sm overflow-hidden">
             <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0066B2]/[0.03] to-transparent opacity-100" />
-            <div className="relative z-10 flex items-center justify-between border-b border-zinc-200/80 dark:border-white/[0.08] pb-3">
-              <div className="flex items-center gap-2">
+            <div className="relative z-10 flex items-center justify-between border-b border-[#0066B2]/10 dark:border-[#38BDF8]/15 pb-3">
+              <div className="flex items-center gap-2.5">
+                <div className="flex h-7 w-7 items-center justify-center rounded-lg border border-[#0066B2]/30 bg-[#EFF6FF] dark:bg-[#0066B2]/20">
+                  <Laptop className="h-4 w-4 text-[#0066B2] dark:text-[#38BDF8]" />
+                </div>
                 <h3 className="text-sm font-bold text-zinc-900 dark:text-white flex items-center gap-2">
-                  <Laptop className="h-4 w-4 text-[#0066B2] dark:text-cyan-400" />
                   <span>Device Breakdown</span>
                 </h3>
                 <InfoTooltip content="Desktop vs Mobile Visitors" title="Device Breakdown" />
@@ -748,12 +746,14 @@ export default function AnalyticsLinearView({
           </div>
 
           {/* Top Traffic Referrers Card */}
-          <div className="relative rounded-2xl bg-white/90 dark:bg-[#18181B]/90 border border-[#0066B2]/30 dark:border-[#38BDF8]/25 p-4 sm:p-5 space-y-3.5 sm:space-y-4 shadow-md backdrop-blur-sm overflow-hidden">
+          <div className="relative rounded-2xl bg-white/90 dark:bg-[#18181B]/90 border border-[#0066B2]/15 dark:border-[#38BDF8]/25 p-4 sm:p-5 space-y-3.5 sm:space-y-4 shadow-md backdrop-blur-sm overflow-hidden">
             <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0066B2]/[0.03] to-transparent opacity-100" />
-            <div className="relative z-10 flex items-center justify-between border-b border-zinc-200/80 dark:border-white/[0.08] pb-3">
-              <div className="flex items-center gap-2">
-                <h3 className="text-sm font-bold text-zinc-900 dark:text-white flex items-center gap-2">
+            <div className="relative z-10 flex items-center justify-between border-b border-[#0066B2]/10 dark:border-[#38BDF8]/15 pb-3">
+              <div className="flex items-center gap-2.5">
+                <div className="flex h-7 w-7 items-center justify-center rounded-lg border border-emerald-500/30 bg-emerald-50 dark:bg-emerald-500/20">
                   <Globe className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                </div>
+                <h3 className="text-sm font-bold text-zinc-900 dark:text-white flex items-center gap-2">
                   <span>Top Traffic Referrers</span>
                 </h3>
                 <InfoTooltip content="Source Domain Breakdown" title="Traffic Referrers" />
@@ -764,15 +764,15 @@ export default function AnalyticsLinearView({
             </div>
 
             <div className="relative z-10 space-y-2 pt-1 text-xs">
-              <div className="flex items-center justify-between p-2.5 rounded-xl bg-zinc-50/80 dark:bg-[#131316] border border-zinc-200/60 dark:border-white/[0.06]">
+              <div className="flex items-center justify-between p-2.5 rounded-xl bg-[#F8FBFF] dark:bg-white/[0.03] border border-[#0066B2]/10 dark:border-white/[0.08] shadow-xs">
                 <span className="text-zinc-800 dark:text-zinc-200 font-semibold flex items-center gap-2">
-                  <Share2 className="h-3.5 w-3.5 text-[#0066B2] dark:text-cyan-400" />
+                  <Share2 className="h-3.5 w-3.5 text-[#0066B2] dark:text-[#38BDF8]" />
                   Direct / Social Links
                 </span>
-                <span className="font-mono font-bold text-[#0066B2] dark:text-cyan-400">{directPct}%</span>
+                <span className="font-mono font-bold text-[#0066B2] dark:text-[#38BDF8]">{directPct}%</span>
               </div>
 
-              <div className="flex items-center justify-between p-2.5 rounded-xl bg-zinc-50/80 dark:bg-[#131316] border border-zinc-200/60 dark:border-white/[0.06]">
+              <div className="flex items-center justify-between p-2.5 rounded-xl bg-[#F8FBFF] dark:bg-white/[0.03] border border-[#0066B2]/10 dark:border-white/[0.08] shadow-xs">
                 <span className="text-zinc-800 dark:text-zinc-200 font-semibold flex items-center gap-2">
                   <SearchIcon className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
                   Google / Search Engine
@@ -780,7 +780,7 @@ export default function AnalyticsLinearView({
                 <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400">{searchPct}%</span>
               </div>
 
-              <div className="flex items-center justify-between p-2.5 rounded-xl bg-zinc-50/80 dark:bg-[#131316] border border-zinc-200/60 dark:border-white/[0.06]">
+              <div className="flex items-center justify-between p-2.5 rounded-xl bg-[#F8FBFF] dark:bg-white/[0.03] border border-[#0066B2]/10 dark:border-white/[0.08] shadow-xs">
                 <span className="text-zinc-800 dark:text-zinc-200 font-semibold flex items-center gap-2">
                   <Globe className="h-3.5 w-3.5 text-amber-500 dark:text-amber-400" />
                   Twitter / X / LinkedIn

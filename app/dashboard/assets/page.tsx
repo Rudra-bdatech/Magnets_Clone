@@ -843,7 +843,7 @@ export default function ResourcesPage() {
         {/* ========================================================================= */}
         <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
           {/* Total Resources */}
-          <div className="relative h-full rounded-2xl border border-[#0066B2]/30 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
+          <div className="relative h-full rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
             <div className="flex items-center justify-between sm:justify-start w-full sm:w-auto">
               <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl border border-indigo-500/30 bg-indigo-50 text-indigo-600 dark:border-indigo-500/30 dark:bg-indigo-500/20 dark:text-indigo-400">
                 <Layers className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
@@ -861,7 +861,7 @@ export default function ResourcesPage() {
           </div>
 
           {/* Storage Used */}
-          <div className="relative h-full rounded-2xl border border-[#0066B2]/30 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
+          <div className="relative h-full rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
             <div className="flex items-center justify-between sm:justify-start w-full sm:w-auto">
               <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl border border-[#0066B2]/30 bg-[#EFF6FF] text-[#0066B2] dark:border-[#0066B2]/30 dark:bg-[#0066B2]/20 dark:text-[#38BDF8]">
                 <HardDrive className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
@@ -879,7 +879,7 @@ export default function ResourcesPage() {
           </div>
 
           {/* Active in Magnets */}
-          <div className="relative h-full rounded-2xl border border-[#0066B2]/30 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
+          <div className="relative h-full rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
             <div className="flex items-center justify-between sm:justify-start w-full sm:w-auto">
               <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl border border-sky-500/30 bg-sky-50 text-sky-600 dark:border-sky-500/30 dark:bg-sky-500/20 dark:text-sky-400">
                 <Link2 className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
@@ -897,7 +897,7 @@ export default function ResourcesPage() {
           </div>
 
           {/* Total Deliveries */}
-          <div className="relative h-full rounded-2xl border border-[#0066B2]/30 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
+          <div className="relative h-full rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
             <div className="flex items-center justify-between sm:justify-start w-full sm:w-auto">
               <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl border border-emerald-500/30 bg-emerald-50 text-emerald-600 dark:border-emerald-500/30 dark:bg-emerald-500/20 dark:text-emerald-400">
                 <Send className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
@@ -1174,7 +1174,7 @@ export default function ResourcesPage() {
             {/* ========================================================================= */}
             {/* 4. Table & Cards Data Container (Standalone Separated Card)               */}
             {/* ========================================================================= */}
-            <div className="rounded-2xl border border-zinc-200/80 bg-white/90 dark:border-[#2e2e38] dark:bg-[#18181B]/90 shadow-sm backdrop-blur-sm relative overflow-hidden">
+            <div className="rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 shadow-md backdrop-blur-sm relative overflow-hidden">
               {/* Mobile Select All Strip when in selection mode */}
               <AnimatePresence>
                 {isMobileSelectionMode && (
@@ -1229,8 +1229,8 @@ export default function ResourcesPage() {
                     {/* 4. DESKTOP Table View (hidden md:block) - Preserved 100% Unchanged        */}
                     {/* ========================================================================= */}
                     <div className="hidden md:block overflow-x-auto">
-                      <table className="min-w-full divide-y divide-zinc-200/80 dark:divide-[#2e2e38]">
-                        <thead className="bg-[#F8FBFF] dark:bg-[#151518]">
+                      <table className="min-w-full divide-y divide-[#0066B2]/8 dark:divide-[#38BDF8]/15">
+                        <thead className="bg-[#F8FBFF] dark:bg-[#151518] border-b border-[#0066B2]/10 dark:border-[#38BDF8]/20">
                           <tr>
                             <th className="px-6 py-3.5 text-left text-[11px] font-semibold tracking-wider text-zinc-500 dark:text-[#9B9085] uppercase">
                               <div className="flex items-center">
@@ -1270,7 +1270,7 @@ export default function ResourcesPage() {
                             <th className="px-6 py-3.5 text-right text-[11px] font-semibold tracking-wider text-zinc-500 dark:text-[#9B9085] uppercase">Actions</th>
                           </tr>
                         </thead>
-                        <tbody className="divide-y divide-zinc-100 bg-white dark:divide-[#222228] dark:bg-[#18181B]">
+                        <tbody className="divide-y divide-[#0066B2]/8 bg-white dark:divide-[#222228] dark:bg-[#18181B]">
                           {filteredResources.map((resource) => {
                             const badge = getFileBadge(resource.name);
                             const isCopied = copiedId === resource.id;

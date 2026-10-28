@@ -856,7 +856,7 @@ export default function SequencesPage() {
           {sequences.length > 0 && (
             <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
               {/* Card 1: Active Flows */}
-              <div className="relative h-full rounded-2xl border border-[#0066B2]/30 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
+              <div className="relative h-full rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
                 <div className="flex items-center justify-between sm:justify-start w-full sm:w-auto">
                   <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl border border-emerald-500/30 bg-emerald-50 text-emerald-600 dark:border-emerald-500/30 dark:bg-emerald-500/20 dark:text-emerald-400">
                     <Rocket className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
@@ -874,7 +874,7 @@ export default function SequencesPage() {
               </div>
 
               {/* Card 2: Total Delivered */}
-              <div className="relative h-full rounded-2xl border border-[#0066B2]/30 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
+              <div className="relative h-full rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
                 <div className="flex items-center justify-between sm:justify-start w-full sm:w-auto">
                   <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl border border-[#0066B2]/30 bg-[#EFF6FF] text-[#0066B2] dark:border-[#0066B2]/30 dark:bg-[#0066B2]/20 dark:text-[#38BDF8]">
                     <Send className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
@@ -892,7 +892,7 @@ export default function SequencesPage() {
               </div>
 
               {/* Card 3: Avg Open Rate */}
-              <div className="relative h-full rounded-2xl border border-[#0066B2]/30 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
+              <div className="relative h-full rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
                 <div className="flex items-center justify-between sm:justify-start w-full sm:w-auto">
                   <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl border border-indigo-500/30 bg-indigo-50 text-indigo-600 dark:border-indigo-500/30 dark:bg-indigo-500/20 dark:text-indigo-400">
                     <TrendingUp className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
@@ -910,7 +910,7 @@ export default function SequencesPage() {
               </div>
 
               {/* Card 4: Sequence Completed */}
-              <div className="relative h-full rounded-2xl border border-[#0066B2]/30 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
+              <div className="relative h-full rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
                 <div className="flex items-center justify-between sm:justify-start w-full sm:w-auto">
                   <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl border border-purple-500/30 bg-purple-50 text-purple-600 dark:border-purple-500/30 dark:bg-purple-500/20 dark:text-purple-400">
                     <CheckCircle2 className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
@@ -1246,7 +1246,7 @@ export default function SequencesPage() {
                       setActiveFolderFilter(folder.id);
                       setViewMode("grid");
                     }}
-                    className="group relative flex flex-col justify-between rounded-2xl border border-zinc-200/80 dark:border-white/[0.08] bg-white dark:bg-[#141417] p-5 hover:border-zinc-300 dark:hover:border-white/20 shadow-[0_2px_8px_rgba(0,0,0,0.06),0_1px_2px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.09)] dark:shadow-[0_4px_16px_rgba(0,0,0,0.3)] dark:hover:shadow-[0_8px_24px_rgba(0,0,0,0.4)] dark:hover:bg-[#18181D] transition-all duration-200 cursor-pointer overflow-hidden"
+                    className="group relative flex flex-col justify-between rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 p-5 shadow-md backdrop-blur-sm hover:border-[#0066B2]/30 dark:hover:border-[#38BDF8]/40 hover:shadow-lg transition-all duration-200 cursor-pointer overflow-hidden"
                   >
                     <div>
                       {/* Top Header with Folder Icon and Badge */}
@@ -1392,7 +1392,7 @@ export default function SequencesPage() {
                           } ${
                             isChecked
                               ? "border-[#0066B2] dark:border-[#38BDF8] bg-blue-50/40 dark:bg-[#0066B2]/15 ring-2 ring-[#0066B2]/30 shadow-[0_8px_30px_rgba(0,102,178,0.15)]"
-                              : "border-zinc-200/80 dark:border-white/[0.08] bg-white dark:bg-[#141417] hover:border-zinc-300 dark:hover:border-white/20 shadow-[0_2px_8px_rgba(0,0,0,0.06),0_1px_2px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.09)] dark:shadow-[0_4px_16px_rgba(0,0,0,0.3)] dark:hover:shadow-[0_8px_24px_rgba(0,0,0,0.4)] dark:hover:bg-[#18181D]"
+                              : "border-[#0066B2]/15 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 shadow-md backdrop-blur-sm hover:border-[#0066B2]/30 dark:hover:border-[#38BDF8]/40 hover:shadow-lg transition-all duration-200"
                           }`}
                         >
                           {/* Top Section: Header & Step Pipeline */}
@@ -1608,7 +1608,7 @@ export default function SequencesPage() {
                           </div>
 
                           {/* High-Signal Metrics Footer (Clean & Airy) */}
-                          <div className="px-4 sm:px-5 py-3 border-t border-zinc-100 dark:border-white/[0.05] bg-zinc-50/50 dark:bg-white/[0.01] flex items-center justify-between text-xs">
+                          <div className="px-4 sm:px-5 py-3 border-t border-[#0066B2]/10 dark:border-white/[0.05] bg-[#F8FBFF]/60 dark:bg-white/[0.01] flex items-center justify-between text-xs">
                             <div className="flex items-center gap-4 sm:gap-6">
                               <div>
                                 <span className="text-[10px] font-medium uppercase tracking-wider text-zinc-400 dark:text-zinc-500 block leading-none">
@@ -1668,11 +1668,11 @@ export default function SequencesPage() {
                   </div>
                 ) : (
                   /* TABLE VIEW - Resend / Loops Minimalist Rows */
-                  <div className="overflow-hidden rounded-2xl border border-zinc-200/80 dark:border-white/[0.08] bg-white dark:bg-[#141417] shadow-sm">
+                  <div className="overflow-hidden rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 shadow-md backdrop-blur-sm">
                     <div className="overflow-x-auto">
                       <table className="w-full text-left border-collapse">
                         <thead>
-                          <tr className="border-b border-zinc-200/80 dark:border-white/[0.06] bg-zinc-50/50 dark:bg-white/[0.02] text-[10.5px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">
+                          <tr className="border-b border-[#0066B2]/10 dark:border-[#38BDF8]/20 bg-[#F8FBFF] dark:bg-white/[0.02] text-[10.5px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">
                             <th className="py-3 pl-5 pr-3">
                               <div className="flex items-center">
                                 <AnimatePresence initial={false}>
@@ -1709,7 +1709,7 @@ export default function SequencesPage() {
                             <th className="py-3 pl-3 pr-5 text-right">Actions</th>
                           </tr>
                         </thead>
-                        <tbody className="divide-y divide-zinc-100 dark:divide-white/[0.04] text-xs">
+                        <tbody className="divide-y divide-[#0066B2]/8 dark:divide-white/[0.04] text-xs">
                           {filteredSequences.map((seq) => {
                             const { signedUp, delivered, opened, replied } = seq.stats;
                             const completed = seq.stats.completed || (delivered > 0 ? delivered : 0);

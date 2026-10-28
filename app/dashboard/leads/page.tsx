@@ -1012,7 +1012,7 @@ function parseCsvLine(line: string): string[] {
         {/* ========================================================================= */}
         <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
           {/* Total Subscribers */}
-          <div className="relative h-full rounded-2xl border border-[#0066B2]/30 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
+          <div className="relative h-full rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
             <div className="flex items-center justify-between sm:justify-start w-full sm:w-auto">
               <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl border border-indigo-500/30 bg-indigo-50 text-indigo-600 dark:border-indigo-500/30 dark:bg-indigo-500/20 dark:text-indigo-400">
                 <Layers className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
@@ -1030,7 +1030,7 @@ function parseCsvLine(line: string): string[] {
           </div>
 
           {/* Unique Subscribers */}
-          <div className="relative h-full rounded-2xl border border-[#0066B2]/30 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
+          <div className="relative h-full rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
             <div className="flex items-center justify-between sm:justify-start w-full sm:w-auto">
               <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl border border-[#0066B2]/30 bg-[#EFF6FF] text-[#0066B2] dark:border-[#0066B2]/30 dark:bg-[#0066B2]/20 dark:text-[#38BDF8]">
                 <Users className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
@@ -1048,7 +1048,7 @@ function parseCsvLine(line: string): string[] {
           </div>
 
           {/* New This Month */}
-          <div className="relative h-full rounded-2xl border border-[#0066B2]/30 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
+          <div className="relative h-full rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
             <div className="flex items-center justify-between sm:justify-start w-full sm:w-auto">
               <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl border border-emerald-500/30 bg-emerald-50 text-emerald-600 dark:border-emerald-500/30 dark:bg-emerald-500/20 dark:text-emerald-400">
                 <TrendingUp className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
@@ -1066,7 +1066,7 @@ function parseCsvLine(line: string): string[] {
           </div>
 
           {/* Active In Sequence */}
-          <div className="relative h-full rounded-2xl border border-[#0066B2]/30 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
+          <div className="relative h-full rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
             <div className="flex items-center justify-between sm:justify-start w-full sm:w-auto">
               <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl border border-purple-500/30 bg-purple-50 text-purple-600 dark:border-purple-500/30 dark:bg-purple-500/20 dark:text-purple-400">
                 <Zap className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
@@ -1540,7 +1540,7 @@ function parseCsvLine(line: string): string[] {
         {/* ========================================================================= */}
         {/* 4. Table & Cards Data Container (Standalone Separated Card)               */}
         {/* ========================================================================= */}
-        <div className="rounded-2xl border border-[#0066B2]/30 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 shadow-md backdrop-blur-sm relative overflow-hidden">
+        <div className="rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 shadow-md backdrop-blur-sm relative overflow-hidden">
           {/* Mobile Select All Strip when in selection mode */}
             <AnimatePresence>
               {isMobileSelectionMode && (
@@ -1577,8 +1577,8 @@ function parseCsvLine(line: string): string[] {
             {/* 4. DESKTOP Table View (hidden md:block) - Preserved 100% Unchanged        */}
             {/* ========================================================================= */}
             <div className="hidden md:block overflow-x-auto">
-              <table className="w-full text-left divide-y divide-[#0066B2]/15 dark:divide-[#38BDF8]/15">
-                <thead className="bg-[#F8FBFF] dark:bg-[#151518] border-b border-[#0066B2]/20 dark:border-[#38BDF8]/20">
+              <table className="w-full text-left divide-y divide-[#0066B2]/8 dark:divide-[#38BDF8]/15">
+                <thead className="bg-[#F8FBFF] dark:bg-[#151518] border-b border-[#0066B2]/10 dark:border-[#38BDF8]/20">
                   <tr>
                     <th className="px-3 lg:px-4 py-3.5 text-left text-[11px] font-semibold uppercase tracking-wider text-zinc-500 dark:text-[#9B9085]">
                       <div className="flex items-center">

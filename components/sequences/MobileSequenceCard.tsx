@@ -78,7 +78,7 @@ export const MobileSequenceCard = memo(function MobileSequenceCard({
         className={`group relative rounded-xl border p-3 transition-all duration-200 active:scale-[0.99] select-none cursor-pointer flex items-center justify-between gap-2.5 ${
           isChecked
             ? "border-[#0066B2] dark:border-[#38BDF8] bg-blue-50/60 dark:bg-[#0066B2]/15 ring-1 ring-[#0066B2]/30 shadow-xs"
-            : "border-zinc-200/80 bg-white dark:border-[#282832] dark:bg-[#18181C] hover:border-zinc-300 dark:hover:border-zinc-700 shadow-2xs"
+            : "border-[#0066B2]/15 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181C] shadow-sm backdrop-blur-sm"
         }`}
       >
         {/* Left: Checkbox (if in select mode), Icon & Sequence Info */}
@@ -165,7 +165,7 @@ export const MobileSequenceCard = memo(function MobileSequenceCard({
       className={`group relative rounded-2xl border transition-all duration-200 active:scale-[0.99] select-none cursor-pointer flex flex-col justify-between overflow-hidden ${
         isChecked
           ? "border-[#0066B2] dark:border-[#38BDF8] bg-blue-50/50 dark:bg-[#0066B2]/15 ring-2 ring-[#0066B2]/30 shadow-[0_8px_30px_rgba(0,102,178,0.15)]"
-          : "border-zinc-200/80 bg-white dark:border-white/[0.08] dark:bg-[#141417] hover:border-zinc-300 dark:hover:border-white/20 shadow-[0_2px_8px_rgba(0,0,0,0.06),0_1px_2px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.09)] dark:shadow-[0_4px_16px_rgba(0,0,0,0.3)] dark:hover:shadow-[0_8px_24px_rgba(0,0,0,0.4)]"
+          : "border-[#0066B2]/15 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 shadow-md backdrop-blur-sm hover:border-[#0066B2]/30 dark:hover:border-[#38BDF8]/40 hover:shadow-lg"
       }`}
     >
       {/* Top Header Row: Animated Checkbox, Icon, Title, Status & 3-Dot Actions */}
@@ -314,7 +314,7 @@ export const MobileSequenceCard = memo(function MobileSequenceCard({
       </div>
 
       {/* Bottom Performance Metrics Grid */}
-      <div className="px-3.5 py-2.5 border-t border-zinc-100 dark:border-white/[0.05] bg-zinc-50/50 dark:bg-white/[0.01] flex items-center justify-between text-xs">
+      <div className="px-3.5 py-2.5 border-t border-[#0066B2]/10 dark:border-white/[0.05] bg-[#F8FBFF]/60 dark:bg-white/[0.01] flex items-center justify-between text-xs">
         <div className="flex items-center gap-4">
           <div>
             <span className="text-[9px] font-medium uppercase tracking-wider text-zinc-400 dark:text-zinc-500 block leading-none">

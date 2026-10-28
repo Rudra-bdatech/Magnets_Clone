@@ -236,24 +236,28 @@ function UsageBar({
 // Avatar initials generator
 // ─────────────────────────────────────────────
 
-function getAvatarHue(email: string): number {
+const AVATAR_PALETTES = [
+  "bg-[#0066B2]/10 text-[#0066B2] border-[#0066B2]/20 dark:bg-[#38BDF8]/20 dark:text-[#38BDF8] dark:border-[#38BDF8]/30",
+  "bg-purple-500/10 text-purple-600 border-purple-500/20 dark:bg-purple-500/20 dark:text-purple-400 dark:border-purple-500/30",
+  "bg-emerald-500/10 text-emerald-600 border-emerald-500/20 dark:bg-emerald-500/20 dark:text-emerald-400 dark:border-emerald-500/30",
+  "bg-amber-500/10 text-amber-600 border-amber-500/20 dark:bg-amber-500/20 dark:text-amber-400 dark:border-amber-500/30",
+  "bg-rose-500/10 text-rose-600 border-rose-500/20 dark:bg-rose-500/20 dark:text-rose-400 dark:border-rose-500/30",
+  "bg-sky-500/10 text-sky-600 border-sky-500/20 dark:bg-sky-500/20 dark:text-sky-400 dark:border-sky-500/30",
+];
+
+function getAvatarPalette(seed: string): string {
   let hash = 0;
-  for (let i = 0; i < email.length; i++) hash = email.charCodeAt(i) + ((hash << 5) - hash);
-  return Math.abs(hash) % 360;
+  for (let i = 0; i < seed.length; i++) {
+    hash = (hash * 31 + seed.charCodeAt(i)) >>> 0;
+  }
+  return AVATAR_PALETTES[hash % AVATAR_PALETTES.length];
 }
 
 function Avatar({ name, email }: { name?: string; email: string }) {
-  const initials = (name || email || "?")
-    .split(" ")
-    .map((w) => w[0])
-    .slice(0, 2)
-    .join("")
-    .toUpperCase();
-  const hue = getAvatarHue(email);
+  const initials = (name || email || "U").slice(0, 2).toUpperCase();
   return (
     <div
-      className="h-8 w-8 shrink-0 rounded-full flex items-center justify-center text-[10px] font-bold text-white"
-      style={{ background: `hsl(${hue}, 58%, 52%)` }}
+      className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-xl text-xs font-bold uppercase border ${getAvatarPalette(email || name || "U")}`}
     >
       {initials}
     </div>
@@ -501,8 +505,7 @@ export default function DashboardHome({
       value: countLeads.toLocaleString(),
       rawValue: totalLeads,
       icon: Users,
-      iconBg: "bg-[#EFF6FF] dark:bg-[#0066B2]/20",
-      iconColor: "text-[#0066B2] dark:text-[#38BDF8]",
+      iconBadge: "border border-[#0066B2]/30 bg-[#EFF6FF] text-[#0066B2] dark:border-[#0066B2]/30 dark:bg-[#0066B2]/20 dark:text-[#38BDF8]",
       sparkData: leadsSparkline,
       sparkColor: "#0066B2",
       href: "/dashboard/leads",
@@ -517,8 +520,7 @@ export default function DashboardHome({
           : countViews.toLocaleString(),
       rawValue: totalViews,
       icon: Eye,
-      iconBg: "bg-violet-50 dark:bg-violet-500/20",
-      iconColor: "text-violet-600 dark:text-violet-400",
+      iconBadge: "border border-violet-500/30 bg-violet-50 text-violet-600 dark:border-violet-500/30 dark:bg-violet-500/20 dark:text-violet-400",
       sparkData: viewsSparkline,
       sparkColor: "#7C3AED",
       href: "/dashboard/analytics",
@@ -530,8 +532,7 @@ export default function DashboardHome({
       value: `${avgConversion.toFixed(1)}%`,
       rawValue: avgConversion,
       icon: TrendingUp,
-      iconBg: "bg-emerald-50 dark:bg-emerald-500/20",
-      iconColor: "text-emerald-600 dark:text-emerald-400",
+      iconBadge: "border border-emerald-500/30 bg-emerald-50 text-emerald-600 dark:border-emerald-500/30 dark:bg-emerald-500/20 dark:text-emerald-400",
       sparkData: conversionSparkline,
       sparkColor: "#10B981",
       href: "/dashboard/analytics",
@@ -543,8 +544,7 @@ export default function DashboardHome({
       value: activeMagnets.toString(),
       rawValue: activeMagnets,
       icon: Zap,
-      iconBg: "bg-amber-50 dark:bg-amber-500/20",
-      iconColor: "text-amber-600 dark:text-amber-400",
+      iconBadge: "border border-amber-500/30 bg-amber-50 text-amber-600 dark:border-amber-500/30 dark:bg-amber-500/20 dark:text-amber-400",
       sparkData: activeSparkline,
       sparkColor: "#F59E0B",
       href: "/dashboard/landing-page",
@@ -606,11 +606,11 @@ export default function DashboardHome({
                 href={card.href}
                 className="group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0066B2] rounded-2xl h-full flex flex-col"
               >
-                <div className="relative h-full rounded-2xl border border-zinc-200/90 bg-white dark:border-[#2e2e38] dark:bg-[#18181B]/90 p-3.5 sm:p-4 shadow-xs hover:border-[#0066B2]/40 dark:hover:border-[#38BDF8]/25 hover:shadow-md transition-all duration-200 overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
+                <div className="relative h-full rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 p-3.5 sm:p-4 shadow-md backdrop-blur-sm hover:border-[#0066B2]/30 dark:hover:border-[#38BDF8]/40 hover:shadow-lg transition-all duration-200 overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
                   {/* Top on mobile / Left on desktop: Icon Badge */}
                   <div className="flex items-center justify-between sm:justify-start w-full sm:w-auto">
                     <div
-                      className={`flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl ${card.iconBg} ${card.iconColor}`}
+                      className={`flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl ${card.iconBadge}`}
                     >
                       <card.icon className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
                     </div>
@@ -650,7 +650,7 @@ export default function DashboardHome({
             className="grid grid-cols-1 md:grid-cols-2 gap-4"
           >
             {/* 🌐 LANDING PAGES ENGINE CARD */}
-            <div className="relative rounded-2xl border border-blue-200/80 bg-gradient-to-br from-blue-50/70 via-white to-sky-50/40 dark:border-blue-900/40 dark:from-blue-950/30 dark:via-[#18181B] dark:to-sky-950/20 p-4 sm:p-5 shadow-sm backdrop-blur-sm flex flex-col justify-between overflow-hidden group">
+            <div className="relative rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 p-4 sm:p-5 shadow-md backdrop-blur-sm flex flex-col justify-between overflow-hidden group">
               <div>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
@@ -678,7 +678,7 @@ export default function DashboardHome({
 
                 {/* Performance stats grid */}
                 <div className="grid grid-cols-3 gap-1.5 sm:gap-2 mt-3 sm:mt-4">
-                  <div className="p-2 sm:p-2.5 rounded-xl bg-white/80 dark:bg-black/20 border border-blue-100/60 dark:border-blue-900/20">
+                  <div className="p-2 sm:p-2.5 rounded-xl bg-[#F8FBFF] dark:bg-white/[0.03] border border-[#0066B2]/10 dark:border-[#38BDF8]/15 shadow-xs">
                     <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-[#9B9085]">
                       Views
                     </span>
@@ -686,7 +686,7 @@ export default function DashboardHome({
                       {landingPageViews.toLocaleString()}
                     </p>
                   </div>
-                  <div className="p-2 sm:p-2.5 rounded-xl bg-white/80 dark:bg-black/20 border border-blue-100/60 dark:border-blue-900/20">
+                  <div className="p-2 sm:p-2.5 rounded-xl bg-[#F8FBFF] dark:bg-white/[0.03] border border-[#0066B2]/10 dark:border-[#38BDF8]/15 shadow-xs">
                     <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-[#9B9085]">
                       Leads
                     </span>
@@ -694,7 +694,7 @@ export default function DashboardHome({
                       {landingPageLeads.toLocaleString()}
                     </p>
                   </div>
-                  <div className="p-2 sm:p-2.5 rounded-xl bg-white/80 dark:bg-black/20 border border-blue-100/60 dark:border-blue-900/20">
+                  <div className="p-2 sm:p-2.5 rounded-xl bg-[#F8FBFF] dark:bg-white/[0.03] border border-[#0066B2]/10 dark:border-[#38BDF8]/15 shadow-xs">
                     <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-[#9B9085]">
                       Conv. Rate
                     </span>
@@ -727,7 +727,7 @@ export default function DashboardHome({
             </div>
 
             {/* 🔒 LOCKED PDF ENGINE CARD */}
-            <div className="relative rounded-2xl border border-amber-200/80 bg-gradient-to-br from-amber-50/70 via-white to-orange-50/40 dark:border-amber-900/40 dark:from-amber-950/30 dark:via-[#18181B] dark:to-orange-950/20 p-4 sm:p-5 shadow-sm backdrop-blur-sm flex flex-col justify-between overflow-hidden group">
+            <div className="relative rounded-2xl border border-amber-500/20 bg-white/90 dark:border-amber-500/30 dark:bg-[#18181B]/90 p-4 sm:p-5 shadow-md backdrop-blur-sm flex flex-col justify-between overflow-hidden group">
               <div>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
@@ -755,7 +755,7 @@ export default function DashboardHome({
 
                 {/* Performance stats grid */}
                 <div className="grid grid-cols-3 gap-1.5 sm:gap-2 mt-3 sm:mt-4">
-                  <div className="p-2 sm:p-2.5 rounded-xl bg-white/80 dark:bg-black/20 border border-amber-100/60 dark:border-amber-900/20">
+                  <div className="p-2 sm:p-2.5 rounded-xl bg-amber-50/40 dark:bg-white/[0.03] border border-amber-500/15 dark:border-amber-500/20 shadow-xs">
                     <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-[#9B9085]">
                       Views
                     </span>
@@ -763,7 +763,7 @@ export default function DashboardHome({
                       {lockedPdfViews.toLocaleString()}
                     </p>
                   </div>
-                  <div className="p-2 sm:p-2.5 rounded-xl bg-white/80 dark:bg-black/20 border border-amber-100/60 dark:border-amber-900/20">
+                  <div className="p-2 sm:p-2.5 rounded-xl bg-amber-50/40 dark:bg-white/[0.03] border border-amber-500/15 dark:border-amber-500/20 shadow-xs">
                     <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-[#9B9085]">
                       Unlocks
                     </span>
@@ -771,7 +771,7 @@ export default function DashboardHome({
                       {lockedPdfLeadsCount.toLocaleString()}
                     </p>
                   </div>
-                  <div className="p-2 sm:p-2.5 rounded-xl bg-white/80 dark:bg-black/20 border border-amber-100/60 dark:border-amber-900/20">
+                  <div className="p-2 sm:p-2.5 rounded-xl bg-amber-50/40 dark:bg-white/[0.03] border border-amber-500/15 dark:border-amber-500/20 shadow-xs">
                     <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-[#9B9085]">
                       Unlock Rate
                     </span>
@@ -812,11 +812,11 @@ export default function DashboardHome({
             className="grid grid-cols-1 gap-4 lg:grid-cols-2"
           >
             {/* ── Recent Leads ── */}
-            <div className="rounded-2xl border border-zinc-200/80 bg-white/90 dark:border-[#2e2e38] dark:bg-[#18181B]/90 shadow-sm backdrop-blur-sm overflow-hidden">
-              <div className="flex items-center justify-between px-4 py-2.5 border-b border-zinc-100/80 dark:border-white/[0.06]">
+            <div className="rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 shadow-md backdrop-blur-sm overflow-hidden">
+              <div className="flex items-center justify-between px-4 py-2.5 border-b border-[#0066B2]/10 dark:border-[#38BDF8]/15">
                 <div className="flex items-center gap-2.5">
-                  <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#EFF6FF] dark:bg-[#0066B2]/20">
-                    <Users className="h-4 w-4 text-[#0066B2] dark:text-[#38BDF8]" />
+                  <div className="flex h-7 w-7 items-center justify-center rounded-lg border border-[#0066B2]/30 bg-[#EFF6FF] text-[#0066B2] dark:border-[#0066B2]/30 dark:bg-[#0066B2]/20 dark:text-[#38BDF8]">
+                    <Users className="h-4 w-4" />
                   </div>
                   <h2 className="text-base font-bold text-zinc-900 dark:text-white">
                     Recent Leads
@@ -832,7 +832,7 @@ export default function DashboardHome({
               </div>
 
               {recentLeads.length > 0 ? (
-                <div className="divide-y divide-zinc-50 dark:divide-[#18181e]">
+                <div className="divide-y divide-[#0066B2]/8 dark:divide-white/[0.04]">
                   {recentLeads.map((lead) => (
                     <div
                       key={lead.id}
@@ -866,11 +866,11 @@ export default function DashboardHome({
             {/* ── Right Column (50% Width): Stacked 50% Active Sequences (Top) + 50% Integrations Status (Bottom) ── */}
             <div className="flex flex-col gap-4 h-full">
               {/* Top 50%: Active Sequences */}
-              <div className="rounded-2xl border border-zinc-200/80 bg-white/90 dark:border-[#2e2e38] dark:bg-[#18181B]/90 shadow-sm backdrop-blur-sm overflow-hidden flex-1 flex flex-col justify-between">
-                <div className="flex items-center justify-between px-4 py-2.5 border-b border-zinc-100/80 dark:border-white/[0.06]">
+              <div className="rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 shadow-md backdrop-blur-sm overflow-hidden flex-1 flex flex-col justify-between">
+                <div className="flex items-center justify-between px-4 py-2.5 border-b border-[#0066B2]/10 dark:border-[#38BDF8]/15">
                   <div className="flex items-center gap-2.5">
-                    <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-50 dark:bg-emerald-500/20">
-                      <Mail className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                    <div className="flex h-7 w-7 items-center justify-center rounded-lg border border-emerald-500/30 bg-emerald-50 text-emerald-600 dark:border-emerald-500/30 dark:bg-emerald-500/20 dark:text-emerald-400">
+                      <Mail className="h-4 w-4" />
                     </div>
                     <h2 className="text-base font-bold text-zinc-900 dark:text-white">
                       Active Sequences
@@ -886,7 +886,7 @@ export default function DashboardHome({
                 </div>
 
                 {activeSeqs.length > 0 ? (
-                  <div className="divide-y divide-zinc-50 dark:divide-[#18181e]">
+                  <div className="divide-y divide-[#0066B2]/8 dark:divide-white/[0.04]">
                     {activeSeqs.map((seq) => {
                       const openRate =
                         seq.stats.delivered > 0
@@ -898,7 +898,7 @@ export default function DashboardHome({
                           href={`/dashboard/sequences/${seq.id}`}
                           className="group flex items-center gap-3 px-4 py-2.5 hover:bg-zinc-50/80 dark:hover:bg-white/[0.025] transition-colors"
                         >
-                          <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[#EFF6FF] dark:bg-[#0066B2]/20">
+                          <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-[#0066B2]/25 bg-[#EFF6FF] text-[#0066B2] dark:border-[#0066B2]/25 dark:bg-[#0066B2]/20 dark:text-[#38BDF8]">
                             <Rocket className="h-3.5 w-3.5 text-[#0066B2] dark:text-[#38BDF8]" />
                           </div>
                           <div className="flex-1 min-w-0">
@@ -946,11 +946,11 @@ export default function DashboardHome({
               </div>
 
               {/* Bottom 50%: Integrations Status */}
-              <div className="rounded-2xl border border-zinc-200/80 bg-white/90 dark:border-[#2e2e38] dark:bg-[#18181B]/90 shadow-sm backdrop-blur-sm overflow-hidden flex flex-col justify-between">
-                <div className="flex items-center justify-between px-4 py-2.5 border-b border-zinc-100/80 dark:border-white/[0.06]">
+              <div className="rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 shadow-md backdrop-blur-sm overflow-hidden flex flex-col justify-between">
+                <div className="flex items-center justify-between px-4 py-2.5 border-b border-[#0066B2]/10 dark:border-[#38BDF8]/15">
                   <div className="flex items-center gap-2.5">
-                    <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-rose-50 dark:bg-rose-500/20">
-                      <Zap className="h-4 w-4 text-rose-600 dark:text-rose-400" />
+                    <div className="flex h-7 w-7 items-center justify-center rounded-lg border border-rose-500/30 bg-rose-50 text-rose-600 dark:border-rose-500/30 dark:bg-rose-500/20 dark:text-rose-400">
+                      <Zap className="h-4 w-4" />
                     </div>
                     <h2 className="text-base font-bold text-zinc-900 dark:text-white">
                       Integrations
@@ -967,7 +967,7 @@ export default function DashboardHome({
 
                 <div className="grid grid-cols-3 gap-2 p-4">
                   {/* ConvertKit */}
-                  <div className="p-2.5 rounded-xl bg-zinc-50/80 dark:bg-white/[0.02] border border-zinc-100 dark:border-white/[0.05]">
+                  <div className="p-2.5 rounded-xl bg-[#F8FBFF] dark:bg-white/[0.03] border border-[#0066B2]/10 dark:border-white/[0.08] shadow-xs">
                     <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-[#9B9085]">
                       ConvertKit / Kit
                     </span>
@@ -980,7 +980,7 @@ export default function DashboardHome({
                   </div>
 
                   {/* Webhooks */}
-                  <div className="p-2.5 rounded-xl bg-zinc-50/80 dark:bg-white/[0.02] border border-zinc-100 dark:border-white/[0.05]">
+                  <div className="p-2.5 rounded-xl bg-[#F8FBFF] dark:bg-white/[0.03] border border-[#0066B2]/10 dark:border-white/[0.08] shadow-xs">
                     <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-[#9B9085]">
                       Webhooks
                     </span>
@@ -993,7 +993,7 @@ export default function DashboardHome({
                   </div>
 
                   {/* GA4 / Pixel */}
-                  <div className="p-2.5 rounded-xl bg-zinc-50/80 dark:bg-white/[0.02] border border-zinc-100 dark:border-white/[0.05]">
+                  <div className="p-2.5 rounded-xl bg-[#F8FBFF] dark:bg-white/[0.03] border border-[#0066B2]/10 dark:border-white/[0.08] shadow-xs">
                     <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-[#9B9085]">
                       GA4 / Pixel
                     </span>

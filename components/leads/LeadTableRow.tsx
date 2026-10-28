@@ -6,6 +6,23 @@ import { Copy, Eye, Trash2, Lock, Upload, Sparkles, Linkedin } from "lucide-reac
 import type { Lead } from "@/lib/data";
 import { AppleCheckbox } from "./AppleCheckbox";
 
+const AVATAR_PALETTES = [
+  "bg-[#0066B2]/10 text-[#0066B2] border-[#0066B2]/20 dark:bg-[#38BDF8]/20 dark:text-[#38BDF8] dark:border-[#38BDF8]/30",
+  "bg-purple-500/10 text-purple-600 border-purple-500/20 dark:bg-purple-500/20 dark:text-purple-400 dark:border-purple-500/30",
+  "bg-emerald-500/10 text-emerald-600 border-emerald-500/20 dark:bg-emerald-500/20 dark:text-emerald-400 dark:border-emerald-500/30",
+  "bg-amber-500/10 text-amber-600 border-amber-500/20 dark:bg-amber-500/20 dark:text-amber-400 dark:border-amber-500/30",
+  "bg-rose-500/10 text-rose-600 border-rose-500/20 dark:bg-rose-500/20 dark:text-rose-400 dark:border-rose-500/30",
+  "bg-sky-500/10 text-sky-600 border-sky-500/20 dark:bg-sky-500/20 dark:text-sky-400 dark:border-sky-500/30",
+];
+
+function getAvatarPalette(seed: string): string {
+  let hash = 0;
+  for (let i = 0; i < seed.length; i++) {
+    hash = (hash * 31 + seed.charCodeAt(i)) >>> 0;
+  }
+  return AVATAR_PALETTES[hash % AVATAR_PALETTES.length];
+}
+
 interface LeadTableRowProps {
   lead: Lead;
   isSelected: boolean;
@@ -73,7 +90,7 @@ export const LeadTableRow = memo(function LeadTableRow({
           <div
             onClick={() => onToggleSelect(lead.id)}
             title={isSelected ? "Deselect" : "Select"}
-            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-[#0066B2]/10 text-[#0066B2] dark:bg-[#38BDF8]/20 dark:text-[#38BDF8] text-xs font-bold uppercase border border-[#0066B2]/20 dark:border-[#38BDF8]/30 cursor-pointer active:scale-95 transition-transform"
+            className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-xl text-xs font-bold uppercase border cursor-pointer active:scale-95 transition-transform ${getAvatarPalette(lead.email || lead.name || "U")}`}
           >
             {(lead.name || lead.email || "U").slice(0, 2)}
           </div>
@@ -148,9 +165,9 @@ export const LeadTableRow = memo(function LeadTableRow({
           <button
             type="button"
             onClick={() => onViewDetails(lead)}
-            className="flex items-center gap-1.5 rounded-lg border border-zinc-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-zinc-700 hover:bg-zinc-50 dark:border-[#2e2e38] dark:bg-[#202026] dark:text-zinc-200 dark:hover:bg-[#282830] transition-all duration-150 cursor-pointer shadow-xs active:scale-[0.97]"
+            className="flex items-center gap-1.5 rounded-lg border border-[#0066B2]/20 bg-[#0066B2]/[0.06] px-2.5 py-1.5 text-xs font-semibold text-[#0066B2] hover:bg-[#0066B2]/10 dark:border-[#38BDF8]/25 dark:bg-[#38BDF8]/10 dark:text-[#38BDF8] dark:hover:bg-[#38BDF8]/15 transition-all duration-150 cursor-pointer shadow-xs active:scale-[0.97]"
           >
-            <Eye className="h-3.5 w-3.5 text-[#0066B2] dark:text-[#38BDF8]" />{" "}
+            <Eye className="h-3.5 w-3.5" />{" "}
             View Details
           </button>
           <button
