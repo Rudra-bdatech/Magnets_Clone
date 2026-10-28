@@ -58,7 +58,7 @@ export const AutomationsSection = memo(function AutomationsSection({
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           {/* Slack Expandable Card */}
-          <div className={`${openSections["slack-webhook"] ? "md:col-span-2" : "md:col-span-1"} rounded-2xl border border-[#0066B2]/30 bg-white dark:border-[#0066B2]/35 dark:bg-[#121214] overflow-hidden shadow-sm transition-all duration-300 ease-in-out`}>
+          <div className={`${openSections["slack-webhook"] ? "md:col-span-2" : "md:col-span-1"} rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 overflow-hidden shadow-md backdrop-blur-sm transition-all duration-300 ease-in-out`}>
             <div
               onClick={() => toggle("slack-webhook")}
               className="p-4 flex items-center justify-between hover:bg-[#EFF6FF] dark:hover:bg-[#18181c] transition-colors cursor-pointer"
@@ -182,7 +182,7 @@ export const AutomationsSection = memo(function AutomationsSection({
           </div>
 
           {/* Zapier Expandable Card */}
-          <div className={`${openSections["zapier-webhook"] ? "md:col-span-2" : "md:col-span-1"} rounded-2xl border border-[#0066B2]/30 bg-white dark:border-[#0066B2]/35 dark:bg-[#121214] overflow-hidden shadow-sm transition-all duration-300 ease-in-out`}>
+          <div className={`${openSections["zapier-webhook"] ? "md:col-span-2" : "md:col-span-1"} rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 overflow-hidden shadow-md backdrop-blur-sm transition-all duration-300 ease-in-out`}>
             <div
               onClick={() => toggle("zapier-webhook")}
               className="p-4 flex items-center justify-between hover:bg-[#EFF6FF] dark:hover:bg-[#18181c] transition-colors cursor-pointer"
@@ -311,7 +311,7 @@ export const AutomationsSection = memo(function AutomationsSection({
           </div>
 
           {/* Pipedrive Expandable Card */}
-          <div className={`${openSections["pipedrive-webhook"] ? "md:col-span-2" : "md:col-span-1"} rounded-2xl border border-[#0066B2]/30 bg-white dark:border-[#0066B2]/35 dark:bg-[#121214] overflow-hidden shadow-sm transition-all duration-300 ease-in-out`}>
+          <div className={`${openSections["pipedrive-webhook"] ? "md:col-span-2" : "md:col-span-1"} rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 overflow-hidden shadow-md backdrop-blur-sm transition-all duration-300 ease-in-out`}>
             <div
               onClick={() => toggle("pipedrive-webhook")}
               className="p-4 flex items-center justify-between hover:bg-[#EFF6FF] dark:hover:bg-[#18181c] transition-colors cursor-pointer"
@@ -414,7 +414,7 @@ export const AutomationsSection = memo(function AutomationsSection({
           </div>
 
           {/* Kit Expandable Card */}
-          <div className={`${openSections["kit-webhook"] ? "md:col-span-2" : "md:col-span-1"} rounded-2xl border border-[#0066B2]/30 bg-white dark:border-[#0066B2]/35 dark:bg-[#121214] overflow-hidden shadow-sm transition-all duration-300 ease-in-out`}>
+          <div className={`${openSections["kit-webhook"] ? "md:col-span-2" : "md:col-span-1"} rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 overflow-hidden shadow-md backdrop-blur-sm transition-all duration-300 ease-in-out`}>
             <div
               onClick={() => toggle("kit-webhook")}
               className="p-4 flex items-center justify-between hover:bg-[#EFF6FF] dark:hover:bg-[#18181c] transition-colors cursor-pointer"

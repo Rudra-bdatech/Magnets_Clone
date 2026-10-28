@@ -72,14 +72,14 @@ export const BrandingSection = memo(function BrandingSection({
   return (
     <div className="space-y-4">
       {/* Legal links card */}
-      <div className="group rounded-2xl border border-[#0066B2]/30 bg-white dark:border-[#0066B2]/35 dark:bg-[#18181B] shadow-sm transition-colors overflow-hidden hover:bg-[#EFF6FF] dark:hover:bg-[#18181c]">
+      <div className="group rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 shadow-md backdrop-blur-sm transition-colors overflow-hidden hover:bg-[#EFF6FF] dark:hover:bg-[#18181c]">
         <button
           type="button"
           onClick={() => toggle("legal-links")}
           className="flex w-full items-center justify-between p-4 text-left cursor-pointer"
         >
           <div className="flex items-center gap-3 min-w-0 flex-1">
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#EFF6FF] text-[#0066B2] border border-[#DBEAFE] dark:bg-[#0066B2]/20 dark:border-[#0066B2]/40 dark:text-[#38BDF8]">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-[#0066B2]/30 bg-[#EFF6FF] text-[#0066B2] dark:border-[#0066B2]/30 dark:bg-[#0066B2]/20 dark:text-[#38BDF8]">
               <FileText className="h-4.5 w-4.5" />
             </div>
             <div className="min-w-0 flex-1">
@@ -98,7 +98,7 @@ export const BrandingSection = memo(function BrandingSection({
           <ChevronDown className={`h-4 w-4 text-zinc-400 dark:text-zinc-500 transition-transform duration-200 shrink-0 ${openSections["legal-links"] ? "rotate-180" : ""}`} />
         </button>
         {openSections["legal-links"] && (
-          <div className="border-t border-[#E2E8F0] dark:border-[#2e2e38] px-5 py-5 space-y-4">
+          <div className="border-t border-[#0066B2]/10 dark:border-[#38BDF8]/20 px-5 py-5 space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-xs font-semibold text-zinc-700 dark:text-[#9B9085] mb-1.5">Privacy policy URL</label>
@@ -226,14 +226,14 @@ export const BrandingSection = memo(function BrandingSection({
       </div>
 
       {/* Social Preview & Favicon Branding Card */}
-      <div className="group rounded-2xl border border-[#0066B2]/30 bg-white dark:border-[#0066B2]/35 dark:bg-[#18181B] shadow-sm transition-colors overflow-hidden">
+      <div className="group rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 shadow-md backdrop-blur-sm transition-colors overflow-hidden">
         <button
           type="button"
           onClick={() => toggle("branding-preview")}
           className="flex w-full items-center justify-between p-4 text-left hover:bg-[#EFF6FF] dark:hover:bg-[#18181c] transition-colors cursor-pointer"
         >
           <div className="flex items-center gap-3 min-w-0 flex-1">
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#EFF6FF] text-[#0066B2] border border-[#DBEAFE] dark:bg-[#1A2E40]">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-[#0066B2]/30 bg-[#EFF6FF] text-[#0066B2] dark:border-[#0066B2]/30 dark:bg-[#1A2E40]">
               <Globe className="h-4.5 w-4.5" />
             </div>
             <div className="min-w-0 flex-1">
@@ -260,7 +260,7 @@ export const BrandingSection = memo(function BrandingSection({
         </button>
 
         {openSections["branding-preview"] && (
-          <div className="border-t border-[#E2E8F0] dark:border-[#2e2e38] px-3.5 sm:px-5 py-4 sm:py-5 space-y-4 sm:space-y-6">
+          <div className="border-t border-[#0066B2]/10 dark:border-[#38BDF8]/20 px-3.5 sm:px-5 py-4 sm:py-5 space-y-4 sm:space-y-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
               {/* Favicon Section */}
               <div className="space-y-3 rounded-xl border border-zinc-200/80 bg-zinc-50/50 p-3.5 sm:p-4 dark:border-white/10 dark:bg-[#121214]">

@@ -289,7 +289,7 @@ export default function WorkspaceSetupPage() {
             </h2>
 
             {/* Public URL ready status card */}
-            <div className="flex items-center gap-2.5 rounded-2xl border border-zinc-200/80 bg-white/80 dark:border-white/[0.08] dark:bg-[#141417] px-3.5 sm:px-4 py-2 sm:py-2.5 shrink-0 shadow-xs backdrop-blur-sm w-full sm:w-auto">
+            <div className="flex items-center gap-2.5 rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 px-3.5 sm:px-4 py-2 sm:py-2.5 shrink-0 shadow-md backdrop-blur-sm w-full sm:w-auto">
               <span className={`h-2 w-2 rounded-full ${cnameVerified || domainVerified ? "bg-emerald-500" : "bg-amber-500"} shrink-0`} />
               <div className="min-w-0 flex-1 sm:flex-initial">
                 <div className="flex items-center gap-2 flex-wrap">
@@ -349,14 +349,14 @@ export default function WorkspaceSetupPage() {
             />
 
             {/* 2. Optional connections wrapper (Automations) */}
-            <div id="connections-section" className="rounded-2xl border border-[#0066B2]/30 bg-white dark:border-[#0066B2]/35 dark:bg-[#18181B] shadow-sm transition-colors overflow-hidden">
+            <div id="connections-section" className="rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 shadow-md backdrop-blur-sm transition-colors overflow-hidden">
               <button
                 type="button"
                 onClick={() => toggle("connections")}
                 className="flex w-full items-center justify-between p-4 text-left hover:bg-[#EFF6FF] dark:hover:bg-[#18181c] transition-colors cursor-pointer"
               >
                 <div className="flex items-center gap-3 min-w-0 flex-1">
-                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#EFF6FF] text-[#0066B2] border border-[#DBEAFE] dark:bg-[#0066B2]/20 dark:border-[#0066B2]/40 dark:text-[#38BDF8]">
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-[#0066B2]/30 bg-[#EFF6FF] text-[#0066B2] dark:border-[#0066B2]/30 dark:bg-[#0066B2]/20 dark:text-[#38BDF8]">
                     <Plug className="h-4.5 w-4.5" />
                   </div>
                   <div className="min-w-0 flex-1">
@@ -380,7 +380,7 @@ export default function WorkspaceSetupPage() {
                 </div>
               </button>
               {openSections["connections"] && (
-                <div className="border-t border-[#E2E8F0] bg-white dark:border-[#2e2e38] dark:bg-[#0E0E10]/50 px-5 py-5 space-y-6">
+                <div className="border-t border-[#0066B2]/10 bg-white/50 dark:border-[#38BDF8]/20 dark:bg-[#0E0E10]/50 px-5 py-5 space-y-6">
                   {/* Automations (Slack, Zapier, Pipedrive, Kit, Substack) */}
                   <AutomationsSection
                     account={account}

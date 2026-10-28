@@ -367,10 +367,10 @@ export const DomainSection = memo(function DomainSection({
   const activeError = !domainVerified ? domainError : cnameError;
 
   return (
-    <div id="custom-domain-section" className="rounded-xl border border-zinc-200 bg-white dark:border-white/10 dark:bg-[#0A0A0B] overflow-hidden">
+    <div id="custom-domain-section" className="rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 shadow-md backdrop-blur-sm overflow-hidden">
 
       {/* Header */}
-      <div className="px-4 sm:px-6 py-4 sm:py-5 border-b border-zinc-200 dark:border-white/10">
+      <div className="px-4 sm:px-6 py-4 sm:py-5 border-b border-[#0066B2]/10 dark:border-[#38BDF8]/20">
         <h4 className="text-base font-semibold text-zinc-900 dark:text-white flex items-center gap-1.5">
           Domains
           <InfoTooltip
@@ -385,7 +385,7 @@ export const DomainSection = memo(function DomainSection({
       </div>
 
       {/* Default workspace URL */}
-      <div className="px-4 sm:px-6 py-4 sm:py-5 border-b border-zinc-200 dark:border-white/10">
+      <div className="px-4 sm:px-6 py-4 sm:py-5 border-b border-[#0066B2]/10 dark:border-[#38BDF8]/20">
         <label htmlFor="domain-username-input" className="block text-[13px] font-medium text-zinc-900 dark:text-white mb-2">
           Workspace URL
         </label>
@@ -429,7 +429,7 @@ export const DomainSection = memo(function DomainSection({
         </div>
 
         {/* Mobile Modern Stacked Slug Card (Vercel & Substack style) */}
-        <div className="sm:hidden rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#0E0E10] p-3 focus-within:border-[#0066B2] focus-within:ring-2 focus-within:ring-[#0066B2]/15 transition shadow-xs">
+        <div className="sm:hidden rounded-xl border border-[#0066B2]/15 dark:border-[#38BDF8]/25 bg-white dark:bg-[#0E0E10] p-3 focus-within:border-[#0066B2] focus-within:ring-2 focus-within:ring-[#0066B2]/15 transition shadow-xs">
           {/* Top line: clean domain origin */}
           <div className="text-[11px] font-mono font-medium text-zinc-400 dark:text-zinc-500 select-none truncate leading-none">
             {appBaseUrl.replace(/^https?:\/\//, "")}/
@@ -555,7 +555,7 @@ export const DomainSection = memo(function DomainSection({
 
           {/* Domain card (Vercel-style) */}
           {(rootDomain.trim() || showEditPanel) && (
-            <div className="rounded-lg border border-zinc-200 dark:border-white/10 overflow-hidden">
+            <div className="rounded-xl border border-[#0066B2]/15 dark:border-[#38BDF8]/25 bg-white/50 dark:bg-[#141417]/50 overflow-hidden">
               {rootDomain.trim() ? (
               <div className="flex flex-col md:flex-row md:items-center gap-3 md:gap-6 p-4">
                 {/* Left: host + status */}

@@ -44,14 +44,14 @@ export const AnalyticsSection = memo(function AnalyticsSection({
   };
 
   return (
-    <div className="group rounded-2xl border border-[#0066B2]/30 bg-white dark:border-[#0066B2]/35 dark:bg-[#18181B] shadow-sm transition-colors overflow-hidden hover:bg-[#EFF6FF] dark:hover:bg-[#18181c]">
+    <div className="group rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 shadow-md backdrop-blur-sm transition-colors overflow-hidden hover:bg-[#EFF6FF] dark:hover:bg-[#18181c]">
       <button
         type="button"
         onClick={onToggle}
         className="flex w-full items-center justify-between p-4 text-left cursor-pointer"
       >
         <div className="flex items-center gap-3 min-w-0 flex-1">
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#F0FDF4] text-emerald-600 border border-[#BBF7D0] dark:bg-[#0f2e1b] dark:border-emerald-800">
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-emerald-500/30 bg-[#F0FDF4] text-emerald-600 dark:border-emerald-500/30 dark:bg-[#0f2e1b]">
             <Sparkles className="h-4.5 w-4.5" />
           </div>
           <div className="min-w-0 flex-1">
@@ -77,7 +77,7 @@ export const AnalyticsSection = memo(function AnalyticsSection({
         </div>
       </button>
       {isOpen && (
-        <div className="border-t border-[#E2E8F0] dark:border-[#2e2e38] px-5 py-5 space-y-4">
+        <div className="border-t border-[#0066B2]/10 dark:border-[#38BDF8]/20 px-5 py-5 space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* GA4 Measurement ID */}
             <div>
