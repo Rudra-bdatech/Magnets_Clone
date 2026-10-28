@@ -818,7 +818,7 @@ export default function SequencesPage() {
         </div>
       )}
 
-      <div className="flex flex-col min-h-[calc(100vh-3rem)] bg-gradient-to-b from-[#EFF6FF]/60 via-[#F8FBFF] to-[#F8FBFF] dark:bg-none dark:bg-[#09090B] w-full overflow-x-hidden">
+      <div className="flex flex-col min-h-[calc(100vh-3rem)] bg-gradient-to-b from-[#EFF6FF]/60 via-[#F8FBFF] to-[#F8FBFF] dark:bg-none dark:bg-[#0a0a0a] w-full overflow-x-hidden">
         <div className={`flex-1 px-3 sm:px-6 py-3.5 sm:py-6 lg:px-8 mx-auto w-full space-y-3.5 sm:space-y-5 overflow-x-hidden transition-[max-width] duration-[220ms] ease-[cubic-bezier(0.16,1,0.3,1)] will-change-[max-width] ${isCollapsed ? "max-w-[1440px]" : "max-w-7xl"}`}>
           
           {/* Header Section */}
@@ -856,7 +856,7 @@ export default function SequencesPage() {
           {sequences.length > 0 && (
             <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
               {/* Card 1: Active Flows */}
-              <div className="relative h-full rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#141417] dark:shadow-none p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
+              <div className="relative h-full rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#171717] dark:shadow-none p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
                 <div className="flex items-center justify-between sm:justify-start w-full sm:w-auto">
                   <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl border border-emerald-500/30 bg-emerald-50 text-emerald-600 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-400">
                     <Rocket className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
@@ -874,7 +874,7 @@ export default function SequencesPage() {
               </div>
 
               {/* Card 2: Total Delivered */}
-              <div className="relative h-full rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#141417] dark:shadow-none p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
+              <div className="relative h-full rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#171717] dark:shadow-none p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
                 <div className="flex items-center justify-between sm:justify-start w-full sm:w-auto">
                   <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl border border-[#0066B2]/30 bg-[#EFF6FF] text-[#0066B2] dark:border-white/10 dark:bg-white/5 dark:text-zinc-200">
                     <Send className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
@@ -892,7 +892,7 @@ export default function SequencesPage() {
               </div>
 
               {/* Card 3: Avg Open Rate */}
-              <div className="relative h-full rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#141417] dark:shadow-none p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
+              <div className="relative h-full rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#171717] dark:shadow-none p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
                 <div className="flex items-center justify-between sm:justify-start w-full sm:w-auto">
                   <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl border border-indigo-500/30 bg-indigo-50 text-indigo-600 dark:border-white/10 dark:bg-white/5 dark:text-zinc-200">
                     <TrendingUp className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
@@ -910,7 +910,7 @@ export default function SequencesPage() {
               </div>
 
               {/* Card 4: Sequence Completed */}
-              <div className="relative h-full rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#141417] dark:shadow-none p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
+              <div className="relative h-full rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#171717] dark:shadow-none p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
                 <div className="flex items-center justify-between sm:justify-start w-full sm:w-auto">
                   <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl border border-purple-500/30 bg-purple-50 text-purple-600 dark:border-purple-500/20 dark:bg-purple-500/10 dark:text-purple-400">
                     <CheckCircle2 className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
@@ -934,7 +934,7 @@ export default function SequencesPage() {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3 w-full max-w-full min-w-0">
               
               {/* Search Bar on Left */}
-              <div className="flex items-center gap-2 flex-1 rounded-xl bg-zinc-50 dark:bg-[#16161a] px-3.5 py-2 border border-zinc-200/60 dark:border-white/[0.08] focus-within:border-[#0066B2] dark:focus-within:border-[#0066B2] min-w-0">
+              <div className="flex items-center gap-2 flex-1 rounded-xl bg-zinc-50 dark:bg-[#1a1a1a] px-3.5 py-2 border border-zinc-200/60 dark:border-white/[0.08] focus-within:border-[#0066B2] dark:focus-within:border-[#0066B2] min-w-0">
                 <Search className="h-4 w-4 text-zinc-400 shrink-0" />
                 <input
                   type="text"
@@ -957,7 +957,7 @@ export default function SequencesPage() {
               <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 justify-between sm:justify-end w-full sm:w-auto min-w-0">
                 
                 {/* Desktop Status Tabs Pod (Preserved untouched) */}
-                <div className="hidden sm:flex items-center p-1 bg-zinc-100 dark:bg-[#16161a] dark:border dark:border-white/[0.06] rounded-xl text-xs font-semibold min-w-0">
+                <div className="hidden sm:flex items-center p-1 bg-zinc-100 dark:bg-[#1a1a1a] dark:border dark:border-white/[0.06] rounded-xl text-xs font-semibold min-w-0">
                   {[
                     { id: "all", label: `All (${sequences.length})` },
                     { id: "live", label: `Active (${metrics.liveCount})` },
@@ -975,7 +975,7 @@ export default function SequencesPage() {
                       {statusFilter === tab.id && (
                         <motion.div
                           layoutId="activeStatusFilterTabSequences"
-                          className="absolute inset-0 bg-white dark:bg-[#222226] rounded-lg shadow-xs"
+                          className="absolute inset-0 bg-white dark:bg-white/10 rounded-lg shadow-xs"
                           transition={{ type: "spring", stiffness: 500, damping: 32 }}
                         />
                       )}
@@ -993,7 +993,7 @@ export default function SequencesPage() {
                       setIsSortOpen(false);
                       setIsStatusFilterOpen((v) => !v);
                     }}
-                    className="flex h-8 items-center gap-1 sm:gap-1.5 rounded-xl border border-zinc-200 dark:border-white/[0.08] bg-white dark:bg-[#16161a] px-2 sm:px-2.5 text-[11px] font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-[#222226] transition shadow-2xs cursor-pointer select-none whitespace-nowrap shrink-0"
+                    className="flex h-8 items-center gap-1 sm:gap-1.5 rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#171717] px-2 sm:px-2.5 text-[11px] font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-[#222222] transition shadow-2xs cursor-pointer select-none whitespace-nowrap shrink-0"
                   >
                     <Filter className="h-3.5 w-3.5 text-zinc-500 dark:text-zinc-400 shrink-0" />
                     <span className="whitespace-nowrap">
@@ -1018,7 +1018,7 @@ export default function SequencesPage() {
                         exit={{ opacity: 0, scale: 0.96, y: -4 }}
                         transition={{ type: "spring", damping: 28, stiffness: 400 }}
                         onClick={(e) => e.stopPropagation()}
-                        className="absolute left-0 top-full z-40 mt-1.5 w-48 rounded-xl border border-zinc-200/90 dark:border-white/[0.08] bg-white/95 dark:bg-[#16161a]/95 p-1.5 shadow-xl backdrop-blur-xl dark:text-white"
+                        className="absolute left-0 top-full z-40 mt-1.5 w-48 rounded-xl border border-zinc-200/90 dark:border-white/[0.08] bg-white/95 dark:bg-[#171717]/95 p-1.5 shadow-xl backdrop-blur-xl dark:text-white"
                       >
                         <div className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
                           Filter Status
@@ -1064,7 +1064,7 @@ export default function SequencesPage() {
                       e.stopPropagation();
                       setIsSortOpen((v) => !v);
                     }}
-                    className="flex h-8 w-auto items-center gap-1 sm:gap-1.5 rounded-xl border border-zinc-200 dark:border-white/[0.08] bg-white dark:bg-[#16161a] px-2 sm:px-3 text-[11px] sm:text-xs font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-[#222226] transition shadow-2xs cursor-pointer select-none whitespace-nowrap shrink-0"
+                    className="flex h-8 w-auto items-center gap-1 sm:gap-1.5 rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#171717] px-2 sm:px-3 text-[11px] sm:text-xs font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-[#222222] transition shadow-2xs cursor-pointer select-none whitespace-nowrap shrink-0"
                   >
                     <ArrowUpDown className="h-3.5 w-3.5 text-zinc-500 dark:text-zinc-400 shrink-0" />
                     <span className="whitespace-nowrap">
@@ -1086,7 +1086,7 @@ export default function SequencesPage() {
                         exit={{ opacity: 0, scale: 0.96, y: -4 }}
                         transition={{ type: "spring", damping: 28, stiffness: 400 }}
                         onClick={(e) => e.stopPropagation()}
-                        className="absolute right-0 top-full z-40 mt-1.5 w-48 rounded-xl border border-zinc-200/90 dark:border-white/10 bg-white/95 dark:bg-[#1C1C20]/95 p-1.5 shadow-xl backdrop-blur-xl dark:text-white"
+                        className="absolute right-0 top-full z-40 mt-1.5 w-48 rounded-xl border border-zinc-200/90 dark:border-white/10 bg-white/95 dark:bg-[#171717]/95 p-1.5 shadow-xl backdrop-blur-xl dark:text-white"
                       >
                         <div className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
                           Sort by
@@ -1120,7 +1120,7 @@ export default function SequencesPage() {
                 {/* Semantic Zoom Mode & Selection Toggle Pod */}
                 <div className="flex items-center gap-1.5 shrink-0">
                   {/* Semantic Zoom Segmented Control (Icon Only) */}
-                  <div className="flex h-8 sm:h-auto items-center p-0.5 sm:p-1 bg-zinc-100 dark:bg-[#16161a] dark:border dark:border-white/[0.06] rounded-xl shrink-0">
+                  <div className="flex h-8 sm:h-auto items-center p-0.5 sm:p-1 bg-zinc-100 dark:bg-[#1a1a1a] dark:border dark:border-white/[0.06] rounded-xl shrink-0">
                     <button
                       onClick={() => setViewMode("folders")}
                       title="Stage 1: Campaign Folders (Macro 25% Zoom)"
@@ -1133,7 +1133,7 @@ export default function SequencesPage() {
                       {viewMode === "folders" && (
                         <motion.div
                           layoutId="activeViewModeTabSequences"
-                          className="absolute inset-0 bg-white dark:bg-[#222226] rounded-lg shadow-xs"
+                          className="absolute inset-0 bg-white dark:bg-white/10 rounded-lg shadow-xs"
                           transition={{ type: "spring", stiffness: 500, damping: 32 }}
                         />
                       )}
@@ -1152,7 +1152,7 @@ export default function SequencesPage() {
                       {viewMode === "grid" && (
                         <motion.div
                           layoutId="activeViewModeTabSequences"
-                          className="absolute inset-0 bg-white dark:bg-[#222226] rounded-lg shadow-xs"
+                          className="absolute inset-0 bg-white dark:bg-white/10 rounded-lg shadow-xs"
                           transition={{ type: "spring", stiffness: 500, damping: 32 }}
                         />
                       )}
@@ -1171,7 +1171,7 @@ export default function SequencesPage() {
                       {viewMode === "table" && (
                         <motion.div
                           layoutId="activeViewModeTabSequences"
-                          className="absolute inset-0 bg-white dark:bg-[#222226] rounded-lg shadow-xs"
+                          className="absolute inset-0 bg-white dark:bg-white/10 rounded-lg shadow-xs"
                           transition={{ type: "spring", stiffness: 500, damping: 32 }}
                         />
                       )}
@@ -1191,7 +1191,7 @@ export default function SequencesPage() {
                       }}
                       className={`relative p-1.5 max-[380px]:px-1 rounded-lg transition-colors duration-150 cursor-pointer ${
                         isSelectMode || checkedIds.length > 0
-                          ? "bg-white dark:bg-[#222226] text-[#0066B2] dark:text-[#38BDF8] shadow-xs"
+                          ? "bg-white dark:bg-white/10 text-[#0066B2] dark:text-[#38BDF8] shadow-xs"
                           : "text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200"
                       }`}
                       title={isSelectMode || checkedIds.length > 0 ? "Exit Select Mode" : "Select Sequences"}
@@ -1246,7 +1246,7 @@ export default function SequencesPage() {
                       setActiveFolderFilter(folder.id);
                       setViewMode("grid");
                     }}
-                    className="group relative flex flex-col justify-between rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#141417] p-5 shadow-md dark:shadow-none backdrop-blur-sm hover:border-[#0066B2]/30 dark:hover:border-white/20 hover:shadow-lg transition-all duration-200 cursor-pointer overflow-hidden"
+                    className="group relative flex flex-col justify-between rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#171717] p-5 shadow-md dark:shadow-none backdrop-blur-sm hover:border-[#0066B2]/30 dark:hover:border-white/20 hover:shadow-lg transition-all duration-200 cursor-pointer overflow-hidden"
                   >
                     <div>
                       {/* Top Header with Folder Icon and Badge */}
@@ -1392,7 +1392,7 @@ export default function SequencesPage() {
                           } ${
                             isChecked
                               ? "border-[#0066B2] dark:border-[#38BDF8] bg-blue-50/40 dark:bg-[#0066B2]/15 ring-2 ring-[#0066B2]/30 shadow-[0_8px_30px_rgba(0,102,178,0.15)]"
-                              : "border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#141417] shadow-md dark:shadow-none backdrop-blur-sm hover:border-[#0066B2]/30 dark:hover:border-white/20 hover:shadow-lg transition-all duration-200"
+                              : "border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#171717] shadow-md dark:shadow-none backdrop-blur-sm hover:border-[#0066B2]/30 dark:hover:border-white/20 hover:shadow-lg transition-all duration-200"
                           }`}
                         >
                           {/* Top Section: Header & Step Pipeline */}
@@ -1484,7 +1484,7 @@ export default function SequencesPage() {
                                   {isMenuOpen && (
                                     <div
                                       onClick={(e) => e.stopPropagation()}
-                                      className="absolute right-0 top-8 z-50 w-52 rounded-xl border border-zinc-200 dark:border-white/[0.08] bg-white dark:bg-[#16161a] py-1 shadow-xl animate-in fade-in zoom-in-95"
+                                      className="absolute right-0 top-8 z-50 w-52 rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#171717] py-1 shadow-xl animate-in fade-in zoom-in-95"
                                     >
                                       <Link
                                         href={`/dashboard/sequences/${seq.id}`}
@@ -1668,11 +1668,11 @@ export default function SequencesPage() {
                   </div>
                 ) : (
                   /* TABLE VIEW - Resend / Loops Minimalist Rows */
-                  <div className="overflow-hidden rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#131316] shadow-md dark:shadow-none backdrop-blur-sm">
+                  <div className="overflow-hidden rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#171717] shadow-md dark:shadow-none backdrop-blur-sm">
                     <div className="overflow-x-auto">
                       <table className="w-full text-left border-collapse">
                         <thead>
-                          <tr className="border-b border-[#0066B2]/10 dark:border-white/[0.06] bg-[#F8FBFF] dark:bg-[#161619] text-[10.5px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">
+                          <tr className="border-b border-[#0066B2]/10 dark:border-white/[0.06] bg-[#F8FBFF] dark:bg-[#151515] text-[10.5px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">
                             <th className="py-3 pl-5 pr-3">
                               <div className="flex items-center">
                                 <AnimatePresence initial={false}>
@@ -1871,7 +1871,7 @@ export default function SequencesPage() {
           ) : (
         /* Empty State for Search or 0 Sequences */
             sequences.length > 0 ? (
-              <div className="rounded-2xl border border-dashed border-zinc-300 dark:border-white/10 bg-white/50 dark:bg-[#18181B]/50 p-5 sm:p-8 text-center">
+              <div className="rounded-2xl border border-dashed border-zinc-300 dark:border-white/10 bg-white/50 dark:bg-[#171717]/50 p-5 sm:p-8 text-center">
                 <Search className="mx-auto h-6 w-6 sm:h-7 sm:w-7 text-zinc-400" />
                 <h3 className="mt-2 text-sm font-bold text-zinc-900 dark:text-white">
                   No matching sequences found
@@ -1892,7 +1892,7 @@ export default function SequencesPage() {
             ) : (
               /* Global Empty State */
               <>
-                <div className="mt-2 rounded-2xl border border-zinc-200/80 dark:border-white/10 bg-white dark:bg-[#141417] dark:border-white/[0.08] p-5 sm:p-10 text-center shadow-2xs dark:shadow-none">
+                <div className="mt-2 rounded-2xl border border-zinc-200/80 dark:border-white/10 bg-white dark:bg-[#171717] dark:border-white/[0.08] p-5 sm:p-10 text-center shadow-2xs dark:shadow-none">
                   <div className="mx-auto flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center rounded-2xl bg-[#0066B2]/10 dark:bg-[#0066B2]/20 text-[#0066B2] dark:text-[#38BDF8] mb-3 sm:mb-4 border border-[#0066B2]/20">
                     <MailOpen className="h-6 w-6 sm:h-7 sm:w-7" />
                   </div>
@@ -1926,7 +1926,7 @@ export default function SequencesPage() {
                 {/* Feature Highlights Grid (Clean cards with pure hover 'i' Info tooltips) */}
                 <div className="mt-3 sm:mt-4 grid gap-2.5 sm:gap-3.5 sm:grid-cols-3">
                   {/* Card 1: Instant Trigger */}
-                  <div className="relative flex items-center justify-between rounded-2xl border border-zinc-200/80 dark:border-white/10 bg-white dark:bg-[#141417] dark:border-white/[0.08] p-4 shadow-2xs dark:shadow-none">
+                  <div className="relative flex items-center justify-between rounded-2xl border border-zinc-200/80 dark:border-white/10 bg-white dark:bg-[#171717] dark:border-white/[0.08] p-4 shadow-2xs dark:shadow-none">
                     <div className="flex items-center gap-3 min-w-0">
                       <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#EFF6FF] text-[#0066B2] dark:bg-[#0066B2]/20 dark:text-[#38BDF8]">
                         <MailOpen className="h-4.5 w-4.5" />
@@ -1951,7 +1951,7 @@ export default function SequencesPage() {
                   </div>
 
                   {/* Card 2: Custom Delays */}
-                  <div className="relative flex items-center justify-between rounded-2xl border border-zinc-200/80 dark:border-white/10 bg-white dark:bg-[#141417] dark:border-white/[0.08] p-4 shadow-2xs dark:shadow-none">
+                  <div className="relative flex items-center justify-between rounded-2xl border border-zinc-200/80 dark:border-white/10 bg-white dark:bg-[#171717] dark:border-white/[0.08] p-4 shadow-2xs dark:shadow-none">
                     <div className="flex items-center gap-3 min-w-0">
                       <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#EFF6FF] text-[#0066B2] dark:bg-[#0066B2]/20 dark:text-[#38BDF8]">
                         <Pause className="h-4.5 w-4.5" />
@@ -1976,7 +1976,7 @@ export default function SequencesPage() {
                   </div>
 
                   {/* Card 3: Smart Sequence Stop */}
-                  <div className="relative flex items-center justify-between rounded-2xl border border-zinc-200/80 dark:border-white/10 bg-white dark:bg-[#141417] dark:border-white/[0.08] p-4 shadow-2xs dark:shadow-none">
+                  <div className="relative flex items-center justify-between rounded-2xl border border-zinc-200/80 dark:border-white/10 bg-white dark:bg-[#171717] dark:border-white/[0.08] p-4 shadow-2xs dark:shadow-none">
                     <div className="flex items-center gap-3 min-w-0">
                       <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#EFF6FF] text-[#0066B2] dark:bg-[#0066B2]/20 dark:text-[#38BDF8]">
                         <StopCircle className="h-4.5 w-4.5" />
@@ -2041,7 +2041,7 @@ export default function SequencesPage() {
               animate={{ y: 0 }}
               exit={{ y: "100%" }}
               transition={{ type: "spring", damping: 30, stiffness: 320 }}
-              className="relative z-10 w-full max-h-[88vh] overflow-y-auto rounded-t-[28px] border-t border-zinc-200 dark:border-white/10 bg-white/95 dark:bg-[#141417]/95 backdrop-blur-xl p-5 text-zinc-900 dark:text-white shadow-2xl space-y-4 pb-8"
+              className="relative z-10 w-full max-h-[88vh] overflow-y-auto rounded-t-[28px] border-t border-zinc-200 dark:border-white/10 bg-white/95 dark:bg-[#171717]/95 backdrop-blur-xl p-5 text-zinc-900 dark:text-white shadow-2xl space-y-4 pb-8"
               onClick={(e) => e.stopPropagation()}
             >
               {/* Grab Handle */}
@@ -2066,7 +2066,7 @@ export default function SequencesPage() {
                     setSelectedPageId("");
                     setIsDropdownOpen(false);
                   }}
-                  className="rounded-lg p-1.5 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-900 dark:hover:bg-[#25252b] dark:hover:text-white transition-colors cursor-pointer"
+                  className="rounded-lg p-1.5 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-900 dark:hover:bg-white/10 dark:hover:text-white transition-colors cursor-pointer"
                 >
                   <X className="h-4 w-4" />
                 </button>
@@ -2086,7 +2086,7 @@ export default function SequencesPage() {
                     placeholder="e.g. VIP Welcome Sequence"
                     maxLength={80}
                     required
-                    className="w-full rounded-xl border border-zinc-200 bg-white p-3 text-xs text-zinc-900 placeholder-zinc-400 focus:border-[#0066B2] focus:outline-none dark:border-[#2e2e38] dark:bg-[#202026] dark:text-white dark:placeholder-zinc-500 shadow-xs font-medium"
+                    className="w-full rounded-xl border border-zinc-200 bg-white p-3 text-xs text-zinc-900 placeholder-zinc-400 focus:border-[#0066B2] focus:outline-none dark:border-white/10 dark:bg-[#121212] dark:text-white dark:placeholder-zinc-500 shadow-xs font-medium"
                   />
                 </div>
 
@@ -2102,8 +2102,8 @@ export default function SequencesPage() {
                     onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                     className={`w-full flex items-center justify-between gap-2.5 rounded-xl border p-2.5 text-left transition shadow-xs cursor-pointer ${
                       isDropdownOpen
-                        ? "border-[#0066B2] ring-2 ring-[#0066B2]/20 bg-white dark:bg-[#202026]"
-                        : "border-zinc-200 bg-white hover:border-zinc-300 dark:border-[#2e2e38] dark:bg-[#202026]"
+                        ? "border-[#0066B2] ring-2 ring-[#0066B2]/20 bg-white dark:bg-[#121212]"
+                        : "border-zinc-200 bg-white hover:border-zinc-300 dark:border-white/10 dark:bg-[#121212]"
                     }`}
                   >
                     {selectedPage ? (
@@ -2152,7 +2152,7 @@ export default function SequencesPage() {
 
                   {/* Dropdown Options */}
                   {isDropdownOpen && (
-                    <div className="absolute left-0 right-0 z-50 mt-1.5 rounded-2xl border border-zinc-200 bg-white/95 p-2 shadow-2xl backdrop-blur-xl dark:border-[#2e2e38] dark:bg-[#18181B]/95 flex flex-col max-h-56">
+                    <div className="absolute left-0 right-0 z-50 mt-1.5 rounded-2xl border border-zinc-200 bg-white/95 p-2 shadow-2xl backdrop-blur-xl dark:border-white/10 dark:bg-[#171717]/95 flex flex-col max-h-56">
                       {validPages.length > 3 && (
                         <div className="relative px-1 pt-1 pb-2 border-b border-zinc-100 dark:border-[#2e2e38] shrink-0">
                           <Search className="absolute left-3 top-3 h-3 w-3 text-zinc-400" />
@@ -2161,7 +2161,7 @@ export default function SequencesPage() {
                             value={magnetSearchQuery}
                             onChange={(e) => setMagnetSearchQuery(e.target.value)}
                             placeholder="Search magnets..."
-                            className="w-full rounded-lg border border-zinc-200 bg-zinc-50/70 pl-7 pr-3 py-1 text-xs text-zinc-900 placeholder-zinc-400 focus:border-[#0066B2] focus:outline-none dark:border-[#2e2e38] dark:bg-[#202026] dark:text-white dark:placeholder-zinc-500"
+                            className="w-full rounded-lg border border-zinc-200 bg-zinc-50/70 pl-7 pr-3 py-1 text-xs text-zinc-900 placeholder-zinc-400 focus:border-[#0066B2] focus:outline-none dark:border-white/10 dark:bg-[#121212] dark:text-white dark:placeholder-zinc-500"
                             onClick={(e) => e.stopPropagation()}
                           />
                         </div>
@@ -2290,7 +2290,7 @@ export default function SequencesPage() {
                     placeholder="e.g. Here is your free guide download →"
                     maxLength={120}
                     required
-                    className="w-full rounded-xl border border-zinc-200 bg-white p-3 text-xs text-zinc-900 placeholder-zinc-400 focus:border-[#0066B2] focus:outline-none dark:border-[#2e2e38] dark:bg-[#202026] dark:text-white dark:placeholder-zinc-500 shadow-xs font-medium"
+                    className="w-full rounded-xl border border-zinc-200 bg-white p-3 text-xs text-zinc-900 placeholder-zinc-400 focus:border-[#0066B2] focus:outline-none dark:border-white/10 dark:bg-[#121212] dark:text-white dark:placeholder-zinc-500 shadow-xs font-medium"
                   />
                 </div>
 
@@ -2301,14 +2301,14 @@ export default function SequencesPage() {
                     <span>Automated Email Steps</span>
                   </div>
                   <div className="space-y-1.5 text-xs">
-                    <div className="flex items-center gap-2 bg-white dark:bg-[#18181B] p-2 rounded-lg border border-zinc-200/80 dark:border-white/5">
+                    <div className="flex items-center gap-2 bg-white dark:bg-white/[0.03] p-2 rounded-lg border border-zinc-200/80 dark:border-white/5">
                       <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#0066B2] text-[9px] font-bold text-white shrink-0">1</span>
                       <span className="flex-1 text-[11px] font-semibold text-zinc-800 dark:text-zinc-200 truncate">
                         {newSeqSubject || "Resource Delivery Email"}
                       </span>
                       <span className="px-1.5 py-0.5 rounded-full text-[9px] font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 shrink-0">Instantly</span>
                     </div>
-                    <div className="flex items-center gap-2 bg-white dark:bg-[#18181B] p-2 rounded-lg border border-zinc-200/80 dark:border-white/5">
+                    <div className="flex items-center gap-2 bg-white dark:bg-white/[0.03] p-2 rounded-lg border border-zinc-200/80 dark:border-white/5">
                       <span className="flex h-5 w-5 items-center justify-center rounded-full bg-zinc-600 text-[9px] font-bold text-white shrink-0">2</span>
                       <span className="flex-1 text-[11px] font-semibold text-zinc-800 dark:text-zinc-200 truncate">
                         Follow-up: Did you get a chance to check it out?
@@ -2330,7 +2330,7 @@ export default function SequencesPage() {
                       setSelectedPageId("");
                       setIsDropdownOpen(false);
                     }}
-                    className="flex-1 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-[#25252A] px-4 py-2.5 text-xs font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-all cursor-pointer text-center"
+                    className="flex-1 rounded-xl border border-zinc-200 dark:border-white/10 bg-zinc-100 dark:bg-white/5 px-4 py-2.5 text-xs font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-all cursor-pointer text-center"
                   >
                     Cancel
                   </button>
@@ -2384,7 +2384,7 @@ export default function SequencesPage() {
                   ? { type: "spring", stiffness: 450, damping: 32, mass: 0.4 }
                   : { type: "spring", stiffness: 650, damping: 36, mass: 0.3 }
               }
-              className="relative z-10 w-full sm:max-w-[440px] max-h-[85vh] overflow-y-auto rounded-t-[28px] sm:rounded-3xl border-t sm:border border-zinc-200 dark:border-white/10 bg-white/95 dark:bg-[#141417]/95 backdrop-blur-xl p-5 sm:p-6 text-zinc-900 dark:text-white shadow-2xl space-y-4 transform-gpu will-change-transform"
+              className="relative z-10 w-full sm:max-w-[440px] max-h-[85vh] overflow-y-auto rounded-t-[28px] sm:rounded-3xl border-t sm:border border-zinc-200 dark:border-white/10 bg-white/95 dark:bg-[#171717]/95 backdrop-blur-xl p-5 sm:p-6 text-zinc-900 dark:text-white shadow-2xl space-y-4 transform-gpu will-change-transform"
               onClick={(e) => e.stopPropagation()}
             >
               {/* Grab Handle */}
@@ -2419,7 +2419,7 @@ export default function SequencesPage() {
                 <button
                   type="button"
                   onClick={() => setSeqToDelete(null)}
-                  className="flex-1 sm:flex-none rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-[#25252A] px-4 py-2.5 text-xs font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white transition-all cursor-pointer text-center"
+                  className="flex-1 sm:flex-none rounded-xl border border-zinc-200 dark:border-white/10 bg-zinc-100 dark:bg-white/5 px-4 py-2.5 text-xs font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white transition-all cursor-pointer text-center"
                 >
                   Cancel
                 </button>
@@ -2463,7 +2463,7 @@ export default function SequencesPage() {
               animate={{ y: 0 }}
               exit={{ y: "100%" }}
               transition={{ type: "spring", damping: 30, stiffness: 320 }}
-              className="relative z-10 w-full max-h-[85vh] overflow-y-auto rounded-t-[28px] border-t border-zinc-200 dark:border-white/10 bg-white/95 dark:bg-[#141417]/95 backdrop-blur-xl p-5 text-zinc-900 dark:text-white shadow-2xl space-y-3.5 pb-6"
+              className="relative z-10 w-full max-h-[85vh] overflow-y-auto rounded-t-[28px] border-t border-zinc-200 dark:border-white/10 bg-white/95 dark:bg-[#171717]/95 backdrop-blur-xl p-5 text-zinc-900 dark:text-white shadow-2xl space-y-3.5 pb-6"
               onClick={(e) => e.stopPropagation()}
             >
               {/* Grab Handle */}
@@ -2590,7 +2590,7 @@ export default function SequencesPage() {
               animate={{ opacity: 1, y: 0, x: "-50%" }}
               exit={{ opacity: 0, y: 40, x: "-50%" }}
               transition={{ type: "spring", stiffness: 450, damping: 30 }}
-              className="fixed bottom-6 left-1/2 z-[100] flex items-center gap-2 sm:gap-3 rounded-2xl bg-white/90 dark:bg-[#16161a]/95 border border-zinc-200/90 dark:border-white/[0.08] text-zinc-900 dark:text-white px-3 sm:px-5 py-2.5 shadow-[0_16px_40px_rgba(0,0,0,0.2)] dark:shadow-[0_16px_40px_rgba(0,0,0,0.6)] backdrop-blur-xl ring-1 ring-black/5 dark:ring-white/10 max-w-[calc(100vw-24px)] overflow-x-auto scrollbar-none"
+              className="fixed bottom-6 left-1/2 z-[100] flex items-center gap-2 sm:gap-3 rounded-2xl bg-white/90 dark:bg-[#171717]/95 border border-zinc-200/90 dark:border-white/10 text-zinc-900 dark:text-white px-3 sm:px-5 py-2.5 shadow-[0_16px_40px_rgba(0,0,0,0.2)] dark:shadow-[0_16px_40px_rgba(0,0,0,0.6)] backdrop-blur-xl ring-1 ring-black/5 dark:ring-white/10 max-w-[calc(100vw-24px)] overflow-x-auto scrollbar-none"
             >
               <span className="text-xs font-bold whitespace-nowrap text-zinc-900 dark:text-white">
                 <span className="text-[#0066B2] dark:text-[#38BDF8] font-black">{checkedIds.length}</span> selected
@@ -2688,7 +2688,7 @@ export default function SequencesPage() {
                   ? { type: "spring", stiffness: 450, damping: 32, mass: 0.4 }
                   : { type: "spring", stiffness: 650, damping: 36, mass: 0.3 }
               }
-              className="relative z-10 w-full sm:max-w-[440px] max-h-[85vh] overflow-y-auto rounded-t-[28px] sm:rounded-3xl border-t sm:border border-zinc-200 dark:border-white/10 bg-white/95 dark:bg-[#141417]/95 backdrop-blur-xl p-5 sm:p-6 text-zinc-900 dark:text-white shadow-2xl space-y-4 transform-gpu will-change-transform"
+              className="relative z-10 w-full sm:max-w-[440px] max-h-[85vh] overflow-y-auto rounded-t-[28px] sm:rounded-3xl border-t sm:border border-zinc-200 dark:border-white/10 bg-white/95 dark:bg-[#171717]/95 backdrop-blur-xl p-5 sm:p-6 text-zinc-900 dark:text-white shadow-2xl space-y-4 transform-gpu will-change-transform"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="w-10 h-1.5 rounded-full bg-zinc-300 dark:bg-zinc-700/80 mx-auto -mt-1 mb-2.5 cursor-grab active:scale-95 transition-transform sm:hidden" />
@@ -2729,7 +2729,7 @@ export default function SequencesPage() {
                   type="button"
                   disabled={isBulkDeleting}
                   onClick={() => setShowBulkDeleteModal(false)}
-                  className="flex-1 sm:flex-none rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-[#25252A] px-4 py-2.5 text-xs font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white transition-all cursor-pointer text-center"
+                  className="flex-1 sm:flex-none rounded-xl border border-zinc-200 dark:border-white/10 bg-zinc-100 dark:bg-white/5 px-4 py-2.5 text-xs font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white transition-all cursor-pointer text-center"
                 >
                   Cancel
                 </button>

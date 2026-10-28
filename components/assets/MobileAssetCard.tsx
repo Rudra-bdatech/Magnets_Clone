@@ -96,7 +96,7 @@ export const MobileAssetCard = memo(function MobileAssetCard({
       className={`group relative rounded-2xl border p-3.5 transition-all duration-200 cursor-pointer select-none overflow-hidden ${
         isSelected
           ? "border-[#0066B2] bg-[#EFF6FF] dark:border-[#38BDF8] dark:bg-[#0066B2]/15 shadow-sm"
-          : "border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#141417] shadow-sm"
+          : "border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#171717] shadow-sm dark:shadow-none"
       }`}
     >
       {/* Background Watermark Icon */}
@@ -160,7 +160,7 @@ export const MobileAssetCard = memo(function MobileAssetCard({
                   }}
                   autoFocus
                   disabled={isSavingName}
-                  className="w-full rounded-lg border border-[#0066B2] bg-white px-2 py-1 text-xs font-semibold text-zinc-900 focus:outline-none dark:border-[#38BDF8] dark:bg-[#202026] dark:text-white"
+                  className="w-full rounded-lg border border-[#0066B2] bg-white px-2 py-1 text-xs font-semibold text-zinc-900 focus:outline-none dark:border-white/20 dark:bg-[#121212] dark:text-white"
                 />
                 <button
                   type="button"
@@ -179,7 +179,7 @@ export const MobileAssetCard = memo(function MobileAssetCard({
                   type="button"
                   onClick={onCancelRename}
                   disabled={isSavingName}
-                  className="rounded-lg border border-zinc-200 bg-white p-1.5 text-zinc-500 hover:bg-zinc-100 dark:border-zinc-700 dark:bg-[#202026] dark:text-zinc-400 transition cursor-pointer shrink-0"
+                  className="rounded-lg border border-zinc-200 bg-white p-1.5 text-zinc-500 hover:bg-zinc-100 dark:border-white/10 dark:bg-white/5 dark:text-zinc-400 transition cursor-pointer shrink-0"
                   title="Cancel"
                 >
                   <X className="h-3 w-3" />
@@ -207,7 +207,7 @@ export const MobileAssetCard = memo(function MobileAssetCard({
                   </button>
                 </div>
 
-                <div className="flex items-center gap-2 mt-0.5 text-[11px] text-zinc-500 dark:text-[#9B9085]">
+                <div className="flex items-center gap-2 mt-0.5 text-[11px] text-zinc-500 dark:text-zinc-400">
                   <span className="font-semibold text-zinc-700 dark:text-zinc-300">
                     {formattedSize}
                   </span>
@@ -275,7 +275,7 @@ export const MobileAssetCard = memo(function MobileAssetCard({
             target="_blank"
             rel="noopener noreferrer"
             title="Download / Open file"
-            className="inline-flex items-center gap-1 rounded-xl border border-zinc-200/90 bg-white px-2.5 py-1.5 text-xs font-semibold text-zinc-700 hover:bg-zinc-50 dark:border-[#2e2e38] dark:bg-[#202026] dark:text-zinc-200 transition shadow-2xs"
+            className="inline-flex items-center gap-1 rounded-xl border border-zinc-200/90 bg-white px-2.5 py-1.5 text-xs font-semibold text-zinc-700 hover:bg-zinc-50 dark:border-white/10 dark:bg-white/5 dark:text-zinc-200 dark:hover:bg-white/10 transition shadow-2xs"
           >
             <Download className="h-3.5 w-3.5 text-zinc-500 dark:text-zinc-400" />
             <span>Test</span>

@@ -738,7 +738,7 @@ export default function ResourcesPage() {
       onDrop={handleDrop}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
-      className="relative flex flex-col min-h-[calc(100vh-3.5rem)] bg-gradient-to-b from-[#EFF6FF]/40 via-[#F8FBFF] to-[#F8FBFF] dark:bg-none dark:bg-[#09090B]"
+      className="relative flex flex-col min-h-[calc(100vh-3.5rem)] bg-gradient-to-b from-[#EFF6FF]/40 via-[#F8FBFF] to-[#F8FBFF] dark:bg-none dark:bg-[#0a0a0a]"
     >
 
       {/* Global Drag Overlay when dragging files anywhere onto the page */}
@@ -843,7 +843,7 @@ export default function ResourcesPage() {
         {/* ========================================================================= */}
         <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
           {/* Total Resources */}
-          <div className="relative h-full rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#141417] dark:shadow-none p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
+          <div className="relative h-full rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#171717] dark:shadow-none p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
             <div className="flex items-center justify-between sm:justify-start w-full sm:w-auto">
               <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl border border-indigo-500/30 bg-indigo-50 text-indigo-600 dark:border-white/10 dark:bg-white/5 dark:text-zinc-200">
                 <Layers className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
@@ -861,7 +861,7 @@ export default function ResourcesPage() {
           </div>
 
           {/* Storage Used */}
-          <div className="relative h-full rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#141417] dark:shadow-none p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
+          <div className="relative h-full rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#171717] dark:shadow-none p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
             <div className="flex items-center justify-between sm:justify-start w-full sm:w-auto">
               <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl border border-[#0066B2]/30 bg-[#EFF6FF] text-[#0066B2] dark:border-white/10 dark:bg-white/5 dark:text-zinc-200">
                 <HardDrive className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
@@ -879,7 +879,7 @@ export default function ResourcesPage() {
           </div>
 
           {/* Active in Magnets */}
-          <div className="relative h-full rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#141417] dark:shadow-none p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
+          <div className="relative h-full rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#171717] dark:shadow-none p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
             <div className="flex items-center justify-between sm:justify-start w-full sm:w-auto">
               <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl border border-sky-500/30 bg-sky-50 text-sky-600 dark:border-white/10 dark:bg-white/5 dark:text-zinc-200">
                 <Link2 className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
@@ -897,7 +897,7 @@ export default function ResourcesPage() {
           </div>
 
           {/* Total Deliveries */}
-          <div className="relative h-full rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#141417] dark:shadow-none p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
+          <div className="relative h-full rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#171717] dark:shadow-none p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
             <div className="flex items-center justify-between sm:justify-start w-full sm:w-auto">
               <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl border border-emerald-500/30 bg-emerald-50 text-emerald-600 dark:border-emerald-500/30 dark:bg-emerald-500/20 dark:text-emerald-400">
                 <Send className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
@@ -917,7 +917,7 @@ export default function ResourcesPage() {
 
         {/* Option 1: SMART EMPTY STATE DROPZONE (Only rendered when user has NO files) */}
         {resources.length === 0 && (
-          <div className="relative rounded-2xl border-2 border-dashed border-[#0066B2]/40 bg-white/90 p-12 text-center backdrop-blur-sm hover:border-[#0066B2] dark:border-[#0066B2]/40 dark:bg-[#18181B]/90 shadow-sm transition-all">
+          <div className="relative rounded-2xl border-2 border-dashed border-[#0066B2]/40 bg-white/90 p-12 text-center backdrop-blur-sm hover:border-[#0066B2] dark:border-[#0066B2]/40 dark:bg-[#171717]/90 shadow-sm transition-all">
             <input
               type="file"
               multiple
@@ -951,7 +951,7 @@ export default function ResourcesPage() {
             {/* ===================================================================== */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3 w-full max-w-full min-w-0">
               {/* Search Bar */}
-              <div className="flex items-center gap-2 flex-1 rounded-xl bg-zinc-50 dark:bg-[#16161a] px-3.5 py-2 border border-zinc-200/60 dark:border-white/[0.08] focus-within:border-[#0066B2] dark:focus-within:border-white/20 min-w-0">
+              <div className="flex items-center gap-2 flex-1 rounded-xl bg-zinc-50 dark:bg-[#1a1a1a] px-3.5 py-2 border border-zinc-200/60 dark:border-white/[0.08] focus-within:border-[#0066B2] dark:focus-within:border-white/20 min-w-0">
                 <Search className="h-4 w-4 text-zinc-400 shrink-0" />
                 <input
                   type="text"
@@ -973,7 +973,7 @@ export default function ResourcesPage() {
 
               <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 justify-between sm:justify-end w-full sm:w-auto min-w-0">
                 {/* Desktop Category Tabs Pod */}
-                <div className="hidden sm:flex items-center p-1 bg-zinc-100 dark:bg-[#16161a] rounded-xl text-xs font-semibold min-w-0">
+                <div className="hidden sm:flex items-center p-1 bg-zinc-100 dark:bg-[#1a1a1a] rounded-xl text-xs font-semibold min-w-0">
                   {[
                     { id: "all", label: `All (${categoryCounts.all})` },
                     { id: "docs", label: `Docs (${categoryCounts.docs})` },
@@ -993,7 +993,7 @@ export default function ResourcesPage() {
                       {activeCategory === tab.id && (
                         <motion.div
                           layoutId="activeAssetCategoryTab"
-                          className="absolute inset-0 bg-white dark:bg-[#222226] rounded-lg shadow-xs"
+                          className="absolute inset-0 bg-white dark:bg-white/10 rounded-lg shadow-xs"
                           transition={{ type: "spring", stiffness: 500, damping: 32 }}
                         />
                       )}
@@ -1011,7 +1011,7 @@ export default function ResourcesPage() {
                       setIsSortOpen(false);
                       setIsMobileFilterOpen((v) => !v);
                     }}
-                    className="flex h-8 items-center gap-1.5 rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#18181B] px-2.5 text-[11px] font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-[#222226] transition shadow-2xs cursor-pointer select-none"
+                    className="flex h-8 items-center gap-1.5 rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#171717] px-2.5 text-[11px] font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-[#222222] transition shadow-2xs cursor-pointer select-none"
                   >
                     <Filter className="h-3 w-3 text-zinc-400 shrink-0" />
                     <span className="truncate">
@@ -1039,7 +1039,7 @@ export default function ResourcesPage() {
                         exit={{ opacity: 0, scale: 0.96, y: -4 }}
                         transition={{ type: "spring", damping: 28, stiffness: 400 }}
                         onClick={(e) => e.stopPropagation()}
-                        className="absolute left-0 top-full z-40 mt-1.5 w-48 rounded-xl border border-zinc-200/90 dark:border-white/10 bg-white/95 dark:bg-[#16161a]/95 p-1.5 shadow-xl backdrop-blur-xl dark:text-white"
+                        className="absolute left-0 top-full z-40 mt-1.5 w-48 rounded-xl border border-zinc-200/90 dark:border-white/10 bg-white/95 dark:bg-[#1a1a1a]/95 p-1.5 shadow-xl backdrop-blur-xl dark:text-white"
                       >
                         <div className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
                           Filter Category
@@ -1087,7 +1087,7 @@ export default function ResourcesPage() {
                       setIsMobileFilterOpen(false);
                       setIsSortOpen((v) => !v);
                     }}
-                    className="flex h-8 items-center gap-1 sm:gap-2 rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#18181B] px-2 sm:px-3 text-[11px] sm:text-xs font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-[#222226] transition shadow-2xs cursor-pointer select-none"
+                    className="flex h-8 items-center gap-1 sm:gap-2 rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#171717] px-2 sm:px-3 text-[11px] sm:text-xs font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-[#222222] transition shadow-2xs cursor-pointer select-none"
                   >
                     <SlidersHorizontal className="h-3 w-3 text-zinc-400 shrink-0" />
                     <span className="truncate max-w-[76px] sm:max-w-none">
@@ -1113,7 +1113,7 @@ export default function ResourcesPage() {
                         exit={{ opacity: 0, scale: 0.96, y: -4 }}
                         transition={{ type: "spring", damping: 28, stiffness: 400 }}
                         onClick={(e) => e.stopPropagation()}
-                        className="absolute right-0 top-full z-40 mt-1.5 w-48 rounded-xl border border-zinc-200/90 dark:border-white/10 bg-white/95 dark:bg-[#16161a]/95 p-1.5 shadow-xl backdrop-blur-xl dark:text-white"
+                        className="absolute right-0 top-full z-40 mt-1.5 w-48 rounded-xl border border-zinc-200/90 dark:border-white/10 bg-white/95 dark:bg-[#1a1a1a]/95 p-1.5 shadow-xl backdrop-blur-xl dark:text-white"
                       >
                         <div className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
                           Sort by
@@ -1149,7 +1149,7 @@ export default function ResourcesPage() {
                 </div>
 
                 {/* Select Mode Toggle Pod with CheckSquare icon */}
-                <div className="flex items-center p-1 bg-zinc-100 dark:bg-[#16161a] rounded-xl shrink-0">
+                <div className="flex items-center p-1 bg-zinc-100 dark:bg-[#1a1a1a] rounded-xl shrink-0">
                   <button
                     type="button"
                     onClick={() => {
@@ -1160,7 +1160,7 @@ export default function ResourcesPage() {
                       });
                     }}
                     className={`relative p-1.5 rounded-lg transition-colors duration-150 cursor-pointer ${isMobileSelectionMode || selectedResourceIds.length > 0
-                        ? "bg-white dark:bg-[#222226] text-[#0066B2] dark:text-[#38BDF8] shadow-xs"
+                        ? "bg-white dark:bg-white/10 text-[#0066B2] dark:text-[#38BDF8] shadow-xs"
                         : "text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200"
                       }`}
                     title={isMobileSelectionMode || selectedResourceIds.length > 0 ? "Exit Select Mode" : "Select Files"}
@@ -1174,7 +1174,7 @@ export default function ResourcesPage() {
             {/* ========================================================================= */}
             {/* 4. Table & Cards Data Container (Standalone Separated Card)               */}
             {/* ========================================================================= */}
-            <div className="rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#131316] shadow-md dark:shadow-none backdrop-blur-sm relative overflow-hidden">
+            <div className="rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#171717] shadow-md dark:shadow-none backdrop-blur-sm relative overflow-hidden">
               {/* Mobile Select All Strip when in selection mode */}
               <AnimatePresence>
                 {isMobileSelectionMode && (
@@ -1219,7 +1219,7 @@ export default function ResourcesPage() {
                     <p className="mt-3 text-sm font-semibold text-zinc-900 dark:text-white">
                       No matching resources found
                     </p>
-                    <p className="mt-1 text-xs text-zinc-500 dark:text-[#9B9085]">
+                    <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
                       Try clearing your search term or changing category filters.
                     </p>
                   </div>
@@ -1230,9 +1230,9 @@ export default function ResourcesPage() {
                     {/* ========================================================================= */}
                     <div className="hidden md:block overflow-x-auto">
                       <table className="min-w-full divide-y divide-zinc-200/60 dark:divide-white/[0.05]">
-                        <thead className="bg-zinc-50/70 dark:bg-[#161619] border-b border-zinc-200/80 dark:border-white/[0.06]">
+                        <thead className="bg-zinc-50/70 dark:bg-[#151515] border-b border-zinc-200/80 dark:border-white/[0.06]">
                           <tr>
-                            <th className="px-6 py-3.5 text-left text-[11px] font-semibold tracking-wider text-zinc-500 dark:text-[#9B9085] uppercase">
+                            <th className="px-6 py-3.5 text-left text-[11px] font-semibold tracking-wider text-zinc-500 dark:text-zinc-400 uppercase">
                               <div className="flex items-center">
                                 <AnimatePresence initial={false}>
                                   {(isMobileSelectionMode || selectedResourceIds.length > 0) && (
@@ -1265,12 +1265,12 @@ export default function ResourcesPage() {
                                 <span>Resource Name</span>
                               </div>
                             </th>
-                            <th className="px-6 py-3.5 text-left text-[11px] font-semibold tracking-wider text-zinc-500 dark:text-[#9B9085] uppercase">Size</th>
-                            <th className="px-6 py-3.5 text-left text-[11px] font-semibold tracking-wider text-zinc-500 dark:text-[#9B9085] uppercase">Uploaded Date & Time</th>
-                            <th className="px-6 py-3.5 text-right text-[11px] font-semibold tracking-wider text-zinc-500 dark:text-[#9B9085] uppercase">Actions</th>
+                            <th className="px-6 py-3.5 text-left text-[11px] font-semibold tracking-wider text-zinc-500 dark:text-zinc-400 uppercase">Size</th>
+                            <th className="px-6 py-3.5 text-left text-[11px] font-semibold tracking-wider text-zinc-500 dark:text-zinc-400 uppercase">Uploaded Date & Time</th>
+                            <th className="px-6 py-3.5 text-right text-[11px] font-semibold tracking-wider text-zinc-500 dark:text-zinc-400 uppercase">Actions</th>
                           </tr>
                         </thead>
-                        <tbody className="divide-y divide-zinc-200/60 bg-white dark:divide-white/[0.05] dark:bg-[#131316]">
+                        <tbody className="divide-y divide-zinc-200/60 bg-white dark:divide-white/[0.05] dark:bg-[#171717]">
                           {filteredResources.map((resource) => {
                             const badge = getFileBadge(resource.name);
                             const isCopied = copiedId === resource.id;
@@ -1348,7 +1348,7 @@ export default function ResourcesPage() {
                                               }}
                                               autoFocus
                                               disabled={isSavingName}
-                                              className="w-full min-w-[200px] max-w-sm rounded-lg border border-[#0066B2] bg-white px-2.5 py-1 text-xs font-semibold text-zinc-900 focus:outline-none focus:ring-2 focus:ring-[#0066B2]/20 dark:border-[#38BDF8] dark:bg-[#202026] dark:text-white"
+                                              className="w-full min-w-[200px] max-w-sm rounded-lg border border-[#0066B2] bg-white px-2.5 py-1 text-xs font-semibold text-zinc-900 focus:outline-none focus:ring-2 focus:ring-[#0066B2]/20 dark:border-white/20 dark:bg-[#121212] dark:text-white"
                                             />
                                             <button
                                               onClick={() => handleSaveRename(resource)}
@@ -1361,7 +1361,7 @@ export default function ResourcesPage() {
                                             <button
                                               onClick={() => setEditingResourceId(null)}
                                               disabled={isSavingName}
-                                              className="rounded-lg border border-zinc-200 bg-white p-1.5 text-zinc-500 hover:bg-zinc-100 dark:border-zinc-700 dark:bg-[#202026] dark:text-zinc-400 transition cursor-pointer"
+                                              className="rounded-lg border border-zinc-200 bg-white p-1.5 text-zinc-500 hover:bg-zinc-100 dark:border-white/10 dark:bg-white/5 dark:text-zinc-400 transition cursor-pointer"
                                               title="Cancel"
                                             >
                                               <X className="h-3.5 w-3.5" />
@@ -1429,7 +1429,7 @@ export default function ResourcesPage() {
                                       target="_blank"
                                       rel="noopener noreferrer"
                                       title="Test / Download file"
-                                      className="inline-flex h-8 w-8 items-center justify-center rounded-xl border border-zinc-200/90 bg-white dark:border-[#2e2e38] dark:bg-[#202026] text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-[#282830] hover:text-[#0066B2] dark:hover:text-[#38BDF8] transition-all duration-150 cursor-pointer shadow-2xs active:scale-95"
+                                      className="inline-flex h-8 w-8 items-center justify-center rounded-xl border border-zinc-200/90 bg-white dark:border-white/10 dark:bg-white/5 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-white/10 hover:text-[#0066B2] dark:hover:text-[#38BDF8] transition-all duration-150 cursor-pointer shadow-2xs active:scale-95"
                                     >
                                       <Download className="h-4 w-4" />
                                     </a>
@@ -1441,7 +1441,7 @@ export default function ResourcesPage() {
                                       title={isCopied ? "Link copied!" : "Copy shareable link"}
                                       className={`inline-flex h-8 w-8 items-center justify-center rounded-xl border transition-all duration-150 cursor-pointer shadow-2xs active:scale-95 ${isCopied
                                           ? "border-emerald-500/40 bg-emerald-500/15 text-emerald-600 dark:text-emerald-400"
-                                          : "border-zinc-200/90 bg-white dark:border-[#2e2e38] dark:bg-[#202026] text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-[#282830] hover:text-[#0066B2] dark:hover:text-[#38BDF8]"
+                                          : "border-zinc-200/90 bg-white dark:border-white/10 dark:bg-white/5 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-white/10 hover:text-[#0066B2] dark:hover:text-[#38BDF8]"
                                         }`}
                                     >
                                       {isCopied ? <Check className="h-4 w-4 text-emerald-500" /> : <Link2 className="h-4 w-4" />}
@@ -1524,7 +1524,7 @@ export default function ResourcesPage() {
               animate={{ opacity: 1, y: 0, x: "-50%" }}
               exit={{ opacity: 0, y: 40, x: "-50%" }}
               transition={{ type: "spring", stiffness: 450, damping: 30 }}
-              className="fixed bottom-6 left-1/2 z-[100] flex items-center gap-2.5 sm:gap-3 rounded-2xl bg-white/90 dark:bg-[#18181B]/95 border border-zinc-200/90 dark:border-white/10 text-zinc-900 dark:text-white px-3.5 sm:px-5 py-2.5 shadow-[0_16px_40px_rgba(0,0,0,0.2)] dark:shadow-[0_16px_40px_rgba(0,0,0,0.6)] backdrop-blur-xl ring-1 ring-black/5 dark:ring-white/10 max-w-[calc(100vw-24px)] overflow-x-auto scrollbar-none"
+              className="fixed bottom-6 left-1/2 z-[100] flex items-center gap-2.5 sm:gap-3 rounded-2xl bg-white/90 dark:bg-[#171717]/95 border border-zinc-200/90 dark:border-white/10 text-zinc-900 dark:text-white px-3.5 sm:px-5 py-2.5 shadow-[0_16px_40px_rgba(0,0,0,0.2)] dark:shadow-[0_16px_40px_rgba(0,0,0,0.6)] backdrop-blur-xl ring-1 ring-black/5 dark:ring-white/10 max-w-[calc(100vw-24px)] overflow-x-auto scrollbar-none"
             >
               <span className="text-xs font-bold whitespace-nowrap text-zinc-900 dark:text-white">
                 <span className="text-[#0066B2] dark:text-[#38BDF8] font-black">{selectedResourceIds.length}</span> selected
@@ -1591,7 +1591,7 @@ export default function ResourcesPage() {
                   ? { type: "spring", stiffness: 450, damping: 32, mass: 0.4 }
                   : { type: "spring", stiffness: 650, damping: 36, mass: 0.3 }
               }
-              className="w-full sm:max-w-md max-h-[85vh] overflow-y-auto rounded-t-[28px] sm:rounded-3xl bg-white p-5 sm:p-6 dark:bg-[#18181B] shadow-2xl border-t sm:border border-zinc-200 dark:border-white/10 transform-gpu will-change-transform"
+              className="w-full sm:max-w-md max-h-[85vh] overflow-y-auto rounded-t-[28px] sm:rounded-3xl bg-white p-5 sm:p-6 dark:bg-[#171717] dark:shadow-none shadow-2xl border-t sm:border border-zinc-200 dark:border-white/10 transform-gpu will-change-transform"
               onClick={(e) => e.stopPropagation()}
             >
               {/* Mobile Grab Handle */}
@@ -1611,7 +1611,7 @@ export default function ResourcesPage() {
                 <button
                   disabled={isBulkDeleting}
                   onClick={() => setShowBulkDeleteModal(false)}
-                  className="flex-1 sm:flex-none rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-[#25252A] px-4 py-2.5 text-xs font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white transition-all cursor-pointer text-center"
+                  className="flex-1 sm:flex-none rounded-xl border border-zinc-200 dark:border-white/10 bg-zinc-100 dark:bg-white/5 px-4 py-2.5 text-xs font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white transition-all cursor-pointer text-center"
                 >
                   Cancel
                 </button>
@@ -1653,7 +1653,7 @@ export default function ResourcesPage() {
                   ? { type: "spring", stiffness: 450, damping: 32, mass: 0.4 }
                   : { type: "spring", stiffness: 650, damping: 36, mass: 0.3 }
               }
-              className="w-full sm:max-w-md max-h-[85vh] overflow-y-auto rounded-t-[28px] sm:rounded-3xl bg-white p-5 sm:p-6 dark:bg-[#18181B] shadow-2xl border-t sm:border border-zinc-200 dark:border-white/10 transform-gpu will-change-transform"
+              className="w-full sm:max-w-md max-h-[85vh] overflow-y-auto rounded-t-[28px] sm:rounded-3xl bg-white p-5 sm:p-6 dark:bg-[#171717] dark:shadow-none shadow-2xl border-t sm:border border-zinc-200 dark:border-white/10 transform-gpu will-change-transform"
               onClick={(e) => e.stopPropagation()}
             >
               {/* Mobile Grab Handle */}
@@ -1671,7 +1671,7 @@ export default function ResourcesPage() {
                 <button
                   disabled={isDeleting}
                   onClick={() => setResourceToDelete(null)}
-                  className="flex-1 sm:flex-none rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-[#25252A] px-4 py-2.5 text-xs font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white transition-all cursor-pointer text-center"
+                  className="flex-1 sm:flex-none rounded-xl border border-zinc-200 dark:border-white/10 bg-zinc-100 dark:bg-white/5 px-4 py-2.5 text-xs font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white transition-all cursor-pointer text-center"
                 >
                   Cancel
                 </button>

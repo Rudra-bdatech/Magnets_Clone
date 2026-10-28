@@ -200,7 +200,7 @@ export const EmailSenderSection = memo(function EmailSenderSection({
     <div className="space-y-3">
       {/* Section header */}
       <div className="flex items-center justify-between">
-        <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 dark:text-[#9B9085] flex items-center gap-1.5">
+        <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 flex items-center gap-1.5">
           EMAIL SENDER
           <InfoTooltip
             content="Connect your own Gmail or SMTP to send emails from your domain. For security and zero cost, each user sends through their connected account."
@@ -218,11 +218,11 @@ export const EmailSenderSection = memo(function EmailSenderSection({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3 items-stretch">
 
         {/* ─── Gmail OAuth2 Card ─────────────────────────────────────────────── */}
-        <div data-tour="gmail-connect" className="rounded-2xl border border-[#0066B2]/30 bg-white dark:border-[#0066B2]/35 dark:bg-[#121214] overflow-hidden shadow-md flex flex-col justify-between h-full">
+        <div data-tour="gmail-connect" className="rounded-2xl border border-[#0066B2]/30 bg-white dark:border-white/[0.08] dark:bg-[#171717] dark:shadow-none overflow-hidden shadow-md flex flex-col justify-between h-full">
           <div className="p-4 flex flex-col justify-between h-full">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200/90 dark:border-zinc-800 shadow-xs overflow-hidden p-2">
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white dark:bg-[#121212] border border-zinc-200/90 dark:border-white/10 shadow-xs overflow-hidden p-2">
                   <svg className="h-full w-full object-contain" viewBox="0 0 24 24">
                     <path
                       fill="#4285F4"
@@ -319,13 +319,13 @@ export const EmailSenderSection = memo(function EmailSenderSection({
         </div>
 
         {/* ─── Custom SMTP Card ─────────────────────────────────────────────── */}
-        <div className={`rounded-2xl border border-[#0066B2]/30 bg-white dark:border-[#0066B2]/35 dark:bg-[#121214] overflow-hidden shadow-md transition-all duration-300 ease-in-out flex flex-col justify-between ${showSmtp ? "md:col-span-2" : "h-full"}`}>
+        <div className={`rounded-2xl border border-[#0066B2]/30 bg-white dark:border-white/[0.08] dark:bg-[#171717] dark:shadow-none overflow-hidden shadow-md transition-all duration-300 ease-in-out flex flex-col justify-between ${showSmtp ? "md:col-span-2" : "h-full"}`}>
           <div
             onClick={() => setShowSmtp((v) => !v)}
-            className="p-4 flex items-center justify-between hover:bg-[#EFF6FF] dark:hover:bg-[#18181c] transition-colors cursor-pointer"
+            className="p-4 flex items-center justify-between hover:bg-[#EFF6FF] dark:hover:bg-white/[0.04] transition-colors cursor-pointer"
           >
             <div className="flex items-center gap-3">
-              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200/90 dark:border-zinc-800 shadow-xs overflow-hidden p-1.5">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white dark:bg-[#121212] border border-zinc-200/90 dark:border-white/10 shadow-xs overflow-hidden p-1.5">
                 <svg className="h-full w-full object-contain" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <defs>
                     <linearGradient id="smtpGrad1" x1="2" y1="4" x2="22" y2="20" gradientUnits="userSpaceOnUse">
@@ -375,7 +375,7 @@ export const EmailSenderSection = memo(function EmailSenderSection({
               onClick={() => setShowSmtp(true)}
               className="px-4 pb-4 pt-0 mt-auto cursor-pointer"
             >
-              <div className="rounded-xl bg-zinc-50 dark:bg-zinc-900/40 border border-zinc-200/60 dark:border-zinc-800/60 px-3 py-2 flex items-center justify-between text-[11px] text-zinc-500 dark:text-zinc-400 hover:border-[#0066B2]/40 transition-colors">
+              <div className="rounded-xl bg-zinc-50 dark:bg-[#121212] border border-zinc-200/60 dark:border-white/10 px-3 py-2 flex items-center justify-between text-[11px] text-zinc-500 dark:text-zinc-400 hover:border-[#0066B2]/40 transition-colors">
                 <span>{smtpConnected ? "Verified custom SMTP configured" : "Optional alternative: connect custom host & port"}</span>
                 <span className="text-[10px] font-semibold text-[#0066B2] dark:text-[#38BDF8]">Configure →</span>
               </div>
@@ -383,7 +383,7 @@ export const EmailSenderSection = memo(function EmailSenderSection({
           )}
 
           {showSmtp && (
-            <div className="px-4 pb-4 border-t border-zinc-100 dark:border-zinc-800/50 space-y-4 pt-4">
+            <div className="px-4 pb-4 border-t border-zinc-100 dark:border-white/5 space-y-4 pt-4">
               {/* Preset Buttons */}
               <div>
                 <p className="text-[10px] font-semibold text-zinc-500 mb-2 uppercase tracking-wider">Quick Setup</p>
@@ -395,7 +395,7 @@ export const EmailSenderSection = memo(function EmailSenderSection({
                       className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold border transition ${
                         preset === key
                           ? "bg-[#0066B2] text-white border-[#0066B2]"
-                          : "bg-zinc-50 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 border-zinc-200 dark:border-zinc-700 hover:border-[#0066B2]/50"
+                          : "bg-zinc-50 dark:bg-[#121212] text-zinc-600 dark:text-zinc-300 border-zinc-200 dark:border-white/10 hover:border-[#0066B2]/50"
                       }`}
                     >
                       {p.label}
@@ -425,7 +425,7 @@ export const EmailSenderSection = memo(function EmailSenderSection({
                     value={smtpForm.host}
                     onChange={(e) => setSmtpForm((f) => ({ ...f, host: e.target.value }))}
                     placeholder="e.g. smtp.gmail.com"
-                    className="mt-1 w-full rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-xs text-zinc-900 dark:text-white px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#0066B2]/30"
+                    className="mt-1 w-full rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#121212] text-xs text-zinc-900 dark:text-white px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#0066B2]/30"
                   />
                 </div>
                 <div className="flex gap-2">
@@ -435,14 +435,14 @@ export const EmailSenderSection = memo(function EmailSenderSection({
                       type="number"
                       value={smtpForm.port}
                       onChange={(e) => setSmtpForm((f) => ({ ...f, port: Number(e.target.value) }))}
-                      className="mt-1 w-full rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-xs text-zinc-900 dark:text-white px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#0066B2]/30"
+                      className="mt-1 w-full rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#121212] text-xs text-zinc-900 dark:text-white px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#0066B2]/30"
                     />
                   </div>
                   <div className="flex flex-col justify-end pb-0.5">
                     <label className="text-[10px] font-semibold text-zinc-500 uppercase tracking-wider mb-1">SSL</label>
                     <button
                       onClick={() => setSmtpForm((f) => ({ ...f, secure: !f.secure }))}
-                      className={`h-8 w-12 rounded-xl border text-[10px] font-bold transition ${smtpForm.secure ? "bg-[#0066B2] text-white border-[#0066B2]" : "bg-zinc-100 dark:bg-zinc-800 text-zinc-500 border-zinc-200 dark:border-zinc-700"}`}
+                      className={`h-8 w-12 rounded-xl border text-[10px] font-bold transition ${smtpForm.secure ? "bg-[#0066B2] text-white border-[#0066B2]" : "bg-zinc-100 dark:bg-[#121212] text-zinc-500 border-zinc-200 dark:border-white/10"}`}
                     >
                       {smtpForm.secure ? "ON" : "OFF"}
                     </button>
@@ -455,7 +455,7 @@ export const EmailSenderSection = memo(function EmailSenderSection({
                     value={smtpForm.user}
                     onChange={(e) => setSmtpForm((f) => ({ ...f, user: e.target.value }))}
                     placeholder="you@yourdomain.com"
-                    className="mt-1 w-full rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-xs text-zinc-900 dark:text-white px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#0066B2]/30"
+                    className="mt-1 w-full rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#121212] text-xs text-zinc-900 dark:text-white px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#0066B2]/30"
                   />
                 </div>
                 <div>
@@ -466,7 +466,7 @@ export const EmailSenderSection = memo(function EmailSenderSection({
                       value={smtpForm.pass}
                       onChange={(e) => setSmtpForm((f) => ({ ...f, pass: e.target.value }))}
                       placeholder={smtpConnected ? "••••••••••••••••" : "Enter password"}
-                      className="w-full rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-xs text-zinc-900 dark:text-white px-3 py-2 pr-9 focus:outline-none focus:ring-2 focus:ring-[#0066B2]/30"
+                      className="w-full rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#121212] text-xs text-zinc-900 dark:text-white px-3 py-2 pr-9 focus:outline-none focus:ring-2 focus:ring-[#0066B2]/30"
                     />
                     <button
                       type="button"
@@ -484,7 +484,7 @@ export const EmailSenderSection = memo(function EmailSenderSection({
                     value={smtpForm.fromEmail}
                     onChange={(e) => setSmtpForm((f) => ({ ...f, fromEmail: e.target.value }))}
                     placeholder="Same as username"
-                    className="mt-1 w-full rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-xs text-zinc-900 dark:text-white px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#0066B2]/30"
+                    className="mt-1 w-full rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#121212] text-xs text-zinc-900 dark:text-white px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#0066B2]/30"
                   />
                 </div>
                 <div>
@@ -494,7 +494,7 @@ export const EmailSenderSection = memo(function EmailSenderSection({
                     value={smtpForm.fromName}
                     onChange={(e) => setSmtpForm((f) => ({ ...f, fromName: e.target.value }))}
                     placeholder={account?.name || "Your Name"}
-                    className="mt-1 w-full rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-xs text-zinc-900 dark:text-white px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#0066B2]/30"
+                    className="mt-1 w-full rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#121212] text-xs text-zinc-900 dark:text-white px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#0066B2]/30"
                   />
                 </div>
               </div>

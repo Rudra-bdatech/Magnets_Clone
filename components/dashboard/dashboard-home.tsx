@@ -164,7 +164,7 @@ function MagnetStatusBadge({ status }: { status: string }) {
     },
     draft: {
       label: "Draft",
-      cls: "bg-zinc-100 text-zinc-500 dark:bg-zinc-800/80 dark:text-zinc-400 border-zinc-200 dark:border-zinc-700",
+      cls: "bg-zinc-100 text-zinc-500 dark:bg-white/5 dark:text-zinc-400 border-zinc-200 dark:border-white/10",
       dot: "bg-zinc-400",
     },
     paused: {
@@ -219,7 +219,7 @@ function UsageBar({
           {limit >= 100000 ? "∞" : limit.toLocaleString()}
         </span>
       </div>
-      <div className="h-1.5 w-full rounded-full bg-zinc-100 dark:bg-zinc-800 overflow-hidden">
+      <div className="h-1.5 w-full rounded-full bg-zinc-100 dark:bg-white/10 overflow-hidden">
         <motion.div
           initial={{ width: 0 }}
           animate={{ width: `${pct}%` }}
@@ -553,7 +553,7 @@ export default function DashboardHome({
   ];
 
   return (
-    <div className="flex flex-col min-h-[calc(100vh-3.5rem)] bg-gradient-to-b from-[#EFF6FF]/40 via-[#F8FBFF] to-[#F8FBFF] dark:bg-none dark:bg-[#09090B]">
+    <div className="flex flex-col min-h-[calc(100vh-3.5rem)] bg-gradient-to-b from-[#EFF6FF]/40 via-[#F8FBFF] to-[#F8FBFF] dark:bg-none dark:bg-[#0a0a0a]">
       <div className={`flex-1 px-3.5 py-6 sm:px-6 sm:py-7 lg:px-8 mx-auto w-full transition-[max-width] duration-[220ms] ease-[cubic-bezier(0.16,1,0.3,1)] will-change-[max-width] ${isCollapsed ? "max-w-[1440px]" : "max-w-7xl"}`}>
         <motion.div
           variants={container}
@@ -606,7 +606,7 @@ export default function DashboardHome({
                 href={card.href}
                 className="group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0066B2] rounded-2xl h-full flex flex-col"
               >
-                <div className="relative h-full rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#141417] dark:shadow-none p-3.5 sm:p-4 shadow-md backdrop-blur-sm hover:border-[#0066B2]/30 dark:hover:border-white/20 hover:shadow-lg transition-all duration-200 overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
+                <div className="relative h-full rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#171717] dark:shadow-none p-3.5 sm:p-4 shadow-md backdrop-blur-sm hover:border-[#0066B2]/30 dark:hover:border-white/20 hover:shadow-lg transition-all duration-200 overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
                   {/* Top on mobile / Left on desktop: Icon Badge */}
                   <div className="flex items-center justify-between sm:justify-start w-full sm:w-auto">
                     <div
@@ -650,7 +650,7 @@ export default function DashboardHome({
             className="grid grid-cols-1 md:grid-cols-2 gap-4"
           >
             {/* 🌐 LANDING PAGES ENGINE CARD */}
-            <div className="relative rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#141417] dark:shadow-none p-4 sm:p-5 shadow-md backdrop-blur-sm flex flex-col justify-between overflow-hidden group">
+            <div className="relative rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#171717] dark:shadow-none p-4 sm:p-5 shadow-md backdrop-blur-sm flex flex-col justify-between overflow-hidden group">
               <div>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
@@ -678,7 +678,7 @@ export default function DashboardHome({
 
                 {/* Performance stats grid */}
                 <div className="grid grid-cols-3 gap-1.5 sm:gap-2 mt-3 sm:mt-4">
-                  <div className="p-2 sm:p-2.5 rounded-xl bg-[#F8FBFF] dark:bg-white/[0.02] border border-[#0066B2]/10 dark:border-white/[0.06] shadow-xs">
+                  <div className="p-2 sm:p-2.5 rounded-xl bg-[#F8FBFF] dark:bg-[#121212] border border-[#0066B2]/10 dark:border-white/[0.06] shadow-xs">
                     <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-400">
                       Views
                     </span>
@@ -686,7 +686,7 @@ export default function DashboardHome({
                       {landingPageViews.toLocaleString()}
                     </p>
                   </div>
-                  <div className="p-2 sm:p-2.5 rounded-xl bg-[#F8FBFF] dark:bg-white/[0.02] border border-[#0066B2]/10 dark:border-white/[0.06] shadow-xs">
+                  <div className="p-2 sm:p-2.5 rounded-xl bg-[#F8FBFF] dark:bg-[#121212] border border-[#0066B2]/10 dark:border-white/[0.06] shadow-xs">
                     <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-400">
                       Leads
                     </span>
@@ -694,7 +694,7 @@ export default function DashboardHome({
                       {landingPageLeads.toLocaleString()}
                     </p>
                   </div>
-                  <div className="p-2 sm:p-2.5 rounded-xl bg-[#F8FBFF] dark:bg-white/[0.02] border border-[#0066B2]/10 dark:border-white/[0.06] shadow-xs">
+                  <div className="p-2 sm:p-2.5 rounded-xl bg-[#F8FBFF] dark:bg-[#121212] border border-[#0066B2]/10 dark:border-white/[0.06] shadow-xs">
                     <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-400">
                       Conv. Rate
                     </span>
@@ -727,7 +727,7 @@ export default function DashboardHome({
             </div>
 
             {/* 🔒 LOCKED PDF ENGINE CARD */}
-            <div className="relative rounded-2xl border border-amber-500/20 bg-white/90 dark:border-white/[0.08] dark:bg-[#141417] dark:shadow-none p-4 sm:p-5 shadow-md backdrop-blur-sm flex flex-col justify-between overflow-hidden group">
+            <div className="relative rounded-2xl border border-amber-500/20 bg-white/90 dark:border-white/[0.08] dark:bg-[#171717] dark:shadow-none p-4 sm:p-5 shadow-md backdrop-blur-sm flex flex-col justify-between overflow-hidden group">
               <div>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
@@ -755,7 +755,7 @@ export default function DashboardHome({
 
                 {/* Performance stats grid */}
                 <div className="grid grid-cols-3 gap-1.5 sm:gap-2 mt-3 sm:mt-4">
-                  <div className="p-2 sm:p-2.5 rounded-xl bg-amber-50/40 dark:bg-white/[0.02] border border-amber-500/15 dark:border-amber-500/20 shadow-xs">
+                  <div className="p-2 sm:p-2.5 rounded-xl bg-amber-50/40 dark:bg-[#121212] border border-amber-500/15 dark:border-amber-500/20 shadow-xs">
                     <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-400">
                       Views
                     </span>
@@ -763,7 +763,7 @@ export default function DashboardHome({
                       {lockedPdfViews.toLocaleString()}
                     </p>
                   </div>
-                  <div className="p-2 sm:p-2.5 rounded-xl bg-amber-50/40 dark:bg-white/[0.02] border border-amber-500/15 dark:border-amber-500/20 shadow-xs">
+                  <div className="p-2 sm:p-2.5 rounded-xl bg-amber-50/40 dark:bg-[#121212] border border-amber-500/15 dark:border-amber-500/20 shadow-xs">
                     <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-400">
                       Unlocks
                     </span>
@@ -771,7 +771,7 @@ export default function DashboardHome({
                       {lockedPdfLeadsCount.toLocaleString()}
                     </p>
                   </div>
-                  <div className="p-2 sm:p-2.5 rounded-xl bg-amber-50/40 dark:bg-white/[0.02] border border-amber-500/15 dark:border-amber-500/20 shadow-xs">
+                  <div className="p-2 sm:p-2.5 rounded-xl bg-amber-50/40 dark:bg-[#121212] border border-amber-500/15 dark:border-amber-500/20 shadow-xs">
                     <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-400">
                       Unlock Rate
                     </span>
@@ -812,8 +812,8 @@ export default function DashboardHome({
             className="grid grid-cols-1 gap-4 lg:grid-cols-2"
           >
             {/* ── Recent Leads ── */}
-            <div className="rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#131316] shadow-md dark:shadow-none backdrop-blur-sm overflow-hidden">
-              <div className="flex items-center justify-between px-4 py-2.5 border-b border-[#0066B2]/10 dark:border-white/[0.06] dark:bg-[#161619]">
+            <div className="rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#171717] shadow-md dark:shadow-none backdrop-blur-sm overflow-hidden">
+              <div className="flex items-center justify-between px-4 py-2.5 border-b border-[#0066B2]/10 dark:border-white/[0.06] dark:bg-[#151515]">
                 <div className="flex items-center gap-2.5">
                   <div className="flex h-7 w-7 items-center justify-center rounded-lg border border-[#0066B2]/30 bg-[#EFF6FF] text-[#0066B2] dark:border-[#0066B2]/30 dark:bg-[#0066B2]/20 dark:text-[#38BDF8]">
                     <Users className="h-4 w-4" />
@@ -866,8 +866,8 @@ export default function DashboardHome({
             {/* ── Right Column (50% Width): Stacked 50% Active Sequences (Top) + 50% Integrations Status (Bottom) ── */}
             <div className="flex flex-col gap-4 h-full">
               {/* Top 50%: Active Sequences */}
-              <div className="rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#131316] shadow-md dark:shadow-none backdrop-blur-sm overflow-hidden flex-1 flex flex-col justify-between">
-                <div className="flex items-center justify-between px-4 py-2.5 border-b border-[#0066B2]/10 dark:border-white/[0.06] dark:bg-[#161619]">
+              <div className="rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#171717] shadow-md dark:shadow-none backdrop-blur-sm overflow-hidden flex-1 flex flex-col justify-between">
+                <div className="flex items-center justify-between px-4 py-2.5 border-b border-[#0066B2]/10 dark:border-white/[0.06] dark:bg-[#151515]">
                   <div className="flex items-center gap-2.5">
                     <div className="flex h-7 w-7 items-center justify-center rounded-lg border border-emerald-500/30 bg-emerald-50 text-emerald-600 dark:border-emerald-500/30 dark:bg-emerald-500/20 dark:text-emerald-400">
                       <Mail className="h-4 w-4" />
@@ -906,7 +906,7 @@ export default function DashboardHome({
                               {seq.name}
                             </p>
                             <div className="flex items-center gap-2 mt-1">
-                              <div className="flex-1 h-1 rounded-full bg-zinc-100 dark:bg-zinc-800 overflow-hidden">
+                              <div className="flex-1 h-1 rounded-full bg-zinc-100 dark:bg-white/10 overflow-hidden">
                                 <div
                                   className="h-full rounded-full bg-emerald-500 transition-all"
                                   style={{ width: `${openRate}%` }}
@@ -946,8 +946,8 @@ export default function DashboardHome({
               </div>
 
               {/* Bottom 50%: Integrations Status */}
-              <div className="rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#131316] shadow-md dark:shadow-none backdrop-blur-sm overflow-hidden flex flex-col justify-between">
-                <div className="flex items-center justify-between px-4 py-2.5 border-b border-[#0066B2]/10 dark:border-white/[0.06] dark:bg-[#161619]">
+              <div className="rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#171717] shadow-md dark:shadow-none backdrop-blur-sm overflow-hidden flex flex-col justify-between">
+                <div className="flex items-center justify-between px-4 py-2.5 border-b border-[#0066B2]/10 dark:border-white/[0.06] dark:bg-[#151515]">
                   <div className="flex items-center gap-2.5">
                     <div className="flex h-7 w-7 items-center justify-center rounded-lg border border-rose-500/30 bg-rose-50 text-rose-600 dark:border-rose-500/30 dark:bg-rose-500/20 dark:text-rose-400">
                       <Zap className="h-4 w-4" />
@@ -967,7 +967,7 @@ export default function DashboardHome({
 
                 <div className="grid grid-cols-3 gap-2 p-4">
                   {/* ConvertKit */}
-                  <div className="p-2.5 rounded-xl bg-[#F8FBFF] dark:bg-white/[0.03] border border-[#0066B2]/10 dark:border-white/[0.08] shadow-xs">
+                  <div className="p-2.5 rounded-xl bg-[#F8FBFF] dark:bg-[#121212] border border-[#0066B2]/10 dark:border-white/[0.08] shadow-xs">
                     <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-400">
                       ConvertKit / Kit
                     </span>
@@ -980,7 +980,7 @@ export default function DashboardHome({
                   </div>
 
                   {/* Webhooks */}
-                  <div className="p-2.5 rounded-xl bg-[#F8FBFF] dark:bg-white/[0.03] border border-[#0066B2]/10 dark:border-white/[0.08] shadow-xs">
+                  <div className="p-2.5 rounded-xl bg-[#F8FBFF] dark:bg-[#121212] border border-[#0066B2]/10 dark:border-white/[0.08] shadow-xs">
                     <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-400">
                       Webhooks
                     </span>
@@ -993,7 +993,7 @@ export default function DashboardHome({
                   </div>
 
                   {/* GA4 / Pixel */}
-                  <div className="p-2.5 rounded-xl bg-[#F8FBFF] dark:bg-white/[0.03] border border-[#0066B2]/10 dark:border-white/[0.08] shadow-xs">
+                  <div className="p-2.5 rounded-xl bg-[#F8FBFF] dark:bg-[#121212] border border-[#0066B2]/10 dark:border-white/[0.08] shadow-xs">
                     <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-400">
                       GA4 / Pixel
                     </span>
@@ -1030,7 +1030,7 @@ export default function DashboardHome({
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: "100%", scale: 1 }}
               transition={{ type: "spring", stiffness: 400, damping: 32, mass: 0.8 }}
-              className="relative w-full max-w-[480px] rounded-t-3xl sm:rounded-2xl border-t sm:border border-zinc-200/80 dark:border-white/10 bg-white dark:bg-[#141417] p-5 sm:p-6 text-zinc-900 dark:text-white shadow-2xl space-y-4 sm:space-y-5 max-h-[92vh] overflow-y-auto"
+              className="relative w-full max-w-[480px] rounded-t-3xl sm:rounded-2xl border-t sm:border border-zinc-200/80 dark:border-white/10 bg-white dark:bg-[#171717] dark:shadow-none p-5 sm:p-6 text-zinc-900 dark:text-white shadow-2xl space-y-4 sm:space-y-5 max-h-[92vh] overflow-y-auto"
               onClick={(e) => e.stopPropagation()}
             >
               {/* Mobile Drag Indicator */}
@@ -1081,7 +1081,7 @@ export default function DashboardHome({
                 <button
                   type="button"
                   onClick={() => setShowCreateModal(false)}
-                  className="rounded-lg p-1.5 text-zinc-400 hover:bg-zinc-100 dark:hover:bg-[#25252b] dark:hover:text-white transition-colors cursor-pointer self-start"
+                  className="rounded-lg p-1.5 text-zinc-400 hover:bg-zinc-100 dark:hover:bg-white/10 dark:hover:text-white transition-colors cursor-pointer self-start"
                 >
                   <X className="h-4 w-4" />
                 </button>
@@ -1099,14 +1099,14 @@ export default function DashboardHome({
                       className={`relative flex items-start gap-3 p-3 rounded-xl border text-left cursor-pointer transition-colors duration-75 ${
                         selectedMagnetType === "locked-pdf"
                           ? "border-amber-500/90 bg-amber-500/10 dark:bg-amber-500/10 dark:border-amber-500/70"
-                          : "border-zinc-200 dark:border-[#2e2e38] bg-zinc-50/70 dark:bg-[#121214] hover:border-zinc-300 dark:hover:border-[#3e3e4a]"
+                          : "border-zinc-200 dark:border-white/10 bg-zinc-50/70 dark:bg-[#121212] hover:border-zinc-300 dark:hover:border-white/20"
                       }`}
                     >
                       <div
                         className={`p-2 rounded-lg shrink-0 ${
                           selectedMagnetType === "locked-pdf"
                             ? "bg-amber-600 text-white"
-                            : "bg-zinc-200 dark:bg-[#25252b] text-zinc-600 dark:text-zinc-400"
+                            : "bg-zinc-200 dark:bg-white/5 text-zinc-600 dark:text-zinc-400"
                         }`}
                       >
                         <Lock className="h-4 w-4" />
@@ -1128,14 +1128,14 @@ export default function DashboardHome({
                       className={`relative flex items-start gap-3 p-3 rounded-xl border text-left cursor-pointer transition-colors duration-75 ${
                         selectedMagnetType === "classic"
                           ? "border-emerald-600/90 bg-emerald-500/10 dark:bg-emerald-500/10 dark:border-emerald-500/70"
-                          : "border-zinc-200 dark:border-[#2e2e38] bg-zinc-50/70 dark:bg-[#121214] hover:border-zinc-300 dark:hover:border-[#3e3e4a]"
+                          : "border-zinc-200 dark:border-white/10 bg-zinc-50/70 dark:bg-[#121212] hover:border-zinc-300 dark:hover:border-white/20"
                       }`}
                     >
                       <div
                         className={`p-2 rounded-lg shrink-0 ${
                           selectedMagnetType === "classic"
                             ? "bg-[#059669] text-white"
-                            : "bg-zinc-200 dark:bg-[#25252b] text-zinc-600 dark:text-zinc-400"
+                            : "bg-zinc-200 dark:bg-white/5 text-zinc-600 dark:text-zinc-400"
                         }`}
                       >
                         <FileText className="h-4 w-4" />
@@ -1154,7 +1154,7 @@ export default function DashboardHome({
 
                 {/* Page Name */}
                 <div className="space-y-1.5">
-                  <label className="block text-xs font-semibold text-zinc-700 dark:text-[#d4c8bc]">
+                  <label className="block text-xs font-semibold text-zinc-700 dark:text-zinc-200">
                     Page name
                   </label>
                   <input
@@ -1173,7 +1173,7 @@ export default function DashboardHome({
                         ? "e.g. AI Pipeline Playbook"
                         : "e.g. 2026 Growth Checklist"
                     }
-                    className={`w-full rounded-xl border border-zinc-200 dark:border-[#2e2e38] bg-zinc-50 dark:bg-[#121214] px-3.5 py-2.5 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-[#52525b] outline-none transition-colors duration-75 ${
+                    className={`w-full rounded-xl border border-zinc-200 dark:border-white/10 bg-zinc-50 dark:bg-[#121212] px-3.5 py-2.5 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 outline-none transition-colors duration-75 ${
                       selectedMagnetType === "locked-pdf"
                         ? "focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
                         : "focus:ring-2 focus:ring-emerald-600 focus:border-emerald-600"
@@ -1183,12 +1183,12 @@ export default function DashboardHome({
 
                 {/* URL Slug */}
                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-zinc-700 dark:text-[#d4c8bc]">
+                  <label className="text-xs font-semibold text-zinc-700 dark:text-zinc-200">
                     URL slug
                   </label>
-                  <div className="flex items-center rounded-xl border border-zinc-200 dark:border-[#2e2e38] bg-zinc-50 dark:bg-[#121214] px-3.5 py-2.5 text-xs text-zinc-500 dark:text-zinc-400">
-                    <span className="text-zinc-400 dark:text-[#666675] shrink-0 mr-1.5 font-mono">/</span>
-                    <span className="font-mono text-zinc-800 dark:text-[#d4c8bc] truncate">
+                  <div className="flex items-center rounded-xl border border-zinc-200 dark:border-white/10 bg-zinc-50 dark:bg-[#121212] px-3.5 py-2.5 text-xs text-zinc-500 dark:text-zinc-400">
+                    <span className="text-zinc-400 dark:text-zinc-500 shrink-0 mr-1.5 font-mono">/</span>
+                    <span className="font-mono text-zinc-800 dark:text-zinc-200 truncate">
                       {createMagnetName
                         .toLowerCase()
                         .trim()
@@ -1199,7 +1199,7 @@ export default function DashboardHome({
                           : "untitled-page")}
                     </span>
                   </div>
-                  <p className="text-[11px] text-zinc-400 dark:text-[#666675]">
+                  <p className="text-[11px] text-zinc-400 dark:text-zinc-500">
                     The path of the page. Lowercase, digits, and hyphens only.
                   </p>
                 </div>
@@ -1209,7 +1209,7 @@ export default function DashboardHome({
                   <button
                     type="button"
                     onClick={() => setShowCreateModal(false)}
-                    className="flex-1 sm:flex-initial rounded-xl border border-zinc-200 dark:border-[#2e2e38] bg-white dark:bg-[#222228] px-4 py-2.5 text-xs font-semibold text-zinc-700 dark:text-white hover:bg-zinc-100 dark:hover:bg-[#2c2c34] transition-colors duration-75 cursor-pointer text-center"
+                    className="flex-1 sm:flex-initial rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-white/5 px-4 py-2.5 text-xs font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-white/10 transition-colors duration-75 cursor-pointer text-center"
                   >
                     Cancel
                   </button>

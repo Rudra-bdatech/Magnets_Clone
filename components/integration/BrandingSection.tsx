@@ -72,14 +72,14 @@ export const BrandingSection = memo(function BrandingSection({
   return (
     <div className="space-y-4">
       {/* Legal links card */}
-      <div className="group rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 shadow-md backdrop-blur-sm transition-colors overflow-hidden hover:bg-[#EFF6FF] dark:hover:bg-[#18181c]">
+      <div className="group rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#171717] shadow-md dark:shadow-none backdrop-blur-sm transition-colors overflow-hidden">
         <button
           type="button"
           onClick={() => toggle("legal-links")}
-          className="flex w-full items-center justify-between p-4 text-left cursor-pointer"
+          className="flex w-full items-center justify-between p-4 text-left hover:bg-[#EFF6FF] dark:hover:bg-white/[0.04] transition-colors cursor-pointer"
         >
           <div className="flex items-center gap-3 min-w-0 flex-1">
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-[#0066B2]/30 bg-[#EFF6FF] text-[#0066B2] dark:border-[#0066B2]/30 dark:bg-[#0066B2]/20 dark:text-[#38BDF8]">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-[#0066B2]/30 bg-[#EFF6FF] text-[#0066B2] dark:border-white/10 dark:bg-white/5 dark:text-zinc-200">
               <FileText className="h-4.5 w-4.5" />
             </div>
             <div className="min-w-0 flex-1">
@@ -98,10 +98,10 @@ export const BrandingSection = memo(function BrandingSection({
           <ChevronDown className={`h-4 w-4 text-zinc-400 dark:text-zinc-500 transition-transform duration-200 shrink-0 ${openSections["legal-links"] ? "rotate-180" : ""}`} />
         </button>
         {openSections["legal-links"] && (
-          <div className="border-t border-[#0066B2]/10 dark:border-[#38BDF8]/20 px-5 py-5 space-y-4">
+          <div className="border-t border-[#0066B2]/10 dark:border-white/[0.06] px-5 py-5 space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-semibold text-zinc-700 dark:text-[#9B9085] mb-1.5">Privacy policy URL</label>
+                <label className="block text-xs font-semibold text-zinc-700 dark:text-zinc-400 mb-1.5">Privacy policy URL</label>
                 <input
                   type="url"
                   placeholder="https://your-site.com/privacy"
@@ -134,8 +134,8 @@ export const BrandingSection = memo(function BrandingSection({
                     setPrivacyError("");
                     handleSave({ privacyPolicy: normalized });
                   }}
-                  className={`w-full rounded-xl border bg-white dark:bg-[#0E0E10] px-3.5 py-2.5 text-xs text-zinc-900 dark:text-white outline-none placeholder:text-zinc-400 dark:placeholder:text-[#52525b] transition ${
-                    privacyError ? "border-rose-500 focus:border-rose-500" : "border-[#E2E8F0] dark:border-[#2e2e38] focus:border-[#0066B2]"
+                  className={`w-full rounded-xl border bg-white dark:bg-[#121212] px-3.5 py-2.5 text-xs text-zinc-900 dark:text-white outline-none placeholder:text-zinc-400 dark:placeholder:text-zinc-500 transition ${
+                    privacyError ? "border-rose-500 focus:border-rose-500" : "border-[#E2E8F0] dark:border-white/10 focus:border-[#0066B2]"
                   }`}
                 />
                 {privacyError ? (
@@ -144,11 +144,11 @@ export const BrandingSection = memo(function BrandingSection({
                     <span>{privacyError}</span>
                   </p>
                 ) : (
-                  <p className="mt-1 text-[11px] text-zinc-400 dark:text-[#666675]">Leave blank to hide this link.</p>
+                  <p className="mt-1 text-[11px] text-zinc-400 dark:text-zinc-400">Leave blank to hide this link.</p>
                 )}
               </div>
               <div>
-                <label className="block text-xs font-semibold text-zinc-700 dark:text-[#9B9085] mb-1.5">Terms URL</label>
+                <label className="block text-xs font-semibold text-zinc-700 dark:text-zinc-400 mb-1.5">Terms URL</label>
                 <input
                   type="url"
                   placeholder="https://your-site.com/terms"
@@ -181,8 +181,8 @@ export const BrandingSection = memo(function BrandingSection({
                     setTermsError("");
                     handleSave({ termsOfService: normalized });
                   }}
-                  className={`w-full rounded-xl border bg-white dark:bg-[#0E0E10] px-3.5 py-2.5 text-xs text-zinc-900 dark:text-white outline-none placeholder:text-zinc-400 dark:placeholder:text-[#52525b] transition ${
-                    termsError ? "border-rose-500 focus:border-rose-500" : "border-[#E5E3DD] dark:border-[#2e2e38] focus:border-[#0066B2]"
+                  className={`w-full rounded-xl border bg-white dark:bg-[#121212] px-3.5 py-2.5 text-xs text-zinc-900 dark:text-white outline-none placeholder:text-zinc-400 dark:placeholder:text-zinc-500 transition ${
+                    termsError ? "border-rose-500 focus:border-rose-500" : "border-[#E5E3DD] dark:border-white/10 focus:border-[#0066B2]"
                   }`}
                 />
                 {termsError ? (
@@ -191,13 +191,13 @@ export const BrandingSection = memo(function BrandingSection({
                     <span>{termsError}</span>
                   </p>
                 ) : (
-                  <p className="mt-1 text-[11px] text-zinc-400 dark:text-[#666675]">Leave blank to hide this link.</p>
+                  <p className="mt-1 text-[11px] text-zinc-400 dark:text-zinc-400">Leave blank to hide this link.</p>
                 )}
               </div>
             </div>
 
             <div className="pt-2 border-t border-zinc-100 dark:border-white/5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              <p className="text-[11px] text-zinc-500 dark:text-[#666675]">
+              <p className="text-[11px] text-zinc-500 dark:text-zinc-400">
                 Links appear in the footer of all published lead magnet pages.
               </p>
               <button
@@ -215,7 +215,7 @@ export const BrandingSection = memo(function BrandingSection({
                   });
                   addToast("✅ Filled with built-in Privacy & Terms pages!", "success");
                 }}
-                className="inline-flex items-center gap-1.5 self-start sm:self-auto px-3.5 py-1.5 rounded-lg border border-zinc-200 bg-white dark:border-white/10 dark:bg-[#1E1E22] text-xs font-semibold text-zinc-700 dark:text-white hover:bg-zinc-100 dark:hover:bg-[#25252A] transition shrink-0 cursor-pointer shadow-xs"
+                className="inline-flex items-center gap-1.5 self-start sm:self-auto px-3.5 py-1.5 rounded-lg border border-zinc-200 bg-white dark:border-white/10 dark:bg-white/5 text-xs font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-white/10 transition shrink-0 cursor-pointer shadow-xs"
               >
                 <Sparkles className="h-3.5 w-3.5 text-[#0066B2] dark:text-[#38BDF8]" />
                 Use Built-in Default Pages
@@ -226,14 +226,14 @@ export const BrandingSection = memo(function BrandingSection({
       </div>
 
       {/* Social Preview & Favicon Branding Card */}
-      <div className="group rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 shadow-md backdrop-blur-sm transition-colors overflow-hidden">
+      <div className="group rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#171717] shadow-md dark:shadow-none backdrop-blur-sm transition-colors overflow-hidden">
         <button
           type="button"
           onClick={() => toggle("branding-preview")}
-          className="flex w-full items-center justify-between p-4 text-left hover:bg-[#EFF6FF] dark:hover:bg-[#18181c] transition-colors cursor-pointer"
+          className="flex w-full items-center justify-between p-4 text-left hover:bg-[#EFF6FF] dark:hover:bg-white/[0.04] transition-colors cursor-pointer"
         >
           <div className="flex items-center gap-3 min-w-0 flex-1">
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-[#0066B2]/30 bg-[#EFF6FF] text-[#0066B2] dark:border-[#0066B2]/30 dark:bg-[#1A2E40]">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-[#0066B2]/30 bg-[#EFF6FF] text-[#0066B2] dark:border-white/10 dark:bg-white/5 dark:text-zinc-200">
               <Globe className="h-4.5 w-4.5" />
             </div>
             <div className="min-w-0 flex-1">
@@ -260,10 +260,10 @@ export const BrandingSection = memo(function BrandingSection({
         </button>
 
         {openSections["branding-preview"] && (
-          <div className="border-t border-[#0066B2]/10 dark:border-[#38BDF8]/20 px-3.5 sm:px-5 py-4 sm:py-5 space-y-4 sm:space-y-6">
+          <div className="border-t border-[#0066B2]/10 dark:border-white/[0.06] px-3.5 sm:px-5 py-4 sm:py-5 space-y-4 sm:space-y-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
               {/* Favicon Section */}
-              <div className="space-y-3 rounded-xl border border-zinc-200/80 bg-zinc-50/50 p-3.5 sm:p-4 dark:border-white/10 dark:bg-[#121214]">
+              <div className="space-y-3 rounded-xl border border-zinc-200/80 bg-zinc-50/50 p-3.5 sm:p-4 dark:border-white/10 dark:bg-[#121212]">
                 <div className="flex items-center justify-between">
                   <label className="block text-xs font-bold text-zinc-900 dark:text-white">
                     Custom Favicon <span className="text-zinc-400 font-normal">(Browser Tab Icon)</span>
@@ -293,8 +293,8 @@ export const BrandingSection = memo(function BrandingSection({
                       }
                       handleSave();
                     }}
-                    className={`w-full flex-1 min-w-0 rounded-xl border bg-white dark:bg-[#0E0E10] px-3.5 py-2.5 text-xs text-zinc-900 dark:text-white outline-none placeholder:text-zinc-400 dark:placeholder:text-[#52525b] transition font-mono ${
-                      faviconUrlError ? "border-rose-500 focus:border-rose-500" : "border-[#E2E8F0] dark:border-[#2e2e38] focus:border-[#0066B2]"
+                    className={`w-full flex-1 min-w-0 rounded-xl border bg-white dark:bg-[#121212] px-3.5 py-2.5 text-xs text-zinc-900 dark:text-white outline-none placeholder:text-zinc-400 dark:placeholder:text-zinc-500 transition font-mono ${
+                      faviconUrlError ? "border-rose-500 focus:border-rose-500" : "border-[#E2E8F0] dark:border-white/10 focus:border-[#0066B2]"
                     }`}
                   />
                   <div className="flex items-center gap-2 shrink-0">
@@ -313,7 +313,7 @@ export const BrandingSection = memo(function BrandingSection({
                         Clear ✕
                       </button>
                     )}
-                    <label className="cursor-pointer inline-flex items-center justify-center gap-1.5 rounded-xl border border-zinc-300 dark:border-white/15 bg-white dark:bg-[#202026] px-3.5 py-2 text-xs font-bold text-zinc-800 dark:text-white hover:bg-zinc-100 dark:hover:bg-[#282830] transition shrink-0 flex-1 sm:flex-initial shadow-2xs">
+                    <label className="cursor-pointer inline-flex items-center justify-center gap-1.5 rounded-xl border border-zinc-300 dark:border-white/15 bg-white dark:bg-white/10 px-3.5 py-2 text-xs font-bold text-zinc-800 dark:text-white hover:bg-zinc-100 dark:hover:bg-white/15 transition shrink-0 flex-1 sm:flex-initial shadow-2xs">
                       {uploadingFavicon ? <Loader2 className="h-3.5 w-3.5 animate-spin text-[#0066B2]" /> : <Sparkles className="h-3.5 w-3.5 text-[#0066B2]" />}
                       <span>{uploadingFavicon ? "Uploading..." : "Upload File"}</span>
                       <input
@@ -354,8 +354,8 @@ export const BrandingSection = memo(function BrandingSection({
                 </div>
 
                 {/* Favicon Browser Tab Mockup Preview */}
-                <div className="mt-2 rounded-lg border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#1C1C20] p-2.5 flex items-center gap-3 flex-wrap">
-                  <div className="flex items-center gap-2 rounded-md bg-zinc-100 dark:bg-[#0E0E10] px-3 py-1.5 text-xs text-zinc-700 dark:text-zinc-300 border border-zinc-200 dark:border-white/10 shrink-0">
+                <div className="mt-2 rounded-lg border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#121212] p-2.5 flex items-center gap-3 flex-wrap">
+                  <div className="flex items-center gap-2 rounded-md bg-zinc-100 dark:bg-[#121212] px-3 py-1.5 text-xs text-zinc-700 dark:text-zinc-300 border border-zinc-200 dark:border-white/10 shrink-0">
                     {faviconUrl ? (
                       <img src={faviconUrl} alt="Favicon preview" className="h-4 w-4 rounded object-contain shrink-0" />
                     ) : (
@@ -364,14 +364,14 @@ export const BrandingSection = memo(function BrandingSection({
                     <span className="font-semibold text-[11px] truncate max-w-[120px]">My Lead Magnet Page</span>
                     <span className="text-zinc-400 text-[10px]">×</span>
                   </div>
-                  <p className="text-[11px] text-zinc-500 dark:text-[#9B9085]">
+                  <p className="text-[11px] text-zinc-500 dark:text-zinc-400">
                     Live Tab Icon Preview
                   </p>
                 </div>
               </div>
 
               {/* OG Social Share Image Section */}
-              <div className="space-y-3 rounded-xl border border-zinc-200/80 bg-zinc-50/50 p-3.5 sm:p-4 dark:border-white/10 dark:bg-[#121214]">
+              <div className="space-y-3 rounded-xl border border-zinc-200/80 bg-zinc-50/50 p-3.5 sm:p-4 dark:border-white/10 dark:bg-[#121212]">
                 <div className="flex items-center justify-between">
                   <label className="block text-xs font-bold text-zinc-900 dark:text-white">
                     Social Share Thumbnail <span className="text-zinc-400 font-normal">(Open Graph Card)</span>
@@ -401,8 +401,8 @@ export const BrandingSection = memo(function BrandingSection({
                       }
                       handleSave();
                     }}
-                    className={`w-full flex-1 min-w-0 rounded-xl border bg-white dark:bg-[#0E0E10] px-3.5 py-2.5 text-xs text-zinc-900 dark:text-white outline-none placeholder:text-zinc-400 dark:placeholder:text-[#52525b] transition font-mono ${
-                      ogUrlError ? "border-rose-500 focus:border-rose-500" : "border-[#E2E8F0] dark:border-[#2e2e38] focus:border-[#0066B2]"
+                    className={`w-full flex-1 min-w-0 rounded-xl border bg-white dark:bg-[#121212] px-3.5 py-2.5 text-xs text-zinc-900 dark:text-white outline-none placeholder:text-zinc-400 dark:placeholder:text-zinc-500 transition font-mono ${
+                      ogUrlError ? "border-rose-500 focus:border-rose-500" : "border-[#E2E8F0] dark:border-white/10 focus:border-[#0066B2]"
                     }`}
                   />
                   <div className="flex items-center gap-2 shrink-0">
@@ -421,7 +421,7 @@ export const BrandingSection = memo(function BrandingSection({
                         Clear ✕
                       </button>
                     )}
-                    <label className="cursor-pointer inline-flex items-center justify-center gap-1.5 rounded-xl border border-zinc-300 dark:border-white/15 bg-white dark:bg-[#202026] px-3.5 py-2 text-xs font-bold text-zinc-800 dark:text-white hover:bg-zinc-100 dark:hover:bg-[#282830] transition shrink-0 flex-1 sm:flex-initial shadow-2xs">
+                    <label className="cursor-pointer inline-flex items-center justify-center gap-1.5 rounded-xl border border-zinc-300 dark:border-white/15 bg-white dark:bg-white/10 px-3.5 py-2 text-xs font-bold text-zinc-800 dark:text-white hover:bg-zinc-100 dark:hover:bg-white/15 transition shrink-0 flex-1 sm:flex-initial shadow-2xs">
                       {uploadingOgImage ? <Loader2 className="h-3.5 w-3.5 animate-spin text-[#0066B2]" /> : <Sparkles className="h-3.5 w-3.5 text-[#0066B2]" />}
                       <span>{uploadingOgImage ? "Uploading..." : "Upload File"}</span>
                       <input
@@ -462,8 +462,8 @@ export const BrandingSection = memo(function BrandingSection({
                 </div>
 
               {/* Real Social Media Share Card Mockup */}
-                <div className="rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#1C1C20] overflow-hidden shadow-xs">
-                  <div className="h-32 w-full bg-zinc-100 dark:bg-[#0E0E10] relative flex items-center justify-center overflow-hidden">
+                <div className="rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#121212] overflow-hidden shadow-xs">
+                  <div className="h-32 w-full bg-zinc-100 dark:bg-[#121212] relative flex items-center justify-center overflow-hidden">
                     {ogImageUrl ? (
                       <img src={ogImageUrl} alt="Social Card Thumbnail" className="h-full w-full object-cover" />
                     ) : (
@@ -473,14 +473,14 @@ export const BrandingSection = memo(function BrandingSection({
                       </div>
                     )}
                   </div>
-                  <div className="p-3 bg-zinc-50/80 dark:bg-[#18181B] border-t border-zinc-100 dark:border-white/5">
+                  <div className="p-3 bg-zinc-50/80 dark:bg-[#171717] border-t border-zinc-100 dark:border-white/5">
                     <p className="text-[10px] font-mono text-zinc-400 uppercase tracking-wider">
                       {rootDomain || "leadmagnets.so"}
                     </p>
                     <p className="text-xs font-bold text-zinc-900 dark:text-white mt-0.5 truncate">
                       Free Guide: The 10-Step Audience Growth Playbook
                     </p>
-                    <p className="text-[11px] text-zinc-500 dark:text-[#9B9085] truncate">
+                    <p className="text-[11px] text-zinc-500 dark:text-zinc-400 truncate">
                       Get instant access to strategies used by top creators.
                     </p>
                   </div>

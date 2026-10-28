@@ -44,7 +44,7 @@ export const ImportCsvModal = memo(function ImportCsvModal({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 120 }}
             transition={{ type: "spring", damping: 30, stiffness: 360, mass: 0.8 }}
-            className="w-full max-w-lg rounded-t-3xl sm:rounded-2xl border-t sm:border border-zinc-200/80 bg-white dark:border-[#2e2e38] dark:bg-[#18181B] p-5 sm:p-6 shadow-2xl relative space-y-4 max-h-[88vh] overflow-y-auto overscroll-contain scrollbar-thin pb-8 sm:pb-6 mt-auto sm:mt-0"
+            className="w-full max-w-lg rounded-t-3xl sm:rounded-2xl border-t sm:border border-zinc-200/80 bg-white dark:border-white/10 dark:bg-[#171717] dark:shadow-none p-5 sm:p-6 shadow-2xl relative space-y-4 max-h-[88vh] overflow-y-auto overscroll-contain scrollbar-thin pb-8 sm:pb-6 mt-auto sm:mt-0"
             data-lenis-prevent
             onClick={(e) => e.stopPropagation()}
           >
@@ -62,7 +62,7 @@ export const ImportCsvModal = memo(function ImportCsvModal({
                   <h3 className="text-base font-bold text-zinc-900 dark:text-white">
                     Import Contacts from CSV
                   </h3>
-                  <p className="text-xs text-zinc-500 dark:text-[#9B9085]">
+                  <p className="text-xs text-zinc-500 dark:text-zinc-400">
                     {csvFileName || "CSV File Preview"}
                   </p>
                 </div>
@@ -85,7 +85,7 @@ export const ImportCsvModal = memo(function ImportCsvModal({
                 from your CSV file. Preview below:
               </p>
 
-              <div className="max-h-52 overflow-y-auto rounded-xl border border-zinc-200 dark:border-[#2e2e38] bg-zinc-50 dark:bg-[#121214] p-3 divide-y divide-zinc-200/60 dark:divide-white/5">
+              <div className="max-h-52 overflow-y-auto rounded-xl border border-zinc-200 dark:border-white/10 bg-zinc-50 dark:bg-[#121212] p-3 divide-y divide-zinc-200/60 dark:divide-white/5">
                 {importedLeadsPreview.slice(0, 5).map((previewLead, idx) => (
                   <div
                     key={idx}
@@ -95,7 +95,7 @@ export const ImportCsvModal = memo(function ImportCsvModal({
                       <span className="font-semibold text-zinc-900 dark:text-white truncate max-w-[180px] sm:max-w-[240px]">
                         {previewLead.email}
                       </span>
-                      <span className="text-[11px] text-zinc-500 dark:text-[#9B9085] truncate">
+                      <span className="text-[11px] text-zinc-500 dark:text-zinc-400 truncate">
                         {previewLead.page || "Imported Magnet"}
                       </span>
                     </div>
@@ -121,7 +121,7 @@ export const ImportCsvModal = memo(function ImportCsvModal({
               <button
                 type="button"
                 onClick={onClose}
-                className="w-full sm:w-auto rounded-xl border border-zinc-200 bg-white px-4 py-2.5 sm:py-2 text-xs font-semibold text-zinc-700 hover:bg-zinc-50 dark:border-[#2e2e38] dark:bg-[#202026] dark:text-zinc-300 transition cursor-pointer text-center"
+                className="w-full sm:w-auto rounded-xl border border-zinc-200 bg-white px-4 py-2.5 sm:py-2 text-xs font-semibold text-zinc-700 hover:bg-zinc-50 dark:border-white/10 dark:bg-white/5 dark:text-zinc-300 dark:hover:bg-white/10 transition cursor-pointer text-center"
               >
                 Cancel
               </button>

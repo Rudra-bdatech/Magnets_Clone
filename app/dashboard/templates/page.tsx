@@ -354,7 +354,7 @@ export default function TemplatesPage() {
         </div>
       )}
 
-      <div className="flex flex-col min-h-[calc(100vh-3rem)] bg-gradient-to-b from-[#EFF6FF]/60 via-[#F8FBFF] to-[#F8FBFF] dark:bg-none dark:bg-[#0E0E10] text-zinc-900 dark:text-white transition-colors duration-200 animate-fade-in">
+      <div className="flex flex-col min-h-[calc(100vh-3rem)] bg-gradient-to-b from-[#EFF6FF]/60 via-[#F8FBFF] to-[#F8FBFF] dark:bg-none dark:bg-[#0a0a0a] text-zinc-900 dark:text-white transition-colors duration-200 animate-fade-in">
         <div className={`flex-1 px-3.5 py-4 sm:px-6 sm:py-6 lg:px-8 w-full mx-auto transition-[max-width] duration-[220ms] ease-[cubic-bezier(0.16,1,0.3,1)] will-change-[max-width] ${isCollapsed ? "max-w-[1440px]" : "max-w-7xl"}`}>
 
           {/* Page Title */}
@@ -364,7 +364,7 @@ export default function TemplatesPage() {
               <button
                 type="button"
                 onClick={() => setShowHelpModal(true)}
-                className="flex h-5 w-5 items-center justify-center rounded-full border border-zinc-300 dark:border-[#2e2e38] text-xs font-normal text-zinc-500 dark:text-[#9B9085] hover:bg-zinc-200 dark:hover:bg-[#18181B] hover:text-zinc-900 dark:hover:text-white transition cursor-pointer"
+                className="flex h-5 w-5 items-center justify-center rounded-full border border-zinc-300 dark:border-white/10 text-xs font-normal text-zinc-500 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-white/10 hover:text-zinc-900 dark:hover:text-white transition cursor-pointer"
                 title="Help: How do I update my brand colours?"
               >
                 ?
@@ -403,7 +403,7 @@ export default function TemplatesPage() {
               <div className="relative mb-3 lg:mb-0 lg:absolute lg:-top-12 lg:left-0 lg:right-0 z-10 flex justify-end w-full">
                 <div
                   ref={tabsContainerRef}
-                  className="w-full flex items-center gap-1 bg-white/90 dark:bg-[#111113]/90 backdrop-blur-md p-1 sm:p-1.5 rounded-xl border border-[#0066B2]/15 dark:border-[#38BDF8]/25 shadow-sm overflow-x-auto no-scrollbar scroll-smooth touch-pan-x"
+                  className="w-full flex items-center gap-1 bg-white/90 dark:bg-[#171717]/90 backdrop-blur-md p-1 sm:p-1.5 rounded-xl border border-[#0066B2]/15 dark:border-white/[0.08] shadow-sm overflow-x-auto no-scrollbar scroll-smooth touch-pan-x"
                   onMouseLeave={() => setHoveredTemplateTab(null)}
                 >
                   {TEMPLATE_TABS.map((t) => {
@@ -424,7 +424,7 @@ export default function TemplatesPage() {
                         }}
                         className={`relative shrink-0 min-w-fit lg:flex-1 flex items-center justify-center gap-1 sm:gap-1.5 px-2 sm:px-2.5 lg:px-2 xl:px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-colors duration-200 cursor-pointer whitespace-nowrap select-none ${isActive
                           ? "text-white font-bold"
-                          : "text-zinc-600 dark:text-[#9B9085] dark:hover:text-white"
+                          : "text-zinc-600 dark:text-zinc-400 dark:hover:text-white"
                           }`}
                       >
                         {/* Active Solid Pill */}
@@ -439,7 +439,7 @@ export default function TemplatesPage() {
                         {!isActive && isHovered && (
                           <motion.div
                             layoutId="hoverTemplateTab"
-                            className="absolute inset-0 bg-zinc-200/80 dark:bg-[#25252a] rounded-lg"
+                            className="absolute inset-0 bg-zinc-200/80 dark:bg-white/10 rounded-lg"
                             transition={{ type: "spring", stiffness: 500, damping: 32 }}
                           />
                         )}
@@ -452,10 +452,10 @@ export default function TemplatesPage() {
               </div>
 
               {/* Main Preview Card Box (Top aligns EXACTLY with Left Card on desktop) */}
-              <div className="rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 p-3.5 sm:p-5 shadow-md backdrop-blur-sm h-full flex flex-col transition-colors">
-                <div className="flex flex-col gap-1 mb-3 sm:mb-4 pb-2.5 sm:pb-3 border-b border-[#0066B2]/10 dark:border-[#38BDF8]/20">
+              <div className="rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#171717] dark:shadow-none p-3.5 sm:p-5 shadow-md backdrop-blur-sm h-full flex flex-col transition-colors">
+                <div className="flex flex-col gap-1 mb-3 sm:mb-4 pb-2.5 sm:pb-3 border-b border-[#0066B2]/10 dark:border-white/[0.06]">
                   <span className="text-xs sm:text-sm font-bold text-zinc-900 dark:text-zinc-200 uppercase tracking-wider">Preview</span>
-                  <span className="text-[11px] sm:text-xs text-zinc-500 dark:text-[#9B9085] block">How your brand appears on a full magnet page.</span>
+                  <span className="text-[11px] sm:text-xs text-zinc-500 dark:text-zinc-400 block">How your brand appears on a full magnet page.</span>
                 </div>
 
                 {/* Outer frame matching client page background theme mode */}

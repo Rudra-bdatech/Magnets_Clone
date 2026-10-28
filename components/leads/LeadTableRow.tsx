@@ -108,7 +108,7 @@ export const LeadTableRow = memo(function LeadTableRow({
               </button>
             </p>
             {lead.name && lead.name !== lead.email.split("@")[0] && (
-              <p className="text-[11px] text-zinc-500 dark:text-[#9B9085] truncate mt-0.5" title={lead.name}>
+              <p className="text-[11px] text-zinc-500 dark:text-zinc-400 truncate mt-0.5" title={lead.name}>
                 {lead.name}
               </p>
             )}
@@ -144,7 +144,7 @@ export const LeadTableRow = memo(function LeadTableRow({
       {/* Lead Magnet Column */}
       <td className="px-3 lg:px-4 py-3.5 whitespace-nowrap">
         <span
-          className="inline-flex items-center rounded-lg bg-zinc-100 dark:bg-[#222228] px-2 py-0.5 text-xs font-medium text-zinc-800 dark:text-zinc-200 truncate max-w-[140px]"
+          className="inline-flex items-center rounded-lg bg-zinc-100 dark:bg-white/5 px-2 py-0.5 text-xs font-medium text-zinc-800 dark:text-zinc-200 truncate max-w-[140px]"
           title={lead.page}
         >
           <span className="truncate">{lead.page}</span>

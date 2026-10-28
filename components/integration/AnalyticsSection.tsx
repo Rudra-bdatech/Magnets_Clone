@@ -44,11 +44,11 @@ export const AnalyticsSection = memo(function AnalyticsSection({
   };
 
   return (
-    <div className="group rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 shadow-md backdrop-blur-sm transition-colors overflow-hidden hover:bg-[#EFF6FF] dark:hover:bg-[#18181c]">
+    <div className="group rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#171717] shadow-md dark:shadow-none backdrop-blur-sm transition-colors overflow-hidden">
       <button
         type="button"
         onClick={onToggle}
-        className="flex w-full items-center justify-between p-4 text-left cursor-pointer"
+        className="flex w-full items-center justify-between p-4 text-left hover:bg-[#EFF6FF] dark:hover:bg-white/[0.04] transition-colors cursor-pointer"
       >
         <div className="flex items-center gap-3 min-w-0 flex-1">
           <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-emerald-500/30 bg-[#F0FDF4] text-emerald-600 dark:border-emerald-500/30 dark:bg-[#0f2e1b]">
@@ -77,13 +77,13 @@ export const AnalyticsSection = memo(function AnalyticsSection({
         </div>
       </button>
       {isOpen && (
-        <div className="border-t border-[#0066B2]/10 dark:border-[#38BDF8]/20 px-5 py-5 space-y-4">
+        <div className="border-t border-[#0066B2]/10 dark:border-white/[0.06] px-5 py-5 space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* GA4 Measurement ID */}
             <div>
-              <label className="block text-xs font-semibold text-zinc-700 dark:text-[#9B9085] mb-1.5 flex items-center gap-1">
+              <label className="block text-xs font-semibold text-zinc-700 dark:text-zinc-400 mb-1.5 flex items-center gap-1">
                 <span>Google Analytics 4 Measurement ID</span>
-                <span className="text-zinc-400 dark:text-[#666675] cursor-help" title="Find in GA4 Admin -> Data Streams -> Measurement ID (starts with G-)">?</span>
+                <span className="text-zinc-400 dark:text-zinc-400 cursor-help" title="Find in GA4 Admin -> Data Streams -> Measurement ID (starts with G-)">?</span>
               </label>
               <div className="relative">
                 <input
@@ -107,8 +107,8 @@ export const AnalyticsSection = memo(function AnalyticsSection({
                     }
                     handleSave();
                   }}
-                  className={`w-full rounded-xl border bg-white dark:bg-[#0E0E10] px-3.5 py-2.5 text-xs text-zinc-900 dark:text-white outline-none placeholder:text-zinc-400 dark:placeholder:text-[#52525b] transition font-mono ${
-                    ga4Error ? "border-rose-500 focus:border-rose-500" : "border-[#E2E8F0] dark:border-[#2e2e38] focus:border-[#0066B2]"
+                  className={`w-full rounded-xl border bg-white dark:bg-[#121212] px-3.5 py-2.5 text-xs text-zinc-900 dark:text-white outline-none placeholder:text-zinc-400 dark:placeholder:text-zinc-500 transition font-mono ${
+                    ga4Error ? "border-rose-500 focus:border-rose-500" : "border-[#E2E8F0] dark:border-white/10 focus:border-[#0066B2]"
                   }`}
                 />
               </div>
@@ -118,15 +118,15 @@ export const AnalyticsSection = memo(function AnalyticsSection({
                   <span>{ga4Error}</span>
                 </p>
               ) : (
-                <p className="mt-1 text-[11px] text-zinc-400 dark:text-[#666675]">Automatically fires pageviews & lead signup conversion events to GA4.</p>
+                <p className="mt-1 text-[11px] text-zinc-400 dark:text-zinc-400">Automatically fires pageviews & lead signup conversion events to GA4.</p>
               )}
             </div>
 
             {/* Meta Pixel ID */}
             <div>
-              <label className="block text-xs font-semibold text-zinc-700 dark:text-[#9B9085] mb-1.5 flex items-center gap-1">
+              <label className="block text-xs font-semibold text-zinc-700 dark:text-zinc-400 mb-1.5 flex items-center gap-1">
                 <span>Meta (Facebook) Pixel ID</span>
-                <span className="text-zinc-400 dark:text-[#666675] cursor-help" title="Find in Meta Events Manager -> Data Sources -> Pixel ID">?</span>
+                <span className="text-zinc-400 dark:text-zinc-400 cursor-help" title="Find in Meta Events Manager -> Data Sources -> Pixel ID">?</span>
               </label>
               <div className="relative">
                 <input
@@ -150,8 +150,8 @@ export const AnalyticsSection = memo(function AnalyticsSection({
                     }
                     handleSave();
                   }}
-                  className={`w-full rounded-xl border bg-white dark:bg-[#0E0E10] px-3.5 py-2.5 text-xs text-zinc-900 dark:text-white outline-none placeholder:text-zinc-400 dark:placeholder:text-[#52525b] transition font-mono ${
-                    pixelError ? "border-rose-500 focus:border-rose-500" : "border-[#E2E8F0] dark:border-[#2e2e38] focus:border-[#0066B2]"
+                  className={`w-full rounded-xl border bg-white dark:bg-[#121212] px-3.5 py-2.5 text-xs text-zinc-900 dark:text-white outline-none placeholder:text-zinc-400 dark:placeholder:text-zinc-500 transition font-mono ${
+                    pixelError ? "border-rose-500 focus:border-rose-500" : "border-[#E2E8F0] dark:border-white/10 focus:border-[#0066B2]"
                   }`}
                 />
               </div>
@@ -161,7 +161,7 @@ export const AnalyticsSection = memo(function AnalyticsSection({
                   <span>{pixelError}</span>
                 </p>
               ) : (
-                <p className="mt-1 text-[11px] text-zinc-400 dark:text-[#666675]">Automatically fires Meta `Lead` & `PageView` events for Facebook/Instagram ads.</p>
+                <p className="mt-1 text-[11px] text-zinc-400 dark:text-zinc-400">Automatically fires Meta `Lead` & `PageView` events for Facebook/Instagram ads.</p>
               )}
             </div>
           </div>

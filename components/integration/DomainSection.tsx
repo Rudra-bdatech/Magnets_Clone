@@ -331,9 +331,9 @@ export const DomainSection = memo(function DomainSection({
   const badgeBase = "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium whitespace-nowrap";
 
   const btnSecondary =
-    "inline-flex items-center justify-center gap-1.5 rounded-md border border-zinc-200 bg-white px-3 h-8 text-[13px] font-medium text-zinc-900 hover:bg-zinc-50 dark:border-white/10 dark:bg-[#0E0E10] dark:text-white dark:hover:bg-white/5 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0066B2] focus-visible:ring-offset-1";
+    "inline-flex items-center justify-center gap-1.5 rounded-md border border-zinc-200 bg-white px-3 h-8 text-[13px] font-medium text-zinc-900 hover:bg-zinc-50 dark:border-white/10 dark:bg-[#121212] dark:text-white dark:hover:bg-white/5 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0066B2] focus-visible:ring-offset-1";
   const inputClass =
-    "w-full rounded-md border border-zinc-200 bg-white px-3 h-9 text-[13px] font-mono text-zinc-900 placeholder:text-zinc-400 outline-none focus:border-[#0066B2] focus:ring-2 focus:ring-[#0066B2]/15 dark:border-white/10 dark:bg-[#0E0E10] dark:text-white dark:placeholder:text-zinc-600 transition";
+    "w-full rounded-md border border-zinc-200 bg-white px-3 h-9 text-[13px] font-mono text-zinc-900 placeholder:text-zinc-400 outline-none focus:border-[#0066B2] focus:ring-2 focus:ring-[#0066B2]/15 dark:border-white/10 dark:bg-[#121212] dark:text-white dark:placeholder:text-zinc-600 transition";
 
   const copyIcon = (text: string, fieldKey: string, toastMessage: string, label: string) => (
     <button
@@ -367,10 +367,10 @@ export const DomainSection = memo(function DomainSection({
   const activeError = !domainVerified ? domainError : cnameError;
 
   return (
-    <div id="custom-domain-section" className="rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 shadow-md backdrop-blur-sm overflow-hidden">
+    <div id="custom-domain-section" className="rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#171717] shadow-md dark:shadow-none backdrop-blur-sm overflow-hidden">
 
       {/* Header */}
-      <div className="px-4 sm:px-6 py-4 sm:py-5 border-b border-[#0066B2]/10 dark:border-[#38BDF8]/20">
+      <div className="px-4 sm:px-6 py-4 sm:py-5 border-b border-[#0066B2]/10 dark:border-white/[0.06]">
         <h4 className="text-base font-semibold text-zinc-900 dark:text-white flex items-center gap-1.5">
           Domains
           <InfoTooltip
@@ -385,13 +385,13 @@ export const DomainSection = memo(function DomainSection({
       </div>
 
       {/* Default workspace URL */}
-      <div className="px-4 sm:px-6 py-4 sm:py-5 border-b border-[#0066B2]/10 dark:border-[#38BDF8]/20">
+      <div className="px-4 sm:px-6 py-4 sm:py-5 border-b border-[#0066B2]/10 dark:border-white/[0.06]">
         <label htmlFor="domain-username-input" className="block text-[13px] font-medium text-zinc-900 dark:text-white mb-2">
           Workspace URL
         </label>
         {/* Desktop & Tablet Layout (Horizontal) */}
         <div className="hidden sm:flex flex-row gap-2">
-          <div className="flex flex-1 min-w-0 h-9 rounded-md border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#0E0E10] focus-within:border-[#0066B2] focus-within:ring-2 focus-within:ring-[#0066B2]/15 transition overflow-hidden">
+          <div className="flex flex-1 min-w-0 h-9 rounded-md border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#121212] focus-within:border-[#0066B2] focus-within:ring-2 focus-within:ring-[#0066B2]/15 transition overflow-hidden">
             <span className="flex items-center select-none border-r border-zinc-200 bg-zinc-50 px-3 text-[13px] font-mono text-zinc-500 dark:border-white/10 dark:bg-white/[0.03] dark:text-zinc-400 shrink-0">
               {appBaseUrl}/
             </span>
@@ -429,7 +429,7 @@ export const DomainSection = memo(function DomainSection({
         </div>
 
         {/* Mobile Modern Stacked Slug Card (Vercel & Substack style) */}
-        <div className="sm:hidden rounded-xl border border-[#0066B2]/15 dark:border-[#38BDF8]/25 bg-white dark:bg-[#0E0E10] p-3 focus-within:border-[#0066B2] focus-within:ring-2 focus-within:ring-[#0066B2]/15 transition shadow-xs">
+        <div className="sm:hidden rounded-xl border border-[#0066B2]/15 dark:border-white/[0.08] bg-white dark:bg-[#121212] p-3 focus-within:border-[#0066B2] focus-within:ring-2 focus-within:ring-[#0066B2]/15 transition shadow-xs">
           {/* Top line: clean domain origin */}
           <div className="text-[11px] font-mono font-medium text-zinc-400 dark:text-zinc-500 select-none truncate leading-none">
             {appBaseUrl.replace(/^https?:\/\//, "")}/
@@ -555,7 +555,7 @@ export const DomainSection = memo(function DomainSection({
 
           {/* Domain card (Vercel-style) */}
           {(rootDomain.trim() || showEditPanel) && (
-            <div className="rounded-xl border border-[#0066B2]/15 dark:border-[#38BDF8]/25 bg-white/50 dark:bg-[#141417]/50 overflow-hidden">
+            <div className="rounded-xl border border-[#0066B2]/15 dark:border-white/[0.08] bg-white/50 dark:bg-[#121212]/50 overflow-hidden">
               {rootDomain.trim() ? (
               <div className="flex flex-col md:flex-row md:items-center gap-3 md:gap-6 p-4">
                 {/* Left: host + status */}
@@ -788,7 +788,7 @@ export const DomainSection = memo(function DomainSection({
                             <span>Name</span>
                             <span className="text-[10px] text-zinc-400">Copy</span>
                           </div>
-                          <div className="flex items-center justify-between gap-2 rounded-md border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#0E0E10] px-2.5 py-1.5 min-w-0">
+                          <div className="flex items-center justify-between gap-2 rounded-md border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#121212] px-2.5 py-1.5 min-w-0">
                             <span className="font-mono text-xs text-zinc-900 dark:text-zinc-100 break-all select-all min-w-0" title={row.name}>
                               {row.name}
                             </span>
@@ -802,7 +802,7 @@ export const DomainSection = memo(function DomainSection({
                             <span>Value</span>
                             <span className="text-[10px] text-zinc-400">Copy</span>
                           </div>
-                          <div className="flex items-center justify-between gap-2 rounded-md border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#0E0E10] px-2.5 py-1.5 min-w-0">
+                          <div className="flex items-center justify-between gap-2 rounded-md border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#121212] px-2.5 py-1.5 min-w-0">
                             <span className="font-mono text-xs text-zinc-900 dark:text-zinc-100 break-all select-all min-w-0">
                               {row.value}
                             </span>

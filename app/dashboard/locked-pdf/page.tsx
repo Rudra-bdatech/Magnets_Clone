@@ -874,7 +874,7 @@ export default function LockedPdfPage() {
 
   return (
     <>
-      <div className="flex flex-col min-h-[calc(100vh-3.5rem)] bg-gradient-to-b from-[#EFF6FF]/40 via-[#F8FBFF] to-[#F8FBFF] dark:bg-none dark:bg-[#0B0B0D] w-full">
+      <div className="flex flex-col min-h-[calc(100vh-3.5rem)] bg-gradient-to-b from-[#EFF6FF]/40 via-[#F8FBFF] to-[#F8FBFF] dark:bg-none dark:bg-[#09090B] w-full">
         {/* Top Executive Header & Stat Cards */}
         <div className={`mx-auto w-full px-3.5 sm:px-6 pt-4 sm:pt-6 lg:px-8 space-y-4 transition-[max-width] duration-[220ms] ease-[cubic-bezier(0.16,1,0.3,1)] will-change-[max-width] ${isCollapsed ? "max-w-[1440px]" : "max-w-7xl"}`}>
           <div className="flex items-center justify-between gap-3">
@@ -907,75 +907,75 @@ export default function LockedPdfPage() {
           {/* Quick Metrics 4 Stat Cards */}
           <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
             {/* Active Pages */}
-            <div className="relative h-full rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
+            <div className="relative h-full rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#141417] dark:shadow-none p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
               <div className="flex items-center justify-between sm:justify-start w-full sm:w-auto">
-                <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl border border-[#0066B2]/30 bg-[#EFF6FF] text-[#0066B2] dark:border-[#0066B2]/30 dark:bg-[#0066B2]/20 dark:text-[#38BDF8]">
+                <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl border border-[#0066B2]/30 bg-[#EFF6FF] text-[#0066B2] dark:border-white/10 dark:bg-white/5 dark:text-zinc-200">
                   <Globe className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
                 </div>
               </div>
               <div className="flex-1 min-w-0 w-full">
-                <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-[#9B9085] leading-none truncate">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-400 leading-none truncate">
                   Active Pages
                 </p>
                 <p className="text-xl font-extrabold tabular-nums text-zinc-900 dark:text-white mt-1 leading-none tracking-tight">
                   {liveCount} <span className="text-xs font-normal text-zinc-400">/ {total}</span>
                 </p>
               </div>
-              <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0066B2]/[0.04] to-transparent" />
+              <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0066B2]/[0.04] to-transparent dark:hidden" />
             </div>
 
             {/* Total Traffic */}
-            <div className="relative h-full rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
+            <div className="relative h-full rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#141417] dark:shadow-none p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
               <div className="flex items-center justify-between sm:justify-start w-full sm:w-auto">
-                <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl border border-emerald-500/30 bg-emerald-50 text-emerald-600 dark:border-emerald-500/30 dark:bg-emerald-500/20 dark:text-emerald-400">
+                <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl border border-emerald-500/30 bg-emerald-50 text-emerald-600 dark:border-white/10 dark:bg-white/5 dark:text-zinc-200">
                   <Eye className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
                 </div>
               </div>
               <div className="flex-1 min-w-0 w-full">
-                <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-[#9B9085] leading-none truncate">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-400 leading-none truncate">
                   Total Traffic
                 </p>
                 <p className="text-xl font-extrabold tabular-nums text-zinc-900 dark:text-white mt-1 leading-none tracking-tight">
                   {totalViews.toLocaleString()}
                 </p>
               </div>
-              <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0066B2]/[0.04] to-transparent" />
+              <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0066B2]/[0.04] to-transparent dark:hidden" />
             </div>
 
             {/* Leads Collected */}
-            <div className="relative h-full rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
+            <div className="relative h-full rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#141417] dark:shadow-none p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
               <div className="flex items-center justify-between sm:justify-start w-full sm:w-auto">
-                <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl border border-purple-500/30 bg-purple-50 text-purple-600 dark:border-purple-500/30 dark:bg-purple-500/20 dark:text-purple-400">
+                <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl border border-purple-500/30 bg-purple-50 text-purple-600 dark:border-white/10 dark:bg-white/5 dark:text-zinc-200">
                   <MousePointer className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
                 </div>
               </div>
               <div className="flex-1 min-w-0 w-full">
-                <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-[#9B9085] leading-none truncate">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-400 leading-none truncate">
                   Leads Collected
                 </p>
                 <p className="text-xl font-extrabold tabular-nums text-zinc-900 dark:text-white mt-1 leading-none tracking-tight">
                   {totalSignups.toLocaleString()}
                 </p>
               </div>
-              <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0066B2]/[0.04] to-transparent" />
+              <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0066B2]/[0.04] to-transparent dark:hidden" />
             </div>
 
             {/* Avg Conv. Rate */}
-            <div className="relative h-full rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
+            <div className="relative h-full rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#141417] dark:shadow-none p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
               <div className="flex items-center justify-between sm:justify-start w-full sm:w-auto">
-                <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl border border-amber-500/30 bg-amber-50 text-amber-600 dark:border-amber-500/30 dark:bg-amber-500/20 dark:text-amber-400">
+                <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl border border-amber-500/30 bg-amber-50 text-amber-600 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-400">
                   <TrendingUp className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
                 </div>
               </div>
               <div className="flex-1 min-w-0 w-full">
-                <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-[#9B9085] leading-none truncate">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-400 leading-none truncate">
                   Avg. Conv. Rate
                 </p>
                 <p className="text-xl font-extrabold tabular-nums text-zinc-900 dark:text-white mt-1 leading-none tracking-tight">
                   {avgConversion}%
                 </p>
               </div>
-              <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0066B2]/[0.04] to-transparent" />
+              <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0066B2]/[0.04] to-transparent dark:hidden" />
             </div>
           </div>
         </div>
@@ -992,7 +992,7 @@ export default function LockedPdfPage() {
             >
               {/* Search & Filter Bar */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3 w-full max-w-full min-w-0">
-              <div className="flex items-center gap-2 flex-1 rounded-xl bg-zinc-50 dark:bg-[#1C1C20] px-3.5 py-2 border border-zinc-200/60 dark:border-zinc-800 focus-within:border-[#0066B2] dark:focus-within:border-[#0066B2] min-w-0">
+              <div className="flex items-center gap-2 flex-1 rounded-xl bg-zinc-50 dark:bg-[#16161a] px-3.5 py-2 border border-zinc-200/60 dark:border-white/[0.08] focus-within:border-[#0066B2] dark:focus-within:border-[#0066B2] min-w-0">
                 <Search className="h-4 w-4 text-zinc-400 shrink-0" />
                 <input
                   type="text"
@@ -1010,7 +1010,7 @@ export default function LockedPdfPage() {
 
               <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 justify-between sm:justify-end w-full sm:w-auto min-w-0">
                 {/* Desktop Status Tabs Pod (Preserved untouched) */}
-                <div className="hidden sm:flex items-center p-1 bg-zinc-100 dark:bg-[#1C1C20] rounded-xl text-xs min-w-0">
+                <div className="hidden sm:flex items-center p-1 bg-zinc-100 dark:bg-[#16161a] dark:border dark:border-white/[0.06] rounded-xl text-xs min-w-0">
                   {[
                     { id: "all", label: `All (${total})` },
                     { id: "live", label: `Live (${liveCount})` },
@@ -1028,7 +1028,7 @@ export default function LockedPdfPage() {
                       {statusFilter === tab.id && (
                         <motion.div
                           layoutId="activeStatusFilterTabLockedPdf"
-                          className="absolute inset-0 bg-white dark:bg-[#2A2A30] rounded-lg shadow-xs"
+                          className="absolute inset-0 bg-white dark:bg-[#222226] rounded-lg shadow-xs"
                           transition={{ type: "spring", stiffness: 500, damping: 32 }}
                         />
                       )}
@@ -1046,7 +1046,7 @@ export default function LockedPdfPage() {
                       setIsSortOpen(false);
                       setIsStatusFilterOpen((v) => !v);
                     }}
-                    className="flex h-8 items-center gap-1.5 rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#18181B] px-2.5 text-[11px] font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-[#222226] transition shadow-2xs cursor-pointer select-none"
+                    className="flex h-8 items-center gap-1.5 rounded-xl border border-zinc-200 dark:border-white/[0.08] bg-white dark:bg-[#16161a] px-2.5 text-[11px] font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-[#222226] transition shadow-2xs cursor-pointer select-none"
                   >
                     <Filter className="h-3 w-3 text-zinc-400 shrink-0" />
                     <span className="truncate">
@@ -1071,7 +1071,7 @@ export default function LockedPdfPage() {
                         exit={{ opacity: 0, scale: 0.96, y: -4 }}
                         transition={{ type: "spring", damping: 28, stiffness: 400 }}
                         onClick={(e) => e.stopPropagation()}
-                        className="absolute left-0 top-full z-40 mt-1.5 w-48 rounded-xl border border-zinc-200/90 dark:border-white/10 bg-white/95 dark:bg-[#1C1C20]/95 p-1.5 shadow-xl backdrop-blur-xl dark:text-white"
+                        className="absolute left-0 top-full z-40 mt-1.5 w-48 rounded-xl border border-zinc-200/90 dark:border-white/[0.08] bg-white/95 dark:bg-[#16161a]/95 p-1.5 shadow-xl backdrop-blur-xl dark:text-white"
                       >
                         <div className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
                           Filter Status
@@ -1117,7 +1117,7 @@ export default function LockedPdfPage() {
                       e.stopPropagation();
                       setIsSortOpen((v) => !v);
                     }}
-                    className="flex h-8 items-center gap-1 sm:gap-2 rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#18181B] px-2 sm:px-3 text-[11px] sm:text-xs font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-[#222226] transition shadow-2xs cursor-pointer select-none"
+                    className="flex h-8 items-center gap-1 sm:gap-2 rounded-xl border border-zinc-200 dark:border-white/[0.08] bg-white dark:bg-[#16161a] px-2 sm:px-3 text-[11px] sm:text-xs font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-[#222226] transition shadow-2xs cursor-pointer select-none"
                   >
                     <SlidersHorizontal className="h-3 w-3 text-zinc-400 shrink-0" />
                     <span className="truncate max-w-[76px] sm:max-w-none">{sortOptions.find((o) => o.id === sortBy)?.label || "Sort"}</span>
@@ -1178,7 +1178,7 @@ export default function LockedPdfPage() {
                     {viewMode === "grid" && (
                       <motion.div
                         layoutId="activeViewModeTabLockedPdf"
-                        className="absolute inset-0 bg-white dark:bg-[#2A2A30] rounded-lg shadow-xs"
+                        className="absolute inset-0 bg-white dark:bg-[#222226] rounded-lg shadow-xs"
                         transition={{ type: "spring", stiffness: 500, damping: 32 }}
                       />
                     )}
@@ -1195,7 +1195,7 @@ export default function LockedPdfPage() {
                     {viewMode === "table" && (
                       <motion.div
                         layoutId="activeViewModeTabLockedPdf"
-                        className="absolute inset-0 bg-white dark:bg-[#2A2A30] rounded-lg shadow-xs"
+                        className="absolute inset-0 bg-white dark:bg-[#222226] rounded-lg shadow-xs"
                         transition={{ type: "spring", stiffness: 500, damping: 32 }}
                       />
                     )}
@@ -1215,7 +1215,7 @@ export default function LockedPdfPage() {
                     }}
                     className={`relative p-1.5 rounded-lg transition-colors duration-150 cursor-pointer ${
                       isSelectMode || checkedIds.length > 0
-                        ? "bg-white dark:bg-[#2A2A30] text-[#0066B2] dark:text-[#38BDF8] shadow-xs"
+                        ? "bg-white dark:bg-[#222226] text-[#0066B2] dark:text-[#38BDF8] shadow-xs"
                         : "text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200"
                     }`}
                     title={isSelectMode || checkedIds.length > 0 ? "Exit Select Mode" : "Select Locked PDFs"}
@@ -1288,16 +1288,16 @@ export default function LockedPdfPage() {
                           }}
                           className={`group relative rounded-2xl border cursor-pointer overflow-hidden flex flex-col justify-between will-change-transform transition-all duration-200 ${
                             isChecked
-                              ? "border-[#0066B2] dark:border-[#38BDF8] bg-white dark:bg-[#18181C] ring-2 ring-[#0066B2]/40 dark:ring-[#38BDF8]/40 shadow-[0_8px_30px_rgba(0,102,178,0.12)]"
+                              ? "border-[#0066B2] dark:border-blue-500 bg-white dark:bg-[#141417] ring-2 ring-[#0066B2]/40 dark:ring-blue-500/40 shadow-[0_8px_30px_rgba(0,102,178,0.12)]"
                               : isSelected
-                                ? "border-[#0066B2] dark:border-[#38BDF8]/80 bg-gradient-to-b from-[#0066B2]/[0.08] via-[#0066B2]/[0.02] to-transparent ring-1 ring-[#0066B2]/30 dark:ring-[#38BDF8]/30 shadow-[0_8px_30px_rgba(0,102,178,0.15)]"
-                                : "border-[#0066B2]/15 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 shadow-md backdrop-blur-sm hover:border-[#0066B2]/30 dark:hover:border-[#38BDF8]/40 hover:shadow-lg"
+                                ? "border-[#0066B2] dark:border-white/20 bg-gradient-to-b from-[#0066B2]/[0.08] via-[#0066B2]/[0.02] to-transparent dark:from-white/[0.04] dark:via-transparent dark:to-transparent ring-1 ring-[#0066B2]/30 dark:ring-white/10 shadow-[0_8px_30px_rgba(0,102,178,0.15)]"
+                                : "border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#141417] shadow-md dark:shadow-none backdrop-blur-sm hover:border-[#0066B2]/30 dark:hover:border-white/20 hover:shadow-lg"
                           }`}
                         >
 
 
                         {/* PDF Canvas Preview Box */}
-                        <div className="relative h-[136px] sm:h-[142px] w-full bg-gradient-to-b from-zinc-100 via-zinc-100/80 to-zinc-200/50 dark:from-[#18181D] dark:via-[#141418] dark:to-[#0D0D10] rounded-b-2xl border-b border-zinc-200/70 dark:border-[#1F1F24] overflow-hidden flex flex-col items-center justify-center select-none">
+                        <div className="relative h-[136px] sm:h-[142px] w-full bg-gradient-to-b from-zinc-100 via-zinc-100/80 to-zinc-200/50 dark:from-[#131316] dark:via-[#131316] dark:to-[#101013] rounded-b-2xl border-b border-zinc-200/70 dark:border-white/[0.06] overflow-hidden flex flex-col items-center justify-center select-none">
                           {/* Selection Checkbox */}
                           <button
                             type="button"
@@ -1502,12 +1502,12 @@ export default function LockedPdfPage() {
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: -6, scale: 0.995 }}
                   transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-                  className="rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 overflow-hidden shadow-md backdrop-blur-sm"
+                  className="rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#131316] overflow-hidden shadow-md dark:shadow-none backdrop-blur-sm"
                 >
                   {/* DESKTOP Table View (hidden md:block) - Preserved exactly as original */}
                   <div className="hidden md:block overflow-x-auto">
                     <table className="w-full text-left text-xs">
-                      <thead className="bg-[#F8FBFF] dark:bg-[#151518] text-zinc-500 dark:text-[#9B9085] uppercase text-[11px] font-semibold tracking-wider border-b border-[#0066B2]/10 dark:border-[#38BDF8]/20">
+                      <thead className="bg-[#F8FBFF] dark:bg-[#151518] text-zinc-500 dark:text-zinc-400 uppercase text-[11px] font-semibold tracking-wider border-b border-[#0066B2]/10 dark:border-[#38BDF8]/20">
                         <tr>
                           <th className="px-6 py-3.5 text-left">
                             <div className="flex items-center">
@@ -1542,7 +1542,7 @@ export default function LockedPdfPage() {
                           <th className="px-6 py-3.5 text-right">Actions</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-[#0066B2]/8 bg-white dark:divide-[#222228] dark:bg-[#18181B]">
+                      <tbody className="divide-y divide-[#0066B2]/8 bg-white dark:divide-white/[0.05] dark:bg-[#131316]">
                         {filtered.map((pdf) => {
                           const isSelected = activePage?.id === pdf.id;
                           const isChecked = checkedIds.includes(pdf.id);
@@ -1560,7 +1560,7 @@ export default function LockedPdfPage() {
                                   ? "bg-gradient-to-r from-[#0066B2]/[0.08] via-[#0066B2]/[0.04] to-transparent dark:from-[#38BDF8]/15 dark:via-[#38BDF8]/[0.06] dark:to-transparent"
                                   : isSelected
                                     ? "bg-gradient-to-r from-[#0066B2]/[0.06] via-[#0066B2]/[0.02] to-transparent dark:from-[#38BDF8]/10 dark:via-[#38BDF8]/[0.04] dark:to-transparent"
-                                    : "hover:bg-zinc-50/80 dark:hover:bg-[#1F1F24]/70"
+                                    : "hover:bg-zinc-50/80 dark:hover:bg-white/[0.02]"
                               }`}
                             >
                               <td className="px-6 py-4 font-semibold text-zinc-900 dark:text-white">
@@ -1687,8 +1687,8 @@ export default function LockedPdfPage() {
                             isChecked
                               ? "border-[#0066B2] dark:border-[#38BDF8] bg-blue-50/50 dark:bg-[#0066B2]/15 ring-2 ring-[#0066B2]/30 shadow-sm"
                               : isSelected
-                              ? "border-[#0066B2] dark:border-[#38BDF8] bg-white dark:bg-[#18181C] ring-1 ring-[#0066B2]/30 shadow-xs"
-                              : "border-[#0066B2]/15 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181C] shadow-sm backdrop-blur-sm"
+                              ? "border-[#0066B2] dark:border-white/20 bg-white dark:bg-[#141417] ring-1 ring-[#0066B2]/30 shadow-xs"
+                              : "border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#141417] shadow-sm dark:shadow-none backdrop-blur-sm"
                           }`}
                         >
                           {/* Top Row: Checkbox, Thumbnail, Title/Slug, Page Count & Status Badge */}
@@ -1847,7 +1847,7 @@ export default function LockedPdfPage() {
                 }}
                 className="hidden lg:block lg:w-[35%] sticky top-6 z-20 space-y-4 shrink-0"
               >
-                <div className="rounded-2xl border border-[#0066B2]/15 dark:border-[#38BDF8]/25 bg-white/90 dark:bg-[#18181B]/90 p-5 shadow-md backdrop-blur-sm space-y-5">
+                <div className="rounded-2xl border border-[#0066B2]/15 dark:border-white/[0.08] bg-white/90 dark:bg-[#141417] dark:shadow-none p-5 shadow-md backdrop-blur-sm space-y-5">
                   <motion.div
                     key={activePage.id}
                     initial={{ opacity: 0, y: 3 }}
@@ -1874,7 +1874,7 @@ export default function LockedPdfPage() {
                       </button>
                     </div>
 
-                    <div className="rounded-xl bg-zinc-50 dark:bg-[#1A1A1E] p-3 border border-zinc-200/60 dark:border-zinc-800/60 space-y-2">
+                    <div className="rounded-xl bg-zinc-50 dark:bg-[#16161a] p-3 border border-zinc-200/60 dark:border-white/[0.06] space-y-2">
                       <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Public Share URL</p>
                       <div className="flex items-center justify-between gap-2">
                         <span className="text-xs font-mono text-zinc-800 dark:text-zinc-200 truncate">
@@ -1900,11 +1900,11 @@ export default function LockedPdfPage() {
                         <TrendingUp className="h-3.5 w-3.5 text-[#0066B2] dark:text-[#38BDF8]" /> Magnet Conversion Metrics
                       </p>
                       <div className="grid grid-cols-2 gap-2">
-                        <div className="rounded-xl border border-zinc-100 dark:border-zinc-800 p-3 bg-zinc-50/50 dark:bg-[#1A1A1E]/50">
+                        <div className="rounded-xl border border-zinc-100 dark:border-white/[0.06] p-3 bg-zinc-50/50 dark:bg-white/[0.02]">
                           <p className="text-[10px] text-zinc-400 font-semibold uppercase">Total Views</p>
                           <p className="text-lg font-bold text-zinc-900 dark:text-white mt-1">{activePage.views || 0}</p>
                         </div>
-                        <div className="rounded-xl border border-zinc-100 dark:border-zinc-800 p-3 bg-zinc-50/50 dark:bg-[#1A1A1E]/50">
+                        <div className="rounded-xl border border-zinc-100 dark:border-white/[0.06] p-3 bg-zinc-50/50 dark:bg-white/[0.02]">
                           <p className="text-[10px] text-zinc-400 font-semibold uppercase">Leads Captured</p>
                           <p className="text-lg font-bold text-[#0066B2] dark:text-[#38BDF8] mt-1">{activePage.signups || 0}</p>
                         </div>
@@ -2109,7 +2109,7 @@ export default function LockedPdfPage() {
               <div className="flex items-start justify-between">
                 <div>
                   <h3 className="text-base font-bold text-zinc-900 dark:text-white">Create Locked PDF</h3>
-                  <p className="text-xs text-zinc-500 dark:text-[#9B9085] mt-0.5 sm:mt-1">Name the page and choose its URL.</p>
+                  <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5 sm:mt-1">Name the page and choose its URL.</p>
                 </div>
                 <button
                   type="button"
@@ -2117,7 +2117,7 @@ export default function LockedPdfPage() {
                     setShowCreateModal(false);
                     setCreateMagnetName("");
                   }}
-                  className="rounded-lg p-1.5 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-900 dark:text-[#9B9085] dark:hover:bg-[#25252b] dark:hover:text-white transition-colors cursor-pointer"
+                  className="rounded-lg p-1.5 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-[#25252b] dark:hover:text-white transition-colors cursor-pointer"
                 >
                   <X className="h-4 w-4" />
                 </button>
@@ -2152,7 +2152,7 @@ export default function LockedPdfPage() {
                 {/* URL Slug Field */}
                 <div className="space-y-1.5">
                   <label className="text-xs font-semibold text-zinc-700 dark:text-[#d4c8bc]">URL slug</label>
-                  <div className="flex items-center rounded-xl border border-zinc-200 dark:border-[#2e2e38] bg-zinc-50 dark:bg-[#121214] px-3 py-2 text-xs text-zinc-500 dark:text-[#9B9085] focus-within:border-[#0066B2] focus-within:ring-1 focus-within:ring-[#0066B2] transition-all">
+                  <div className="flex items-center rounded-xl border border-zinc-200 dark:border-[#2e2e38] bg-zinc-50 dark:bg-[#121214] px-3 py-2 text-xs text-zinc-500 dark:text-zinc-400 focus-within:border-[#0066B2] focus-within:ring-1 focus-within:ring-[#0066B2] transition-all">
                     <span className="text-zinc-400 dark:text-[#666675] shrink-0 mr-1.5 font-mono">/</span>
                     <input
                       type="text"
@@ -2517,11 +2517,11 @@ export default function LockedPdfPage() {
                   <TrendingUp className="h-3.5 w-3.5 text-[#0066B2] dark:text-[#38BDF8]" /> Magnet Conversion Metrics
                 </p>
                 <div className="grid grid-cols-2 gap-2">
-                  <div className="rounded-xl border border-zinc-100 dark:border-zinc-800 p-3 bg-zinc-50/50 dark:bg-[#1A1A1E]/50">
+                  <div className="rounded-xl border border-zinc-100 dark:border-white/[0.06] p-3 bg-zinc-50/50 dark:bg-white/[0.02]">
                     <p className="text-[10px] text-zinc-400 font-semibold uppercase">Total Views</p>
                     <p className="text-lg font-bold text-zinc-900 dark:text-white mt-1">{activePage.views || 0}</p>
                   </div>
-                  <div className="rounded-xl border border-zinc-100 dark:border-zinc-800 p-3 bg-zinc-50/50 dark:bg-[#1A1A1E]/50">
+                  <div className="rounded-xl border border-zinc-100 dark:border-white/[0.06] p-3 bg-zinc-50/50 dark:bg-white/[0.02]">
                     <p className="text-[10px] text-zinc-400 font-semibold uppercase">Leads Captured</p>
                     <p className="text-lg font-bold text-[#0066B2] dark:text-[#38BDF8] mt-1">{activePage.signups || 0}</p>
                   </div>

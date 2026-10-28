@@ -103,7 +103,7 @@ export const DisconnectDomainModal = memo(function DisconnectDomainModal({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.94, y: 10 }}
             transition={{ type: "spring", stiffness: 450, damping: 30 }}
-            className="relative w-full max-w-lg rounded-2xl sm:rounded-3xl border border-rose-500/30 dark:border-rose-500/30 bg-white dark:bg-[#141418] text-zinc-900 dark:text-white shadow-2xl overflow-hidden z-10 flex flex-col"
+            className="relative w-full max-w-lg rounded-2xl sm:rounded-3xl border border-rose-500/30 dark:border-white/10 bg-white dark:bg-[#171717] text-zinc-900 dark:text-white shadow-2xl overflow-hidden z-10 flex flex-col"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Top Red Accent Banner */}
@@ -128,7 +128,7 @@ export const DisconnectDomainModal = memo(function DisconnectDomainModal({
                 type="button"
                 disabled={isDeleting}
                 onClick={onClose}
-                className="rounded-xl p-1.5 text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white transition cursor-pointer disabled:opacity-40"
+                className="rounded-xl p-1.5 text-zinc-400 hover:bg-zinc-100 dark:hover:bg-white/10 hover:text-zinc-900 dark:hover:text-white transition cursor-pointer disabled:opacity-40"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -137,7 +137,7 @@ export const DisconnectDomainModal = memo(function DisconnectDomainModal({
             {/* Content Body */}
             <div className="p-4 sm:p-6 space-y-4">
               {/* Target Domain Badge */}
-              <div className="flex items-center justify-between rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-[#1B1B20] px-3.5 py-2.5">
+              <div className="flex items-center justify-between rounded-xl border border-zinc-200 dark:border-white/10 bg-zinc-50 dark:bg-[#121212] px-3.5 py-2.5">
                 <div className="flex items-center gap-2 min-w-0">
                   <Globe className="h-4 w-4 text-zinc-400 shrink-0" />
                   <span className="text-xs font-mono font-bold text-zinc-800 dark:text-zinc-200 truncate">
@@ -190,19 +190,19 @@ export const DisconnectDomainModal = memo(function DisconnectDomainModal({
                     onChange={(e) => setConfirmationInput(e.target.value)}
                     placeholder={cleanTarget}
                     autoFocus
-                    className="w-full rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-[#0E0E10] px-3.5 py-2.5 text-xs sm:text-sm font-mono text-zinc-900 dark:text-white placeholder:text-zinc-400 outline-none focus:border-rose-500 dark:focus:border-rose-500 focus:ring-1 focus:ring-rose-500/20 transition shadow-2xs"
+                    className="w-full rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#121212] px-3.5 py-2.5 text-xs sm:text-sm font-mono text-zinc-900 dark:text-white placeholder:text-zinc-400 outline-none focus:border-rose-500 dark:focus:border-rose-500 focus:ring-1 focus:ring-rose-500/20 transition shadow-2xs"
                   />
                 </div>
               )}
             </div>
 
             {/* Modal Actions */}
-            <div className="p-4 sm:p-6 pt-2 border-t border-zinc-100 dark:border-white/5 bg-zinc-50/50 dark:bg-[#111114] flex flex-col-reverse sm:flex-row items-center justify-end gap-2.5 sm:gap-3">
+            <div className="p-4 sm:p-6 pt-2 border-t border-zinc-100 dark:border-white/5 bg-zinc-50/50 dark:bg-[#151515] flex flex-col-reverse sm:flex-row items-center justify-end gap-2.5 sm:gap-3">
               <button
                 type="button"
                 disabled={isDeleting}
                 onClick={onClose}
-                className="w-full sm:w-auto rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#1E1E24] px-4 py-2.5 text-xs font-bold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-[#282830] transition cursor-pointer disabled:opacity-50 text-center"
+                className="w-full sm:w-auto rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-white/5 px-4 py-2.5 text-xs font-bold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-white/10 transition cursor-pointer disabled:opacity-50 text-center"
               >
                 Cancel
               </button>

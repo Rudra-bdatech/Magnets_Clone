@@ -44,10 +44,10 @@ function BrandSettingsForm({
   handleSave,
 }: BrandSettingsFormProps) {
   return (
-    <div className="rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 p-4 sm:p-6 shadow-md backdrop-blur-sm h-full flex flex-col justify-between transition-colors">
+    <div className="rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#171717] dark:shadow-none p-4 sm:p-6 shadow-md backdrop-blur-sm h-full flex flex-col justify-between transition-colors">
       {/* Heading */}
       <div className="flex items-center gap-3 mb-4">
-        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-[#0066B2]/30 bg-[#EFF6FF] dark:border-[#0066B2]/30 dark:bg-[#1a2638] text-[#0066B2]">
+        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-[#0066B2]/30 bg-[#EFF6FF] text-[#0066B2] dark:border-white/10 dark:bg-white/5 dark:text-zinc-200">
           <Palette className="h-4.5 w-4.5 text-[#0066B2]" />
         </div>
         <div className="flex items-center gap-1.5">
@@ -78,7 +78,7 @@ function BrandSettingsForm({
             value={businessName}
             onChange={(e) => setBusinessName(e.target.value)}
             placeholder="Enter business name"
-            className="w-full rounded-md border border-[#E2E8F0] bg-white dark:border-[#0066B2]/30 dark:bg-[#18181B] px-3.5 py-2.5 text-sm text-zinc-900 dark:text-white outline-none placeholder:text-zinc-400 dark:placeholder:text-[#5c5650] focus:border-[#0066B2] transition"
+            className="w-full rounded-md border border-[#E2E8F0] bg-white dark:border-white/10 dark:bg-[#121212] px-3.5 py-2.5 text-sm text-zinc-900 dark:text-white outline-none placeholder:text-zinc-400 dark:placeholder:text-[#5c5650] focus:border-[#0066B2] transition"
           />
         </div>
 
@@ -106,7 +106,7 @@ function BrandSettingsForm({
               type="button"
               disabled={uploadingLogo}
               onClick={() => fileInputRef.current?.click()}
-              className="flex items-center gap-1.5 rounded-md border border-[#E2E8F0] bg-zinc-50 dark:border-[#0066B2]/30 dark:bg-[#18181B] px-3.5 sm:px-4 py-2 text-xs font-semibold text-zinc-800 dark:text-white hover:bg-zinc-100 dark:hover:bg-[#252529] hover:border-[#0066B2] dark:hover:border-[#0066B2] transition cursor-pointer disabled:opacity-50 touch-manipulation min-h-[38px]"
+              className="flex items-center gap-1.5 rounded-md border border-[#E2E8F0] bg-zinc-50 dark:border-white/10 dark:bg-[#121212] px-3.5 sm:px-4 py-2 text-xs font-semibold text-zinc-800 dark:text-white hover:bg-zinc-100 dark:hover:bg-white/10 hover:border-[#0066B2] dark:hover:border-white/20 transition cursor-pointer disabled:opacity-50 touch-manipulation min-h-[38px]"
             >
               {uploadingLogo ? (
                 <>
@@ -125,7 +125,7 @@ function BrandSettingsForm({
                 <img
                   src={logo}
                   alt="Logo Preview"
-                  className="h-9 w-9 rounded object-contain border border-[#0066B2]/30 bg-white dark:border-[#0066B2]/30 dark:bg-[#18181B]"
+                  className="h-9 w-9 rounded object-contain border border-[#0066B2]/30 bg-white dark:border-white/10 dark:bg-[#121212]"
                 />
                 <button
                   type="button"
@@ -147,8 +147,8 @@ function BrandSettingsForm({
           <label className="block text-xs sm:text-sm font-semibold text-zinc-700 dark:text-[#a1a1aa] mb-1.5 sm:mb-2">
             Primary Brand Color
           </label>
-          <div className="flex items-center rounded-md border border-[#E2E8F0] bg-white dark:border-[#0066B2]/30 dark:bg-[#18181B] px-3.5 py-2.5 focus-within:border-[#0066B2] transition">
-            <label className="relative h-6 w-9 shrink-0 rounded cursor-pointer overflow-hidden border border-zinc-200 dark:border-[#0066B2]/30 mr-2.5 touch-manipulation">
+          <div className="flex items-center rounded-md border border-[#E2E8F0] bg-white dark:border-white/10 dark:bg-[#121212] px-3.5 py-2.5 focus-within:border-[#0066B2] transition">
+            <label className="relative h-6 w-9 shrink-0 rounded cursor-pointer overflow-hidden border border-zinc-200 dark:border-white/10 mr-2.5 touch-manipulation">
               <input
                 type="color"
                 value={/^#[0-9a-f]{6}$/i.test(brandColor) ? brandColor : "#0066B2"}
@@ -215,7 +215,7 @@ function BrandSettingsForm({
               className={`flex items-center justify-center gap-1.5 rounded-md border py-2.5 text-xs font-semibold transition touch-manipulation cursor-pointer ${
                 themeMode === "light"
                   ? "border-[#0066B2] bg-[#EFF6FF] dark:bg-[#0066B2]/20 text-zinc-900 dark:text-white font-bold shadow-xs"
-                  : "border-[#E2E8F0] bg-white dark:border-[#0066B2]/30 dark:bg-[#18181B] text-zinc-600 dark:text-[#9B9085] hover:bg-zinc-50 dark:hover:bg-[#252529] hover:text-zinc-900 dark:hover:text-white"
+                  : "border-[#E2E8F0] bg-white dark:border-white/10 dark:bg-[#121212] text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-white/10 hover:text-zinc-900 dark:hover:text-white"
               }`}
             >
               <Sun className="h-3.5 w-3.5" />
@@ -227,7 +227,7 @@ function BrandSettingsForm({
               className={`flex items-center justify-center gap-1.5 rounded-md border py-2.5 text-xs font-semibold transition touch-manipulation cursor-pointer ${
                 themeMode === "dark"
                   ? "border-[#0066B2] bg-zinc-900 text-white font-bold shadow-xs"
-                  : "border-[#E2E8F0] bg-white dark:border-[#0066B2]/30 dark:bg-[#18181B] text-zinc-600 dark:text-[#9B9085] hover:bg-zinc-50 dark:hover:bg-[#252529] hover:text-zinc-900 dark:hover:text-white"
+                  : "border-[#E2E8F0] bg-white dark:border-white/10 dark:bg-[#121212] text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-white/10 hover:text-zinc-900 dark:hover:text-white"
               }`}
             >
               <Moon className="h-3.5 w-3.5" />
@@ -242,7 +242,7 @@ function BrandSettingsForm({
             <label className="text-xs sm:text-sm font-semibold text-zinc-700 dark:text-[#a1a1aa]">
               Highlight intensity
             </label>
-            <span className="rounded bg-[#252529] px-2 py-0.5 text-xs font-mono font-bold text-white">
+            <span className="rounded bg-zinc-100 dark:bg-[#121212] border border-zinc-200 dark:border-white/10 px-2 py-0.5 text-xs font-mono font-bold text-zinc-900 dark:text-white">
               {highlightIntensity}%
             </span>
           </div>
@@ -252,7 +252,7 @@ function BrandSettingsForm({
             max="100"
             value={highlightIntensity}
             onChange={(e) => setHighlightIntensity(Number(e.target.value))}
-            className="w-full accent-[#0066B2] bg-[#18181B] h-2 sm:h-1.5 rounded-lg appearance-none cursor-pointer touch-manipulation"
+            className="w-full accent-[#0066B2] bg-zinc-200 dark:bg-[#121212] h-2 sm:h-1.5 rounded-lg appearance-none cursor-pointer touch-manipulation"
             style={{
               backgroundImage: `linear-gradient(to right, ${brandColor} 0%, ${brandColor} ${highlightIntensity}%, #2e2e38 ${highlightIntensity}%, #2e2e38 100%)`,
             }}
@@ -266,8 +266,8 @@ function BrandSettingsForm({
       </div>
 
       {/* Action Bar */}
-      <div className="mt-6 border-t border-[#0066B2]/10 dark:border-[#38BDF8]/20 pt-4 sm:pt-5 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
-        <span className="text-[11px] sm:text-[10px] text-zinc-500 dark:text-[#9B9085] leading-tight text-center sm:text-left">
+      <div className="mt-6 border-t border-[#0066B2]/10 dark:border-white/[0.06] pt-4 sm:pt-5 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+        <span className="text-[11px] sm:text-[10px] text-zinc-500 dark:text-zinc-400 leading-tight text-center sm:text-left">
           {hasUnsavedChanges ? "Unsaved changes stay local until saved." : "All changes saved to database."}
         </span>
         <button

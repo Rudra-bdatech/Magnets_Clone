@@ -233,7 +233,7 @@ export const LeadDetailsModal = memo(function LeadDetailsModal({
             ? { type: "spring", damping: 30, stiffness: 360, mass: 0.8 }
             : { type: "spring", stiffness: 440, damping: 32, mass: 0.7 }
         }
-        className="w-full max-w-xl sm:max-w-2xl rounded-t-3xl sm:rounded-2xl border-t sm:border border-zinc-200/80 bg-white dark:border-[#2e2e38] dark:bg-[#18181B] p-5 sm:p-6 shadow-2xl relative space-y-4 max-h-[88vh] overflow-y-auto overscroll-contain scrollbar-thin pb-8 sm:pb-6 mt-auto sm:mt-0 transform-gpu will-change-[transform,opacity]"
+        className="w-full max-w-xl sm:max-w-2xl rounded-t-3xl sm:rounded-2xl border-t sm:border border-zinc-200/80 bg-white dark:border-white/10 dark:bg-[#171717] dark:shadow-none p-5 sm:p-6 shadow-2xl relative space-y-4 max-h-[88vh] overflow-y-auto overscroll-contain scrollbar-thin pb-8 sm:pb-6 mt-auto sm:mt-0 transform-gpu will-change-[transform,opacity]"
         data-lenis-prevent
         onClick={(e) => e.stopPropagation()}
       >
@@ -245,7 +245,7 @@ export const LeadDetailsModal = memo(function LeadDetailsModal({
         {/* Header */}
         <div className="flex items-start justify-between pb-1 gap-3">
           <div className="flex items-center gap-3 min-w-0">
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#0066B2]/10 text-[#0066B2] dark:bg-[#38BDF8]/20 dark:text-[#38BDF8] text-sm font-bold uppercase border border-[#0066B2]/20 dark:border-[#38BDF8]/30">
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#0066B2]/10 text-[#0066B2] dark:bg-white/5 dark:text-zinc-200 text-sm font-bold uppercase border border-[#0066B2]/20 dark:border-white/10">
               {(selectedLead.name || selectedLead.email || "U").slice(0, 2)}
             </div>
             <div className="min-w-0">
@@ -253,7 +253,7 @@ export const LeadDetailsModal = memo(function LeadDetailsModal({
                 {selectedLead.name || "Subscriber Details"}
               </h3>
               <div className="flex items-center gap-2 mt-0.5 flex-wrap">
-                <p className="text-xs text-zinc-500 dark:text-[#9B9085] truncate max-w-[200px] sm:max-w-[280px]">
+                <p className="text-xs text-zinc-500 dark:text-zinc-400 truncate max-w-[200px] sm:max-w-[280px]">
                   {selectedLead.email}
                 </p>
                 <span
@@ -282,7 +282,7 @@ export const LeadDetailsModal = memo(function LeadDetailsModal({
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg p-1.5 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-700 dark:hover:bg-[#25252A] dark:hover:text-white transition cursor-pointer shrink-0"
+            className="rounded-lg p-1.5 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-700 dark:hover:bg-white/10 dark:hover:text-white transition cursor-pointer shrink-0"
             title="Close modal"
           >
             <X className="h-5 w-5" />
@@ -298,7 +298,7 @@ export const LeadDetailsModal = memo(function LeadDetailsModal({
           {/* Top Grid Info */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3.5 py-1">
             <div>
-              <span className="block text-[11px] font-medium text-zinc-500 dark:text-[#9B9085]">
+              <span className="block text-[11px] font-medium text-zinc-500 dark:text-zinc-400">
                 Signup Method / Gate
               </span>
               <div className="mt-1">
@@ -326,7 +326,7 @@ export const LeadDetailsModal = memo(function LeadDetailsModal({
               </div>
             </div>
             <div>
-              <span className="block text-[11px] font-medium text-zinc-500 dark:text-[#9B9085]">
+              <span className="block text-[11px] font-medium text-zinc-500 dark:text-zinc-400">
                 Subscribed On Magnet
               </span>
               <strong className="font-semibold text-zinc-900 dark:text-white block truncate mt-1 text-xs">
@@ -334,7 +334,7 @@ export const LeadDetailsModal = memo(function LeadDetailsModal({
               </strong>
             </div>
             <div>
-              <span className="block text-[11px] font-medium text-zinc-500 dark:text-[#9B9085]">
+              <span className="block text-[11px] font-medium text-zinc-500 dark:text-zinc-400">
                 Signup Date & Time
               </span>
               <strong className="font-semibold text-zinc-900 dark:text-white block mt-1 text-xs">
@@ -342,7 +342,7 @@ export const LeadDetailsModal = memo(function LeadDetailsModal({
               </strong>
             </div>
             <div>
-              <span className="block text-[11px] font-medium text-zinc-500 dark:text-[#9B9085]">
+              <span className="block text-[11px] font-medium text-zinc-500 dark:text-zinc-400">
                 Traffic Source / Referrer
               </span>
               <strong className="font-semibold text-zinc-900 dark:text-white block capitalize mt-1 text-xs">
@@ -388,9 +388,9 @@ export const LeadDetailsModal = memo(function LeadDetailsModal({
                   {validCustomFields.map(([key, val]) => (
                     <div
                       key={key}
-                      className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-2.5 rounded-xl bg-zinc-50 dark:bg-[#121214] border border-zinc-100 dark:border-white/5 overflow-hidden"
+                      className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-2.5 rounded-xl bg-zinc-50 dark:bg-[#121212] border border-zinc-100 dark:border-white/5 overflow-hidden"
                     >
-                      <span className="text-[11px] font-semibold text-zinc-500 dark:text-[#9B9085] shrink-0">
+                      <span className="text-[11px] font-semibold text-zinc-500 dark:text-zinc-400 shrink-0">
                         {formatFieldKey(key)}
                       </span>
                       <div className="min-w-0 max-w-full flex items-center sm:justify-end overflow-hidden">
@@ -416,7 +416,7 @@ export const LeadDetailsModal = memo(function LeadDetailsModal({
           )}
 
           {/* Sequence Delivery Breakdown Card */}
-          <div className="p-3.5 rounded-xl bg-zinc-50 dark:bg-[#121214] border border-zinc-200/80 dark:border-white/10 space-y-2.5">
+          <div className="p-3.5 rounded-xl bg-zinc-50 dark:bg-[#121212] border border-zinc-200/80 dark:border-white/10 space-y-2.5">
             <div className="flex items-center justify-between">
               <span className="font-bold text-zinc-900 dark:text-white flex items-center gap-1.5 text-xs">
                 <Mail className="h-3.5 w-3.5 text-[#0066B2] dark:text-[#38BDF8]" />
@@ -453,7 +453,7 @@ export const LeadDetailsModal = memo(function LeadDetailsModal({
                 return (
                   <div
                     key={idx}
-                    className="flex items-center justify-between text-[11px] bg-white dark:bg-[#18181B] p-2 rounded-lg border border-zinc-100 dark:border-white/5 gap-2"
+                    className="flex items-center justify-between text-[11px] bg-white dark:bg-white/[0.03] p-2 rounded-lg border border-zinc-100 dark:border-white/5 gap-2"
                   >
                     <span className="flex items-center gap-2 text-zinc-700 dark:text-zinc-300 min-w-0">
                       {isDone ? (
@@ -500,7 +500,7 @@ export const LeadDetailsModal = memo(function LeadDetailsModal({
             <button
               type="button"
               onClick={() => onResendEmail(selectedLead)}
-              className="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-3.5 py-2.5 sm:py-2 rounded-xl text-xs font-semibold border border-zinc-200 dark:border-[#2e2e38] bg-white dark:bg-[#202026] text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-[#282830] transition cursor-pointer"
+              className="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-3.5 py-2.5 sm:py-2 rounded-xl text-xs font-semibold border border-zinc-200 dark:border-white/10 bg-white dark:bg-white/5 text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-white/10 transition cursor-pointer"
             >
               <Send className="h-3.5 w-3.5 text-emerald-500" /> Resend Email
             </button>

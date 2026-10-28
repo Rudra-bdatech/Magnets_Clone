@@ -54,7 +54,7 @@ export const AddLeadModal = memo(function AddLeadModal({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 120 }}
             transition={{ type: "spring", damping: 30, stiffness: 360, mass: 0.8 }}
-            className="w-full max-w-md rounded-t-3xl sm:rounded-2xl border-t sm:border border-zinc-200/80 bg-white dark:border-[#2e2e38] dark:bg-[#18181B] p-5 sm:p-6 shadow-2xl relative space-y-4 max-h-[88vh] overflow-y-auto overscroll-contain scrollbar-thin pb-8 sm:pb-6 mt-auto sm:mt-0"
+            className="w-full max-w-md rounded-t-3xl sm:rounded-2xl border-t sm:border border-zinc-200/80 bg-white dark:border-white/10 dark:bg-[#171717] dark:shadow-none p-5 sm:p-6 shadow-2xl relative space-y-4 max-h-[88vh] overflow-y-auto overscroll-contain scrollbar-thin pb-8 sm:pb-6 mt-auto sm:mt-0"
             data-lenis-prevent
             onClick={(e) => e.stopPropagation()}
           >
@@ -65,14 +65,14 @@ export const AddLeadModal = memo(function AddLeadModal({
 
             <div className="flex items-center justify-between border-b border-zinc-100 dark:border-white/10 pb-3">
               <div className="flex items-center gap-2.5">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#EFF6FF] text-[#0066B2] dark:bg-[#0066B2]/20 dark:text-[#38BDF8]">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#EFF6FF] text-[#0066B2] dark:bg-white/5 dark:text-zinc-200 dark:border dark:border-white/10">
                   <UserPlus className="h-5 w-5" />
                 </div>
                 <div>
                   <h3 className="text-base font-bold text-zinc-900 dark:text-white">
                     Add Subscriber Manually
                   </h3>
-                  <p className="text-xs text-zinc-500 dark:text-[#9B9085]">
+                  <p className="text-xs text-zinc-500 dark:text-zinc-400">
                     Manually add a contact to your lead list.
                   </p>
                 </div>
@@ -97,7 +97,7 @@ export const AddLeadModal = memo(function AddLeadModal({
                   placeholder="subscriber@example.com"
                   value={newLeadEmail}
                   onChange={(e) => setNewLeadEmail(e.target.value)}
-                  className="w-full rounded-xl border border-zinc-200 bg-white p-2.5 text-xs text-zinc-900 dark:border-[#2e2e38] dark:bg-[#202026] dark:text-white focus:border-[#0066B2] focus:outline-none"
+                  className="w-full rounded-xl border border-zinc-200 bg-white p-2.5 text-xs text-zinc-900 dark:border-white/10 dark:bg-[#121212] dark:text-white focus:border-[#0066B2] dark:focus:border-white/20 focus:outline-none"
                 />
               </div>
 
@@ -110,7 +110,7 @@ export const AddLeadModal = memo(function AddLeadModal({
                   placeholder="John Doe"
                   value={newLeadName}
                   onChange={(e) => setNewLeadName(e.target.value)}
-                  className="w-full rounded-xl border border-zinc-200 bg-white p-2.5 text-xs text-zinc-900 dark:border-[#2e2e38] dark:bg-[#202026] dark:text-white focus:border-[#0066B2] focus:outline-none"
+                  className="w-full rounded-xl border border-zinc-200 bg-white p-2.5 text-xs text-zinc-900 dark:border-white/10 dark:bg-[#121212] dark:text-white focus:border-[#0066B2] dark:focus:border-white/20 focus:outline-none"
                 />
               </div>
 
@@ -121,7 +121,7 @@ export const AddLeadModal = memo(function AddLeadModal({
                 <select
                   value={newLeadMagnet}
                   onChange={(e) => setNewLeadMagnet(e.target.value)}
-                  className="w-full rounded-xl border border-zinc-200 bg-white p-2.5 text-xs font-medium text-zinc-700 dark:border-[#2e2e38] dark:bg-[#202026] dark:text-zinc-300 focus:border-[#0066B2] focus:outline-none cursor-pointer"
+                  className="w-full rounded-xl border border-zinc-200 bg-white p-2.5 text-xs font-medium text-zinc-700 dark:border-white/10 dark:bg-[#121212] dark:text-zinc-200 focus:border-[#0066B2] dark:focus:border-white/20 focus:outline-none cursor-pointer"
                 >
                   {magnetPages.map((page) => (
                     <option key={page.id} value={page.name}>
@@ -136,7 +136,7 @@ export const AddLeadModal = memo(function AddLeadModal({
                 <button
                   type="button"
                   onClick={onClose}
-                  className="w-full sm:w-auto rounded-xl border border-zinc-200 bg-white px-4 py-2.5 sm:py-2 text-xs font-semibold text-zinc-700 hover:bg-zinc-50 dark:border-[#2e2e38] dark:bg-[#202026] dark:text-zinc-300 transition cursor-pointer text-center"
+                  className="w-full sm:w-auto rounded-xl border border-zinc-200 bg-white px-4 py-2.5 sm:py-2 text-xs font-semibold text-zinc-700 hover:bg-zinc-50 dark:border-white/10 dark:bg-white/5 dark:text-zinc-300 dark:hover:bg-white/10 transition cursor-pointer text-center"
                 >
                   Cancel
                 </button>

@@ -55,15 +55,15 @@ export default function AnalyticsHelpModal({ isOpen, onClose }: AnalyticsHelpMod
             transition={{ type: "spring", stiffness: 400, damping: 32, mass: 0.8 }}
             onWheel={(e) => e.stopPropagation()}
             onTouchMove={(e) => e.stopPropagation()}
-            className="relative w-full max-w-3xl rounded-t-3xl sm:rounded-2xl bg-white dark:bg-[#111318] text-zinc-900 dark:text-white border-t sm:border border-zinc-200 dark:border-zinc-800/90 shadow-2xl overflow-hidden flex flex-col max-h-[90vh] sm:max-h-[88vh] z-10 font-sans"
+            className="relative w-full max-w-3xl rounded-t-3xl sm:rounded-2xl bg-white dark:bg-[#171717] dark:shadow-none text-zinc-900 dark:text-white border-t sm:border border-zinc-200 dark:border-white/10 shadow-2xl overflow-hidden flex flex-col max-h-[90vh] sm:max-h-[88vh] z-10 font-sans"
           >
             {/* Mobile Drag Indicator */}
-            <div className="flex sm:hidden justify-center pt-2.5 pb-1 bg-zinc-50 dark:bg-[#15171D]">
+            <div className="flex sm:hidden justify-center pt-2.5 pb-1 bg-zinc-50 dark:bg-[#151515]">
               <div className="w-10 h-1 rounded-full bg-zinc-300 dark:bg-zinc-700" />
             </div>
 
             {/* Top Navigation Bar */}
-            <div className="flex items-center justify-between px-5 sm:px-6 py-3.5 sm:py-4 border-b border-zinc-100 dark:border-zinc-800/80 bg-zinc-50 dark:bg-[#15171D] shrink-0">
+            <div className="flex items-center justify-between px-5 sm:px-6 py-3.5 sm:py-4 border-b border-zinc-100 dark:border-white/[0.06] bg-zinc-50 dark:bg-[#151515] shrink-0">
               <div className="flex items-center gap-3">
                 <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#0066B2] text-white shadow-xs">
                   <ListChecks className="h-5 w-5" />
@@ -84,7 +84,7 @@ export default function AnalyticsHelpModal({ isOpen, onClose }: AnalyticsHelpMod
             </div>
 
             {/* Sub-header navigation row */}
-            <div className="flex items-center justify-between px-6 py-3 border-b border-zinc-100 dark:border-zinc-800/60 bg-white dark:bg-[#0D0E12] text-xs font-semibold text-zinc-500 dark:text-zinc-400 shrink-0">
+            <div className="flex items-center justify-between px-6 py-3 border-b border-zinc-100 dark:border-white/[0.06] bg-white dark:bg-[#121212] text-xs font-semibold text-zinc-500 dark:text-zinc-400 shrink-0">
               <button
                 type="button"
                 onClick={onClose}
@@ -121,7 +121,7 @@ export default function AnalyticsHelpModal({ isOpen, onClose }: AnalyticsHelpMod
               {/* Analytics vs A/B Testing Grid */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-1">
                 {/* Card 1: Analytics */}
-                <div className="rounded-2xl border border-[#0066B2]/30 bg-zinc-50/70 dark:bg-[#16181F] p-5 space-y-2.5 shadow-xs">
+                <div className="rounded-2xl border border-[#0066B2]/30 bg-zinc-50/70 dark:bg-[#121212] p-5 space-y-2.5 shadow-xs">
                   <h4 className="text-base font-bold text-zinc-900 dark:text-white">Analytics</h4>
                   <p className="text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed">
                     Open a lead magnet and choose Analytics to see total signups, unique people, tracked visits and conversions, conversion rate, engagement, and results from the after-signup experience. Total signups include repeat requests. Conversion rate uses only signups matched to a tracked visit.
@@ -129,7 +129,7 @@ export default function AnalyticsHelpModal({ isOpen, onClose }: AnalyticsHelpMod
                 </div>
 
                 {/* Card 2: A/B testing */}
-                <div className="rounded-2xl border border-[#0066B2]/30 bg-zinc-50/70 dark:bg-[#16181F] p-5 space-y-2.5 shadow-xs">
+                <div className="rounded-2xl border border-[#0066B2]/30 bg-zinc-50/70 dark:bg-[#121212] p-5 space-y-2.5 shadow-xs">
                   <h4 className="text-base font-bold text-zinc-900 dark:text-white">A/B testing</h4>
                   <p className="text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed">
                     Test a different title or image against the current page. LeadMagnets splits new visitors between the versions and keeps each visitor on the same version.

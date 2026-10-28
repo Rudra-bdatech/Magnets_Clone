@@ -275,7 +275,7 @@ export default function AnalyticsChart({
   const activeSignupPoint = safeHoveredIndex !== null ? pointsSignups[safeHoveredIndex] : null;
 
   return (
-    <div className="relative rounded-2xl border border-[#0066B2]/15 dark:border-white/[0.08] bg-white/90 dark:bg-[#141417] dark:shadow-none p-4 sm:p-6 space-y-4 shadow-md backdrop-blur-sm overflow-hidden">
+    <div className="relative rounded-2xl border border-[#0066B2]/15 dark:border-white/[0.08] bg-white/90 dark:bg-[#171717] dark:shadow-none p-4 sm:p-6 space-y-4 shadow-md backdrop-blur-sm overflow-hidden">
       <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0066B2]/[0.02] to-transparent dark:hidden" />
 
       {/* Header */}
@@ -317,7 +317,7 @@ export default function AnalyticsChart({
                 onClick={() => setChartMode("bar")}
                 className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-md text-[11px] font-semibold transition-all ${
                   chartMode === "bar"
-                    ? "bg-white dark:bg-[#222226] text-zinc-900 dark:text-white shadow-xs"
+                    ? "bg-white dark:bg-white/10 text-zinc-900 dark:text-white shadow-xs"
                     : "text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200"
                 }`}
               >
@@ -329,7 +329,7 @@ export default function AnalyticsChart({
                 onClick={() => setChartMode("line")}
                 className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-md text-[11px] font-semibold transition-all ${
                   chartMode === "line"
-                    ? "bg-white dark:bg-[#222226] text-zinc-900 dark:text-white shadow-xs"
+                    ? "bg-white dark:bg-white/10 text-zinc-900 dark:text-white shadow-xs"
                     : "text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200"
                 }`}
               >
@@ -343,7 +343,7 @@ export default function AnalyticsChart({
 
       {!hasData ? (
         /* Minimal Empty State */
-        <div className="flex flex-col items-center justify-center py-12 sm:py-16 px-4 border border-zinc-200/80 dark:border-white/[0.08] rounded-xl bg-zinc-50/50 dark:bg-[#121214]">
+        <div className="flex flex-col items-center justify-center py-12 sm:py-16 px-4 border border-zinc-200/80 dark:border-white/[0.08] rounded-xl bg-zinc-50/50 dark:bg-[#121212]">
           <BarChart2 className="h-8 w-8 text-zinc-400 dark:text-zinc-600 mb-3" />
           <h4 className="text-sm font-bold text-zinc-900 dark:text-white">No visits recorded yet</h4>
           <p className="text-xs text-zinc-500 dark:text-zinc-400 text-center max-w-md mt-1 leading-relaxed">
@@ -355,7 +355,7 @@ export default function AnalyticsChart({
         <div className="space-y-3">
           {/* Always-on Summary Stat Strip (no hover required) */}
           <div className="grid grid-cols-3 gap-2 sm:gap-3">
-            <div className="rounded-xl border border-[#0066B2]/10 dark:border-white/[0.06] bg-[#F8FBFF] dark:bg-white/[0.02] px-3 py-2 shadow-xs">
+            <div className="rounded-xl border border-[#0066B2]/10 dark:border-white/[0.06] bg-[#F8FBFF] dark:bg-[#121212] px-3 py-2 shadow-xs">
               <p className="text-[10px] font-semibold uppercase tracking-wide text-zinc-400 dark:text-zinc-500">
                 Avg / day
               </p>
@@ -363,7 +363,7 @@ export default function AnalyticsChart({
                 {avgVisitsPerDay.toFixed(1)}
               </p>
             </div>
-            <div className="rounded-xl border border-[#0066B2]/10 dark:border-white/[0.06] bg-[#F8FBFF] dark:bg-white/[0.02] px-3 py-2 shadow-xs">
+            <div className="rounded-xl border border-[#0066B2]/10 dark:border-white/[0.06] bg-[#F8FBFF] dark:bg-[#121212] px-3 py-2 shadow-xs">
               <p className="text-[10px] font-semibold uppercase tracking-wide text-zinc-400 dark:text-zinc-500">
                 Peak day
               </p>
@@ -371,7 +371,7 @@ export default function AnalyticsChart({
                 {peakIsMeaningful ? `${peakDay.visits} · ${peakDay.label}` : "—"}
               </p>
             </div>
-            <div className="rounded-xl border border-[#0066B2]/10 dark:border-white/[0.06] bg-[#F8FBFF] dark:bg-white/[0.02] px-3 py-2 shadow-xs">
+            <div className="rounded-xl border border-[#0066B2]/10 dark:border-white/[0.06] bg-[#F8FBFF] dark:bg-[#121212] px-3 py-2 shadow-xs">
               <p className="text-[10px] font-semibold uppercase tracking-wide text-zinc-400 dark:text-zinc-500">
                 Conv. rate
               </p>
@@ -382,7 +382,7 @@ export default function AnalyticsChart({
           </div>
 
           {/* Subtle Hover / Tap Inspector Bar */}
-          <div className="min-h-8 flex flex-col sm:flex-row sm:items-center justify-between px-3.5 py-1.5 sm:py-1 rounded-xl bg-[#F8FBFF]/80 dark:bg-white/[0.02] border border-[#0066B2]/10 dark:border-white/[0.06] text-xs gap-1 sm:gap-0 shadow-xs">
+          <div className="min-h-8 flex flex-col sm:flex-row sm:items-center justify-between px-3.5 py-1.5 sm:py-1 rounded-xl bg-[#F8FBFF]/80 dark:bg-[#121212] border border-[#0066B2]/10 dark:border-white/[0.06] text-xs gap-1 sm:gap-0 shadow-xs">
             {activeDay ? (
               <>
                 <span className="text-zinc-900 dark:text-white font-bold flex items-center gap-2">
@@ -410,36 +410,36 @@ export default function AnalyticsChart({
           </div>
 
           {/* Canvas Box */}
-          <div className="relative h-44 sm:h-52 w-full border border-[#0066B2]/10 dark:border-white/[0.06] rounded-xl bg-zinc-50/30 dark:bg-[#111113] overflow-hidden select-none">
+          <div className="relative h-44 sm:h-52 w-full border border-[#0066B2]/10 dark:border-white/[0.06] rounded-xl bg-zinc-50/30 dark:bg-[#121212] overflow-hidden select-none">
             {/* Quantitative Gridlines + Y-Axis Scale Reference Marks */}
             <div className="absolute inset-0 pointer-events-none">
               {/* Max / 100% line */}
               <div className="absolute inset-x-0 top-3.5 border-b border-zinc-200/60 dark:border-zinc-800/60">
-                <span className="absolute right-2.5 -top-2 text-[10px] font-mono font-medium text-zinc-400 dark:text-zinc-500 bg-zinc-50/80 dark:bg-[#111113]/80 px-1 rounded-xs">
+                <span className="absolute right-2.5 -top-2 text-[10px] font-mono font-medium text-zinc-400 dark:text-zinc-500 bg-zinc-50/80 dark:bg-[#121212]/80 px-1 rounded-xs">
                   {formatYValue(maxVal)}
                 </span>
               </div>
               {/* 75% line */}
               <div className="absolute inset-x-0 top-[31%] border-b border-zinc-200/30 dark:border-zinc-800/30">
-                <span className="absolute right-2.5 -top-2 text-[10px] font-mono font-medium text-zinc-400/70 dark:text-zinc-500/70 bg-zinc-50/80 dark:bg-[#111113]/80 px-1 rounded-xs">
+                <span className="absolute right-2.5 -top-2 text-[10px] font-mono font-medium text-zinc-400/70 dark:text-zinc-500/70 bg-zinc-50/80 dark:bg-[#121212]/80 px-1 rounded-xs">
                   {formatYValue(maxVal * 0.75)}
                 </span>
               </div>
               {/* Mid / 50% line */}
               <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 border-b border-zinc-200/40 dark:border-zinc-800/40">
-                <span className="absolute right-2.5 -top-2 text-[10px] font-mono font-medium text-zinc-400/80 dark:text-zinc-500/80 bg-zinc-50/80 dark:bg-[#111113]/80 px-1 rounded-xs">
+                <span className="absolute right-2.5 -top-2 text-[10px] font-mono font-medium text-zinc-400/80 dark:text-zinc-500/80 bg-zinc-50/80 dark:bg-[#121212]/80 px-1 rounded-xs">
                   {formatYValue(maxVal / 2)}
                 </span>
               </div>
               {/* 25% line */}
               <div className="absolute inset-x-0 top-[69%] border-b border-zinc-200/30 dark:border-zinc-800/30">
-                <span className="absolute right-2.5 -top-2 text-[10px] font-mono font-medium text-zinc-400/70 dark:text-zinc-500/70 bg-zinc-50/80 dark:bg-[#111113]/80 px-1 rounded-xs">
+                <span className="absolute right-2.5 -top-2 text-[10px] font-mono font-medium text-zinc-400/70 dark:text-zinc-500/70 bg-zinc-50/80 dark:bg-[#121212]/80 px-1 rounded-xs">
                   {formatYValue(maxVal * 0.25)}
                 </span>
               </div>
               {/* Baseline / 0 line */}
               <div className="absolute inset-x-0 bottom-2.5 border-b border-zinc-200/40 dark:border-zinc-800/40">
-                <span className="absolute right-2.5 -top-2 text-[10px] font-mono font-medium text-zinc-400/70 dark:text-zinc-600 bg-zinc-50/80 dark:bg-[#111113]/80 px-1 rounded-xs">
+                <span className="absolute right-2.5 -top-2 text-[10px] font-mono font-medium text-zinc-400/70 dark:text-zinc-600 bg-zinc-50/80 dark:bg-[#121212]/80 px-1 rounded-xs">
                   0
                 </span>
               </div>

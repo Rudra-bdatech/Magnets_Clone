@@ -932,7 +932,7 @@ function parseCsvLine(line: string): string[] {
   );
 
   return (
-    <div className="flex flex-col min-h-[calc(100vh-3.5rem)] bg-gradient-to-b from-[#EFF6FF]/40 via-[#F8FBFF] to-[#F8FBFF] dark:bg-none dark:bg-[#09090B]">
+    <div className="flex flex-col min-h-[calc(100vh-3.5rem)] bg-gradient-to-b from-[#EFF6FF]/40 via-[#F8FBFF] to-[#F8FBFF] dark:bg-none dark:bg-[#0a0a0a]">
       <div className={`flex-1 px-3.5 py-6 sm:px-6 sm:py-7 lg:px-8 mx-auto w-full flex flex-col gap-4 transition-[max-width] duration-[220ms] ease-[cubic-bezier(0.16,1,0.3,1)] will-change-[max-width] ${isCollapsed ? "max-w-[1440px]" : "max-w-7xl"}`}>
 
         {/* ========================================================================= */}
@@ -954,7 +954,7 @@ function parseCsvLine(line: string): string[] {
               <UserPlus className="h-4 w-4" /> + Add Subscriber
             </button>
 
-            <label className="flex items-center gap-1.5 rounded-xl border border-zinc-200 bg-white px-4 py-2.5 text-xs font-semibold text-zinc-700 hover:bg-zinc-50 dark:border-[#2e2e38] dark:bg-[#18181B] dark:text-zinc-300 dark:hover:bg-[#25252A] transition cursor-pointer shadow-xs">
+            <label className="flex items-center gap-1.5 rounded-xl border border-zinc-200 bg-white px-4 py-2.5 text-xs font-semibold text-zinc-700 hover:bg-zinc-50 dark:border-white/10 dark:bg-[#171717] dark:text-zinc-200 dark:hover:bg-[#222222] transition cursor-pointer shadow-xs">
               <Download className="h-4 w-4 text-[#0066B2]" /> Import CSV
               <input type="file" accept=".csv" onChange={handleCSVFileSelect} className="hidden" />
             </label>
@@ -962,7 +962,7 @@ function parseCsvLine(line: string): string[] {
             <button
               type="button"
               onClick={handleExportCSV}
-              className="flex items-center gap-1.5 rounded-xl border border-zinc-200 bg-white px-4 py-2.5 text-xs font-semibold text-zinc-700 hover:bg-zinc-50 dark:border-[#2e2e38] dark:bg-[#18181B] dark:text-zinc-300 dark:hover:bg-[#25252A] transition cursor-pointer shadow-xs"
+              className="flex items-center gap-1.5 rounded-xl border border-zinc-200 bg-white px-4 py-2.5 text-xs font-semibold text-zinc-700 hover:bg-zinc-50 dark:border-white/10 dark:bg-[#171717] dark:text-zinc-200 dark:hover:bg-[#222222] transition cursor-pointer shadow-xs"
             >
               <Upload className="h-4 w-4 text-[#0066B2]" /> Export CSV
             </button>
@@ -990,7 +990,7 @@ function parseCsvLine(line: string): string[] {
 
           {/* Mobile Actions Quick Bar */}
           <div className="grid grid-cols-2 gap-2">
-            <label className="flex items-center justify-center gap-1.5 rounded-xl border border-zinc-200/90 bg-white py-2 px-3 text-xs font-semibold text-zinc-700 hover:bg-zinc-50 dark:border-[#2e2e38] dark:bg-[#18181B] dark:text-zinc-300 active:scale-98 transition cursor-pointer shadow-2xs">
+            <label className="flex items-center justify-center gap-1.5 rounded-xl border border-zinc-200/90 bg-white py-2 px-3 text-xs font-semibold text-zinc-700 hover:bg-zinc-50 dark:border-white/10 dark:bg-[#171717] dark:text-zinc-200 dark:hover:bg-[#222222] active:scale-98 transition cursor-pointer shadow-2xs">
               <Download className="h-3.5 w-3.5 text-[#0066B2] shrink-0" />
               <span className="truncate">Import CSV</span>
               <input type="file" accept=".csv" onChange={handleCSVFileSelect} className="hidden" />
@@ -999,7 +999,7 @@ function parseCsvLine(line: string): string[] {
             <button
               type="button"
               onClick={handleExportCSV}
-              className="flex items-center justify-center gap-1.5 rounded-xl border border-zinc-200/90 bg-white py-2 px-3 text-xs font-semibold text-zinc-700 hover:bg-zinc-50 dark:border-[#2e2e38] dark:bg-[#18181B] dark:text-zinc-300 active:scale-98 transition cursor-pointer shadow-2xs"
+              className="flex items-center justify-center gap-1.5 rounded-xl border border-zinc-200/90 bg-white py-2 px-3 text-xs font-semibold text-zinc-700 hover:bg-zinc-50 dark:border-white/10 dark:bg-[#171717] dark:text-zinc-200 dark:hover:bg-[#222222] active:scale-98 transition cursor-pointer shadow-2xs"
             >
               <Upload className="h-3.5 w-3.5 text-[#0066B2] shrink-0" />
               <span className="truncate">Export CSV</span>
@@ -1012,7 +1012,7 @@ function parseCsvLine(line: string): string[] {
         {/* ========================================================================= */}
         <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
           {/* Total Subscribers */}
-          <div className="relative h-full rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#141417] dark:shadow-none p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
+          <div className="relative h-full rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#171717] dark:shadow-none p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
             <div className="flex items-center justify-between sm:justify-start w-full sm:w-auto">
               <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl border border-indigo-500/30 bg-indigo-50 text-indigo-600 dark:border-white/10 dark:bg-white/5 dark:text-zinc-200">
                 <Layers className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
@@ -1030,7 +1030,7 @@ function parseCsvLine(line: string): string[] {
           </div>
 
           {/* Unique Subscribers */}
-          <div className="relative h-full rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#141417] dark:shadow-none p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
+          <div className="relative h-full rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#171717] dark:shadow-none p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
             <div className="flex items-center justify-between sm:justify-start w-full sm:w-auto">
               <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl border border-[#0066B2]/30 bg-[#EFF6FF] text-[#0066B2] dark:border-white/10 dark:bg-white/5 dark:text-zinc-200">
                 <Users className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
@@ -1048,7 +1048,7 @@ function parseCsvLine(line: string): string[] {
           </div>
 
           {/* New This Month */}
-          <div className="relative h-full rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#141417] dark:shadow-none p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
+          <div className="relative h-full rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#171717] dark:shadow-none p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
             <div className="flex items-center justify-between sm:justify-start w-full sm:w-auto">
               <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl border border-emerald-500/30 bg-emerald-50 text-emerald-600 dark:border-white/10 dark:bg-white/5 dark:text-emerald-400">
                 <TrendingUp className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
@@ -1066,7 +1066,7 @@ function parseCsvLine(line: string): string[] {
           </div>
 
           {/* Active In Sequence */}
-          <div className="relative h-full rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#141417] dark:shadow-none p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
+          <div className="relative h-full rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#171717] dark:shadow-none p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
             <div className="flex items-center justify-between sm:justify-start w-full sm:w-auto">
               <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl border border-purple-500/30 bg-purple-50 text-purple-600 dark:border-white/10 dark:bg-white/5 dark:text-zinc-200">
                 <Zap className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
@@ -1089,7 +1089,7 @@ function parseCsvLine(line: string): string[] {
         {/* ========================================================================= */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3 w-full max-w-full min-w-0">
             {/* Search Bar */}
-            <div className="flex items-center gap-2 flex-1 rounded-xl bg-zinc-50 dark:bg-[#16161a] px-3.5 py-2 border border-zinc-200/60 dark:border-white/[0.08] focus-within:border-[#0066B2] dark:focus-within:border-white/20 min-w-0">
+            <div className="flex items-center gap-2 flex-1 rounded-xl bg-zinc-50 dark:bg-[#1a1a1a] px-3.5 py-2 border border-zinc-200/60 dark:border-white/[0.08] focus-within:border-[#0066B2] dark:focus-within:border-white/20 min-w-0">
               <Search className="h-4 w-4 text-zinc-400 shrink-0" />
               <input
                 type="text"
@@ -1117,7 +1117,7 @@ function parseCsvLine(line: string): string[] {
 
             <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 justify-between sm:justify-end w-full sm:w-auto min-w-0">
               {/* Desktop Status Tabs Pod */}
-              <div className="hidden sm:flex items-center p-1 bg-zinc-100 dark:bg-[#16161a] rounded-xl text-xs font-semibold min-w-0">
+              <div className="hidden sm:flex items-center p-1 bg-zinc-100 dark:bg-[#1a1a1a] rounded-xl text-xs font-semibold min-w-0">
                 {[
                   { id: "all", label: `All (${leads.length})` },
                   { id: "in_progress", label: `In Progress (${inProgressCount})` },
@@ -1146,7 +1146,7 @@ function parseCsvLine(line: string): string[] {
                     {statusFilter === tab.id && (
                       <motion.div
                         layoutId="activeLeadsStatusFilterTab"
-                        className="absolute inset-0 bg-white dark:bg-[#222226] rounded-lg shadow-xs"
+                        className="absolute inset-0 bg-white dark:bg-white/10 rounded-lg shadow-xs"
                         transition={{ type: "spring", stiffness: 500, damping: 32 }}
                       />
                     )}
@@ -1164,7 +1164,7 @@ function parseCsvLine(line: string): string[] {
                     setIsSortOpen(false);
                     setIsMobileFilterOpen((v) => !v);
                   }}
-                  className="flex h-8 items-center gap-1.5 rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#18181B] px-2.5 text-[11px] font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-[#222226] transition shadow-2xs cursor-pointer select-none"
+                  className="flex h-8 items-center gap-1.5 rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#171717] px-2.5 text-[11px] font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-[#222222] transition shadow-2xs cursor-pointer select-none"
                 >
                   {filterMagnet === "All LinkedIn Leads" ? (
                     <Linkedin className="h-3 w-3 text-[#0A66C2] dark:text-[#38BDF8] shrink-0" />
@@ -1207,7 +1207,7 @@ function parseCsvLine(line: string): string[] {
                       exit={{ opacity: 0, scale: 0.96, y: -4 }}
                       transition={{ type: "spring", damping: 28, stiffness: 400 }}
                       onClick={(e) => e.stopPropagation()}
-                      className="absolute left-0 top-full z-40 mt-1.5 w-56 rounded-xl border border-zinc-200/90 dark:border-white/10 bg-white/95 dark:bg-[#16161a]/95 p-1.5 shadow-xl backdrop-blur-xl dark:text-white"
+                      className="absolute left-0 top-full z-40 mt-1.5 w-56 rounded-xl border border-zinc-200/90 dark:border-white/10 bg-white/95 dark:bg-[#1a1a1a]/95 p-1.5 shadow-xl backdrop-blur-xl dark:text-white"
                     >
                       <div className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
                         Filter Status
@@ -1297,7 +1297,7 @@ function parseCsvLine(line: string): string[] {
                     setIsMobileFilterOpen(false);
                     setFilterOpen((v) => !v);
                   }}
-                  className="flex h-8 items-center gap-1 sm:gap-2 rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#18181B] px-2 sm:px-3 text-[11px] sm:text-xs font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-[#222226] transition shadow-2xs cursor-pointer select-none"
+                  className="flex h-8 items-center gap-1 sm:gap-2 rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#171717] px-2 sm:px-3 text-[11px] sm:text-xs font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-[#222222] transition shadow-2xs cursor-pointer select-none"
                 >
                   {filterMagnet === "All LinkedIn Leads" ? (
                     <Linkedin className="h-3 w-3 text-[#0A66C2] dark:text-[#38BDF8] shrink-0" />
@@ -1326,7 +1326,7 @@ function parseCsvLine(line: string): string[] {
                       exit={{ opacity: 0, scale: 0.96, y: -4 }}
                       transition={{ type: "spring", damping: 28, stiffness: 400 }}
                       style={{ transformOrigin: "top right" }}
-                      className="absolute right-0 top-full z-40 mt-1.5 w-64 max-w-[calc(100vw-2rem)] rounded-xl border border-zinc-200/80 bg-white/95 p-1.5 shadow-2xl backdrop-blur-xl dark:border-white/10 dark:bg-[#18181F]/95 dark:text-white dark:shadow-[0_8px_24px_rgba(0,0,0,0.6)]"
+                      className="absolute right-0 top-full z-40 mt-1.5 w-64 max-w-[calc(100vw-2rem)] rounded-xl border border-zinc-200/80 bg-white/95 p-1.5 shadow-2xl backdrop-blur-xl dark:border-white/10 dark:bg-[#171717]/95 dark:text-white dark:shadow-[0_8px_24px_rgba(0,0,0,0.6)]"
                     >
                       <div className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
                         Quick Filters
@@ -1454,7 +1454,7 @@ function parseCsvLine(line: string): string[] {
                     setFilterOpen(false);
                     setIsSortOpen((v) => !v);
                   }}
-                  className="flex h-8 items-center gap-1 sm:gap-2 rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#18181B] px-2 sm:px-3 text-[11px] sm:text-xs font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-[#222226] transition shadow-2xs cursor-pointer select-none"
+                  className="flex h-8 items-center gap-1 sm:gap-2 rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#171717] px-2 sm:px-3 text-[11px] sm:text-xs font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-[#222222] transition shadow-2xs cursor-pointer select-none"
                 >
                   <SlidersHorizontal className="h-3 w-3 text-zinc-400 shrink-0" />
                   <span className="truncate max-w-[85px] sm:max-w-none">
@@ -1481,7 +1481,7 @@ function parseCsvLine(line: string): string[] {
                       exit={{ opacity: 0, scale: 0.96, y: -4 }}
                       transition={{ type: "spring", damping: 28, stiffness: 400 }}
                       onClick={(e) => e.stopPropagation()}
-                      className="absolute right-0 top-full z-40 mt-1.5 w-48 rounded-xl border border-zinc-200/90 dark:border-white/10 bg-white/95 dark:bg-[#16161a]/95 p-1.5 shadow-xl backdrop-blur-xl dark:text-white"
+                      className="absolute right-0 top-full z-40 mt-1.5 w-48 rounded-xl border border-zinc-200/90 dark:border-white/10 bg-white/95 dark:bg-[#1a1a1a]/95 p-1.5 shadow-xl backdrop-blur-xl dark:text-white"
                     >
                       <div className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
                         Sort by
@@ -1514,7 +1514,7 @@ function parseCsvLine(line: string): string[] {
               </div>
 
               {/* Select Mode Toggle Pod with CheckSquare icon */}
-              <div className="flex items-center p-1 bg-zinc-100 dark:bg-[#16161a] rounded-xl shrink-0">
+              <div className="flex items-center p-1 bg-zinc-100 dark:bg-[#1a1a1a] rounded-xl shrink-0">
                 <button
                   type="button"
                   onClick={() => {
@@ -1526,7 +1526,7 @@ function parseCsvLine(line: string): string[] {
                   }}
                   className={`relative p-1.5 rounded-lg transition-colors duration-150 cursor-pointer ${
                     isMobileSelectionMode || selectedLeadIds.length > 0
-                      ? "bg-white dark:bg-[#222226] text-[#0066B2] dark:text-[#38BDF8] shadow-xs"
+                      ? "bg-white dark:bg-white/10 text-[#0066B2] dark:text-[#38BDF8] shadow-xs"
                       : "text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200"
                   }`}
                   title={isMobileSelectionMode || selectedLeadIds.length > 0 ? "Exit Select Mode" : "Select Subscribers"}
@@ -1540,7 +1540,7 @@ function parseCsvLine(line: string): string[] {
         {/* ========================================================================= */}
         {/* 4. Table & Cards Data Container (Standalone Separated Card)               */}
         {/* ========================================================================= */}
-        <div className="rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#131316] shadow-md dark:shadow-none backdrop-blur-sm relative overflow-hidden">
+        <div className="rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#171717] shadow-md dark:shadow-none backdrop-blur-sm relative overflow-hidden">
           {/* Mobile Select All Strip when in selection mode */}
             <AnimatePresence>
               {isMobileSelectionMode && (
@@ -1578,9 +1578,9 @@ function parseCsvLine(line: string): string[] {
             {/* ========================================================================= */}
             <div className="hidden md:block overflow-x-auto">
               <table className="w-full text-left divide-y divide-zinc-200/60 dark:divide-white/[0.05]">
-                <thead className="bg-zinc-50/70 dark:bg-[#161619] border-b border-zinc-200/80 dark:border-white/[0.06]">
+                <thead className="bg-zinc-50/70 dark:bg-[#151515] border-b border-zinc-200/80 dark:border-white/[0.06]">
                   <tr>
-                    <th className="px-3 lg:px-4 py-3.5 text-left text-[11px] font-semibold uppercase tracking-wider text-zinc-500 dark:text-[#9B9085]">
+                    <th className="px-3 lg:px-4 py-3.5 text-left text-[11px] font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
                       <div className="flex items-center">
                         <AnimatePresence initial={false}>
                           {(isMobileSelectionMode || selectedLeadIds.length > 0) && (
@@ -1607,14 +1607,14 @@ function parseCsvLine(line: string): string[] {
                         <span>Subscriber</span>
                       </div>
                     </th>
-                    <th className="px-3 lg:px-4 py-3.5 text-left text-[11px] font-semibold uppercase tracking-wider text-zinc-500 dark:text-[#9B9085]">Source / Gate</th>
-                    <th className="px-3 lg:px-4 py-3.5 text-left text-[11px] font-semibold uppercase tracking-wider text-zinc-500 dark:text-[#9B9085]">Lead Magnet</th>
-                    <th className="px-3 lg:px-4 py-3.5 text-left text-[11px] font-semibold uppercase tracking-wider text-zinc-500 dark:text-[#9B9085]">Signup Date</th>
-                    <th className="px-3 lg:px-4 py-3.5 text-left text-[11px] font-semibold uppercase tracking-wider text-zinc-500 dark:text-[#9B9085]">Sequence</th>
-                    <th className="px-3 lg:px-4 py-3.5 text-right text-[11px] font-semibold uppercase tracking-wider text-zinc-500 dark:text-[#9B9085]">Actions</th>
+                    <th className="px-3 lg:px-4 py-3.5 text-left text-[11px] font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Source / Gate</th>
+                    <th className="px-3 lg:px-4 py-3.5 text-left text-[11px] font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Lead Magnet</th>
+                    <th className="px-3 lg:px-4 py-3.5 text-left text-[11px] font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Signup Date</th>
+                    <th className="px-3 lg:px-4 py-3.5 text-left text-[11px] font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Sequence</th>
+                    <th className="px-3 lg:px-4 py-3.5 text-right text-[11px] font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-zinc-100 bg-white dark:divide-[#222228] dark:bg-[#18181B]">
+                <tbody className="divide-y divide-zinc-100 bg-white dark:divide-white/[0.06] dark:bg-[#171717]">
                   {paginatedLeads.map((lead) => {
                     const isSelected = selectedLeadIds.includes(lead.id);
                     const isLinkedIn = checkIsLinkedInLead(lead);
@@ -1656,7 +1656,7 @@ function parseCsvLine(line: string): string[] {
                   <p className="text-sm font-bold text-zinc-900 dark:text-white mb-1">
                     {search ? "No matching leads found" : "No leads yet"}
                   </p>
-                  <p className="text-xs text-zinc-500 dark:text-[#9B9085]">
+                  <p className="text-xs text-zinc-500 dark:text-zinc-400">
                     {search
                       ? "Try searching for a different name, email, or magnet."
                       : "Leads appear automatically when users enter their email on a published magnet."}
@@ -1712,7 +1712,7 @@ function parseCsvLine(line: string): string[] {
                   <p className="text-sm font-bold text-zinc-900 dark:text-white mb-1">
                     {search ? "No matching leads found" : "No leads yet"}
                   </p>
-                  <p className="text-xs text-zinc-500 dark:text-[#9B9085] max-w-xs mx-auto mb-4">
+                  <p className="text-xs text-zinc-500 dark:text-zinc-400 max-w-xs mx-auto mb-4">
                     {search
                       ? "Try searching for a different name, email, or magnet."
                       : "Leads appear automatically when users enter their email on a published magnet."}
@@ -1743,7 +1743,7 @@ function parseCsvLine(line: string): string[] {
             {/* 5. DESKTOP Pagination (hidden md:flex) - Preserved 100% Unchanged         */}
             {/* ========================================================================= */}
             {filtered.length > 0 && (
-              <div className="hidden md:flex flex-col sm:flex-row items-center justify-between gap-3 px-4 sm:px-6 py-2.5 border-t border-[#0066B2]/20 dark:border-[#38BDF8]/20 bg-[#F8FBFF]/50 dark:bg-[#151518]/50 text-xs text-zinc-600 dark:text-[#9B9085]">
+              <div className="hidden md:flex flex-col sm:flex-row items-center justify-between gap-3 px-4 sm:px-6 py-2.5 border-t border-[#0066B2]/20 dark:border-white/[0.06] bg-[#F8FBFF]/50 dark:bg-[#151515] text-xs text-zinc-600 dark:text-zinc-400">
                 <div>
                   {filtered.length <= pageSize ? (
                     <>
@@ -1774,7 +1774,7 @@ function parseCsvLine(line: string): string[] {
                         setPageSize(Number(e.target.value));
                         setCurrentPage(1);
                       }}
-                      className="rounded-lg border border-zinc-200 bg-white px-2 py-0.5 text-xs font-semibold text-zinc-700 dark:border-[#2e2e38] dark:bg-[#202026] dark:text-zinc-300 focus:outline-none cursor-pointer"
+                      className="rounded-lg border border-zinc-200 bg-white px-2 py-0.5 text-xs font-semibold text-zinc-700 dark:border-white/10 dark:bg-white/5 dark:text-zinc-200 focus:outline-none cursor-pointer"
                     >
                       <option value={10}>10</option>
                       <option value={25}>25</option>
@@ -1787,7 +1787,7 @@ function parseCsvLine(line: string): string[] {
                       type="button"
                       disabled={currentPage === 1}
                       onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                      className="flex h-7 w-7 items-center justify-center rounded-lg border border-zinc-200 bg-white text-zinc-600 hover:bg-zinc-50 disabled:opacity-40 dark:border-[#2e2e38] dark:bg-[#202026] dark:text-zinc-300 transition cursor-pointer"
+                      className="flex h-7 w-7 items-center justify-center rounded-lg border border-zinc-200 bg-white text-zinc-600 hover:bg-zinc-50 disabled:opacity-40 dark:border-white/10 dark:bg-white/5 dark:text-zinc-200 dark:hover:bg-white/10 transition cursor-pointer"
                     >
                       <ChevronLeft className="h-3.5 w-3.5" />
                     </button>
@@ -1798,7 +1798,7 @@ function parseCsvLine(line: string): string[] {
                       type="button"
                       disabled={currentPage >= totalPages}
                       onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-                      className="flex h-7 w-7 items-center justify-center rounded-lg border border-zinc-200 bg-white text-zinc-600 hover:bg-zinc-50 disabled:opacity-40 dark:border-[#2e2e38] dark:bg-[#202026] dark:text-zinc-300 transition cursor-pointer"
+                      className="flex h-7 w-7 items-center justify-center rounded-lg border border-zinc-200 bg-white text-zinc-600 hover:bg-zinc-50 disabled:opacity-40 dark:border-white/10 dark:bg-white/5 dark:text-zinc-200 dark:hover:bg-white/10 transition cursor-pointer"
                     >
                       <ChevronRight className="h-3.5 w-3.5" />
                     </button>
@@ -1811,8 +1811,8 @@ function parseCsvLine(line: string): string[] {
             {/* 5. MOBILE Pagination (flex md:hidden) - Ergonomic Thumb Buttons           */}
             {/* ========================================================================= */}
             {filtered.length > 0 && (
-              <div className="flex md:hidden flex-col gap-2.5 p-3.5 border-t border-zinc-200/80 dark:border-[#2e2e38] bg-[#F8FBFF]/50 dark:bg-[#151518]/50">
-                <div className="flex items-center justify-between text-xs text-zinc-600 dark:text-[#9B9085]">
+              <div className="flex md:hidden flex-col gap-2.5 p-3.5 border-t border-zinc-200/80 dark:border-white/[0.06] bg-[#F8FBFF]/50 dark:bg-[#151515]">
+                <div className="flex items-center justify-between text-xs text-zinc-600 dark:text-zinc-400">
                   <div>
                     {filtered.length <= pageSize ? (
                       <>
@@ -1841,7 +1841,7 @@ function parseCsvLine(line: string): string[] {
                         setPageSize(Number(e.target.value));
                         setCurrentPage(1);
                       }}
-                      className="rounded-lg border border-zinc-200 bg-white px-2 py-0.5 text-xs font-semibold text-zinc-700 dark:border-[#2e2e38] dark:bg-[#202026] dark:text-zinc-300 focus:outline-none cursor-pointer"
+                      className="rounded-lg border border-zinc-200 bg-white px-2 py-0.5 text-xs font-semibold text-zinc-700 dark:border-white/10 dark:bg-white/5 dark:text-zinc-200 focus:outline-none cursor-pointer"
                     >
                       <option value={10}>10</option>
                       <option value={25}>25</option>
@@ -1855,7 +1855,7 @@ function parseCsvLine(line: string): string[] {
                     type="button"
                     disabled={currentPage === 1}
                     onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                    className="flex-1 flex items-center justify-center gap-1 py-2 px-3 rounded-xl border border-zinc-200 bg-white text-xs font-bold text-zinc-700 hover:bg-zinc-50 disabled:opacity-40 dark:border-[#2e2e38] dark:bg-[#202026] dark:text-zinc-300 transition shadow-2xs cursor-pointer"
+                    className="flex-1 flex items-center justify-center gap-1 py-2 px-3 rounded-xl border border-zinc-200 bg-white text-xs font-bold text-zinc-700 hover:bg-zinc-50 disabled:opacity-40 dark:border-white/10 dark:bg-white/5 dark:text-zinc-200 dark:hover:bg-white/10 transition shadow-2xs cursor-pointer"
                   >
                     <ChevronLeft className="h-4 w-4" /> Previous
                   </button>
@@ -1868,7 +1868,7 @@ function parseCsvLine(line: string): string[] {
                     type="button"
                     disabled={currentPage >= totalPages}
                     onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-                    className="flex-1 flex items-center justify-center gap-1 py-2 px-3 rounded-xl border border-zinc-200 bg-white text-xs font-bold text-zinc-700 hover:bg-zinc-50 disabled:opacity-40 dark:border-[#2e2e38] dark:bg-[#202026] dark:text-zinc-300 transition shadow-2xs cursor-pointer"
+                    className="flex-1 flex items-center justify-center gap-1 py-2 px-3 rounded-xl border border-zinc-200 bg-white text-xs font-bold text-zinc-700 hover:bg-zinc-50 disabled:opacity-40 dark:border-white/10 dark:bg-white/5 dark:text-zinc-200 dark:hover:bg-white/10 transition shadow-2xs cursor-pointer"
                   >
                     Next <ChevronRight className="h-4 w-4" />
                   </button>
@@ -1889,7 +1889,7 @@ function parseCsvLine(line: string): string[] {
                 animate={{ opacity: 1, y: 0, x: "-50%" }}
                 exit={{ opacity: 0, y: 40, x: "-50%" }}
                 transition={{ type: "spring", stiffness: 450, damping: 30 }}
-                className="fixed bottom-6 left-1/2 z-[100] flex items-center gap-2.5 sm:gap-3 rounded-2xl bg-white/90 dark:bg-[#18181B]/95 border border-zinc-200/90 dark:border-white/10 text-zinc-900 dark:text-white px-3.5 sm:px-5 py-2.5 shadow-[0_16px_40px_rgba(0,0,0,0.2)] dark:shadow-[0_16px_40px_rgba(0,0,0,0.6)] backdrop-blur-xl ring-1 ring-black/5 dark:ring-white/10 max-w-[calc(100vw-24px)] overflow-x-auto scrollbar-none"
+                className="fixed bottom-6 left-1/2 z-[100] flex items-center gap-2.5 sm:gap-3 rounded-2xl bg-white/90 dark:bg-[#171717]/95 border border-zinc-200/90 dark:border-white/10 text-zinc-900 dark:text-white px-3.5 sm:px-5 py-2.5 shadow-[0_16px_40px_rgba(0,0,0,0.2)] dark:shadow-[0_16px_40px_rgba(0,0,0,0.6)] backdrop-blur-xl ring-1 ring-black/5 dark:ring-white/10 max-w-[calc(100vw-24px)] overflow-x-auto scrollbar-none"
               >
                 <span className="text-xs font-bold whitespace-nowrap text-zinc-900 dark:text-white">
                   <span className="text-[#0066B2] dark:text-[#38BDF8] font-black">{selectedLeadIds.length}</span> selected

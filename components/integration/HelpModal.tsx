@@ -54,11 +54,11 @@ export const HelpModal = memo(function HelpModal({ isOpen, onClose }: HelpModalP
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.94, y: 12 }}
             transition={{ type: "spring", stiffness: 380, damping: 28, mass: 0.9 }}
-            className="relative w-full max-w-3xl rounded-2xl bg-[#141517] text-white border border-zinc-800/90 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.7)] overflow-hidden flex flex-col max-h-[90vh] z-10 overscroll-contain"
+            className="relative w-full max-w-3xl rounded-2xl bg-[#171717] text-white border border-white/10 shadow-2xl overflow-hidden flex flex-col max-h-[90vh] z-10 overscroll-contain"
             data-lenis-prevent
           >
             {/* Header */}
-            <div className="flex items-center justify-between px-4 sm:px-6 py-3.5 sm:py-4 border-b border-zinc-800/80 bg-[#16181C]">
+            <div className="flex items-center justify-between px-4 sm:px-6 py-3.5 sm:py-4 border-b border-white/10 bg-[#151515]">
               <div className="flex items-center gap-3">
                 <div className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-xl bg-[#0066B2] text-white font-bold shadow-xs">
                   <Settings className="h-4 w-4 sm:h-5 sm:w-5" />
@@ -78,7 +78,7 @@ export const HelpModal = memo(function HelpModal({ isOpen, onClose }: HelpModalP
             </div>
 
             {/* Sub-header navigation */}
-            <div className="flex items-center justify-between px-4 sm:px-6 py-2.5 sm:py-3 border-b border-zinc-800/60 bg-[#111215] text-xs font-semibold text-zinc-400">
+            <div className="flex items-center justify-between px-4 sm:px-6 py-2.5 sm:py-3 border-b border-white/[0.06] bg-[#121212] text-xs font-semibold text-zinc-400">
               <button
                 type="button"
                 onClick={onClose}
@@ -110,7 +110,7 @@ export const HelpModal = memo(function HelpModal({ isOpen, onClose }: HelpModalP
               {/* 5 Feature Cards Grid matching screenshot */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Card 1 */}
-                <div className="rounded-xl border border-zinc-800/80 bg-[#181A1F] p-4 space-y-1.5">
+                <div className="rounded-xl border border-white/10 bg-[#121212] p-4 space-y-1.5">
                   <h4 className="text-sm font-bold text-white">LeadMagnets URL</h4>
                   <p className="text-xs text-zinc-400 leading-relaxed">
                     Choose the included leadmagnets.so address used by your published pages.
@@ -118,7 +118,7 @@ export const HelpModal = memo(function HelpModal({ isOpen, onClose }: HelpModalP
                 </div>
 
                 {/* Card 2 */}
-                <div className="rounded-xl border border-zinc-800/80 bg-[#181A1F] p-4 space-y-1.5">
+                <div className="rounded-xl border border-white/10 bg-[#121212] p-4 space-y-1.5">
                   <h4 className="text-sm font-bold text-white">Custom domain</h4>
                   <p className="text-xs text-zinc-400 leading-relaxed">
                     Optionally use a branded page address on a domain you own.
@@ -126,7 +126,7 @@ export const HelpModal = memo(function HelpModal({ isOpen, onClose }: HelpModalP
                 </div>
 
                 {/* Card 3 */}
-                <div className="rounded-xl border border-zinc-800/80 bg-[#181A1F] p-4 space-y-1.5">
+                <div className="rounded-xl border border-white/10 bg-[#121212] p-4 space-y-1.5">
                   <h4 className="text-sm font-bold text-white">Email and scheduling</h4>
                   <p className="text-xs text-zinc-400 leading-relaxed">
                     Optionally use your own sender domain or stop a sequence when someone books.
@@ -134,7 +134,7 @@ export const HelpModal = memo(function HelpModal({ isOpen, onClose }: HelpModalP
                 </div>
 
                 {/* Card 4 */}
-                <div className="rounded-xl border border-zinc-800/80 bg-[#181A1F] p-4 space-y-1.5">
+                <div className="rounded-xl border border-white/10 bg-[#121212] p-4 space-y-1.5">
                   <h4 className="text-sm font-bold text-white">Connections</h4>
                   <p className="text-xs text-zinc-400 leading-relaxed">
                     Optionally send signups to a newsletter, Slack, Zapier, Kit, or Pipedrive.
@@ -142,7 +142,7 @@ export const HelpModal = memo(function HelpModal({ isOpen, onClose }: HelpModalP
                 </div>
 
                 {/* Card 5 */}
-                <div className="rounded-xl border border-zinc-800/80 bg-[#181A1F] p-4 space-y-1.5 md:col-span-2">
+                <div className="rounded-xl border border-white/10 bg-[#121212] p-4 space-y-1.5 md:col-span-2">
                   <h4 className="text-sm font-bold text-white">Legal links</h4>
                   <p className="text-xs text-zinc-400 leading-relaxed">
                     Add your privacy policy and terms to the footer of every public lead magnet page.

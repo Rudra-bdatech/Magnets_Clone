@@ -271,7 +271,7 @@ export default function WorkspaceSetupPage() {
 
   return (
     <>
-      <div className="flex flex-col min-h-[calc(100vh-3rem)] bg-gradient-to-b from-[#EFF6FF]/40 via-[#F8FBFF] to-[#F8FBFF] dark:bg-none dark:bg-[#0B0B0D]">
+      <div className="flex flex-col min-h-[calc(100vh-3rem)] bg-gradient-to-b from-[#EFF6FF]/40 via-[#F8FBFF] to-[#F8FBFF] dark:bg-none dark:bg-[#0a0a0a]">
         <div className={`flex-1 px-3.5 sm:px-6 py-4 sm:py-6 lg:px-8 mx-auto w-full transition-[max-width] duration-[220ms] ease-[cubic-bezier(0.16,1,0.3,1)] will-change-[max-width] ${isCollapsed ? "max-w-[1440px]" : "max-w-7xl"}`}>
 
           {/* Page heading & status */}
@@ -281,7 +281,7 @@ export default function WorkspaceSetupPage() {
               <button
                 type="button"
                 onClick={() => setShowHelpModal(true)}
-                className="flex h-5 w-5 items-center justify-center rounded-full border border-zinc-300 text-xs font-normal text-zinc-500 hover:bg-zinc-200 dark:border-[#2e2e38] dark:text-[#9B9085] dark:hover:bg-[#18181B] dark:hover:text-white transition cursor-pointer"
+                className="flex h-5 w-5 items-center justify-center rounded-full border border-zinc-300 text-xs font-normal text-zinc-500 hover:bg-zinc-200 dark:border-white/10 dark:text-zinc-400 dark:hover:bg-white/10 dark:hover:text-white transition cursor-pointer"
                 title="Help: What belongs in Integration?"
               >
                 ?
@@ -289,7 +289,7 @@ export default function WorkspaceSetupPage() {
             </h2>
 
             {/* Public URL ready status card */}
-            <div className="flex items-center gap-2.5 rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 px-3.5 sm:px-4 py-2 sm:py-2.5 shrink-0 shadow-md backdrop-blur-sm w-full sm:w-auto">
+            <div className="flex items-center gap-2.5 rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#171717]/90 px-3.5 sm:px-4 py-2 sm:py-2.5 shrink-0 shadow-md dark:shadow-none backdrop-blur-sm w-full sm:w-auto">
               <span className={`h-2 w-2 rounded-full ${cnameVerified || domainVerified ? "bg-emerald-500" : "bg-amber-500"} shrink-0`} />
               <div className="min-w-0 flex-1 sm:flex-initial">
                 <div className="flex items-center gap-2 flex-wrap">
@@ -302,7 +302,7 @@ export default function WorkspaceSetupPage() {
                     </span>
                   )}
                 </div>
-                <p className="text-[11px] text-zinc-500 dark:text-[#9B9085] mt-0.5 font-mono truncate max-w-[260px] sm:max-w-xs">
+                <p className="text-[11px] text-zinc-500 dark:text-zinc-400 mt-0.5 font-mono truncate max-w-[260px] sm:max-w-xs">
                   {cnameVerified && rootDomain
                     ? formatFullHost(rootDomain, pageSubdomain)
                     : `${appBaseUrl}/${username}`}
@@ -349,14 +349,14 @@ export default function WorkspaceSetupPage() {
             />
 
             {/* 2. Optional connections wrapper (Automations) */}
-            <div id="connections-section" className="rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 shadow-md backdrop-blur-sm transition-colors overflow-hidden">
+            <div id="connections-section" className="rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#171717] shadow-md dark:shadow-none backdrop-blur-sm transition-colors overflow-hidden">
               <button
                 type="button"
                 onClick={() => toggle("connections")}
-                className="flex w-full items-center justify-between p-4 text-left hover:bg-[#EFF6FF] dark:hover:bg-[#18181c] transition-colors cursor-pointer"
+                className="flex w-full items-center justify-between p-4 text-left hover:bg-[#EFF6FF] dark:hover:bg-white/[0.04] transition-colors cursor-pointer"
               >
                 <div className="flex items-center gap-3 min-w-0 flex-1">
-                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-[#0066B2]/30 bg-[#EFF6FF] text-[#0066B2] dark:border-[#0066B2]/30 dark:bg-[#0066B2]/20 dark:text-[#38BDF8]">
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-[#0066B2]/30 bg-[#EFF6FF] text-[#0066B2] dark:border-white/10 dark:bg-white/5 dark:text-zinc-200">
                     <Plug className="h-4.5 w-4.5" />
                   </div>
                   <div className="min-w-0 flex-1">
@@ -380,7 +380,7 @@ export default function WorkspaceSetupPage() {
                 </div>
               </button>
               {openSections["connections"] && (
-                <div className="border-t border-[#0066B2]/10 bg-white/50 dark:border-[#38BDF8]/20 dark:bg-[#0E0E10]/50 px-5 py-5 space-y-6">
+                <div className="border-t border-[#0066B2]/10 bg-white/50 dark:border-white/[0.06] dark:bg-[#121212]/50 px-5 py-5 space-y-6">
                   {/* Automations (Slack, Zapier, Pipedrive, Kit, Substack) */}
                   <AutomationsSection
                     account={account}
@@ -474,13 +474,13 @@ export default function WorkspaceSetupPage() {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 15 }}
               transition={{ type: "spring", duration: 0.4, bounce: 0.1 }}
-              className="relative w-full max-w-md overflow-hidden rounded-2xl border border-emerald-500/30 bg-white dark:bg-[#12131A] text-zinc-900 dark:text-white shadow-2xl z-10 p-6 sm:p-7 text-center my-8"
+              className="relative w-full max-w-md overflow-hidden rounded-2xl border border-emerald-500/30 bg-white dark:bg-[#171717] text-zinc-900 dark:text-white shadow-2xl z-10 p-6 sm:p-7 text-center my-8"
             >
               {/* Close Button */}
               <button
                 type="button"
                 onClick={() => setShowSuccessModal(false)}
-                className="absolute top-4 right-4 flex h-8 w-8 items-center justify-center rounded-full bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition cursor-pointer"
+                className="absolute top-4 right-4 flex h-8 w-8 items-center justify-center rounded-full bg-zinc-100 hover:bg-zinc-200 dark:bg-white/10 dark:hover:bg-white/15 text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition cursor-pointer"
                 aria-label="Close"
               >
                 <X className="h-4 w-4" />

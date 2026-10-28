@@ -46,7 +46,7 @@ export const AutomationsSection = memo(function AutomationsSection({
       {/* AUTOMATIONS Section */}
       <div className="space-y-3">
         <div>
-          <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 dark:text-[#9B9085] flex items-center gap-1.5">
+          <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 flex items-center gap-1.5">
             AUTOMATIONS
             <InfoTooltip
               content="Send each new signup to the tools your team already uses."
@@ -58,10 +58,10 @@ export const AutomationsSection = memo(function AutomationsSection({
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           {/* Slack Expandable Card */}
-          <div className={`${openSections["slack-webhook"] ? "md:col-span-2" : "md:col-span-1"} rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 overflow-hidden shadow-md backdrop-blur-sm transition-all duration-300 ease-in-out`}>
+          <div className={`${openSections["slack-webhook"] ? "md:col-span-2" : "md:col-span-1"} rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#171717] overflow-hidden shadow-md dark:shadow-none backdrop-blur-sm transition-all duration-300 ease-in-out`}>
             <div
               onClick={() => toggle("slack-webhook")}
-              className="p-4 flex items-center justify-between hover:bg-[#EFF6FF] dark:hover:bg-[#18181c] transition-colors cursor-pointer"
+              className="p-4 flex items-center justify-between hover:bg-[#EFF6FF] dark:hover:bg-white/[0.04] transition-colors cursor-pointer"
             >
               <div className="flex items-center gap-3">
                 <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#F3E8FF] border border-[#E9D5FF] dark:bg-[#251838] overflow-hidden p-1.5">
@@ -78,7 +78,7 @@ export const AutomationsSection = memo(function AutomationsSection({
                   </h5>
                 </div>
               </div>
-              <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-[#0066B2]/30 bg-white text-zinc-500 shadow-sm dark:border-[#0066B2]/30 dark:bg-[#18181B] transition-transform duration-300">
+              <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-[#0066B2]/30 bg-white text-zinc-500 shadow-sm dark:border-white/10 dark:bg-[#121212] transition-transform duration-300">
                 <ChevronDown className={`h-3.5 w-3.5 transition-transform duration-300 ${openSections["slack-webhook"] ? "rotate-180" : ""}`} />
               </div>
             </div>
@@ -86,9 +86,9 @@ export const AutomationsSection = memo(function AutomationsSection({
             {/* Expanded Webhook Input Panel with Grid Height Animation */}
             <div className={`grid transition-all duration-300 ease-in-out ${openSections["slack-webhook"] ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"}`}>
               <div className="overflow-hidden">
-                <div className="px-5 pb-5 pt-2 border-t border-zinc-100 dark:border-white/5 space-y-4 bg-zinc-50/50 dark:bg-[#151518]">
+                <div className="px-5 pb-5 pt-2 border-t border-zinc-100 dark:border-white/5 space-y-4 bg-zinc-50/50 dark:bg-[#121212]/50">
                   <div>
-                    <label className="block text-xs font-semibold text-zinc-700 dark:text-[#9B9085] mb-2">
+                    <label className="block text-xs font-semibold text-zinc-700 dark:text-zinc-400 mb-2">
                       Slack incoming-webhook URL
                     </label>
                     <div className="relative">
@@ -113,7 +113,7 @@ export const AutomationsSection = memo(function AutomationsSection({
                           }
                           handleSave();
                         }}
-                        className={`w-full rounded-xl border bg-white dark:bg-[#0E0E10] pl-3.5 pr-10 py-2.5 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-[#555] outline-none transition font-mono ${
+                        className={`w-full rounded-xl border bg-white dark:bg-[#121212] pl-3.5 pr-10 py-2.5 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 outline-none transition font-mono ${
                           slackUrlError ? "border-rose-500 focus:border-rose-500" : "border-zinc-200 dark:border-white/10 focus:border-[#0066B2]"
                         }`}
                       />
@@ -129,14 +129,14 @@ export const AutomationsSection = memo(function AutomationsSection({
                     {slackUrlError ? (
                       <p className="text-[11px] text-rose-500 mt-1.5">{slackUrlError}</p>
                     ) : (
-                      <p className="text-[11px] text-zinc-500 dark:text-[#666675] mt-1.5">
+                      <p className="text-[11px] text-zinc-500 dark:text-zinc-400 mt-1.5">
                         In Slack, create an Incoming Webhook, choose its channel, then paste the generated hooks.slack.com URL here. Leave it blank to disconnect.
                       </p>
                     )}
                   </div>
 
                   <div className="pt-2 border-t border-zinc-200/60 dark:border-white/5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                    <p className="text-[11px] text-zinc-500 dark:text-[#666675]">
+                    <p className="text-[11px] text-zinc-500 dark:text-zinc-400">
                       Slack receives the name, email, lead magnet title, and a link to the page. It never blocks the signup or resource email.
                     </p>
                     <button
@@ -170,7 +170,7 @@ export const AutomationsSection = memo(function AutomationsSection({
                           addToast(`Error sending test message: ${err.message}`, "error");
                         }
                       }}
-                      className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-3.5 py-2 sm:py-1.5 rounded-lg border border-zinc-200 bg-white dark:border-white/10 dark:bg-[#1E1E22] text-xs font-semibold text-zinc-700 dark:text-white hover:bg-zinc-100 dark:hover:bg-[#25252A] transition shrink-0 cursor-pointer shadow-2xs"
+                      className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-3.5 py-2 sm:py-1.5 rounded-lg border border-zinc-200 bg-white dark:border-white/10 dark:bg-white/5 text-xs font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-white/10 transition shrink-0 cursor-pointer shadow-2xs"
                     >
                       <Slack className="h-3.5 w-3.5 text-[#0066B2] dark:text-[#38BDF8]" />
                       <span>Send test</span>
@@ -182,10 +182,10 @@ export const AutomationsSection = memo(function AutomationsSection({
           </div>
 
           {/* Zapier Expandable Card */}
-          <div className={`${openSections["zapier-webhook"] ? "md:col-span-2" : "md:col-span-1"} rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 overflow-hidden shadow-md backdrop-blur-sm transition-all duration-300 ease-in-out`}>
+          <div className={`${openSections["zapier-webhook"] ? "md:col-span-2" : "md:col-span-1"} rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#171717] overflow-hidden shadow-md dark:shadow-none backdrop-blur-sm transition-all duration-300 ease-in-out`}>
             <div
               onClick={() => toggle("zapier-webhook")}
-              className="p-4 flex items-center justify-between hover:bg-[#EFF6FF] dark:hover:bg-[#18181c] transition-colors cursor-pointer"
+              className="p-4 flex items-center justify-between hover:bg-[#EFF6FF] dark:hover:bg-white/[0.04] transition-colors cursor-pointer"
             >
               <div className="flex items-center gap-3">
                 <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#FFF0EB] text-[#FF4F00] border border-[#FFDCD0] dark:bg-[#33180F] dark:border-[#522518]">
@@ -202,7 +202,7 @@ export const AutomationsSection = memo(function AutomationsSection({
                   </h5>
                 </div>
               </div>
-              <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-[#0066B2]/30 bg-white text-zinc-500 shadow-sm dark:border-[#0066B2]/30 dark:bg-[#18181B] transition-transform duration-300">
+              <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-[#0066B2]/30 bg-white text-zinc-500 shadow-sm dark:border-white/10 dark:bg-[#121212] transition-transform duration-300">
                 <ChevronDown className={`h-3.5 w-3.5 transition-transform duration-300 ${openSections["zapier-webhook"] ? "rotate-180" : ""}`} />
               </div>
             </div>
@@ -210,14 +210,14 @@ export const AutomationsSection = memo(function AutomationsSection({
             {/* Expanded Zapier Webhook Input Panel with Grid Height Animation */}
             <div className={`grid transition-all duration-300 ease-in-out ${openSections["zapier-webhook"] ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"}`}>
               <div className="overflow-hidden">
-                <div className="px-5 pb-5 pt-3 border-t border-zinc-100 dark:border-white/5 space-y-4 bg-zinc-50/50 dark:bg-[#151518]">
+                <div className="px-5 pb-5 pt-3 border-t border-zinc-100 dark:border-white/5 space-y-4 bg-zinc-50/50 dark:bg-[#121212]/50">
                   {/* Instruction Note Box */}
-                  <div className="rounded-xl border border-zinc-200 bg-white dark:border-white/10 dark:bg-[#1C1C20] p-3 text-xs text-zinc-600 dark:text-[#9B9085]">
+                  <div className="rounded-xl border border-zinc-200 bg-white dark:border-white/10 dark:bg-[#121212] p-3 text-xs text-zinc-600 dark:text-zinc-400">
                     In Zapier, choose <strong className="text-zinc-900 dark:text-white font-semibold">Webhooks by Zapier</strong> as the trigger, select <strong className="text-zinc-900 dark:text-white font-semibold">Catch Hook</strong>, then copy its webhook URL.
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-zinc-700 dark:text-[#9B9085] mb-2">
+                    <label className="block text-xs font-semibold text-zinc-700 dark:text-zinc-400 mb-2">
                       Zapier Catch Hook URL
                     </label>
                     <div className="relative">
@@ -242,7 +242,7 @@ export const AutomationsSection = memo(function AutomationsSection({
                           }
                           handleSave();
                         }}
-                        className={`w-full rounded-xl border bg-white dark:border-white/10 dark:bg-[#0E0E10] pl-3.5 pr-10 py-2.5 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-[#555] outline-none transition font-mono ${
+                        className={`w-full rounded-xl border bg-white dark:border-white/10 dark:bg-[#121212] pl-3.5 pr-10 py-2.5 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 outline-none transition font-mono ${
                           zapierUrlError ? "border-rose-500 focus:border-rose-500" : "border-zinc-200 dark:border-white/10 focus:border-[#FF4F00]"
                         }`}
                       />
@@ -258,14 +258,14 @@ export const AutomationsSection = memo(function AutomationsSection({
                     {zapierUrlError ? (
                       <p className="text-[11px] text-rose-500 mt-1.5">{zapierUrlError}</p>
                     ) : (
-                      <p className="text-[11px] text-zinc-500 dark:text-[#666675] mt-1.5">
+                      <p className="text-[11px] text-zinc-500 dark:text-zinc-400 mt-1.5">
                         Paste the unique hooks.zapier.com URL from the Test tab. Leave it blank to disconnect.
                       </p>
                     )}
                   </div>
 
                   <div className="pt-2 border-t border-zinc-200/60 dark:border-white/5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                    <p className="text-[11px] text-zinc-500 dark:text-[#666675]">
+                    <p className="text-[11px] text-zinc-500 dark:text-zinc-400">
                       Each event includes the lead, signup ID, lead magnet, and public page URL. Zapier never blocks the signup or resource email.
                     </p>
                     <button
@@ -299,7 +299,7 @@ export const AutomationsSection = memo(function AutomationsSection({
                           addToast(`Error sending test payload: ${err.message}`, "error");
                         }
                       }}
-                      className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-3.5 py-2 sm:py-1.5 rounded-lg border border-zinc-200 bg-white dark:border-white/10 dark:bg-[#1E1E22] text-xs font-semibold text-zinc-700 dark:text-white hover:bg-zinc-100 dark:hover:bg-[#25252A] transition shrink-0 cursor-pointer shadow-2xs"
+                      className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-3.5 py-2 sm:py-1.5 rounded-lg border border-zinc-200 bg-white dark:border-white/10 dark:bg-white/5 text-xs font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-white/10 transition shrink-0 cursor-pointer shadow-2xs"
                     >
                       <Zap className="h-3.5 w-3.5 text-[#FF4F00]" />
                       <span>Send test</span>
@@ -311,10 +311,10 @@ export const AutomationsSection = memo(function AutomationsSection({
           </div>
 
           {/* Pipedrive Expandable Card */}
-          <div className={`${openSections["pipedrive-webhook"] ? "md:col-span-2" : "md:col-span-1"} rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 overflow-hidden shadow-md backdrop-blur-sm transition-all duration-300 ease-in-out`}>
+          <div className={`${openSections["pipedrive-webhook"] ? "md:col-span-2" : "md:col-span-1"} rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#171717] overflow-hidden shadow-md dark:shadow-none backdrop-blur-sm transition-all duration-300 ease-in-out`}>
             <div
               onClick={() => toggle("pipedrive-webhook")}
-              className="p-4 flex items-center justify-between hover:bg-[#EFF6FF] dark:hover:bg-[#18181c] transition-colors cursor-pointer"
+              className="p-4 flex items-center justify-between hover:bg-[#EFF6FF] dark:hover:bg-white/[0.04] transition-colors cursor-pointer"
             >
               <div className="flex items-center gap-3">
                 <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#DCFCE7] border border-[#BBF7D0] dark:bg-[#0f2e1b] overflow-hidden p-1.5">
@@ -331,7 +331,7 @@ export const AutomationsSection = memo(function AutomationsSection({
                   </h5>
                 </div>
               </div>
-              <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-[#0066B2]/30 bg-white text-zinc-500 shadow-sm dark:border-[#0066B2]/30 dark:bg-[#18181B] transition-transform duration-300">
+              <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-[#0066B2]/30 bg-white text-zinc-500 shadow-sm dark:border-white/10 dark:bg-[#121212] transition-transform duration-300">
                 <ChevronDown className={`h-3.5 w-3.5 transition-transform duration-300 ${openSections["pipedrive-webhook"] ? "rotate-180" : ""}`} />
               </div>
             </div>
@@ -339,9 +339,9 @@ export const AutomationsSection = memo(function AutomationsSection({
             {/* Expanded Pipedrive API Token Panel with Smooth Height Animation */}
             <div className={`grid transition-all duration-300 ease-in-out ${openSections["pipedrive-webhook"] ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"}`}>
               <div className="overflow-hidden">
-                <div className="px-5 pb-5 pt-3 border-t border-zinc-100 dark:border-white/5 space-y-4 bg-zinc-50/50 dark:bg-[#151518]">
+                <div className="px-5 pb-5 pt-3 border-t border-zinc-100 dark:border-white/5 space-y-4 bg-zinc-50/50 dark:bg-[#121212]/50">
                   <div>
-                    <label className="block text-xs font-semibold text-zinc-700 dark:text-[#9B9085] mb-2">
+                    <label className="block text-xs font-semibold text-zinc-700 dark:text-zinc-400 mb-2">
                       Pipedrive API token
                     </label>
                     <div className="relative">
@@ -355,7 +355,7 @@ export const AutomationsSection = memo(function AutomationsSection({
                           setAccount((prev) => prev ? { ...prev, pipedriveApiToken: token } : prev);
                         }}
                         onBlur={() => handleSave()}
-                        className="w-full rounded-xl border border-zinc-200 bg-white dark:border-white/10 dark:bg-[#0E0E10] pl-3.5 pr-10 py-2.5 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-[#555] outline-none focus:border-[#28A745] transition font-mono"
+                        className="w-full rounded-xl border border-zinc-200 bg-white dark:border-white/10 dark:bg-[#121212] pl-3.5 pr-10 py-2.5 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 outline-none focus:border-[#28A745] transition font-mono"
                       />
                       <button
                         type="button"
@@ -366,13 +366,13 @@ export const AutomationsSection = memo(function AutomationsSection({
                         {showPipedriveToken ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                       </button>
                     </div>
-                    <p className="text-[11px] text-zinc-500 dark:text-[#666675] mt-1.5">
+                    <p className="text-[11px] text-zinc-500 dark:text-zinc-400 mt-1.5">
                       In Pipedrive, open Personal preferences, then API. Paste the API token here. Leave it blank to disconnect.
                     </p>
                   </div>
 
                   <div className="pt-2 border-t border-zinc-200/60 dark:border-white/5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                    <p className="text-[11px] text-zinc-500 dark:text-[#666675]">
+                    <p className="text-[11px] text-zinc-500 dark:text-zinc-400">
                       Existing contacts are matched by email. Pipedrive sync never blocks the signup or resource email.
                     </p>
                     <button
@@ -402,7 +402,7 @@ export const AutomationsSection = memo(function AutomationsSection({
                           addToast(`Error connecting to Pipedrive: ${err.message}`, "error");
                         }
                       }}
-                      className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-3.5 py-2 sm:py-1.5 rounded-lg border border-zinc-200 bg-white dark:border-white/10 dark:bg-[#1E1E22] text-xs font-semibold text-zinc-700 dark:text-white hover:bg-zinc-100 dark:hover:bg-[#25252A] transition shrink-0 cursor-pointer shadow-2xs"
+                      className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-3.5 py-2 sm:py-1.5 rounded-lg border border-zinc-200 bg-white dark:border-white/10 dark:bg-white/5 text-xs font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-white/10 transition shrink-0 cursor-pointer shadow-2xs"
                     >
                       <Check className="h-3.5 w-3.5 text-emerald-500" />
                       <span>Test connection</span>
@@ -414,10 +414,10 @@ export const AutomationsSection = memo(function AutomationsSection({
           </div>
 
           {/* Kit Expandable Card */}
-          <div className={`${openSections["kit-webhook"] ? "md:col-span-2" : "md:col-span-1"} rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-[#38BDF8]/25 dark:bg-[#18181B]/90 overflow-hidden shadow-md backdrop-blur-sm transition-all duration-300 ease-in-out`}>
+          <div className={`${openSections["kit-webhook"] ? "md:col-span-2" : "md:col-span-1"} rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#171717] overflow-hidden shadow-md dark:shadow-none backdrop-blur-sm transition-all duration-300 ease-in-out`}>
             <div
               onClick={() => toggle("kit-webhook")}
-              className="p-4 flex items-center justify-between hover:bg-[#EFF6FF] dark:hover:bg-[#18181c] transition-colors cursor-pointer"
+              className="p-4 flex items-center justify-between hover:bg-[#EFF6FF] dark:hover:bg-white/[0.04] transition-colors cursor-pointer"
             >
               <div className="flex items-center gap-3">
                 <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#FFE4E6] text-[#E11D48] border border-[#FECDD3] dark:bg-[#331118]">
@@ -434,7 +434,7 @@ export const AutomationsSection = memo(function AutomationsSection({
                   </h5>
                 </div>
               </div>
-              <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-[#0066B2]/30 bg-white text-zinc-500 shadow-sm dark:border-[#0066B2]/30 dark:bg-[#18181B] transition-transform duration-300">
+              <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-[#0066B2]/30 bg-white text-zinc-500 shadow-sm dark:border-white/10 dark:bg-[#121212] transition-transform duration-300">
                 <ChevronDown className={`h-3.5 w-3.5 transition-transform duration-300 ${openSections["kit-webhook"] ? "rotate-180" : ""}`} />
               </div>
             </div>
@@ -442,9 +442,9 @@ export const AutomationsSection = memo(function AutomationsSection({
             {/* Expanded Kit Authorization Panel with Smooth Height Animation */}
             <div className={`grid transition-all duration-300 ease-in-out ${openSections["kit-webhook"] ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"}`}>
               <div className="overflow-hidden">
-                <div className="px-5 pb-5 pt-3 border-t border-zinc-100 dark:border-white/5 space-y-4 bg-zinc-50/50 dark:bg-[#151518]">
+                <div className="px-5 pb-5 pt-3 border-t border-zinc-100 dark:border-white/5 space-y-4 bg-zinc-50/50 dark:bg-[#121212]/50">
                   <div>
-                    <label className="block text-xs font-semibold text-zinc-700 dark:text-[#9B9085] mb-2">
+                    <label className="block text-xs font-semibold text-zinc-700 dark:text-zinc-400 mb-2">
                       Kit API Secret / Key
                     </label>
                     <div className="relative">
@@ -458,7 +458,7 @@ export const AutomationsSection = memo(function AutomationsSection({
                           setAccount((prev) => prev ? { ...prev, kitApiKey: key, kitConnected: !!key.trim() } : prev);
                         }}
                         onBlur={() => handleSave()}
-                        className="w-full rounded-xl border border-zinc-200 bg-white dark:border-white/10 dark:bg-[#0E0E10] pl-3.5 pr-10 py-2.5 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-[#555] outline-none focus:border-[#FF6A3D] transition font-mono"
+                        className="w-full rounded-xl border border-zinc-200 bg-white dark:border-white/10 dark:bg-[#121212] pl-3.5 pr-10 py-2.5 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 outline-none focus:border-[#FF6A3D] transition font-mono"
                       />
                       <button
                         type="button"
@@ -469,13 +469,13 @@ export const AutomationsSection = memo(function AutomationsSection({
                         {showKitKey ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                       </button>
                     </div>
-                    <p className="text-[11px] text-zinc-500 dark:text-[#666675] mt-1.5">
+                    <p className="text-[11px] text-zinc-500 dark:text-zinc-400 mt-1.5">
                       In Kit, open Settings → Advanced, then copy your API Key. Leave blank to disconnect.
                     </p>
                   </div>
 
                   <div className="pt-2 border-t border-zinc-200/60 dark:border-white/5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                    <p className="text-[11px] text-zinc-500 dark:text-[#666675]">
+                    <p className="text-[11px] text-zinc-500 dark:text-zinc-400">
                       Kit subscriber sync runs automatically after every lead magnet signup.
                     </p>
                     <button

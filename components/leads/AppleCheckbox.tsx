@@ -36,7 +36,7 @@ export function AppleCheckbox({
       className={`relative inline-flex items-center justify-center transition-colors duration-150 cursor-pointer select-none focus:outline-none ${sizeClasses} ${
         checked || indeterminate
           ? "bg-[#0066B2] text-white dark:bg-[#38BDF8] dark:text-zinc-950 border border-[#0066B2] dark:border-[#38BDF8] shadow-xs"
-          : "border border-zinc-300/90 dark:border-[#3E3E4A] bg-white/90 dark:bg-[#1E1E24]/90 hover:border-[#0066B2] dark:hover:border-[#38BDF8] hover:bg-zinc-50 dark:hover:bg-[#25252D] shadow-2xs"
+          : "border border-zinc-300/90 dark:border-white/20 bg-white/90 dark:bg-white/5 hover:border-[#0066B2] dark:hover:border-white/40 hover:bg-zinc-50 dark:hover:bg-white/10 shadow-2xs"
       } ${className}`}
     >
       <AnimatePresence mode="wait">

@@ -82,7 +82,7 @@ export const MobileLeadCard = memo(function MobileLeadCard({
       className={`group relative rounded-2xl border p-3.5 transition-all duration-200 cursor-pointer active:scale-[0.99] select-none ${
         isSelected
           ? "border-[#0066B2] bg-[#EFF6FF] dark:border-[#38BDF8] dark:bg-[#0066B2]/15 shadow-sm"
-          : "border-zinc-200/80 bg-white dark:border-[#282832] dark:bg-[#18181C] hover:border-zinc-300 dark:hover:border-zinc-700 shadow-2xs"
+          : "border-zinc-200/80 bg-white dark:border-white/[0.08] dark:bg-[#171717] dark:hover:border-white/20 shadow-2xs dark:shadow-none"
       }`}
     >
       {/* Top Header Row: Animated Checkbox, Avatar, Name/Email & Gate Badge */}
@@ -106,7 +106,7 @@ export const MobileLeadCard = memo(function MobileLeadCard({
                   className={`flex h-5 w-5 items-center justify-center rounded-md border transition-all duration-150 ${
                     isSelected
                       ? "border-[#0066B2] bg-[#0066B2] text-white dark:border-[#38BDF8] dark:bg-[#38BDF8] dark:text-zinc-900 shadow-2xs"
-                      : "border-zinc-300 dark:border-zinc-600 bg-white dark:bg-[#202026] hover:border-[#0066B2]"
+                      : "border-zinc-300 dark:border-white/20 bg-white dark:bg-white/5 hover:border-[#0066B2]"
                   }`}
                 >
                   <AnimatePresence>
@@ -154,7 +154,7 @@ export const MobileLeadCard = memo(function MobileLeadCard({
             </div>
 
             <div className="flex items-center gap-1.5 mt-0.5">
-              <span className="text-[11px] font-medium text-zinc-500 dark:text-[#9B9085] truncate max-w-[170px]">
+              <span className="text-[11px] font-medium text-zinc-500 dark:text-zinc-400 truncate max-w-[170px]">
                 {lead.email}
               </span>
               <button
@@ -225,7 +225,7 @@ export const MobileLeadCard = memo(function MobileLeadCard({
           <button
             type="button"
             onClick={() => onViewDetails(lead)}
-            className="inline-flex items-center gap-1 rounded-lg border border-zinc-200 bg-zinc-50 px-2.5 py-1 text-[11px] font-semibold text-zinc-700 hover:bg-zinc-100 dark:border-[#2e2e38] dark:bg-[#202026] dark:text-zinc-200 dark:hover:bg-[#282830] transition cursor-pointer"
+            className="inline-flex items-center gap-1 rounded-lg border border-zinc-200 bg-zinc-50 px-2.5 py-1 text-[11px] font-semibold text-zinc-700 hover:bg-zinc-100 dark:border-white/10 dark:bg-white/5 dark:text-zinc-200 dark:hover:bg-white/10 transition cursor-pointer"
           >
             <Eye className="h-3 w-3 text-[#0066B2] dark:text-[#38BDF8]" />
             <span>Details</span>
