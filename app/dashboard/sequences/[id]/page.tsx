@@ -88,8 +88,8 @@ export default function SequenceEditor() {
   const [expandedEmailId, setExpandedEmailId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<Record<string, "edit" | "preview">>({});
   const [toastMessage, setToastMessage] = useState<string | null>(null);
-  const [generatingAiForId, setGeneratingAiForId] = useState<string | null>(null);
-  const [generatingAiBodyForId, setGeneratingAiBodyForId] = useState<string | null>(null);
+
+
   const [sendingTestForId, setSendingTestForId] = useState<string | null>(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [editorViewMode, setEditorViewMode] = useState<"flow" | "list">("flow");
@@ -534,102 +534,6 @@ export default function SequenceEditor() {
     triggerToast("New email step added!");
   }
 
-  function generateAiSubject(id: string) {
-    setGeneratingAiForId(id);
-    const emailIndex = emailsWithBody.findIndex((e) => e.id === id);
-    const isStandalone = !attachedPage;
-    const seqName = seq?.name || "our community";
-    const pageTitle = attachedPage?.name || seqName;
-
-    setTimeout(() => {
-      let suggestionsByStep: string[] = [];
-      if (isStandalone) {
-        suggestionsByStep =
-          emailIndex === 0
-            ? [
-                `Welcome to ${seqName}! 🚀 (Important details inside)`,
-                `Glad you're here! Here's what to expect`,
-                `Quick intro + your special welcome gift inside 🎁`,
-                `Welcome aboard! Let's get you set up`,
-              ]
-            : emailIndex === 1
-            ? [
-                `Quick follow-up: How's everything going?`,
-                `1 quick question for you...`,
-                `3 essential tips to help you get started faster`,
-                `The #1 mistake to avoid early on`,
-              ]
-            : [
-                `Case study: How to get maximum results with ${seqName}`,
-                `Next steps: Leveling up your progress 🚀`,
-                `Quick check-in: How can we help?`,
-                `Are you ready for the next level?`,
-              ];
-      } else {
-        suggestionsByStep =
-          emailIndex === 0
-            ? [
-                `Your ${pageTitle} is ready for download! 🎁`,
-                `Access your ${pageTitle} inside (+ bonus resource)`,
-                `Here is the ${pageTitle} you requested`,
-                `Welcome! Get the most out of ${pageTitle}`,
-              ]
-            : emailIndex === 1
-            ? [
-                `Quick follow-up: Did you get a chance to check out ${pageTitle}?`,
-                `1 quick question about your download...`,
-                `3 tips to implement ${pageTitle} in under 10 minutes`,
-                `The biggest mistake people make with ${pageTitle}`,
-              ]
-            : [
-                `Case study: How to get 3x results with ${pageTitle}`,
-                `Next steps: Scaling your growth faster 🚀`,
-                `Did this work for you? (Feedback appreciated)`,
-                `Following up: Ready for the next stage?`,
-              ];
-      }
-
-      const selected = suggestionsByStep[Math.floor(Math.random() * suggestionsByStep.length)];
-      patchEmail(id, { subject: selected });
-      setGeneratingAiForId(null);
-      triggerToast("AI generated contextual subject line!");
-    }, 500);
-  }
-
-  function generateAiBody(id: string) {
-    setGeneratingAiBodyForId(id);
-    const emailIndex = emailsWithBody.findIndex((e) => e.id === id);
-    const isStandalone = !attachedPage;
-    const seqName = seq?.name || "our platform";
-    const pageTitle = attachedPage?.name || seqName;
-    const brandName = account?.brandName || account?.name || "Our Team";
-
-    setTimeout(() => {
-      let aiBody = "";
-      if (isStandalone) {
-        if (emailIndex === 0) {
-          aiBody = `Hi {first_name},\n\nWelcome to ${seqName}! We're thrilled to have you here.\n\nOver the next few days, I'll be sharing our most effective strategies, guides, and lessons directly with you.\n\nTo make sure you get the most out of this, feel free to reply to this email with what your #1 current goal is right now!\n\nWarm regards,\n${brandName}`;
-        } else if (emailIndex === 1) {
-          aiBody = `Hi {first_name},\n\nI wanted to quickly check in and see how everything is going so far.\n\nMost members find that taking action on Day 1 creates the fastest momentum.\n\nDid you have a chance to review our initial notes? If you're stuck on anything, simply hit reply—I read every message.\n\nBest,\n${brandName}`;
-        } else {
-          aiBody = `Hi {first_name},\n\nChecking in one last time regarding ${seqName}.\n\nIf you'd like to dive deeper or want personalized help taking your progress to the next stage, feel free to reach out anytime.\n\nLooking forward to hearing about your wins!\n\nCheers,\n${brandName}`;
-        }
-      } else {
-        if (emailIndex === 0) {
-          aiBody = `Hi {first_name},\n\nThank you for requesting ${pageTitle}!\n\nYou can access your deliverable anytime via the direct link below:\n{resource_link}\n\nI recommend reviewing section 1 first, as it covers the foundational strategies you can implement right away.\n\nIf you have any questions or feedback, simply hit reply to this email.\n\nWarm regards,\n${brandName}`;
-        } else if (emailIndex === 1) {
-          aiBody = `Hi {first_name},\n\nI wanted to quickly follow up and see if you had a chance to look through ${pageTitle} yet.\n\nMost readers find that taking action within the first 24 hours leads to the highest results.\n\nHave you tried applying the core takeaways yet? Let me know where you're at—happy to share extra tips!\n\nBest,\n${brandName}`;
-        } else {
-          aiBody = `Hi {first_name},\n\nChecking in one last time regarding ${pageTitle}.\n\nIf you'd like to dive deeper or walk through how to apply this directly to your current workflow, feel free to let me know.\n\nLooking forward to hearing about your progress!\n\nCheers,\n${brandName}`;
-        }
-      }
-
-      patchEmail(id, { body: aiBody });
-      setGeneratingAiBodyForId(null);
-      triggerToast("AI generated complete email body!");
-    }, 600);
-  }
-
   function insertVariable(emailId: string, variableStr: string) {
     const targetEmail = emailsWithBody.find((e) => e.id === emailId);
     if (!targetEmail) return;
@@ -692,7 +596,7 @@ export default function SequenceEditor() {
         </div>
       )}
 
-      <div className="min-h-[calc(100vh-3.5rem)] bg-gradient-to-b from-[#EFF6FF]/40 via-[#F8FBFF] to-[#F8FBFF] dark:bg-none dark:bg-[#0B0B0D] pb-12">
+      <div className="min-h-[calc(100vh-3.5rem)] bg-gradient-to-b from-[#EFF6FF]/40 via-[#F8FBFF] to-[#F8FBFF] dark:bg-none dark:bg-[#0a0a0a] pb-12">
         <div className={`flex-1 px-3 sm:px-6 py-3.5 sm:py-6 lg:px-8 mx-auto w-full space-y-4 sm:space-y-6 lg:space-y-8 transition-[max-width] duration-[220ms] ease-[cubic-bezier(0.16,1,0.3,1)] will-change-[max-width] ${isCollapsed ? "max-w-[1440px]" : "max-w-7xl"}`}>
           
           {/* Header Bar - Clean Borderless Hierarchy */}
@@ -701,7 +605,7 @@ export default function SequenceEditor() {
               <Link
                 href="/dashboard/sequences"
                 aria-label="Back to sequences"
-                className="mt-0.5 sm:mt-1 flex h-8 w-8 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl sm:rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#18181B] text-zinc-600 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 active:scale-95 transition shadow-xs"
+                className="mt-0.5 sm:mt-1 flex h-8 w-8 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl sm:rounded-2xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-white/5 text-zinc-600 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-white/10 active:scale-95 transition shadow-xs"
               >
                 <ArrowLeft className="h-4 w-4" />
               </Link>
@@ -720,7 +624,7 @@ export default function SequenceEditor() {
                           if (e.key === "Escape") setIsEditingTitle(false);
                         }}
                         onBlur={handleSaveTitle}
-                        className="text-base sm:text-2xl font-bold tracking-tight bg-white dark:bg-zinc-900 border border-[#0066B2] rounded-xl px-2.5 py-1 text-zinc-900 dark:text-white outline-none shadow-xs w-full max-w-[200px] sm:max-w-xs"
+                        className="text-base sm:text-2xl font-bold tracking-tight bg-white dark:bg-[#121212] border border-[#0066B2] rounded-xl px-2.5 py-1 text-zinc-900 dark:text-white outline-none shadow-xs w-full max-w-[200px] sm:max-w-xs"
                       />
                       <button
                         onClick={handleSaveTitle}
@@ -738,7 +642,7 @@ export default function SequenceEditor() {
                       <h1 className="text-lg sm:text-2xl font-bold tracking-tight text-zinc-900 dark:text-white group-hover:text-[#0066B2] transition truncate">
                         {seq.name}
                       </h1>
-                      <span className="p-1 rounded-md text-zinc-400 opacity-80 sm:opacity-0 group-hover:opacity-100 transition shrink-0 hover:bg-zinc-100 dark:hover:bg-zinc-800">
+                      <span className="p-1 rounded-md text-zinc-400 opacity-80 sm:opacity-0 group-hover:opacity-100 transition shrink-0 hover:bg-zinc-100 dark:hover:bg-white/10">
                         <Pencil className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                       </span>
                     </div>
@@ -849,7 +753,7 @@ export default function SequenceEditor() {
                 <button
                   onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                   aria-label="More options"
-                  className="flex h-9 w-9 items-center justify-center rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#18181B] text-zinc-600 dark:text-zinc-300 active:bg-zinc-100 dark:active:bg-zinc-800 active:scale-95 transition shadow-xs cursor-pointer"
+                  className="flex h-9 w-9 items-center justify-center rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-white/5 text-zinc-600 dark:text-zinc-200 active:bg-zinc-100 dark:active:bg-white/10 active:scale-95 transition shadow-xs cursor-pointer"
                 >
                   <MoreVertical className="h-4 w-4" />
                 </button>
@@ -861,7 +765,7 @@ export default function SequenceEditor() {
                       className="fixed inset-0 z-40"
                       onClick={() => setIsMobileMenuOpen(false)}
                     />
-                    <div className="absolute right-0 top-11 z-50 w-52 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#18181B] p-1.5 shadow-2xl animate-in fade-in zoom-in-95 duration-150">
+                    <div className="absolute right-0 top-11 z-50 w-52 rounded-2xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#171717] p-1.5 shadow-2xl animate-in fade-in zoom-in-95 duration-150">
                       <button
                         onClick={() => {
                           setIsMobileMenuOpen(false);
@@ -884,15 +788,15 @@ export default function SequenceEditor() {
 
           {/* Mobile Quick KPI Summary Bar (Visible only on mobile/tablet) */}
           <div className="lg:hidden grid grid-cols-3 gap-2 sm:gap-3">
-            <div className="rounded-xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-[#18181B] p-2.5 sm:p-3 text-center shadow-xs">
+            <div className="rounded-xl border border-zinc-200/80 dark:border-white/[0.08] bg-white dark:bg-[#171717] dark:shadow-none p-2.5 sm:p-3 text-center shadow-xs">
               <span className="text-[10px] uppercase font-bold text-zinc-400 tracking-wider block truncate">Enrolled</span>
               <span className="text-base sm:text-lg font-extrabold text-zinc-900 dark:text-white font-mono">{signedUp.toLocaleString()}</span>
             </div>
-            <div className="rounded-xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-[#18181B] p-2.5 sm:p-3 text-center shadow-xs">
+            <div className="rounded-xl border border-zinc-200/80 dark:border-white/[0.08] bg-white dark:bg-[#171717] dark:shadow-none p-2.5 sm:p-3 text-center shadow-xs">
               <span className="text-[10px] uppercase font-bold text-zinc-400 tracking-wider block truncate">Delivered</span>
               <span className="text-base sm:text-lg font-extrabold text-indigo-600 dark:text-indigo-400 font-mono">{delivered.toLocaleString()}</span>
             </div>
-            <div className="rounded-xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-[#18181B] p-2.5 sm:p-3 text-center shadow-xs">
+            <div className="rounded-xl border border-zinc-200/80 dark:border-white/[0.08] bg-white dark:bg-[#171717] dark:shadow-none p-2.5 sm:p-3 text-center shadow-xs">
               <span className="text-[10px] uppercase font-bold text-zinc-400 tracking-wider block truncate">Open Rate</span>
               <span className="text-base sm:text-lg font-extrabold text-emerald-600 dark:text-emerald-400 font-mono">{overallOpenRate}%</span>
             </div>
@@ -908,13 +812,13 @@ export default function SequenceEditor() {
               {/* Timeline Header with Flow Canvas / Step List Switcher */}
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div className="flex items-center gap-3">
-                  <div className="flex items-center p-1 bg-zinc-200/70 dark:bg-white/[0.06] rounded-xl">
+                  <div className="flex items-center p-1 bg-zinc-200/70 dark:bg-[#121212] border border-transparent dark:border-white/10 rounded-xl">
                     <button
                       type="button"
                       onClick={() => setEditorViewMode("flow")}
                       className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                         editorViewMode === "flow"
-                          ? "bg-white dark:bg-[#1E1E24] text-[#0066B2] dark:text-[#38BDF8] shadow-xs"
+                          ? "bg-white dark:bg-white/10 text-[#0066B2] dark:text-white shadow-xs"
                           : "text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white"
                       }`}
                     >
@@ -926,7 +830,7 @@ export default function SequenceEditor() {
                       onClick={() => setEditorViewMode("list")}
                       className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                         editorViewMode === "list"
-                          ? "bg-white dark:bg-[#1E1E24] text-[#0066B2] dark:text-[#38BDF8] shadow-xs"
+                          ? "bg-white dark:bg-white/10 text-[#0066B2] dark:text-white shadow-xs"
                           : "text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white"
                       }`}
                     >
@@ -953,7 +857,7 @@ export default function SequenceEditor() {
                   VIEW 1: SPATIAL WORKFLOW CANVAS (VISUAL PIPELINE)
               ══════════════════════════════════════════════ */}
               {editorViewMode === "flow" && (
-                <div className="rounded-2xl border border-zinc-200/90 dark:border-white/[0.08] bg-white dark:bg-[#141417] p-4 sm:p-6 shadow-sm space-y-6">
+                <div className="rounded-2xl border border-zinc-200/90 dark:border-white/[0.08] bg-white dark:bg-[#171717] dark:shadow-none p-4 sm:p-6 shadow-sm space-y-6">
                   {/* Canvas Pipeline Nodes */}
                   <div className="space-y-4">
                     {/* Node 0: Entry Trigger */}
@@ -1041,7 +945,7 @@ export default function SequenceEditor() {
                             className={`group flex items-center justify-between gap-3 p-3.5 rounded-xl border transition-all cursor-pointer ${
                               isSelected
                                 ? "border-[#0066B2] bg-[#0066B2]/5 dark:border-[#38BDF8] dark:bg-[#38BDF8]/10 ring-2 ring-[#0066B2]/20"
-                                : "border-zinc-200 dark:border-white/10 bg-zinc-50/60 dark:bg-[#18181D] hover:border-[#0066B2]/40"
+                                : "border-zinc-200 dark:border-white/10 bg-zinc-50/60 dark:bg-[#121212] hover:border-[#0066B2]/40"
                             }`}
                           >
                             <div className="flex items-center gap-3 min-w-0">
@@ -1109,14 +1013,6 @@ export default function SequenceEditor() {
                         <div className="flex items-center gap-2">
                           <button
                             type="button"
-                            onClick={() => generateAiSubject(emailsWithBody[selectedFlowNodeIndex].id)}
-                            className="flex items-center gap-1 text-[11px] font-bold text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-950/40 px-2 py-1 rounded-lg hover:bg-purple-100 transition"
-                          >
-                            <Sparkles className="h-3 w-3" />
-                            <span>AI Subject</span>
-                          </button>
-                          <button
-                            type="button"
                             onClick={() => sendTestEmail(emailsWithBody[selectedFlowNodeIndex].id)}
                             className="flex items-center gap-1 text-[11px] font-bold text-[#0066B2] dark:text-[#38BDF8] bg-blue-50 dark:bg-blue-950/40 px-2 py-1 rounded-lg hover:bg-blue-100 transition"
                           >
@@ -1135,7 +1031,7 @@ export default function SequenceEditor() {
                           type="text"
                           value={emailsWithBody[selectedFlowNodeIndex].subject || ""}
                           onChange={(e) => patchEmail(emailsWithBody[selectedFlowNodeIndex].id, { subject: e.target.value })}
-                          className="w-full rounded-xl border border-zinc-200 dark:border-white/10 bg-zinc-50 dark:bg-[#101013] p-2.5 text-xs font-semibold text-zinc-900 dark:text-white outline-none focus:border-[#0066B2]"
+                          className="w-full rounded-xl border border-zinc-200 dark:border-white/10 bg-zinc-50 dark:bg-[#121212] p-2.5 text-xs font-semibold text-zinc-900 dark:text-white outline-none focus:border-[#0066B2]"
                         />
                       </div>
 
@@ -1144,9 +1040,9 @@ export default function SequenceEditor() {
                         <label className="block text-[10px] font-bold uppercase tracking-wider text-zinc-400 mb-1">
                           Email Body Preview
                         </label>
-                        <div className="rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#0E0E11] p-4 text-xs text-zinc-700 dark:text-zinc-300 space-y-2 whitespace-pre-wrap shadow-inner min-h-[100px]">
+                        <div className="rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#121212] p-4 text-xs text-zinc-700 dark:text-zinc-300 space-y-2 whitespace-pre-wrap shadow-inner min-h-[100px]">
                           {emailsWithBody[selectedFlowNodeIndex].body || (
-                            <span className="italic text-zinc-400">No body text yet. Switch to Step List or use AI to generate body copy.</span>
+                            <span className="italic text-zinc-400">No body text yet. Switch to Step List to write your email content.</span>
                           )}
                         </div>
                       </div>
@@ -1163,7 +1059,7 @@ export default function SequenceEditor() {
                 
                 {/* Step 1: Instant Resource Delivery Milestone Card (Only for Lead Magnet Attached Sequences) */}
                 {attachedPage && (
-                  <div className="rounded-2xl border border-emerald-500/30 dark:border-emerald-500/20 bg-gradient-to-br from-emerald-50/80 via-white to-white dark:from-emerald-950/20 dark:via-[#18181B] dark:to-[#18181B] p-3.5 sm:p-5 shadow-xs transition hover:shadow-md">
+                  <div className="rounded-2xl border border-emerald-500/30 dark:border-white/[0.08] bg-gradient-to-br from-emerald-50/80 via-white to-white dark:from-emerald-950/20 dark:via-[#171717] dark:to-[#171717] p-3.5 sm:p-5 shadow-xs dark:shadow-none transition hover:shadow-md">
                     
                     {/* Step 1 Header Row */}
                     <div className="flex items-center justify-between gap-2.5">
@@ -1183,7 +1079,7 @@ export default function SequenceEditor() {
 
                       {/* Step 1 Performance Stats Pill */}
                       <div className="flex items-center gap-1.5 shrink-0">
-                        <div className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-200/80 dark:border-zinc-800 bg-white/90 dark:bg-zinc-900/90 px-2 py-1 text-[10px] sm:text-[11px] font-medium text-zinc-600 dark:text-zinc-300 shadow-2xs">
+                        <div className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-200/80 dark:border-white/10 bg-white/90 dark:bg-[#121212] px-2 py-1 text-[10px] sm:text-[11px] font-medium text-zinc-600 dark:text-zinc-300 shadow-2xs">
                           <span className="inline-flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-bold">
                             <Check className="h-3 w-3 shrink-0" />
                             <span>{delivered.toLocaleString()} Sent</span>
@@ -1198,7 +1094,7 @@ export default function SequenceEditor() {
                     </div>
 
                     {/* Step 1 Inner Delivery Details Box */}
-                    <div className="mt-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white/90 dark:bg-zinc-900/80 rounded-xl p-3 sm:p-3.5 border border-emerald-100 dark:border-emerald-950/50">
+                    <div className="mt-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white/90 dark:bg-[#121212] rounded-xl p-3 sm:p-3.5 border border-emerald-100 dark:border-white/10">
                       <div className="min-w-0 flex-1">
                         <p className="text-[10px] font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">
                           Resource Delivery Email
@@ -1224,7 +1120,7 @@ export default function SequenceEditor() {
 
                 {/* Empty State for Standalone Sequences with 0 steps */}
                 {!attachedPage && emailsWithBody.length === 0 && (
-                  <div className="rounded-2xl border border-dashed border-zinc-300 dark:border-zinc-800 bg-white/50 dark:bg-[#18181B]/50 p-8 text-center space-y-3">
+                  <div className="rounded-2xl border border-dashed border-zinc-300 dark:border-white/10 bg-white/50 dark:bg-[#171717]/50 p-8 text-center space-y-3">
                     <div className="flex h-12 w-12 mx-auto items-center justify-center rounded-2xl bg-blue-50 dark:bg-blue-950/40 text-[#0066B2] dark:text-[#38BDF8]">
                       <Mail className="h-6 w-6" />
                     </div>
@@ -1274,10 +1170,10 @@ export default function SequenceEditor() {
                         </div>
                       )}
 
-                      <div className={`rounded-2xl border bg-white dark:bg-[#18181B] p-3.5 sm:p-5 shadow-xs transition hover:shadow-md ${
+                      <div className={`rounded-2xl border bg-white dark:bg-[#171717] dark:shadow-none p-3.5 sm:p-5 shadow-xs transition hover:shadow-md ${
                         isInitialStandaloneStep 
-                          ? "border-emerald-500/30 dark:border-emerald-500/20 bg-gradient-to-br from-emerald-50/30 via-white to-white dark:from-emerald-950/10 dark:via-[#18181B] dark:to-[#18181B]" 
-                          : "border-zinc-200/90 dark:border-zinc-800/90"
+                          ? "border-emerald-500/30 dark:border-white/[0.08] bg-gradient-to-br from-emerald-50/30 via-white to-white dark:from-emerald-950/10 dark:via-[#171717] dark:to-[#171717]" 
+                          : "border-zinc-200/90 dark:border-white/[0.08]"
                       }`}>
                         {/* Step Header */}
                         <div className="flex items-center justify-between gap-2">
@@ -1299,7 +1195,7 @@ export default function SequenceEditor() {
                             </span>
 
                             {/* Delay Selector Pill */}
-                            <div className="flex items-center gap-1 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 px-2 py-1 text-[11px] sm:text-xs font-semibold text-zinc-700 dark:text-zinc-300 shrink-0">
+                            <div className="flex items-center gap-1 rounded-lg border border-zinc-200 dark:border-white/10 bg-zinc-50 dark:bg-[#121212] px-2 py-1 text-[11px] sm:text-xs font-semibold text-zinc-700 dark:text-zinc-300 shrink-0">
                               <Clock className="h-3 w-3 text-zinc-400 shrink-0" />
                               <select
                                 value={email.delayMinutes}
@@ -1315,12 +1211,12 @@ export default function SequenceEditor() {
                                 className="bg-transparent font-bold text-[11px] sm:text-xs text-zinc-900 dark:text-white outline-none cursor-pointer pr-1"
                               >
                                 {isCustomDelay && (
-                                  <option value={email.delayMinutes} className="bg-white dark:bg-zinc-900">
+                                  <option value={email.delayMinutes} className="bg-white dark:bg-[#171717]">
                                     {email.delayLabel || `${Math.round(email.delayMinutes / 1440)} days later`}
                                   </option>
                                 )}
                                 {standardDelays.map((d) => (
-                                  <option key={d.minutes} value={d.minutes} className="bg-white dark:bg-zinc-900">
+                                  <option key={d.minutes} value={d.minutes} className="bg-white dark:bg-[#171717]">
                                     {d.label}
                                   </option>
                                 ))}
@@ -1331,12 +1227,12 @@ export default function SequenceEditor() {
                           {/* Right: Step Actions (Reorder, Expand, Delete) */}
                           <div className="flex items-center gap-1 shrink-0">
                             {/* Reorder Buttons */}
-                            <div className="flex items-center bg-zinc-100 dark:bg-zinc-850 rounded-lg p-0.5">
+                            <div className="flex items-center bg-zinc-100 dark:bg-white/5 rounded-lg p-0.5">
                               <button
                                 disabled={i === 0}
                                 onClick={() => moveEmailUp(i)}
                                 title="Move step up"
-                                className="p-1 rounded text-zinc-500 hover:text-zinc-900 dark:hover:text-white hover:bg-white dark:hover:bg-zinc-800 disabled:opacity-20 cursor-pointer disabled:cursor-not-allowed transition"
+                                className="p-1 rounded text-zinc-500 hover:text-zinc-900 dark:hover:text-white hover:bg-white dark:hover:bg-white/10 disabled:opacity-20 cursor-pointer disabled:cursor-not-allowed transition"
                               >
                                 <ArrowUp className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
                               </button>
@@ -1344,7 +1240,7 @@ export default function SequenceEditor() {
                                 disabled={i === emailsWithBody.length - 1}
                                 onClick={() => moveEmailDown(i)}
                                 title="Move step down"
-                                className="p-1 rounded text-zinc-500 hover:text-zinc-900 dark:hover:text-white hover:bg-white dark:hover:bg-zinc-800 disabled:opacity-20 cursor-pointer disabled:cursor-not-allowed transition"
+                                className="p-1 rounded text-zinc-500 hover:text-zinc-900 dark:hover:text-white hover:bg-white dark:hover:bg-white/10 disabled:opacity-20 cursor-pointer disabled:cursor-not-allowed transition"
                               >
                                 <ArrowDown className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
                               </button>
@@ -1353,7 +1249,7 @@ export default function SequenceEditor() {
                             {/* Expand/Collapse Chevron Button */}
                             <button
                               onClick={() => setExpandedEmailId(isExpanded ? null : email.id)}
-                              className="flex h-7 w-7 items-center justify-center rounded-lg text-zinc-500 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 transition cursor-pointer"
+                              className="flex h-7 w-7 items-center justify-center rounded-lg text-zinc-500 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-white/10 transition cursor-pointer"
                               title="Toggle email editor"
                             >
                               {isExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
@@ -1387,18 +1283,7 @@ export default function SequenceEditor() {
                             <label className="block text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
                               Subject Line *
                             </label>
-                            <button
-                              onClick={() => generateAiSubject(email.id)}
-                              disabled={generatingAiForId === email.id}
-                              className="inline-flex items-center gap-1 text-[10px] sm:text-[11px] font-bold text-[#0066B2] dark:text-[#38BDF8] hover:underline cursor-pointer disabled:opacity-50"
-                            >
-                              {generatingAiForId === email.id ? (
-                                <Loader2 className="h-3 w-3 animate-spin" />
-                              ) : (
-                                <Sparkles className="h-3 w-3 text-amber-500 shrink-0" />
-                              )}
-                              <span>AI Subject Suggest</span>
-                            </button>
+                            
                           </div>
 
                           <div className="relative">
@@ -1407,7 +1292,7 @@ export default function SequenceEditor() {
                               value={email.subject}
                               onChange={(e) => patchEmail(email.id, { subject: e.target.value })}
                               placeholder="Enter compelling email subject..."
-                              className="w-full rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/90 p-2.5 sm:p-3 text-xs sm:text-sm font-semibold text-zinc-900 dark:text-white placeholder-zinc-400 focus:border-[#0066B2] focus:outline-none shadow-xs"
+                              className="w-full rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#121212] p-2.5 sm:p-3 text-xs sm:text-sm font-semibold text-zinc-900 dark:text-white placeholder-zinc-400 focus:border-[#0066B2] focus:outline-none shadow-xs"
                             />
                           </div>
                         </div>
@@ -1417,12 +1302,12 @@ export default function SequenceEditor() {
                           <div className="mt-3 sm:mt-4 pt-3.5 space-y-3 animate-in fade-in duration-200">
                             <div className="flex items-center justify-between flex-wrap gap-2">
                               {/* Segmented Control Tabs */}
-                              <div className="flex items-center p-0.5 rounded-lg bg-zinc-100 dark:bg-zinc-800/90">
+                              <div className="flex items-center p-0.5 rounded-lg bg-zinc-100 dark:bg-[#121212] border border-transparent dark:border-white/10">
                                 <button
                                   onClick={() => setActiveTab((prev) => ({ ...prev, [email.id]: "edit" }))}
                                   className={`px-2.5 sm:px-3 py-1 rounded-md text-[11px] sm:text-xs font-bold transition ${
                                     currentTab === "edit"
-                                      ? "bg-white dark:bg-zinc-900 text-zinc-900 dark:text-white shadow-xs"
+                                      ? "bg-white dark:bg-white/10 text-zinc-900 dark:text-white shadow-xs"
                                       : "text-zinc-500 hover:text-zinc-900 dark:hover:text-white"
                                   }`}
                                 >
@@ -1432,7 +1317,7 @@ export default function SequenceEditor() {
                                   onClick={() => setActiveTab((prev) => ({ ...prev, [email.id]: "preview" }))}
                                   className={`px-2.5 sm:px-3 py-1 rounded-md text-[11px] sm:text-xs font-bold transition ${
                                     currentTab === "preview"
-                                      ? "bg-white dark:bg-zinc-900 text-zinc-900 dark:text-white shadow-xs"
+                                      ? "bg-white dark:bg-white/10 text-zinc-900 dark:text-white shadow-xs"
                                       : "text-zinc-500 hover:text-zinc-900 dark:hover:text-white"
                                   }`}
                                 >
@@ -1441,26 +1326,13 @@ export default function SequenceEditor() {
                               </div>
 
                               <div className="flex items-center gap-1.5 sm:gap-2">
-                                {/* AI Generate Body */}
-                                <button
-                                  onClick={() => generateAiBody(email.id)}
-                                  disabled={generatingAiBodyForId === email.id}
-                                  className="inline-flex items-center gap-1 rounded-lg border border-purple-200 dark:border-purple-900/60 bg-purple-50 dark:bg-purple-950/40 px-2 py-1 text-[10px] sm:text-[11px] font-bold text-purple-700 dark:text-purple-300 hover:bg-purple-100 transition cursor-pointer disabled:opacity-50"
-                                  title="Generate email body with AI"
-                                >
-                                  {generatingAiBodyForId === email.id ? (
-                                    <Loader2 className="h-3 w-3 animate-spin shrink-0" />
-                                  ) : (
-                                    <Sparkles className="h-3 w-3 text-purple-500 shrink-0" />
-                                  )}
-                                  <span>AI Body</span>
-                                </button>
+                                
 
                                 {/* Send Test Email */}
                                 <button
                                   onClick={() => sendTestEmail(email.id)}
                                   disabled={sendingTestForId === email.id}
-                                  className="inline-flex items-center gap-1 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-2 sm:px-2.5 py-1 text-[10px] sm:text-[11px] font-bold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 active:scale-95 transition cursor-pointer disabled:opacity-50"
+                                  className="inline-flex items-center gap-1 rounded-lg border border-zinc-200 dark:border-white/10 bg-white dark:bg-white/5 px-2 sm:px-2.5 py-1 text-[10px] sm:text-[11px] font-bold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-white/10 active:scale-95 transition cursor-pointer disabled:opacity-50"
                                   title="Send test email to your account email"
                                 >
                                   {sendingTestForId === email.id ? (
@@ -1481,7 +1353,7 @@ export default function SequenceEditor() {
                                   key={tag}
                                   type="button"
                                   onClick={() => insertVariable(email.id, tag)}
-                                  className="inline-flex items-center rounded-md bg-zinc-100 dark:bg-zinc-800 px-1.5 sm:px-2 py-0.5 text-[9px] sm:text-[10px] font-mono text-zinc-600 dark:text-zinc-300 hover:bg-[#0066B2]/10 hover:text-[#0066B2] dark:hover:text-[#38BDF8] active:scale-95 transition cursor-pointer"
+                                  className="inline-flex items-center rounded-md bg-zinc-100 dark:bg-white/10 px-1.5 sm:px-2 py-0.5 text-[9px] sm:text-[10px] font-mono text-zinc-600 dark:text-zinc-300 hover:bg-[#0066B2]/10 hover:text-[#0066B2] dark:hover:text-[#38BDF8] active:scale-95 transition cursor-pointer"
                                 >
                                   + {tag}
                                 </button>
@@ -1494,10 +1366,10 @@ export default function SequenceEditor() {
                                 value={htmlToPlainText(email.body || "")}
                                 onChange={(e) => patchEmail(email.id, { body: e.target.value })}
                                 placeholder="Write your email content here..."
-                                className="w-full rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 p-2.5 sm:p-3 text-xs sm:text-sm font-medium text-zinc-800 dark:text-zinc-200 placeholder-zinc-400 focus:border-[#0066B2] focus:outline-none font-sans leading-relaxed"
+                                className="w-full rounded-xl border border-zinc-200 dark:border-white/10 bg-zinc-50 dark:bg-[#121212] p-2.5 sm:p-3 text-xs sm:text-sm font-medium text-zinc-800 dark:text-zinc-200 placeholder-zinc-400 focus:border-[#0066B2] focus:outline-none font-sans leading-relaxed"
                               />
                             ) : (
-                              <div className="rounded-xl border border-zinc-200/80 dark:border-zinc-800 bg-zinc-50/80 dark:bg-zinc-950/80 p-3 sm:p-4 text-xs space-y-3">
+                              <div className="rounded-xl border border-zinc-200/80 dark:border-white/10 bg-zinc-50/80 dark:bg-[#121212] p-3 sm:p-4 text-xs space-y-3">
                                 <div className="text-[10px] sm:text-[11px] font-semibold text-zinc-400 pb-2 flex justify-between items-center gap-2">
                                   <div className="truncate">
                                     From: {account?.name || "Your Brand"} &lt;{account?.email || "hello@yourbrand.com"}&gt;
@@ -1545,7 +1417,7 @@ export default function SequenceEditor() {
                 <div className="pt-3">
                   <button
                     onClick={addEmail}
-                    className="flex w-full items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-zinc-300 dark:border-zinc-800 bg-white/40 dark:bg-[#18181B]/40 py-3.5 sm:py-4 text-xs font-bold text-zinc-600 dark:text-zinc-400 hover:border-[#0066B2] hover:text-[#0066B2] dark:hover:border-[#38BDF8] dark:hover:text-[#38BDF8] hover:bg-blue-50/50 dark:hover:bg-blue-950/20 active:scale-[0.99] transition cursor-pointer shadow-xs"
+                    className="flex w-full items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-zinc-300 dark:border-white/10 bg-white/40 dark:bg-[#171717]/40 py-3.5 sm:py-4 text-xs font-bold text-zinc-600 dark:text-zinc-400 hover:border-[#0066B2] hover:text-[#0066B2] dark:hover:border-[#38BDF8] dark:hover:text-[#38BDF8] hover:bg-blue-50/50 dark:hover:bg-blue-950/20 active:scale-[0.99] transition cursor-pointer shadow-xs"
                   >
                     <Plus className="h-4 w-4" />
                     <span>Add Another Email Step to {attachedPage ? "Funnel" : "Sequence"}</span>
@@ -1559,7 +1431,7 @@ export default function SequenceEditor() {
             <div className="lg:col-span-4 space-y-4 sm:space-y-6">
               
               {/* Performance Metrics Card */}
-              <div className="rounded-2xl border border-zinc-200/90 dark:border-zinc-800/90 bg-white dark:bg-[#18181B] p-4 sm:p-5 shadow-xs space-y-4">
+              <div className="rounded-2xl border border-zinc-200/90 dark:border-white/[0.08] bg-white dark:bg-[#171717] dark:shadow-none p-4 sm:p-5 shadow-xs space-y-4">
                 <div className="flex items-center justify-between">
                   <h3 className="text-xs font-extrabold uppercase tracking-wider text-zinc-900 dark:text-white flex items-center gap-2">
                     <Rocket className="h-4 w-4 text-[#0066B2] dark:text-[#38BDF8]" />
@@ -1630,7 +1502,7 @@ export default function SequenceEditor() {
                     <span>Email Engagement Rate</span>
                     <span>{overallOpenRate}%</span>
                   </div>
-                  <div className="h-2 w-full rounded-full bg-zinc-100 dark:bg-zinc-800 overflow-hidden">
+                  <div className="h-2 w-full rounded-full bg-zinc-100 dark:bg-[#121212] overflow-hidden">
                     <div
                       className="h-full rounded-full bg-gradient-to-r from-[#0066B2] to-emerald-400"
                       style={{ width: `${Math.min(overallOpenRate, 100)}%` }}
@@ -1651,7 +1523,7 @@ export default function SequenceEditor() {
               </div>
 
               {/* Unsubscribe & Stop Link Explanation */}
-              <div className="rounded-2xl border border-blue-500/20 dark:border-blue-500/30 bg-blue-50/50 dark:bg-blue-950/20 p-3 sm:p-4 space-y-2">
+              <div className="rounded-2xl border border-blue-500/20 dark:border-white/[0.08] bg-blue-50/50 dark:bg-[#171717] dark:shadow-none p-3 sm:p-4 space-y-2">
                 <div className="flex items-center gap-2 text-xs font-bold text-[#0066B2] dark:text-[#38BDF8]">
                   <HelpCircle className="h-4 w-4 shrink-0" />
                   <span>How Stop Links Work</span>

@@ -174,13 +174,13 @@ export default function NewSequence() {
   }, [lockedPdfPagesList, searchQuery]);
 
   return (
-    <div className="flex flex-col min-h-[calc(100vh-3rem)] bg-gradient-to-b from-[#EFF6FF]/60 via-[#F8FBFF] to-[#F8FBFF] dark:bg-none dark:bg-[#0E0E10]">
+    <div className="flex flex-col min-h-[calc(100vh-3rem)] bg-gradient-to-b from-[#EFF6FF]/60 via-[#F8FBFF] to-[#F8FBFF] dark:bg-none dark:bg-[#0a0a0a]">
         <div className="mx-auto max-w-3xl w-full px-4 py-8 sm:px-6 lg:px-8 flex-1">
           
           {/* Back button */}
           <Link
             href="/dashboard/sequences"
-            className="inline-flex items-center gap-2 rounded-xl bg-white dark:bg-[#18181B] border border-zinc-200 dark:border-[#2e2e38] px-3.5 py-1.5 text-xs font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-[#25252A] transition shadow-xs"
+            className="inline-flex items-center gap-2 rounded-xl bg-white dark:bg-white/5 border border-zinc-200 dark:border-white/10 px-3.5 py-1.5 text-xs font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-white/10 transition shadow-xs"
           >
             <ArrowLeft className="h-3.5 w-3.5" />
             <span>Back to Sequences</span>
@@ -195,7 +195,7 @@ export default function NewSequence() {
               <h2 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-white">
                 Create Follow-up Sequence
               </h2>
-              <p className="text-xs text-zinc-500 dark:text-[#9B9085] mt-1">
+              <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
                 Automate your initial resource delivery email and scheduled follow-up drip campaign.
               </p>
             </div>
@@ -204,7 +204,7 @@ export default function NewSequence() {
           {/* Form Card */}
           <form 
             onSubmit={create}
-            className="mt-8 rounded-2xl border border-zinc-200/90 dark:border-[#2e2e38] bg-white/90 dark:bg-[#18181B]/90 p-6 sm:p-8 shadow-sm backdrop-blur-sm space-y-6"
+            className="mt-8 rounded-2xl border border-zinc-200/90 dark:border-white/[0.08] bg-white/90 dark:bg-[#171717]/90 dark:shadow-none p-6 sm:p-8 shadow-sm backdrop-blur-sm space-y-6"
           >
             {/* Sequence Name */}
             <div>
@@ -219,7 +219,7 @@ export default function NewSequence() {
                 placeholder="e.g. VIP eBook Welcome Sequence"
                 maxLength={80}
                 required
-                className="w-full rounded-xl border border-zinc-200 bg-white p-3 text-xs text-zinc-900 placeholder-zinc-400 focus:border-[#0066B2] focus:outline-none dark:border-[#2e2e38] dark:bg-[#202026] dark:text-white dark:placeholder-zinc-500 shadow-xs font-medium"
+                className="w-full rounded-xl border border-zinc-200 bg-white p-3 text-xs text-zinc-900 placeholder-zinc-400 focus:border-[#0066B2] focus:outline-none dark:border-white/10 dark:bg-[#121212] dark:text-white dark:placeholder-zinc-500 shadow-xs font-medium"
               />
             </div>
 
@@ -236,8 +236,8 @@ export default function NewSequence() {
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                 className={`w-full flex items-center justify-between gap-3 rounded-xl border p-3 text-left transition shadow-xs cursor-pointer ${
                   isDropdownOpen
-                    ? "border-[#0066B2] ring-2 ring-[#0066B2]/20 bg-white dark:bg-[#202026]"
-                    : "border-zinc-200 bg-white hover:border-zinc-300 dark:border-[#2e2e38] dark:bg-[#202026] dark:hover:border-zinc-700"
+                    ? "border-[#0066B2] ring-2 ring-[#0066B2]/20 bg-white dark:bg-[#121212]"
+                    : "border-zinc-200 bg-white hover:border-zinc-300 dark:border-white/10 dark:bg-[#121212] dark:hover:border-zinc-700"
                 }`}
               >
                 {selectedPage ? (
@@ -264,12 +264,12 @@ export default function NewSequence() {
                             Live
                           </span>
                         ) : (
-                          <span className="rounded-full bg-zinc-100 dark:bg-zinc-800 px-2 py-0.5 text-[10px] font-semibold text-zinc-500 dark:text-zinc-400 border border-zinc-200 dark:border-zinc-700 shrink-0">
+                          <span className="rounded-full bg-zinc-100 dark:bg-white/10 px-2 py-0.5 text-[10px] font-semibold text-zinc-500 dark:text-zinc-400 border border-zinc-200 dark:border-zinc-700 shrink-0">
                             Draft
                           </span>
                         )}
                       </div>
-                      <div className="flex items-center gap-1 mt-0.5 text-[11px] text-zinc-500 dark:text-[#9B9085] font-mono truncate">
+                      <div className="flex items-center gap-1 mt-0.5 text-[11px] text-zinc-500 dark:text-zinc-400 font-mono truncate">
                         <span>/{selectedPage.slug || selectedPage.id}</span>
                       </div>
                     </div>
@@ -300,18 +300,18 @@ export default function NewSequence() {
               {isDropdownOpen && (
                 <div 
                   data-lenis-prevent="true"
-                  className="absolute z-50 mt-2 w-full rounded-2xl border border-zinc-200 bg-white/95 p-2 shadow-2xl backdrop-blur-xl dark:border-[#2e2e38] dark:bg-[#18181B]/95 flex flex-col max-h-80"
+                  className="absolute z-50 mt-2 w-full rounded-2xl border border-zinc-200 bg-white/95 p-2 shadow-2xl backdrop-blur-xl dark:border-white/10 dark:bg-[#171717]/95 flex flex-col max-h-80"
                 >
                   {/* Pinned Search Input at the top */}
                   {validPages.length > 3 && (
-                    <div className="relative px-1 pt-1 pb-2 border-b border-zinc-100 dark:border-[#2e2e38] shrink-0">
+                    <div className="relative px-1 pt-1 pb-2 border-b border-zinc-100 dark:border-white/10 shrink-0">
                       <Search className="absolute left-3.5 top-3.5 h-3.5 w-3.5 text-zinc-400" />
                       <input
                         type="text"
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         placeholder="Search lead magnets..."
-                        className="w-full rounded-lg border border-zinc-200 bg-zinc-50/70 pl-8 pr-3 py-1.5 text-xs text-zinc-900 placeholder-zinc-400 focus:border-[#0066B2] focus:outline-none dark:border-[#2e2e38] dark:bg-[#202026] dark:text-white dark:placeholder-zinc-500"
+                        className="w-full rounded-lg border border-zinc-200 bg-zinc-50/70 pl-8 pr-3 py-1.5 text-xs text-zinc-900 placeholder-zinc-400 focus:border-[#0066B2] focus:outline-none dark:border-white/10 dark:bg-[#121212] dark:text-white dark:placeholder-zinc-500"
                         onClick={(e) => e.stopPropagation()}
                       />
                     </div>
@@ -332,7 +332,7 @@ export default function NewSequence() {
                             <Magnet className="h-3 w-3 text-emerald-500" />
                             Landing Pages
                           </span>
-                          <span className="text-[9px] bg-zinc-100 dark:bg-zinc-800 px-1.5 py-0.5 rounded font-mono">
+                          <span className="text-[9px] bg-zinc-100 dark:bg-white/10 px-1.5 py-0.5 rounded font-mono">
                             {filteredLandingPages.length}
                           </span>
                         </div>
@@ -351,7 +351,7 @@ export default function NewSequence() {
                                 className={`w-full flex items-center justify-between gap-3 p-2.5 rounded-xl text-left transition cursor-pointer ${
                                   isSelected
                                     ? "bg-[#0066B2]/10 dark:bg-[#0066B2]/20 border border-[#0066B2]/30"
-                                    : "hover:bg-zinc-100 dark:hover:bg-[#222228] border border-transparent"
+                                    : "hover:bg-zinc-100 dark:hover:bg-white/10 border border-transparent"
                                 }`}
                               >
                                 <div className="flex items-center gap-2.5 min-w-0 flex-1">
@@ -368,7 +368,7 @@ export default function NewSequence() {
                                           Live
                                         </span>
                                       ) : (
-                                        <span className="rounded-full bg-zinc-100 dark:bg-zinc-800 px-1.5 py-0.5 text-[9px] font-semibold text-zinc-500 dark:text-zinc-400">
+                                        <span className="rounded-full bg-zinc-100 dark:bg-white/10 px-1.5 py-0.5 text-[9px] font-semibold text-zinc-500 dark:text-zinc-400">
                                           Draft
                                         </span>
                                       )}
@@ -396,7 +396,7 @@ export default function NewSequence() {
                             <Lock className="h-3 w-3 text-amber-500" />
                             Saved Locked PDFs
                           </span>
-                          <span className="text-[9px] bg-zinc-100 dark:bg-zinc-800 px-1.5 py-0.5 rounded font-mono">
+                          <span className="text-[9px] bg-zinc-100 dark:bg-white/10 px-1.5 py-0.5 rounded font-mono">
                             {filteredLockedPdfPages.length}
                           </span>
                         </div>
@@ -415,7 +415,7 @@ export default function NewSequence() {
                                 className={`w-full flex items-center justify-between gap-3 p-2.5 rounded-xl text-left transition cursor-pointer ${
                                   isSelected
                                     ? "bg-[#0066B2]/10 dark:bg-[#0066B2]/20 border border-[#0066B2]/30"
-                                    : "hover:bg-zinc-100 dark:hover:bg-[#222228] border border-transparent"
+                                    : "hover:bg-zinc-100 dark:hover:bg-white/10 border border-transparent"
                                 }`}
                               >
                                 <div className="flex items-center gap-2.5 min-w-0 flex-1">
@@ -432,7 +432,7 @@ export default function NewSequence() {
                                           Live
                                         </span>
                                       ) : (
-                                        <span className="rounded-full bg-zinc-100 dark:bg-zinc-800 px-1.5 py-0.5 text-[9px] font-semibold text-zinc-500 dark:text-zinc-400">
+                                        <span className="rounded-full bg-zinc-100 dark:bg-white/10 px-1.5 py-0.5 text-[9px] font-semibold text-zinc-500 dark:text-zinc-400">
                                           Draft
                                         </span>
                                       )}
@@ -453,7 +453,7 @@ export default function NewSequence() {
                     )}
 
                     {/* Standalone / None option */}
-                    <div className="pt-1 border-t border-zinc-100 dark:border-[#2e2e38]">
+                    <div className="pt-1 border-t border-zinc-100 dark:border-white/10">
                       <button
                         type="button"
                         onClick={() => {
@@ -464,7 +464,7 @@ export default function NewSequence() {
                         className={`w-full flex items-center justify-between gap-3 p-2.5 rounded-xl text-left transition cursor-pointer ${
                           !selectedPageId
                             ? "bg-[#0066B2]/10 dark:bg-[#0066B2]/20 border border-[#0066B2]/30"
-                            : "hover:bg-zinc-100 dark:hover:bg-[#222228] border border-transparent"
+                            : "hover:bg-zinc-100 dark:hover:bg-white/10 border border-transparent"
                         }`}
                       >
                         <div className="flex items-center gap-2.5">
@@ -508,9 +508,9 @@ export default function NewSequence() {
                 placeholder="e.g. Here is your free guide download →"
                 maxLength={120}
                 required
-                className="w-full rounded-xl border border-zinc-200 bg-white p-3 text-xs text-zinc-900 placeholder-zinc-400 focus:border-[#0066B2] focus:outline-none dark:border-[#2e2e38] dark:bg-[#202026] dark:text-white dark:placeholder-zinc-500 shadow-xs font-medium"
+                className="w-full rounded-xl border border-zinc-200 bg-white p-3 text-xs text-zinc-900 placeholder-zinc-400 focus:border-[#0066B2] focus:outline-none dark:border-white/10 dark:bg-[#121212] dark:text-white dark:placeholder-zinc-500 shadow-xs font-medium"
               />
-              <p className="mt-1.5 text-xs text-zinc-500 dark:text-[#9B9085]">
+              <p className="mt-1.5 text-xs text-zinc-500 dark:text-zinc-400">
                 Sent instantly to subscribers the moment they sign up on your lead magnet form.
               </p>
             </div>
@@ -523,20 +523,20 @@ export default function NewSequence() {
               </div>
 
               <div className="space-y-2 text-xs">
-                <div className="flex items-center gap-3 bg-white dark:bg-[#18181B] p-2.5 rounded-lg border border-zinc-200/80 dark:border-white/5">
+                <div className="flex items-center gap-3 bg-white dark:bg-[#121212] p-2.5 rounded-lg border border-zinc-200/80 dark:border-white/10">
                   <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#0066B2] text-[10px] font-bold text-white shrink-0">1</span>
                   <div className="flex-1 truncate">
                     <span className="font-semibold text-zinc-900 dark:text-white">Resource Delivery Email</span>
-                    <span className="block text-[11px] text-zinc-500 dark:text-[#9B9085] truncate">{subject || "Here is your resource download"}</span>
+                    <span className="block text-[11px] text-zinc-500 dark:text-zinc-400 truncate">{subject || "Here is your resource download"}</span>
                   </div>
                   <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 shrink-0">Instantly</span>
                 </div>
 
-                <div className="flex items-center gap-3 bg-white dark:bg-[#18181B] p-2.5 rounded-lg border border-zinc-200/80 dark:border-white/5">
+                <div className="flex items-center gap-3 bg-white dark:bg-[#121212] p-2.5 rounded-lg border border-zinc-200/80 dark:border-white/10">
                   <span className="flex h-6 w-6 items-center justify-center rounded-full bg-zinc-700 text-[10px] font-bold text-white shrink-0">2</span>
                   <div className="flex-1 truncate">
                     <span className="font-semibold text-zinc-900 dark:text-white">Follow-up Email #1</span>
-                    <span className="block text-[11px] text-zinc-500 dark:text-[#9B9085]">Checking in to see if you have any questions</span>
+                    <span className="block text-[11px] text-zinc-500 dark:text-zinc-400">Checking in to see if you have any questions</span>
                   </div>
                   <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-amber-500/10 text-amber-600 dark:text-amber-400 shrink-0">1 Day Later</span>
                 </div>
@@ -544,8 +544,8 @@ export default function NewSequence() {
             </div>
 
             {/* Bottom Actions */}
-            <div className="pt-3 border-t border-zinc-100 dark:border-[#2e2e38] flex flex-col sm:flex-row items-center justify-between gap-4">
-              <span className="text-[11px] text-zinc-500 dark:text-[#9B9085] flex items-center gap-1">
+            <div className="pt-3 border-t border-zinc-100 dark:border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4">
+              <span className="text-[11px] text-zinc-500 dark:text-zinc-400 flex items-center gap-1">
                 <Check className="h-3.5 w-3.5 text-emerald-500" /> Automated & Verified Email Sender
               </span>
 
