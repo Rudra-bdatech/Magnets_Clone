@@ -1387,8 +1387,8 @@ export default function SequencesPage() {
                               handleToggleCheck(seq.id, e);
                             }
                           }}
-                          className={`group relative flex flex-col justify-between rounded-2xl border transition-all duration-200 min-w-0 w-full max-w-full cursor-pointer overflow-hidden ${
-                            isMenuOpen ? "z-30" : "z-0"
+                          className={`group relative flex flex-col justify-between rounded-2xl border transition-all duration-200 min-w-0 w-full max-w-full cursor-pointer ${
+                            isMenuOpen ? "overflow-visible z-40" : "overflow-hidden z-0"
                           } ${
                             isChecked
                               ? "border-[#0066B2] dark:border-[#38BDF8] bg-blue-50/40 dark:bg-[#0066B2]/15 ring-2 ring-[#0066B2]/30 shadow-[0_8px_30px_rgba(0,102,178,0.15)]"
@@ -1396,7 +1396,7 @@ export default function SequencesPage() {
                           }`}
                         >
                           {/* Top Section: Header & Step Pipeline */}
-                          <div className="p-4 sm:p-5 pb-3">
+                          <div className="p-4 sm:p-5 pb-3 rounded-t-2xl">
                             <div className="flex items-start justify-between gap-3">
                               <div className="flex items-start gap-3 flex-1 min-w-0">
                                 {/* Animated Checkbox */}
@@ -1608,7 +1608,7 @@ export default function SequencesPage() {
                           </div>
 
                           {/* High-Signal Metrics Footer (Clean & Airy) */}
-                          <div className="px-4 sm:px-5 py-3 border-t border-[#0066B2]/10 dark:border-white/[0.05] bg-[#F8FBFF]/60 dark:bg-white/[0.01] flex items-center justify-between text-xs">
+                          <div className="px-4 sm:px-5 py-3 border-t border-[#0066B2]/10 dark:border-white/[0.05] bg-[#F8FBFF]/60 dark:bg-white/[0.01] flex items-center justify-between text-xs rounded-b-2xl">
                             <div className="flex items-center gap-4 sm:gap-6">
                               <div>
                                 <span className="text-[10px] font-medium uppercase tracking-wider text-zinc-400 dark:text-zinc-500 block leading-none">
