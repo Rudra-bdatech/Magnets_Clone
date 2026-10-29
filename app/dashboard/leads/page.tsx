@@ -990,7 +990,7 @@ function parseCsvLine(line: string): string[] {
               className="flex items-center gap-1.5 rounded-xl bg-[#0066B2] px-3.5 py-2 text-xs font-bold text-white hover:bg-[#005291] active:scale-95 transition shadow-sm cursor-pointer"
             >
               <UserPlus className="h-3.5 w-3.5" />
-              <span>+ Add</span>
+              <span>Add</span>
             </button>
 
             {/* 3-Dot Overflow Menu for Secondary Actions */}
