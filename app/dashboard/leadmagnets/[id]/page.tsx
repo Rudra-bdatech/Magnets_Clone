@@ -62,6 +62,7 @@ import SocialCardModal from "@/components/leadmagnets/social-card-modal";
 import DeleteModal from "@/components/leadmagnets/edit/DeleteModal";
 import SequencePreviewModal from "@/components/leadmagnets/edit/SequencePreviewModal";
 import EmailPreviewModal from "@/components/leadmagnets/edit/EmailPreviewModal";
+import QRCodeDropdown from "@/components/leadmagnets/QRCodeDropdown";
 import LandingPageTab from "@/components/leadmagnets/edit/LandingPageTab";
 import DeliveryEmailTab from "@/components/leadmagnets/edit/DeliveryEmailTab";
 import SequenceTab from "@/components/leadmagnets/edit/SequenceTab";
@@ -293,6 +294,7 @@ export default function EditLeadMagnetPage() {
   const [showMenu, setShowMenu] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const mobileMenuRef = useRef<HTMLDivElement>(null);
   const [showAIModal, setShowAIModal] = useState(false);
   const [isGeneratingAICover, setIsGeneratingAICover] = useState(false);
   const [imageGenerationStatus, setImageGenerationStatus] = useState<import("@/components/agents/image-generation").ImageGenerationStatus>("complete");
@@ -361,7 +363,9 @@ export default function EditLeadMagnetPage() {
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+      const inDesktop = menuRef.current && menuRef.current.contains(e.target as Node);
+      const inMobile = mobileMenuRef.current && mobileMenuRef.current.contains(e.target as Node);
+      if (!inDesktop && !inMobile) {
         setShowMenu(false);
       }
     };
@@ -1390,18 +1394,6 @@ export default function EditLeadMagnetPage() {
     router.push(`/dashboard/leadmagnets/${params.id}/analytics`);
   };
 
-  const handleDownloadQR = () => {
-    setShowMenu(false);
-    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=${encodeURIComponent(url)}`;
-    const a = document.createElement("a");
-    a.href = qrUrl;
-    a.download = `${page.slug || "lead-magnet"}-qr.png`;
-    a.target = "_blank";
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-  };
-
   const handleDeletePage = () => {
     setShowMenu(false);
     setShowDeleteModal(true);
@@ -1640,7 +1632,7 @@ export default function EditLeadMagnetPage() {
                       <ExternalLink className="h-3.5 w-3.5" />
                     </a>
 
-                    <div className="relative">
+                    <div className="relative" ref={mobileMenuRef}>
                       <button
                         type="button"
                         onClick={() => setShowMenu(!showMenu)}
@@ -1654,42 +1646,20 @@ export default function EditLeadMagnetPage() {
                       </button>
 
                       {showMenu && (
-                        <div className="absolute right-0 top-9 w-48 rounded-2xl border p-1.5 shadow-xl z-50 animate-in fade-in slide-in-from-top-2 duration-150 border-zinc-200 bg-white text-zinc-900 dark:border-white/10 dark:bg-[#171717] dark:text-zinc-200">
-                          <button
-                            onClick={() => {
-                              setShowMenu(false);
-                              handleAnalytics();
-                            }}
-                            className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-semibold transition cursor-pointer text-zinc-700 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-300 dark:hover:bg-white/10 dark:hover:text-white"
-                          >
-                            <BarChart2 className="h-4 w-4 text-zinc-400" />
-                            <span>Analytics</span>
-                          </button>
-
-                          <button
-                            onClick={() => {
-                              setShowMenu(false);
-                              handleDownloadQR();
-                            }}
-                            className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-semibold transition cursor-pointer text-zinc-700 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-300 dark:hover:bg-white/10 dark:hover:text-white"
-                          >
-                            <QrCode className="h-4 w-4 text-zinc-400" />
-                            <span>Download QR code</span>
-                          </button>
-
-                          <div className="my-1 h-px bg-zinc-200 dark:bg-white/10" />
-
-                          <button
-                            onClick={() => {
-                              setShowMenu(false);
-                              handleDeletePage();
-                            }}
-                            className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-semibold text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 transition cursor-pointer"
-                          >
-                            <Trash2 className="h-4 w-4 text-red-400" />
-                            <span>Delete lead magnet</span>
-                          </button>
-                        </div>
+                        <QRCodeDropdown
+                          page={page}
+                          account={account}
+                          isLockedPdf={isLockedPdf}
+                          onAnalytics={() => {
+                            setShowMenu(false);
+                            handleAnalytics();
+                          }}
+                          onDelete={() => {
+                            setShowMenu(false);
+                            handleDeletePage();
+                          }}
+                          onClose={() => setShowMenu(false)}
+                        />
                       )}
                     </div>
                   </div>
@@ -1800,42 +1770,20 @@ export default function EditLeadMagnetPage() {
                         </button>
 
                         {showMenu && (
-                          <div className="absolute right-0 top-9 w-48 rounded-2xl border p-1.5 shadow-xl z-50 animate-in fade-in slide-in-from-top-2 duration-150 border-zinc-200 bg-white text-zinc-900 dark:border-white/10 dark:bg-[#171717] dark:text-zinc-200">
-                            <button
-                              onClick={() => {
-                                setShowMenu(false);
-                                handleAnalytics();
-                              }}
-                              className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-semibold transition cursor-pointer text-zinc-700 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-300 dark:hover:bg-white/10 dark:hover:text-white"
-                            >
-                              <BarChart2 className="h-4 w-4 text-zinc-400" />
-                              <span>Analytics</span>
-                            </button>
-
-                            <button
-                              onClick={() => {
-                                setShowMenu(false);
-                                handleDownloadQR();
-                              }}
-                              className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-semibold transition cursor-pointer text-zinc-700 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-300 dark:hover:bg-white/10 dark:hover:text-white"
-                            >
-                              <QrCode className="h-4 w-4 text-zinc-400" />
-                              <span>Download QR code</span>
-                            </button>
-
-                            <div className="my-1 h-px bg-zinc-200 dark:bg-white/10" />
-
-                            <button
-                              onClick={() => {
-                                setShowMenu(false);
-                                handleDeletePage();
-                              }}
-                              className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-semibold text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 transition cursor-pointer"
-                            >
-                              <Trash2 className="h-4 w-4 text-red-400" />
-                              <span>Delete lead magnet</span>
-                            </button>
-                          </div>
+                          <QRCodeDropdown
+                            page={page}
+                            account={account}
+                            isLockedPdf={isLockedPdf}
+                            onAnalytics={() => {
+                              setShowMenu(false);
+                              handleAnalytics();
+                            }}
+                            onDelete={() => {
+                              setShowMenu(false);
+                              handleDeletePage();
+                            }}
+                            onClose={() => setShowMenu(false)}
+                          />
                         )}
                       </div>
 
