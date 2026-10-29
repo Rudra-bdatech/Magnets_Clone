@@ -6,6 +6,8 @@ import { usePathname, useRouter } from "next/navigation";
 import { FileText, FolderOpen, Users, Sliders, Palette, User, CircleHelp, Menu, X, Search, ChevronRight, HelpCircle, Sun, Moon, Monitor, Bug, Lightbulb, LogOut, BookOpen, Gift, Compass, Send, GitFork, Calendar, Settings, Globe, Mail, Share2, Cpu, Slack, Zap, Link as LinkIcon, BarChart3, PlayCircle, CheckCircle2, ArrowLeft, Sparkles, Rocket, ExternalLink, ListChecks, Loader2, FileLock, Lock, LayoutDashboard, Linkedin, PanelLeftClose, PanelLeftOpen, PanelLeft } from "lucide-react";
 import { useState, useEffect, useRef, useMemo, useCallback, createContext, useContext } from "react";
 import ThemeToggle from "@/components/theme-toggle";
+import { toggleThemeWithRipple } from "@/lib/theme-transition";
+import { createTickPlayer, type TickPlayer } from "@/lib/tick-sound";
 import BrandLogo from "@/components/brand";
 import type { Account } from "@/lib/data";
 import { motion, AnimatePresence } from "framer-motion";
@@ -76,6 +78,7 @@ export default function DashboardShell({
   const [showDrawerProfileMenu, setShowDrawerProfileMenu] = useState(false);
   const [hoveredNavHref, setHoveredNavHref] = useState<string | null>(null);
   const profileMenuRef = useRef<HTMLDivElement>(null);
+  const tickPlayerRef = useRef<TickPlayer | null>(null);
   const mobileDrawerProfileMenuRef = useRef<HTMLDivElement>(null);
 
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -170,23 +173,41 @@ export default function DashboardShell({
   const [feedbackText, setFeedbackText] = useState("");
   const [feedbackSent, setFeedbackSent] = useState(false);
 
-  const applyThemeMode = (mode: "light" | "dark" | "system") => {
-    setThemeMode(mode);
-    let isDark = false;
-    if (mode === "system") {
-      isDark = typeof window !== "undefined" && window.matchMedia("(prefers-color-scheme: dark)").matches;
-    } else {
-      isDark = mode === "dark";
-    }
-    setDark(isDark);
-    document.documentElement.classList.toggle("dark", isDark);
-    document.documentElement.classList.toggle("light", !isDark);
-    document.documentElement.dataset.theme = isDark ? "dark" : "light";
-    document.documentElement.style.colorScheme = isDark ? "dark" : "light";
+  const applyThemeMode = (mode: "light" | "dark" | "system", event?: React.MouseEvent<any>) => {
     try {
-      localStorage.setItem("leadmagnets-theme-mode", mode);
-      localStorage.setItem("leadmagnets-theme", isDark ? "dark" : "light");
-    } catch (_) { }
+      if (!tickPlayerRef.current) {
+        tickPlayerRef.current = createTickPlayer();
+      }
+      tickPlayerRef.current?.play();
+    } catch (_) {}
+    if (typeof window !== "undefined" && "vibrate" in navigator) {
+      try { navigator.vibrate(10); } catch (_) {}
+    }
+    const doApply = () => {
+      setThemeMode(mode);
+      let isDark = false;
+      if (mode === "system") {
+        isDark = typeof window !== "undefined" && window.matchMedia("(prefers-color-scheme: dark)").matches;
+      } else {
+        isDark = mode === "dark";
+      }
+      setDark(isDark);
+      document.documentElement.classList.toggle("dark", isDark);
+      document.documentElement.classList.toggle("light", !isDark);
+      document.documentElement.dataset.theme = isDark ? "dark" : "light";
+      document.documentElement.style.colorScheme = isDark ? "dark" : "light";
+      try {
+        localStorage.setItem("leadmagnets-theme-mode", mode);
+        localStorage.setItem("leadmagnets-theme", isDark ? "dark" : "light");
+      } catch (_) { }
+      window.dispatchEvent(new CustomEvent("leadmagnets-theme-changed", { detail: { isDark } }));
+    };
+
+    if (event) {
+      toggleThemeWithRipple(event, doApply);
+    } else {
+      doApply();
+    }
   };
 
   const openGmailCompose = (type: "bug" | "feature") => {
@@ -776,9 +797,13 @@ export default function DashboardShell({
                             key={mode}
                             type="button"
                             title={`${mode.charAt(0).toUpperCase() + mode.slice(1)} mode`}
-                            onClick={() => applyThemeMode(mode)}
+                            onClick={(e) => applyThemeMode(mode, e)}
                             className={`relative flex-1 flex items-center justify-center py-1.5 text-xs font-medium transition-colors duration-150 cursor-pointer z-10 ${isActive
-                              ? "text-zinc-900 dark:text-white"
+                              ? mode === "light"
+                                ? "text-amber-500 font-semibold"
+                                : mode === "dark"
+                                ? "text-sky-400 dark:text-zinc-100 font-semibold"
+                                : "text-zinc-900 dark:text-white font-semibold"
                               : "text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200"
                               }`}
                           >
@@ -927,7 +952,7 @@ export default function DashboardShell({
                 )}
               </AnimatePresence>
 
-              <button
+                            <button
                 data-tour="account-menu"
                 onClick={() => setShowProfileMenu(!showProfileMenu)}
                 title={isCollapsed ? `${displayAccount.name}` : undefined}
@@ -1090,9 +1115,13 @@ export default function DashboardShell({
                               key={mode}
                               type="button"
                               title={`${mode.charAt(0).toUpperCase() + mode.slice(1)} mode`}
-                              onClick={() => applyThemeMode(mode)}
+                              onClick={(e) => applyThemeMode(mode, e)}
                               className={`relative flex-1 flex items-center justify-center py-1.5 text-xs font-medium transition-colors duration-150 cursor-pointer z-10 ${isActive
-                                ? "text-zinc-900 dark:text-white"
+                                ? mode === "light"
+                                  ? "text-amber-500 font-semibold"
+                                  : mode === "dark"
+                                  ? "text-sky-400 dark:text-zinc-100 font-semibold"
+                                  : "text-zinc-900 dark:text-white font-semibold"
                                 : "text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200"
                                 }`}
                             >

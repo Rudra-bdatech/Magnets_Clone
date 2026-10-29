@@ -7,6 +7,7 @@
 .font-instrument {
   font-family: 'Instrument Serif', Georgia, serif;
 }
+
 .font-manrope {
   font-family: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
 }
@@ -61,11 +62,13 @@ html.lenis body {
   -ms-overflow-style: none !important;
   scrollbar-width: none !important;
 }
+
 .scrollbar-none,
 .no-scrollbar {
   -ms-overflow-style: none !important;
   scrollbar-width: none !important;
 }
+
 .scrollbar-none::-webkit-scrollbar,
 .no-scrollbar::-webkit-scrollbar {
   display: none !important;
@@ -97,6 +100,7 @@ html.lenis body {
     opacity: 0;
     transform: translateY(4px);
   }
+
   100% {
     opacity: 1;
     transform: translateY(0);
@@ -132,6 +136,7 @@ html.lenis body {
     opacity: 0;
     transform: translateY(6px);
   }
+
   100% {
     opacity: 1;
     transform: translateY(0);
@@ -1139,6 +1144,7 @@ textarea {
     opacity: 0;
     transform: translateY(6px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -1231,7 +1237,10 @@ textarea {
   z-index: 2;
   position: absolute;
   content: "";
-  left: 0; right: 0; top: 0; bottom: 0;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
   background: rgba(0, 102, 178, 0.12);
   pointer-events: none;
 }
@@ -1323,50 +1332,111 @@ textarea {
   height: auto;
   border-radius: 8px;
 }
+
 /* ------------------------------------------------------------------ */
 /* Landing page motion (components/landing/*)                          */
 /* ------------------------------------------------------------------ */
 .lm-underline path {
   stroke-dasharray: 1;
   stroke-dashoffset: 1;
-  animation: lmDraw 0.7s 0.2s cubic-bezier(.2,.8,.2,1) forwards;
+  animation: lmDraw 0.7s 0.2s cubic-bezier(.2, .8, .2, 1) forwards;
 }
-@keyframes lmDraw { to { stroke-dashoffset: 0; } }
+
+@keyframes lmDraw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
 
 /* Integrations flow: a short lit segment travels along a pathLength=1 path */
 .lm-comet {
   stroke-dasharray: 0.14 1;
   filter: drop-shadow(0 0 4px currentColor);
-  animation: lmComet var(--dur, 700ms) cubic-bezier(.55,0,.35,1) var(--delay, 0ms) both;
+  animation: lmComet var(--dur, 700ms) cubic-bezier(.55, 0, .35, 1) var(--delay, 0ms) both;
 }
-@keyframes lmComet { from { stroke-dashoffset: 0.14; } to { stroke-dashoffset: -1; } }
+
+@keyframes lmComet {
+  from {
+    stroke-dashoffset: 0.14;
+  }
+
+  to {
+    stroke-dashoffset: -1;
+  }
+}
+
 /* Bright head riding the front 0.03 of the comet */
 .lm-comet-core {
   stroke-dasharray: 0.03 1.11;
-  animation: lmCometCore var(--dur, 700ms) cubic-bezier(.55,0,.35,1) var(--delay, 0ms) both;
+  animation: lmCometCore var(--dur, 700ms) cubic-bezier(.55, 0, .35, 1) var(--delay, 0ms) both;
 }
-@keyframes lmCometCore { from { stroke-dashoffset: 0.03; } to { stroke-dashoffset: -1.11; } }
+
+@keyframes lmCometCore {
+  from {
+    stroke-dashoffset: 0.03;
+  }
+
+  to {
+    stroke-dashoffset: -1.11;
+  }
+}
+
 .lm-trail {
   stroke-dasharray: 1;
-  animation: lmTrail var(--dur, 700ms) cubic-bezier(.55,0,.35,1) var(--delay, 0ms) both;
+  animation: lmTrail var(--dur, 700ms) cubic-bezier(.55, 0, .35, 1) var(--delay, 0ms) both;
 }
-@keyframes lmTrail { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+
+@keyframes lmTrail {
+  from {
+    stroke-dashoffset: 1;
+  }
+
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
 /* Mobile rail: glowing head that rides the growing rail (hub centre → last card centre) */
 .lm-beam {
   filter: drop-shadow(0 0 6px #38BDF8);
   animation: lmBeam 1000ms linear both;
 }
+
 @keyframes lmBeam {
-  0% { top: 0; opacity: 0; }
-  8%, 92% { opacity: 1; }
-  100% { top: calc(100% - 68px); opacity: 0; }
+  0% {
+    top: 0;
+    opacity: 0;
+  }
+
+  8%,
+  92% {
+    opacity: 1;
+  }
+
+  100% {
+    top: calc(100% - 68px);
+    opacity: 0;
+  }
 }
+
 .lm-ripple {
   transform-box: fill-box;
   transform-origin: center;
   animation: lmRipple 700ms ease-out both;
 }
-@keyframes lmRipple { from { transform: scale(.4); opacity: .9; } to { transform: scale(3.2); opacity: 0; } }
+
+@keyframes lmRipple {
+  from {
+    transform: scale(.4);
+    opacity: .9;
+  }
+
+  to {
+    transform: scale(3.2);
+    opacity: 0;
+  }
+}
+
 .lm-hit {
   position: absolute;
   inset: -1px;
@@ -1375,40 +1445,147 @@ textarea {
   box-shadow: 0 0 0 4px color-mix(in srgb, var(--c) 18%, transparent), 0 0 28px -6px var(--c);
   animation: lmHit 900ms ease-out both;
 }
-@keyframes lmHit { from { opacity: 1; } to { opacity: 0; } }
-.lm-pop { animation: lmPop 420ms cubic-bezier(.34,1.56,.64,1) both; }
-@keyframes lmPop { from { transform: scale(.6); opacity: 0; } to { transform: none; opacity: 1; } }
-.lm-shake { animation: lmShake 420ms cubic-bezier(.36,.07,.19,.97) both; }
-@keyframes lmShake {
-  10%, 90% { transform: translateX(-1px); }
-  20%, 80% { transform: translateX(2px); }
-  30%, 50%, 70% { transform: translateX(-3px); }
-  40%, 60% { transform: translateX(3px); }
+
+@keyframes lmHit {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
 }
 
-.lm-fade-in { animation: lmFadeIn 0.35s ease-out both; }
-@keyframes lmFadeIn { from { opacity: 0; transform: translateY(3px); } to { opacity: 1; transform: none; } }
+.lm-pop {
+  animation: lmPop 420ms cubic-bezier(.34, 1.56, .64, 1) both;
+}
+
+@keyframes lmPop {
+  from {
+    transform: scale(.6);
+    opacity: 0;
+  }
+
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+.lm-shake {
+  animation: lmShake 420ms cubic-bezier(.36, .07, .19, .97) both;
+}
+
+@keyframes lmShake {
+
+  10%,
+  90% {
+    transform: translateX(-1px);
+  }
+
+  20%,
+  80% {
+    transform: translateX(2px);
+  }
+
+  30%,
+  50%,
+  70% {
+    transform: translateX(-3px);
+  }
+
+  40%,
+  60% {
+    transform: translateX(3px);
+  }
+}
+
+.lm-fade-in {
+  animation: lmFadeIn 0.35s ease-out both;
+}
+
+@keyframes lmFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(3px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
 
 /* Hosting tile: upload bars */
-.lm-fill { animation: lmFill 3s cubic-bezier(.4,0,.2,1) infinite both; }
+.lm-fill {
+  animation: lmFill 3s cubic-bezier(.4, 0, .2, 1) infinite both;
+}
+
 @keyframes lmFill {
-  0% { transform: scaleX(0); }
-  55%, 92% { transform: scaleX(1); opacity: 1; }
-  100% { transform: scaleX(1); opacity: 0; }
+  0% {
+    transform: scaleX(0);
+  }
+
+  55%,
+  92% {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+
+  100% {
+    transform: scaleX(1);
+    opacity: 0;
+  }
 }
 
 /* Exit-intent tile: cursor heads for the tab bar, popup appears */
-.lm-exit-cursor { animation: lmExitCursor 4s ease-in-out infinite; }
-@keyframes lmExitCursor {
-  0%, 10% { transform: translate(0, 0); opacity: 1; }
-  40% { transform: translate(40px, -110px); opacity: 1; }
-  45%, 100% { transform: translate(40px, -110px); opacity: 0; }
+.lm-exit-cursor {
+  animation: lmExitCursor 4s ease-in-out infinite;
 }
-.lm-exit-popup { animation: lmExitPopup 4s ease-out infinite; }
+
+@keyframes lmExitCursor {
+
+  0%,
+  10% {
+    transform: translate(0, 0);
+    opacity: 1;
+  }
+
+  40% {
+    transform: translate(40px, -110px);
+    opacity: 1;
+  }
+
+  45%,
+  100% {
+    transform: translate(40px, -110px);
+    opacity: 0;
+  }
+}
+
+.lm-exit-popup {
+  animation: lmExitPopup 4s ease-out infinite;
+}
+
 @keyframes lmExitPopup {
-  0%, 42% { opacity: 0; transform: translateY(-40%) scale(0.95); }
-  50%, 88% { opacity: 1; transform: translateY(-50%) scale(1); }
-  96%, 100% { opacity: 0; transform: translateY(-50%) scale(1); }
+
+  0%,
+  42% {
+    opacity: 0;
+    transform: translateY(-40%) scale(0.95);
+  }
+
+  50%,
+  88% {
+    opacity: 1;
+    transform: translateY(-50%) scale(1);
+  }
+
+  96%,
+  100% {
+    opacity: 0;
+    transform: translateY(-50%) scale(1);
+  }
 }
 
 /* Compare table: strike through the DIY tool */
@@ -1417,72 +1594,246 @@ textarea {
   background-repeat: no-repeat;
   background-position: 0 55%;
   background-size: 0% 1px;
-  transition: background-size 0.5s cubic-bezier(.2,.8,.2,1), opacity 0.5s;
+  transition: background-size 0.5s cubic-bezier(.2, .8, .2, 1), opacity 0.5s;
 }
-.lm-strike[data-on="true"] { background-size: 100% 1px; opacity: 0.6; }
+
+.lm-strike[data-on="true"] {
+  background-size: 100% 1px;
+  opacity: 0.6;
+}
 
 /* Paused while off screen */
 .lm-paused .lm-fill,
 .lm-paused .lm-exit-cursor,
-.lm-paused .lm-exit-popup { animation-play-state: paused; }
+.lm-paused .lm-exit-popup {
+  animation-play-state: paused;
+}
 
 @media (prefers-reduced-motion: reduce) {
-  .lm-underline path { animation: none; stroke-dashoffset: 0; }
-  .lm-fill, .lm-exit-cursor, .lm-fade-in { animation: none; }
-  .lm-comet, .lm-comet-core, .lm-trail, .lm-ripple, .lm-pop, .lm-shake { animation: none; }
-  .lm-beam { display: none; }
-  .lm-hit { display: none; }
-  .lm-exit-cursor { opacity: 0; }
-  .lm-exit-popup { animation: none; opacity: 1; transform: translateY(-50%); }
+  .lm-underline path {
+    animation: none;
+    stroke-dashoffset: 0;
+  }
+
+  .lm-fill,
+  .lm-exit-cursor,
+  .lm-fade-in {
+    animation: none;
+  }
+
+  .lm-comet,
+  .lm-comet-core,
+  .lm-trail,
+  .lm-ripple,
+  .lm-pop,
+  .lm-shake {
+    animation: none;
+  }
+
+  .lm-beam {
+    display: none;
+  }
+
+  .lm-hit {
+    display: none;
+  }
+
+  .lm-exit-cursor {
+    opacity: 0;
+  }
+
+  .lm-exit-popup {
+    animation: none;
+    opacity: 1;
+    transform: translateY(-50%);
+  }
 }
 
 /* Hero entrance: everything except the H1 (LCP) rises in */
-.lm-rise { animation: lmRise 0.8s cubic-bezier(.2,.8,.2,1) both; }
-@keyframes lmRise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+.lm-rise {
+  animation: lmRise 0.8s cubic-bezier(.2, .8, .2, 1) both;
+}
 
-.lm-pop { animation: lmPop 0.4s cubic-bezier(.3,1.6,.5,1) both; }
-@keyframes lmPop { from { transform: scale(0.3); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+@keyframes lmRise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.lm-pop {
+  animation: lmPop 0.4s cubic-bezier(.3, 1.6, .5, 1) both;
+}
+
+@keyframes lmPop {
+  from {
+    transform: scale(0.3);
+    opacity: 0;
+  }
+
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
 
 /* Try-it builder */
-.lm-word { display: inline-block; animation: lmWord 420ms cubic-bezier(.2,.8,.2,1) both; }
-@keyframes lmWord { from { opacity: 0; transform: translateY(6px); filter: blur(4px); } to { opacity: 1; transform: none; filter: none; } }
-.lm-rise-in { animation: lmRiseIn 500ms cubic-bezier(.2,.8,.2,1) both; }
-@keyframes lmRiseIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
-.lm-cover-in { transform-origin: left center; animation: lmCoverIn 900ms cubic-bezier(.2,.9,.25,1) both; }
-@keyframes lmCoverIn { from { opacity: 0; transform: rotateY(-80deg) translateX(-12px); } to { opacity: 1; transform: none; } }
-.lm-float { animation: lmFloat 6s ease-in-out infinite; }
-@keyframes lmFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
-.lm-select { animation: lmSelect 280ms ease-out both; }
-@keyframes lmSelect { from { opacity: 0; transform: scale(1.03); } to { opacity: 1; transform: none; } }
+.lm-word {
+  display: inline-block;
+  animation: lmWord 420ms cubic-bezier(.2, .8, .2, 1) both;
+}
+
+@keyframes lmWord {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+    filter: blur(4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+}
+
+.lm-rise-in {
+  animation: lmRiseIn 500ms cubic-bezier(.2, .8, .2, 1) both;
+}
+
+@keyframes lmRiseIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.lm-cover-in {
+  transform-origin: left center;
+  animation: lmCoverIn 900ms cubic-bezier(.2, .9, .25, 1) both;
+}
+
+@keyframes lmCoverIn {
+  from {
+    opacity: 0;
+    transform: rotateY(-80deg) translateX(-12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.lm-float {
+  animation: lmFloat 6s ease-in-out infinite;
+}
+
+@keyframes lmFloat {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+.lm-select {
+  animation: lmSelect 280ms ease-out both;
+}
+
+@keyframes lmSelect {
+  from {
+    opacity: 0;
+    transform: scale(1.03);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
 
 @media (prefers-reduced-motion: reduce) {
-  .lm-rise, .lm-pop { animation: none; }
-  .lm-word, .lm-rise-in, .lm-cover-in, .lm-float, .lm-select { animation: none; }
-  .animate-marquee-left, .animate-marquee-right { animation-duration: 0s; }
+
+  .lm-rise,
+  .lm-pop {
+    animation: none;
+  }
+
+  .lm-word,
+  .lm-rise-in,
+  .lm-cover-in,
+  .lm-float,
+  .lm-select {
+    animation: none;
+  }
+
+  .animate-marquee-left,
+  .animate-marquee-right {
+    animation-duration: 0s;
+  }
 }
 
 /* Rolling price odometer: disable transition for reduced-motion */
 @media (prefers-reduced-motion: reduce) {
-  .lm-rolling-digit { transition: none !important; }
+  .lm-rolling-digit {
+    transition: none !important;
+  }
 }
 
 /* Staggered cascade for bento grid children */
-.lm-cascade > * {
+.lm-cascade>* {
   opacity: 0;
   transform: translateY(20px) scale(0.97);
-  transition: opacity 0.6s cubic-bezier(.2,.8,.2,1), transform 0.6s cubic-bezier(.2,.8,.2,1);
+  transition: opacity 0.6s cubic-bezier(.2, .8, .2, 1), transform 0.6s cubic-bezier(.2, .8, .2, 1);
 }
-.lm-cascade.lm-visible > * {
+
+.lm-cascade.lm-visible>* {
   opacity: 1;
   transform: none;
 }
-.lm-cascade.lm-visible > *:nth-child(1) { transition-delay: 0ms; }
-.lm-cascade.lm-visible > *:nth-child(2) { transition-delay: 80ms; }
-.lm-cascade.lm-visible > *:nth-child(3) { transition-delay: 160ms; }
-.lm-cascade.lm-visible > *:nth-child(4) { transition-delay: 240ms; }
-.lm-cascade.lm-visible > *:nth-child(5) { transition-delay: 320ms; }
-.lm-cascade.lm-visible > *:nth-child(6) { transition-delay: 400ms; }
-.lm-cascade.lm-visible > *:nth-child(7) { transition-delay: 480ms; }
+
+.lm-cascade.lm-visible>*:nth-child(1) {
+  transition-delay: 0ms;
+}
+
+.lm-cascade.lm-visible>*:nth-child(2) {
+  transition-delay: 80ms;
+}
+
+.lm-cascade.lm-visible>*:nth-child(3) {
+  transition-delay: 160ms;
+}
+
+.lm-cascade.lm-visible>*:nth-child(4) {
+  transition-delay: 240ms;
+}
+
+.lm-cascade.lm-visible>*:nth-child(5) {
+  transition-delay: 320ms;
+}
+
+.lm-cascade.lm-visible>*:nth-child(6) {
+  transition-delay: 400ms;
+}
+
+.lm-cascade.lm-visible>*:nth-child(7) {
+  transition-delay: 480ms;
+}
 
 /* Compare table row wipe */
 .lm-wipe-row {
@@ -1490,6 +1841,7 @@ textarea {
   transform: translateX(-12px);
   transition: opacity 0.5s ease-out, transform 0.5s ease-out;
 }
+
 .lm-wipe-visible .lm-wipe-row {
   opacity: 1;
   transform: none;
@@ -1499,18 +1851,21 @@ textarea {
 .lm-split-title {
   opacity: 0;
   transform: translateY(10px);
-  transition: opacity 0.5s cubic-bezier(.2,.8,.2,1), transform 0.5s cubic-bezier(.2,.8,.2,1);
+  transition: opacity 0.5s cubic-bezier(.2, .8, .2, 1), transform 0.5s cubic-bezier(.2, .8, .2, 1);
 }
+
 .lm-split-accent {
   opacity: 0;
   transform: translateY(10px);
-  transition: opacity 0.5s cubic-bezier(.2,.8,.2,1) 0.15s, transform 0.5s cubic-bezier(.2,.8,.2,1) 0.15s;
+  transition: opacity 0.5s cubic-bezier(.2, .8, .2, 1) 0.15s, transform 0.5s cubic-bezier(.2, .8, .2, 1) 0.15s;
 }
+
 .lm-split-desc {
   opacity: 0;
   transform: translateY(8px);
-  transition: opacity 0.5s cubic-bezier(.2,.8,.2,1) 0.25s, transform 0.5s cubic-bezier(.2,.8,.2,1) 0.25s;
+  transition: opacity 0.5s cubic-bezier(.2, .8, .2, 1) 0.25s, transform 0.5s cubic-bezier(.2, .8, .2, 1) 0.25s;
 }
+
 .lm-split-visible .lm-split-title,
 .lm-split-visible .lm-split-accent,
 .lm-split-visible .lm-split-desc {
@@ -1519,7 +1874,8 @@ textarea {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .lm-cascade > *,
+
+  .lm-cascade>*,
   .lm-wipe-row,
   .lm-split-title,
   .lm-split-accent,
@@ -1528,4 +1884,20 @@ textarea {
     transform: none !important;
     transition: none !important;
   }
+}
+
+
+/* Circular View Transition Ripple Animation */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+::view-transition-old(root) {
+  z-index: 1;
+}
+
+::view-transition-new(root) {
+  z-index: 99999;
 }
