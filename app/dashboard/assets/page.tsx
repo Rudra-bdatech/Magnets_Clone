@@ -752,7 +752,7 @@ export default function ResourcesPage() {
         </div>
       )}
 
-      <div className={`flex-1 px-3.5 py-6 sm:px-6 sm:py-7 lg:px-8 mx-auto w-full flex flex-col gap-4 transition-[max-width] duration-[220ms] ease-[cubic-bezier(0.16,1,0.3,1)] will-change-[max-width] ${isCollapsed ? "max-w-[1440px]" : "max-w-7xl"}`}>
+      <div className={`flex-1 px-3.5 sm:px-6 py-4 sm:py-6 lg:px-8 mx-auto w-full flex flex-col gap-4 transition-[max-width] duration-[220ms] ease-[cubic-bezier(0.16,1,0.3,1)] will-change-[max-width] ${isCollapsed ? "max-w-[1440px]" : "max-w-7xl"}`}>
 
         {/* ========================================================================= */}
         {/* 1. DESKTOP Page Heading (hidden md:flex)                                 */}
