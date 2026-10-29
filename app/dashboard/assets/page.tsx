@@ -803,7 +803,7 @@ export default function ResourcesPage() {
         {/* ========================================================================= */}
         <div className="flex md:hidden flex-col gap-3">
           <div className="flex items-center justify-between">
-            <h2 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-white">
+            <h2 className="text-2xl font-extrabold tracking-tight text-zinc-900 dark:text-white">
               Assets
             </h2>
 

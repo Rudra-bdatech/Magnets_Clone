@@ -359,7 +359,7 @@ export default function TemplatesPage() {
 
           {/* Page Title */}
           <div className="mb-6 sm:mb-8">
-            <h2 className="flex items-center gap-2 text-2xl sm:text-3xl font-bold text-zinc-900 dark:text-white animate-slide-in">
+            <h2 className="flex items-center gap-2 text-2xl sm:text-3xl font-extrabold tracking-tight text-zinc-900 dark:text-white animate-slide-in">
               Templates
               <button
                 type="button"

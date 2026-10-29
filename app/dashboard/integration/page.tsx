@@ -276,7 +276,7 @@ export default function WorkspaceSetupPage() {
 
           {/* Page heading & status */}
           <div className="mb-5 sm:mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-            <h2 className="flex items-center gap-2 text-2xl sm:text-3xl font-bold text-zinc-900 dark:text-white">
+            <h2 className="flex items-center gap-2 text-2xl sm:text-3xl font-extrabold tracking-tight text-zinc-900 dark:text-white">
               Integration
               <button
                 type="button"

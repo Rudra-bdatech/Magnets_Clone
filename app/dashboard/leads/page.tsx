@@ -979,7 +979,7 @@ function parseCsvLine(line: string): string[] {
         {/* 1. MOBILE Page Heading (flex md:hidden)                                   */}
         {/* ========================================================================= */}
         <div className="flex md:hidden items-center justify-between">
-          <h2 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-white">
+          <h2 className="text-2xl font-extrabold tracking-tight text-zinc-900 dark:text-white">
             Leads
           </h2>
 

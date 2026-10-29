@@ -824,8 +824,8 @@ export default function SequencesPage() {
           {/* Header Section */}
           <div className="flex items-center justify-between gap-2.5 mb-1 sm:mb-4">
             <div className="min-w-0">
-              <h2 className="text-lg sm:text-2xl lg:text-3xl font-extrabold tracking-tight text-zinc-900 dark:text-white truncate">
-                Follow-up Sequences
+              <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-zinc-900 dark:text-white truncate">
+                Sequences
               </h2>
             </div>
 
