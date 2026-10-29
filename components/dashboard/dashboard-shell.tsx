@@ -1269,10 +1269,10 @@ export default function DashboardShell({
                 <button
                   aria-label="Open menu"
                   data-tour="mobile-menu"
-                  className="flex h-8.5 w-8.5 items-center justify-center rounded-lg border border-zinc-200 dark:border-white/10 text-zinc-700 dark:text-zinc-300 md:hidden hover:bg-zinc-100 dark:hover:bg-zinc-800 transition cursor-pointer"
+                  className="flex h-9 w-9 items-center justify-center rounded-lg text-zinc-700 dark:text-zinc-300 md:hidden hover:bg-zinc-100/80 dark:hover:bg-white/10 active:scale-90 transition-all cursor-pointer"
                   onClick={() => setMenuOpen(true)}
                 >
-                  <Menu className="h-4 w-4" aria-hidden="true" />
+                  <Menu className="h-5.5 w-5.5" aria-hidden="true" strokeWidth={2} />
                 </button>
                 <Link href="/dashboard" aria-label="Dashboard" className="flex items-center">
                   <BrandLogo height="h-7" />
