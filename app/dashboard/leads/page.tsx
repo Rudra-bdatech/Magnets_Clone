@@ -26,6 +26,7 @@ import {
   CheckSquare,
   StopCircle,
   Clock,
+  MoreVertical,
 } from "lucide-react";
 import {
   syncWithDatabase,
@@ -85,6 +86,7 @@ export default function LeadsPage() {
   const [statusFilter, setStatusFilter] = useState<"all" | "in_progress" | "completed" | "recent">("all");
   const [isStatusFilterOpen, setIsStatusFilterOpen] = useState(false);
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
+  const [isMobileMoreOpen, setIsMobileMoreOpen] = useState(false);
   const [filterMagnet, setFilterMagnet] = useState("All lead magnets");
   const [filterOpen, setFilterOpen] = useState(false);
   const [sortBy, setSortBy] = useState<"newest" | "oldest" | "name" | "email">("newest");
@@ -94,6 +96,7 @@ export default function LeadsPage() {
   const sortRef = useRef<HTMLDivElement>(null);
   const statusFilterRef = useRef<HTMLDivElement>(null);
   const mobileFilterRef = useRef<HTMLDivElement>(null);
+  const mobileMoreRef = useRef<HTMLDivElement>(null);
 
   const sortOptions = [
     { id: "newest", label: "Most Recent" },
@@ -168,6 +171,9 @@ export default function LeadsPage() {
       }
       if (mobileFilterRef.current && !mobileFilterRef.current.contains(e.target as Node)) {
         setIsMobileFilterOpen(false);
+      }
+      if (mobileMoreRef.current && !mobileMoreRef.current.contains(e.target as Node)) {
+        setIsMobileMoreOpen(false);
       }
     }
     document.addEventListener("mousedown", handler);
@@ -972,12 +978,12 @@ function parseCsvLine(line: string): string[] {
         {/* ========================================================================= */}
         {/* 1. MOBILE Page Heading (flex md:hidden)                                   */}
         {/* ========================================================================= */}
-        <div className="flex md:hidden flex-col gap-3">
-          <div className="flex items-center justify-between">
-            <h2 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-white">
-              Leads
-            </h2>
+        <div className="flex md:hidden items-center justify-between">
+          <h2 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-white">
+            Leads
+          </h2>
 
+          <div className="flex items-center gap-2">
             <button
               type="button"
               onClick={() => setShowAddModal(true)}
@@ -986,24 +992,63 @@ function parseCsvLine(line: string): string[] {
               <UserPlus className="h-3.5 w-3.5" />
               <span>+ Add</span>
             </button>
-          </div>
 
-          {/* Mobile Actions Quick Bar */}
-          <div className="grid grid-cols-2 gap-2">
-            <label className="flex items-center justify-center gap-1.5 rounded-xl border border-zinc-200/90 bg-white py-2 px-3 text-xs font-semibold text-zinc-700 hover:bg-zinc-50 dark:border-white/10 dark:bg-[#171717] dark:text-zinc-200 dark:hover:bg-[#222222] active:scale-98 transition cursor-pointer shadow-2xs">
-              <Download className="h-3.5 w-3.5 text-[#0066B2] shrink-0" />
-              <span className="truncate">Import CSV</span>
-              <input type="file" accept=".csv" onChange={handleCSVFileSelect} className="hidden" />
-            </label>
+            {/* 3-Dot Overflow Menu for Secondary Actions */}
+            <div className="relative" ref={mobileMoreRef}>
+              <button
+                type="button"
+                onClick={() => setIsMobileMoreOpen((prev) => !prev)}
+                className={`flex h-8 w-8 items-center justify-center rounded-xl border transition active:scale-95 cursor-pointer ${
+                  isMobileMoreOpen
+                    ? "border-[#0066B2] bg-blue-50 text-[#0066B2] dark:border-[#0066B2] dark:bg-[#0066B2]/20"
+                    : "border-zinc-200/90 bg-white text-zinc-700 hover:bg-zinc-50 dark:border-white/10 dark:bg-[#171717] dark:text-zinc-200 dark:hover:bg-[#222222] shadow-2xs"
+                }`}
+                aria-label="More actions"
+              >
+                <MoreVertical className="h-4 w-4" />
+              </button>
 
-            <button
-              type="button"
-              onClick={handleExportCSV}
-              className="flex items-center justify-center gap-1.5 rounded-xl border border-zinc-200/90 bg-white py-2 px-3 text-xs font-semibold text-zinc-700 hover:bg-zinc-50 dark:border-white/10 dark:bg-[#171717] dark:text-zinc-200 dark:hover:bg-[#222222] active:scale-98 transition cursor-pointer shadow-2xs"
-            >
-              <Upload className="h-3.5 w-3.5 text-[#0066B2] shrink-0" />
-              <span className="truncate">Export CSV</span>
-            </button>
+              <AnimatePresence>
+                {isMobileMoreOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.95, y: -4 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.95, y: -4 }}
+                    transition={{ duration: 0.15 }}
+                    className="absolute right-0 top-full mt-2 w-44 rounded-xl border border-zinc-200/90 bg-white/95 p-1.5 shadow-xl backdrop-blur-md dark:border-white/10 dark:bg-[#171717]/95 z-50"
+                  >
+                    <label
+                      onClick={() => setIsMobileMoreOpen(false)}
+                      className="flex items-center gap-2.5 w-full rounded-lg px-3 py-2 text-xs font-semibold text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-white/5 cursor-pointer transition"
+                    >
+                      <Download className="h-3.5 w-3.5 text-[#0066B2] shrink-0" />
+                      <span>Import CSV</span>
+                      <input
+                        type="file"
+                        accept=".csv"
+                        onChange={(e) => {
+                          handleCSVFileSelect(e);
+                          setIsMobileMoreOpen(false);
+                        }}
+                        className="hidden"
+                      />
+                    </label>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsMobileMoreOpen(false);
+                        handleExportCSV();
+                      }}
+                      className="flex items-center gap-2.5 w-full rounded-lg px-3 py-2 text-xs font-semibold text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-white/5 cursor-pointer transition text-left"
+                    >
+                      <Upload className="h-3.5 w-3.5 text-[#0066B2] shrink-0" />
+                      <span>Export CSV</span>
+                    </button>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
           </div>
         </div>
 
