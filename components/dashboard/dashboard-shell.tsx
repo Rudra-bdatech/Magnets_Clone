@@ -27,8 +27,8 @@ export interface SidebarContextType {
 
 export const SidebarContext = createContext<SidebarContextType>({
   isCollapsed: false,
-  toggleSidebar: () => {},
-  setIsCollapsed: () => {},
+  toggleSidebar: () => { },
+  setIsCollapsed: () => { },
 });
 
 export const useSidebar = () => useContext(SidebarContext);
@@ -90,15 +90,24 @@ export default function DashboardShell({
       if (saved !== null) {
         setIsCollapsed(saved === "true");
       }
-    } catch (_) {}
+    } catch (_) { }
   }, []);
 
   const toggleSidebar = useCallback(() => {
+    try {
+      if (!tickPlayerRef.current) {
+        tickPlayerRef.current = createTickPlayer();
+      }
+      tickPlayerRef.current?.play();
+    } catch (_) { }
+    if (typeof window !== "undefined" && "vibrate" in navigator) {
+      try { navigator.vibrate(8); } catch (_) { }
+    }
     setIsCollapsed((prev) => {
       const next = !prev;
       try {
         localStorage.setItem("leadmagnets_sidebar_collapsed", String(next));
-      } catch (_) {}
+      } catch (_) { }
       return next;
     });
   }, []);
@@ -179,9 +188,9 @@ export default function DashboardShell({
         tickPlayerRef.current = createTickPlayer();
       }
       tickPlayerRef.current?.play();
-    } catch (_) {}
+    } catch (_) { }
     if (typeof window !== "undefined" && "vibrate" in navigator) {
-      try { navigator.vibrate(10); } catch (_) {}
+      try { navigator.vibrate(10); } catch (_) { }
     }
     const doApply = () => {
       setThemeMode(mode);
@@ -397,7 +406,7 @@ export default function DashboardShell({
           refreshOnboarding();
         };
       }
-    } catch (_) {}
+    } catch (_) { }
 
     return () => {
       window.removeEventListener("storage", handleStorage);
@@ -434,7 +443,7 @@ export default function DashboardShell({
         const p = loadPages().find((item) => item.id === id);
         if (p && (p.template === "locked-pdf" || (p.pdfPages && p.pdfPages.length > 0))) return true;
       }
-    } catch (_) {}
+    } catch (_) { }
     return false;
   }, [pathname]);
 
@@ -481,119 +490,217 @@ export default function DashboardShell({
         triggerRadius="8px"
         contentRadius="20px"
       >
-      <div className="dashboard-canvas flex min-h-screen relative w-full max-w-full">
+        <div className="dashboard-canvas flex min-h-screen relative w-full max-w-full">
 
-        <motion.aside
-          animate={{ width: isCollapsed ? 68 : 232 }}
-          transition={{ type: "spring", stiffness: 520, damping: 38, mass: 0.5 }}
-          className="shadow-sm hidden h-screen shrink-0 flex-col border-r border-[#E0EDFB] bg-[#F0F7FF] text-zinc-900 sticky top-0 md:flex z-50 dark:border-white/[0.08] dark:bg-[#171717] dark:text-zinc-400 overflow-visible select-none"
-        >
-          {/* Header & Logo Area */}
-          <div className="flex shrink-0 items-center justify-between px-3.5 pt-3 pb-1 h-14 relative">
-            <Link
-              href="/dashboard"
-              aria-label="Dashboard"
-              className="flex items-center group relative h-9 overflow-hidden rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0066B2]"
-              title={isCollapsed ? "Dashboard" : undefined}
-            >
-              {/* Seamless, pixel-perfect logo with smooth spring text masking */}
-              <motion.div
-                animate={{ width: isCollapsed ? 36 : 144 }}
-                transition={{ type: "spring", stiffness: 520, damping: 38, mass: 0.5 }}
-                className="h-9 overflow-hidden flex items-center shrink-0"
-              >
-                <div className="w-[144px] min-w-[144px] h-9 shrink-0 flex items-center">
-                  <Image
-                    alt="LeadMagnets"
-                    src="/brand/custom-logo-light.webp"
-                    width={144}
-                    height={36}
-                    priority
-                    className="h-9 w-[144px] min-w-[144px] max-w-none object-contain object-left dark:hidden"
-                  />
-                  <Image
-                    alt="LeadMagnets"
-                    src="/brand/custom-logo.webp"
-                    width={144}
-                    height={36}
-                    priority
-                    className="h-9 w-[144px] min-w-[144px] max-w-none object-contain object-left hidden dark:block"
-                  />
-                </div>
-              </motion.div>
-            </Link>
-
-            {/* Toggle Collapse Button (Expanded State) */}
-            {!isCollapsed && (
-              <motion.button
-                type="button"
-                onClick={toggleSidebar}
-                title="Collapse sidebar (⌘B)"
-                whileTap={{ scale: 0.92 }}
-                whileHover={{ scale: 1.06 }}
-                className="flex h-8 w-8 items-center justify-center rounded-lg text-zinc-400 hover:text-zinc-800 hover:bg-[#E2F0FD] dark:text-zinc-400 dark:hover:text-white dark:hover:bg-zinc-800/80 transition-colors cursor-pointer"
-                aria-label="Collapse sidebar"
-              >
-                <PanelLeftClose className="h-4 w-4" />
-              </motion.button>
-            )}
-
-            {/* Floating Toggle Button on Outside Border Seam (Collapsed State) */}
-            {isCollapsed && (
-              <motion.button
-                type="button"
-                onClick={toggleSidebar}
-                title="Expand sidebar (⌘B)"
-                whileTap={{ scale: 0.92 }}
-                whileHover={{ scale: 1.12 }}
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ type: "spring", stiffness: 500, damping: 28 }}
-                className="absolute -right-3.5 top-3.5 z-[70] flex h-7 w-7 items-center justify-center rounded-full bg-white dark:bg-[#171717] border border-zinc-200/90 dark:border-white/10 shadow-[0_2px_8px_rgba(0,0,0,0.12)] dark:shadow-[0_2px_12px_rgba(0,0,0,0.5)] text-zinc-500 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-white hover:bg-[#E2F0FD] dark:hover:bg-white/10 transition-colors cursor-pointer"
-                aria-label="Expand sidebar"
-              >
-                <PanelLeftOpen className="h-3.5 w-3.5" />
-              </motion.button>
-            )}
-          </div>
-
-          {/* Nav Items */}
-          <nav
-            className={`flex-1 space-y-1 px-2 mt-1 ${
-              isCollapsed ? "overflow-visible" : "overflow-y-auto overflow-x-hidden scrollbar-none"
-            }`}
-            aria-label="Dashboard"
-            onMouseLeave={() => setHoveredNavHref(null)}
+          <motion.aside
+            animate={{ width: isCollapsed ? 68 : 232 }}
+            transition={{ type: "spring", stiffness: 520, damping: 38, mass: 0.5 }}
+            className="shadow-sm hidden h-screen shrink-0 flex-col border-r border-[#E0EDFB] bg-[#F0F7FF] text-zinc-900 sticky top-0 md:flex z-50 dark:border-white/[0.08] dark:bg-[#171717] dark:text-zinc-400 overflow-visible select-none"
           >
-            {computedNav.map((item) => {
-              const active = activeNavHref
-                ? item.href === activeNavHref
-                : item.href === "/dashboard"
-                  ? pathname === "/dashboard"
-                  : item.href === "/dashboard/locked-pdf"
-                    ? (pathname === "/dashboard/locked-pdf" || isCurrentLockedPdf)
-                    : item.href === "/dashboard/landing-page"
-                      ? (!isCurrentLockedPdf && (pathname === "/dashboard/landing-page" || pathname === "/dashboard/leadmagnets" || pathname.startsWith("/dashboard/leadmagnets/")))
-                      : (pathname === item.href || (item.href !== "/dashboard" && item.href !== "/dashboard/landing-page" && item.href !== "/dashboard/locked-pdf" && pathname.startsWith(`${item.href}/`)));
-              const isHovered = hoveredNavHref === item.href;              if (item.isModal) {
+            {/* Header & Logo Area */}
+            <div className="flex shrink-0 items-center justify-between px-3.5 pt-3 pb-1 h-14 relative">
+              <Link
+                href="/dashboard"
+                aria-label="Dashboard"
+                className="flex items-center group relative h-9 overflow-hidden rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0066B2]"
+                title={isCollapsed ? "Dashboard" : undefined}
+              >
+                {/* Seamless, pixel-perfect logo with smooth spring text masking */}
+                <motion.div
+                  animate={{ width: isCollapsed ? 36 : 144 }}
+                  transition={{ type: "spring", stiffness: 520, damping: 38, mass: 0.5 }}
+                  className="h-9 overflow-hidden flex items-center shrink-0"
+                >
+                  <div className="w-[144px] min-w-[144px] h-9 shrink-0 flex items-center">
+                    <Image
+                      alt="LeadMagnets"
+                      src="/brand/custom-logo-light.webp"
+                      width={144}
+                      height={36}
+                      priority
+                      className="h-9 w-[144px] min-w-[144px] max-w-none object-contain object-left dark:hidden"
+                    />
+                    <Image
+                      alt="LeadMagnets"
+                      src="/brand/custom-logo.webp"
+                      width={144}
+                      height={36}
+                      priority
+                      className="h-9 w-[144px] min-w-[144px] max-w-none object-contain object-left hidden dark:block"
+                    />
+                  </div>
+                </motion.div>
+              </Link>
+
+              {/* Toggle Collapse / Expand Button */}
+              <AnimatePresence mode="wait" initial={false}>
+                {!isCollapsed ? (
+                  <motion.button
+                    key="sidebar-collapse-btn"
+                    type="button"
+                    onClick={toggleSidebar}
+                    title="Collapse sidebar (⌘B)"
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.9 }}
+                    transition={{ duration: 0.15, ease: [0.16, 1, 0.3, 1] }}
+                    className="group flex h-8 w-8 items-center justify-center rounded-lg text-zinc-400 hover:text-zinc-800 hover:bg-[#E2F0FD] dark:text-zinc-400 dark:hover:text-white dark:hover:bg-zinc-800/80 transition-colors duration-150 active:scale-95 cursor-pointer transform-gpu"
+                    aria-label="Collapse sidebar"
+                  >
+                    <PanelLeftClose className="h-4 w-4 transition-transform duration-150 group-hover:-translate-x-0.5" />
+                  </motion.button>
+                ) : (
+                  <motion.button
+                    key="sidebar-expand-btn"
+                    type="button"
+                    onClick={toggleSidebar}
+                    title="Expand sidebar (⌘B)"
+                    initial={{ opacity: 0, scale: 0.85 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.85 }}
+                    transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
+                    className="group absolute -right-3.5 top-3.5 z-[70] flex h-7 w-7 items-center justify-center rounded-full bg-white dark:bg-[#171717] border border-zinc-200/90 dark:border-white/10 shadow-[0_2px_8px_rgba(0,0,0,0.12)] dark:shadow-[0_2px_12px_rgba(0,0,0,0.5)] text-zinc-500 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-white hover:bg-[#E2F0FD] dark:hover:bg-white/10 hover:border-zinc-300 dark:hover:border-white/20 hover:shadow-md transition-colors duration-150 cursor-pointer active:scale-95 transform-gpu before:absolute before:-inset-1 before:content-[''] before:rounded-full"
+                    aria-label="Expand sidebar"
+                  >
+                    <PanelLeftOpen className="h-3.5 w-3.5 transition-transform duration-150 group-hover:translate-x-0.5" />
+                  </motion.button>
+                )}
+              </AnimatePresence>
+            </div>
+
+            {/* Nav Items */}
+            <nav
+              className={`flex-1 space-y-1 px-2 mt-1 ${isCollapsed ? "overflow-visible" : "overflow-y-auto overflow-x-hidden scrollbar-none"
+                }`}
+              aria-label="Dashboard"
+              onMouseLeave={() => setHoveredNavHref(null)}
+            >
+              {computedNav.map((item) => {
+                const active = activeNavHref
+                  ? item.href === activeNavHref
+                  : item.href === "/dashboard"
+                    ? pathname === "/dashboard"
+                    : item.href === "/dashboard/locked-pdf"
+                      ? (pathname === "/dashboard/locked-pdf" || isCurrentLockedPdf)
+                      : item.href === "/dashboard/landing-page"
+                        ? (!isCurrentLockedPdf && (pathname === "/dashboard/landing-page" || pathname === "/dashboard/leadmagnets" || pathname.startsWith("/dashboard/leadmagnets/")))
+                        : (pathname === item.href || (item.href !== "/dashboard" && item.href !== "/dashboard/landing-page" && item.href !== "/dashboard/locked-pdf" && pathname.startsWith(`${item.href}/`)));
+                const isHovered = hoveredNavHref === item.href; if (item.isModal) {
+                  return (
+                    <div
+                      key={item.href}
+                      className="relative group flex items-center justify-center"
+                      onMouseEnter={() => setHoveredNavHref(item.href)}
+                    >
+                      <ExpandableScreenTrigger className="w-full">
+                        <motion.button
+                          type="button"
+                          whileTap={{ scale: 0.95 }}
+                          transition={{ type: "spring", stiffness: 600, damping: 28 }}
+                          className={`relative flex items-center rounded-xl font-medium transition-colors cursor-pointer text-zinc-600 dark:text-zinc-400 dark:hover:text-white ${isCollapsed
+                              ? "h-10 w-10 mx-auto justify-center"
+                              : "w-full gap-2.5 px-2.5 py-2 text-sm"
+                            }`}
+                        >
+                          {isHovered && (
+                            <motion.div
+                              layoutId="leftPanelHoverPill"
+                              transition={{ type: "spring", stiffness: 800, damping: 38, mass: 0.2 }}
+                              className="absolute inset-0 rounded-xl bg-[#E2F0FD] dark:bg-white/5"
+                            />
+                          )}
+                          <item.icon
+                            className={`shrink-0 relative z-10 text-zinc-500 group-hover:text-zinc-900 dark:text-zinc-400 dark:group-hover:text-white ${isCollapsed ? "h-4.5 w-4.5" : "h-4 w-4"
+                              }`}
+                            aria-hidden="true"
+                          />
+                          {!isCollapsed && (
+                            <span className="flex-1 text-left relative z-10 flex items-center justify-between whitespace-nowrap overflow-hidden">
+                              <span className="truncate">{item.label}</span>
+                              {item.badge && (
+                                <span className="text-[10px] font-bold px-1.5 py-0.2 rounded-full bg-[#0066B2]/10 text-[#0066B2] dark:bg-[#38BDF8]/15 dark:text-[#38BDF8]">
+                                  {item.badge}
+                                </span>
+                              )}
+                            </span>
+                          )}
+                        </motion.button>
+                      </ExpandableScreenTrigger>
+
+                      {/* Apple-grade Collapsed Floating Tooltip with Translucent Frosted Glass */}
+                      <AnimatePresence>
+                        {isCollapsed && isHovered && (
+                          <div className="absolute left-full ml-3.5 top-1/2 -translate-y-1/2 z-[100] pointer-events-none flex items-center">
+                            <motion.div
+                              layoutId="collapsedNavFloatingTooltip"
+                              initial={{ opacity: 0, x: -6, scale: 0.95 }}
+                              animate={{ opacity: 1, x: 0, scale: 1 }}
+                              exit={{ opacity: 0, x: -4, scale: 0.95, transition: { duration: 0.06 } }}
+                              transition={{ type: "spring", stiffness: 850, damping: 38, mass: 0.2 }}
+                              className="relative flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/80 text-zinc-900 text-xs font-semibold border border-zinc-200/90 shadow-[0_10px_25px_-4px_rgba(0,0,0,0.15)] dark:bg-[#171717]/95 dark:text-zinc-100 dark:border-white/10 dark:shadow-[0_12px_32px_-4px_rgba(0,0,0,0.6)] whitespace-nowrap backdrop-blur-xl transform-gpu will-change-transform"
+                            >
+                              {/* Micro Arrow Pointer */}
+                              <div className="absolute -left-1 top-1/2 -translate-y-1/2 w-2 h-2 rotate-45 bg-white/80 border-l border-b border-zinc-200/90 dark:bg-[#171717]/95 dark:border-white/10" />
+                              <motion.div
+                                key={item.label}
+                                initial={{ opacity: 0.5, y: 1 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -1 }}
+                                transition={{ duration: 0.06 }}
+                                className="relative z-10 flex items-center gap-2"
+                              >
+                                <span>{item.label}</span>
+                                {item.badge && (
+                                  <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-[#0066B2]/20 text-[#0066B2] dark:bg-[#38BDF8]/20 dark:text-[#38BDF8] border border-[#0066B2]/30 dark:border-[#38BDF8]/30">
+                                    {item.badge}
+                                  </span>
+                                )}
+                              </motion.div>
+                            </motion.div>
+                          </div>
+                        )}
+                      </AnimatePresence>
+                    </div>
+                  );
+                }
+
                 return (
                   <div
                     key={item.href}
                     className="relative group flex items-center justify-center"
                     onMouseEnter={() => setHoveredNavHref(item.href)}
                   >
-                    <ExpandableScreenTrigger className="w-full">
-                      <motion.button
-                        type="button"
-                        whileTap={{ scale: 0.95 }}
-                        transition={{ type: "spring", stiffness: 600, damping: 28 }}
-                        className={`relative flex items-center rounded-xl font-medium transition-colors cursor-pointer text-zinc-600 dark:text-zinc-400 dark:hover:text-white ${
-                          isCollapsed
+                    <motion.div
+                      className={isCollapsed ? "w-10 h-10 flex items-center justify-center" : "w-full"}
+                      whileTap={{ scale: 0.95 }}
+                      transition={{ type: "spring", stiffness: 600, damping: 28 }}
+                    >
+                      <Link
+                        href={item.href}
+                        className={`relative flex items-center rounded-xl font-medium transition-colors cursor-pointer ${isCollapsed
                             ? "h-10 w-10 mx-auto justify-center"
                             : "w-full gap-2.5 px-2.5 py-2 text-sm"
-                        }`}
+                          } ${active
+                            ? "text-white font-bold dark:text-white"
+                            : "text-zinc-600 dark:text-zinc-400 dark:hover:text-white"
+                          }`}
+                        onClick={(e) => {
+                          if (pathname !== item.href) {
+                            e.preventDefault();
+                            router.push(item.href);
+                          }
+                        }}
                       >
-                        {isHovered && (
+                        {/* Active Page Solid Pill */}
+                        {active && (
+                          <motion.div
+                            layoutId="leftPanelActivePill"
+                            transition={{ type: "spring", stiffness: 600, damping: 34 }}
+                            className="absolute inset-0 rounded-xl bg-[#0066B2] shadow-xs dark:bg-[#0066B2]/20 dark:border dark:border-[#0066B2]/40"
+                          />
+                        )}
+                        {/* Hover Morphing Pill */}
+                        {!active && isHovered && (
                           <motion.div
                             layoutId="leftPanelHoverPill"
                             transition={{ type: "spring", stiffness: 800, damping: 38, mass: 0.2 }}
@@ -601,23 +708,33 @@ export default function DashboardShell({
                           />
                         )}
                         <item.icon
-                          className={`shrink-0 relative z-10 text-zinc-500 group-hover:text-zinc-900 dark:text-zinc-400 dark:group-hover:text-white ${
-                            isCollapsed ? "h-4.5 w-4.5" : "h-4 w-4"
-                          }`}
+                          className={`shrink-0 relative z-10 ${active
+                              ? "text-white"
+                              : "text-zinc-500 group-hover:text-zinc-900 dark:text-zinc-400 dark:group-hover:text-white"
+                            } ${isCollapsed ? "h-4.5 w-4.5" : "h-4 w-4"}`}
                           aria-hidden="true"
                         />
                         {!isCollapsed && (
-                          <span className="flex-1 text-left relative z-10 flex items-center justify-between whitespace-nowrap overflow-hidden">
+                          <span className="flex-1 relative z-10 flex items-center justify-between whitespace-nowrap overflow-hidden">
                             <span className="truncate">{item.label}</span>
                             {item.badge && (
-                              <span className="text-[10px] font-bold px-1.5 py-0.2 rounded-full bg-[#0066B2]/10 text-[#0066B2] dark:bg-[#38BDF8]/15 dark:text-[#38BDF8]">
+                              <span
+                                className={`text-[10px] font-bold px-1.5 py-0.5 rounded-md ${active
+                                    ? "bg-white/20 text-white"
+                                    : "bg-[#0066B2]/10 text-[#0066B2] dark:bg-[#38BDF8]/15 dark:text-[#38BDF8]"
+                                  }`}
+                              >
                                 {item.badge}
                               </span>
                             )}
                           </span>
                         )}
-                      </motion.button>
-                    </ExpandableScreenTrigger>
+                        {/* Collapsed badge dot */}
+                        {isCollapsed && item.badge && !active && (
+                          <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-[#0066B2] dark:bg-[#38BDF8] ring-2 ring-white dark:ring-[#171717]" />
+                        )}
+                      </Link>
+                    </motion.div>
 
                     {/* Apple-grade Collapsed Floating Tooltip with Translucent Frosted Glass */}
                     <AnimatePresence>
@@ -654,455 +771,23 @@ export default function DashboardShell({
                     </AnimatePresence>
                   </div>
                 );
-              }
+              })}
+            </nav>
 
-              return (
-                <div
-                  key={item.href}
-                  className="relative group flex items-center justify-center"
-                  onMouseEnter={() => setHoveredNavHref(item.href)}
-                >
-                  <motion.div
-                    className={isCollapsed ? "w-10 h-10 flex items-center justify-center" : "w-full"}
-                    whileTap={{ scale: 0.95 }}
-                    transition={{ type: "spring", stiffness: 600, damping: 28 }}
-                  >
-                    <Link
-                      href={item.href}
-                      className={`relative flex items-center rounded-xl font-medium transition-colors cursor-pointer ${
-                        isCollapsed
-                          ? "h-10 w-10 mx-auto justify-center"
-                          : "w-full gap-2.5 px-2.5 py-2 text-sm"
-                      } ${
-                        active
-                          ? "text-white font-bold dark:text-white"
-                          : "text-zinc-600 dark:text-zinc-400 dark:hover:text-white"
-                      }`}
-                      onClick={(e) => {
-                        if (pathname !== item.href) {
-                          e.preventDefault();
-                          router.push(item.href);
-                        }
-                      }}
-                    >
-                      {/* Active Page Solid Pill */}
-                      {active && (
-                        <motion.div
-                          layoutId="leftPanelActivePill"
-                          transition={{ type: "spring", stiffness: 600, damping: 34 }}
-                          className="absolute inset-0 rounded-xl bg-[#0066B2] shadow-xs dark:bg-[#0066B2]/20 dark:border dark:border-[#0066B2]/40"
-                        />
-                      )}
-                      {/* Hover Morphing Pill */}
-                      {!active && isHovered && (
-                        <motion.div
-                          layoutId="leftPanelHoverPill"
-                          transition={{ type: "spring", stiffness: 800, damping: 38, mass: 0.2 }}
-                          className="absolute inset-0 rounded-xl bg-[#E2F0FD] dark:bg-white/5"
-                        />
-                      )}
-                      <item.icon
-                        className={`shrink-0 relative z-10 ${
-                          active
-                            ? "text-white"
-                            : "text-zinc-500 group-hover:text-zinc-900 dark:text-zinc-400 dark:group-hover:text-white"
-                        } ${isCollapsed ? "h-4.5 w-4.5" : "h-4 w-4"}`}
-                        aria-hidden="true"
-                      />
-                      {!isCollapsed && (
-                        <span className="flex-1 relative z-10 flex items-center justify-between whitespace-nowrap overflow-hidden">
-                          <span className="truncate">{item.label}</span>
-                          {item.badge && (
-                            <span
-                              className={`text-[10px] font-bold px-1.5 py-0.5 rounded-md ${
-                                active
-                                  ? "bg-white/20 text-white"
-                                  : "bg-[#0066B2]/10 text-[#0066B2] dark:bg-[#38BDF8]/15 dark:text-[#38BDF8]"
-                              }`}
-                            >
-                              {item.badge}
-                            </span>
-                          )}
-                        </span>
-                      )}
-                      {/* Collapsed badge dot */}
-                      {isCollapsed && item.badge && !active && (
-                        <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-[#0066B2] dark:bg-[#38BDF8] ring-2 ring-white dark:ring-[#171717]" />
-                      )}
-                    </Link>
-                  </motion.div>
-
-                  {/* Apple-grade Collapsed Floating Tooltip with Translucent Frosted Glass */}
-                  <AnimatePresence>
-                    {isCollapsed && isHovered && (
-                      <div className="absolute left-full ml-3.5 top-1/2 -translate-y-1/2 z-[100] pointer-events-none flex items-center">
-                        <motion.div
-                          layoutId="collapsedNavFloatingTooltip"
-                          initial={{ opacity: 0, x: -6, scale: 0.95 }}
-                          animate={{ opacity: 1, x: 0, scale: 1 }}
-                          exit={{ opacity: 0, x: -4, scale: 0.95, transition: { duration: 0.06 } }}
-                          transition={{ type: "spring", stiffness: 850, damping: 38, mass: 0.2 }}
-                          className="relative flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/80 text-zinc-900 text-xs font-semibold border border-zinc-200/90 shadow-[0_10px_25px_-4px_rgba(0,0,0,0.15)] dark:bg-[#171717]/95 dark:text-zinc-100 dark:border-white/10 dark:shadow-[0_12px_32px_-4px_rgba(0,0,0,0.6)] whitespace-nowrap backdrop-blur-xl transform-gpu will-change-transform"
-                        >
-                          {/* Micro Arrow Pointer */}
-                          <div className="absolute -left-1 top-1/2 -translate-y-1/2 w-2 h-2 rotate-45 bg-white/80 border-l border-b border-zinc-200/90 dark:bg-[#171717]/95 dark:border-white/10" />
-                          <motion.div
-                            key={item.label}
-                            initial={{ opacity: 0.5, y: 1 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -1 }}
-                            transition={{ duration: 0.06 }}
-                            className="relative z-10 flex items-center gap-2"
-                          >
-                            <span>{item.label}</span>
-                            {item.badge && (
-                              <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-[#0066B2]/20 text-[#0066B2] dark:bg-[#38BDF8]/20 dark:text-[#38BDF8] border border-[#0066B2]/30 dark:border-[#38BDF8]/30">
-                                {item.badge}
-                              </span>
-                            )}
-                          </motion.div>
-                        </motion.div>
-                      </div>
-                    )}
-                  </AnimatePresence>
-                </div>
-              );
-            })}
-          </nav>
-
-          {/* Bottom Profile Section */}
-          <div className={`px-2 pt-1.5 pb-2 border-t border-[#E0EDFB]/60 dark:border-white/5 overflow-visible ${isCollapsed ? "flex justify-center" : ""}`}>
-            <div ref={profileMenuRef} className="relative w-full overflow-visible">
-              {/* Profile Popover Menu */}
-              <AnimatePresence>
-                {showProfileMenu && (
-                  <motion.div
-                    initial={isCollapsed ? { opacity: 0, scale: 0.95, x: -8 } : { opacity: 0, scale: 0.95, y: 4 }}
-                    animate={{ opacity: 1, scale: 1, x: 0, y: 0 }}
-                    exit={isCollapsed ? { opacity: 0, scale: 0.95, x: -8 } : { opacity: 0, scale: 0.95, y: 4 }}
-                    transition={{ duration: 0.15, ease: [0.16, 1, 0.3, 1] }}
-                    style={{ transformOrigin: isCollapsed ? "bottom left" : "bottom left" }}
-                    className={`absolute rounded-2xl border border-zinc-200/80 bg-white/95 p-1.5 shadow-2xl backdrop-blur-md z-[100] text-zinc-900 flex flex-col gap-0.5 dark:border-white/10 dark:bg-[#171717]/95 dark:text-white dark:shadow-[0_12px_36px_-6px_rgba(0,0,0,0.6),0_0_0_1px_rgba(255,255,255,0.06)] ${
-                      isCollapsed ? "w-56 left-full bottom-0 ml-3.5" : "w-full bottom-full mb-2 left-0"
-                    }`}
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    {/* Theme Switcher Segmented Control */}
-                    <div className="relative flex items-center justify-between p-1 bg-zinc-100/90 dark:bg-zinc-900/80 rounded-xl border border-zinc-200/80 dark:border-zinc-800/90 mb-1 select-none">
-                      {(["light", "dark", "system"] as const).map((mode) => {
-                        const Icon = mode === "light" ? Sun : mode === "dark" ? Moon : Monitor;
-                        const isActive = themeMode === mode;
-                        return (
-                          <button
-                            key={mode}
-                            type="button"
-                            title={`${mode.charAt(0).toUpperCase() + mode.slice(1)} mode`}
-                            onClick={(e) => applyThemeMode(mode, e)}
-                            className={`relative flex-1 flex items-center justify-center py-1.5 text-xs font-medium transition-colors duration-150 cursor-pointer z-10 ${isActive
-                              ? mode === "light"
-                                ? "text-amber-500 font-semibold"
-                                : mode === "dark"
-                                ? "text-sky-400 dark:text-zinc-100 font-semibold"
-                                : "text-zinc-900 dark:text-white font-semibold"
-                              : "text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200"
-                              }`}
-                          >
-                            {isActive && (
-                              <motion.div
-                                layoutId="activeThemePillSidebar"
-                                transition={{ type: "spring", stiffness: 450, damping: 35 }}
-                                className="absolute inset-0.5 bg-white dark:bg-white/10 rounded-[9px] shadow-sm border border-black/[0.04] dark:border-white/[0.08]"
-                              />
-                            )}
-                            <span className="relative z-10 flex items-center justify-center">
-                              <Icon className="h-3.5 w-3.5" strokeWidth={1.85} />
-                            </span>
-                          </button>
-                        );
-                      })}
-                    </div>
-
-                    <div onMouseLeave={() => setHoveredProfileMenuKey(null)} className="flex flex-col gap-0.5">
-                      {/* Account / User Section */}
-                      <motion.button
-                        type="button"
-                        whileTap={{ scale: 0.97 }}
-                        transition={{ type: "spring", stiffness: 600, damping: 28 }}
-                        onMouseEnter={() => setHoveredProfileMenuKey("account")}
-                        onClick={() => {
-                          setShowProfileMenu(false);
-                          router.push("/dashboard/settings");
-                        }}
-                        className="relative flex items-center gap-2.5 rounded-[10px] px-2.5 py-2 text-left text-xs font-medium text-zinc-600 transition-colors w-full dark:text-zinc-400 dark:hover:text-white cursor-pointer"
-                      >
-                        {hoveredProfileMenuKey === "account" && (
-                          <motion.div
-                            layoutId="profileMenuHoverPill"
-                            transition={{ type: "spring", stiffness: 500, damping: 32 }}
-                            className="absolute inset-0 rounded-[10px] bg-[#E2F0FD] dark:bg-zinc-800/80"
-                          />
-                        )}
-                        <span className="relative z-10 flex h-4 w-4 shrink-0 items-center justify-center">
-                          <User className="h-4 w-4 text-zinc-500 dark:text-zinc-400" strokeWidth={1.85} />
-                        </span>
-                        <span className="relative z-10">Account</span>
-                      </motion.button>
-
-                      {/* Semantic Divider between Account and Support */}
-                      <div className="my-1 border-t border-zinc-100 dark:border-zinc-800/70" />
-
-                      {/* Support & Feedback Section */}
-                      <motion.button
-                        type="button"
-                        whileTap={{ scale: 0.97 }}
-                        transition={{ type: "spring", stiffness: 600, damping: 28 }}
-                        onMouseEnter={() => setHoveredProfileMenuKey("help")}
-                        onClick={() => {
-                          setShowProfileMenu(false);
-                          setShowHelp(true);
-                        }}
-                        className="relative flex items-center gap-2.5 rounded-[10px] px-2.5 py-2 text-left text-xs font-medium text-zinc-600 transition-colors w-full dark:text-zinc-400 dark:hover:text-white cursor-pointer"
-                      >
-                        {hoveredProfileMenuKey === "help" && (
-                          <motion.div
-                            layoutId="profileMenuHoverPill"
-                            transition={{ type: "spring", stiffness: 500, damping: 32 }}
-                            className="absolute inset-0 rounded-[10px] bg-[#E2F0FD] dark:bg-zinc-800/80"
-                          />
-                        )}
-                        <span className="relative z-10 flex h-4 w-4 shrink-0 items-center justify-center">
-                          <CircleHelp className="h-4 w-4 text-zinc-500 dark:text-zinc-400" strokeWidth={1.85} />
-                        </span>
-                        <span className="relative z-10">Help</span>
-                      </motion.button>
-
-                      <motion.button
-                        type="button"
-                        whileTap={{ scale: 0.97 }}
-                        transition={{ type: "spring", stiffness: 600, damping: 28 }}
-                        onMouseEnter={() => setHoveredProfileMenuKey("bug")}
-                        onClick={() => {
-                          openGmailCompose("bug");
-                          setShowProfileMenu(false);
-                        }}
-                        className="relative flex items-center gap-2.5 rounded-[10px] px-2.5 py-2 text-left text-xs font-medium text-zinc-600 transition-colors w-full dark:text-zinc-400 dark:hover:text-white cursor-pointer"
-                      >
-                        {hoveredProfileMenuKey === "bug" && (
-                          <motion.div
-                            layoutId="profileMenuHoverPill"
-                            transition={{ type: "spring", stiffness: 500, damping: 32 }}
-                            className="absolute inset-0 rounded-[10px] bg-[#E2F0FD] dark:bg-zinc-800/80"
-                          />
-                        )}
-                        <span className="relative z-10 flex h-4 w-4 shrink-0 items-center justify-center">
-                          <Bug className="h-4 w-4 text-zinc-500 dark:text-zinc-400" strokeWidth={1.85} />
-                        </span>
-                        <span className="relative z-10">Report a bug</span>
-                      </motion.button>
-
-                      <motion.button
-                        type="button"
-                        whileTap={{ scale: 0.97 }}
-                        transition={{ type: "spring", stiffness: 600, damping: 28 }}
-                        onMouseEnter={() => setHoveredProfileMenuKey("feature")}
-                        onClick={() => {
-                          openGmailCompose("feature");
-                          setShowProfileMenu(false);
-                        }}
-                        className="relative flex items-center gap-2.5 rounded-[10px] px-2.5 py-2 text-left text-xs font-medium text-zinc-600 transition-colors w-full dark:text-zinc-400 dark:hover:text-white cursor-pointer"
-                      >
-                        {hoveredProfileMenuKey === "feature" && (
-                          <motion.div
-                            layoutId="profileMenuHoverPill"
-                            transition={{ type: "spring", stiffness: 500, damping: 32 }}
-                            className="absolute inset-0 rounded-[10px] bg-[#E2F0FD] dark:bg-zinc-800/80"
-                          />
-                        )}
-                        <span className="relative z-10 flex h-4 w-4 shrink-0 items-center justify-center">
-                          <Sparkles className="h-4 w-4 text-zinc-500 dark:text-zinc-400" strokeWidth={1.85} />
-                        </span>
-                        <span className="relative z-10">Request a feature</span>
-                      </motion.button>
-                    </div>
-
-                    {/* Divider before Destructive Action */}
-                    <div className="my-1 border-t border-zinc-100 dark:border-zinc-800/70" />
-
-                    <motion.button
-                      type="button"
-                      disabled={isLoggingOut}
-                      whileTap={{ scale: 0.97 }}
-                      transition={{ type: "spring", stiffness: 600, damping: 28 }}
-                      onClick={() => {
-                        setShowProfileMenu(false);
-                        handleLogout();
-                      }}
-                      className="flex items-center gap-2.5 rounded-[10px] px-2.5 py-2 text-left text-xs font-medium text-rose-600 hover:bg-rose-50/80 transition-colors w-full dark:text-rose-400 dark:hover:bg-rose-950/30 cursor-pointer disabled:opacity-50"
-                    >
-                      <span className="flex h-4 w-4 shrink-0 items-center justify-center">
-                        {isLoggingOut ? (
-                          <Loader2 className="h-4 w-4 animate-spin text-rose-500" />
-                        ) : (
-                          <LogOut className="h-4 w-4 text-rose-500 dark:text-rose-400" strokeWidth={1.85} />
-                        )}
-                      </span>
-                      <span>{isLoggingOut ? "Signing out..." : "Sign out"}</span>
-                    </motion.button>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-
-                            <button
-                data-tour="account-menu"
-                onClick={() => setShowProfileMenu(!showProfileMenu)}
-                title={isCollapsed ? `${displayAccount.name}` : undefined}
-                className={`flex items-center rounded-xl transition cursor-pointer hover:bg-[#E2F0FD] dark:hover:bg-white/5 ${
-                  isCollapsed
-                    ? "h-10 w-10 mx-auto justify-center p-0"
-                    : "w-full justify-between gap-2.5 p-2 text-left"
-                }`}
-              >
-                {displayAccount.avatar && !avatarError ? (
-                  <img
-                    src={displayAccount.avatar}
-                    alt={displayAccount.name}
-                    referrerPolicy="no-referrer"
-                    onError={() => setAvatarError(true)}
-                    className="h-8 w-8 shrink-0 rounded-full object-cover border border-[#0066B2]/40"
-                  />
-                ) : (
-                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#0066B2] text-xs font-extrabold text-white dark:bg-white dark:text-[#0066B2]" suppressHydrationWarning>
-                    {mounted
-                      ? (displayAccount.name.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase() || displayAccount.name.charAt(0))
-                      : (displayAccount.name.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase() || "RK")}
-                  </span>
-                )}
-                {!isCollapsed && (
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-xs font-bold text-zinc-900 leading-tight dark:text-white" suppressHydrationWarning>{displayAccount.name}</p>
-                    <p className="truncate text-[10px] text-zinc-500 leading-tight mt-0.5 dark:text-zinc-400" suppressHydrationWarning>{displayAccount.email}</p>
-                  </div>
-                )}
-              </button>
-            </div>
-          </div>
-        </motion.aside>
-
-        <AnimatePresence>
-          {menuOpen && (
-            <div className="fixed inset-0 z-50 md:hidden">
-              {/* Backdrop with fade and blur */}
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.22, ease: "easeInOut" }}
-                className="fixed inset-0 bg-black/45 backdrop-blur-sm"
-                onClick={() => setMenuOpen(false)}
-              />
-
-              {/* Apple-grade Spring Drawer Panel */}
-              <motion.div
-                initial={{ x: "-100%" }}
-                animate={{ x: 0 }}
-                exit={{ x: "-100%" }}
-                transition={{ type: "spring", stiffness: 380, damping: 34, mass: 0.85 }}
-                className="relative z-10 flex h-full w-72 max-w-[85vw] flex-col bg-[#F0F7FF] dark:bg-[#171717] border-y border-r border-[#E0EDFB] dark:border-white/[0.08] rounded-r-3xl p-4 text-zinc-900 dark:text-zinc-400 shadow-2xl overflow-hidden"
-                onClick={(e) => e.stopPropagation()}
-              >
-              <div className="mb-4 flex items-center justify-between pb-3">
-                <Link href="/dashboard" aria-label="Dashboard" onClick={() => setMenuOpen(false)}>
-                  <BrandLogo height="h-9" />
-                </Link>
-                <button
-                  aria-label="Close menu"
-                  className="flex h-8 w-8 items-center justify-center rounded-full bg-zinc-200/70 hover:bg-zinc-300/80 text-zinc-600 hover:text-zinc-900 dark:bg-white/10 dark:hover:bg-white/20 dark:text-zinc-300 dark:hover:text-white transition-all active:scale-90 cursor-pointer"
-                  onClick={() => setMenuOpen(false)}
-                >
-                  <X className="h-4 w-4" strokeWidth={2.2} aria-hidden="true" />
-                </button>
-              </div>
-
-              {/* Navigation links */}
-              <nav className="flex-1 overflow-y-auto space-y-1.5 pr-1" aria-label="Dashboard">
-                {computedNav.map((item) => {
-                  const active = activeNavHref
-                    ? item.href === activeNavHref
-                    : item.href === "/dashboard"
-                      ? pathname === "/dashboard"
-                      : item.href === "/dashboard/locked-pdf"
-                        ? (pathname === "/dashboard/locked-pdf" || isCurrentLockedPdf)
-                        : item.href === "/dashboard/landing-page"
-                          ? (!isCurrentLockedPdf && (pathname === "/dashboard/landing-page" || pathname === "/dashboard/leadmagnets" || pathname.startsWith("/dashboard/leadmagnets/")))
-                          : (pathname === item.href || (item.href !== "/dashboard" && item.href !== "/dashboard/landing-page" && item.href !== "/dashboard/locked-pdf" && pathname.startsWith(`${item.href}/`)));
-                  if (item.isModal) {
-                    return (
-                      <button
-                        key={item.href}
-                        onClick={() => {
-                          setMenuOpen(false);
-                          setShowHelp(true);
-                        }}
-                        className="flex w-full items-center gap-2 rounded-lg px-2 py-2 text-sm font-medium transition text-zinc-600 hover:bg-[#E2F0FD] hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-[#0066B2]/15 dark:hover:text-white cursor-pointer"
-                      >
-                        <item.icon className="h-4 w-4 shrink-0 text-zinc-500 dark:text-zinc-400" aria-hidden="true" />
-                        <span className="flex-1 text-left flex items-center justify-between">
-                          <span>{item.label}</span>
-                          {item.badge && (
-                            <span className="text-[10px] font-bold px-1.5 py-0.2 rounded-full bg-[#0066B2]/10 text-[#0066B2] dark:bg-[#38BDF8]/15 dark:text-[#38BDF8]">
-                              {item.badge}
-                            </span>
-                          )}
-                        </span>
-                      </button>
-                    );
-                  }
-                  return (
-                    <div key={item.href}>
-                      <Link
-                        href={item.href}
-                        onClick={(e) => {
-                          setMenuOpen(false);
-                          if (pathname !== item.href) {
-                            e.preventDefault();
-                            router.push(item.href);
-                          }
-                        }}
-                        className={`flex items-center gap-2 rounded-lg px-2 py-2 text-sm font-medium transition cursor-pointer ${active
-                          ? "bg-[#0066B2] text-white font-bold dark:bg-[#0066B2]/20 dark:text-[#38BDF8]"
-                          : "text-zinc-600 hover:bg-[#E2F0FD] hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-[#0066B2]/15 dark:hover:text-white"
-                          }`}
-                      >
-                        <item.icon className={`h-4 w-4 shrink-0 ${active ? "text-white dark:text-[#38BDF8]" : "text-zinc-500 dark:text-zinc-400"}`} aria-hidden="true" />
-                        <span className="flex-1 flex items-center justify-between">
-                          <span>{item.label}</span>
-                          {item.badge && (
-                            <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-md ${
-                              active
-                                ? "bg-white/20 text-white"
-                                : "bg-[#0066B2]/10 text-[#0066B2] dark:bg-[#38BDF8]/15 dark:text-[#38BDF8]"
-                            }`}>
-                              {item.badge}
-                            </span>
-                          )}
-                        </span>
-                      </Link>
-                    </div>
-                  );
-                })}
-              </nav>
-
-              {/* Bottom Profile Section in Mobile Drawer */}
-              <div ref={mobileDrawerProfileMenuRef} className="pt-3 relative">
+            {/* Bottom Profile Section */}
+            <div className={`px-2 pt-1.5 pb-2 border-t border-[#E0EDFB]/60 dark:border-white/5 overflow-visible ${isCollapsed ? "flex justify-center" : ""}`}>
+              <div ref={profileMenuRef} className="relative w-full overflow-visible">
+                {/* Profile Popover Menu */}
                 <AnimatePresence>
-                  {showDrawerProfileMenu && (
+                  {showProfileMenu && (
                     <motion.div
-                      initial={{ opacity: 0, scale: 0.95, y: 4 }}
-                      animate={{ opacity: 1, scale: 1, y: 0 }}
-                      exit={{ opacity: 0, scale: 0.95, y: 4 }}
+                      initial={isCollapsed ? { opacity: 0, scale: 0.95, x: -8 } : { opacity: 0, scale: 0.95, y: 4 }}
+                      animate={{ opacity: 1, scale: 1, x: 0, y: 0 }}
+                      exit={isCollapsed ? { opacity: 0, scale: 0.95, x: -8 } : { opacity: 0, scale: 0.95, y: 4 }}
                       transition={{ duration: 0.15, ease: [0.16, 1, 0.3, 1] }}
-                      style={{ transformOrigin: "bottom left" }}
-                      className="absolute bottom-full mb-2 left-0 w-full rounded-2xl border border-zinc-200/80 bg-white/95 p-1.5 shadow-2xl backdrop-blur-md z-50 text-zinc-900 flex flex-col gap-0.5 dark:border-white/10 dark:bg-[#171717]/95 dark:text-white dark:shadow-[0_12px_36px_-6px_rgba(0,0,0,0.6),0_0_0_1px_rgba(255,255,255,0.06)]"
+                      style={{ transformOrigin: isCollapsed ? "bottom left" : "bottom left" }}
+                      className={`absolute rounded-2xl border border-zinc-200/80 bg-white/95 p-1.5 shadow-2xl backdrop-blur-md z-[100] text-zinc-900 flex flex-col gap-0.5 dark:border-white/10 dark:bg-[#171717]/95 dark:text-white dark:shadow-[0_12px_36px_-6px_rgba(0,0,0,0.6),0_0_0_1px_rgba(255,255,255,0.06)] ${isCollapsed ? "w-56 left-full bottom-0 ml-3.5" : "w-full bottom-full mb-2 left-0"
+                        }`}
                       onClick={(e) => e.stopPropagation()}
                     >
                       {/* Theme Switcher Segmented Control */}
@@ -1120,14 +805,14 @@ export default function DashboardShell({
                                 ? mode === "light"
                                   ? "text-amber-500 font-semibold"
                                   : mode === "dark"
-                                  ? "text-sky-400 dark:text-zinc-100 font-semibold"
-                                  : "text-zinc-900 dark:text-white font-semibold"
+                                    ? "text-sky-400 dark:text-zinc-100 font-semibold"
+                                    : "text-zinc-900 dark:text-white font-semibold"
                                 : "text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200"
                                 }`}
                             >
                               {isActive && (
                                 <motion.div
-                                  layoutId="activeThemePillDrawer"
+                                  layoutId="activeThemePillSidebar"
                                   transition={{ type: "spring", stiffness: 450, damping: 35 }}
                                   className="absolute inset-0.5 bg-white dark:bg-white/10 rounded-[9px] shadow-sm border border-black/[0.04] dark:border-white/[0.08]"
                                 />
@@ -1140,80 +825,119 @@ export default function DashboardShell({
                         })}
                       </div>
 
-                      <div className="flex flex-col gap-0.5">
+                      <div onMouseLeave={() => setHoveredProfileMenuKey(null)} className="flex flex-col gap-0.5">
                         {/* Account / User Section */}
-                        <button
+                        <motion.button
                           type="button"
+                          whileTap={{ scale: 0.97 }}
+                          transition={{ type: "spring", stiffness: 600, damping: 28 }}
+                          onMouseEnter={() => setHoveredProfileMenuKey("account")}
                           onClick={() => {
-                            setShowDrawerProfileMenu(false);
-                            setMenuOpen(false);
+                            setShowProfileMenu(false);
                             router.push("/dashboard/settings");
                           }}
-                          className="flex items-center gap-2.5 rounded-[10px] px-2.5 py-2 text-left text-xs font-medium text-zinc-600 hover:bg-[#E2F0FD] hover:text-zinc-900 transition-colors w-full dark:text-zinc-400 dark:hover:bg-zinc-800/80 dark:hover:text-white cursor-pointer"
+                          className="relative flex items-center gap-2.5 rounded-[10px] px-2.5 py-2 text-left text-xs font-medium text-zinc-600 transition-colors w-full dark:text-zinc-400 dark:hover:text-white cursor-pointer"
                         >
-                          <span className="flex h-4 w-4 shrink-0 items-center justify-center">
+                          {hoveredProfileMenuKey === "account" && (
+                            <motion.div
+                              layoutId="profileMenuHoverPill"
+                              transition={{ type: "spring", stiffness: 500, damping: 32 }}
+                              className="absolute inset-0 rounded-[10px] bg-[#E2F0FD] dark:bg-zinc-800/80"
+                            />
+                          )}
+                          <span className="relative z-10 flex h-4 w-4 shrink-0 items-center justify-center">
                             <User className="h-4 w-4 text-zinc-500 dark:text-zinc-400" strokeWidth={1.85} />
                           </span>
-                          <span>Account</span>
-                        </button>
+                          <span className="relative z-10">Account</span>
+                        </motion.button>
 
                         {/* Semantic Divider between Account and Support */}
                         <div className="my-1 border-t border-zinc-100 dark:border-zinc-800/70" />
 
                         {/* Support & Feedback Section */}
-                        <button
+                        <motion.button
                           type="button"
+                          whileTap={{ scale: 0.97 }}
+                          transition={{ type: "spring", stiffness: 600, damping: 28 }}
+                          onMouseEnter={() => setHoveredProfileMenuKey("help")}
                           onClick={() => {
-                            setShowDrawerProfileMenu(false);
-                            setMenuOpen(false);
+                            setShowProfileMenu(false);
                             setShowHelp(true);
                           }}
-                          className="flex items-center gap-2.5 rounded-[10px] px-2.5 py-2 text-left text-xs font-medium text-zinc-600 hover:bg-[#E2F0FD] hover:text-zinc-900 transition-colors w-full dark:text-zinc-400 dark:hover:bg-zinc-800/80 dark:hover:text-white cursor-pointer"
+                          className="relative flex items-center gap-2.5 rounded-[10px] px-2.5 py-2 text-left text-xs font-medium text-zinc-600 transition-colors w-full dark:text-zinc-400 dark:hover:text-white cursor-pointer"
                         >
-                          <span className="flex h-4 w-4 shrink-0 items-center justify-center">
+                          {hoveredProfileMenuKey === "help" && (
+                            <motion.div
+                              layoutId="profileMenuHoverPill"
+                              transition={{ type: "spring", stiffness: 500, damping: 32 }}
+                              className="absolute inset-0 rounded-[10px] bg-[#E2F0FD] dark:bg-zinc-800/80"
+                            />
+                          )}
+                          <span className="relative z-10 flex h-4 w-4 shrink-0 items-center justify-center">
                             <CircleHelp className="h-4 w-4 text-zinc-500 dark:text-zinc-400" strokeWidth={1.85} />
                           </span>
-                          <span>Help</span>
-                        </button>
+                          <span className="relative z-10">Help</span>
+                        </motion.button>
 
-                        <button
+                        <motion.button
                           type="button"
+                          whileTap={{ scale: 0.97 }}
+                          transition={{ type: "spring", stiffness: 600, damping: 28 }}
+                          onMouseEnter={() => setHoveredProfileMenuKey("bug")}
                           onClick={() => {
-                            setShowDrawerProfileMenu(false);
                             openGmailCompose("bug");
+                            setShowProfileMenu(false);
                           }}
-                          className="flex items-center gap-2.5 rounded-[10px] px-2.5 py-2 text-left text-xs font-medium text-zinc-600 hover:bg-[#E2F0FD] hover:text-zinc-900 transition-colors w-full dark:text-zinc-400 dark:hover:bg-zinc-800/80 dark:hover:text-white cursor-pointer"
+                          className="relative flex items-center gap-2.5 rounded-[10px] px-2.5 py-2 text-left text-xs font-medium text-zinc-600 transition-colors w-full dark:text-zinc-400 dark:hover:text-white cursor-pointer"
                         >
-                          <span className="flex h-4 w-4 shrink-0 items-center justify-center">
+                          {hoveredProfileMenuKey === "bug" && (
+                            <motion.div
+                              layoutId="profileMenuHoverPill"
+                              transition={{ type: "spring", stiffness: 500, damping: 32 }}
+                              className="absolute inset-0 rounded-[10px] bg-[#E2F0FD] dark:bg-zinc-800/80"
+                            />
+                          )}
+                          <span className="relative z-10 flex h-4 w-4 shrink-0 items-center justify-center">
                             <Bug className="h-4 w-4 text-zinc-500 dark:text-zinc-400" strokeWidth={1.85} />
                           </span>
-                          <span>Report a bug</span>
-                        </button>
+                          <span className="relative z-10">Report a bug</span>
+                        </motion.button>
 
-                        <button
+                        <motion.button
                           type="button"
+                          whileTap={{ scale: 0.97 }}
+                          transition={{ type: "spring", stiffness: 600, damping: 28 }}
+                          onMouseEnter={() => setHoveredProfileMenuKey("feature")}
                           onClick={() => {
-                            setShowDrawerProfileMenu(false);
                             openGmailCompose("feature");
+                            setShowProfileMenu(false);
                           }}
-                          className="flex items-center gap-2.5 rounded-[10px] px-2.5 py-2 text-left text-xs font-medium text-zinc-600 hover:bg-[#E2F0FD] hover:text-zinc-900 transition-colors w-full dark:text-zinc-400 dark:hover:bg-zinc-800/80 dark:hover:text-white cursor-pointer"
+                          className="relative flex items-center gap-2.5 rounded-[10px] px-2.5 py-2 text-left text-xs font-medium text-zinc-600 transition-colors w-full dark:text-zinc-400 dark:hover:text-white cursor-pointer"
                         >
-                          <span className="flex h-4 w-4 shrink-0 items-center justify-center">
+                          {hoveredProfileMenuKey === "feature" && (
+                            <motion.div
+                              layoutId="profileMenuHoverPill"
+                              transition={{ type: "spring", stiffness: 500, damping: 32 }}
+                              className="absolute inset-0 rounded-[10px] bg-[#E2F0FD] dark:bg-zinc-800/80"
+                            />
+                          )}
+                          <span className="relative z-10 flex h-4 w-4 shrink-0 items-center justify-center">
                             <Sparkles className="h-4 w-4 text-zinc-500 dark:text-zinc-400" strokeWidth={1.85} />
                           </span>
-                          <span>Request a feature</span>
-                        </button>
+                          <span className="relative z-10">Request a feature</span>
+                        </motion.button>
                       </div>
 
                       {/* Divider before Destructive Action */}
                       <div className="my-1 border-t border-zinc-100 dark:border-zinc-800/70" />
 
-                      <button
+                      <motion.button
                         type="button"
                         disabled={isLoggingOut}
+                        whileTap={{ scale: 0.97 }}
+                        transition={{ type: "spring", stiffness: 600, damping: 28 }}
                         onClick={() => {
-                          setShowDrawerProfileMenu(false);
-                          setMenuOpen(false);
+                          setShowProfileMenu(false);
                           handleLogout();
                         }}
                         className="flex items-center gap-2.5 rounded-[10px] px-2.5 py-2 text-left text-xs font-medium text-rose-600 hover:bg-rose-50/80 transition-colors w-full dark:text-rose-400 dark:hover:bg-rose-950/30 cursor-pointer disabled:opacity-50"
@@ -1226,15 +950,19 @@ export default function DashboardShell({
                           )}
                         </span>
                         <span>{isLoggingOut ? "Signing out..." : "Sign out"}</span>
-                      </button>
+                      </motion.button>
                     </motion.div>
                   )}
                 </AnimatePresence>
 
                 <button
-                  type="button"
-                  onClick={() => setShowDrawerProfileMenu(!showDrawerProfileMenu)}
-                  className="flex w-full items-center justify-between gap-2.5 rounded-xl p-2 text-left hover:bg-[#E2F0FD] transition dark:hover:bg-[#25252A] cursor-pointer"
+                  data-tour="account-menu"
+                  onClick={() => setShowProfileMenu(!showProfileMenu)}
+                  title={isCollapsed ? `${displayAccount.name}` : undefined}
+                  className={`flex items-center rounded-xl transition cursor-pointer hover:bg-[#E2F0FD] dark:hover:bg-white/5 ${isCollapsed
+                      ? "h-10 w-10 mx-auto justify-center p-0"
+                      : "w-full justify-between gap-2.5 p-2 text-left"
+                    }`}
                 >
                   {displayAccount.avatar && !avatarError ? (
                     <img
@@ -1245,126 +973,399 @@ export default function DashboardShell({
                       className="h-8 w-8 shrink-0 rounded-full object-cover border border-[#0066B2]/40"
                     />
                   ) : (
-                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#0066B2] text-xs font-extrabold text-white dark:bg-white dark:text-[#0066B2]">
+                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#0066B2] text-xs font-extrabold text-white dark:bg-white dark:text-[#0066B2]" suppressHydrationWarning>
                       {mounted
                         ? (displayAccount.name.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase() || displayAccount.name.charAt(0))
                         : (displayAccount.name.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase() || "RK")}
                     </span>
                   )}
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-xs font-bold text-zinc-900 leading-tight dark:text-white">{displayAccount.name}</p>
-                    <p className="truncate text-[10px] text-zinc-500 leading-tight mt-0.5 dark:text-zinc-400">{displayAccount.email}</p>
-                  </div>
+                  {!isCollapsed && (
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-xs font-bold text-zinc-900 leading-tight dark:text-white" suppressHydrationWarning>{displayAccount.name}</p>
+                      <p className="truncate text-[10px] text-zinc-500 leading-tight mt-0.5 dark:text-zinc-400" suppressHydrationWarning>{displayAccount.email}</p>
+                    </div>
+                  )}
                 </button>
               </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
-
-        <div className="flex min-h-screen min-w-0 flex-1 flex-col bg-[#FAFAFA] dark:bg-[#0E0E10] w-full max-w-full">
-          <header className="dashboard-chrome sticky top-0 z-30 flex h-12 shrink-0 items-center justify-between border-b border-zinc-200/70 bg-white/75 dark:bg-[#141417]/75 dark:border-white/10 backdrop-blur-xl supports-[backdrop-filter]:bg-white/60 dark:supports-[backdrop-filter]:bg-[#141417]/60 px-4 sm:px-6 md:hidden transition-colors w-full max-w-full">
-            <div className="flex items-center gap-2.5">
-              <button
-                aria-label="Open menu"
-                data-tour="mobile-menu"
-                className="flex h-8.5 w-8.5 items-center justify-center rounded-lg border border-zinc-200 dark:border-white/10 text-zinc-700 dark:text-zinc-300 md:hidden hover:bg-zinc-100 dark:hover:bg-zinc-800 transition cursor-pointer"
-                onClick={() => setMenuOpen(true)}
-              >
-                <Menu className="h-4 w-4" aria-hidden="true" />
-              </button>
-              <Link href="/dashboard" aria-label="Dashboard" className="flex items-center">
-                <BrandLogo height="h-7" />
-              </Link>
             </div>
-            <div className="flex items-center gap-2">
-              <ThemeToggle />
-            </div>
-          </header>
-          <main className="min-w-0 flex-1 bg-[#FAFAF8] dark:bg-[#0E0E10] w-full max-w-full">
-            <AnimatePresence mode="wait" initial={false}>
-              <motion.div
-                key={pathname}
-                initial={{ opacity: 0, y: 4 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, transition: { duration: 0.05, ease: "easeOut" } }}
-                transition={{
-                  duration: 0.13,
-                  ease: [0.22, 1, 0.36, 1],
-                }}
-                className="w-full h-full max-w-full"
-              >
-                {children}
-              </motion.div>
-            </AnimatePresence>
-          </main>
-        </div>
+          </motion.aside>
 
+          <AnimatePresence>
+            {menuOpen && (
+              <div className="fixed inset-0 z-50 md:hidden">
+                {/* Backdrop with fade and blur */}
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.22, ease: "easeInOut" }}
+                  className="fixed inset-0 bg-black/45 backdrop-blur-sm"
+                  onClick={() => setMenuOpen(false)}
+                />
 
-
-        {/* Help Centre Expandable Content (Dynamically Loaded) */}
-        {hasOpenedHelp && (
-          <HelpCenterContent
-            onClose={() => {
-              setShowHelp(false);
-              setTimeout(() => setSelectedTopic(null), 320);
-            }}
-            selectedTopic={selectedTopic}
-            setSelectedTopic={setSelectedTopic}
-            onCreateMagnet={() => setShowCreateMagnetModal(true)}
-          />
-        )}
-
-        {/* 'Create a magnet' Popup Modal Overlay triggered from DashboardShell */}
-        {showCreateMagnetModal && (
-          <div
-            className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm p-0 sm:p-4 transition-all duration-200"
-            onClick={() => setShowCreateMagnetModal(false)}
-          >
-            <div
-              className="relative w-full max-w-[480px] rounded-t-3xl sm:rounded-2xl border-t sm:border border-zinc-200/80 dark:border-[#2e2e38] bg-white dark:bg-[#18181c] p-5 sm:p-6 text-zinc-900 dark:text-white shadow-2xl space-y-4 sm:space-y-5 max-h-[92vh] overflow-y-auto animate-in fade-in zoom-in-95 duration-200"
-              onClick={(e) => e.stopPropagation()}
-            >
-              {/* Mobile Drag Indicator */}
-              <div className="flex sm:hidden justify-center pb-1 -mt-1">
-                <div className="w-10 h-1.5 rounded-full bg-zinc-300 dark:bg-zinc-700" />
-              </div>
-
-              {/* Modal Header */}
-              <div className="flex items-center justify-between">
-                <h3 className="text-base font-bold text-zinc-900 dark:text-white">
-                  Create a magnet
-                </h3>
-                <button
-                  type="button"
-                  onClick={() => setShowCreateMagnetModal(false)}
-                  className="rounded-lg p-1.5 text-zinc-400 hover:bg-zinc-100 dark:hover:bg-[#25252b] dark:hover:text-white transition-colors cursor-pointer"
+                {/* Apple-grade Spring Drawer Panel */}
+                <motion.div
+                  initial={{ x: "-100%" }}
+                  animate={{ x: 0 }}
+                  exit={{ x: "-100%" }}
+                  transition={{ type: "spring", stiffness: 380, damping: 34, mass: 0.85 }}
+                  className="relative z-10 flex h-full w-72 max-w-[85vw] flex-col bg-[#F0F7FF] dark:bg-[#171717] border-y border-r border-[#E0EDFB] dark:border-white/[0.08] rounded-r-3xl p-4 text-zinc-900 dark:text-zinc-400 shadow-2xl overflow-hidden"
+                  onClick={(e) => e.stopPropagation()}
                 >
-                  <X className="h-4 w-4" />
-                </button>
+                  <div className="mb-4 flex items-center justify-between pb-3">
+                    <Link href="/dashboard" aria-label="Dashboard" onClick={() => setMenuOpen(false)}>
+                      <BrandLogo height="h-9" />
+                    </Link>
+                    <button
+                      aria-label="Close menu"
+                      className="flex h-8 w-8 items-center justify-center rounded-full bg-zinc-200/70 hover:bg-zinc-300/80 text-zinc-600 hover:text-zinc-900 dark:bg-white/10 dark:hover:bg-white/20 dark:text-zinc-300 dark:hover:text-white transition-all active:scale-90 cursor-pointer"
+                      onClick={() => setMenuOpen(false)}
+                    >
+                      <X className="h-4 w-4" strokeWidth={2.2} aria-hidden="true" />
+                    </button>
+                  </div>
+
+                  {/* Navigation links */}
+                  <nav className="flex-1 overflow-y-auto space-y-1.5 pr-1" aria-label="Dashboard">
+                    {computedNav.map((item) => {
+                      const active = activeNavHref
+                        ? item.href === activeNavHref
+                        : item.href === "/dashboard"
+                          ? pathname === "/dashboard"
+                          : item.href === "/dashboard/locked-pdf"
+                            ? (pathname === "/dashboard/locked-pdf" || isCurrentLockedPdf)
+                            : item.href === "/dashboard/landing-page"
+                              ? (!isCurrentLockedPdf && (pathname === "/dashboard/landing-page" || pathname === "/dashboard/leadmagnets" || pathname.startsWith("/dashboard/leadmagnets/")))
+                              : (pathname === item.href || (item.href !== "/dashboard" && item.href !== "/dashboard/landing-page" && item.href !== "/dashboard/locked-pdf" && pathname.startsWith(`${item.href}/`)));
+                      if (item.isModal) {
+                        return (
+                          <button
+                            key={item.href}
+                            onClick={() => {
+                              setMenuOpen(false);
+                              setShowHelp(true);
+                            }}
+                            className="flex w-full items-center gap-2 rounded-lg px-2 py-2 text-sm font-medium transition text-zinc-600 hover:bg-[#E2F0FD] hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-[#0066B2]/15 dark:hover:text-white cursor-pointer"
+                          >
+                            <item.icon className="h-4 w-4 shrink-0 text-zinc-500 dark:text-zinc-400" aria-hidden="true" />
+                            <span className="flex-1 text-left flex items-center justify-between">
+                              <span>{item.label}</span>
+                              {item.badge && (
+                                <span className="text-[10px] font-bold px-1.5 py-0.2 rounded-full bg-[#0066B2]/10 text-[#0066B2] dark:bg-[#38BDF8]/15 dark:text-[#38BDF8]">
+                                  {item.badge}
+                                </span>
+                              )}
+                            </span>
+                          </button>
+                        );
+                      }
+                      return (
+                        <div key={item.href}>
+                          <Link
+                            href={item.href}
+                            onClick={(e) => {
+                              setMenuOpen(false);
+                              if (pathname !== item.href) {
+                                e.preventDefault();
+                                router.push(item.href);
+                              }
+                            }}
+                            className={`flex items-center gap-2 rounded-lg px-2 py-2 text-sm font-medium transition cursor-pointer ${active
+                              ? "bg-[#0066B2] text-white font-bold dark:bg-[#0066B2]/20 dark:text-[#38BDF8]"
+                              : "text-zinc-600 hover:bg-[#E2F0FD] hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-[#0066B2]/15 dark:hover:text-white"
+                              }`}
+                          >
+                            <item.icon className={`h-4 w-4 shrink-0 ${active ? "text-white dark:text-[#38BDF8]" : "text-zinc-500 dark:text-zinc-400"}`} aria-hidden="true" />
+                            <span className="flex-1 flex items-center justify-between">
+                              <span>{item.label}</span>
+                              {item.badge && (
+                                <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-md ${active
+                                    ? "bg-white/20 text-white"
+                                    : "bg-[#0066B2]/10 text-[#0066B2] dark:bg-[#38BDF8]/15 dark:text-[#38BDF8]"
+                                  }`}>
+                                  {item.badge}
+                                </span>
+                              )}
+                            </span>
+                          </Link>
+                        </div>
+                      );
+                    })}
+                  </nav>
+
+                  {/* Bottom Profile Section in Mobile Drawer */}
+                  <div ref={mobileDrawerProfileMenuRef} className="pt-3 relative">
+                    <AnimatePresence>
+                      {showDrawerProfileMenu && (
+                        <motion.div
+                          initial={{ opacity: 0, scale: 0.95, y: 4 }}
+                          animate={{ opacity: 1, scale: 1, y: 0 }}
+                          exit={{ opacity: 0, scale: 0.95, y: 4 }}
+                          transition={{ duration: 0.15, ease: [0.16, 1, 0.3, 1] }}
+                          style={{ transformOrigin: "bottom left" }}
+                          className="absolute bottom-full mb-2 left-0 w-full rounded-2xl border border-zinc-200/80 bg-white/95 p-1.5 shadow-2xl backdrop-blur-md z-50 text-zinc-900 flex flex-col gap-0.5 dark:border-white/10 dark:bg-[#171717]/95 dark:text-white dark:shadow-[0_12px_36px_-6px_rgba(0,0,0,0.6),0_0_0_1px_rgba(255,255,255,0.06)]"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          {/* Theme Switcher Segmented Control */}
+                          <div className="relative flex items-center justify-between p-1 bg-zinc-100/90 dark:bg-zinc-900/80 rounded-xl border border-zinc-200/80 dark:border-zinc-800/90 mb-1 select-none">
+                            {(["light", "dark", "system"] as const).map((mode) => {
+                              const Icon = mode === "light" ? Sun : mode === "dark" ? Moon : Monitor;
+                              const isActive = themeMode === mode;
+                              return (
+                                <button
+                                  key={mode}
+                                  type="button"
+                                  title={`${mode.charAt(0).toUpperCase() + mode.slice(1)} mode`}
+                                  onClick={(e) => applyThemeMode(mode, e)}
+                                  className={`relative flex-1 flex items-center justify-center py-1.5 text-xs font-medium transition-colors duration-150 cursor-pointer z-10 ${isActive
+                                    ? mode === "light"
+                                      ? "text-amber-500 font-semibold"
+                                      : mode === "dark"
+                                        ? "text-sky-400 dark:text-zinc-100 font-semibold"
+                                        : "text-zinc-900 dark:text-white font-semibold"
+                                    : "text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200"
+                                    }`}
+                                >
+                                  {isActive && (
+                                    <motion.div
+                                      layoutId="activeThemePillDrawer"
+                                      transition={{ type: "spring", stiffness: 450, damping: 35 }}
+                                      className="absolute inset-0.5 bg-white dark:bg-white/10 rounded-[9px] shadow-sm border border-black/[0.04] dark:border-white/[0.08]"
+                                    />
+                                  )}
+                                  <span className="relative z-10 flex items-center justify-center">
+                                    <Icon className="h-3.5 w-3.5" strokeWidth={1.85} />
+                                  </span>
+                                </button>
+                              );
+                            })}
+                          </div>
+
+                          <div className="flex flex-col gap-0.5">
+                            {/* Account / User Section */}
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setShowDrawerProfileMenu(false);
+                                setMenuOpen(false);
+                                router.push("/dashboard/settings");
+                              }}
+                              className="flex items-center gap-2.5 rounded-[10px] px-2.5 py-2 text-left text-xs font-medium text-zinc-600 hover:bg-[#E2F0FD] hover:text-zinc-900 transition-colors w-full dark:text-zinc-400 dark:hover:bg-zinc-800/80 dark:hover:text-white cursor-pointer"
+                            >
+                              <span className="flex h-4 w-4 shrink-0 items-center justify-center">
+                                <User className="h-4 w-4 text-zinc-500 dark:text-zinc-400" strokeWidth={1.85} />
+                              </span>
+                              <span>Account</span>
+                            </button>
+
+                            {/* Semantic Divider between Account and Support */}
+                            <div className="my-1 border-t border-zinc-100 dark:border-zinc-800/70" />
+
+                            {/* Support & Feedback Section */}
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setShowDrawerProfileMenu(false);
+                                setMenuOpen(false);
+                                setShowHelp(true);
+                              }}
+                              className="flex items-center gap-2.5 rounded-[10px] px-2.5 py-2 text-left text-xs font-medium text-zinc-600 hover:bg-[#E2F0FD] hover:text-zinc-900 transition-colors w-full dark:text-zinc-400 dark:hover:bg-zinc-800/80 dark:hover:text-white cursor-pointer"
+                            >
+                              <span className="flex h-4 w-4 shrink-0 items-center justify-center">
+                                <CircleHelp className="h-4 w-4 text-zinc-500 dark:text-zinc-400" strokeWidth={1.85} />
+                              </span>
+                              <span>Help</span>
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setShowDrawerProfileMenu(false);
+                                openGmailCompose("bug");
+                              }}
+                              className="flex items-center gap-2.5 rounded-[10px] px-2.5 py-2 text-left text-xs font-medium text-zinc-600 hover:bg-[#E2F0FD] hover:text-zinc-900 transition-colors w-full dark:text-zinc-400 dark:hover:bg-zinc-800/80 dark:hover:text-white cursor-pointer"
+                            >
+                              <span className="flex h-4 w-4 shrink-0 items-center justify-center">
+                                <Bug className="h-4 w-4 text-zinc-500 dark:text-zinc-400" strokeWidth={1.85} />
+                              </span>
+                              <span>Report a bug</span>
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setShowDrawerProfileMenu(false);
+                                openGmailCompose("feature");
+                              }}
+                              className="flex items-center gap-2.5 rounded-[10px] px-2.5 py-2 text-left text-xs font-medium text-zinc-600 hover:bg-[#E2F0FD] hover:text-zinc-900 transition-colors w-full dark:text-zinc-400 dark:hover:bg-zinc-800/80 dark:hover:text-white cursor-pointer"
+                            >
+                              <span className="flex h-4 w-4 shrink-0 items-center justify-center">
+                                <Sparkles className="h-4 w-4 text-zinc-500 dark:text-zinc-400" strokeWidth={1.85} />
+                              </span>
+                              <span>Request a feature</span>
+                            </button>
+                          </div>
+
+                          {/* Divider before Destructive Action */}
+                          <div className="my-1 border-t border-zinc-100 dark:border-zinc-800/70" />
+
+                          <button
+                            type="button"
+                            disabled={isLoggingOut}
+                            onClick={() => {
+                              setShowDrawerProfileMenu(false);
+                              setMenuOpen(false);
+                              handleLogout();
+                            }}
+                            className="flex items-center gap-2.5 rounded-[10px] px-2.5 py-2 text-left text-xs font-medium text-rose-600 hover:bg-rose-50/80 transition-colors w-full dark:text-rose-400 dark:hover:bg-rose-950/30 cursor-pointer disabled:opacity-50"
+                          >
+                            <span className="flex h-4 w-4 shrink-0 items-center justify-center">
+                              {isLoggingOut ? (
+                                <Loader2 className="h-4 w-4 animate-spin text-rose-500" />
+                              ) : (
+                                <LogOut className="h-4 w-4 text-rose-500 dark:text-rose-400" strokeWidth={1.85} />
+                              )}
+                            </span>
+                            <span>{isLoggingOut ? "Signing out..." : "Sign out"}</span>
+                          </button>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+
+                    <button
+                      type="button"
+                      onClick={() => setShowDrawerProfileMenu(!showDrawerProfileMenu)}
+                      className="flex w-full items-center justify-between gap-2.5 rounded-xl p-2 text-left hover:bg-[#E2F0FD] transition dark:hover:bg-[#25252A] cursor-pointer"
+                    >
+                      {displayAccount.avatar && !avatarError ? (
+                        <img
+                          src={displayAccount.avatar}
+                          alt={displayAccount.name}
+                          referrerPolicy="no-referrer"
+                          onError={() => setAvatarError(true)}
+                          className="h-8 w-8 shrink-0 rounded-full object-cover border border-[#0066B2]/40"
+                        />
+                      ) : (
+                        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#0066B2] text-xs font-extrabold text-white dark:bg-white dark:text-[#0066B2]">
+                          {mounted
+                            ? (displayAccount.name.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase() || displayAccount.name.charAt(0))
+                            : (displayAccount.name.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase() || "RK")}
+                        </span>
+                      )}
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-xs font-bold text-zinc-900 leading-tight dark:text-white">{displayAccount.name}</p>
+                        <p className="truncate text-[10px] text-zinc-500 leading-tight mt-0.5 dark:text-zinc-400">{displayAccount.email}</p>
+                      </div>
+                    </button>
+                  </div>
+                </motion.div>
               </div>
+            )}
+          </AnimatePresence>
 
-              {/* Form */}
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  const isLockedPdf = selectedMagnetType === "locked-pdf";
-                  const defaultName = isLockedPdf ? "Locked PDF Document" : "Untitled Page";
-                  const name = createMagnetName.trim() || defaultName;
-                  const defaultSlug = isLockedPdf ? "locked-pdf" : "untitled-page";
-                  const cleanSlug =
-                    createMagnetName
-                      .toLowerCase()
-                      .trim()
-                      .replace(/[^a-z0-9\s-]/g, "")
-                      .replace(/\s+/g, "-") || defaultSlug;
-                  const newId = `page-${Date.now()}`;
+          <div className="flex min-h-screen min-w-0 flex-1 flex-col bg-[#FAFAFA] dark:bg-[#0E0E10] w-full max-w-full">
+            <header className="dashboard-chrome sticky top-0 z-30 flex h-12 shrink-0 items-center justify-between border-b border-zinc-200/70 bg-white/75 dark:bg-[#141417]/75 dark:border-white/10 backdrop-blur-xl supports-[backdrop-filter]:bg-white/60 dark:supports-[backdrop-filter]:bg-[#141417]/60 px-4 sm:px-6 md:hidden transition-colors w-full max-w-full">
+              <div className="flex items-center gap-2.5">
+                <button
+                  aria-label="Open menu"
+                  data-tour="mobile-menu"
+                  className="flex h-8.5 w-8.5 items-center justify-center rounded-lg border border-zinc-200 dark:border-white/10 text-zinc-700 dark:text-zinc-300 md:hidden hover:bg-zinc-100 dark:hover:bg-zinc-800 transition cursor-pointer"
+                  onClick={() => setMenuOpen(true)}
+                >
+                  <Menu className="h-4 w-4" aria-hidden="true" />
+                </button>
+                <Link href="/dashboard" aria-label="Dashboard" className="flex items-center">
+                  <BrandLogo height="h-7" />
+                </Link>
+              </div>
+              <div className="flex items-center gap-2">
+                <ThemeToggle />
+              </div>
+            </header>
+            <main className="min-w-0 flex-1 bg-[#FAFAF8] dark:bg-[#0E0E10] w-full max-w-full">
+              <AnimatePresence mode="wait" initial={false}>
+                <motion.div
+                  key={pathname}
+                  initial={{ opacity: 0, y: 4 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, transition: { duration: 0.05, ease: "easeOut" } }}
+                  transition={{
+                    duration: 0.13,
+                    ease: [0.22, 1, 0.36, 1],
+                  }}
+                  className="w-full h-full max-w-full"
+                >
+                  {children}
+                </motion.div>
+              </AnimatePresence>
+            </main>
+          </div>
 
-                  try {
-                    const { loadPages, savePages } = require("@/lib/store");
-                    const currentPages = loadPages();
-                    const newPage = isLockedPdf
-                      ? {
+
+
+          {/* Help Centre Expandable Content (Dynamically Loaded) */}
+          {hasOpenedHelp && (
+            <HelpCenterContent
+              onClose={() => {
+                setShowHelp(false);
+                setTimeout(() => setSelectedTopic(null), 320);
+              }}
+              selectedTopic={selectedTopic}
+              setSelectedTopic={setSelectedTopic}
+              onCreateMagnet={() => setShowCreateMagnetModal(true)}
+            />
+          )}
+
+          {/* 'Create a magnet' Popup Modal Overlay triggered from DashboardShell */}
+          {showCreateMagnetModal && (
+            <div
+              className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm p-0 sm:p-4 transition-all duration-200"
+              onClick={() => setShowCreateMagnetModal(false)}
+            >
+              <div
+                className="relative w-full max-w-[480px] rounded-t-3xl sm:rounded-2xl border-t sm:border border-zinc-200/80 dark:border-[#2e2e38] bg-white dark:bg-[#18181c] p-5 sm:p-6 text-zinc-900 dark:text-white shadow-2xl space-y-4 sm:space-y-5 max-h-[92vh] overflow-y-auto animate-in fade-in zoom-in-95 duration-200"
+                onClick={(e) => e.stopPropagation()}
+              >
+                {/* Mobile Drag Indicator */}
+                <div className="flex sm:hidden justify-center pb-1 -mt-1">
+                  <div className="w-10 h-1.5 rounded-full bg-zinc-300 dark:bg-zinc-700" />
+                </div>
+
+                {/* Modal Header */}
+                <div className="flex items-center justify-between">
+                  <h3 className="text-base font-bold text-zinc-900 dark:text-white">
+                    Create a magnet
+                  </h3>
+                  <button
+                    type="button"
+                    onClick={() => setShowCreateMagnetModal(false)}
+                    className="rounded-lg p-1.5 text-zinc-400 hover:bg-zinc-100 dark:hover:bg-[#25252b] dark:hover:text-white transition-colors cursor-pointer"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
+
+                {/* Form */}
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    const isLockedPdf = selectedMagnetType === "locked-pdf";
+                    const defaultName = isLockedPdf ? "Locked PDF Document" : "Untitled Page";
+                    const name = createMagnetName.trim() || defaultName;
+                    const defaultSlug = isLockedPdf ? "locked-pdf" : "untitled-page";
+                    const cleanSlug =
+                      createMagnetName
+                        .toLowerCase()
+                        .trim()
+                        .replace(/[^a-z0-9\s-]/g, "")
+                        .replace(/\s+/g, "-") || defaultSlug;
+                    const newId = `page-${Date.now()}`;
+
+                    try {
+                      const { loadPages, savePages } = require("@/lib/store");
+                      const currentPages = loadPages();
+                      const newPage = isLockedPdf
+                        ? {
                           id: newId,
                           name,
                           slug: cleanSlug,
@@ -1384,7 +1385,7 @@ export default function DashboardShell({
                           pdfPageCount: 0,
                           updatedAt: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
                         }
-                      : {
+                        : {
                           id: newId,
                           name,
                           slug: cleanSlug,
@@ -1404,37 +1405,35 @@ export default function DashboardShell({
                             linkUrl: "",
                           },
                         };
-                    savePages([newPage, ...currentPages]);
-                  } catch (_) {}
+                      savePages([newPage, ...currentPages]);
+                    } catch (_) { }
 
-                  setShowCreateMagnetModal(false);
-                  setCreateMagnetName("");
-                  if (isLockedPdf) {
-                    router.push("/dashboard/locked-pdf");
-                  } else {
-                    router.push(`/dashboard/leadmagnets/${newId}`);
-                  }
-                }}
-                className="space-y-4"
-              >
-                {/* Format Selection Cards */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                    setShowCreateMagnetModal(false);
+                    setCreateMagnetName("");
+                    if (isLockedPdf) {
+                      router.push("/dashboard/locked-pdf");
+                    } else {
+                      router.push(`/dashboard/leadmagnets/${newId}`);
+                    }
+                  }}
+                  className="space-y-4"
+                >
+                  {/* Format Selection Cards */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                     {/* Locked PDF Card */}
                     <button
                       type="button"
                       onClick={() => setSelectedMagnetType("locked-pdf")}
-                      className={`relative flex items-start gap-3 p-3 rounded-xl border text-left cursor-pointer transition-colors duration-75 ${
-                        selectedMagnetType === "locked-pdf"
+                      className={`relative flex items-start gap-3 p-3 rounded-xl border text-left cursor-pointer transition-colors duration-75 ${selectedMagnetType === "locked-pdf"
                           ? "border-amber-500/90 bg-amber-500/10 dark:bg-amber-500/10 dark:border-amber-500/70"
                           : "border-zinc-200 dark:border-[#2e2e38] bg-zinc-50/70 dark:bg-[#121214] hover:border-zinc-300 dark:hover:border-[#3e3e4a]"
-                      }`}
+                        }`}
                     >
                       <div
-                        className={`p-2 rounded-lg shrink-0 ${
-                          selectedMagnetType === "locked-pdf"
+                        className={`p-2 rounded-lg shrink-0 ${selectedMagnetType === "locked-pdf"
                             ? "bg-amber-600 text-white"
                             : "bg-zinc-200 dark:bg-[#25252b] text-zinc-600 dark:text-zinc-400"
-                        }`}
+                          }`}
                       >
                         <Lock className="h-4 w-4" />
                       </div>
@@ -1452,18 +1451,16 @@ export default function DashboardShell({
                     <button
                       type="button"
                       onClick={() => setSelectedMagnetType("classic")}
-                      className={`relative flex items-start gap-3 p-3 rounded-xl border text-left cursor-pointer transition-colors duration-75 ${
-                        selectedMagnetType === "classic"
+                      className={`relative flex items-start gap-3 p-3 rounded-xl border text-left cursor-pointer transition-colors duration-75 ${selectedMagnetType === "classic"
                           ? "border-emerald-600/90 bg-emerald-500/10 dark:bg-emerald-500/10 dark:border-emerald-500/70"
                           : "border-zinc-200 dark:border-[#2e2e38] bg-zinc-50/70 dark:bg-[#121214] hover:border-zinc-300 dark:hover:border-[#3e3e4a]"
-                      }`}
+                        }`}
                     >
                       <div
-                        className={`p-2 rounded-lg shrink-0 ${
-                          selectedMagnetType === "classic"
+                        className={`p-2 rounded-lg shrink-0 ${selectedMagnetType === "classic"
                             ? "bg-[#059669] text-white"
                             : "bg-zinc-200 dark:bg-[#25252b] text-zinc-600 dark:text-zinc-400"
-                        }`}
+                          }`}
                       >
                         <FileText className="h-4 w-4" />
                       </div>
@@ -1478,173 +1475,172 @@ export default function DashboardShell({
                     </button>
                   </div>
 
-                {/* Page Name */}
-                <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-zinc-700 dark:text-[#d4c8bc]">Page name</label>
-                  <input
-                    type="text"
-                    autoFocus
-                    value={createMagnetName}
-                    onChange={(e) => setCreateMagnetName(e.target.value)}
-                    placeholder={
-                      selectedMagnetType === "locked-pdf"
-                        ? "e.g. AI Pipeline Playbook"
-                        : "e.g. 2026 Growth Checklist"
-                    }
-                    className="w-full rounded-xl border border-zinc-200 dark:border-[#2e2e38] bg-zinc-50 dark:bg-[#121214] px-3.5 py-2.5 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-[#52525b] outline-none focus:ring-2 focus:ring-[#0066B2] focus:border-[#0066B2] transition-all"
-                  />
-                </div>
-
-                {/* URL Slug */}
-                <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-zinc-700 dark:text-[#d4c8bc]">URL slug</label>
-                  <div className="flex items-center rounded-xl border border-zinc-200 dark:border-[#2e2e38] bg-zinc-50 dark:bg-[#121214] px-3.5 py-2.5 text-xs text-zinc-500 dark:text-zinc-400">
-                    <span className="text-zinc-400 dark:text-[#666675] shrink-0 mr-1.5 font-mono">/</span>
-                    <span className="font-mono text-zinc-800 dark:text-[#d4c8bc] truncate">
-                      {createMagnetName
-                        .toLowerCase()
-                        .trim()
-                        .replace(/[^a-z0-9\s-]/g, "")
-                        .replace(/\s+/g, "-") ||
-                        (selectedMagnetType === "locked-pdf"
-                          ? "locked-pdf"
-                          : "untitled-page")}
-                    </span>
-                  </div>
-                  <p className="text-[11px] text-zinc-400 dark:text-[#666675]">The path of the page. Lowercase, digits, and hyphens only.</p>
-                </div>
-
-                {/* Modal Action Buttons */}
-                <div className="pt-3 flex items-center justify-end gap-2.5 w-full">
-                  <button
-                    type="button"
-                    onClick={() => setShowCreateMagnetModal(false)}
-                    className="flex-1 sm:flex-initial rounded-xl border border-zinc-200 dark:border-[#2e2e38] bg-white dark:bg-[#222228] px-4 py-2.5 text-xs font-semibold text-zinc-700 dark:text-white hover:bg-zinc-100 dark:hover:bg-[#2c2c34] transition-all cursor-pointer text-center"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    className={`flex-[1.5] sm:flex-initial inline-flex items-center justify-center gap-1.5 rounded-xl px-5 py-2.5 text-xs font-bold text-white shadow-md active:scale-95 transition-all cursor-pointer ${
-                      selectedMagnetType === "locked-pdf"
-                        ? "bg-[#0066B2] hover:bg-[#005291] shadow-[0_4px_14px_rgba(0,102,178,0.3)]"
-                        : "bg-[#059669] hover:bg-[#047857] shadow-[0_4px_14px_rgba(5,150,105,0.3)]"
-                    }`}
-                  >
-                    {selectedMagnetType === "locked-pdf" ? (
-                      <>
-                        <Lock className="h-3.5 w-3.5" />
-                        <span>Create Locked PDF</span>
-                      </>
-                    ) : (
-                      <>
-                        <FileText className="h-3.5 w-3.5" />
-                        <span>Create Landing Page</span>
-                      </>
-                    )}
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        )}
-
-        {/* In-App Feedback / Bug Report / Feature Request Modal */}
-        {feedbackModal && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-150">
-            <div className="w-full max-w-md rounded-2xl border border-zinc-200 bg-white p-6 shadow-2xl dark:border-zinc-800 dark:bg-[#18181B] dark:text-white">
-              <div className="flex items-center justify-between pb-3 border-b border-zinc-100 dark:border-zinc-800">
-                <div className="flex items-center gap-2 font-bold text-sm text-zinc-900 dark:text-white">
-                  {feedbackModal === "bug" ? (
-                    <>
-                      <Bug className="h-4.5 w-4.5 text-rose-500" />
-                      <span>Report a Bug</span>
-                    </>
-                  ) : (
-                    <>
-                      <Sparkles className="h-4.5 w-4.5 text-[#0066B2]" />
-                      <span>Request a Feature</span>
-                    </>
-                  )}
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setFeedbackModal(null)}
-                  className="rounded-lg p-1 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-700 dark:hover:bg-zinc-800 dark:hover:text-white transition cursor-pointer"
-                >
-                  <X className="h-4 w-4" />
-                </button>
-              </div>
-
-              {feedbackSent ? (
-                <div className="py-8 flex flex-col items-center justify-center text-center space-y-3">
-                  <CheckCircle2 className="h-10 w-10 text-emerald-500 animate-bounce" />
-                  <h4 className="text-sm font-bold text-zinc-900 dark:text-white">Thank you for your feedback!</h4>
-                  <p className="text-xs text-zinc-500 dark:text-zinc-400 max-w-xs">
-                    {feedbackModal === "bug"
-                      ? "Our engineering team has received your bug report and will investigate."
-                      : "We've added your feature suggestion to our product roadmap."}
-                  </p>
-                  <button
-                    type="button"
-                    onClick={() => setFeedbackModal(null)}
-                    className="mt-2 rounded-xl bg-[#0066B2] px-5 py-2 text-xs font-bold text-white hover:bg-[#005799] transition cursor-pointer"
-                  >
-                    Close
-                  </button>
-                </div>
-              ) : (
-                <form
-                  onSubmit={(e) => {
-                    e.preventDefault();
-                    if (!feedbackText.trim()) return;
-                    setFeedbackSent(true);
-                  }}
-                  className="mt-4 space-y-4"
-                >
-                  <div>
-                    <label className="block text-xs font-semibold text-zinc-700 dark:text-zinc-300 mb-1.5">
-                      {feedbackModal === "bug" ? "What issue did you encounter?" : "What feature would you like to see?"}
-                    </label>
-                    <textarea
-                      rows={4}
-                      required
-                      value={feedbackText}
-                      onChange={(e) => setFeedbackText(e.target.value)}
+                  {/* Page Name */}
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-semibold text-zinc-700 dark:text-[#d4c8bc]">Page name</label>
+                    <input
+                      type="text"
+                      autoFocus
+                      value={createMagnetName}
+                      onChange={(e) => setCreateMagnetName(e.target.value)}
                       placeholder={
-                        feedbackModal === "bug"
-                          ? "Please describe what happened, expected behavior, or steps to reproduce..."
-                          : "Describe the feature or workflow improvement you'd love..."
+                        selectedMagnetType === "locked-pdf"
+                          ? "e.g. AI Pipeline Playbook"
+                          : "e.g. 2026 Growth Checklist"
                       }
-                      className="w-full rounded-xl border border-zinc-200 bg-zinc-50 dark:border-zinc-800 dark:bg-[#121214] p-3 text-xs text-zinc-900 dark:text-white outline-none focus:border-[#0066B2] transition placeholder:text-zinc-400 dark:placeholder:text-zinc-600"
+                      className="w-full rounded-xl border border-zinc-200 dark:border-[#2e2e38] bg-zinc-50 dark:bg-[#121214] px-3.5 py-2.5 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-[#52525b] outline-none focus:ring-2 focus:ring-[#0066B2] focus:border-[#0066B2] transition-all"
                     />
                   </div>
 
-                  <div className="flex items-center justify-end gap-2.5 pt-2">
+                  {/* URL Slug */}
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-semibold text-zinc-700 dark:text-[#d4c8bc]">URL slug</label>
+                    <div className="flex items-center rounded-xl border border-zinc-200 dark:border-[#2e2e38] bg-zinc-50 dark:bg-[#121214] px-3.5 py-2.5 text-xs text-zinc-500 dark:text-zinc-400">
+                      <span className="text-zinc-400 dark:text-[#666675] shrink-0 mr-1.5 font-mono">/</span>
+                      <span className="font-mono text-zinc-800 dark:text-[#d4c8bc] truncate">
+                        {createMagnetName
+                          .toLowerCase()
+                          .trim()
+                          .replace(/[^a-z0-9\s-]/g, "")
+                          .replace(/\s+/g, "-") ||
+                          (selectedMagnetType === "locked-pdf"
+                            ? "locked-pdf"
+                            : "untitled-page")}
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-zinc-400 dark:text-[#666675]">The path of the page. Lowercase, digits, and hyphens only.</p>
+                  </div>
+
+                  {/* Modal Action Buttons */}
+                  <div className="pt-3 flex items-center justify-end gap-2.5 w-full">
                     <button
                       type="button"
-                      onClick={() => setFeedbackModal(null)}
-                      className="rounded-xl border border-zinc-200 bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-800 px-4 py-2 text-xs font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition cursor-pointer"
+                      onClick={() => setShowCreateMagnetModal(false)}
+                      className="flex-1 sm:flex-initial rounded-xl border border-zinc-200 dark:border-[#2e2e38] bg-white dark:bg-[#222228] px-4 py-2.5 text-xs font-semibold text-zinc-700 dark:text-white hover:bg-zinc-100 dark:hover:bg-[#2c2c34] transition-all cursor-pointer text-center"
                     >
                       Cancel
                     </button>
                     <button
                       type="submit"
-                      disabled={!feedbackText.trim()}
-                      className="rounded-xl bg-[#0066B2] px-4 py-2 text-xs font-bold text-white hover:bg-[#005799] disabled:opacity-50 disabled:cursor-not-allowed transition cursor-pointer shadow-sm"
+                      className={`flex-[1.5] sm:flex-initial inline-flex items-center justify-center gap-1.5 rounded-xl px-5 py-2.5 text-xs font-bold text-white shadow-md active:scale-95 transition-all cursor-pointer ${selectedMagnetType === "locked-pdf"
+                          ? "bg-[#0066B2] hover:bg-[#005291] shadow-[0_4px_14px_rgba(0,102,178,0.3)]"
+                          : "bg-[#059669] hover:bg-[#047857] shadow-[0_4px_14px_rgba(5,150,105,0.3)]"
+                        }`}
                     >
-                      Submit Feedback
+                      {selectedMagnetType === "locked-pdf" ? (
+                        <>
+                          <Lock className="h-3.5 w-3.5" />
+                          <span>Create Locked PDF</span>
+                        </>
+                      ) : (
+                        <>
+                          <FileText className="h-3.5 w-3.5" />
+                          <span>Create Landing Page</span>
+                        </>
+                      )}
                     </button>
                   </div>
                 </form>
-              )}
+              </div>
             </div>
-          </div>
-        )}
-      </div>
-      <CommandMenu isOpen={isCommandMenuOpen} onClose={() => setIsCommandMenuOpen(false)} />
-      <GmailSyncTour />
-    </ExpandableScreen>
+          )}
+
+          {/* In-App Feedback / Bug Report / Feature Request Modal */}
+          {feedbackModal && (
+            <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-150">
+              <div className="w-full max-w-md rounded-2xl border border-zinc-200 bg-white p-6 shadow-2xl dark:border-zinc-800 dark:bg-[#18181B] dark:text-white">
+                <div className="flex items-center justify-between pb-3 border-b border-zinc-100 dark:border-zinc-800">
+                  <div className="flex items-center gap-2 font-bold text-sm text-zinc-900 dark:text-white">
+                    {feedbackModal === "bug" ? (
+                      <>
+                        <Bug className="h-4.5 w-4.5 text-rose-500" />
+                        <span>Report a Bug</span>
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles className="h-4.5 w-4.5 text-[#0066B2]" />
+                        <span>Request a Feature</span>
+                      </>
+                    )}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setFeedbackModal(null)}
+                    className="rounded-lg p-1 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-700 dark:hover:bg-zinc-800 dark:hover:text-white transition cursor-pointer"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
+
+                {feedbackSent ? (
+                  <div className="py-8 flex flex-col items-center justify-center text-center space-y-3">
+                    <CheckCircle2 className="h-10 w-10 text-emerald-500 animate-bounce" />
+                    <h4 className="text-sm font-bold text-zinc-900 dark:text-white">Thank you for your feedback!</h4>
+                    <p className="text-xs text-zinc-500 dark:text-zinc-400 max-w-xs">
+                      {feedbackModal === "bug"
+                        ? "Our engineering team has received your bug report and will investigate."
+                        : "We've added your feature suggestion to our product roadmap."}
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => setFeedbackModal(null)}
+                      className="mt-2 rounded-xl bg-[#0066B2] px-5 py-2 text-xs font-bold text-white hover:bg-[#005799] transition cursor-pointer"
+                    >
+                      Close
+                    </button>
+                  </div>
+                ) : (
+                  <form
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      if (!feedbackText.trim()) return;
+                      setFeedbackSent(true);
+                    }}
+                    className="mt-4 space-y-4"
+                  >
+                    <div>
+                      <label className="block text-xs font-semibold text-zinc-700 dark:text-zinc-300 mb-1.5">
+                        {feedbackModal === "bug" ? "What issue did you encounter?" : "What feature would you like to see?"}
+                      </label>
+                      <textarea
+                        rows={4}
+                        required
+                        value={feedbackText}
+                        onChange={(e) => setFeedbackText(e.target.value)}
+                        placeholder={
+                          feedbackModal === "bug"
+                            ? "Please describe what happened, expected behavior, or steps to reproduce..."
+                            : "Describe the feature or workflow improvement you'd love..."
+                        }
+                        className="w-full rounded-xl border border-zinc-200 bg-zinc-50 dark:border-zinc-800 dark:bg-[#121214] p-3 text-xs text-zinc-900 dark:text-white outline-none focus:border-[#0066B2] transition placeholder:text-zinc-400 dark:placeholder:text-zinc-600"
+                      />
+                    </div>
+
+                    <div className="flex items-center justify-end gap-2.5 pt-2">
+                      <button
+                        type="button"
+                        onClick={() => setFeedbackModal(null)}
+                        className="rounded-xl border border-zinc-200 bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-800 px-4 py-2 text-xs font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition cursor-pointer"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="submit"
+                        disabled={!feedbackText.trim()}
+                        className="rounded-xl bg-[#0066B2] px-4 py-2 text-xs font-bold text-white hover:bg-[#005799] disabled:opacity-50 disabled:cursor-not-allowed transition cursor-pointer shadow-sm"
+                      >
+                        Submit Feedback
+                      </button>
+                    </div>
+                  </form>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+        <CommandMenu isOpen={isCommandMenuOpen} onClose={() => setIsCommandMenuOpen(false)} />
+        <GmailSyncTour />
+      </ExpandableScreen>
     </SidebarContext.Provider>
   );
 }
