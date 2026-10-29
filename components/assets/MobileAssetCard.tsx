@@ -11,7 +11,7 @@ import {
 } from "framer-motion";
 import {
   Link2,
-  Download,
+  Eye,
   Trash2,
   Pencil,
   Check,
@@ -61,6 +61,7 @@ interface MobileAssetCardProps {
   onSaveRename: (resource: Resource) => void;
   onCancelRename: () => void;
   onDelete: (resource: Resource) => void;
+  onPreview: (resource: Resource) => void;
 }
 
 // -----------------------------------------------------------------------------
@@ -102,6 +103,7 @@ export const MobileAssetCard = memo(function MobileAssetCard({
   onSaveRename,
   onCancelRename,
   onDelete,
+  onPreview,
 }: MobileAssetCardProps) {
   const [internalIsOpen, setInternalIsOpen] = useState(false);
   const isOpen = controlledIsOpen !== undefined ? controlledIsOpen : internalIsOpen;
@@ -263,26 +265,25 @@ export const MobileAssetCard = memo(function MobileAssetCard({
         </button>
 
         {/* Island 2: Test / Download */}
-        <a
-          href={resource.url}
-          target="_blank"
-          rel="noopener noreferrer"
+        <button
+          type="button"
           onClick={(e) => {
             e.stopPropagation();
             triggerHaptic(12);
             setIsOpen(false);
             springTo(0);
+            onPreview(resource);
           }}
           className="w-[68px] h-[calc(100%-16px)] flex flex-col items-center justify-center rounded-2xl bg-zinc-500/10 hover:bg-zinc-500/18 active:bg-zinc-500/25 border border-zinc-500/20 text-zinc-700 dark:bg-white/[0.08] dark:hover:bg-white/[0.14] dark:border-white/15 dark:text-zinc-100 transition-colors duration-150 cursor-pointer shadow-2xs backdrop-blur-md active:scale-95 will-change-transform"
-          title="Test / Download file"
+          title="Test / View file"
         >
           <div className="h-6 w-6 flex items-center justify-center shrink-0">
-            <Download className="h-5 w-5 stroke-[2.4]" />
+            <Eye className="h-5 w-5 stroke-[2.4]" />
           </div>
           <span className="text-[11.5px] font-bold tracking-tight leading-none whitespace-nowrap mt-1">
             Test
           </span>
-        </a>
+        </button>
 
         {/* Island 3: Delete (Stretches smoothly with finger on overswipe) */}
         <motion.button

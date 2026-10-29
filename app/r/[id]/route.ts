@@ -67,6 +67,9 @@ export async function GET(
     return (await getAuthenticatedUserEmail()) === owner;
   };
   const denied = () => NextResponse.redirect(new URL("/", req.url), 302);
+  // ?inline=1 serves the file for in-page viewing (dashboard PDF viewer) instead of downloading it
+  const inline = req.nextUrl.searchParams.get("inline") === "1";
+  const disposition = inline ? "inline" : "attachment";
 
   try {
     await dbConnect();
@@ -152,7 +155,7 @@ export async function GET(
                 resource_type: parsed.resourceType,
                 type: "upload",
                 expires_at: Math.floor(Date.now() / 1000) + 3600,
-                attachment: true,
+                attachment: !inline,
               }
             );
             // 302 redirect: browser downloads the file straight from Cloudinary.
@@ -182,7 +185,7 @@ export async function GET(
           return new NextResponse(blobResponse.body, {
             headers: {
               "Content-Type": isPdf ? "application/pdf" : (blobResponse.headers.get("content-type") || "application/octet-stream"),
-              "Content-Disposition": `attachment; filename="${encodeURIComponent(downloadFilename)}"`,
+              "Content-Disposition": `${disposition}; filename="${encodeURIComponent(downloadFilename)}"`,
               "Cache-Control": "private, no-cache, no-store, must-revalidate",
             },
           });
@@ -237,7 +240,7 @@ export async function GET(
       return new NextResponse(fileBuffer, {
         headers: {
           "Content-Type": contentType,
-          "Content-Disposition": `attachment; filename="${encodeURIComponent(downloadFilename)}"`,
+          "Content-Disposition": `${disposition}; filename="${encodeURIComponent(downloadFilename)}"`,
         },
       });
     }

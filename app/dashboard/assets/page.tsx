@@ -13,7 +13,7 @@ import {
   Check,
   HardDrive,
   Layers,
-  Download,
+  Eye,
   FileCode,
   Image as ImageIcon,
   Film,
@@ -33,6 +33,7 @@ import {
 import { syncWithDatabase, loadResources, loadAccount, loadPages, loadLeads } from "@/lib/store";
 import type { Account, MagnetPage, Lead } from "@/lib/data";
 import { MobileAssetCard } from "@/components/assets/MobileAssetCard";
+import { FileViewerModal } from "@/components/assets/FileViewerModal";
 import {
   UploadProgressCard,
   type UploadProgressState,
@@ -106,6 +107,12 @@ export default function ResourcesPage() {
   const [showBulkDeleteModal, setShowBulkDeleteModal] = useState(false);
   const [isBulkDeleting, setIsBulkDeleting] = useState(false);
   const [resourceToDelete, setResourceToDelete] = useState<Resource | null>(null);
+  const [previewResource, setPreviewResource] = useState<Resource | null>(null);
+  // PDFs open in the in-page viewer; other file types still open in a new tab
+  const openFilePreview = useCallback((resource: Resource) => {
+    if (resource.name.toLowerCase().endsWith(".pdf")) setPreviewResource(resource);
+    else window.open(resource.url, "_blank", "noopener,noreferrer");
+  }, []);
   const [isDeleting, setIsDeleting] = useState(false);
   const [toasts, setToasts] = useState<Toast[]>([]);
   const [mounted, setMounted] = useState(false);
@@ -1429,16 +1436,15 @@ export default function ResourcesPage() {
                                   )}
 
                                   <div className="relative z-10 flex items-center justify-end gap-1.5">
-                                    {/* Direct Download / Test File */}
-                                    <a
-                                      href={resource.url}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                      title="Test / Download file"
+                                    {/* Test File: opens the in-page PDF viewer */}
+                                    <button
+                                      type="button"
+                                      onClick={() => openFilePreview(resource)}
+                                      title="Test / View file"
                                       className="inline-flex h-8 w-8 items-center justify-center rounded-xl border border-zinc-200/90 bg-white dark:border-white/10 dark:bg-white/5 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-white/10 hover:text-[#0066B2] dark:hover:text-[#38BDF8] transition-all duration-150 cursor-pointer shadow-2xs active:scale-95"
                                     >
-                                      <Download className="h-4 w-4" />
-                                    </a>
+                                      <Eye className="h-4 w-4" />
+                                    </button>
 
                                     {/* Copy Link Button */}
                                     <button
@@ -1509,6 +1515,7 @@ export default function ResourcesPage() {
                             onSaveRename={handleSaveRename}
                             onCancelRename={() => setEditingResourceId(null)}
                             onDelete={setResourceToDelete}
+                            onPreview={openFilePreview}
                           />
                         );
                       })}
@@ -1636,6 +1643,8 @@ export default function ResourcesPage() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      <FileViewerModal resource={previewResource} onClose={() => setPreviewResource(null)} />
 
       {/* Delete Confirmation Modal */}
       <AnimatePresence>

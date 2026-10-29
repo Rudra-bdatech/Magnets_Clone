@@ -66,6 +66,11 @@ const nextConfig = {
         ],
       },
       {
+        // File route: the dashboard previews PDFs in an iframe on the same origin
+        source: "/r/:path*",
+        headers: [{ key: "X-Frame-Options", value: "SAMEORIGIN" }],
+      },
+      {
         // Landing page: allow bfcache (no no-store, no no-cache)
         // stale-while-revalidate keeps it fast AND fresh
         source: "/",
