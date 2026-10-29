@@ -100,6 +100,7 @@ export default function ResourcesPage() {
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
   const mobileFilterRef = useRef<HTMLDivElement>(null);
   const [isMobileSelectionMode, setIsMobileSelectionMode] = useState(false);
+  const [openSwipeResourceId, setOpenSwipeResourceId] = useState<string | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [selectedResourceIds, setSelectedResourceIds] = useState<string[]>([]);
   const [showBulkDeleteModal, setShowBulkDeleteModal] = useState(false);
@@ -529,6 +530,11 @@ export default function ResourcesPage() {
         failedIds.length === 1 ? "Couldn't delete that asset — it's been restored." : `Couldn't delete ${failedIds.length} assets — they've been restored.`
       );
     }
+  };
+
+  const closeDeleteModal = () => {
+    setResourceToDelete(null);
+    setOpenSwipeResourceId(null);
   };
 
   const confirmDelete = () => {
@@ -1468,7 +1474,7 @@ export default function ResourcesPage() {
                     {/* ========================================================================= */}
                     {/* 4. MOBILE Card-Based Asset List (block md:hidden) - Senior UX Engineered   */}
                     {/* ========================================================================= */}
-                    <div className="block md:hidden p-3 space-y-2.5">
+                    <div className="block md:hidden p-1.5 space-y-1.5">
                       {filteredResources.map((resource) => {
                         const badge = getFileBadge(resource.name);
                         const isCopied = copiedId === resource.id;
@@ -1488,6 +1494,8 @@ export default function ResourcesPage() {
                             isEditing={editingResourceId === resource.id}
                             editingName={editingName}
                             isSavingName={isSavingName}
+                            isOpen={openSwipeResourceId === resource.id}
+                            onOpenChange={(open) => setOpenSwipeResourceId(open ? resource.id : null)}
                             onToggleSelect={toggleSelectResource}
                             onEnterSelectionMode={(id) => {
                               setIsMobileSelectionMode(true);
@@ -1638,7 +1646,7 @@ export default function ResourcesPage() {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.12 }}
             className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm p-0 sm:p-4 transform-gpu"
-            onClick={() => setResourceToDelete(null)}
+            onClick={closeDeleteModal}
           >
             <motion.div
               initial={isMobile ? { y: "100%", opacity: 0.9 } : { opacity: 0, scale: 0.94, y: 10 }}
@@ -1670,7 +1678,7 @@ export default function ResourcesPage() {
               <div className="mt-6 flex items-center justify-end gap-3">
                 <button
                   disabled={isDeleting}
-                  onClick={() => setResourceToDelete(null)}
+                  onClick={closeDeleteModal}
                   className="flex-1 sm:flex-none rounded-xl border border-zinc-200 dark:border-white/10 bg-zinc-100 dark:bg-white/5 px-4 py-2.5 text-xs font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white transition-all cursor-pointer text-center"
                 >
                   Cancel
