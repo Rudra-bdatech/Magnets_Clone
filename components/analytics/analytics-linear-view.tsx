@@ -430,17 +430,19 @@ export default function AnalyticsLinearView({
               <span>Export CSV</span>
             </motion.button>
 
-            <Link
-              href={backHref}
-              onClick={(e) => {
-                e.preventDefault();
-                window.location.href = backHref;
-              }}
-              className="relative z-20 flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-white dark:bg-[#171717] border border-zinc-200/80 dark:border-white/[0.08] hover:bg-zinc-50 dark:hover:border-white/[0.2] dark:hover:bg-zinc-800/60 text-xs font-semibold text-zinc-700 dark:text-zinc-200 transition-all shadow-xs cursor-pointer select-none"
-            >
-              <ArrowLeft className="h-3.5 w-3.5 text-zinc-400" />
-              <span>{isLockedPdf ? "Locked PDFs" : "Landing Page"}</span>
-            </Link>
+            {isPerMagnet && (
+              <Link
+                href={backHref}
+                onClick={(e) => {
+                  e.preventDefault();
+                  window.location.href = backHref;
+                }}
+                className="relative z-20 flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-white dark:bg-[#171717] border border-zinc-200/80 dark:border-white/[0.08] hover:bg-zinc-50 dark:hover:border-white/[0.2] dark:hover:bg-zinc-800/60 text-xs font-semibold text-zinc-700 dark:text-zinc-200 transition-all shadow-xs cursor-pointer select-none"
+              >
+                <ArrowLeft className="h-3.5 w-3.5 text-zinc-400" />
+                <span>{isLockedPdf ? "Locked PDFs" : "Landing Page"}</span>
+              </Link>
+            )}
 
             {isPerMagnet && targetMagnetId && (
               <Link
@@ -465,7 +467,7 @@ export default function AnalyticsLinearView({
         >
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-2">
-              <h1 className="text-2xl font-black tracking-tight text-zinc-900 dark:text-white">
+              <h1 className="text-2xl font-extrabold tracking-tight text-zinc-900 dark:text-white">
                 Analytics
               </h1>
               <button
@@ -478,33 +480,54 @@ export default function AnalyticsLinearView({
               </button>
             </div>
 
-            {/* Back / Edit on Mobile */}
-            <div className="flex items-center gap-1.5">
-              <Link
-                href={backHref}
-                onClick={(e) => {
-                  e.preventDefault();
-                  window.location.href = backHref;
-                }}
-                className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-white dark:bg-[#171717] border border-zinc-200/80 dark:border-white/[0.08] text-xs font-semibold text-zinc-700 dark:text-zinc-200 shadow-xs"
-              >
-                <ArrowLeft className="h-3 w-3 text-zinc-400" />
-                <span>{isLockedPdf ? "Locked PDFs" : "Landing Page"}</span>
-              </Link>
-              {isPerMagnet && targetMagnetId && (
+            {/* Top Right Actions on Mobile */}
+            {isPerMagnet ? (
+              <div className="flex items-center gap-1.5">
                 <Link
-                  href={editHref}
+                  href={backHref}
                   onClick={(e) => {
                     e.preventDefault();
-                    window.location.href = editHref;
+                    window.location.href = backHref;
                   }}
-                  className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-[#0066B2] text-white font-bold text-xs shadow-xs"
+                  className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-white dark:bg-[#171717] border border-zinc-200/80 dark:border-white/[0.08] text-xs font-semibold text-zinc-700 dark:text-zinc-200 shadow-xs"
                 >
-                  <Pencil className="h-3 w-3" />
-                  <span>Edit</span>
+                  <ArrowLeft className="h-3 w-3 text-zinc-400" />
+                  <span>{isLockedPdf ? "Locked PDFs" : "Landing Page"}</span>
                 </Link>
-              )}
-            </div>
+                {targetMagnetId && (
+                  <Link
+                    href={editHref}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      window.location.href = editHref;
+                    }}
+                    className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-[#0066B2] text-white font-bold text-xs shadow-xs"
+                  >
+                    <Pencil className="h-3 w-3" />
+                    <span>Edit</span>
+                  </Link>
+                )}
+                <motion.button
+                  whileTap={{ scale: 0.96 }}
+                  type="button"
+                  onClick={exportToCSV}
+                  title="Export CSV"
+                  className="flex h-8 w-8 items-center justify-center rounded-xl bg-white dark:bg-[#171717] border border-zinc-200/80 dark:border-white/[0.08] text-zinc-700 dark:text-zinc-200 shadow-xs cursor-pointer shrink-0"
+                >
+                  <Download className="h-3.5 w-3.5 text-zinc-400" />
+                </motion.button>
+              </div>
+            ) : (
+              <motion.button
+                whileTap={{ scale: 0.96 }}
+                type="button"
+                onClick={exportToCSV}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white dark:bg-[#171717] border border-zinc-200/80 dark:border-white/[0.08] text-xs font-semibold text-zinc-700 dark:text-zinc-200 shadow-xs cursor-pointer shrink-0"
+              >
+                <Download className="h-3.5 w-3.5 text-zinc-400" />
+                <span>Export</span>
+              </motion.button>
+            )}
           </div>
 
           {isPerMagnet && page?.name && (
@@ -513,9 +536,9 @@ export default function AnalyticsLinearView({
             </p>
           )}
 
-          {/* Timeframe & Export on Mobile */}
-          <div className="flex items-center gap-2 pt-0.5">
-            <div className="relative flex-1 flex items-center p-1 rounded-xl bg-white/80 dark:bg-[#171717] border border-zinc-200/80 dark:border-white/[0.08] text-xs shadow-xs backdrop-blur-sm">
+          {/* Timeframe on Mobile (Full Width Segmented Bar) */}
+          <div className="w-full pt-0.5">
+            <div className="relative w-full flex items-center p-1 rounded-xl bg-white/80 dark:bg-[#171717] border border-zinc-200/80 dark:border-white/[0.08] text-xs shadow-xs backdrop-blur-sm">
               {(["7d", "30d", "90d", "all"] as TimeRange[]).map((r) => {
                 const isActive = timeRange === r;
                 return (
@@ -541,16 +564,6 @@ export default function AnalyticsLinearView({
                 );
               })}
             </div>
-
-            <motion.button
-              whileTap={{ scale: 0.96 }}
-              type="button"
-              onClick={exportToCSV}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white dark:bg-[#171717] border border-zinc-200/80 dark:border-white/[0.08] text-xs font-semibold text-zinc-700 dark:text-zinc-200 shadow-xs cursor-pointer shrink-0"
-            >
-              <Download className="h-3.5 w-3.5 text-zinc-400" />
-              <span>Export</span>
-            </motion.button>
           </div>
         </motion.header>
 
