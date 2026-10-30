@@ -243,7 +243,7 @@ export default function IntegrationsFlow() {
               </span>
             </div>
             <p className="absolute left-1/2 top-full mt-3 -translate-x-1/2 whitespace-nowrap font-mono text-[10px] uppercase tracking-[0.18em] text-zinc-500">
-              LeadMagnets
+              Funnels
             </p>
           </div>
 
@@ -316,7 +316,7 @@ export default function IntegrationsFlow() {
               </span>
             </span>
             <div>
-              <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-zinc-500">LeadMagnets</p>
+              <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-zinc-500">Funnels</p>
               <p className="text-xs text-zinc-500 dark:text-zinc-400">
                 {phase <= 1 ? "Waiting for a signup…" : phase === 5 ? "Delivered everywhere" : "Routing to 6 tools…"}
               </p>
