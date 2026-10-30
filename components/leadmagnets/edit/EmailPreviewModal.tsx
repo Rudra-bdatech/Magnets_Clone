@@ -139,7 +139,7 @@ export default function EmailPreviewModal({
             <div className="text-center py-1">
               <img
                 src="/brand/custom-logo-light.png"
-                alt="LeadMagnets"
+                alt="Funnels"
                 className="h-7 w-auto mx-auto object-contain opacity-90"
               />
             </div>
@@ -211,3 +211,4 @@ export default function EmailPreviewModal({
     </div>
   );
 }
+

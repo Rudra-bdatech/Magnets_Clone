@@ -5,7 +5,7 @@ export function LegalHeader() {
   return (
     <header className="border-b border-zinc-200 bg-white dark:border-[#2e2e38] dark:bg-[#18181B]">
       <div className="mx-auto flex h-14 max-w-3xl items-center justify-between px-4 sm:px-6 lg:px-8">
-        <a aria-label="LeadMagnets home" href="/">
+        <a aria-label="Funnels home" href="/">
           <BrandLogo height="h-8" />
         </a>
         <a

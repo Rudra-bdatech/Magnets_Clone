@@ -513,7 +513,7 @@ export default function DashboardShell({
                 >
                   <div className="w-[144px] min-w-[144px] h-9 shrink-0 flex items-center">
                     <Image
-                      alt="LeadMagnets"
+                      alt="Funnels"
                       src="/brand/custom-logo-light.webp"
                       width={144}
                       height={36}
@@ -521,7 +521,7 @@ export default function DashboardShell({
                       className="h-9 w-[144px] min-w-[144px] max-w-none object-contain object-left dark:hidden"
                     />
                     <Image
-                      alt="LeadMagnets"
+                      alt="Funnels"
                       src="/brand/custom-logo.webp"
                       width={144}
                       height={36}

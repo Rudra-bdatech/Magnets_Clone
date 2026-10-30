@@ -5,7 +5,7 @@ export function MagnetIcon({ className = "h-7 w-auto" }: { className?: string })
     <span className="inline-flex shrink-0 items-center justify-center">
       {/* Light mode magnet icon */}
       <Image
-        alt="LeadMagnets"
+        alt="Funnels"
         src="/brand/gemini-logo.png"
         width={160}
         height={160}
@@ -14,7 +14,7 @@ export function MagnetIcon({ className = "h-7 w-auto" }: { className?: string })
       />
       {/* Dark mode magnet icon */}
       <Image
-        alt="LeadMagnets"
+        alt="Funnels"
         src="/brand/gemini-logo-dark.png"
         width={160}
         height={160}
@@ -40,7 +40,7 @@ export default function BrandLogo({
       <span className={`inline-flex shrink-0 items-center ${className}`}>
         {/* Light mode mark */}
         <Image
-          alt="LeadMagnets"
+          alt="Funnels"
           src="/brand/gemini-logo.png"
           width={160}
           height={160}
@@ -49,7 +49,7 @@ export default function BrandLogo({
         />
         {/* Dark mode mark */}
         <Image
-          alt="LeadMagnets"
+          alt="Funnels"
           src="/brand/gemini-logo-dark.png"
           width={160}
           height={160}
@@ -64,7 +64,7 @@ export default function BrandLogo({
     <span className={`inline-flex shrink-0 items-center ${className}`}>
       {/* Light mode logo — intrinsic 512×160 (3.2:1 ratio) */}
       <Image
-        alt="LeadMagnets"
+        alt="Funnels"
         src="/brand/custom-logo-light.webp"
         width={512}
         height={112}
@@ -74,7 +74,7 @@ export default function BrandLogo({
 
       {/* Dark mode logo — transparent background full logo */}
       <Image
-        alt="LeadMagnets"
+        alt="Funnels"
         src="/brand/custom-logo.webp"
         width={512}
         height={112}
@@ -89,7 +89,7 @@ export function MagnetsMark({ size = "h-14 w-14", src = "/brand/custom-mark.png"
   return (
     <span aria-hidden="true" className="inline-flex shrink-0 items-center justify-center">
       <Image
-        alt="LeadMagnets"
+        alt="Funnels"
         src={src}
         width={160}
         height={160}
@@ -115,7 +115,7 @@ export function GeminiLogo({
     <span aria-hidden="true" className="inline-flex shrink-0 items-center justify-center">
       {/* Light mode logo */}
       <Image
-        alt="LeadMagnets Logo"
+        alt="Funnels"
         src={src}
         width={240}
         height={60}
@@ -124,7 +124,7 @@ export function GeminiLogo({
       />
       {/* Dark mode logo */}
       <Image
-        alt="LeadMagnets Logo"
+        alt="Funnels"
         src={darkSrc}
         width={240}
         height={60}
@@ -134,6 +134,7 @@ export function GeminiLogo({
     </span>
   );
 }
+
 
 
 
