@@ -23,7 +23,6 @@ const TryIt = dynamic(() => import("@/components/landing/try-it"));
 const IntegrationsFlow = dynamic(() => import("@/components/landing/integrations-flow"));
 const ProofStrip = dynamic(() => import("@/components/landing/proof-strip"));
 const CinematicPreloader = dynamic(() => import("@/components/landing/cinematic-preloader"), { ssr: false });
-const HeroShader = dynamic(() => import("@/components/landing/hero-shader"), { ssr: false });
 const HorizontalShowcase = dynamic(() => import("@/components/landing/horizontal-showcase"), { ssr: false });
 
 const jsonLd = {
@@ -58,7 +57,7 @@ const jsonLd = {
 
 export default function HomeV2() {
   return (
-    <main className="overflow-x-clip bg-[#F0F7FF] dark:bg-[#0a0a0a] text-zinc-900 dark:text-zinc-100 transition-colors duration-300">
+    <main className="overflow-x-clip bg-[#F0F7FF] dark:bg-[#0a0a0a] text-zinc-900 dark:text-zinc-100">
       <CinematicPreloader />
       <script
         type="application/ld+json"
@@ -68,8 +67,7 @@ export default function HomeV2() {
       <SiteHeader />
 
       {/* HERO */}
-      <section className="relative bg-[#F0F7FF] dark:bg-[#0a0a0a] border-b border-zinc-200/80 dark:border-zinc-800/80 overflow-hidden">
-        <HeroShader />
+      <section className="relative bg-[#F0F7FF] dark:bg-[#0a0a0a] border-b border-zinc-200/80 dark:border-zinc-800/80">
         <div aria-hidden="true" className="absolute inset-x-0 top-0 -z-0 h-[36rem] vercel-dot-bg opacity-25 dark:opacity-10 pointer-events-none" />
 
         <div className="relative mx-auto max-w-7xl px-5 pt-20 pb-20 sm:px-8 sm:pt-28 lg:px-10 lg:pt-32 lg:pb-28">

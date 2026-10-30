@@ -1556,3 +1556,25 @@ textarea {
   animation: m3-wave-flow 1.35s linear infinite;
   will-change: transform;
 }
+
+
+/* Circular View Transition Ripple Animation */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+::view-transition-old(root) {
+  z-index: 1;
+}
+
+::view-transition-new(root) {
+  z-index: 99999;
+}
+
+/* Prevent background-color interpolation lag during View Transitions */
+html.theme-transitioning,
+html.theme-transitioning * {
+  transition: none !important;
+}
