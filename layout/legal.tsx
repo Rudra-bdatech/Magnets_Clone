@@ -5,7 +5,7 @@ export function LegalHeader() {
   return (
     <header className="border-b border-zinc-200 bg-white dark:border-[#2e2e38] dark:bg-[#18181B]">
       <div className="mx-auto flex h-14 max-w-3xl items-center justify-between px-4 sm:px-6 lg:px-8">
-        <a aria-label="LeadMagnets home" href="/">
+        <a aria-label="Funnels home" href="/">
           <BrandLogo height="h-8" />
         </a>
         <a
@@ -24,7 +24,7 @@ export function LegalFooter() {
   return (
     <footer className="border-t border-zinc-200 bg-white dark:border-[#2e2e38] dark:bg-[#18181B] px-4 py-6 text-xs text-zinc-500 dark:text-[#9B9085] sm:px-6 lg:px-8">
       <div className="mx-auto flex max-w-3xl flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <span>© 2026 LeadMagnets</span>
+        <span>© 2026 Funnels</span>
         <div className="flex gap-4 font-medium">
           <a className="hover:text-zinc-900 dark:hover:text-white transition" href="/">
             Home
