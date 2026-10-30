@@ -93,7 +93,20 @@ export default function ThemeToggle({
       : `${dimClass} inline-flex items-center justify-center rounded-lg text-zinc-600 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100/80 dark:hover:bg-white/10 active:scale-90 transition-all cursor-pointer shrink-0`;
 
   if (!mounted) {
-    return <div className={`${dimClass} ${className}`} />;
+    return (
+      <button
+        type="button"
+        aria-label="Toggle theme"
+        tabIndex={-1}
+        className={`${baseStyles} ${className} relative select-none`}
+        disabled
+      >
+        <span className="flex items-center justify-center">
+          <Sun className={`${iconClass} block dark:hidden text-amber-500`} strokeWidth={2} />
+          <Moon className={`${iconClass} hidden dark:block text-zinc-200`} strokeWidth={2} />
+        </span>
+      </button>
+    );
   }
 
   return (

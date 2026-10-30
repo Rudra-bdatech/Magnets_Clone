@@ -55,7 +55,7 @@ const jsonLd = {
 
 export default function Home() {
   return (
-    <main className="overflow-x-clip bg-[#F0F7FF] dark:bg-[#0a0a0a] text-zinc-900 dark:text-zinc-100 transition-colors duration-300">
+    <main className="overflow-x-clip bg-[#F0F7FF] dark:bg-[#0a0a0a] text-zinc-900 dark:text-zinc-100">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
