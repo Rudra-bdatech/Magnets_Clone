@@ -33,7 +33,7 @@ export default function SiteFooter() {
       <div className="mx-auto max-w-7xl px-5 pt-14 sm:px-8 lg:px-10">
         <div className="grid grid-cols-2 gap-10 lg:grid-cols-5">
           <div className="col-span-2">
-            <BrandLogo height="h-8 sm:h-9" />
+            <BrandLogo height="h-[28px] sm:h-[32px]" />
             <p className="mt-4 max-w-xs text-sm leading-relaxed">
               Opt-in pages, file delivery and follow-up emails for people who give away useful things.
             </p>
@@ -71,3 +71,5 @@ export default function SiteFooter() {
     </footer>
   );
 }
+
+

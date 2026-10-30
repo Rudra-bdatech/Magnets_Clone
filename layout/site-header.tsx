@@ -48,7 +48,7 @@ export default function SiteHeader() {
         className="relative mx-auto flex max-w-7xl items-center justify-between px-4 sm:px-8 lg:px-10 h-17 sm:h-22 pt-2 sm:pt-3.5"
       >
         <a aria-label="LeadMagnets home" href="/" className="shrink-0 flex items-center">
-          <BrandLogo height="h-10 sm:h-11 lg:h-12" />
+          <BrandLogo height="h-[34px] sm:h-[38px] lg:h-[40px]" />
         </a>
 
         {/* Desktop Navigation */}
@@ -151,3 +151,5 @@ export default function SiteHeader() {
     </div>
   );
 }
+
+

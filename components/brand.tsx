@@ -26,7 +26,7 @@ export function MagnetIcon({ className = "h-7 w-auto" }: { className?: string })
 }
 
 export default function BrandLogo({
-  height = "h-11 sm:h-12 lg:h-13",
+  height = "h-7 sm:h-8",
   className = "",
   collapsed = false,
 }: {
@@ -67,7 +67,7 @@ export default function BrandLogo({
         alt="LeadMagnets"
         src="/brand/custom-logo-light.webp"
         width={512}
-        height={160}
+        height={112}
         priority
         className={`${height} w-auto object-contain dark:hidden`}
       />
@@ -77,7 +77,7 @@ export default function BrandLogo({
         alt="LeadMagnets"
         src="/brand/custom-logo.webp"
         width={512}
-        height={160}
+        height={112}
         priority
         className={`${height} w-auto object-contain hidden dark:block`}
       />
@@ -134,3 +134,6 @@ export function GeminiLogo({
     </span>
   );
 }
+
+
+
