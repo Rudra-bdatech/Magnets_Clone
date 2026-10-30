@@ -54,7 +54,7 @@ export default function SiteFooter() {
           ))}
         </div>
 
-        <div className="mt-12 flex flex-col gap-2 border-t border-zinc-200/80 dark:border-zinc-800/80 py-5 text-xs sm:flex-row sm:justify-between">
+        <div className="mt-12 flex flex-row items-center justify-between border-t border-zinc-200/80 dark:border-zinc-800/80 py-5 text-xs">
           <span>© {new Date().getFullYear()} LeadMagnets</span>
           <span>magnets.bdatech.in</span>
         </div>
