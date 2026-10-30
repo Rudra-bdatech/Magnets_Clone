@@ -498,38 +498,38 @@ export default function DashboardShell({
             className="shadow-sm hidden h-screen shrink-0 flex-col border-r border-[#E0EDFB] bg-[#F0F7FF] text-zinc-900 sticky top-0 md:flex z-50 dark:border-white/[0.08] dark:bg-[#171717] dark:text-zinc-400 overflow-visible select-none"
           >
             {/* Header & Logo Area */}
-            <div className="flex shrink-0 items-center justify-between px-3.5 pt-3 pb-1 h-14 relative">
+            <div className={`flex shrink-0 items-center ${isCollapsed ? "justify-center px-2" : "justify-between px-3.5"} pt-3.5 pb-2 h-16 relative`}>
               <Link
                 href="/dashboard"
                 aria-label="Dashboard"
-                className="flex items-center group relative h-9 overflow-hidden rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0066B2]"
+                className={`flex items-center group relative h-9 rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0066B2] ${isCollapsed ? "w-10 justify-center" : ""}`}
                 title={isCollapsed ? "Dashboard" : undefined}
               >
-                {/* Seamless, pixel-perfect logo with smooth spring text masking */}
-                <motion.div
-                  animate={{ width: isCollapsed ? 36 : 144 }}
-                  transition={{ type: "spring", stiffness: 520, damping: 38, mass: 0.5 }}
-                  className="h-9 overflow-hidden flex items-center shrink-0"
-                >
-                  <div className="w-[144px] min-w-[144px] h-9 shrink-0 flex items-center">
-                    <Image
-                      alt="Funnels"
-                      src="/brand/custom-logo-light.webp"
-                      width={144}
-                      height={36}
-                      priority
-                      className="h-9 w-[144px] min-w-[144px] max-w-none object-contain object-left dark:hidden"
-                    />
-                    <Image
-                      alt="Funnels"
-                      src="/brand/custom-logo.webp"
-                      width={144}
-                      height={36}
-                      priority
-                      className="h-9 w-[144px] min-w-[144px] max-w-none object-contain object-left hidden dark:block"
-                    />
-                  </div>
-                </motion.div>
+                <AnimatePresence mode="wait" initial={false}>
+                  {isCollapsed ? (
+                    <motion.div
+                      key="collapsed-logo"
+                      initial={{ opacity: 0, scale: 0.85 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.85 }}
+                      transition={{ duration: 0.15 }}
+                      className="flex items-center justify-center w-8 h-8"
+                    >
+                      <BrandLogo collapsed={true} height="h-7 w-7" />
+                    </motion.div>
+                  ) : (
+                    <motion.div
+                      key="expanded-logo"
+                      initial={{ opacity: 0, x: -6 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -6 }}
+                      transition={{ duration: 0.15 }}
+                      className="flex items-center h-9 max-w-[140px] overflow-hidden"
+                    >
+                      <BrandLogo collapsed={false} height="h-7" />
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </Link>
 
               {/* Toggle Collapse / Expand Button */}
@@ -559,7 +559,7 @@ export default function DashboardShell({
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.85 }}
                     transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
-                    className="group absolute -right-3.5 top-3.5 z-[70] flex h-7 w-7 items-center justify-center rounded-full bg-white dark:bg-[#171717] border border-zinc-200/90 dark:border-white/10 shadow-[0_2px_8px_rgba(0,0,0,0.12)] dark:shadow-[0_2px_12px_rgba(0,0,0,0.5)] text-zinc-500 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-white hover:bg-[#E2F0FD] dark:hover:bg-white/10 hover:border-zinc-300 dark:hover:border-white/20 hover:shadow-md transition-colors duration-150 cursor-pointer active:scale-95 transform-gpu before:absolute before:-inset-1 before:content-[''] before:rounded-full"
+                    className="group absolute -right-3.5 top-4.5 z-[70] flex h-7 w-7 items-center justify-center rounded-full bg-white dark:bg-[#171717] border border-zinc-200/90 dark:border-white/10 shadow-[0_2px_8px_rgba(0,0,0,0.12)] dark:shadow-[0_2px_12px_rgba(0,0,0,0.5)] text-zinc-500 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-white hover:bg-[#E2F0FD] dark:hover:bg-white/10 hover:border-zinc-300 dark:hover:border-white/20 hover:shadow-md transition-colors duration-150 cursor-pointer active:scale-95 transform-gpu before:absolute before:-inset-1 before:content-[''] before:rounded-full"
                     aria-label="Expand sidebar"
                   >
                     <PanelLeftOpen className="h-3.5 w-3.5 transition-transform duration-150 group-hover:translate-x-0.5" />
@@ -570,7 +570,7 @@ export default function DashboardShell({
 
             {/* Nav Items */}
             <nav
-              className={`flex-1 space-y-1 px-2 mt-1 ${isCollapsed ? "overflow-visible" : "overflow-y-auto overflow-x-hidden scrollbar-none"
+              className={`flex-1 space-y-1 px-2 mt-3 ${isCollapsed ? "overflow-visible" : "overflow-y-auto overflow-x-hidden scrollbar-none"
                 }`}
               aria-label="Dashboard"
               onMouseLeave={() => setHoveredNavHref(null)}
@@ -598,8 +598,8 @@ export default function DashboardShell({
                           whileTap={{ scale: 0.95 }}
                           transition={{ type: "spring", stiffness: 600, damping: 28 }}
                           className={`relative flex items-center rounded-xl font-medium transition-colors cursor-pointer text-zinc-600 dark:text-zinc-400 dark:hover:text-white ${isCollapsed
-                              ? "h-10 w-10 mx-auto justify-center"
-                              : "w-full gap-2.5 px-2.5 py-2 text-sm"
+                            ? "h-10 w-10 mx-auto justify-center"
+                            : "w-full gap-2.5 px-2.5 py-2 text-sm"
                             }`}
                         >
                           {isHovered && (
@@ -678,8 +678,8 @@ export default function DashboardShell({
                       <Link
                         href={item.href}
                         className={`relative flex items-center rounded-xl font-medium transition-colors cursor-pointer ${isCollapsed
-                            ? "h-10 w-10 mx-auto justify-center"
-                            : "w-full gap-2.5 px-2.5 py-2 text-sm"
+                          ? "h-10 w-10 mx-auto justify-center"
+                          : "w-full gap-2.5 px-2.5 py-2 text-sm"
                           } ${active
                             ? "text-white font-bold dark:text-white"
                             : "text-zinc-600 dark:text-zinc-400 dark:hover:text-white"
@@ -709,8 +709,8 @@ export default function DashboardShell({
                         )}
                         <item.icon
                           className={`shrink-0 relative z-10 ${active
-                              ? "text-white"
-                              : "text-zinc-500 group-hover:text-zinc-900 dark:text-zinc-400 dark:group-hover:text-white"
+                            ? "text-white"
+                            : "text-zinc-500 group-hover:text-zinc-900 dark:text-zinc-400 dark:group-hover:text-white"
                             } ${isCollapsed ? "h-4.5 w-4.5" : "h-4 w-4"}`}
                           aria-hidden="true"
                         />
@@ -720,8 +720,8 @@ export default function DashboardShell({
                             {item.badge && (
                               <span
                                 className={`text-[10px] font-bold px-1.5 py-0.5 rounded-md ${active
-                                    ? "bg-white/20 text-white"
-                                    : "bg-[#0066B2]/10 text-[#0066B2] dark:bg-[#38BDF8]/15 dark:text-[#38BDF8]"
+                                  ? "bg-white/20 text-white"
+                                  : "bg-[#0066B2]/10 text-[#0066B2] dark:bg-[#38BDF8]/15 dark:text-[#38BDF8]"
                                   }`}
                               >
                                 {item.badge}
@@ -960,8 +960,8 @@ export default function DashboardShell({
                   onClick={() => setShowProfileMenu(!showProfileMenu)}
                   title={isCollapsed ? `${displayAccount.name}` : undefined}
                   className={`flex items-center rounded-xl transition cursor-pointer hover:bg-[#E2F0FD] dark:hover:bg-white/5 ${isCollapsed
-                      ? "h-10 w-10 mx-auto justify-center p-0"
-                      : "w-full justify-between gap-2.5 p-2 text-left"
+                    ? "h-10 w-10 mx-auto justify-center p-0"
+                    : "w-full justify-between gap-2.5 p-2 text-left"
                     }`}
                 >
                   {displayAccount.avatar && !avatarError ? (
@@ -1080,8 +1080,8 @@ export default function DashboardShell({
                               <span>{item.label}</span>
                               {item.badge && (
                                 <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-md ${active
-                                    ? "bg-white/20 text-white"
-                                    : "bg-[#0066B2]/10 text-[#0066B2] dark:bg-[#38BDF8]/15 dark:text-[#38BDF8]"
+                                  ? "bg-white/20 text-white"
+                                  : "bg-[#0066B2]/10 text-[#0066B2] dark:bg-[#38BDF8]/15 dark:text-[#38BDF8]"
                                   }`}>
                                   {item.badge}
                                 </span>
@@ -1425,14 +1425,14 @@ export default function DashboardShell({
                       type="button"
                       onClick={() => setSelectedMagnetType("locked-pdf")}
                       className={`relative flex items-start gap-3 p-3 rounded-xl border text-left cursor-pointer transition-colors duration-75 ${selectedMagnetType === "locked-pdf"
-                          ? "border-amber-500/90 bg-amber-500/10 dark:bg-amber-500/10 dark:border-amber-500/70"
-                          : "border-zinc-200 dark:border-[#2e2e38] bg-zinc-50/70 dark:bg-[#121214] hover:border-zinc-300 dark:hover:border-[#3e3e4a]"
+                        ? "border-amber-500/90 bg-amber-500/10 dark:bg-amber-500/10 dark:border-amber-500/70"
+                        : "border-zinc-200 dark:border-[#2e2e38] bg-zinc-50/70 dark:bg-[#121214] hover:border-zinc-300 dark:hover:border-[#3e3e4a]"
                         }`}
                     >
                       <div
                         className={`p-2 rounded-lg shrink-0 ${selectedMagnetType === "locked-pdf"
-                            ? "bg-amber-600 text-white"
-                            : "bg-zinc-200 dark:bg-[#25252b] text-zinc-600 dark:text-zinc-400"
+                          ? "bg-amber-600 text-white"
+                          : "bg-zinc-200 dark:bg-[#25252b] text-zinc-600 dark:text-zinc-400"
                           }`}
                       >
                         <Lock className="h-4 w-4" />
@@ -1452,14 +1452,14 @@ export default function DashboardShell({
                       type="button"
                       onClick={() => setSelectedMagnetType("classic")}
                       className={`relative flex items-start gap-3 p-3 rounded-xl border text-left cursor-pointer transition-colors duration-75 ${selectedMagnetType === "classic"
-                          ? "border-emerald-600/90 bg-emerald-500/10 dark:bg-emerald-500/10 dark:border-emerald-500/70"
-                          : "border-zinc-200 dark:border-[#2e2e38] bg-zinc-50/70 dark:bg-[#121214] hover:border-zinc-300 dark:hover:border-[#3e3e4a]"
+                        ? "border-emerald-600/90 bg-emerald-500/10 dark:bg-emerald-500/10 dark:border-emerald-500/70"
+                        : "border-zinc-200 dark:border-[#2e2e38] bg-zinc-50/70 dark:bg-[#121214] hover:border-zinc-300 dark:hover:border-[#3e3e4a]"
                         }`}
                     >
                       <div
                         className={`p-2 rounded-lg shrink-0 ${selectedMagnetType === "classic"
-                            ? "bg-[#059669] text-white"
-                            : "bg-zinc-200 dark:bg-[#25252b] text-zinc-600 dark:text-zinc-400"
+                          ? "bg-[#059669] text-white"
+                          : "bg-zinc-200 dark:bg-[#25252b] text-zinc-600 dark:text-zinc-400"
                           }`}
                       >
                         <FileText className="h-4 w-4" />
@@ -1523,8 +1523,8 @@ export default function DashboardShell({
                     <button
                       type="submit"
                       className={`flex-[1.5] sm:flex-initial inline-flex items-center justify-center gap-1.5 rounded-xl px-5 py-2.5 text-xs font-bold text-white shadow-md active:scale-95 transition-all cursor-pointer ${selectedMagnetType === "locked-pdf"
-                          ? "bg-[#0066B2] hover:bg-[#005291] shadow-[0_4px_14px_rgba(0,102,178,0.3)]"
-                          : "bg-[#059669] hover:bg-[#047857] shadow-[0_4px_14px_rgba(5,150,105,0.3)]"
+                        ? "bg-[#0066B2] hover:bg-[#005291] shadow-[0_4px_14px_rgba(0,102,178,0.3)]"
+                        : "bg-[#059669] hover:bg-[#047857] shadow-[0_4px_14px_rgba(5,150,105,0.3)]"
                         }`}
                     >
                       {selectedMagnetType === "locked-pdf" ? (
@@ -1644,3 +1644,4 @@ export default function DashboardShell({
     </SidebarContext.Provider>
   );
 }
+

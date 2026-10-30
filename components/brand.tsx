@@ -6,7 +6,7 @@ export function MagnetIcon({ className = "h-7 w-auto" }: { className?: string })
       {/* Light mode magnet icon */}
       <Image
         alt="Funnels"
-        src="/brand/gemini-logo.png"
+        src="/brand/funnels-mark-light.png"
         width={160}
         height={160}
         loading="lazy"
@@ -15,7 +15,7 @@ export function MagnetIcon({ className = "h-7 w-auto" }: { className?: string })
       {/* Dark mode magnet icon */}
       <Image
         alt="Funnels"
-        src="/brand/gemini-logo-dark.png"
+        src="/brand/funnels-mark-dark.png"
         width={160}
         height={160}
         loading="lazy"
@@ -41,20 +41,20 @@ export default function BrandLogo({
         {/* Light mode mark */}
         <Image
           alt="Funnels"
-          src="/brand/gemini-logo.png"
+          src="/brand/funnels-mark-light.png"
           width={160}
           height={160}
           priority
-          className={`${height} w-auto object-contain dark:hidden`}
+          className={`${height || "h-7"} w-auto max-h-9 object-contain dark:hidden`}
         />
         {/* Dark mode mark */}
         <Image
           alt="Funnels"
-          src="/brand/gemini-logo-dark.png"
+          src="/brand/funnels-mark-dark.png"
           width={160}
           height={160}
           priority
-          className={`${height} w-auto object-contain hidden dark:block`}
+          className={`${height || "h-7"} w-auto max-h-9 object-contain hidden dark:block`}
         />
       </span>
     );
@@ -69,7 +69,7 @@ export default function BrandLogo({
         width={512}
         height={112}
         priority
-        className={`${height} w-auto object-contain dark:hidden`}
+        className={`${height || "h-7"} w-auto max-h-9 object-contain dark:hidden`}
       />
 
       {/* Dark mode logo — transparent background full logo */}
@@ -79,7 +79,7 @@ export default function BrandLogo({
         width={512}
         height={112}
         priority
-        className={`${height} w-auto object-contain hidden dark:block`}
+        className={`${height || "h-7"} w-auto max-h-9 object-contain hidden dark:block`}
       />
     </span>
   );
@@ -134,6 +134,9 @@ export function GeminiLogo({
     </span>
   );
 }
+
+
+
 
 
 
