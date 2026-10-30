@@ -153,7 +153,7 @@ export async function POST(req: NextRequest) {
           <a href="${appUrl}" target="_blank" style="text-decoration: none; display: inline-block;">
             <img 
               src="${logoUrl}" 
-              alt="LeadMagnets" 
+              alt="Funnels" 
               height="30" 
               style="height: 30px; width: auto; max-height: 34px; display: inline-block; border: 0; outline: none;" 
             />
@@ -223,3 +223,4 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Something went wrong. Please try again." }, { status: 500 });
   }
 }
+

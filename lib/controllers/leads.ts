@@ -612,7 +612,7 @@ export async function handleAddLead(data: any, req: Request, normEmail: string |
                 <tr>
                   <td align="left" style="font-family:'DM Sans','Helvetica Neue',Helvetica,Arial,sans-serif; font-size:19px; font-weight:700; color:#2a3138;">
                     <a href="${appUrl}" target="_blank" style="text-decoration:none; display:inline-block;">
-                      <img src="${logoUrl}" alt="LeadMagnets" height="26" style="height:26px; width:auto; max-height:30px; display:block; border:0; outline:none;" />
+                      <img src="${logoUrl}" alt="Funnels" height="26" style="height:26px; width:auto; max-height:30px; display:block; border:0; outline:none;" />
                     </a>
                   </td>
                   <td align="right" class="hide-mobile" style="font-family:'DM Sans','Helvetica Neue',Helvetica,Arial,sans-serif; font-size:10px; font-weight:600; letter-spacing:1px; color:#7b858c;">
@@ -1233,4 +1233,5 @@ export async function handleSaveLeadQuizAnswers(data: any, normEmail: string | n
 
   return NextResponse.json({ success: true });
 }
+
 

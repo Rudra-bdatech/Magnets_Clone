@@ -92,7 +92,7 @@ export async function sendInstantLeadAlert(payload: LeadAlertPayload): Promise<{
           <a href="${appUrl}" target="_blank" style="text-decoration:none;display:inline-block;">
             <img 
               src="${logoUrl}" 
-              alt="LeadMagnets" 
+              alt="Funnels" 
               height="28" 
               style="height:28px;width:auto;max-height:32px;display:block;margin:0 auto;border:0;outline:none;" 
             />
@@ -177,3 +177,4 @@ export async function sendInstantLeadAlert(payload: LeadAlertPayload): Promise<{
     (payload.senderEmail || ownerEmail).trim()
   );
 }
+

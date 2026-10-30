@@ -726,7 +726,7 @@ export async function handleSendResetEmail(data: any) {
           <a href="${cleanOrigin}" target="_blank" style="text-decoration: none; display: inline-block;">
             <img 
               src="${cleanOrigin}/brand/custom-logo-light.png" 
-              alt="LeadMagnets" 
+              alt="Funnels" 
               height="30" 
               style="height: 30px; width: auto; max-height: 34px; display: inline-block; border: 0; outline: none;" 
             />
@@ -945,7 +945,7 @@ async function issueEmailVerification(account: any): Promise<{ success: boolean;
           <a href="${origin}" target="_blank" style="text-decoration: none; display: inline-block;">
             <img 
               src="${origin}/brand/custom-logo-light.png" 
-              alt="LeadMagnets" 
+              alt="Funnels" 
               height="30" 
               style="height: 30px; width: auto; max-height: 34px; display: inline-block; border: 0; outline: none;" 
             />
@@ -1513,3 +1513,4 @@ export async function handleSaveLinkedInPostCampaign(data: any, authEmail: strin
   await account.save();
   return NextResponse.json({ success: true, message: "Post campaign updated." });
 }
+
