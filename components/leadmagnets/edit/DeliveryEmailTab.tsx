@@ -71,11 +71,11 @@ export default function DeliveryEmailTab({
   emailBody,
   setEmailBody,
   enableAiPersonalizedDeliverable = false,
-  setEnableAiPersonalizedDeliverable = () => {},
+  setEnableAiPersonalizedDeliverable = () => { },
   customPromptQuestion = "",
-  setCustomPromptQuestion = () => {},
+  setCustomPromptQuestion = () => { },
   customPromptPlaceholder = "",
-  setCustomPromptPlaceholder = () => {},
+  setCustomPromptPlaceholder = () => { },
   isLockedPdf = false,
   lockedPdfResources = [],
 }: DeliveryEmailTabProps) {
@@ -619,8 +619,8 @@ export default function DeliveryEmailTab({
           <button className={`flex items-center gap-2.5 rounded-xl px-4 py-2.5 text-xs font-bold shadow-md transition cursor-pointer ${(account?.themeMode || "light") === "dark" ? "bg-white/5 text-white border border-white/10 hover:bg-white/10" : "bg-white text-zinc-900 border border-zinc-200 hover:bg-zinc-50"}`}>
             <img
               key={(account?.themeMode || "light")}
-              src={(account?.themeMode || "light") === "dark" ? "/brand/gemini-logo-dark.png" : "/brand/gemini-logo.png"}
-              alt="LeadMagnets"
+              src={(account?.themeMode || "light") === "dark" ? "/brand/funnels-mark-dark.png" : "/brand/funnels-mark-light.png"}
+              alt="Funnels"
               className="h-5 w-5 object-contain shrink-0"
             />
             <span>Build yours free with LeadMagnets</span>
@@ -631,3 +631,4 @@ export default function DeliveryEmailTab({
     </div>
   );
 }
+
