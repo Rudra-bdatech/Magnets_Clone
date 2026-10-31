@@ -492,10 +492,19 @@ export default function DashboardShell({
       >
         <div className="dashboard-canvas flex min-h-screen relative w-full max-w-full">
 
+          {/* Desktop Fixed Sidebar Spacer (preserves layout flow width) */}
+          <motion.div
+            animate={{ width: isCollapsed ? 68 : 232 }}
+            transition={{ type: "spring", stiffness: 520, damping: 38, mass: 0.5 }}
+            className="hidden md:block shrink-0"
+            aria-hidden="true"
+          />
+
+          {/* Desktop Fixed Sidebar (anchored to viewport, immune to scroll position or body scroll lock shifts) */}
           <motion.aside
             animate={{ width: isCollapsed ? 68 : 232 }}
             transition={{ type: "spring", stiffness: 520, damping: 38, mass: 0.5 }}
-            className="shadow-sm hidden h-screen shrink-0 flex-col border-r border-[#E0EDFB] bg-[#F0F7FF] text-zinc-900 sticky top-0 md:flex z-50 dark:border-white/[0.08] dark:bg-[#171717] dark:text-zinc-400 overflow-visible select-none"
+            className="shadow-sm hidden h-screen shrink-0 flex-col border-r border-[#E0EDFB] bg-[#F0F7FF] text-zinc-900 fixed left-0 top-0 bottom-0 md:flex z-40 dark:border-white/[0.08] dark:bg-[#171717] dark:text-zinc-400 overflow-visible select-none"
           >
             {/* Header & Logo Area */}
             <div className={`flex shrink-0 items-center ${isCollapsed ? "justify-center px-2" : "justify-between px-3.5"} pt-3.5 pb-2 h-16 relative`}>

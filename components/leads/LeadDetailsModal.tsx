@@ -206,7 +206,7 @@ export const LeadDetailsModal = memo(function LeadDetailsModal({
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: isMobile ? 0.22 : 0.16, ease: "easeOut" }}
-      className="fixed inset-0 z-50 flex flex-col justify-end sm:justify-center sm:items-center bg-black/55 backdrop-blur-sm p-0 sm:p-4 overflow-hidden"
+      className="fixed inset-0 z-[100] flex flex-col justify-end sm:justify-center sm:items-center bg-black/55 backdrop-blur-sm p-0 sm:p-4 overflow-hidden"
       onWheel={(e) => e.stopPropagation()}
       onTouchMove={(e) => e.stopPropagation()}
       onClick={onClose}

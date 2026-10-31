@@ -40,8 +40,6 @@ interface MobileAssetCardProps {
     bg: string;
     tagBg?: string;
     ext?: string;
-    watermarkIcon?: React.ReactNode;
-    watermarkColor?: string;
   };
   linkedPages: MagnetPage[];
   isSelected: boolean;

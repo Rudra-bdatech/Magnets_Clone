@@ -598,8 +598,6 @@ export default function ResourcesPage() {
           bg: "bg-emerald-500/[0.08] dark:bg-emerald-500/10 border-emerald-500/20 dark:border-emerald-500/20 shadow-2xs backdrop-blur-md",
           tagBg: "bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-300 border-emerald-500/20",
           ext: ext.toUpperCase(),
-          watermarkIcon: <ImageIcon className="h-20 w-20 sm:h-24 sm:w-24 -rotate-12 stroke-[1.25]" />,
-          watermarkColor: "text-emerald-500/[0.07] dark:text-emerald-400/[0.08] group-hover:text-emerald-500/20 dark:group-hover:text-emerald-400/25",
         };
       case "media":
         return {
@@ -607,8 +605,6 @@ export default function ResourcesPage() {
           bg: "bg-purple-500/[0.08] dark:bg-purple-500/10 border-purple-500/20 dark:border-purple-500/20 shadow-2xs backdrop-blur-md",
           tagBg: "bg-purple-500/10 text-purple-600 dark:bg-purple-500/20 dark:text-purple-300 border-purple-500/20",
           ext: ext.toUpperCase(),
-          watermarkIcon: <Film className="h-20 w-20 sm:h-24 sm:w-24 -rotate-12 stroke-[1.25]" />,
-          watermarkColor: "text-purple-500/[0.07] dark:text-purple-400/[0.08] group-hover:text-purple-500/20 dark:group-hover:text-purple-400/25",
         };
       case "archives":
         return {
@@ -616,8 +612,6 @@ export default function ResourcesPage() {
           bg: "bg-amber-500/[0.08] dark:bg-amber-500/10 border-amber-500/20 dark:border-amber-500/20 shadow-2xs backdrop-blur-md",
           tagBg: "bg-amber-500/10 text-amber-600 dark:bg-amber-500/20 dark:text-amber-300 border-amber-500/20",
           ext: ext.toUpperCase(),
-          watermarkIcon: <Archive className="h-20 w-20 sm:h-24 sm:w-24 -rotate-12 stroke-[1.25]" />,
-          watermarkColor: "text-amber-500/[0.07] dark:text-amber-400/[0.08] group-hover:text-amber-500/20 dark:group-hover:text-amber-400/25",
         };
       default:
         if (ext === "pdf") {
@@ -626,8 +620,6 @@ export default function ResourcesPage() {
             bg: brandBg,
             tagBg: brandTag,
             ext: "PDF",
-            watermarkIcon: <FileText className="h-20 w-20 sm:h-24 sm:w-24 -rotate-12 stroke-[1.25]" />,
-            watermarkColor: "text-[#0066B2]/[0.07] dark:text-[#38BDF8]/[0.08] group-hover:text-[#0066B2]/20 dark:group-hover:text-[#38BDF8]/25",
           };
         }
         return {
@@ -635,8 +627,6 @@ export default function ResourcesPage() {
           bg: brandBg,
           tagBg: brandTag,
           ext: ext.toUpperCase(),
-          watermarkIcon: <FileCode className="h-20 w-20 sm:h-24 sm:w-24 -rotate-12 stroke-[1.25]" />,
-          watermarkColor: "text-[#0066B2]/[0.07] dark:text-[#38BDF8]/[0.08] group-hover:text-[#0066B2]/20 dark:group-hover:text-[#38BDF8]/25",
         };
     }
   }, [getFileCategory]);
@@ -1425,17 +1415,9 @@ export default function ResourcesPage() {
                                   {resource.uploadedAt}
                                 </td>
 
-                                <td className="relative overflow-hidden whitespace-nowrap px-6 py-4 text-right">
-                                  {/* Background Watermark Icon at the end of the row */}
-                                  {badge.watermarkIcon && (
-                                    <div
-                                      className={`pointer-events-none absolute -right-2.5 -bottom-4 ${badge.watermarkColor} transition-all duration-500 group-hover:scale-110 group-hover:-rotate-6 select-none`}
-                                    >
-                                      {badge.watermarkIcon}
-                                    </div>
-                                  )}
+                                <td className="whitespace-nowrap px-6 py-4 text-right">
 
-                                  <div className="relative z-10 flex items-center justify-end gap-1.5">
+                                  <div className="flex items-center justify-end gap-1.5">
                                     {/* Test File: opens the in-page PDF viewer */}
                                     <button
                                       type="button"
