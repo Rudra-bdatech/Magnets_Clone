@@ -83,7 +83,7 @@ Based on your input (*"${leadInput}"*), your primary lever for growth is optimiz
 > *"Success with ${topic} comes down to fast execution on your specific bottleneck: ${leadInput}."*
 
 ---
-*Generated exclusively for ${lead} by LeadMagnets Smart AI Engine.*
+*Generated exclusively for ${lead} by Funnels Smart AI Engine.*
 `;
 
     return NextResponse.json({

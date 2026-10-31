@@ -94,7 +94,7 @@ export async function GET(req: NextRequest) {
                 opacity: 0.8,
               }}
             >
-              ⚡ LeadMagnets
+              ⚡ Funnels
             </div>
           </div>
 

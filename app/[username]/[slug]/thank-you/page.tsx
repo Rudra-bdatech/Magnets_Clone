@@ -156,7 +156,7 @@ export default async function ThankYouPage({
   const themeMode = (accountDoc?.themeMode as "light" | "dark") || "light";
   const brandColor = accountDoc?.brandColor || "#0066B2";
   const logo = accountDoc?.logo || null;
-  const businessName = accountDoc?.brandName || accountDoc?.name || "LeadMagnets";
+  const businessName = accountDoc?.brandName || accountDoc?.name || "Funnels";
 
   const subscriberEmail = searchParams.email ? decodeURIComponent(searchParams.email) : "";
   const subscriberName = searchParams.name ? decodeURIComponent(searchParams.name) : "";
@@ -220,7 +220,7 @@ export default async function ThankYouPage({
       {/* Footer */}
       <footer className="mx-auto pb-3 text-center text-[10px] text-[#5c5650] shrink-0">
         <a href="/" className="inline-flex items-center gap-1 font-medium hover:text-[#FE6F34]">
-          Powered by LeadMagnets
+          Powered by Funnels
         </a>
       </footer>
     </main>

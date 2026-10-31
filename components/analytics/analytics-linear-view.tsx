@@ -165,7 +165,7 @@ export default function AnalyticsLinearView({
 
   // Production-Grade Formatted Excel Spreadsheet Export Handler
   const exportToCSV = () => {
-    const reportTitle = isPerMagnet ? page?.name || "Lead Magnet" : account?.name || "LeadMagnets Account";
+    const reportTitle = isPerMagnet ? page?.name || "Lead Magnet" : account?.name || "Funnels Account";
 
     const escapeXml = (str: string) =>
       String(str || "")

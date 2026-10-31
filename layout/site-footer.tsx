@@ -55,7 +55,7 @@ export default function SiteFooter() {
         </div>
 
         <div className="mt-12 flex flex-row items-center justify-between border-t border-zinc-200/80 dark:border-zinc-800/80 py-5 text-xs">
-          <span>© {new Date().getFullYear()} LeadMagnets</span>
+          <span>© {new Date().getFullYear()} Funnels</span>
           <span>magnets.bdatech.in</span>
         </div>
       </div>
@@ -63,10 +63,10 @@ export default function SiteFooter() {
       {/* Oversized wordmark, cropped by the page edge */}
       <p
         aria-hidden="true"
-        className="pointer-events-none select-none whitespace-nowrap text-center font-extrabold leading-[0.8] tracking-[-0.06em] text-[17vw] -mb-[3vw] text-transparent [-webkit-text-stroke:1px_rgba(0,102,178,0.28)] dark:[-webkit-text-stroke:1px_rgba(56,189,248,0.2)]"
+        className="pointer-events-none select-none whitespace-nowrap text-center font-extrabold leading-[0.8] tracking-[-0.06em] text-[28vw] sm:text-[28.3vw] -mb-[4.5vw] sm:-mb-[5vw] text-transparent [-webkit-text-stroke:1px_rgba(0,102,178,0.28)] dark:[-webkit-text-stroke:1px_rgba(56,189,248,0.2)]"
         style={{ paintOrder: "stroke fill", WebkitTextFillColor: "transparent", color: "rgba(0,102,178,0.28)" }}
       >
-        LeadMagnets
+        Funnels
       </p>
     </footer>
   );

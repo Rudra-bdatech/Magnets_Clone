@@ -459,7 +459,7 @@ export default function PublicProfileView({
               href="https://magnets.bdatech.in"
               className="font-semibold text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white transition"
             >
-              LeadMagnets
+              Funnels
             </Link>
           </p>
         </footer>

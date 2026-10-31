@@ -95,7 +95,7 @@ export default function Pricing() {
             <Feature>Upload & host locked PDFs</Feature>
             <Feature>Lead capture & email delivery</Feature>
             <Feature>AI page generator</Feature>
-            <Feature>Hosted on yourname.leadmagnets.app</Feature>
+            <Feature>Hosted on yourname.funnels.app</Feature>
           </ul>
           <Link
             href="/register"
@@ -123,7 +123,7 @@ export default function Pricing() {
             <Feature dark>All landing pages served under your domain</Feature>
             <Feature dark>All locked PDF web pages served under your domain</Feature>
             <Feature dark>Automatic SSL certificate & DNS routing</Feature>
-            <Feature dark>100% white-label (no LeadMagnets branding)</Feature>
+            <Feature dark>100% white-label (no Funnels branding)</Feature>
           </ul>
           <Link
             href="/register"

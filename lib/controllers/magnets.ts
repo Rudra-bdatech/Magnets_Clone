@@ -297,7 +297,7 @@ export async function handleSendTestSequenceEmail(data: any, normEmail: string |
   const appUrl = (process.env.NEXTAUTH_URL || "https://leadmagnets.app").replace(/\/+$/, "");
   const logoUrl = `${appUrl}/brand/custom-logo-light.png`;
 
-  let senderName = "LeadMagnets";
+  let senderName = "Funnels";
   if (normEmail) {
     try {
       const acc = await AccountModel.findOne({ email: normEmail }).lean();
@@ -422,7 +422,7 @@ export async function handleSendTestSequenceEmail(data: any, normEmail: string |
               <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
                 <tr>
                   <td style="font-family:'DM Sans','Helvetica Neue',Helvetica,Arial,sans-serif; font-size:11px; color:#7b858c; line-height:1.5;">
-                    <p style="margin:0 0 6px 0;">This test preview was sent from your LeadMagnets sequence builder.</p>
+                    <p style="margin:0 0 6px 0;">This test preview was sent from your Funnels sequence builder.</p>
                   </td>
                 </tr>
               </table>

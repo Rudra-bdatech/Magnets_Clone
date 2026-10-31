@@ -532,7 +532,7 @@ export const DomainSection = memo(function DomainSection({
                     Connect your custom domain (e.g. get.yourbrand.com)
                   </p>
                   <p className="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed">
-                    Upgrade to the Pro plan to publish lead magnets on your branded subdomain with automated SSL certificates, high-speed CNAME routing, and zero LeadMagnets branding.
+                    Upgrade to the Pro plan to publish lead magnets on your branded subdomain with automated SSL certificates, high-speed CNAME routing, and zero Funnels branding.
                   </p>
                 </div>
               </div>

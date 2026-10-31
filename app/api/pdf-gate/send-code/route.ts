@@ -194,7 +194,7 @@ export async function POST(req: NextRequest) {
       <tr>
         <td style="padding-top: 24px; text-align: center;">
           <div style="font-size: 12px; color: #94a3b8; line-height: 1.5;">
-            Powered by <strong style="color: #64748b; font-weight: 600;">LeadMagnets</strong> · Secure Access
+            Powered by <strong style="color: #64748b; font-weight: 600;">Funnels</strong> · Secure Access
           </div>
         </td>
       </tr>

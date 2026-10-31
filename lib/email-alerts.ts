@@ -65,7 +65,7 @@ export async function sendInstantLeadAlert(payload: LeadAlertPayload): Promise<{
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="x-apple-disable-message-reformatting">
   <meta name="format-detection" content="telephone=no,date=no,address=no,email=no,url=no">
-  <title>LeadMagnets — New lead received</title>
+  <title>Funnels — New lead received</title>
   <!--[if mso]><xml><o:OfficeDocumentSettings><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml><![endif]-->
   <style>
     body, table, td, a { -webkit-text-size-adjust:100%; -ms-text-size-adjust:100%; }
@@ -154,12 +154,12 @@ export async function sendInstantLeadAlert(payload: LeadAlertPayload): Promise<{
             ${automationStatusHtml}
             <tr><td class="content-pad" style="text-align:left;padding:28px 40px 24px;">
               <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="width:100%;">
-                <tr><td style="text-align:left;border-top:1px solid #e2e7ee;padding-top:20px;font-size:11px;line-height:18px;color:#7c8798;text-align:center;">You’re receiving this email because new lead notifications<br>are enabled for your LeadMagnets account.<br><a href="${appUrl}/dashboard/settings" style="display:inline-block;margin-top:8px;color:#647185;text-decoration:underline;">Manage notifications</a><span style="color:#b3bdca;"> &nbsp;&middot;&nbsp; </span><a href="${appUrl}/dashboard/settings" style="color:#647185;text-decoration:underline;">Unsubscribe</a></td></tr>
+                <tr><td style="text-align:left;border-top:1px solid #e2e7ee;padding-top:20px;font-size:11px;line-height:18px;color:#7c8798;text-align:center;">You’re receiving this email because new lead notifications<br>are enabled for your Funnels account.<br><a href="${appUrl}/dashboard/settings" style="display:inline-block;margin-top:8px;color:#647185;text-decoration:underline;">Manage notifications</a><span style="color:#b3bdca;"> &nbsp;&middot;&nbsp; </span><a href="${appUrl}/dashboard/settings" style="color:#647185;text-decoration:underline;">Unsubscribe</a></td></tr>
               </table>
             </td></tr>
           </table>
         </td></tr>
-        <tr><td align="center" style="text-align:center;padding-top:22px;font-size:11px;line-height:18px;color:#7c8798;">LeadMagnets<span style="color:#b3bdca;"> &nbsp;/&nbsp; </span> Account notifications</td></tr>
+        <tr><td align="center" style="text-align:center;padding-top:22px;font-size:11px;line-height:18px;color:#7c8798;">Funnels<span style="color:#b3bdca;"> &nbsp;/&nbsp; </span> Account notifications</td></tr>
       </table>
       <!--[if mso]></td></tr></table><![endif]-->
     </td></tr>

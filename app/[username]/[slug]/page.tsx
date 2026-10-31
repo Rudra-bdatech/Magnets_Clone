@@ -53,7 +53,7 @@ export async function generateMetadata({
 
   if (!pageDoc) {
     return {
-      title: "Lead Magnet Not Found | LeadMagnets",
+      title: "Lead Magnet Not Found | Funnels",
       description: "The requested lead magnet page could not be found.",
     };
   }
@@ -84,7 +84,7 @@ export async function generateMetadata({
       url: canonicalUrl,
       title: title,
       description: description,
-      siteName: `${authorName} · LeadMagnets`,
+      siteName: `${authorName} · Funnels`,
       images: [
         {
           url: ogImageUrl,
@@ -3251,7 +3251,7 @@ export default async function MagnetPageRoute({
               )}
               <div className="flex items-center gap-1">
                 <a href="https://magnets.bdatech.in" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 font-medium hover:text-[#FE6F34] transition">
-                  Powered by LeadMagnets <MoveRightIcon className="h-2 w-2" />
+                  Powered by Funnels <MoveRightIcon className="h-2 w-2" />
                 </a>
               </div>
             </>

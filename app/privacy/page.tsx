@@ -3,7 +3,7 @@ import { LegalFooter, LegalHeader } from "@/layout/legal";
 
 export const metadata: Metadata = {
   title: "Privacy Policy",
-  description: "LeadMagnets Privacy Policy.",
+  description: "Funnels Privacy Policy.",
   robots: { index: true, follow: true },
   alternates: { canonical: "https://magnets.bdatech.in/privacy" },
 };
@@ -18,16 +18,16 @@ export default function PrivacyPage() {
         <p className="mt-2 text-sm font-medium text-zinc-500 dark:text-[#9B9085]">Effective October 14, 2026</p>
         <article className="mt-10 space-y-8 text-[15px] leading-7 text-zinc-800 dark:text-zinc-300">
           <p className="text-zinc-800 dark:text-zinc-200 font-normal">
-            This Policy explains how LeadMagnets handles personal data when you use our service. It applies to LeadMagnets account holders
-            and to people who submit a form on a page created with LeadMagnets.
+            This Policy explains how Funnels handles personal data when you use our service. It applies to Funnels account holders
+            and to people who submit a form on a page created with Funnels.
           </p>
           <LegalSection title="1. The short version">
             <ul className="list-disc space-y-2 pl-5 text-zinc-700 dark:text-zinc-300">
               <li>We collect the information needed to host pages, deliver emails, run selected integrations, and keep the service secure.</li>
               <li>We do not sell personal data, use it for advertising, or use it to train AI models.</li>
               <li>Signup data belongs to the account holder whose page collected it.</li>
-              <li>Secrets such as API keys and webhook URLs are encrypted at rest when stored by LeadMagnets.</li>
-              <li>Custom domains and custom sender domains are optional. A page can be hosted and sent from LeadMagnets by default.</li>
+              <li>Secrets such as API keys and webhook URLs are encrypted at rest when stored by Funnels.</li>
+              <li>Custom domains and custom sender domains are optional. A page can be hosted and sent from Funnels by default.</li>
               <li>
                 If you connect Gmail, we only use it to send the emails you set up. We never read your inbox, and our use of Google
                 user data follows the Google API Services User Data Policy, including its Limited Use requirements.
@@ -37,8 +37,8 @@ export default function PrivacyPage() {
 
           <LegalSection title="2. Your role and our role">
             <p>
-              For account data, LeadMagnets is the controller. For signup data collected through a page created by an account holder,
-              the account holder is normally the controller and LeadMagnets acts as a processor on that account holder&apos;s behalf.
+              For account data, Funnels is the controller. For signup data collected through a page created by an account holder,
+              the account holder is normally the controller and Funnels acts as a processor on that account holder&apos;s behalf.
               The account holder is responsible for their privacy notice, lawful basis, permissions, and the content of messages
               they send to their audience.
             </p>
@@ -48,7 +48,7 @@ export default function PrivacyPage() {
             <p>When you create or use an account, we may process:</p>
             <ul className="list-disc space-y-2 pl-5 text-zinc-700 dark:text-zinc-300">
               <li>Your name, email address, authentication details, and account timestamps. Passwords are stored as hashes, not plaintext.</li>
-              <li>Your chosen LeadMagnets username, custom-domain settings, brand settings, sender settings, and page configuration.</li>
+              <li>Your chosen Funnels username, custom-domain settings, brand settings, sender settings, and page configuration.</li>
               <li>The copy, images, resource links, email content, and follow-up sequences you create.</li>
               <li>
                 Integration settings and credentials you choose to add, including email, newsletter, calendar, Slack, Pipedrive, and
@@ -67,7 +67,7 @@ export default function PrivacyPage() {
 
           <LegalSection title="4. Information collected from page visitors and subscribers">
             <p>
-              When a person submits a LeadMagnets form, we process the name and email address they provide, the page they signed up on,
+              When a person submits a Funnels form, we process the name and email address they provide, the page they signed up on,
               and the submission time. When a follow-up sequence is enabled, we also keep the information needed to track whether
               that sequence is active, completed, stopped, or failed for that email address.
             </p>
@@ -78,7 +78,7 @@ export default function PrivacyPage() {
               provide aggregate performance reporting to the account holder.
             </p>
             <p>
-              Forms can appear on a LeadMagnets-hosted URL or an account holder&apos;s custom domain. The host does not change which
+              Forms can appear on a Funnels-hosted URL or an account holder&apos;s custom domain. The host does not change which
               account owns the signup data.
             </p>
           </LegalSection>
@@ -104,7 +104,7 @@ export default function PrivacyPage() {
 
           <LegalSection title="6. Email delivery and integrations">
             <p>
-              LeadMagnets can deliver resource emails and follow-up sequences in one of three ways: from a LeadMagnets-managed
+              Funnels can deliver resource emails and follow-up sequences in one of three ways: from a Funnels-managed
               sender address, through an SMTP server whose credentials the account holder provides, or from the account holder&apos;s
               own Gmail address if they connect their Google account (see section 7). SMTP passwords and Google tokens are encrypted
               at rest.
@@ -119,7 +119,7 @@ export default function PrivacyPage() {
           <LegalSection title="7. Google user data (Gmail)">
             <p>
               Account holders can choose to connect a Gmail or Google Workspace account so that emails are sent from their own address.
-              Connecting is optional. When you connect, Google asks you to grant LeadMagnets the following permissions:
+              Connecting is optional. When you connect, Google asks you to grant Funnels the following permissions:
             </p>
             <ul className="list-disc space-y-2 pl-5 text-zinc-700 dark:text-zinc-300">
               <li>
@@ -134,7 +134,7 @@ export default function PrivacyPage() {
             <p>
               <strong className="text-zinc-900 dark:text-white">What we do not do.</strong> We cannot and do not read, search, download, modify, or delete the emails in
               your mailbox, and we do not access your contacts, calendar, or files. We only send the messages that you have set up in
-              LeadMagnets.
+              Funnels.
             </p>
             <p>
               <strong className="text-zinc-900 dark:text-white">How it is stored.</strong> The access and refresh tokens Google issues to us are encrypted at rest with
@@ -149,7 +149,7 @@ export default function PrivacyPage() {
               explicit permission for a specific message, it is necessary for security or abuse investigation, or it is required by law.
             </p>
             <p>
-              <strong className="text-zinc-900 dark:text-white">Limited Use.</strong> LeadMagnets&apos; use and transfer to any other app of information received from
+              <strong className="text-zinc-900 dark:text-white">Limited Use.</strong> Funnels&apos; use and transfer to any other app of information received from
               Google APIs will adhere to the{" "}
               <a className="text-[#0066B2] dark:text-[#38BDF8] font-semibold underline-offset-4 hover:underline" href="https://developers.google.com/terms/api-services-user-data-policy" target="_blank" rel="noopener noreferrer">
                 Google API Services User Data Policy
@@ -158,7 +158,7 @@ export default function PrivacyPage() {
             </p>
             <p>
               <strong className="text-zinc-900 dark:text-white">Disconnecting.</strong> You can disconnect Gmail at any time in Settings &rarr; Email &amp; Gmail Sync.
-              When you disconnect, we revoke our access with Google and delete the stored tokens. Deleting your LeadMagnets account also
+              When you disconnect, we revoke our access with Google and delete the stored tokens. Deleting your Funnels account also
               deletes them. You can also remove access from your{" "}
               <a className="text-[#0066B2] dark:text-[#38BDF8] font-semibold underline-offset-4 hover:underline" href="https://myaccount.google.com/permissions" target="_blank" rel="noopener noreferrer">
                 Google Account permissions page
@@ -168,11 +168,11 @@ export default function PrivacyPage() {
           </LegalSection>
 
           <LegalSection title="8. Service providers and disclosures">
-            <p>We use service providers to operate LeadMagnets. Depending on which features are used, these include:</p>
+            <p>We use service providers to operate Funnels. Depending on which features are used, these include:</p>
             <ul className="list-disc space-y-2 pl-5 text-zinc-700 dark:text-zinc-300">
               <li><strong className="text-zinc-900 dark:text-white">Vercel</strong> for application hosting, content delivery, and file storage.</li>
               <li><strong className="text-zinc-900 dark:text-white">MongoDB</strong> for the hosted application database.</li>
-              <li><strong className="text-zinc-900 dark:text-white">SocketLabs</strong> for email delivery from LeadMagnets-managed sender addresses.</li>
+              <li><strong className="text-zinc-900 dark:text-white">SocketLabs</strong> for email delivery from Funnels-managed sender addresses.</li>
               <li><strong className="text-zinc-900 dark:text-white">Google</strong> for sign-in with Google and, when an account holder connects Gmail, sending email through the Gmail API.</li>
               <li>
                 <strong className="text-zinc-900 dark:text-white">Substack, Kit, Slack, Pipedrive, and Zapier</strong> when an account holder
@@ -180,7 +180,7 @@ export default function PrivacyPage() {
               </li>
             </ul>
             <p>
-              We may also disclose information where required by law, to protect the rights and safety of LeadMagnets and others, or in
+              We may also disclose information where required by law, to protect the rights and safety of Funnels and others, or in
               connection with a reorganisation, merger, or sale of the service.
             </p>
           </LegalSection>
@@ -188,7 +188,7 @@ export default function PrivacyPage() {
           <LegalSection title="9. Retention and deletion">
             <p>
               We retain account data while an account is active. Deleting an account removes the active account record and its
-              associated LeadMagnets pages, signup records, and follow-up records from our application database. Copies may remain in
+              associated Funnels pages, signup records, and follow-up records from our application database. Copies may remain in
               provider backups for a limited period under their normal backup-retention processes. We may retain limited information
               where necessary for legal obligations, security, dispute resolution, or enforcement.
             </p>
@@ -221,21 +221,21 @@ export default function PrivacyPage() {
 
           <LegalSection title="12. International transfers">
             <p>
-              LeadMagnets and our providers may process information in countries other than your own, including the United States. Where
+              Funnels and our providers may process information in countries other than your own, including the United States. Where
               required, we rely on appropriate safeguards for international transfers.
             </p>
           </LegalSection>
 
           <LegalSection title="13. Children">
             <p>
-              LeadMagnets is not intended for children under 16, and we do not knowingly collect personal information from children
+              Funnels is not intended for children under 16, and we do not knowingly collect personal information from children
               under 16. Contact us if you believe this has happened.
             </p>
           </LegalSection>
 
           <LegalSection title="14. Changes and contact">
             <p>
-              We may update this Policy as LeadMagnets changes. For material changes, we will provide reasonable notice before they take
+              We may update this Policy as Funnels changes. For material changes, we will provide reasonable notice before they take
               effect. Questions can be sent to{" "}
               <a className="text-[#0066B2] dark:text-[#38BDF8] font-semibold underline-offset-4 hover:underline" href="mailto:info@bdatechnologies.com">
                 info@bdatechnologies.com

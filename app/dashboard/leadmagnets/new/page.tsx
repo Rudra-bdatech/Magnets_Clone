@@ -150,7 +150,7 @@ export default function NewPage() {
             />
           </label>
           <div>
-            <FieldLabel>Your LeadMagnets URL</FieldLabel>
+            <FieldLabel>Your Funnels URL</FieldLabel>
             <div className="flex h-9 items-center gap-1 overflow-hidden rounded-md border border-ink-200 bg-ink-50 px-3 text-sm text-ink-700 dark:border-ink-700 dark:bg-ink-950 dark:text-ink-300">
               <span className="text-ink-500 dark:text-ink-400">leadmagnets.so/{account?.username || ""}/</span>
               <span className="truncate font-medium">{slug}</span>

@@ -170,7 +170,7 @@ export default function DeliveryEmailTab({
 
             <div className="flex items-center gap-3">
               <span className="text-xs text-zinc-400 font-mono">
-                LeadMagnets &lt;hello@mail.leadmagnets.so&gt;
+                Funnels &lt;hello@mail.funnels.so&gt;
               </span>
               <button
                 type="button"
@@ -623,7 +623,7 @@ export default function DeliveryEmailTab({
               alt="Funnels"
               className="h-5 w-5 object-contain shrink-0"
             />
-            <span>Build yours free with LeadMagnets</span>
+            <span>Build yours free with Funnels</span>
           </button>
         </div>
 

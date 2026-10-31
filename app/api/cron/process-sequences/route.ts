@@ -381,7 +381,7 @@ export async function GET(req: NextRequest) {
           stepBody: nextEmail.body,
           leadName: String(lead.name || "").trim() || "there",
           leadEmail: recipient,
-          senderName: ownerAccount?.senderDisplayName || ownerAccount?.name || "LeadMagnets",
+          senderName: ownerAccount?.senderDisplayName || ownerAccount?.name || "Funnels",
         });
 
         const sendResult = await sendMail(
@@ -697,7 +697,7 @@ function renderSequenceEmail(input: {
                 You&rsquo;re receiving this email because you subscribed to <strong>${safePageName}</strong>.
               </p>
               <p style="margin:8px 0 0 0; font-size:11px; color:#7b858c;">
-                Powered by <a href="${appUrl}" target="_blank" style="color:#2a3138; font-weight:500; text-decoration:none;">LeadMagnets</a>
+                Powered by <a href="${appUrl}" target="_blank" style="color:#2a3138; font-weight:500; text-decoration:none;">Funnels</a>
               </p>
             </td>
           </tr>

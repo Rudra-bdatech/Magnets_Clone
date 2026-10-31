@@ -127,8 +127,8 @@ export async function generateMetadata({ searchParams }: DomainPageProps): Promi
   const account: any = await resolveAccountForHost(host);
   if (!account || !account.username) {
     return {
-      title: "Domain Setup Required | LeadMagnets",
-      description: "This custom domain is routed to LeadMagnets but has not completed workspace setup.",
+      title: "Domain Setup Required | Funnels",
+      description: "This custom domain is routed to Funnels but has not completed workspace setup.",
     };
   }
 
@@ -144,7 +144,7 @@ export async function generateMetadata({ searchParams }: DomainPageProps): Promi
     }
   }
 
-  const title = account.name ? `${account.name} | Official Resources` : `@${account.username} · LeadMagnets`;
+  const title = account.name ? `${account.name} | Official Resources` : `@${account.username} · Funnels`;
   const description = account.bio || `Explore free resources and lead magnets published by ${account.name || account.username}.`;
   const favicon = account.faviconUrl || undefined;
 
@@ -186,14 +186,14 @@ export default async function CustomDomainResolverPage({ searchParams }: DomainP
               Domain Setup Incomplete
             </h1>
             <p className="text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed">
-              Traffic for <code className="font-mono text-zinc-800 dark:text-zinc-200 bg-zinc-100 dark:bg-zinc-800 px-1.5 py-0.5 rounded text-[11px] font-bold">{cleanHost || "this domain"}</code> has reached our servers, but this domain is not currently connected to an active LeadMagnets workspace.
+              Traffic for <code className="font-mono text-zinc-800 dark:text-zinc-200 bg-zinc-100 dark:bg-zinc-800 px-1.5 py-0.5 rounded text-[11px] font-bold">{cleanHost || "this domain"}</code> has reached our servers, but this domain is not currently connected to an active Funnels workspace.
             </p>
           </div>
 
           <div className="rounded-2xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200/60 dark:border-zinc-700/50 p-4 text-left space-y-2 text-xs text-zinc-600 dark:text-zinc-300">
             <p className="font-semibold text-zinc-900 dark:text-white">Are you the domain owner?</p>
             <ol className="list-decimal list-inside space-y-1 text-[11px] text-zinc-500 dark:text-zinc-400">
-              <li>Log in to your LeadMagnets dashboard.</li>
+              <li>Log in to your Funnels dashboard.</li>
               <li>Go to <strong>Workspace Setup &rarr; Custom Domain</strong>.</li>
               <li>Complete both <strong>Step 1 (TXT)</strong> and <strong>Step 2 (CNAME)</strong> verification.</li>
             </ol>

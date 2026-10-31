@@ -330,7 +330,7 @@ export default function LandingPageTab({
                   </h4>
                 </div>
                 <p className={`text-xs mt-2 ${(account?.themeMode || "light") === "dark" ? "text-zinc-400" : "text-zinc-500"}`}>
-                  LeadMagnets splits new visitors evenly and keeps each person on the same version for an accurate result.
+                  Funnels splits new visitors evenly and keeps each person on the same version for an accurate result.
                 </p>
               </div>
 

@@ -115,7 +115,7 @@ export default function EmailPreviewModal({
         <div className={`border-b px-6 py-3 space-y-2 text-xs shrink-0 ${isDark ? "border-[#27272A] bg-[#18181B]" : "border-zinc-100 bg-zinc-50/50"}`}>
           <div className="flex items-center gap-2">
             <span className="font-bold text-zinc-400 w-16">From:</span>
-            <span className="font-medium">{account?.senderDisplayName || account?.name || "LeadMagnets"} &lt;{account?.senderAddress || "non-reply@bdatech.in"}&gt;</span>
+            <span className="font-medium">{account?.senderDisplayName || account?.name || "Funnels"} &lt;{account?.senderAddress || "non-reply@bdatech.in"}&gt;</span>
           </div>
           <div className="flex items-center gap-2">
             <span className="font-bold text-zinc-400 w-16">To:</span>
@@ -177,7 +177,7 @@ export default function EmailPreviewModal({
 
               <hr className={isDark ? "border-zinc-800" : "border-zinc-200"} />
               <p className="text-[11px] text-zinc-400 text-center">
-                Delivered by <strong>{account?.senderDisplayName || account?.name || "LeadMagnets"}</strong> · Instant Resource Delivery
+                Delivered by <strong>{account?.senderDisplayName || account?.name || "Funnels"}</strong> · Instant Resource Delivery
               </p>
             </div>
           </div>

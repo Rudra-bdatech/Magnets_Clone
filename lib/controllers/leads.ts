@@ -498,7 +498,7 @@ export async function handleAddLead(data: any, req: Request, normEmail: string |
             : `Hey {name},\n\nThank you for requesting ${safePageTitle}! Click the link below to access your resource:\n\n${resourceAccessUrl}\n\nEnjoy!`;
 
           const brandColor = ownerAccount?.brandColor || "#0066B2";
-          const senderName = ownerAccount?.senderDisplayName || ownerAccount?.name || "LeadMagnets";
+          const senderName = ownerAccount?.senderDisplayName || ownerAccount?.name || "Funnels";
           const logoUrl = `${appUrl}/brand/custom-logo-light.png`;
 
           // Replace dynamic tags ({name}, {email}) safely with HTML escaping
@@ -758,7 +758,7 @@ export async function handleAddLead(data: any, req: Request, normEmail: string |
                 You&rsquo;re receiving this because you requested this resource.
               </p>
               <p style="margin:8px 0 0 0; font-size:11px; color:#7b858c;">
-                Delivered by <a href="${appUrl}" target="_blank" style="color:#2a3138; font-weight:500; text-decoration:none;">LeadMagnets</a>
+                Delivered by <a href="${appUrl}" target="_blank" style="color:#2a3138; font-weight:500; text-decoration:none;">Funnels</a>
               </p>
             </td>
           </tr>
@@ -856,7 +856,7 @@ export async function handleAddLead(data: any, req: Request, normEmail: string |
                 const createTagRes = await fetch("https://api.convertkit.com/v3/tags", {
                   method: "POST",
                   headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({ api_secret: kitKey, api_key: kitKey, tag: { name: "LeadMagnets Signups" } }),
+                  body: JSON.stringify({ api_secret: kitKey, api_key: kitKey, tag: { name: "Funnels Signups" } }),
                 });
                 const createTagData = await createTagRes.json();
                 tagId = createTagData.tag ? createTagData.tag.id : null;

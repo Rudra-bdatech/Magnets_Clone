@@ -111,7 +111,7 @@ export const HelpModal = memo(function HelpModal({ isOpen, onClose }: HelpModalP
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Card 1 */}
                 <div className="rounded-xl border border-white/10 bg-[#121212] p-4 space-y-1.5">
-                  <h4 className="text-sm font-bold text-white">LeadMagnets URL</h4>
+                  <h4 className="text-sm font-bold text-white">Funnels URL</h4>
                   <p className="text-xs text-zinc-400 leading-relaxed">
                     Choose the included leadmagnets.so address used by your published pages.
                   </p>

@@ -139,10 +139,10 @@ export default function GetStartedPage() {
           {/* Hero Header */}
           <div className="space-y-2">
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-zinc-900 dark:text-white">
-              Let&apos;s get LeadMagnets working for you
+              Let&apos;s get Funnels working for you
             </h1>
             <p className="text-sm sm:text-base text-zinc-600 dark:text-zinc-400 max-w-2xl leading-relaxed">
-              A few quick steps unlock the full LeadMagnets workflow — from lead magnet creation to automated lead capture. You can return to this page any time.
+              A few quick steps unlock the full Funnels workflow — from lead magnet creation to automated lead capture. You can return to this page any time.
             </p>
           </div>
 

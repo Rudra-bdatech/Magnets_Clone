@@ -26,14 +26,14 @@ const SITE = "https://magnets.bdatech.in";
 export const metadata: Metadata = {
   title: {
     default: "Lead Magnet Builder for Landing Pages and Email Capture",
-    template: "%s. LeadMagnets",
+    template: "%s. Funnels",
   },
   description:
-    "Create lead magnet landing pages, capture emails, deliver resources instantly, and follow up automatically. Publish on LeadMagnets or your own domain.",
-  applicationName: "LeadMagnets",
-  authors: [{ name: "LeadMagnets", url: SITE }],
-  creator: "LeadMagnets",
-  publisher: "LeadMagnets",
+    "Create lead magnet landing pages, capture emails, deliver resources instantly, and follow up automatically. Publish on Funnels or your own domain.",
+  applicationName: "Funnels",
+  authors: [{ name: "Funnels", url: SITE }],
+  creator: "Funnels",
+  publisher: "Funnels",
   referrer: "origin-when-cross-origin",
   category: "productivity",
   formatDetection: { telephone: false, address: false, email: false },
@@ -43,17 +43,17 @@ export const metadata: Metadata = {
   robots: { index: true, follow: true },
   openGraph: {
     type: "website",
-    siteName: "LeadMagnets",
+    siteName: "Funnels",
     locale: "en_US",
     url: SITE,
-    title: "LeadMagnets | Lead Magnet Builder",
+    title: "Funnels | Lead Magnet Builder",
     description:
       "Create a lead magnet page, capture emails, deliver the resource, and follow up from one place.",
-    images: [{ url: "/landing-dashboard.png", width: 1280, height: 720, alt: "LeadMagnets lead magnet builder dashboard" }],
+    images: [{ url: "/landing-dashboard.png", width: 1280, height: 720, alt: "Funnels lead magnet builder dashboard" }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "LeadMagnets | Lead Magnet Builder",
+    title: "Funnels | Lead Magnet Builder",
     description:
       "Create a lead magnet page, capture emails, deliver the resource, and follow up from one place.",
     images: ["/landing-dashboard.png"],

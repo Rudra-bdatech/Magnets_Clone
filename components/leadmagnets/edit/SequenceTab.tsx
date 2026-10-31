@@ -192,7 +192,7 @@ export default function SequenceTab({
                   Send extra emails after the lead magnet email. Delays are counted from the previous email or from signup for the first one.
                 </p>
                 <p className="text-xs text-zinc-400 mt-0.5 leading-relaxed">
-                  LeadMagnets creates the events, templates, and automation for this sequence after your sender domain is ready.
+                  Funnels creates the events, templates, and automation for this sequence after your sender domain is ready.
                 </p>
               </div>
 

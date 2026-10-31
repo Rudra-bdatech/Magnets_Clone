@@ -21,7 +21,7 @@ export default function CompareStack() {
       <div className="lm-wipe-row grid grid-cols-[1fr_1fr] sm:grid-cols-[1.1fr_1fr_1fr] border-b border-zinc-200 dark:border-white/10 text-xs font-semibold" style={{ transitionDelay: "0ms" }}>
         <div className="hidden sm:block p-4 font-mono uppercase tracking-wider text-[10px] text-zinc-400">The job</div>
         <div className="p-4 text-zinc-500 dark:text-zinc-400">The duct-tape stack</div>
-        <div className="p-4 bg-[#0066B2] text-white">LeadMagnets</div>
+        <div className="p-4 bg-[#0066B2] text-white">Funnels</div>
       </div>
       {ROWS.map((r, i) => (
         <div key={r.job} className="lm-wipe-row grid grid-cols-[1fr_1fr] sm:grid-cols-[1.1fr_1fr_1fr] border-b border-zinc-100 dark:border-white/5 text-sm" style={{ transitionDelay: `${100 + i * 100}ms` }}>

@@ -51,7 +51,7 @@ export async function GET() {
   return NextResponse.json({
     status: "active",
     endpoint: "/api/webhooks/linkedin",
-    description: "LeadMagnets LinkedIn Comment Automation Webhook",
+    description: "Funnels LinkedIn Comment Automation Webhook",
     message: "Send a POST request with the required fields to create a lead from a LinkedIn comment.",
     requiredFields: ["secret", "magnetId", "commenterName", "commenterEmail"],
     optionalFields: ["commenterLinkedIn", "postUrl", "commentText"],
@@ -292,7 +292,7 @@ export async function POST(req: NextRequest) {
             const hasHtmlTags = /<[a-z][\s\S]*>/i.test(rawBody);
             const formattedBodyHtml = hasHtmlTags ? rawBody : rawBody.replace(/\n/g, "<br/>");
 
-            const senderName = fullOwnerAccount?.senderDisplayName || fullOwnerAccount?.name || ownerAccount?.name || "LeadMagnets";
+            const senderName = fullOwnerAccount?.senderDisplayName || fullOwnerAccount?.name || ownerAccount?.name || "Funnels";
             const logoUrl = `${appUrl}/brand/custom-logo-light.png`;
             const senderInitials = (senderName || "LM")
               .split(" ")
@@ -468,7 +468,7 @@ export async function POST(req: NextRequest) {
                 You&rsquo;re receiving this because you requested this resource.
               </p>
               <p style="margin:8px 0 0 0; font-size:11px; color:#7b858c;">
-                Delivered by <a href="${appUrl}" target="_blank" style="color:#2a3138; font-weight:500; text-decoration:none;">LeadMagnets</a>
+                Delivered by <a href="${appUrl}" target="_blank" style="color:#2a3138; font-weight:500; text-decoration:none;">Funnels</a>
               </p>
             </td>
           </tr>

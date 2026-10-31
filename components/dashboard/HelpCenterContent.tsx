@@ -294,7 +294,7 @@ export default function HelpCenterContent({
                 <div className="rounded-2xl border border-red-200 bg-red-50/80 dark:border-[#452b23] dark:bg-[#221a18] px-5 py-4 text-left space-y-1.5 shadow-xs">
                   <h4 className="text-sm font-bold text-red-700 dark:text-[#f87171]">Account deletion is permanent</h4>
                   <p className="text-xs text-zinc-700 dark:text-zinc-400 leading-relaxed">
-                    Deleting the account removes its lead magnets, signups, integrations, and attached custom domains. There is no recovery. LeadMagnets asks for your password and the word DELETE before it can continue.
+                    Deleting the account removes its lead magnets, signups, integrations, and attached custom domains. There is no recovery. Funnels asks for your password and the word DELETE before it can continue.
                   </p>
                 </div>
 
@@ -339,7 +339,7 @@ export default function HelpCenterContent({
                   <div className="rounded-2xl border border-[#0066B2]/30 bg-white text-zinc-900 shadow-xs dark:border-white/10 dark:bg-[#171717] dark:text-white p-5 space-y-3 text-left">
                     <h4 className="text-base font-bold text-zinc-900 dark:text-white">A/B testing</h4>
                     <p className="text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed">
-                      Test a different title or image against the current page. LeadMagnets splits new visitors between the versions and keeps each visitor on the same version.
+                      Test a different title or image against the current page. Funnels splits new visitors between the versions and keeps each visitor on the same version.
                     </p>
                   </div>
                 </div>
@@ -393,7 +393,7 @@ export default function HelpCenterContent({
                     <div className="space-y-1">
                       <h4 className="text-sm font-bold text-zinc-900 dark:text-white">Use the winner</h4>
                       <p className="text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed">
-                        After 7 days, once every version has at least 25 visitors, LeadMagnets selects by conversion rate and applies the winner automatically.
+                        After 7 days, once every version has at least 25 visitors, Funnels selects by conversion rate and applies the winner automatically.
                       </p>
                     </div>
                   </div>
@@ -534,9 +534,9 @@ export default function HelpCenterContent({
                       3
                     </span>
                     <div className="space-y-1">
-                      <h4 className="text-sm font-bold text-zinc-900 dark:text-white">Add it to LeadMagnets</h4>
+                      <h4 className="text-sm font-bold text-zinc-900 dark:text-white">Add it to Funnels</h4>
                       <p className="text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed">
-                        Open Workspace setup, Optional connections, then Zapier. Paste the URL into LeadMagnets.
+                        Open Workspace setup, Optional connections, then Zapier. Paste the URL into Funnels.
                       </p>
                     </div>
                   </div>
@@ -549,7 +549,7 @@ export default function HelpCenterContent({
                     <div className="space-y-1">
                       <h4 className="text-sm font-bold text-zinc-900 dark:text-white">Test and map the fields</h4>
                       <p className="text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed">
-                        Choose Send test in LeadMagnets. Return to Zapier, choose Test trigger, then map the sample fields into your next action.
+                        Choose Send test in Funnels. Return to Zapier, choose Test trigger, then map the sample fields into your next action.
                       </p>
                     </div>
                   </div>
@@ -596,7 +596,7 @@ export default function HelpCenterContent({
                     <div className="space-y-1">
                       <h4 className="text-sm font-bold text-zinc-900 dark:text-white">Start the connection</h4>
                       <p className="text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed">
-                        Choose Connect Kit. LeadMagnets sends you to Kit's secure authorization screen.
+                        Choose Connect Kit. Funnels sends you to Kit's secure authorization screen.
                       </p>
                     </div>
                   </div>
@@ -622,7 +622,7 @@ export default function HelpCenterContent({
                     <div className="space-y-1">
                       <h4 className="text-sm font-bold text-zinc-900 dark:text-white">Check the connection</h4>
                       <p className="text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed">
-                        Return to LeadMagnets and confirm that the connected account name is shown.
+                        Return to Funnels and confirm that the connected account name is shown.
                       </p>
                     </div>
                   </div>
@@ -700,9 +700,9 @@ export default function HelpCenterContent({
                       3
                     </span>
                     <div className="space-y-1">
-                      <h4 className="text-sm font-bold text-zinc-900 dark:text-white">Add it to LeadMagnets</h4>
+                      <h4 className="text-sm font-bold text-zinc-900 dark:text-white">Add it to Funnels</h4>
                       <p className="text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed">
-                        In LeadMagnets, open Workspace setup, Optional connections, then Pipedrive. Paste the token.
+                        In Funnels, open Workspace setup, Optional connections, then Pipedrive. Paste the token.
                       </p>
                     </div>
                   </div>
@@ -793,9 +793,9 @@ export default function HelpCenterContent({
                       3
                     </span>
                     <div className="space-y-1">
-                      <h4 className="text-sm font-bold text-zinc-900 dark:text-white">Paste it into LeadMagnets</h4>
+                      <h4 className="text-sm font-bold text-zinc-900 dark:text-white">Paste it into Funnels</h4>
                       <p className="text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed">
-                        In LeadMagnets, open Workspace setup, Optional connections, then Slack. Paste the URL into the webhook field.
+                        In Funnels, open Workspace setup, Optional connections, then Slack. Paste the URL into the webhook field.
                       </p>
                     </div>
                   </div>
@@ -852,7 +852,7 @@ export default function HelpCenterContent({
                   </p>
 
                   <p className="text-sm text-zinc-600 dark:text-zinc-300 leading-relaxed">
-                    Every signup remains saved in LeadMagnets. Make it clear on the signup page if requesting the resource also adds someone to your newsletter.
+                    Every signup remains saved in Funnels. Make it clear on the signup page if requesting the resource also adds someone to your newsletter.
                   </p>
                 </div>
 
@@ -964,9 +964,9 @@ export default function HelpCenterContent({
                     </div>
                   </div>
 
-                  {/* Dark Yellowish-Brown Warning Card: LeadMagnets does not write these policies for you */}
+                  {/* Dark Yellowish-Brown Warning Card: Funnels does not write these policies for you */}
                   <div className="rounded-2xl border border-amber-200 bg-amber-50 dark:border-[#4d4022] dark:bg-[#221e16] p-5 text-left space-y-1.5 shadow-xs">
-                    <h4 className="text-sm font-bold text-amber-800 dark:text-[#fbbf24]">LeadMagnets does not write these policies for you</h4>
+                    <h4 className="text-sm font-bold text-amber-800 dark:text-[#fbbf24]">Funnels does not write these policies for you</h4>
                     <p className="text-xs text-zinc-700 dark:text-zinc-400 leading-relaxed">
                       The right wording depends on your business, location, audience, and the services you use. Get appropriate legal advice if you are unsure what your policies need to cover. Leaving a field blank hides that custom link.
                     </p>
@@ -1006,7 +1006,7 @@ export default function HelpCenterContent({
                     This is optional
                   </h3>
                   <p className="text-sm text-zinc-700 dark:text-zinc-400 leading-relaxed">
-                    If LeadMagnets sending is already connected, you can publish and deliver a resource without setting up your own sender domain. Using a recognisable From address can make the email feel more consistent with your brand.
+                    If Funnels sending is already connected, you can publish and deliver a resource without setting up your own sender domain. Using a recognisable From address can make the email feel more consistent with your brand.
                   </p>
                 </div>
 
@@ -1046,7 +1046,7 @@ export default function HelpCenterContent({
                     <div className="space-y-1">
                       <h4 className="text-sm font-bold text-zinc-900 dark:text-white">Add the sending records</h4>
                       <p className="text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed">
-                        Add the exact DNS records shown by LeadMagnets wherever your domain's DNS is managed.
+                        Add the exact DNS records shown by Funnels wherever your domain's DNS is managed.
                       </p>
                     </div>
                   </div>
@@ -1059,7 +1059,7 @@ export default function HelpCenterContent({
                     <div className="space-y-1">
                       <h4 className="text-sm font-bold text-zinc-900 dark:text-white">Verify the sender</h4>
                       <p className="text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed">
-                        Return to LeadMagnets and run the verification check. Use the address only after it shows as verified.
+                        Return to Funnels and run the verification check. Use the address only after it shows as verified.
                       </p>
                     </div>
                   </div>
@@ -1067,7 +1067,7 @@ export default function HelpCenterContent({
                   {/* Dark Info Card */}
                   <div className="rounded-2xl border border-[#0066B2]/30 bg-[#EFF6FF] dark:border-white/10 dark:bg-[#171717] p-5 text-left shadow-xs">
                     <p className="text-xs text-zinc-700 dark:text-zinc-400 leading-relaxed">
-                      LeadMagnets uses a sending subdomain so its email reputation is separated from your main website. Copy every DNS record exactly as shown. Verification is often quick, but DNS changes can take up to 72 hours to appear.
+                      Funnels uses a sending subdomain so its email reputation is separated from your main website. Copy every DNS record exactly as shown. Verification is often quick, but DNS changes can take up to 72 hours to appear.
                     </p>
                   </div>
 
@@ -1132,7 +1132,7 @@ export default function HelpCenterContent({
                     <div className="space-y-1">
                       <h4 className="text-sm font-bold text-zinc-900 dark:text-white">Prove you own the domain</h4>
                       <p className="text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed">
-                        LeadMagnets gives you a TXT record. Add it wherever your DNS is managed, then click Check ownership.
+                        Funnels gives you a TXT record. Add it wherever your DNS is managed, then click Check ownership.
                       </p>
                     </div>
                   </div>
@@ -1143,9 +1143,9 @@ export default function HelpCenterContent({
                       3
                     </span>
                     <div className="space-y-1">
-                      <h4 className="text-sm font-bold text-zinc-900 dark:text-white">Point the subdomain to LeadMagnets</h4>
+                      <h4 className="text-sm font-bold text-zinc-900 dark:text-white">Point the subdomain to Funnels</h4>
                       <p className="text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed">
-                        Add the CNAME record shown in LeadMagnets and connect the subdomain. DNS changes can take a little while to appear.
+                        Add the CNAME record shown in Funnels and connect the subdomain. DNS changes can take a little while to appear.
                       </p>
                     </div>
                   </div>
@@ -1184,9 +1184,9 @@ export default function HelpCenterContent({
 
                 {/* 5 Cards Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 pt-1">
-                  {/* LeadMagnets URL */}
+                  {/* Funnels URL */}
                   <div className="rounded-2xl border border-[#0066B2]/30 bg-white text-zinc-900 shadow-xs dark:border-white/10 dark:bg-[#171717] dark:text-white p-4 space-y-1.5 text-left">
-                    <h4 className="text-base font-bold text-zinc-900 dark:text-white">LeadMagnets URL</h4>
+                    <h4 className="text-base font-bold text-zinc-900 dark:text-white">Funnels URL</h4>
                     <p className="text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed">
                       Choose the included leadmagnets.so address used by your published pages.
                     </p>
@@ -1228,7 +1228,7 @@ export default function HelpCenterContent({
                 {/* Warm Reddish-Chocolate Tip Card */}
                 <div className="rounded-2xl border border-[#0066B2]/30 bg-[#EFF6FF] dark:border-white/10 dark:bg-[#221a18] px-5 py-4 text-left shadow-xs">
                   <p className="text-sm text-zinc-700 dark:text-zinc-400 leading-relaxed">
-                    Start with your LeadMagnets URL. Add a custom domain and integrations only when they support the way you want to publish, deliver, or follow up.
+                    Start with your Funnels URL. Add a custom domain and integrations only when they support the way you want to publish, deliver, or follow up.
                   </p>
                 </div>
 
@@ -1269,7 +1269,7 @@ export default function HelpCenterContent({
                     Bring your own resource link
                   </h3>
                   <p className="text-sm text-zinc-700 dark:text-zinc-400 leading-relaxed text-left">
-                    Create the resource yourself, then paste its full download or access link into this email. For files, you can upload the resource under Hosted resources and use the unique link LeadMagnets gives you.
+                    Create the resource yourself, then paste its full download or access link into this email. For files, you can upload the resource under Hosted resources and use the unique link Funnels gives you.
                   </p>
                 </div>
 
@@ -1805,7 +1805,7 @@ export default function HelpCenterContent({
                   </h2>
 
                   <p className="text-sm text-white/85 leading-relaxed">
-                    LeadMagnets builds the signup, delivery, and follow-up journey. You create the actual resource people receive, then add its download or access link to the Delivery email.
+                    Funnels builds the signup, delivery, and follow-up journey. You create the actual resource people receive, then add its download or access link to the Delivery email.
                   </p>
                 </div>
 
@@ -1815,7 +1815,7 @@ export default function HelpCenterContent({
                     Create the resource before you publish
                   </h3>
                   <p className="text-sm text-zinc-700 dark:text-zinc-400 leading-relaxed">
-                    Make the PDF, template, video, email course, AI tool, or other useful resource yourself. LeadMagnets does not generate the finished resource for you. It gives that resource a page, captures the signup, emails the link, and manages what happens next.
+                    Make the PDF, template, video, email course, AI tool, or other useful resource yourself. Funnels does not generate the finished resource for you. It gives that resource a page, captures the signup, emails the link, and manages what happens next.
                   </p>
                 </div>
 
@@ -2096,7 +2096,7 @@ export default function HelpCenterContent({
                     <div>
                       <h4 className="text-sm font-bold text-zinc-900 dark:text-white">Add it to the journey</h4>
                       <p className="text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed mt-0.5">
-                        Give the resource an accessible link and paste that link into the Delivery email in LeadMagnets.
+                        Give the resource an accessible link and paste that link into the Delivery email in Funnels.
                       </p>
                     </div>
                   </div>
@@ -2135,7 +2135,7 @@ export default function HelpCenterContent({
                     <div>
                       <h4 className="text-sm font-bold text-zinc-900 dark:text-white">They get the promised value</h4>
                       <p className="text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed mt-0.5">
-                        LeadMagnets emails the resource link immediately and records the signup for you.
+                        Funnels emails the resource link immediately and records the signup for you.
                       </p>
                     </div>
                   </div>

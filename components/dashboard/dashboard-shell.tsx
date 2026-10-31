@@ -221,7 +221,7 @@ export default function DashboardShell({
 
   const openGmailCompose = (type: "bug" | "feature") => {
     const email = "info@bdatechnologies.com";
-    const subject = type === "bug" ? "[Bug Report] Issue on LeadMagnets" : "[Feature Request] Suggestion for LeadMagnets";
+    const subject = type === "bug" ? "[Bug Report] Issue on Funnels" : "[Feature Request] Suggestion for Funnels";
     const body = type === "bug"
       ? `Hi Support Team,\n\nI encountered the following issue:\n\n`
       : `Hi Support Team,\n\nI would like to request the following feature:\n\n`;

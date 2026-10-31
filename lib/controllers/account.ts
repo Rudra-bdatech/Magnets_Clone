@@ -706,7 +706,7 @@ export async function handleSendResetEmail(data: any) {
 
   const sendResult = await sendMail({
     to: normEmail,
-    subject: "Reset your LeadMagnets password",
+    subject: "Reset your Funnels password",
     isTransactional: true,
     html: `
 <!DOCTYPE html>
@@ -746,7 +746,7 @@ export async function handleSendResetEmail(data: any) {
               Hi ${account.name || "there"},
             </p>
             <p style="color: #64748b; font-size: 14px; margin: 0 0 28px 0; line-height: 1.6;">
-              We received a request to reset your LeadMagnets account password. Click the button below to choose a new password:
+              We received a request to reset your Funnels account password. Click the button below to choose a new password:
             </p>
 
             <!-- CTA Button -->
@@ -779,7 +779,7 @@ export async function handleSendResetEmail(data: any) {
       <tr>
         <td style="padding-top: 24px; text-align: center;">
           <div style="font-size: 12px; color: #94a3b8; line-height: 1.5;">
-            Sent by <strong style="color: #64748b; font-weight: 600;">LeadMagnets</strong> · Account Security
+            Sent by <strong style="color: #64748b; font-weight: 600;">Funnels</strong> · Account Security
           </div>
         </td>
       </tr>
@@ -875,7 +875,7 @@ async function sendNotifyEmailConfirmation(account: any, address: string, token:
     <div style="max-width:500px;margin:0 auto;background:#ffffff;border:1px solid #e2e8f0;border-radius:12px;padding:32px;">
       <h1 style="margin:0 0 16px;font-size:20px;">Confirm lead alerts</h1>
       <p style="margin:0 0 16px;font-size:14px;line-height:1.6;color:#475569;">
-        The LeadMagnets account ${safeAccountEmail} asked to send its new-lead alerts to this address.
+        The Funnels account ${safeAccountEmail} asked to send its new-lead alerts to this address.
       </p>
       <p style="margin:0 0 24px;font-size:14px;line-height:1.6;color:#475569;">
         If you expected this, confirm below. If not, ignore this email and nothing will be sent to you.
@@ -925,7 +925,7 @@ async function issueEmailVerification(account: any): Promise<{ success: boolean;
   // never from a Gmail or SMTP account the user connected.
   return sendMail({
     to: account.email,
-    subject: "Verify your LeadMagnets email",
+    subject: "Verify your Funnels email",
     isTransactional: true,
     html: `
 <!DOCTYPE html>
@@ -962,7 +962,7 @@ async function issueEmailVerification(account: any): Promise<{ success: boolean;
               Verify your email address
             </h1>
             <p style="color: #64748b; font-size: 14px; margin: 0 0 28px 0; line-height: 1.6;">
-              Please confirm your email address (<strong style="color: #0f172a;">${safeEmail}</strong>) to finish setting up your LeadMagnets account.
+              Please confirm your email address (<strong style="color: #0f172a;">${safeEmail}</strong>) to finish setting up your Funnels account.
             </p>
 
             <!-- CTA Button -->
@@ -988,7 +988,7 @@ async function issueEmailVerification(account: any): Promise<{ success: boolean;
       <tr>
         <td style="padding-top: 24px; text-align: center;">
           <div style="font-size: 12px; color: #94a3b8; line-height: 1.5;">
-            Sent by <strong style="color: #64748b; font-weight: 600;">LeadMagnets</strong> · Account Verification
+            Sent by <strong style="color: #64748b; font-weight: 600;">Funnels</strong> · Account Verification
           </div>
         </td>
       </tr>

@@ -1,4 +1,4 @@
-# LeadMagnets
+# Funnels
 > AI lead magnet builder: create opt-in pages, host resources, send instant delivery emails, and auto-nurture leads with drip sequences.
 
 ## Pages

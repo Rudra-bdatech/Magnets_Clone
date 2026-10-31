@@ -131,7 +131,7 @@ export async function handleSendTestKitAlert(data: any, normEmail: string | null
         const createTagRes = await fetch("https://api.convertkit.com/v3/tags", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ api_secret: kitKey, api_key: kitKey, tag: { name: "LeadMagnets Signups" } }),
+          body: JSON.stringify({ api_secret: kitKey, api_key: kitKey, tag: { name: "Funnels Signups" } }),
         });
         const createTagData = (await createTagRes.json().catch(() => null)) || {};
         tagId = createTagData.tag?.id;
@@ -264,7 +264,7 @@ export async function handleSendTestSlackAlert(data: any, normEmail: string | nu
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        text: "🎉 *LeadMagnets Test Alert!*\nSlack integration is connected and working! New lead signups will post here automatically.",
+        text: "🎉 *Funnels Test Alert!*\nSlack integration is connected and working! New lead signups will post here automatically.",
       }),
     });
 

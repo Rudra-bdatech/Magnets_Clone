@@ -459,7 +459,7 @@ export default function LinkedInAutomationPage() {
       } else {
         // Since extension is the primary engine, guide user clearly
         setSyncResult(
-          "Automation is running via your LeadMagnets Chrome Extension (every 5 mins). For an immediate sync, click 'Sync LinkedIn Comments Now' inside the extension popup!"
+          "Automation is running via your Funnels Chrome Extension (every 5 mins). For an immediate sync, click 'Sync LinkedIn Comments Now' inside the extension popup!"
         );
       }
     } catch (err) {

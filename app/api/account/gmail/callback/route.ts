@@ -106,7 +106,7 @@ export async function GET(req: NextRequest) {
         { "gmailOAuth.refreshToken": 1, "gmailOAuth.gmailAddress": 1 }
       ).lean<any>();
       if (!existing?.gmailOAuth?.refreshToken || existing.gmailOAuth.gmailAddress !== gmailAddress) {
-        throw new Error("Google did not return a refresh token. Remove LeadMagnets at myaccount.google.com/permissions and connect again.");
+        throw new Error("Google did not return a refresh token. Remove Funnels at myaccount.google.com/permissions and connect again.");
       }
     }
 

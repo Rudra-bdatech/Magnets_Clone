@@ -70,7 +70,7 @@ export async function POST(req: NextRequest) {
     await transporter.verify();
 
     await transporter.sendMail({
-      from: `${fromName || "LeadMagnets"} <${fromEmail || user}>`,
+      from: `${fromName || "Funnels"} <${fromEmail || user}>`,
       to: authEmail,
       subject: "SMTP connection verified",
       html: `<p>Your custom SMTP is connected. Emails to your leads will now be sent from <strong>${escapeHtml(String(fromEmail || user))}</strong>.</p>`,

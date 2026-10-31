@@ -132,7 +132,7 @@ export default function AnalyticsHelpModal({ isOpen, onClose }: AnalyticsHelpMod
                 <div className="rounded-2xl border border-[#0066B2]/30 bg-zinc-50/70 dark:bg-[#121212] p-5 space-y-2.5 shadow-xs">
                   <h4 className="text-base font-bold text-zinc-900 dark:text-white">A/B testing</h4>
                   <p className="text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed">
-                    Test a different title or image against the current page. LeadMagnets splits new visitors between the versions and keeps each visitor on the same version.
+                    Test a different title or image against the current page. Funnels splits new visitors between the versions and keeps each visitor on the same version.
                   </p>
                 </div>
               </div>
@@ -186,7 +186,7 @@ export default function AnalyticsHelpModal({ isOpen, onClose }: AnalyticsHelpMod
                   <div>
                     <h5 className="text-sm font-bold text-zinc-900 dark:text-white leading-snug">Use the winner</h5>
                     <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5 leading-normal">
-                      After 7 days, once every version has at least 25 visitors, LeadMagnets selects by conversion rate and applies the winner automatically.
+                      After 7 days, once every version has at least 25 visitors, Funnels selects by conversion rate and applies the winner automatically.
                     </p>
                   </div>
                 </div>

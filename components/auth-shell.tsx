@@ -105,7 +105,7 @@ export default function AuthShell({
 
       {/* Compact Header */}
       <header className="relative z-20 mx-auto flex h-14 sm:h-16 w-full max-w-7xl items-center justify-between px-5 pt-2 sm:px-8">
-        <Link href="/" aria-label="LeadMagnets home" className="inline-flex items-center transition hover:opacity-85">
+        <Link href="/" aria-label="Funnels home" className="inline-flex items-center transition hover:opacity-85">
           <BrandLogo />
         </Link>
         <div className="flex items-center gap-3">

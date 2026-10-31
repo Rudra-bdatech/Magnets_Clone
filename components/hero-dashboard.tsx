@@ -51,7 +51,7 @@ export default function HeroDashboard() {
             <span className="h-2.5 w-2.5 rounded-full bg-amber-400" />
             <span className="h-2.5 w-2.5 rounded-full bg-emerald-400" />
             <span className="ml-3 hidden rounded bg-zinc-100 dark:bg-zinc-800 px-2 py-1 font-mono text-[10px] text-zinc-500 dark:text-zinc-400 sm:block">
-              LeadMagnets platform walkthrough
+              Funnels platform walkthrough
             </span>
           </div>
           <div className="relative mt-2 aspect-video w-full overflow-hidden rounded-xl border border-zinc-100 dark:border-zinc-800 bg-[#F0F7FF] dark:bg-[#0a0a0a] flex items-center justify-center p-6 text-center">

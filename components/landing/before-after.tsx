@@ -148,7 +148,7 @@ export default function BeforeAfter() {
           step={0.5}
           value={pos}
           onChange={(e) => onInput(Number(e.target.value))}
-          aria-label="Compare a shared file link with a LeadMagnets page"
+          aria-label="Compare a shared file link with a Funnels page"
           className="absolute inset-0 h-full w-full cursor-ew-resize opacity-0 touch-pan-y"
         />
       </div>

@@ -735,7 +735,7 @@ export default function ShowcaseTabs() {
               </div>
 
               <div className="flex items-center justify-between border-t border-zinc-100 dark:border-zinc-800 pt-2.5 text-[11px] sm:text-xs text-zinc-400 gap-2 pr-12 sm:pr-0">
-                <span className="truncate">100% White-labeled on Pro Plans · Zero LeadMagnets Branding</span>
+                <span className="truncate">100% White-labeled on Pro Plans · Zero Funnels Branding</span>
                 <span className="font-bold text-emerald-600 dark:text-emerald-400 shrink-0">Auto-SSL Provisioned ✓</span>
               </div>
             </div>
@@ -1060,7 +1060,7 @@ export default function ShowcaseTabs() {
               >
                 <h2 className="text-2xl sm:text-4xl lg:text-5xl font-normal tracking-tight text-white leading-[1.2] max-w-md">
                   Introducing <strong className="font-extrabold text-white">lead magnets &amp; automated nurture</strong> in{" "}
-                  <span className="font-extrabold text-white">LeadMagnets</span>
+                  <span className="font-extrabold text-white">Funnels</span>
                 </h2>
               </motion.div>
             </motion.div>

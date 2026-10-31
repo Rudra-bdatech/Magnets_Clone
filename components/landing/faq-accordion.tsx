@@ -10,7 +10,7 @@ const faqs: BouncyAccordionItem[] = [
     id: "setup-domains",
     category: "SETUP & DOMAINS",
     title: "Do I need technical skills or a custom domain to start?",
-    description: "Not at all. You can generate and publish your lead magnet on a free LeadMagnets subdomain in 60 seconds. Custom CNAME subdomain integration (e.g. get.yourdomain.com) with auto-SSL is available whenever you are ready.",
+    description: "Not at all. You can generate and publish your lead magnet on a free Funnels subdomain in 60 seconds. Custom CNAME subdomain integration (e.g. get.yourdomain.com) with auto-SSL is available whenever you are ready.",
     icon: <Wand2 className="h-3 w-3" aria-hidden="true" />,
     badgeColor: "bg-blue-500/10 text-[#0066B2] dark:text-[#38BDF8] border-[#0066B2]/20",
   },
@@ -18,7 +18,7 @@ const faqs: BouncyAccordionItem[] = [
     id: "resource-storage",
     category: "RESOURCE STORAGE",
     title: "How does instant resource delivery work?",
-    description: "When a visitor enters their email, LeadMagnets immediately fires a personalized delivery email containing their file or document link directly from native platform storage — zero Google Drive or third-party links required.",
+    description: "When a visitor enters their email, Funnels immediately fires a personalized delivery email containing their file or document link directly from native platform storage — zero Google Drive or third-party links required.",
     icon: <HardDrive className="h-3 w-3" aria-hidden="true" />,
     badgeColor: "bg-purple-500/10 text-purple-400 border-purple-500/20",
   },
@@ -74,7 +74,7 @@ export default function FaqAccordion() {
             <Sparkles className="h-3.5 w-3.5" aria-hidden="true" /> Start Free Today
           </Link>
           <Link
-            href="mailto:support@leadmagnets.app"
+            href="mailto:support@funnels.app"
             className="flex-1 sm:flex-none inline-flex h-10 items-center justify-center gap-2 rounded-xl border border-zinc-200/80 dark:border-white/10 bg-white/80 dark:bg-[#20202A]/80 backdrop-blur-md px-4 text-xs font-bold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-all"
           >
             <MailIcon className="h-3.5 w-3.5" aria-hidden="true" /> Contact Support

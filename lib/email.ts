@@ -261,7 +261,7 @@ export async function sendMail(
         try {
           const refreshToken = decrypt(gmail.refreshToken);
           const accessToken = await refreshGmailAccessToken(clientId, clientSecret, refreshToken);
-          const displayName = gmail.fromName || account.name || "LeadMagnets";
+          const displayName = gmail.fromName || account.name || "Funnels";
           const fromHeader = `${displayName} <${gmail.gmailAddress}>`;
 
           const gmailRes = await sendViaGmailApi(
@@ -311,7 +311,7 @@ export async function sendMail(
           tls: { rejectUnauthorized: process.env.NODE_ENV === "production" },
         });
 
-        const displayName = smtp.fromName || account.name || "LeadMagnets";
+        const displayName = smtp.fromName || account.name || "Funnels";
         const fromEmail = smtp.fromEmail || smtp.user;
         const fromHeader = `${displayName} <${fromEmail}>`;
 
@@ -345,7 +345,7 @@ export async function sendMail(
 
     // Platform Fallback (SocketLabs / default company SMTP for internal accounts)
     const platformTrans = getPlatformTransporter();
-    const platformFrom = options.from || `LeadMagnets <${defaultFrom}>`;
+    const platformFrom = options.from || `Funnels <${defaultFrom}>`;
 
     const info = await platformTrans.sendMail({
       from: platformFrom,

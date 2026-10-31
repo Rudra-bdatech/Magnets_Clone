@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "LeadMagnets — LinkedIn Auto-Reply & DM Engine",
+  "name": "Funnels — LinkedIn Auto-Reply & DM Engine",
   "version": "1.0.0",
-  "description": "100% In-House LinkedIn Comment Auto-Reply, Personalized DM Sender & CRM Lead Engine for LeadMagnets.",
+  "description": "100% In-House LinkedIn Comment Auto-Reply, Personalized DM Sender & CRM Lead Engine for Funnels.",
   "permissions": [
     "cookies",
     "storage",

@@ -174,7 +174,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (chrome.runtime.lastError) {}
       });
     } else {
-      statusText.textContent = "⚠️ No open LeadMagnets tab found. Please type email manually.";
+      statusText.textContent = "⚠️ No open Funnels tab found. Please type email manually.";
     }
   });
 
