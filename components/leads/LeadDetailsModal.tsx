@@ -250,7 +250,7 @@ export const LeadDetailsModal = memo(function LeadDetailsModal({
             </div>
             <div className="min-w-0">
               <h3 className="text-base font-bold text-zinc-900 dark:text-white truncate">
-                {selectedLead.name || "Subscriber Details"}
+                {selectedLead.name || "Lead Details"}
               </h3>
               <div className="flex items-center gap-2 mt-0.5 flex-wrap">
                 <p className="text-xs text-zinc-500 dark:text-zinc-400 truncate max-w-[200px] sm:max-w-[280px]">

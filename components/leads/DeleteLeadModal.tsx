@@ -66,7 +66,7 @@ export const DeleteLeadModal = memo(function DeleteLeadModal({
                 </div>
                 <div>
                   <h3 className="text-base sm:text-lg font-bold text-zinc-900 dark:text-white tracking-tight">
-                    Delete Subscriber?
+                    Delete Lead?
                   </h3>
                   <p className="text-[11px] text-zinc-500 dark:text-zinc-400 mt-0.5">
                     This action cannot be undone
@@ -110,7 +110,7 @@ export const DeleteLeadModal = memo(function DeleteLeadModal({
                 className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 rounded-xl border border-rose-500/30 bg-rose-600 px-4 py-2.5 text-xs font-bold text-white hover:bg-rose-700 active:scale-95 transition-all cursor-pointer shadow-sm text-center disabled:opacity-50"
               >
                 {isDeleting && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
-                <span>Delete Subscriber</span>
+                <span>Delete Lead</span>
               </button>
             </div>
           </motion.div>

@@ -80,7 +80,7 @@ export const LeadTableRow = memo(function LeadTableRow({
                 <AppleCheckbox
                   checked={isSelected}
                   onChange={() => onToggleSelect(lead.id)}
-                  title={isSelected ? "Deselect subscriber" : "Select subscriber"}
+                  title={isSelected ? "Deselect lead" : "Select lead"}
                 />
               </motion.div>
             )}

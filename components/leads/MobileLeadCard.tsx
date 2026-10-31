@@ -234,7 +234,7 @@ export const MobileLeadCard = memo(function MobileLeadCard({
           <button
             type="button"
             onClick={() => onDelete(lead)}
-            title="Delete subscriber"
+            title="Delete lead"
             className="inline-flex items-center justify-center h-7 w-7 rounded-lg text-zinc-400 hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-950/30 dark:hover:text-rose-400 transition cursor-pointer"
           >
             <Trash2 className="h-3.5 w-3.5" />

@@ -70,7 +70,7 @@ export const AddLeadModal = memo(function AddLeadModal({
                 </div>
                 <div>
                   <h3 className="text-base font-bold text-zinc-900 dark:text-white">
-                    Add Subscriber Manually
+                    Add Lead Manually
                   </h3>
                   <p className="text-xs text-zinc-500 dark:text-zinc-400">
                     Manually add a contact to your lead list.
@@ -150,7 +150,7 @@ export const AddLeadModal = memo(function AddLeadModal({
                   ) : (
                     <UserPlus className="h-3.5 w-3.5" />
                   )}
-                  <span>Save Subscriber</span>
+                  <span>Save Lead</span>
                 </button>
               </div>
             </form>

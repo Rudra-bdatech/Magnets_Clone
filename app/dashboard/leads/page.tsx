@@ -957,7 +957,7 @@ function parseCsvLine(line: string): string[] {
               onClick={() => setShowAddModal(true)}
               className="flex items-center gap-1.5 rounded-xl bg-[#0066B2] px-4 py-2.5 text-xs font-bold text-white hover:bg-[#005291] transition shadow-md cursor-pointer"
             >
-              <UserPlus className="h-4 w-4" /> + Add Subscriber
+              <UserPlus className="h-4 w-4" /> + Add Lead
             </button>
 
             <label className="flex items-center gap-1.5 rounded-xl border border-zinc-200 bg-white px-4 py-2.5 text-xs font-semibold text-zinc-700 hover:bg-zinc-50 dark:border-white/10 dark:bg-[#171717] dark:text-zinc-200 dark:hover:bg-[#222222] transition cursor-pointer shadow-xs">
@@ -1065,7 +1065,7 @@ function parseCsvLine(line: string): string[] {
             </div>
             <div className="flex-1 min-w-0 w-full">
               <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-400 leading-none truncate">
-                Total Subscribers
+                Total Leads
               </p>
               <p className="text-xl font-extrabold tabular-nums text-zinc-900 dark:text-white mt-1 leading-none tracking-tight">
                 {totalLeads}
@@ -1083,7 +1083,7 @@ function parseCsvLine(line: string): string[] {
             </div>
             <div className="flex-1 min-w-0 w-full">
               <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-400 leading-none truncate">
-                Unique Subscribers
+                Unique Leads
               </p>
               <p className="text-xl font-extrabold tabular-nums text-zinc-900 dark:text-white mt-1 leading-none tracking-tight">
                 {uniqueSignups}
@@ -1138,7 +1138,7 @@ function parseCsvLine(line: string): string[] {
               <Search className="h-4 w-4 text-zinc-400 shrink-0" />
               <input
                 type="text"
-                placeholder="Search subscribers by name, email, or magnet..."
+                placeholder="Search leads by name, email, or magnet..."
                 value={search}
                 onChange={(e) => {
                   setSearch(e.target.value);
@@ -1258,7 +1258,7 @@ function parseCsvLine(line: string): string[] {
                         Filter Status
                       </div>
                       {[
-                        { id: "all", label: "All Subscribers", count: leads.length },
+                        { id: "all", label: "All Leads", count: leads.length },
                         { id: "in_progress", label: "In Progress", count: inProgressCount },
                         { id: "completed", label: "Completed", count: completedCount },
                         { id: "recent", label: "Most Recent", count: recentCount },
@@ -1574,7 +1574,7 @@ function parseCsvLine(line: string): string[] {
                       ? "bg-white dark:bg-white/10 text-[#0066B2] dark:text-[#38BDF8] shadow-xs"
                       : "text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200"
                   }`}
-                  title={isMobileSelectionMode || selectedLeadIds.length > 0 ? "Exit Select Mode" : "Select Subscribers"}
+                  title={isMobileSelectionMode || selectedLeadIds.length > 0 ? "Exit Select Mode" : "Select Leads"}
                 >
                   <CheckSquare className="relative z-10 h-4 w-4" />
                 </button>
@@ -1649,7 +1649,7 @@ function parseCsvLine(line: string): string[] {
                             </motion.div>
                           )}
                         </AnimatePresence>
-                        <span>Subscriber</span>
+                        <span>Lead</span>
                       </div>
                     </th>
                     <th className="px-3 lg:px-4 py-3.5 text-left text-[11px] font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Source / Gate</th>
@@ -1777,7 +1777,7 @@ function parseCsvLine(line: string): string[] {
                       className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#0066B2] text-xs font-bold text-white shadow-sm cursor-pointer"
                     >
                       <UserPlus className="h-3.5 w-3.5" />
-                      <span>+ Add Subscriber</span>
+                      <span>+ Add Lead</span>
                     </button>
                   )}
                 </div>
@@ -1971,7 +1971,7 @@ function parseCsvLine(line: string): string[] {
           document.body
         )}
 
-        {/* 1. Add Subscriber Manually Modal */}
+        {/* 1. Add Lead Manually Modal */}
         <AddLeadModal
           isOpen={showAddModal}
           onClose={() => setShowAddModal(false)}
