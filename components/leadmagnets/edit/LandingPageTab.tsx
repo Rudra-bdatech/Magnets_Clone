@@ -156,7 +156,7 @@ export default function LandingPageTab({
           pdfUrl={lockedPdfUrl || page.pdfUrl}
           pageName={page.name}
           pageSlug={page.slug}
-          appUrl={typeof window !== "undefined" ? window.location.origin : (process.env.NEXT_PUBLIC_APP_URL || "https://magnets.bdatech.in")}
+          appUrl={typeof window !== "undefined" ? window.location.origin : (process.env.NEXT_PUBLIC_APP_URL || "https://funnels.co.in")}
           onSave={async (updates) => {
             setLockedPdfPages(updates.pdfPages);
             setLockedPdfFreePages(updates.pdfFreePages);

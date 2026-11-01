@@ -44,6 +44,8 @@ export const RESERVED_USERNAMES = new Set([
   "support",
   "help",
   "official",
+  "funnels",
+  "funnel",
   "leadmagnets",
   "magnets",
   "bdatech",

@@ -8,7 +8,7 @@ type Currency = "INR" | "USD";
 // Mirrors PLAN_PRICING in lib/billing.ts (kept literal so this client file doesn't import the server billing module).
 const PRICES: Record<Currency, { free: string; pro: string; proNote: string }> = {
   INR: { free: "₹0", pro: "₹4,999", proNote: "one-time · lifetime access" },
-  USD: { free: "$0", pro: "$29", proNote: "per month" },
+  USD: { free: "$0", pro: "$67", proNote: "per month" },
 };
 
 // Odometer-style price: each digit is a 0–9 column translated into place.
@@ -91,7 +91,7 @@ export default function Pricing() {
           </p>
           <p className="mt-2 text-sm text-zinc-500">forever, no card needed</p>
           <ul className="mt-7 flex-1 space-y-3 text-zinc-700 dark:text-zinc-300">
-            <Feature>Create & publish lead magnets</Feature>
+            <Feature>Create & publish funnels</Feature>
             <Feature>Upload & host locked PDFs</Feature>
             <Feature>Lead capture & email delivery</Feature>
             <Feature>AI page generator</Feature>

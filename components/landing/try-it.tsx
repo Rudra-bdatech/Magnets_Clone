@@ -181,7 +181,7 @@ export default function TryIt() {
           <div className="flex min-w-0 flex-1 items-center gap-1.5 rounded-md border border-zinc-200 bg-white px-2.5 py-1 font-mono text-[11px] text-zinc-500 dark:border-white/10 dark:bg-white/[0.06]">
             <Lock className="h-3 w-3 shrink-0 text-emerald-600" aria-hidden="true" />
             <span className="truncate">
-              magnets.bdatech.in/you/<span className="text-zinc-900 dark:text-zinc-200">{slugify(topic)}</span>
+              funnels.co.in/you/<span className="text-zinc-900 dark:text-zinc-200">{slugify(topic)}</span>
             </span>
           </div>
           <StatusPill building={building} ready={ready} demoing={demoing && step === 0} />
@@ -528,7 +528,7 @@ function Cover({ title, kind, gradient }: { title: string; kind: string; gradien
                   <Check className="h-3 w-3 text-emerald-300" strokeWidth={3} aria-hidden="true" /> Ready to share
                 </span>
                 <span className="font-mono text-[9px] uppercase tracking-wider text-white/60">
-                  Magnets
+                  Funnels
                 </span>
               </div>
             </div>

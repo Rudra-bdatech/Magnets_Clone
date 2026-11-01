@@ -178,7 +178,7 @@ export default function SequencePreviewModal({
                         <Magnet className="h-3 w-3" />
                       </span>
                     )}
-                    <span>Build yours free with Magnets</span>
+                    <span>Build yours free with Funnels</span>
                   </button>
                 </div>
 

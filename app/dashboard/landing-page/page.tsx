@@ -143,7 +143,7 @@ const MagnetCard = React.memo(
                 ? "bg-white/90 dark:bg-black/70 border-zinc-300 dark:border-white/10 text-transparent hover:border-[#0066B2] dark:hover:border-[#38BDF8] opacity-100 shadow-xs active:scale-95"
                 : "bg-white/90 dark:bg-black/70 border-zinc-300 dark:border-white/10 text-transparent hover:border-[#0066B2] dark:hover:border-[#38BDF8] opacity-0 md:group-hover:opacity-100 shadow-xs"
               }`}
-            title={isChecked ? "Deselect magnet" : "Select magnet"}
+            title={isChecked ? "Deselect funnel" : "Select funnel"}
           >
             <Check className={`h-3.5 w-3.5 stroke-[3px] ${isChecked ? "opacity-100 text-white" : "opacity-0"}`} />
           </button>
@@ -468,7 +468,7 @@ export default function PagesPage() {
                   className="flex items-center gap-1.5 rounded-xl bg-[#0066B2] px-4 py-2.5 text-xs font-bold text-white hover:bg-[#005799] transition shadow-md shadow-[#0066B2]/20 cursor-pointer active:scale-95"
                 >
                   <Plus className="h-4 w-4 stroke-[2.5px]" />
-                  <span className="hidden sm:inline">Create Lead Magnet</span>
+                  <span className="hidden sm:inline">Create Funnel</span>
                   <span className="sm:hidden">New</span>
                 </button>
               </div>
@@ -565,7 +565,7 @@ export default function PagesPage() {
                   <Search className="h-4 w-4 text-zinc-400 shrink-0" />
                   <input
                     type="text"
-                    placeholder="Filter lead magnets by title or slug..."
+                    placeholder="Filter funnels by title or slug..."
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                     className="bg-transparent text-xs text-zinc-900 dark:text-white outline-none placeholder:text-zinc-400 w-full min-w-0"
@@ -781,7 +781,7 @@ export default function PagesPage() {
                         ? "bg-white dark:bg-white/10 text-[#0066B2] dark:text-[#38BDF8] shadow-xs"
                         : "text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200"
                         }`}
-                      title={isSelectMode || checkedIds.length > 0 ? "Exit Select Mode" : "Select Lead Magnets"}
+                      title={isSelectMode || checkedIds.length > 0 ? "Exit Select Mode" : "Select Funnels"}
                     >
                       <CheckSquare className="relative z-10 h-4 w-4" />
                     </button>
@@ -802,15 +802,15 @@ export default function PagesPage() {
                     <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#EFF6FF] dark:bg-[#0066B2]/20 text-[#0066B2] dark:text-[#38BDF8] mb-3">
                       <Sparkles className="h-6 w-6" />
                     </div>
-                    <h3 className="text-base font-bold text-zinc-900 dark:text-white">No lead magnets found</h3>
+                    <h3 className="text-base font-bold text-zinc-900 dark:text-white">No funnels found</h3>
                     <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1 max-w-xs">
-                      {search ? "Try adjusting your search query or clear filters." : "Create your first lead magnet to start collecting emails."}
+                      {search ? "Try adjusting your search query or clear filters." : "Create your first funnel to start collecting emails."}
                     </p>
                     <button
                       onClick={() => setShowCreateModal(true)}
                       className="mt-4 flex items-center gap-1.5 rounded-xl bg-[#0066B2] px-4 py-2 text-xs font-bold text-white hover:bg-[#005799] transition cursor-pointer"
                     >
-                      <Plus className="h-4 w-4" /> Create Lead Magnet
+                      <Plus className="h-4 w-4" /> Create Funnel
                     </button>
                   </motion.div>
                 ) : viewMode === "grid" ? (
@@ -885,7 +885,7 @@ export default function PagesPage() {
                                     </motion.div>
                                   )}
                                 </AnimatePresence>
-                                <span>Lead Magnet</span>
+                                <span>Funnel</span>
                               </div>
                             </th>
                             <th className="px-6 py-3.5">Status</th>
@@ -927,7 +927,7 @@ export default function PagesPage() {
                                           <AppleCheckbox
                                             checked={isChecked}
                                             onChange={() => handleToggleCheck(page.id)}
-                                            title={isChecked ? "Deselect magnet" : "Select magnet"}
+                                            title={isChecked ? "Deselect funnel" : "Select funnel"}
                                           />
                                         </motion.div>
                                       )}
@@ -1040,7 +1040,7 @@ export default function PagesPage() {
                                       <AppleCheckbox
                                         checked={isChecked}
                                         onChange={() => handleToggleCheck(page.id)}
-                                        title={isChecked ? "Deselect magnet" : "Select magnet"}
+                                        title={isChecked ? "Deselect funnel" : "Select funnel"}
                                       />
                                     </motion.div>
                                   )}
@@ -1150,7 +1150,7 @@ export default function PagesPage() {
                   <p className="text-zinc-500 dark:text-zinc-400 text-[11px] font-medium text-center">
                     {itemsPerPage === "all" || filtered.length <= (itemsPerPage as number) ? (
                       <>
-                        Showing <span className="font-bold text-zinc-900 dark:text-white">{filtered.length}</span> {filtered.length === 1 ? "lead magnet" : "lead magnets"}
+                        Showing <span className="font-bold text-zinc-900 dark:text-white">{filtered.length}</span> {filtered.length === 1 ? "funnel" : "funnels"}
                       </>
                     ) : (
                       <>
@@ -1162,7 +1162,7 @@ export default function PagesPage() {
                         <span className="font-bold text-zinc-900 dark:text-white">
                           {Math.min(currentPage * (itemsPerPage as number), filtered.length)}
                         </span>{" "}
-                        of <span className="font-bold text-zinc-900 dark:text-white">{filtered.length}</span> lead magnets
+                        of <span className="font-bold text-zinc-900 dark:text-white">{filtered.length}</span> funnels
                       </>
                     )}
                   </p>
@@ -1290,7 +1290,7 @@ export default function PagesPage() {
 
                       <div className="space-y-2">
                         <p className="text-xs font-bold text-zinc-900 dark:text-white flex items-center gap-1.5">
-                          <TrendingUp className="h-3.5 w-3.5 text-[#0066B2] dark:text-[#38BDF8]" /> Magnet Conversion Metrics
+                          <TrendingUp className="h-3.5 w-3.5 text-[#0066B2] dark:text-[#38BDF8]" /> Funnel Conversion Metrics
                         </p>
                         <div className="grid grid-cols-2 gap-2">
                           <div className="rounded-xl border border-zinc-100 dark:border-white/[0.06] p-3 bg-zinc-50/50 dark:bg-white/[0.02]">
@@ -1337,7 +1337,7 @@ export default function PagesPage() {
                           onClick={(e) => removePage(activePage.id, e)}
                           className="flex items-center gap-1 text-[11px] font-bold text-red-500 hover:text-red-600 dark:hover:text-red-400 transition cursor-pointer"
                         >
-                          <Trash2 className="h-3.5 w-3.5" /> Delete Magnet
+                          <Trash2 className="h-3.5 w-3.5" /> Delete Funnel
                         </button>
                       </div>
                     </motion.div>
@@ -1545,7 +1545,7 @@ export default function PagesPage() {
                     <AlertTriangle className="h-5 w-5" />
                   </div>
                   <div>
-                    <h3 className="text-base sm:text-lg font-bold text-zinc-900 dark:text-white tracking-tight">Delete this magnet?</h3>
+                    <h3 className="text-base sm:text-lg font-bold text-zinc-900 dark:text-white tracking-tight">Delete this funnel?</h3>
                     <p className="text-[11px] text-zinc-500 dark:text-zinc-400 mt-0.5">This action cannot be undone</p>
                   </div>
                 </div>
@@ -1576,7 +1576,7 @@ export default function PagesPage() {
                   onClick={confirmPageDeletion}
                   className="flex-1 sm:flex-none rounded-xl border border-rose-500/30 bg-rose-500/15 dark:bg-rose-500/15 px-4 py-2.5 text-xs font-bold text-rose-600 dark:text-rose-400 hover:bg-rose-600 hover:text-white dark:hover:bg-rose-600 dark:hover:text-white transition-all cursor-pointer shadow-sm text-center"
                 >
-                  Delete magnet
+                  Delete funnel
                 </button>
               </div>
             </motion.div>
@@ -1631,7 +1631,7 @@ export default function PagesPage() {
                   </div>
                   <div>
                     <h3 className="text-base sm:text-lg font-bold text-zinc-900 dark:text-white tracking-tight">
-                      Delete {checkedIds.length} lead magnet{checkedIds.length > 1 ? "s" : ""}?
+                      Delete {checkedIds.length} funnel{checkedIds.length > 1 ? "s" : ""}?
                     </h3>
                     <p className="text-[11px] text-zinc-500 dark:text-zinc-400 mt-0.5">This action cannot be undone</p>
                   </div>
@@ -1646,7 +1646,7 @@ export default function PagesPage() {
 
               <div className="space-y-1.5 pt-1 text-xs leading-relaxed text-zinc-600 dark:text-zinc-400">
                 <p>
-                  This will permanently delete the <span className="font-bold text-zinc-900 dark:text-white">{checkedIds.length}</span> selected lead magnet{checkedIds.length > 1 ? "s" : ""} and stop serving them on their URLs. Any signups already collected stay on your list.
+                  This will permanently delete the <span className="font-bold text-zinc-900 dark:text-white">{checkedIds.length}</span> selected funnel{checkedIds.length > 1 ? "s" : ""} and stop serving them on their URLs. Any signups already collected stay on your list.
                 </p>
               </div>
 
@@ -1739,7 +1739,7 @@ export default function PagesPage() {
               {/* Conversion Metrics */}
               <div className="space-y-2">
                 <p className="text-xs font-bold text-zinc-900 dark:text-white flex items-center gap-1.5">
-                  <TrendingUp className="h-3.5 w-3.5 text-[#0066B2] dark:text-[#38BDF8]" /> Magnet Conversion Metrics
+                  <TrendingUp className="h-3.5 w-3.5 text-[#0066B2] dark:text-[#38BDF8]" /> Funnel Conversion Metrics
                 </p>
                 <div className="grid grid-cols-2 gap-2">
                   <div className="rounded-xl border border-zinc-100 dark:border-white/[0.06] p-3 bg-zinc-50/50 dark:bg-white/[0.02]">
@@ -1798,7 +1798,7 @@ export default function PagesPage() {
                   }}
                   className="flex items-center gap-1 text-[11px] font-bold text-red-500 hover:text-red-600 dark:hover:text-red-400 transition cursor-pointer"
                 >
-                  <Trash2 className="h-3.5 w-3.5" /> Delete Magnet
+                  <Trash2 className="h-3.5 w-3.5" /> Delete Funnel
                 </button>
               </div>
             </motion.div>

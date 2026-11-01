@@ -80,7 +80,7 @@ export default function AIMagnetModal({ isOpen, onClose, onGenerated }: AIMagnet
           </span>
           <div>
             <h3 className="text-xl font-bold text-ink-950 dark:text-white flex items-center gap-2">
-              1-Click AI Lead Magnet Creator
+              1-Click AI Funnel Creator
             </h3>
             <p className="text-xs text-ink-500 dark:text-ink-400">
               Generate landing page copy, email sequences & deliverables instantly.
@@ -118,7 +118,7 @@ export default function AIMagnetModal({ isOpen, onClose, onGenerated }: AIMagnet
           </div>
 
           <div>
-            <FieldLabel>Lead Magnet Format</FieldLabel>
+            <FieldLabel>Funnel Format</FieldLabel>
             <div className="grid grid-cols-3 gap-2 mt-1">
               {[
                 { label: "Checklist", val: "Interactive Checklist" },
@@ -157,7 +157,7 @@ export default function AIMagnetModal({ isOpen, onClose, onGenerated }: AIMagnet
                 </>
               ) : (
                 <>
-                  <Wand2 className="h-4 w-4" /> Generate Full Magnet
+                  <Wand2 className="h-4 w-4" /> Generate Full Funnel
                 </>
               )}
             </Button>

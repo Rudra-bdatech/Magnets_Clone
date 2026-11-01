@@ -61,13 +61,13 @@
     try {
       const storage = await chrome.storage.local.get(["userEmail", "leadMagnetUrl", "triggerKeyword"]);
       return {
-        resourceUrl: storage.leadMagnetUrl || 'https://magnets.bdatech.in/rudranath/hhoo',
+        resourceUrl: storage.leadMagnetUrl || 'https://funnels.co.in/rudranath/hhoo',
         triggerKeyword: (storage.triggerKeyword || 'resource').toLowerCase(),
         userEmail: storage.userEmail || ''
       };
     } catch (e) {
       return {
-        resourceUrl: 'https://magnets.bdatech.in/rudranath/hhoo',
+        resourceUrl: 'https://funnels.co.in/rudranath/hhoo',
         triggerKeyword: 'resource',
         userEmail: ''
       };
@@ -401,7 +401,7 @@
     try {
       const editables = document.querySelectorAll('div[contenteditable="true"]');
       for (const ed of editables) {
-        if (isCommentEditor(ed) && ed.innerText && (ed.innerText.includes('magnets.bdatech.in') || ed.innerText.includes('li_lead='))) {
+        if (isCommentEditor(ed) && ed.innerText && (ed.innerText.includes('funnels.co.in') || ed.innerText.includes('li_lead='))) {
           ed.focus();
           document.execCommand('selectAll', false, null);
           document.execCommand('delete', false, null);
@@ -746,7 +746,7 @@
     // Check if lead magnet link was already sent in the visible conversation
     const messageListEl = document.querySelector('.msg-s-message-list, .msg-s-message-list-container, [class*="message-list"]');
     const convoText = (messageListEl ? messageListEl.innerText : document.body.innerText).toLowerCase();
-    if (convoText.includes('magnets.bdatech.in') || convoText.includes('li_lead=')) {
+    if (convoText.includes('funnels.co.in') || convoText.includes('li_lead=')) {
       return false;
     }
 

@@ -560,7 +560,7 @@ export default function SequenceEditor() {
             bodyText: (targetEmail.body || "")
               .replace(/\{first_name\}/g, account.name || "Subscriber")
               .replace(/\{name\}/g, account.name || "Subscriber")
-              .replace(/\{resource_link\}/g, attachedPage ? `https://magnets.app/${account?.username || "demo"}/${attachedPage.slug}` : "https://magnets.app/demo"),
+              .replace(/\{resource_link\}/g, attachedPage ? `https://funnels.co.in/${account?.username || "demo"}/${attachedPage.slug}` : "https://funnels.co.in/demo"),
           },
           email: account.email,
         }),
@@ -663,7 +663,7 @@ export default function SequenceEditor() {
                 <div className="mt-1 text-xs text-zinc-500 dark:text-zinc-400 flex items-center gap-1.5 flex-wrap">
                   {attachedPage ? (
                     <div className="flex items-center gap-1.5 min-w-0 max-w-full">
-                      <span className="text-[11px] sm:text-xs text-zinc-500 shrink-0">Linked Lead Magnet:</span>
+                      <span className="text-[11px] sm:text-xs text-zinc-500 shrink-0">Linked Funnel:</span>
                       <Link
                         href={`/dashboard/leadmagnets/${attachedPage.id}?tab=sequence`}
                         className="font-semibold text-[#0066B2] dark:text-[#38BDF8] hover:underline inline-flex items-center gap-1.5 truncate text-[11px] sm:text-xs bg-blue-50/60 dark:bg-blue-950/30 px-2 py-0.5 rounded-md border border-blue-200/50 dark:border-blue-900/40"
@@ -1384,7 +1384,7 @@ export default function SequenceEditor() {
                                   {(email.body || "")
                                     .replace(/\{first_name\}/g, "Alex")
                                     .replace(/\{name\}/g, "Alex")
-                                    .replace(/\{resource_link\}/g, attachedPage ? `https://magnets.app/${account?.username || "demo"}/${attachedPage.slug}` : "https://download-resource.com")}
+                                    .replace(/\{resource_link\}/g, attachedPage ? `https://funnels.co.in/${account?.username || "demo"}/${attachedPage.slug}` : "https://download-resource.com")}
                                 </div>
                                 <div className="pt-2 text-[10px] text-zinc-400 flex items-center justify-between gap-2">
                                   <span className="truncate">No longer want these emails? <span className="text-rose-500 underline cursor-pointer">Unsubscribe</span></span>

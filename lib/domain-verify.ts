@@ -124,10 +124,10 @@ export function getCnameTarget(appUrl?: string): string {
     appUrl ||
     process.env.NEXT_PUBLIC_APP_URL ||
     process.env.CNAME_TARGET ||
-    "magnets.bdatech.in";
+    "funnels.co.in";
   const cleaned = cleanDomain(raw);
   if (!cleaned || cleaned === "localhost" || cleaned === "127.0.0.1") {
-    return "magnets.bdatech.in";
+    return "funnels.co.in";
   }
   return cleaned;
 }

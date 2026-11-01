@@ -290,7 +290,7 @@ export default function PublicProfileView({
             {/* Results count label */}
             <div className="flex items-center justify-between px-1">
               <h2 className="text-[11px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
-                Featured Lead Magnets ({filteredPages.length})
+                Featured Funnels ({filteredPages.length})
               </h2>
               {searchQuery && (
                 <button
@@ -309,7 +309,7 @@ export default function PublicProfileView({
           <div className="rounded-3xl border border-dashed border-zinc-300 dark:border-zinc-800 p-12 text-center bg-white/50 dark:bg-[#111726]/40">
             <BookOpen className="h-10 w-10 mx-auto text-zinc-400 dark:text-zinc-600 mb-3" />
             <p className="text-base font-semibold text-zinc-700 dark:text-zinc-300">
-              No public lead magnets published yet
+              No public funnels published yet
             </p>
             <p className="text-xs text-zinc-500 dark:text-zinc-500 mt-1">
               Check back soon for new resources and guides.
@@ -456,7 +456,7 @@ export default function PublicProfileView({
           <p className="flex items-center justify-center gap-1.5">
             <span>Powered by</span>
             <Link
-              href="https://magnets.bdatech.in"
+              href="https://funnels.co.in"
               className="font-semibold text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white transition"
             >
               Funnels

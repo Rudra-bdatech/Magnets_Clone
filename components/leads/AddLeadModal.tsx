@@ -116,7 +116,7 @@ export const AddLeadModal = memo(function AddLeadModal({
 
               <div>
                 <label className="block font-semibold text-zinc-700 dark:text-zinc-300 mb-1">
-                  Associated Lead Magnet
+                  Associated Funnel
                 </label>
                 <select
                   value={newLeadMagnet}

@@ -276,7 +276,7 @@ export default function FunnelShowcase() {
                   <div className="p-2.5 sm:p-3 rounded-xl bg-zinc-50 dark:bg-white/[0.03] border border-zinc-200/70 dark:border-white/5 space-y-1.5 min-w-0">
                     <div className="flex items-center justify-between text-xs">
                       <span className="font-bold text-zinc-800 dark:text-zinc-200 flex items-center gap-1.5">
-                        <Wand2 className="h-3.5 w-3.5 text-[#0066B2] dark:text-[#38BDF8]" /> AI Magnet Generator
+                        <Wand2 className="h-3.5 w-3.5 text-[#0066B2] dark:text-[#38BDF8]" /> AI Funnel Generator
                       </span>
                       <span className="text-[9px] font-extrabold px-1.5 py-0.5 rounded bg-[#0066B2]/10 text-[#0066B2] dark:text-[#38BDF8]">
                         Ready

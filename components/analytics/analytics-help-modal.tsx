@@ -124,7 +124,7 @@ export default function AnalyticsHelpModal({ isOpen, onClose }: AnalyticsHelpMod
                 <div className="rounded-2xl border border-[#0066B2]/30 bg-zinc-50/70 dark:bg-[#121212] p-5 space-y-2.5 shadow-xs">
                   <h4 className="text-base font-bold text-zinc-900 dark:text-white">Analytics</h4>
                   <p className="text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed">
-                    Open a lead magnet and choose Analytics to see total signups, unique people, tracked visits and conversions, conversion rate, engagement, and results from the after-signup experience. Total signups include repeat requests. Conversion rate uses only signups matched to a tracked visit.
+                    Open a funnel and choose Analytics to see total signups, unique people, tracked visits and conversions, conversion rate, engagement, and results from the after-signup experience. Total signups include repeat requests. Conversion rate uses only signups matched to a tracked visit.
                   </p>
                 </div>
 
@@ -195,11 +195,11 @@ export default function AnalyticsHelpModal({ isOpen, onClose }: AnalyticsHelpMod
               {/* Bottom Action Button */}
               <div className="pt-3 pb-2">
                 <Link
-                  href="/dashboard/leadmagnets"
+                  href="/dashboard/landing-page"
                   onClick={onClose}
                   className="inline-flex items-center gap-2 rounded-xl bg-[#0066B2] hover:bg-[#005799] px-5 py-2.5 text-xs font-bold text-white transition shadow-md cursor-pointer active:scale-98"
                 >
-                  <span>Open Lead magnets</span>
+                  <span>Open Funnels</span>
                   <ArrowRight className="h-4 w-4" />
                 </Link>
               </div>

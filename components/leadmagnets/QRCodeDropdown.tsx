@@ -107,7 +107,7 @@ export default function QRCodeDropdown({
   const origin =
     typeof window !== "undefined" && window.location.origin
       ? window.location.origin
-      : process.env.NEXT_PUBLIC_APP_URL || "https://magnets.bdatech.in";
+      : process.env.NEXT_PUBLIC_APP_URL || "https://funnels.co.in";
 
   const publicUrl = isLockedPdf
     ? `${origin}/pdf-viewer/${page.id}`
@@ -205,7 +205,7 @@ export default function QRCodeDropdown({
       ctx.fillStyle = selectedTheme.canvasText;
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
-      const title = (page.name || "Lead Magnet").slice(0, 30);
+      const title = (page.name || "Funnel").slice(0, 30);
       ctx.fillText(title, width / 2, 60);
 
       // Handle
@@ -314,7 +314,7 @@ export default function QRCodeDropdown({
           className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-semibold text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 transition cursor-pointer"
         >
           <Trash2 className="h-4 w-4 text-red-400" />
-          <span>Delete lead magnet</span>
+          <span>Delete funnel</span>
         </button>
       </div>
     );
@@ -353,7 +353,7 @@ export default function QRCodeDropdown({
             className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider border ${selectedTheme.badgeBg}`}
           >
             {isLockedPdf ? <Lock className="h-2.5 w-2.5" /> : <Sparkles className="h-2.5 w-2.5" />}
-            <span>{isLockedPdf ? "Locked PDF" : "Lead Magnet"}</span>
+            <span>{isLockedPdf ? "Locked PDF" : "Funnel"}</span>
           </div>
 
           <p className={`mt-1.5 text-xs font-bold line-clamp-1 max-w-[220px] ${selectedTheme.textColor}`}>

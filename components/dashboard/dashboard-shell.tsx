@@ -1343,7 +1343,7 @@ export default function DashboardShell({
                 {/* Modal Header */}
                 <div className="flex items-center justify-between">
                   <h3 className="text-base font-bold text-zinc-900 dark:text-white">
-                    Create a magnet
+                    Create a funnel
                   </h3>
                   <button
                     type="button"

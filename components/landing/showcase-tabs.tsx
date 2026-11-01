@@ -54,7 +54,7 @@ export default function ShowcaseTabs() {
   // 3: 8 Designer Templates & Live Theme Engine
   // 4: Automated Drip Sequence Follow-Up Workflow
   // 5: Live Telemetry & Captured Leads CRM
-  // 6: Brand Graphic Slide ("Introducing lead magnets & automated nurture in LeadMagnets") sliding up from bottom
+  // 6: Brand Graphic Slide ("Introducing funnels & automated nurture in Funnels") sliding up from bottom
   const [phase, setPhase] = useState<number>(0);
   const [cursorPosPx, setCursorPosPx] = useState<{ x: number; y: number }>({ x: 300, y: 240 });
   const [isClicking, setIsClicking] = useState<boolean>(false);
@@ -468,7 +468,7 @@ export default function ShowcaseTabs() {
       title: "Upgrade & Full Access Offer",
       delay: "120 Hours (Auto-cancels if converted)",
       subject: "⚡ Ready to deploy your own lead engines in 60 seconds?",
-      preview: "Hey Sarah, want to build automated lead magnets with locked PDFs and instant webhooks? Activate your full workspace.",
+      preview: "Hey Sarah, want to build automated funnels with locked PDFs and instant webhooks? Activate your full workspace.",
       stat: "Auto-stops on Conversion ✓",
       cta: "🚀 Launch Workspace",
     },
@@ -532,7 +532,7 @@ export default function ShowcaseTabs() {
               <div className="grid grid-cols-1 md:grid-cols-12 gap-6 flex-1 items-center">
                 <div className="md:col-span-7 space-y-3.5">
                   <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#0066B2]/10 text-[#0066B2] dark:text-[#38BDF8] text-xs font-bold border border-[#0066B2]/20">
-                    <FileText className="h-3.5 w-3.5" /> High-Converting Lead Magnet
+                    <FileText className="h-3.5 w-3.5" /> High-Converting Funnel
                   </div>
 
                   <h3 className="text-2xl sm:text-3xl font-black text-zinc-900 dark:text-white tracking-tight leading-snug">
@@ -677,7 +677,7 @@ export default function ShowcaseTabs() {
                     </div>
                     <div className="font-mono text-[10px] sm:text-[11px] text-zinc-600 dark:text-zinc-300 bg-white dark:bg-[#0e0e11] p-1.5 sm:p-2 rounded-lg border border-zinc-200/60 dark:border-white/5 space-y-0.5">
                       <div className="text-zinc-400 text-[9px] sm:text-[10px]">Host: @</div>
-                      <div className="truncate text-purple-600 dark:text-purple-300 font-bold">leadmagnets-verify=a8f9c2</div>
+                      <div className="truncate text-purple-600 dark:text-purple-300 font-bold">funnels-verify=a8f9c2</div>
                     </div>
                   </div>
 
@@ -697,7 +697,7 @@ export default function ShowcaseTabs() {
                     </div>
                     <div className="font-mono text-[10px] sm:text-[11px] text-zinc-600 dark:text-zinc-300 bg-white dark:bg-[#0e0e11] p-1.5 sm:p-2 rounded-lg border border-zinc-200/60 dark:border-white/5 space-y-0.5">
                       <div className="text-zinc-400 text-[9px] sm:text-[10px]">Host: get ➔ Target:</div>
-                      <div className="truncate text-[#0066B2] dark:text-[#38BDF8] font-bold">cname.leadmagnets.io</div>
+                      <div className="truncate text-[#0066B2] dark:text-[#38BDF8] font-bold">cname.funnels.co.in</div>
                     </div>
                   </div>
                 </div>
@@ -1059,7 +1059,7 @@ export default function ShowcaseTabs() {
                 className="relative z-10 w-[94%] sm:w-[90%] max-w-2xl bg-[#0F0F11] text-white rounded-l-2xl sm:rounded-l-3xl rounded-r-[140px] sm:rounded-r-[220px] p-6 sm:p-12 shadow-[0_20px_50px_rgba(0,0,0,0.5)] flex flex-col justify-center min-h-[220px] sm:min-h-[280px]"
               >
                 <h2 className="text-2xl sm:text-4xl lg:text-5xl font-normal tracking-tight text-white leading-[1.2] max-w-md">
-                  Introducing <strong className="font-extrabold text-white">lead magnets &amp; automated nurture</strong> in{" "}
+                  Introducing <strong className="font-extrabold text-white">funnels &amp; automated nurture</strong> in{" "}
                   <span className="font-extrabold text-white">Funnels</span>
                 </h2>
               </motion.div>

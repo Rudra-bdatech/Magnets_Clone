@@ -160,7 +160,7 @@ export const DisconnectDomainModal = memo(function DisconnectDomainModal({
                     <code className="rounded bg-rose-500/10 px-1 py-0.5 font-mono text-[11px] font-semibold text-rose-600 dark:text-rose-300">
                       {displayHost}
                     </code>{" "}
-                    will no longer be able to access your lead magnets.
+                    will no longer be able to access your funnels.
                   </p>
                 </div>
                 <div className="flex items-start gap-2.5">

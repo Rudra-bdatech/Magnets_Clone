@@ -23,7 +23,7 @@ import {
 
 const ONBOARDING_STEPS = [
   { step: 1, title: "Workspace & Handle", label: "01. Workspace" },
-  { step: 2, title: "Choose Format", label: "02. Magnet Type" },
+  { step: 2, title: "Choose Format", label: "02. Funnel Type" },
   { step: 3, title: "Name & Launch", label: "03. Launch" },
 ];
 
@@ -282,7 +282,7 @@ function OnboardingContent() {
           router.push(`/dashboard/leadmagnets/${pageId}`);
         }
       } else {
-        alert("Failed to initialize your lead magnet. Please try again.");
+        alert("Failed to initialize your funnel. Please try again.");
       }
     } catch (err) {
       console.error(err);
@@ -410,7 +410,7 @@ function OnboardingContent() {
                   Welcome, {userName}! Let's set up your workspace
                 </h2>
                 <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
-                  Claim your public handle and configure your brand identity. All your lead magnets will live under this profile.
+                  Claim your public handle and configure your brand identity. All your funnels will live under this profile.
                 </p>
               </div>
 
@@ -453,7 +453,7 @@ function OnboardingContent() {
                     />
                   </div>
                   <p className="text-[11px] text-zinc-500 mt-1">
-                    Your public lead magnet catalog will be viewable at this address.
+                    Your public funnel catalog will be viewable at this address.
                   </p>
                 </div>
 
@@ -490,10 +490,10 @@ function OnboardingContent() {
                   <KeyRound className="h-3.5 w-3.5" /> Step 2: Choose Engine
                 </span>
                 <h2 className="text-2xl font-extrabold text-zinc-900 dark:text-white tracking-tight">
-                  How do you want to deliver your first lead magnet?
+                  How do you want to deliver your first funnel?
                 </h2>
                 <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400">
-                  Select the conversion model for your first magnet. You can create as many of both types as you want anytime.
+                  Select the conversion model for your first funnel. You can create as many of both types as you want anytime.
                 </p>
               </div>
 
@@ -591,7 +591,7 @@ function OnboardingContent() {
                   <Sparkles className="h-3.5 w-3.5" /> Step 3: Name & Launch
                 </span>
                 <h2 className="text-2xl font-extrabold text-zinc-900 dark:text-white tracking-tight">
-                  Name your first lead magnet
+                  Name your first funnel
                 </h2>
                 <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400">
                   Give your resource a title. We will initialize your draft so you can customize and publish it immediately.
@@ -602,7 +602,7 @@ function OnboardingContent() {
                 {/* Title Input */}
                 <div>
                   <label className="block text-xs font-bold text-zinc-700 dark:text-zinc-300 mb-1.5">
-                    Lead Magnet Title
+                    Funnel Title
                   </label>
                   <input
                     type="text"
@@ -675,7 +675,7 @@ function OnboardingContent() {
                   </div>
 
                   <h4 className="text-sm font-bold text-zinc-900 dark:text-white">
-                    {pageName.trim() || (magnetType === "locked-pdf" ? "Locked PDF Document" : "My Lead Magnet")}
+                    {pageName.trim() || (magnetType === "locked-pdf" ? "Locked PDF Document" : "My Funnel")}
                   </h4>
                   <div className="mt-2 flex items-center gap-1.5 text-xs font-mono text-[#0066B2] dark:text-[#38BDF8]">
                     <Globe className="h-3.5 w-3.5 shrink-0" />
@@ -720,7 +720,7 @@ function OnboardingContent() {
                 {creatingPage ? (
                   <>
                     <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
-                    Creating Your Lead Magnet...
+                    Creating Your Funnel...
                   </>
                 ) : (
                   <>

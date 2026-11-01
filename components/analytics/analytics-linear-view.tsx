@@ -165,7 +165,7 @@ export default function AnalyticsLinearView({
 
   // Production-Grade Formatted Excel Spreadsheet Export Handler
   const exportToCSV = () => {
-    const reportTitle = isPerMagnet ? page?.name || "Lead Magnet" : account?.name || "Funnels Account";
+    const reportTitle = isPerMagnet ? page?.name || "Funnel" : account?.name || "Funnels Account";
 
     const escapeXml = (str: string) =>
       String(str || "")
@@ -209,7 +209,7 @@ export default function AnalyticsLinearView({
    <Row ss:Height="28">
     <Cell ss:StyleID="HeaderStyle"><Data ss:Type="String">Name</Data></Cell>
     <Cell ss:StyleID="HeaderStyle"><Data ss:Type="String">Email Address</Data></Cell>
-    <Cell ss:StyleID="HeaderStyle"><Data ss:Type="String">Lead Magnet Title</Data></Cell>
+    <Cell ss:StyleID="HeaderStyle"><Data ss:Type="String">Funnel Title</Data></Cell>
     <Cell ss:StyleID="HeaderStyle"><Data ss:Type="String">Signed Up Date</Data></Cell>
     <Cell ss:StyleID="HeaderStyle"><Data ss:Type="String">Device Type</Data></Cell>
     <Cell ss:StyleID="HeaderStyle"><Data ss:Type="String">Traffic Source</Data></Cell>
@@ -217,7 +217,7 @@ export default function AnalyticsLinearView({
    </Row>\n`;
 
     leads.forEach((l, idx) => {
-      const leadMagnetName = (isPerMagnet && page?.name) ? page.name : (l.page || page?.name || "Lead Magnet");
+      const leadMagnetName = (isPerMagnet && page?.name) ? page.name : (l.page || page?.name || "Funnel");
       const device = l.deviceType
         ? l.deviceType.charAt(0).toUpperCase() + l.deviceType.slice(1)
         : idx % 3 === 0
@@ -454,7 +454,7 @@ export default function AnalyticsLinearView({
                 className="relative z-20 flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-[#0066B2] text-white hover:bg-[#005291] dark:bg-white dark:text-zinc-950 font-bold text-xs dark:hover:bg-zinc-200 transition-all shadow-md cursor-pointer select-none"
               >
                 <Pencil className="h-3.5 w-3.5" />
-                <span>Edit magnet</span>
+                <span>Edit funnel</span>
               </Link>
             )}
           </div>

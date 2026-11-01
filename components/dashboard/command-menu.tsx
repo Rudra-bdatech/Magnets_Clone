@@ -28,7 +28,7 @@ import type { MagnetPage, Sequence, Lead } from "@/lib/data";
 
 interface CommandItem {
   id: string;
-  category: "Navigation" | "Lead Magnets" | "Email Sequences" | "Quick Actions";
+  category: "Navigation" | "Funnels" | "Email Sequences" | "Quick Actions";
   title: string;
   subtitle?: string;
   icon: any;
@@ -125,7 +125,7 @@ export function CommandMenu({
         id: "nav-dash",
         category: "Navigation",
         title: "Dashboard Overview",
-        subtitle: "Key metrics and active magnets summary",
+        subtitle: "Key metrics and active funnels summary",
         icon: LayoutDashboard,
         action: () => {
           onClose();
@@ -205,8 +205,8 @@ export function CommandMenu({
       const isLocked = p.template === "locked-pdf" || (p as any).isLockedPdf;
       list.push({
         id: `magnet-${p.id}`,
-        category: "Lead Magnets",
-        title: p.name || "Untitled Magnet",
+        category: "Funnels",
+        title: p.name || "Untitled Funnel",
         subtitle: `${p.views || 0} views • ${p.signups || 0} leads (${isLocked ? "Locked PDF" : "Landing Page"})`,
         icon: isLocked ? Lock : FileText,
         badge: isLocked ? "PDF" : "Page",
@@ -320,7 +320,7 @@ export function CommandMenu({
                 type="text"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder="Type a command or search magnets, sequences, leads..."
+                placeholder="Type a command or search funnels, sequences, leads..."
                 className="w-full bg-transparent text-sm font-medium text-zinc-900 dark:text-white placeholder:text-zinc-400 focus:outline-none"
               />
               <kbd className="hidden sm:inline-flex items-center gap-0.5 rounded border border-zinc-200 dark:border-white/10 bg-zinc-100 dark:bg-white/[0.06] px-1.5 py-0.5 text-[10px] font-bold text-zinc-500 dark:text-zinc-400">

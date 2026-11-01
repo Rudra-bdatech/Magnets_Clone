@@ -62,7 +62,7 @@ export default function HeroDashboard() {
                 </svg>
               </div>
               <div>
-                <h3 className="text-lg font-bold text-zinc-900 dark:text-white">High-Converting Lead Magnet Builder</h3>
+                <h3 className="text-lg font-bold text-zinc-900 dark:text-white">High-Converting Funnel Builder</h3>
                 <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
                   Create beautiful opt-in pages, capture emails, and automate resource delivery seamlessly.
                 </p>

@@ -464,7 +464,7 @@ export const MobileAssetCard = memo(function MobileAssetCard({
                       <span className="truncate">
                         {linkedPages.length === 1
                           ? `Attached to "${linkedPages[0].name}"`
-                          : `Attached to ${linkedPages.length} magnets`}
+                          : `Attached to ${linkedPages.length} funnels`}
                       </span>
                     </span>
                   ) : (

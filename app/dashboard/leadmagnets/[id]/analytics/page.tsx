@@ -9,7 +9,7 @@ import AnalyticsHelpModal from "@/components/analytics/analytics-help-modal";
 import { type MagnetPage, type Account, type Lead } from "@/lib/data";
 import { loadPages, loadAccount, loadLeads, syncWithDatabase } from "@/lib/store";
 
-export default function LeadMagnetAnalyticsPage() {
+export default function FunnelAnalyticsPage() {
   const params = useParams<{ id: string }>();
   const [account, setAccount] = useState<Account | null>(null);
   const [page, setPage] = useState<MagnetPage | null>(null);

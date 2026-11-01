@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   title: "Terms of Service",
   description: "Funnels Terms of Service.",
   robots: { index: true, follow: true },
-  alternates: { canonical: "https://magnets.bdatech.in/terms" },
+  alternates: { canonical: "https://funnels.co.in/terms" },
 };
 
 export default function TermsPage() {
@@ -23,7 +23,7 @@ export default function TermsPage() {
           </p>
           <LegalSection title="1. What Funnels does">
             <p>
-              Funnels lets you create branded lead-magnet pages, collect signups, deliver resources by email, and optionally run
+              Funnels lets you create branded funnel pages, collect signups, deliver resources by email, and optionally run
               follow-up emails and connected integrations. Pages may be hosted at a Funnels URL or, if you choose, on a custom
               domain you connect. Funnels may be offered free of charge or with different plans and features over time.
             </p>

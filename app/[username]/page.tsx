@@ -86,7 +86,7 @@ export default async function UserProfileRoute({
   const serializedPages = pages.map((page: any) => ({
     id: page._id?.toString() || page.id,
     slug: page.slug || page.id,
-    name: page.name || "Untitled Lead Magnet",
+    name: page.name || "Untitled Funnel",
     headline: page.headline || "",
     subheadline: page.subheadline || "",
     cta: page.cta || "Get instant access",

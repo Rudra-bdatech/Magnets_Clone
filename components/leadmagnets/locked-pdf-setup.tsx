@@ -291,7 +291,7 @@ export default function LockedPdfSetup({
   const effectiveAppUrl =
     typeof window !== "undefined"
       ? window.location.origin
-      : appUrl || "https://magnets.bdatech.in";
+      : appUrl || "https://funnels.co.in";
   const viewerUrl = `${effectiveAppUrl}/pdf-viewer/${magnetId}`;
 
   useEffect(() => {

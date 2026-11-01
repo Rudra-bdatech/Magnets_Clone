@@ -179,7 +179,7 @@ export default function CheckoutPage() {
                 Lifetime License
               </p>
               <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-zinc-900 dark:text-white">
-                Magnets Pro
+                Funnels Pro
               </h1>
               <div className="mt-3 flex items-baseline gap-2">
                 <span className="text-3xl sm:text-4xl font-black text-zinc-900 dark:text-white">
@@ -287,7 +287,7 @@ export default function CheckoutPage() {
                     }`}
                   >
                     <Globe2 className="h-3.5 w-3.5" />
-                    <span>Global Cards ($29)</span>
+                    <span>Global Cards ($67)</span>
                   </button>
                 </div>
               </div>
@@ -295,7 +295,7 @@ export default function CheckoutPage() {
               {/* Order Breakdown */}
               <div className="space-y-3.5 text-xs text-zinc-600 dark:text-zinc-400 pb-5 border-b border-zinc-200 dark:border-white/10">
                 <div className="flex items-center justify-between font-medium text-zinc-900 dark:text-white">
-                  <span>Magnets Pro (Lifetime License)</span>
+                  <span>Funnels Pro (Lifetime License)</span>
                   <span>₹{originalPrice.toLocaleString("en-IN")}.00</span>
                 </div>
 
@@ -464,7 +464,7 @@ export default function CheckoutPage() {
 
       {/* Footer */}
       <footer className="border-t border-zinc-200/80 dark:border-white/5 py-4 px-6 sm:px-12 text-center text-xs text-zinc-400">
-        <span>© {new Date().getFullYear()} Magnets. All rights reserved.</span>
+        <span>© {new Date().getFullYear()} Funnels. All rights reserved.</span>
       </footer>
     </div>
   );

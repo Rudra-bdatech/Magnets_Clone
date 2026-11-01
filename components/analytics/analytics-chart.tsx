@@ -347,7 +347,7 @@ export default function AnalyticsChart({
           <BarChart2 className="h-8 w-8 text-zinc-400 dark:text-zinc-600 mb-3" />
           <h4 className="text-sm font-bold text-zinc-900 dark:text-white">No visits recorded yet</h4>
           <p className="text-xs text-zinc-500 dark:text-zinc-400 text-center max-w-md mt-1 leading-relaxed">
-            Publish and share your lead magnets. New visits and successful form submissions will appear here automatically.
+            Publish and share your funnels. New visits and successful form submissions will appear here automatically.
           </p>
         </div>
       ) : (

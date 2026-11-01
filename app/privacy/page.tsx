@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   title: "Privacy Policy",
   description: "Funnels Privacy Policy.",
   robots: { index: true, follow: true },
-  alternates: { canonical: "https://magnets.bdatech.in/privacy" },
+  alternates: { canonical: "https://funnels.co.in/privacy" },
 };
 
 export default function PrivacyPage() {
@@ -87,7 +87,7 @@ export default function PrivacyPage() {
             <p>We use information to:</p>
             <ul className="list-disc space-y-2 pl-5 text-zinc-700 dark:text-zinc-300">
               <li>Provide, secure, and improve the service, including account authentication and abuse prevention.</li>
-              <li>Host and serve lead-magnet pages, uploaded images, and the resource email requested by a subscriber.</li>
+              <li>Host and serve funnel pages, uploaded images, and the resource email requested by a subscriber.</li>
               <li>Run follow-up email sequences configured by an account holder and honour a recipient&apos;s request to stop those follow-ups.</li>
               <li>
                 Stop a configured follow-up sequence when a connected calendar provider reports that the same person booked a call,

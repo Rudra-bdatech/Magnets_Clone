@@ -34,12 +34,12 @@ export default function HelpPage() {
 
   const guides = [
     {
-      title: "Creating your first lead magnet",
+      title: "Creating your first funnel",
       description: "Learn how to build a landing page, customize styling, and add email sequences in minutes.",
     },
     {
       title: "Connecting a custom domain",
-      description: "How to point your CNAME records to publish lead magnets on your own branding.",
+      description: "How to point your CNAME records to publish funnels on your own branding.",
     },
     {
       title: "Integrating with your CRM",

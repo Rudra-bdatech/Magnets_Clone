@@ -12,7 +12,7 @@ export async function GET(req: NextRequest) {
     const username = searchParams.get("username") || "creator";
     const badge = searchParams.get("badge") || "🎁 FREE RESOURCE";
     const theme = searchParams.get("theme") || "gradient";
-    const url = searchParams.get("url") || `magnets.bdatech.in/${username}`;
+    const url = searchParams.get("url") || `funnels.co.in/${username}`;
 
     // Theme color palettes
     let bgStyle: any = {

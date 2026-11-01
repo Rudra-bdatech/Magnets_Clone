@@ -118,7 +118,7 @@ export const MobileSequenceCard = memo(function MobileSequenceCard({
                 </span>
               ) : (
                 <span className="inline-flex items-center rounded bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400 border border-emerald-200/60 dark:border-emerald-900/40 text-[8.5px] font-bold px-1 py-0.2 shrink-0">
-                  Lead Magnet
+                  Funnel
                 </span>
               )}
             </div>
@@ -209,7 +209,7 @@ export const MobileSequenceCard = memo(function MobileSequenceCard({
                   </span>
                 ) : (
                   <span className="inline-flex items-center rounded bg-emerald-50/80 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border border-emerald-200/50 dark:border-emerald-900/40 text-[9px] font-semibold px-1.5 py-0.2 shrink-0">
-                    Lead Magnet
+                    Funnel
                   </span>
                 )}
               </div>

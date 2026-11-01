@@ -9,6 +9,6 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ["/api/", "/dashboard/"],
       },
     ],
-    sitemap: "https://magnets.bdatech.in/sitemap.xml",
+    sitemap: "https://funnels.co.in/sitemap.xml",
   };
 }

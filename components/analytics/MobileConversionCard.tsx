@@ -113,7 +113,7 @@ export default function MobileConversionCard({ lead, isPerMagnet = false }: Mobi
         {!isPerMagnet ? (
           <div className="flex items-center gap-1 text-zinc-600 dark:text-zinc-400 font-medium truncate min-w-0">
             <FileText className="h-3 w-3 text-[#0066B2] dark:text-cyan-400 shrink-0" />
-            <span className="truncate">{lead.page || "Lead Magnet"}</span>
+            <span className="truncate">{lead.page || "Funnel"}</span>
           </div>
         ) : (
           <div className="flex items-center gap-1 text-zinc-500 dark:text-zinc-400 font-mono text-[10px]">

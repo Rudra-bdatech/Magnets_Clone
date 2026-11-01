@@ -123,7 +123,7 @@ export default function NewPage() {
             </span>
             <div>
               <h2 className="text-lg font-semibold text-ink-950 dark:text-white">Create a new page</h2>
-              <p className="text-sm text-ink-500 dark:text-ink-400">Name your lead magnet or generate with AI.</p>
+              <p className="text-sm text-ink-500 dark:text-ink-400">Name your funnel or generate with AI.</p>
             </div>
           </div>
 
@@ -152,7 +152,7 @@ export default function NewPage() {
           <div>
             <FieldLabel>Your Funnels URL</FieldLabel>
             <div className="flex h-9 items-center gap-1 overflow-hidden rounded-md border border-ink-200 bg-ink-50 px-3 text-sm text-ink-700 dark:border-ink-700 dark:bg-ink-950 dark:text-ink-300">
-              <span className="text-ink-500 dark:text-ink-400">leadmagnets.so/{account?.username || ""}/</span>
+              <span className="text-ink-500 dark:text-ink-400">funnels.co.in/{account?.username || ""}/</span>
               <span className="truncate font-medium">{slug}</span>
             </div>
             <p className="mt-1.5 text-xs text-ink-500 dark:text-ink-400">

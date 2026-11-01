@@ -189,7 +189,7 @@ export default function SequenceTab({
               <div>
                 <h3 className={`text-base font-extrabold ${(account?.themeMode || "light") === "dark" ? "text-white" : "text-zinc-900"}`}>Follow-up sequence</h3>
                 <p className="text-xs text-zinc-400 mt-1 leading-relaxed">
-                  Send extra emails after the lead magnet email. Delays are counted from the previous email or from signup for the first one.
+                  Send extra emails after the funnel delivery email. Delays are counted from the previous email or from signup for the first one.
                 </p>
                 <p className="text-xs text-zinc-400 mt-0.5 leading-relaxed">
                   Funnels creates the events, templates, and automation for this sequence after your sender domain is ready.

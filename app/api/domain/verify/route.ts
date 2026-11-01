@@ -352,7 +352,7 @@ export async function POST(req: Request) {
 
     // Per-user token: use the authenticated account's email so tokens are unique per user
     const expectedValue = getDomainVerificationToken(cleanDomain, account.email);
-    const verificationHost = "leadmagnets-verify";
+    const verificationHost = "funnels-verify";
     const fullVerificationHost = `${verificationHost}.${cleanDomain}`;
     const targetCname = VERCEL_CNAME_TARGET;
     const fullSubdomainHost = formatFullHost(cleanDomain, cleanSubdomain);
@@ -370,6 +370,18 @@ export async function POST(req: Request) {
           isVerified = true;
           dnsMessage = "Domain ownership successfully verified!";
         }
+      }
+      if (!isVerified) {
+        try {
+          const legacyLookup = await queryDns(`leadmagnets-verify.${cleanDomain}`, "TXT");
+          if (!legacyLookup.lookupFailed) {
+            const legacyRecords = readTxtValues(legacyLookup.records);
+            if (legacyRecords.some((txt) => txt === expectedValue)) {
+              isVerified = true;
+              dnsMessage = "Domain ownership successfully verified!";
+            }
+          }
+        } catch (_) { }
       }
     } catch (dnsErr) {
       console.warn("DNS TXT check failed:", dnsErr);

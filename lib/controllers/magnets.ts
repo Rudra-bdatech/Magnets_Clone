@@ -294,7 +294,7 @@ export async function handleSendTestSequenceEmail(data: any, normEmail: string |
   const rawBody = String(data?.bodyText || "This is a test preview of your sequence email.");
   const bodyText = escapeHtml(rawBody).replace(/\n/g, "<br/>");
 
-  const appUrl = (process.env.NEXTAUTH_URL || "https://leadmagnets.app").replace(/\/+$/, "");
+  const appUrl = (process.env.NEXTAUTH_URL || "https://funnels.co.in").replace(/\/+$/, "");
   const logoUrl = `${appUrl}/brand/custom-logo-light.png`;
 
   let senderName = "Funnels";

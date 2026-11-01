@@ -21,15 +21,15 @@ const geistMono = localFont({
   weight: "100 900",
 });
 
-const SITE = "https://magnets.bdatech.in";
+const SITE = "https://funnels.co.in";
 
 export const metadata: Metadata = {
   title: {
-    default: "Lead Magnet Builder for Landing Pages and Email Capture",
-    template: "%s. Funnels",
+    default: "Funnels | High-Converting Funnel Builder & Lead Generation",
+    template: "%s | Funnels",
   },
   description:
-    "Create lead magnet landing pages, capture emails, deliver resources instantly, and follow up automatically. Publish on Funnels or your own domain.",
+    "Create high-converting funnels, capture emails, deliver resources instantly, and follow up automatically. Publish on Funnels or your own domain.",
   applicationName: "Funnels",
   authors: [{ name: "Funnels", url: SITE }],
   creator: "Funnels",
@@ -46,16 +46,16 @@ export const metadata: Metadata = {
     siteName: "Funnels",
     locale: "en_US",
     url: SITE,
-    title: "Funnels | Lead Magnet Builder",
+    title: "Funnels | High-Converting Funnel Builder",
     description:
-      "Create a lead magnet page, capture emails, deliver the resource, and follow up from one place.",
-    images: [{ url: "/landing-dashboard.png", width: 1280, height: 720, alt: "Funnels lead magnet builder dashboard" }],
+      "Create high-converting funnels, capture leads, deliver resources instantly, and follow up automatically.",
+    images: [{ url: "/landing-dashboard.png", width: 1280, height: 720, alt: "Funnels funnel builder dashboard" }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Funnels | Lead Magnet Builder",
+    title: "Funnels | High-Converting Funnel Builder",
     description:
-      "Create a lead magnet page, capture emails, deliver the resource, and follow up from one place.",
+      "Create high-converting funnels, capture leads, deliver resources instantly, and follow up automatically.",
     images: ["/landing-dashboard.png"],
   },
   icons: {
@@ -78,7 +78,7 @@ export const viewport: Viewport = {
 
 const themeScript = `
   try {
-    var saved = localStorage.getItem('leadmagnets-theme');
+    var saved = localStorage.getItem('funnels-theme') || localStorage.getItem('leadmagnets-theme');
     var theme = saved === 'light' || saved === 'dark'
       ? saved
       : (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
@@ -105,8 +105,8 @@ export default function RootLayout({
         <link rel="preload" as="image" href="/brand/custom-logo-light.webp" type="image/webp" />
         <link rel="preload" as="image" href="/brand/custom-logo.webp" type="image/webp" />
         {/* Resource hints: preconnect to same-origin CDN for /_next/static chunks */}
-        <link rel="preconnect" href="https://magnets.bdatech.in" crossOrigin="anonymous" />
-        <link rel="dns-prefetch" href="https://magnets.bdatech.in" />
+        <link rel="preconnect" href="https://funnels.co.in" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://funnels.co.in" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />

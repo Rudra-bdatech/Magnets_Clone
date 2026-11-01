@@ -1621,7 +1621,7 @@ export default function LinkedInAutomationPage() {
                             {
                               n: 5,
                               title: 'Add the auto-reply: LinkedIn â†’ "Create a Comment Reply"',
-                              body: 'After the HTTP module, add LinkedIn â†’ "Create a Comment Reply". For Comment ID, map the {{1.id}} field from the trigger. For Message, write your CTA â€” for example: "Hey {{1.author.firstName}}! ðŸ‘‹ Here is your free resource: https://magnets.bdatech.in/your-username/your-magnet â€” enjoy! Let me know if you have questions."',
+                              body: 'After the HTTP module, add LinkedIn â†’ "Create a Comment Reply". For Comment ID, map the {{1.id}} field from the trigger. For Message, write your CTA â€” for example: "Hey {{1.author.firstName}}! ðŸ‘‹ Here is your free resource: https://funnels.co.in/your-username/your-magnet â€” enjoy! Let me know if you have questions."',
                             },
                             {
                               n: 6,

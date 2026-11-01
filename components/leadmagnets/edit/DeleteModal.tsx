@@ -15,9 +15,9 @@ interface DeleteModalProps {
 export default function DeleteModal({
   onConfirm,
   onClose,
-  title = "Delete this magnet?",
+  title = "Delete this funnel?",
   description = "This removes the page and stops it serving. Any signups already collected stay on your list.",
-  confirmLabel = "Delete magnet",
+  confirmLabel = "Delete funnel",
 }: DeleteModalProps) {
   const isMobile = useIsMobile();
 

@@ -10,7 +10,7 @@ const faqs: BouncyAccordionItem[] = [
     id: "setup-domains",
     category: "SETUP & DOMAINS",
     title: "Do I need technical skills or a custom domain to start?",
-    description: "Not at all. You can generate and publish your lead magnet on a free Funnels subdomain in 60 seconds. Custom CNAME subdomain integration (e.g. get.yourdomain.com) with auto-SSL is available whenever you are ready.",
+    description: "Not at all. You can generate and publish your funnel on a free Funnels subdomain in 60 seconds. Custom CNAME subdomain integration (e.g. get.yourdomain.com) with auto-SSL is available whenever you are ready.",
     icon: <Wand2 className="h-3 w-3" aria-hidden="true" />,
     badgeColor: "bg-blue-500/10 text-[#0066B2] dark:text-[#38BDF8] border-[#0066B2]/20",
   },
@@ -61,7 +61,7 @@ export default function FaqAccordion() {
           <div>
             <h4 className="text-base font-extrabold text-zinc-900 dark:text-white">Still have questions?</h4>
             <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 mt-0.5">
-              Our team is here to help you set up your high-converting lead magnet engines.
+              Our team is here to help you set up your high-converting funnel engines.
             </p>
           </div>
         </div>

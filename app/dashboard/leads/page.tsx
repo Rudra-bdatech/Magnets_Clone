@@ -87,7 +87,7 @@ export default function LeadsPage() {
   const [isStatusFilterOpen, setIsStatusFilterOpen] = useState(false);
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
   const [isMobileMoreOpen, setIsMobileMoreOpen] = useState(false);
-  const [filterMagnet, setFilterMagnet] = useState("All lead magnets");
+  const [filterMagnet, setFilterMagnet] = useState("All funnels");
   const [filterOpen, setFilterOpen] = useState(false);
   const [sortBy, setSortBy] = useState<"newest" | "oldest" | "name" | "email">("newest");
   const [isSortOpen, setIsSortOpen] = useState(false);
@@ -323,13 +323,13 @@ export default function LeadsPage() {
       const isLocked = checkIsLockedPdfLead(l);
       const isLinkedIn = checkIsLinkedInLead(l);
 
-      if (filterMagnet === "All lead magnets") {
+      if (filterMagnet === "All funnels" || filterMagnet === "All lead magnets") {
         matchMagnet = true;
       } else if (filterMagnet === "All LinkedIn Leads") {
         matchMagnet = isLinkedIn;
       } else if (filterMagnet === "All Locked PDFs") {
         matchMagnet = isLocked;
-      } else if (filterMagnet === "All Form Magnets") {
+      } else if (filterMagnet === "All Form Funnels" || filterMagnet === "All Form Magnets") {
         matchMagnet = !isLocked && !isLinkedIn;
       } else {
         matchMagnet = l.page === filterMagnet;
@@ -463,7 +463,7 @@ export default function LeadsPage() {
           }),
           sequence: pageId ? `${magnetTitle} Sequence` : "",
           status: "new",
-          source: "leadmagnets",
+          source: "funnels",
           tags: [],
           userEmail: currentUserEmail,
         };
@@ -722,7 +722,7 @@ function parseCsvLine(line: string): string[] {
           status: "new",
           sequence: "Imported Contact",
           tags: ["csv-import"],
-          source: "leadmagnets",
+          source: "funnels",
         });
       }
 
@@ -781,7 +781,7 @@ function parseCsvLine(line: string): string[] {
       return;
     }
 
-    const header = ["Email", "Name", "Lead Magnet", "Signup Date", "Leads Count", "Sequence Status"];
+    const header = ["Email", "Name", "Funnel", "Signup Date", "Leads Count", "Sequence Status"];
     const rows = exportTarget.map((l) => {
       const page = magnetPages.find((p) => p.id === l.pageId || p.name === l.page);
       const foundSeq = sequences.find(
@@ -818,7 +818,7 @@ function parseCsvLine(line: string): string[] {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    const filterSuffix = filterMagnet !== "All lead magnets" ? `_${filterMagnet.replace(/[^a-zA-Z0-9]/g, "_")}` : "";
+    const filterSuffix = filterMagnet !== "All funnels" && filterMagnet !== "All lead magnets" ? `_${filterMagnet.replace(/[^a-zA-Z0-9]/g, "_")}` : "";
     a.download = `leads${filterSuffix}_${new Date().toISOString().slice(0, 10)}.csv`;
     a.click();
     URL.revokeObjectURL(url);
@@ -1138,7 +1138,7 @@ function parseCsvLine(line: string): string[] {
               <Search className="h-4 w-4 text-zinc-400 shrink-0" />
               <input
                 type="text"
-                placeholder="Search leads by name, email, or magnet..."
+                placeholder="Search leads by name, email, or funnel..."
                 value={search}
                 onChange={(e) => {
                   setSearch(e.target.value);
@@ -1215,18 +1215,18 @@ function parseCsvLine(line: string): string[] {
                     <Linkedin className="h-3 w-3 text-[#0A66C2] dark:text-[#38BDF8] shrink-0" />
                   ) : filterMagnet === "All Locked PDFs" ? (
                     <Lock className="h-3 w-3 text-amber-500 dark:text-amber-400 shrink-0" />
-                  ) : filterMagnet === "All Form Magnets" ? (
+                  ) : filterMagnet === "All Form Funnels" || filterMagnet === "All Form Magnets" ? (
                     <FileText className="h-3 w-3 text-[#0066B2] dark:text-[#38BDF8] shrink-0" />
                   ) : (
                     <Filter className="h-3 w-3 text-zinc-400 shrink-0" />
                   )}
                   <span className="truncate max-w-[82px]">
-                    {filterMagnet !== "All lead magnets"
+                    {filterMagnet !== "All funnels" && filterMagnet !== "All lead magnets"
                       ? filterMagnet === "All LinkedIn Leads"
                         ? "LinkedIn"
                         : filterMagnet === "All Locked PDFs"
                         ? "Locked PDFs"
-                        : filterMagnet === "All Form Magnets"
+                        : (filterMagnet === "All Form Funnels" || filterMagnet === "All Form Magnets")
                         ? "Forms"
                         : filterMagnet
                       : statusFilter === "in_progress"
@@ -1294,12 +1294,12 @@ function parseCsvLine(line: string): string[] {
                         Campaign & Source
                       </div>
                       {[
-                        { id: "All lead magnets", label: "All lead magnets", count: filterCounts.all, icon: Layers },
+                        { id: "All funnels", label: "All funnels", count: filterCounts.all, icon: Layers },
                         { id: "All LinkedIn Leads", label: "LinkedIn Leads", count: filterCounts.linkedIn, icon: Linkedin },
                         { id: "All Locked PDFs", label: "Locked PDFs", count: filterCounts.lockedPdf, icon: Lock },
-                        { id: "All Form Magnets", label: "Form Magnets", count: filterCounts.forms, icon: FileText },
+                        { id: "All Form Funnels", label: "Form Funnels", count: filterCounts.forms, icon: FileText },
                       ].map((item) => {
-                        const isSelected = filterMagnet === item.id;
+                        const isSelected = filterMagnet === item.id || (item.id === "All funnels" && filterMagnet === "All lead magnets") || (item.id === "All Form Funnels" && filterMagnet === "All Form Magnets");
                         const IconComp = item.icon;
                         return (
                           <button
@@ -1348,13 +1348,13 @@ function parseCsvLine(line: string): string[] {
                     <Linkedin className="h-3 w-3 text-[#0A66C2] dark:text-[#38BDF8] shrink-0" />
                   ) : filterMagnet === "All Locked PDFs" ? (
                     <Lock className="h-3 w-3 text-amber-500 dark:text-amber-400 shrink-0" />
-                  ) : filterMagnet === "All Form Magnets" ? (
+                  ) : filterMagnet === "All Form Funnels" || filterMagnet === "All Form Magnets" ? (
                     <FileText className="h-3 w-3 text-[#0066B2] dark:text-[#38BDF8] shrink-0" />
                   ) : (
                     <Layers className="h-3 w-3 text-zinc-400 shrink-0" />
                   )}
                   <span className="truncate max-w-[85px] sm:max-w-[130px]">
-                    {filterMagnet === "All lead magnets" ? "All Magnets" : filterMagnet}
+                    {filterMagnet === "All funnels" || filterMagnet === "All lead magnets" ? "All Funnels" : filterMagnet}
                   </span>
                   <ChevronDown
                     className={`h-3.5 w-3.5 text-zinc-400 shrink-0 transition-transform duration-200 ${
@@ -1382,25 +1382,25 @@ function parseCsvLine(line: string): string[] {
                         type="button"
                         onClick={(e) => {
                           e.stopPropagation();
-                          setFilterMagnet("All lead magnets");
+                          setFilterMagnet("All funnels");
                           setFilterOpen(false);
                           setCurrentPage(1);
                         }}
                         className={`flex w-full items-center justify-between rounded-lg px-2.5 py-2 text-xs font-medium transition-all cursor-pointer ${
-                          filterMagnet === "All lead magnets"
+                          filterMagnet === "All funnels" || filterMagnet === "All lead magnets"
                             ? "bg-[#0066B2]/10 text-[#0066B2] font-bold dark:bg-[#38BDF8]/20 dark:text-[#38BDF8]"
                             : "text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-white/5"
                         }`}
                       >
                         <span className="flex items-center gap-2 truncate">
                           <Layers className="h-3.5 w-3.5 text-zinc-400 shrink-0" />
-                          All lead magnets
+                          All funnels
                         </span>
                         <div className="flex items-center gap-1.5 shrink-0">
                           <span className="px-1.5 py-0.2 rounded bg-zinc-200/60 text-[9px] font-semibold text-zinc-600 dark:bg-white/10 dark:text-zinc-300">
                             {filterCounts.all}
                           </span>
-                          {filterMagnet === "All lead magnets" && <Check className="h-3.5 w-3.5 text-current shrink-0" />}
+                          {(filterMagnet === "All funnels" || filterMagnet === "All lead magnets") && <Check className="h-3.5 w-3.5 text-current shrink-0" />}
                         </div>
                       </button>
 
@@ -1463,25 +1463,25 @@ function parseCsvLine(line: string): string[] {
                         type="button"
                         onClick={(e) => {
                           e.stopPropagation();
-                          setFilterMagnet("All Form Magnets");
+                          setFilterMagnet("All Form Funnels");
                           setFilterOpen(false);
                           setCurrentPage(1);
                         }}
                         className={`flex w-full items-center justify-between rounded-lg px-2.5 py-2 text-xs font-medium transition-all cursor-pointer ${
-                          filterMagnet === "All Form Magnets"
+                          filterMagnet === "All Form Funnels" || filterMagnet === "All Form Magnets"
                             ? "bg-[#0066B2]/10 text-[#0066B2] font-bold dark:bg-[#38BDF8]/20 dark:text-[#38BDF8]"
                             : "text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-white/5"
                         }`}
                       >
                         <span className="flex items-center gap-2 truncate">
                           <FileText className="h-3.5 w-3.5 text-[#0066B2] dark:text-[#38BDF8] shrink-0" />
-                          All Form Magnets
+                          All Form Funnels
                         </span>
                         <div className="flex items-center gap-1.5 shrink-0">
                           <span className="px-1.5 py-0.2 rounded bg-[#0066B2]/10 text-[9px] font-semibold text-[#0066B2] dark:bg-[#38BDF8]/20 dark:text-[#38BDF8]">
                             {filterCounts.forms}
                           </span>
-                          {filterMagnet === "All Form Magnets" && <Check className="h-3.5 w-3.5 text-current shrink-0" />}
+                          {(filterMagnet === "All Form Funnels" || filterMagnet === "All Form Magnets") && <Check className="h-3.5 w-3.5 text-current shrink-0" />}
                         </div>
                       </button>
                     </motion.div>
@@ -1653,7 +1653,7 @@ function parseCsvLine(line: string): string[] {
                       </div>
                     </th>
                     <th className="px-3 lg:px-4 py-3.5 text-left text-[11px] font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Source / Gate</th>
-                    <th className="px-3 lg:px-4 py-3.5 text-left text-[11px] font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Lead Magnet</th>
+                    <th className="px-3 lg:px-4 py-3.5 text-left text-[11px] font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Funnel</th>
                     <th className="px-3 lg:px-4 py-3.5 text-left text-[11px] font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Signup Date</th>
                     <th className="px-3 lg:px-4 py-3.5 text-left text-[11px] font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Sequence</th>
                     <th className="px-3 lg:px-4 py-3.5 text-right text-[11px] font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Actions</th>
@@ -1703,8 +1703,8 @@ function parseCsvLine(line: string): string[] {
                   </p>
                   <p className="text-xs text-zinc-500 dark:text-zinc-400">
                     {search
-                      ? "Try searching for a different name, email, or magnet."
-                      : "Leads appear automatically when users enter their email on a published magnet."}
+                      ? "Try searching for a different name, email, or funnel."
+                      : "Leads appear automatically when users enter their email on a published funnel."}
                   </p>
                 </div>
               )}
@@ -1759,8 +1759,8 @@ function parseCsvLine(line: string): string[] {
                   </p>
                   <p className="text-xs text-zinc-500 dark:text-zinc-400 max-w-xs mx-auto mb-4">
                     {search
-                      ? "Try searching for a different name, email, or magnet."
-                      : "Leads appear automatically when users enter their email on a published magnet."}
+                      ? "Try searching for a different name, email, or funnel."
+                      : "Leads appear automatically when users enter their email on a published funnel."}
                   </p>
                   {search ? (
                     <button

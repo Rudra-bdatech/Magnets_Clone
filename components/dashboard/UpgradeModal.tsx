@@ -470,7 +470,7 @@ export function UpgradeModal({
                           </li>
                           <li className="flex items-center gap-2">
                             <Check className="h-3 w-3 text-emerald-500 shrink-0" />
-                            <span>Standard Magnets URL</span>
+                            <span>Standard Funnels URL</span>
                           </li>
                           <li className="flex items-center gap-2 text-zinc-400 dark:text-zinc-500 line-through">
                             <Lock className="h-2.5 w-2.5 shrink-0" />

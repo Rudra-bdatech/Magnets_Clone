@@ -870,7 +870,7 @@ export default function LockedPdfPage() {
 
   const appUrl = typeof window !== "undefined"
     ? window.location.origin
-    : (process.env.NEXT_PUBLIC_APP_URL || "https://magnets.bdatech.in");
+    : (process.env.NEXT_PUBLIC_APP_URL || "https://funnels.co.in");
 
   return (
     <>
@@ -1897,7 +1897,7 @@ export default function LockedPdfPage() {
 
                     <div className="space-y-2">
                       <p className="text-xs font-bold text-zinc-900 dark:text-white flex items-center gap-1.5">
-                        <TrendingUp className="h-3.5 w-3.5 text-[#0066B2] dark:text-[#38BDF8]" /> Magnet Conversion Metrics
+                        <TrendingUp className="h-3.5 w-3.5 text-[#0066B2] dark:text-[#38BDF8]" /> Funnel Conversion Metrics
                       </p>
                       <div className="grid grid-cols-2 gap-2">
                         <div className="rounded-xl border border-zinc-100 dark:border-white/[0.06] p-3 bg-zinc-50/50 dark:bg-white/[0.02]">
@@ -1944,7 +1944,7 @@ export default function LockedPdfPage() {
                         onClick={() => setShowDeleteModal(true)}
                         className="flex items-center gap-1 text-[11px] font-bold text-red-500 hover:text-red-600 dark:hover:text-red-400 transition cursor-pointer"
                       >
-                        <Trash2 className="h-3.5 w-3.5" /> Delete Magnet
+                        <Trash2 className="h-3.5 w-3.5" /> Delete Funnel
                       </button>
                     </div>
                   </motion.div>
@@ -2082,7 +2082,7 @@ export default function LockedPdfPage() {
         )}
       </AnimatePresence>
 
-      {/* 'Create a magnet' Popup Modal Overlay */}
+      {/* 'Create a funnel' Popup Modal Overlay */}
       <AnimatePresence>
         {showCreateModal && (
           <div
@@ -2514,7 +2514,7 @@ export default function LockedPdfPage() {
               {/* Conversion Metrics */}
               <div className="space-y-2">
                 <p className="text-xs font-bold text-zinc-900 dark:text-white flex items-center gap-1.5">
-                  <TrendingUp className="h-3.5 w-3.5 text-[#0066B2] dark:text-[#38BDF8]" /> Magnet Conversion Metrics
+                  <TrendingUp className="h-3.5 w-3.5 text-[#0066B2] dark:text-[#38BDF8]" /> Funnel Conversion Metrics
                 </p>
                 <div className="grid grid-cols-2 gap-2">
                   <div className="rounded-xl border border-zinc-100 dark:border-white/[0.06] p-3 bg-zinc-50/50 dark:bg-white/[0.02]">
@@ -2574,7 +2574,7 @@ export default function LockedPdfPage() {
                   }}
                   className="flex items-center gap-1 text-[11px] font-bold text-red-500 hover:text-red-600 dark:hover:text-red-400 transition cursor-pointer"
                 >
-                  <Trash2 className="h-3.5 w-3.5" /> Delete Magnet
+                  <Trash2 className="h-3.5 w-3.5" /> Delete Funnel
                 </button>
               </div>
             </motion.div>

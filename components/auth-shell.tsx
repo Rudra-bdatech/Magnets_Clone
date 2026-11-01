@@ -9,7 +9,7 @@ import { CheckCircle2, ShieldCheck, Sparkles, Zap, ArrowRight, Star, Wand2, Mail
 import GhostFibers from "@/components/ui/GhostFibers";
 
 const DYNAMIC_PHRASES = [
-  "high-converting lead magnets",
+  "high-converting funnels",
   "automated resource delivery",
   "instant email sequences",
   "interactive lead calculators",
@@ -152,7 +152,7 @@ export default function AuthShell({
                         : "text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200/60 dark:hover:bg-zinc-800/60"
                         }`}
                     >
-                      <Wand2 className="h-3 w-3" /> Magnet Builder
+                      <Wand2 className="h-3 w-3" /> Funnel Builder
                     </button>
                     <button
                       type="button"
@@ -180,7 +180,7 @@ export default function AuthShell({
                     <div className="space-y-2.5 rounded-xl border border-white/20 dark:border-white/10 bg-white/30 dark:bg-zinc-900/30 p-3 backdrop-blur-sm">
                       <div className="flex items-center justify-between text-[11px]">
                         <span className="font-bold text-zinc-800 dark:text-zinc-200 flex items-center gap-1">
-                          <Sparkles className="h-3 w-3 text-blue-500" /> High-Converting Lead Magnet
+                          <Sparkles className="h-3 w-3 text-blue-500" /> High-Converting Funnel
                         </span>
                         <span className="text-[9px] font-medium text-emerald-500 bg-emerald-500/10 px-1.5 py-0.2 rounded-full border border-emerald-500/20">
                           Live Preview

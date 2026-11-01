@@ -3,7 +3,7 @@ import { dbConnect } from "@/lib/mongodb";
 import { MagnetPageModel, AccountModel } from "@/lib/models";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://magnets.bdatech.in";
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://funnels.co.in";
 
   const staticRoutes: MetadataRoute.Sitemap = [
     {

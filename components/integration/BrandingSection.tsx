@@ -198,7 +198,7 @@ export const BrandingSection = memo(function BrandingSection({
 
             <div className="pt-2 border-t border-zinc-100 dark:border-white/5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <p className="text-[11px] text-zinc-500 dark:text-zinc-400">
-                Links appear in the footer of all published lead magnet pages.
+                Links appear in the footer of all published funnel pages.
               </p>
               <button
                 type="button"
@@ -361,7 +361,7 @@ export const BrandingSection = memo(function BrandingSection({
                     ) : (
                       <span className="h-3.5 w-3.5 rounded-full bg-[#0066B2]" />
                     )}
-                    <span className="font-semibold text-[11px] truncate max-w-[120px]">My Lead Magnet Page</span>
+                    <span className="font-semibold text-[11px] truncate max-w-[120px]">My Funnel Page</span>
                     <span className="text-zinc-400 text-[10px]">×</span>
                   </div>
                   <p className="text-[11px] text-zinc-500 dark:text-zinc-400">
@@ -475,7 +475,7 @@ export const BrandingSection = memo(function BrandingSection({
                   </div>
                   <div className="p-3 bg-zinc-50/80 dark:bg-[#171717] border-t border-zinc-100 dark:border-white/5">
                     <p className="text-[10px] font-mono text-zinc-400 uppercase tracking-wider">
-                      {rootDomain || "leadmagnets.so"}
+                      {rootDomain || "funnels.co.in"}
                     </p>
                     <p className="text-xs font-bold text-zinc-900 dark:text-white mt-0.5 truncate">
                       Free Guide: The 10-Step Audience Growth Playbook

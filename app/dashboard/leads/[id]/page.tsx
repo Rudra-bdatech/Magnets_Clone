@@ -23,7 +23,7 @@ const statusCopy: Record<Lead["status"], { label: string; desc: string; color: s
 };
 
 function SourceLabel({ source }: { source: Lead["source"] }) {
-  if (source === "leadmagnets" || (source as string) === "magnets")
+  if (source === "funnels" || source === "leadmagnets" || (source as string) === "magnets")
     return (
       <span className="inline-flex items-center gap-1 rounded-full border border-ink-200 bg-white px-2 py-0.5 text-[11px] font-medium text-ink-600 dark:border-ink-700 dark:bg-ink-950 dark:text-ink-300">
         <Inbox className="h-3 w-3" aria-hidden="true" /> Funnels URL

@@ -42,7 +42,7 @@ export default function WorkspaceSetupPage() {
   const [domainError, setDomainError] = useState("");
   const [cnameError, setCnameError] = useState("");
   const [saving, setSaving] = useState(false);
-  const [appBaseUrl, setAppBaseUrl] = useState("https://magnets.bdatech.in");
+  const [appBaseUrl, setAppBaseUrl] = useState("https://funnels.co.in");
 
   const [ga4MeasurementId, setGa4MeasurementId] = useState("");
   const [metaPixelId, setMetaPixelId] = useState("");
@@ -503,7 +503,7 @@ export default function WorkspaceSetupPage() {
               <div className="mt-5 rounded-xl border border-zinc-200 dark:border-white/10 bg-zinc-50 dark:bg-zinc-900/60 p-3.5 text-left text-xs space-y-2">
                 <div className="flex items-center justify-between">
                   <span className="text-zinc-500 dark:text-zinc-400">Plan</span>
-                  <span className="font-bold text-zinc-900 dark:text-white">Magnets Pro (Lifetime)</span>
+                  <span className="font-bold text-zinc-900 dark:text-white">Funnels Pro (Lifetime)</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-zinc-500 dark:text-zinc-400">Payment Status</span>

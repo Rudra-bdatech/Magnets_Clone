@@ -223,10 +223,10 @@ export default function NewSequence() {
               />
             </div>
 
-            {/* Attach to Lead Magnet - Production Grade Custom Dropdown */}
+            {/* Attach to Funnel - Production Grade Custom Dropdown */}
             <div className="relative" ref={dropdownRef}>
               <label className="block text-xs font-bold text-zinc-900 dark:text-white uppercase tracking-wider mb-2 flex items-center justify-between">
-                <span>Attach to Lead Magnet</span>
+                <span>Attach to Funnel</span>
                 <span className="text-[10px] text-[#0066B2] dark:text-[#38BDF8] font-semibold lowercase">automates signups</span>
               </label>
 
@@ -284,7 +284,7 @@ export default function NewSequence() {
                         Standalone Sequence
                       </span>
                       <span className="block text-[11px] text-zinc-400 dark:text-zinc-500">
-                        No lead magnet attached
+                        No funnel attached
                       </span>
                     </div>
                   </div>
@@ -310,7 +310,7 @@ export default function NewSequence() {
                         type="text"
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        placeholder="Search lead magnets..."
+                        placeholder="Search funnels..."
                         className="w-full rounded-lg border border-zinc-200 bg-zinc-50/70 pl-8 pr-3 py-1.5 text-xs text-zinc-900 placeholder-zinc-400 focus:border-[#0066B2] focus:outline-none dark:border-white/10 dark:bg-[#121212] dark:text-white dark:placeholder-zinc-500"
                         onClick={(e) => e.stopPropagation()}
                       />
@@ -476,7 +476,7 @@ export default function NewSequence() {
                               Standalone Sequence
                             </span>
                             <span className="block text-[10px] text-zinc-400 dark:text-zinc-500">
-                              Do not attach to any lead magnet
+                              Do not attach to any funnel
                             </span>
                           </div>
                         </div>
@@ -488,7 +488,7 @@ export default function NewSequence() {
 
                     {filteredLandingPages.length === 0 && filteredLockedPdfPages.length === 0 && searchQuery && (
                       <div className="p-4 text-center text-xs text-zinc-400">
-                        No matching lead magnets found for &quot;{searchQuery}&quot;
+                        No matching funnels found for &quot;{searchQuery}&quot;
                       </div>
                     )}
                   </div>
@@ -511,7 +511,7 @@ export default function NewSequence() {
                 className="w-full rounded-xl border border-zinc-200 bg-white p-3 text-xs text-zinc-900 placeholder-zinc-400 focus:border-[#0066B2] focus:outline-none dark:border-white/10 dark:bg-[#121212] dark:text-white dark:placeholder-zinc-500 shadow-xs font-medium"
               />
               <p className="mt-1.5 text-xs text-zinc-500 dark:text-zinc-400">
-                Sent instantly to subscribers the moment they sign up on your lead magnet form.
+                Sent instantly to subscribers the moment they sign up on your funnel form.
               </p>
             </div>
 

@@ -31,7 +31,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   async function detectEmailFromTabs() {
     try {
       const tabs = await chrome.tabs.query({});
-      const targetTabs = tabs.filter(t => t.url && (t.url.includes("magnets.bdatech.in") || t.url.includes("localhost:3000")));
+      const targetTabs = tabs.filter(t => t.url && (t.url.includes("funnels.co.in") || t.url.includes("localhost:3000")));
       for (const tab of targetTabs) {
         if (!tab.id) continue;
         try {

@@ -84,7 +84,7 @@ const BrandHelpModal = memo(function BrandHelpModal({ isOpen, onClose }: BrandHe
                   </div>
                 </div>
                 <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed pl-0 sm:pl-13">
-                  Brand settings apply to every public lead magnet and to the editor preview.
+                  Brand settings apply to every public funnel and to the editor preview.
                 </p>
               </div>
 

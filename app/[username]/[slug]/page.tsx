@@ -47,14 +47,14 @@ export async function generateMetadata({
     console.warn("MongoDB metadata query fallback in generateMetadata:", err);
   }
 
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://magnets.bdatech.in";
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://funnels.co.in";
   const username = params.username || "user";
   const slug = params.slug || "resource";
 
   if (!pageDoc) {
     return {
-      title: "Lead Magnet Not Found | Funnels",
-      description: "The requested lead magnet page could not be found.",
+      title: "Funnel Not Found | Funnels",
+      description: "The requested funnel page could not be found.",
     };
   }
 
@@ -224,10 +224,10 @@ export default async function MagnetPageRoute({
           </div>
           <h1 className="text-xl font-bold text-zinc-900 dark:text-white">Page Not Published Yet</h1>
           <p className="text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed">
-            This lead magnet is currently in <span className="font-bold text-amber-600 dark:text-amber-400">Draft</span> mode and is not visible to the public. If you are the owner, please switch the status to Published inside your dashboard.
+            This funnel is currently in <span className="font-bold text-amber-600 dark:text-amber-400">Draft</span> mode and is not visible to the public. If you are the owner, please switch the status to Published inside your dashboard.
           </p>
           <a
-            href="/dashboard/leadmagnets"
+            href="/dashboard/landing-page"
             className="inline-flex h-10 items-center justify-center rounded-xl bg-[#0066B2] hover:bg-[#005799] px-5 text-xs font-bold text-white transition shadow-md"
           >
             Go to Dashboard
@@ -378,7 +378,7 @@ export default async function MagnetPageRoute({
           <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
           </svg>
-          <span>Draft Preview Mode — This magnet is not yet published. Only you can view this page.</span>
+          <span>Draft Preview Mode — This funnel is not yet published. Only you can view this page.</span>
         </div>
       )}
       {/* If template is not template1, template2, template3, template4, template5, template6, template7, or template8, show the standard top header */}
@@ -3250,7 +3250,7 @@ export default async function MagnetPageRoute({
                 <span className="hidden sm:inline opacity-30">|</span>
               )}
               <div className="flex items-center gap-1">
-                <a href="https://magnets.bdatech.in" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 font-medium hover:text-[#FE6F34] transition">
+                <a href="https://funnels.co.in" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 font-medium hover:text-[#FE6F34] transition">
                   Powered by Funnels <MoveRightIcon className="h-2 w-2" />
                 </a>
               </div>

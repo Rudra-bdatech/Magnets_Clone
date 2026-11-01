@@ -14,7 +14,7 @@
  */
 
 const MAGNETS_SERVER = "http://localhost:3000"; // local dev
-const MAGNETS_PROD   = "https://magnets.bdatech.in";
+const MAGNETS_PROD   = "https://funnels.co.in";
 
 const REPLY_VARIATIONS = [
   "Sent to your DM! Check your inbox 📬",
@@ -644,7 +644,7 @@ async function runFullSync() {
   }
 
   // Resource URL fallback
-  const resourceUrl = `https://magnets.bdatech.in/rudranath/hhoo`;
+  const resourceUrl = `https://funnels.co.in/rudranath/hhoo`;
 
   let dmsSentThisRun = 0;
   let repliesThisRun = 0;

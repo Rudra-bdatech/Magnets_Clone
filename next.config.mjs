@@ -96,4 +96,10 @@ const nextConfig = {
   },
 };
 
+// rewrites
+nextConfig.rewrites = async () => [
+  { source: "/dashboard/funnels", destination: "/dashboard/landing-page" },
+  { source: "/dashboard/funnels/:path*", destination: "/dashboard/leadmagnets/:path*" },
+];
+
 export default nextConfig;

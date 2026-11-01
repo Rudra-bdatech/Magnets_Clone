@@ -220,7 +220,7 @@ export const DomainSection = memo(function DomainSection({
           "success"
         );
       } else {
-        const errMsg = data.error || data.message || `No TXT record found at leadmagnets-verify.${cleanDom}. DNS updates can take a few minutes.`;
+        const errMsg = data.error || data.message || `No TXT record found at funnels-verify.${cleanDom}. DNS updates can take a few minutes.`;
         setDomainError(errMsg);
         addToast(errMsg, "error");
       }
@@ -228,7 +228,7 @@ export const DomainSection = memo(function DomainSection({
       const isTimeout = e instanceof Error && e.name === "AbortError";
       const errMsg = isTimeout
         ? "DNS check timed out (15s). Please try again."
-        : `No TXT record found at leadmagnets-verify.${cleanDom}. Check your DNS provider.`;
+        : `No TXT record found at funnels-verify.${cleanDom}. Check your DNS provider.`;
       setDomainError(errMsg);
       addToast(errMsg, "error");
     } finally {
@@ -348,7 +348,7 @@ export const DomainSection = memo(function DomainSection({
   );
 
   const dnsRows: { key: string; type: string; name: string; value: string; nameKey: string; valueKey: string; nameToast: string; valueToast: string; done?: boolean }[] = [
-    { key: "txt", type: "TXT", name: "leadmagnets-verify", value: tokenValue, nameKey: "host", valueKey: "value", nameToast: "TXT host copied!", valueToast: "TXT token value copied!", done: domainVerified },
+    { key: "txt", type: "TXT", name: "funnels-verify", value: tokenValue, nameKey: "host", valueKey: "value", nameToast: "TXT host copied!", valueToast: "TXT token value copied!", done: domainVerified },
     { key: "cname", type: "CNAME", name: cleanSub, value: cnamePointsTo, nameKey: "cnameHost", valueKey: "cnameValue", nameToast: "CNAME host copied!", valueToast: "CNAME target value copied!", done: cnameVerified },
   ];
   if (hostingChallenge) {
@@ -374,13 +374,13 @@ export const DomainSection = memo(function DomainSection({
         <h4 className="text-base font-semibold text-zinc-900 dark:text-white flex items-center gap-1.5">
           Domains
           <InfoTooltip
-            content="Share your lead magnets directly or connect a white-label custom domain."
+            content="Share your funnels directly or connect a white-label custom domain."
             title="Public URL & Custom Domain"
             align="start"
           />
         </h4>
         <p className="mt-1 text-[13px] text-zinc-500 dark:text-zinc-400">
-          Your public workspace URL and custom domains for your lead magnets.
+          Your public workspace URL and custom domains for your funnels.
         </p>
       </div>
 
@@ -485,7 +485,7 @@ export const DomainSection = memo(function DomainSection({
           <span className="text-[13px] font-medium text-zinc-900 dark:text-white flex items-center gap-1.5">
             Custom Domain
             <InfoTooltip
-              content="Connect your custom brand domain (e.g. get.yourdomain.com) to your lead magnets."
+              content="Connect your custom brand domain (e.g. get.yourdomain.com) to your funnels."
               title="Custom Domain Configuration"
               align="start"
             />
@@ -532,7 +532,7 @@ export const DomainSection = memo(function DomainSection({
                     Connect your custom domain (e.g. get.yourbrand.com)
                   </p>
                   <p className="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed">
-                    Upgrade to the Pro plan to publish lead magnets on your branded subdomain with automated SSL certificates, high-speed CNAME routing, and zero Funnels branding.
+                    Upgrade to the Pro plan to publish funnels on your branded subdomain with automated SSL certificates, high-speed CNAME routing, and zero Funnels branding.
                   </p>
                 </div>
               </div>

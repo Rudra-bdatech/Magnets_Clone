@@ -145,7 +145,7 @@ export async function generateMetadata({ searchParams }: DomainPageProps): Promi
   }
 
   const title = account.name ? `${account.name} | Official Resources` : `@${account.username} · Funnels`;
-  const description = account.bio || `Explore free resources and lead magnets published by ${account.name || account.username}.`;
+  const description = account.bio || `Explore free resources and funnels published by ${account.name || account.username}.`;
   const favicon = account.faviconUrl || undefined;
 
   return {
@@ -201,7 +201,7 @@ export default async function CustomDomainResolverPage({ searchParams }: DomainP
 
           <div className="pt-2">
             <Link
-              href="https://magnets.bdatech.in/login"
+              href="https://funnels.co.in/login"
               className="inline-flex w-full items-center justify-center rounded-xl bg-blue-600 hover:bg-blue-500 text-white px-4 py-2.5 text-xs font-bold transition shadow-sm"
             >
               Go to Dashboard
@@ -216,7 +216,7 @@ export default async function CustomDomainResolverPage({ searchParams }: DomainP
   const { isRoot, slug } = parsePathAndSlug(path, account.username);
 
   if (isRoot || !slug) {
-    // Render the user's workspace profile with all featured lead magnets
+    // Render the user's workspace profile with all featured funnels
     return <UserProfileRoute params={{ username: account.username }} />;
   }
 

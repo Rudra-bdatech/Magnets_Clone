@@ -705,11 +705,11 @@ export default function SequencesPage() {
     return [
       {
         id: "lead-magnets",
-        name: "Lead Magnet Series",
+        name: "Funnel Series",
         subtitle: "Opt-in page instant delivery & follow-ups",
         icon: Magnet,
         color: "emerald",
-        badge: "Lead Magnets",
+        badge: "Funnels",
         sequences: leadMagnetSeqs,
         stats: calculateFolderStats(leadMagnetSeqs),
       },
@@ -1443,7 +1443,7 @@ export default function SequencesPage() {
                                         </span>
                                       ) : (
                                         <span className="inline-flex items-center gap-1 rounded-md border border-emerald-200/70 dark:border-emerald-900/50 bg-emerald-50/70 dark:bg-emerald-950/30 px-1.5 py-0.5 text-[9.5px] font-semibold text-emerald-700 dark:text-emerald-400 shrink-0">
-                                          <Magnet className="w-2.5 h-2.5" /> Lead Magnet
+                                          <Magnet className="w-2.5 h-2.5" /> Funnel
                                         </span>
                                       )}
                                     </div>
@@ -1500,7 +1500,7 @@ export default function SequencesPage() {
                                           className="flex w-full items-center gap-2 px-3.5 py-2 text-xs font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-white/5"
                                         >
                                           <ExternalLink className="h-3.5 w-3.5 text-zinc-400" />
-                                          Edit in Lead Magnet Builder
+                                          Edit in Funnel Builder
                                         </Link>
                                       )}
 
@@ -1785,7 +1785,7 @@ export default function SequencesPage() {
                                             </span>
                                           ) : (
                                             <span className="rounded bg-emerald-50/80 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border border-emerald-200/50 dark:border-emerald-900/40 text-[9px] font-semibold px-1.5 py-0.2">
-                                              Lead Magnet
+                                              Funnel
                                             </span>
                                           )}
                                         </div>
@@ -2090,10 +2090,10 @@ export default function SequencesPage() {
                   />
                 </div>
 
-                {/* Attach to Lead Magnet Dropdown */}
+                {/* Attach to Funnel Dropdown */}
                 <div className="relative">
                   <label className="block text-xs font-bold text-zinc-900 dark:text-white uppercase tracking-wider mb-1.5 flex items-center justify-between">
-                    <span>Attach to Lead Magnet</span>
+                    <span>Attach to Funnel</span>
                     <span className="text-[10px] text-[#0066B2] dark:text-[#38BDF8] font-semibold lowercase">automates signups</span>
                   </label>
 
@@ -2138,7 +2138,7 @@ export default function SequencesPage() {
                             Standalone Sequence
                           </span>
                           <span className="text-[10px] text-zinc-400 dark:text-zinc-500 block">
-                            No lead magnet attached
+                            No funnel attached
                           </span>
                         </div>
                       </div>
@@ -2160,7 +2160,7 @@ export default function SequencesPage() {
                             type="text"
                             value={magnetSearchQuery}
                             onChange={(e) => setMagnetSearchQuery(e.target.value)}
-                            placeholder="Search magnets..."
+                            placeholder="Search funnels..."
                             className="w-full rounded-lg border border-zinc-200 bg-zinc-50/70 pl-7 pr-3 py-1 text-xs text-zinc-900 placeholder-zinc-400 focus:border-[#0066B2] focus:outline-none dark:border-white/10 dark:bg-[#121212] dark:text-white dark:placeholder-zinc-500"
                             onClick={(e) => e.stopPropagation()}
                           />
@@ -2505,7 +2505,7 @@ export default function SequencesPage() {
                     className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-xs font-semibold text-zinc-800 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-white/5 active:bg-zinc-100 dark:active:bg-white/10 transition"
                   >
                     <ExternalLink className="h-4 w-4 text-zinc-400" />
-                    <span>Edit in Lead Magnet Builder</span>
+                    <span>Edit in Funnel Builder</span>
                   </Link>
                 )}
 

@@ -126,7 +126,7 @@ export default function SocialCardModal({
   const coverImageUrl = page.imageUrl || "";
 
   // Public Lead Magnet URL
-  const origin = typeof window !== "undefined" ? window.location.origin : "https://magnets.bdatech.in";
+  const origin = typeof window !== "undefined" ? window.location.origin : "https://funnels.co.in";
   const displayUrl = `${origin}/${username}/${page.slug || page.id}`;
   const cleanUrlDisplay = displayUrl.replace(/^https?:\/\//, "");
 

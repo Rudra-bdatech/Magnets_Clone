@@ -10,10 +10,10 @@ export type UserRole = "user" | "admin" | "super_admin";
 
 /**
  * Returns the list of internal company domain names allowed to use platform email.
- * Configured via process.env.COMPANY_DOMAINS (comma-separated, e.g. "bda.co.in,bdatech.in").
+ * Configured via process.env.COMPANY_DOMAINS (comma-separated, e.g. "bda.co.in,bdatech.in,funnels.co.in").
  */
 export function getCompanyDomains(): string[] {
-  const envDomains = process.env.COMPANY_DOMAINS || "bda.co.in,bdatech.in";
+  const envDomains = process.env.COMPANY_DOMAINS || "bda.co.in,bdatech.in,funnels.co.in";
   return envDomains
     .split(",")
     .map((d) => d.trim().toLowerCase().replace(/^@/, ""))

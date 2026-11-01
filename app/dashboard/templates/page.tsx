@@ -455,7 +455,7 @@ export default function TemplatesPage() {
               <div className="rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#171717] dark:shadow-none p-3.5 sm:p-5 shadow-md backdrop-blur-sm h-full flex flex-col transition-colors">
                 <div className="flex flex-col gap-1 mb-3 sm:mb-4 pb-2.5 sm:pb-3 border-b border-[#0066B2]/10 dark:border-white/[0.06]">
                   <span className="text-xs sm:text-sm font-bold text-zinc-900 dark:text-zinc-200 uppercase tracking-wider">Preview</span>
-                  <span className="text-[11px] sm:text-xs text-zinc-500 dark:text-zinc-400 block">How your brand appears on a full magnet page.</span>
+                  <span className="text-[11px] sm:text-xs text-zinc-500 dark:text-zinc-400 block">How your brand appears on a full funnel page.</span>
                 </div>
 
                 {/* Outer frame matching client page background theme mode */}

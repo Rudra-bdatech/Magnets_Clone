@@ -123,7 +123,7 @@ export async function POST(req: NextRequest) {
     // ── Send email ────────────────────────────────────────────────────────
     // IMPORTANT: sendMail() returns { success, error } — it does NOT throw.
     // We must check the return value explicitly.
-    const appUrl = (process.env.NEXT_PUBLIC_APP_URL || "https://magnets.bdatech.in").replace(/\/$/, "");
+    const appUrl = (process.env.NEXT_PUBLIC_APP_URL || "https://funnels.co.in").replace(/\/$/, "");
     const logoUrl = `${appUrl}/brand/custom-logo-light.png`;
 
     const mailResult = await sendMail(

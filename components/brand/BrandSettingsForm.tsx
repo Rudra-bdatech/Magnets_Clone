@@ -203,7 +203,7 @@ function BrandSettingsForm({
               Page appearance
             </label>
             <InfoTooltip
-              content="Applied to every public magnet and editor preview."
+              content="Applied to every public funnel and editor preview."
               title="Page Appearance"
               size="sm"
             />

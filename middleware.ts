@@ -139,6 +139,7 @@ export async function middleware(request: NextRequest) {
     isPlatformHost(host, "localhost") ||
     host === "127.0.0.1" ||
     isPlatformHost(host, "vercel.app") ||
+    isPlatformHost(host, "funnels.co.in") ||
     isPlatformHost(host, "leadmagnets.so") ||
     isPlatformHost(host, "magnets.bdatech.in") ||
     (configuredHost ? isPlatformHost(host, configuredHost) : false);
@@ -158,7 +159,7 @@ export async function middleware(request: NextRequest) {
       pathname.startsWith("/reset-password") ||
       pathname.startsWith("/forgot-password")
     ) {
-      const mainAppUrl = process.env.NEXT_PUBLIC_APP_URL || "https://magnets.bdatech.in";
+      const mainAppUrl = process.env.NEXT_PUBLIC_APP_URL || "https://funnels.co.in";
       return NextResponse.redirect(new URL(pathname, mainAppUrl));
     }
 

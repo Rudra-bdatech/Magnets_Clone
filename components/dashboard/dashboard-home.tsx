@@ -524,7 +524,7 @@ export default function DashboardHome({
       sparkData: viewsSparkline,
       sparkColor: "#7C3AED",
       href: "/dashboard/analytics",
-      sub: pages.length > 0 ? `across ${pages.length} magnet${pages.length !== 1 ? "s" : ""}` : "No magnets yet",
+      sub: pages.length > 0 ? `across ${pages.length} funnel${pages.length !== 1 ? "s" : ""}` : "No funnels yet",
     },
     {
       id: "conversion",
@@ -540,7 +540,7 @@ export default function DashboardHome({
     },
     {
       id: "active",
-      label: "Active Magnets",
+      label: "Active Funnels",
       value: activeMagnets.toString(),
       rawValue: activeMagnets,
       icon: Zap,
@@ -578,7 +578,7 @@ export default function DashboardHome({
               {/* Primary CTA */}
               <button
                 type="button"
-                aria-label="New Lead Magnet"
+                aria-label="New Funnel"
                 onClick={() => {
                   setCreateMagnetName("");
                   setModalMode("all");
@@ -588,7 +588,7 @@ export default function DashboardHome({
                 className="inline-flex items-center justify-center gap-1.5 h-9 w-9 sm:h-auto sm:w-auto sm:px-4 sm:py-2.5 rounded-xl bg-[#0066B2] text-white text-xs font-bold shadow-md hover:bg-[#005291] active:scale-95 transition-all duration-150 hover:shadow-[0_4px_16px_rgba(0,102,178,0.35)] sm:hover:-translate-y-0.5 cursor-pointer shrink-0"
               >
                 <Plus className="h-4 w-4 sm:h-3.5 sm:w-3.5" />
-                <span className="hidden sm:inline">New Lead Magnet</span>
+                <span className="hidden sm:inline">New Funnel</span>
               </button>
             </div>
           </motion.div>
@@ -708,7 +708,7 @@ export default function DashboardHome({
               {/* Bottom Action */}
               <div className="mt-4 pt-3 flex items-center justify-between gap-2">
                 <span className="text-[11px] font-semibold text-zinc-500 dark:text-zinc-400 truncate">
-                  {landingPageCount} total magnet{landingPageCount !== 1 ? "s" : ""}
+                  {landingPageCount} total funnel{landingPageCount !== 1 ? "s" : ""}
                 </span>
                 <button
                   type="button"
@@ -785,7 +785,7 @@ export default function DashboardHome({
               {/* Bottom Action */}
               <div className="mt-4 pt-3 flex items-center justify-between gap-2">
                 <span className="text-[11px] font-semibold text-zinc-500 dark:text-zinc-400 truncate">
-                  {lockedPdfCount} total magnet{lockedPdfCount !== 1 ? "s" : ""}
+                  {lockedPdfCount} total funnel{lockedPdfCount !== 1 ? "s" : ""}
                 </span>
                 <button
                   type="button"
@@ -857,7 +857,7 @@ export default function DashboardHome({
                 <div className="flex flex-col items-center py-8 text-center">
                   <Users className="h-7 w-7 text-zinc-200 dark:text-zinc-800 mb-2" />
                   <p className="text-xs text-zinc-400 dark:text-zinc-400 max-w-[220px] leading-relaxed">
-                    No leads yet. Share your magnet link to start growing your list.
+                    No leads yet. Share your funnel link to start growing your list.
                   </p>
                 </div>
               )}
@@ -1043,10 +1043,10 @@ export default function DashboardHome({
                 {modalMode === "all" ? (
                   <div>
                     <h3 className="text-base font-bold text-zinc-900 dark:text-white">
-                      Create a magnet
+                      Create a funnel
                     </h3>
                     <p className="text-[11px] text-zinc-500 dark:text-zinc-400 mt-0.5">
-                      Choose the type of lead magnet you want to build.
+                      Choose the type of funnel you want to build.
                     </p>
                   </div>
                 ) : modalMode === "classic" ? (

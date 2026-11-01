@@ -559,7 +559,7 @@ export default function ResourcesPage() {
   const copyToClipboard = useCallback((url: string, id: string) => {
     navigator.clipboard.writeText(url);
     setCopiedId(id);
-    addToast("success", "Link copied! Paste it into lead magnets or email sequences.");
+    addToast("success", "Link copied! Paste it into funnels or email sequences.");
     setTimeout(() => {
       setCopiedId(null);
     }, 2000);
@@ -881,7 +881,7 @@ export default function ResourcesPage() {
             <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0066B2]/[0.05] to-transparent dark:hidden" />
           </div>
 
-          {/* Active in Magnets */}
+          {/* Active in Funnels */}
           <div className="relative h-full rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#171717] dark:shadow-none p-3.5 sm:p-4 shadow-md backdrop-blur-sm overflow-hidden flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
             <div className="flex items-center justify-between sm:justify-start w-full sm:w-auto">
               <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl border border-sky-500/30 bg-sky-50 text-sky-600 dark:border-white/10 dark:bg-white/5 dark:text-zinc-200">
@@ -890,7 +890,7 @@ export default function ResourcesPage() {
             </div>
             <div className="flex-1 min-w-0 w-full">
               <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-400 leading-none truncate">
-                Active in Magnets
+                Active in Funnels
               </p>
               <p className="text-xl font-extrabold tabular-nums text-zinc-900 dark:text-white mt-1 leading-none tracking-tight">
                 {linkedStats.linkedCount}
@@ -936,7 +936,7 @@ export default function ResourcesPage() {
                 ? uploadProgress
                   ? `Uploading (${uploadProgress.current} of ${uploadProgress.total}): ${uploadProgress.currentFileName}`
                   : "Uploading documents..."
-                : "Drag & Drop lead magnet files here"}
+                : "Drag & Drop funnel files here"}
             </h3>
             <button className="mt-5 inline-flex items-center gap-2 rounded-xl bg-[#0066B2] px-5 py-2.5 text-xs font-bold text-white shadow-sm hover:bg-[#005291] transition cursor-pointer">
               <UploadCloud className="h-4 w-4" /> Browse Files from Device
@@ -1392,7 +1392,7 @@ export default function ResourcesPage() {
                                               {linkedPages.length > 0 ? (
                                                 <span className="inline-flex items-center gap-1 text-[11px] font-medium text-sky-600 dark:text-sky-400 truncate max-w-xs">
                                                   <Link2 className="h-3 w-3 shrink-0" />
-                                                  <span>{linkedPages.length === 1 ? `Attached to "${linkedPages[0].name}"` : `Attached to ${linkedPages.length} magnets`}</span>
+                                                  <span>{linkedPages.length === 1 ? `Attached to "${linkedPages[0].name}"` : `Attached to ${linkedPages.length} funnels`}</span>
                                                 </span>
                                               ) : (
                                                 <span className="inline-flex items-center gap-1 text-[11px] font-normal text-zinc-400 dark:text-zinc-500">
@@ -1601,7 +1601,7 @@ export default function ResourcesPage() {
                 Delete {selectedResourceIds.length} Selected Resources?
               </h3>
               <p className="mt-1.5 text-xs leading-relaxed text-zinc-500 dark:text-zinc-400">
-                Are you sure you want to delete <strong className="text-zinc-900 dark:text-white">{selectedResourceIds.length} hosted resources</strong>? Any active lead magnet forms or emails linking to these file links will no longer be able to access them.
+                Are you sure you want to delete <strong className="text-zinc-900 dark:text-white">{selectedResourceIds.length} hosted resources</strong>? Any active funnel forms or emails linking to these file links will no longer be able to access them.
               </p>
 
               <div className="mt-6 flex items-center justify-end gap-3">
@@ -1663,7 +1663,7 @@ export default function ResourcesPage() {
               </div>
               <h3 className="mt-4 text-base sm:text-lg font-bold text-zinc-900 dark:text-white tracking-tight">Delete Hosted Resource?</h3>
               <p className="mt-1.5 text-xs leading-relaxed text-zinc-500 dark:text-zinc-400">
-                Are you sure you want to delete <strong className="text-zinc-900 dark:text-white">{resourceToDelete.name}</strong>? Any active lead magnet forms or emails linking to this file link will no longer be able to access it.
+                Are you sure you want to delete <strong className="text-zinc-900 dark:text-white">{resourceToDelete.name}</strong>? Any active funnel forms or emails linking to this file link will no longer be able to access it.
               </p>
 
               <div className="mt-6 flex items-center justify-end gap-3">

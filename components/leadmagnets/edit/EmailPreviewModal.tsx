@@ -62,7 +62,7 @@ export default function EmailPreviewModal({
               pageSlug: page?.slug || pageId,
               userEmail: userEmail,
               status: "new",
-              source: "leadmagnets",
+              source: "funnels",
               signedUpAt: new Date().toLocaleTimeString(),
             },
           }),
@@ -123,7 +123,7 @@ export default function EmailPreviewModal({
           </div>
           <div className="flex items-center gap-2">
             <span className="font-bold text-zinc-400 w-16">Subject:</span>
-            <span className={`font-bold ${isDark ? "text-white" : "text-zinc-900"}`}>{emailSubject || `Here is your resource: ${page?.name || "Lead Magnet"}`}</span>
+            <span className={`font-bold ${isDark ? "text-white" : "text-zinc-900"}`}>{emailSubject || `Here is your resource: ${page?.name || "Funnel"}`}</span>
           </div>
         </div>
 
@@ -156,9 +156,9 @@ export default function EmailPreviewModal({
                 className={`text-sm leading-relaxed email-rendered-content ${isDark ? "text-zinc-300" : "text-zinc-700"} [&_p]:mb-2 [&_strong]:font-bold [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5`}
                 dangerouslySetInnerHTML={{
                   __html: (() => {
-                    const raw = (emailBody || "Hey {name},\n\nThank you for requesting this resource! Click the link below to get instant access:\n\nhttps://magnets.bdatech.in/r/sample\n\nEnjoy!")
+                    const raw = (emailBody || "Hey {name},\n\nThank you for requesting this resource! Click the link below to get instant access:\n\nhttps://funnels.co.in/r/sample\n\nEnjoy!")
                       .replace(/\{name\}/g, "Subscriber")
-                      .replace(/http:\/\/localhost:3000/g, "https://magnets.bdatech.in");
+                      .replace(/http:\/\/localhost:3000/g, "https://funnels.co.in");
                     const hasHtml = /<[a-z][\s\S]*>/i.test(raw);
                     let formatted = hasHtml ? raw : raw.replace(/\n/g, "<br/>");
 

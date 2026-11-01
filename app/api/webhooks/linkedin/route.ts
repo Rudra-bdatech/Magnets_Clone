@@ -273,7 +273,7 @@ export async function POST(req: NextRequest) {
 
           // 10b. Delivery email to the commenter (only if real email exists)
           if (commenterEmail) {
-            const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://magnets.bdatech.in";
+            const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://funnels.co.in";
             const username = fullOwnerAccount?.username || ownerAccount.username || "u";
             const pageSlug = magnetPage.slug || magnetId;
             const resourceAccessUrl = `${appUrl}/${encodeURIComponent(username)}/${encodeURIComponent(pageSlug)}/thank-you?email=${encodeURIComponent(commenterEmail)}&name=${encodeURIComponent(commenterName)}`;

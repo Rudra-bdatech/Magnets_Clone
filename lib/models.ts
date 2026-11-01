@@ -210,7 +210,7 @@ const LeadSchema = new Schema({
   opened: { type: Boolean, default: false },
   openedSteps: { type: [String], default: [] },
   openedAt: { type: Date },
-  source: { type: String, enum: ["leadmagnets", "magnets", "custom-domain", "integration", "locked-pdf-otp", "linkedin-comment"], default: "leadmagnets" },
+  source: { type: String, enum: ["funnels", "leadmagnets", "magnets", "custom-domain", "integration", "locked-pdf-otp", "linkedin-comment"], default: "funnels" },
   signedUpAt: { type: String, required: true },
   sequence: { type: String },
   sequenceStep: { type: String },

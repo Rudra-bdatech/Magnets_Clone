@@ -128,7 +128,7 @@ export default async function PdfViewerPage({ params, searchParams }: Props) {
           PDF not uploaded yet
         </h1>
         <p style={{ color: "#71717a", fontSize: "0.85rem", maxWidth: 420, margin: 0 }}>
-          Go to your dashboard → edit this lead magnet → Landing page tab →
+          Go to your dashboard → edit this funnel → Landing page tab →
           upload your PDF and click <strong>&quot;Save PDF settings&quot;</strong>.
         </p>
       </div>

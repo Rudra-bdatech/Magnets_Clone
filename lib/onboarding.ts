@@ -51,10 +51,10 @@ export function computeOnboardingStatus({
   const steps: OnboardingStep[] = [
     {
       id: "create-magnet",
-      title: "Create your first Lead Magnet",
+      title: "Create your first Funnel",
       description: "Build a high-converting Landing Page or upload a Locked PDF to turn visitors into leads.",
       done: hasMagnets,
-      ctaText: hasMagnets ? "View Magnets" : "Create Magnet",
+      ctaText: hasMagnets ? "View Funnels" : "Create Funnel",
       href: "/dashboard/landing-page",
       category: "Lead Capture",
       iconName: "FileText",
@@ -71,10 +71,10 @@ export function computeOnboardingStatus({
     },
     {
       id: "publish-live",
-      title: "Publish a Lead Magnet live",
-      description: "Switch your magnet to Live status and get your public shareable link.",
+      title: "Publish a Funnel live",
+      description: "Switch your funnel to Live status and get your public shareable link.",
       done: hasLiveMagnet,
-      ctaText: hasLiveMagnet ? "Manage Live" : "Go to Magnets",
+      ctaText: hasLiveMagnet ? "Manage Live" : "Go to Funnels",
       href: "/dashboard/landing-page",
       category: "Publishing",
       iconName: "Rocket",

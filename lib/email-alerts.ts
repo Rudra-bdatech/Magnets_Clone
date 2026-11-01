@@ -32,7 +32,7 @@ export async function sendInstantLeadAlert(payload: LeadAlertPayload): Promise<{
   }
 
   // Use the public production URL by default so image assets load reliably across all email clients
-  const appUrl = (process.env.NEXT_PUBLIC_APP_URL || "https://magnets.bdatech.in").replace(/\/$/, "");
+  const appUrl = (process.env.NEXT_PUBLIC_APP_URL || "https://funnels.co.in").replace(/\/$/, "");
   const logoUrl = `${appUrl}/brand/custom-logo-light.png`;
   const rawLeadDisplayName = leadName?.trim() || "New Subscriber";
   const safeLeadDisplayName = escapeHtml(rawLeadDisplayName);
@@ -171,7 +171,7 @@ export async function sendInstantLeadAlert(payload: LeadAlertPayload): Promise<{
   return sendMail(
     {
       to: ownerEmail.trim(),
-      subject: `New Lead: ${rawLeadDisplayName} on "${pageTitle || "LeadMagnet"}"`,
+      subject: `New Lead: ${rawLeadDisplayName} on "${pageTitle || "Funnel"}"`,
       html: htmlContent,
     },
     (payload.senderEmail || ownerEmail).trim()

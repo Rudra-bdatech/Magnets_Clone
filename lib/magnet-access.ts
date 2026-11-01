@@ -50,7 +50,7 @@ export function emailLinkBaseUrl(requestOrigin?: string | null): string {
   if (process.env.NODE_ENV === "development") {
     return origin || `http://localhost:${process.env.PORT || 3000}`;
   }
-  return (process.env.NEXT_PUBLIC_APP_URL || origin || "https://magnets.bdatech.in").replace(/\/$/, "");
+  return (process.env.NEXT_PUBLIC_APP_URL || origin || "https://funnels.co.in").replace(/\/$/, "");
 }
 
 function isOwnHost(host: string): boolean {
@@ -60,7 +60,7 @@ function isOwnHost(host: string): boolean {
     h === "localhost:3000" ||
     (process.env.NODE_ENV === "development" && h.startsWith("localhost:")) ||
     h === "localhost" ||
-    h === "magnets.bdatech.in" ||
+    h === "funnels.co.in" || h === "magnets.bdatech.in" ||
     h.endsWith(".vercel.app") || // preview deployments (uploads store the origin they were made on)
     (configured !== "" && h === configured)
   );

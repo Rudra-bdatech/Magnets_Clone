@@ -96,7 +96,7 @@ export const ImportCsvModal = memo(function ImportCsvModal({
                         {previewLead.email}
                       </span>
                       <span className="text-[11px] text-zinc-500 dark:text-zinc-400 truncate">
-                        {previewLead.page || "Imported Magnet"}
+                        {previewLead.page || "Imported Funnel"}
                       </span>
                     </div>
                     <div className="flex flex-col items-end text-right shrink-0">

@@ -1,6 +1,6 @@
 /**
  * LeadMagnets Web Bridge
- * Allows the LeadMagnets dashboard (localhost:3000 / magnets.bdatech.in)
+ * Allows the LeadMagnets dashboard (localhost:3000 / funnels.co.in)
  * to communicate seamlessly with the Chrome Extension in 1-click!
  */
 (function () {

@@ -327,7 +327,7 @@ export const LeadDetailsModal = memo(function LeadDetailsModal({
             </div>
             <div>
               <span className="block text-[11px] font-medium text-zinc-500 dark:text-zinc-400">
-                Subscribed On Magnet
+                Subscribed On Funnel
               </span>
               <strong className="font-semibold text-zinc-900 dark:text-white block truncate mt-1 text-xs">
                 {selectedLead.page}

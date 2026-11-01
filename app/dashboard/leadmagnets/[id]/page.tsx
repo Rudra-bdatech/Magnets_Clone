@@ -1235,7 +1235,7 @@ export default function EditLeadMagnetPage() {
   if (!page) {
     return (
       <div className="flex flex-col items-center gap-3 px-6 py-24 text-center">
-        <p className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Lead magnet page not found</p>
+        <p className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Funnel page not found</p>
         <p className="text-sm text-zinc-500 dark:text-zinc-400">It may have been deleted or the link is wrong.</p>
         <Link
           href="/dashboard/landing-page"
@@ -1248,7 +1248,7 @@ export default function EditLeadMagnetPage() {
     );
   }
 
-  const url = `${process.env.NEXT_PUBLIC_APP_URL || "https://magnets.bdatech.in"}/${account?.username || ""}/${page.slug}`;
+  const url = `${process.env.NEXT_PUBLIC_APP_URL || "https://funnels.co.in"}/${account?.username || ""}/${page.slug}`;
   const live = page.status === "live";
 
   function update(patch: Partial<MagnetPage>) {
@@ -1565,7 +1565,7 @@ export default function EditLeadMagnetPage() {
           <div className="mb-4 sm:mb-6 flex items-center justify-between">
             <div>
               <h2 className="flex items-center gap-2 text-xl sm:text-2xl lg:text-3xl font-extrabold text-zinc-900 dark:text-white">
-                {isLockedPdf ? "Edit Locked PDF" : "Edit lead magnet"}
+                {isLockedPdf ? "Edit Locked PDF" : "Edit funnel"}
                 <span className="shrink-0 cursor-help inline-flex h-5 w-5 items-center justify-center rounded-full border border-zinc-200 dark:border-white/10 text-[11px] font-semibold text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-white/10 leading-none select-none" title={isLockedPdf ? "Edit the PDF, delivery emails, and post-signup flow" : "Edit the page copy, design, emails, and post-signup flow"}>?</span>
               </h2>
             </div>
@@ -2020,7 +2020,7 @@ export default function EditLeadMagnetPage() {
         </div>
       </div>
 
-      {/* 'Delete this magnet?' Confirmation Modal Overlay */}
+      {/* 'Delete this funnel?' Confirmation Modal Overlay */}
       <AnimatePresence>
         {showDeleteModal && (
           <DeleteModal

@@ -672,7 +672,7 @@ function getAppOrigin(): string {
   const appUrl =
     process.env.NODE_ENV !== "production" && process.env.NEXTAUTH_URL
       ? process.env.NEXTAUTH_URL
-      : process.env.NEXT_PUBLIC_APP_URL || "https://magnets.bdatech.in";
+      : process.env.NEXT_PUBLIC_APP_URL || "https://funnels.co.in";
   return appUrl.replace(/\/$/, "");
 }
 
@@ -1099,7 +1099,7 @@ export async function handleGetLinkedInConfig(authEmail: string | null) {
     await account.save();
   }
 
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://magnets.bdatech.in";
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://funnels.co.in";
 
   return NextResponse.json({
     success: true,
@@ -1127,7 +1127,7 @@ export async function handleRegenerateLinkedInSecret(authEmail: string | null) {
   account.linkedinWebhookSecret = newSecret;
   await account.save();
 
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://magnets.bdatech.in";
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://funnels.co.in";
 
   return NextResponse.json({
     success: true,

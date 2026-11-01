@@ -103,7 +103,7 @@ export const HelpModal = memo(function HelpModal({ isOpen, onClose }: HelpModalP
                   </div>
                 </div>
                 <p className="text-sm text-zinc-400 leading-relaxed">
-                  Integration controls where your pages live, where emails come from, and which other tools receive new signups. You do not need to connect every option before creating a lead magnet.
+                  Integration controls where your pages live, where emails come from, and which other tools receive new signups. You do not need to connect every option before creating a funnel.
                 </p>
               </div>
 
@@ -113,7 +113,7 @@ export const HelpModal = memo(function HelpModal({ isOpen, onClose }: HelpModalP
                 <div className="rounded-xl border border-white/10 bg-[#121212] p-4 space-y-1.5">
                   <h4 className="text-sm font-bold text-white">Funnels URL</h4>
                   <p className="text-xs text-zinc-400 leading-relaxed">
-                    Choose the included leadmagnets.so address used by your published pages.
+                    Choose the included funnels.co.in address used by your published pages.
                   </p>
                 </div>
 
@@ -145,7 +145,7 @@ export const HelpModal = memo(function HelpModal({ isOpen, onClose }: HelpModalP
                 <div className="rounded-xl border border-white/10 bg-[#121212] p-4 space-y-1.5 md:col-span-2">
                   <h4 className="text-sm font-bold text-white">Legal links</h4>
                   <p className="text-xs text-zinc-400 leading-relaxed">
-                    Add your privacy policy and terms to the footer of every public lead magnet page.
+                    Add your privacy policy and terms to the footer of every public funnel page.
                   </p>
                 </div>
               </div>

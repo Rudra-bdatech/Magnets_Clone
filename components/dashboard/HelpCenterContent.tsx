@@ -52,8 +52,8 @@ const helpTopics = {
     title: "LEARN",
     count: "4 topics",
     items: [
-      { text: "What is a lead magnet?", icon: "BookOpen" },
-      { text: "Why use a lead magnet?", icon: "Gift" },
+      { text: "What is a funnel?", icon: "BookOpen" },
+      { text: "Why use a funnel?", icon: "Gift" },
       { text: "How do they work?", icon: "Sliders" },
       { text: "What works best?", icon: "Lightbulb" },
     ],
@@ -62,8 +62,8 @@ const helpTopics = {
     title: "BUILD",
     count: "7 topics",
     items: [
-      { text: "Create your first lead magnet", icon: "Compass" },
-      { text: "Edit and publish a magnet", icon: "FileText" },
+      { text: "Create your first funnel", icon: "Compass" },
+      { text: "Edit and publish a funnel", icon: "FileText" },
       { text: "Assets", icon: "FolderOpen" },
       { text: "Brand colours and logo", icon: "Palette" },
       { text: "Delivery emails", icon: "Send" },
@@ -294,7 +294,7 @@ export default function HelpCenterContent({
                 <div className="rounded-2xl border border-red-200 bg-red-50/80 dark:border-[#452b23] dark:bg-[#221a18] px-5 py-4 text-left space-y-1.5 shadow-xs">
                   <h4 className="text-sm font-bold text-red-700 dark:text-[#f87171]">Account deletion is permanent</h4>
                   <p className="text-xs text-zinc-700 dark:text-zinc-400 leading-relaxed">
-                    Deleting the account removes its lead magnets, signups, integrations, and attached custom domains. There is no recovery. Funnels asks for your password and the word DELETE before it can continue.
+                    Deleting the account removes its funnels, signups, integrations, and attached custom domains. There is no recovery. Funnels asks for your password and the word DELETE before it can continue.
                   </p>
                 </div>
 
@@ -331,7 +331,7 @@ export default function HelpCenterContent({
                   <div className="rounded-2xl border border-[#0066B2]/30 bg-white text-zinc-900 shadow-xs dark:border-white/10 dark:bg-[#171717] dark:text-white p-5 space-y-3 text-left">
                     <h4 className="text-base font-bold text-zinc-900 dark:text-white">Analytics</h4>
                     <p className="text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed">
-                      Open a lead magnet and choose Analytics to see total signups, unique people, tracked visits and conversions, conversion rate, engagement, and results from the after-signup experience. Total signups include repeat requests. Conversion rate uses only signups matched to a tracked visit.
+                      Open a funnel and choose Analytics to see total signups, unique people, tracked visits and conversions, conversion rate, engagement, and results from the after-signup experience. Total signups include repeat requests. Conversion rate uses only signups matched to a tracked visit.
                     </p>
                   </div>
 
@@ -401,11 +401,11 @@ export default function HelpCenterContent({
                   {/* Bottom Action Button */}
                   <div className="pt-2 text-left">
                     <Link
-                      href="/dashboard/leadmagnets"
+                      href="/dashboard/landing-page"
                       onClick={() => setShowHelp(false)}
                       className="inline-flex items-center gap-2 rounded-xl bg-[#0066B2] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#005799] transition-all cursor-pointer shadow-sm"
                     >
-                      <span>Open Lead magnets</span>
+                      <span>Open Funnels</span>
                       <span className="text-base font-bold">→</span>
                     </Link>
                   </div>
@@ -426,7 +426,7 @@ export default function HelpCenterContent({
                   </div>
 
                   <p className="text-sm text-zinc-600 dark:text-zinc-300 leading-relaxed">
-                    The Leads area contains everyone who has requested one of your lead magnets.
+                    The Leads area contains everyone who has requested one of your funnels.
                   </p>
                 </div>
 
@@ -436,7 +436,7 @@ export default function HelpCenterContent({
                   <div className="rounded-2xl border border-[#0066B2]/30 bg-white text-zinc-900 shadow-xs dark:border-white/10 dark:bg-[#171717] dark:text-white p-4 space-y-1.5 text-left">
                     <h4 className="text-base font-bold text-zinc-900 dark:text-white">Review</h4>
                     <p className="text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed">
-                      See which lead magnet someone requested and the status of their follow-up sequence.
+                      See which funnel someone requested and the status of their follow-up sequence.
                     </p>
                   </div>
 
@@ -582,7 +582,7 @@ export default function HelpCenterContent({
                   </div>
 
                   <p className="text-sm text-zinc-600 dark:text-zinc-300 leading-relaxed">
-                    Add each new signup to Kit automatically and tag them with the lead magnet they requested. Open Workspace setup, expand Optional connections, then open Kit under Automations.
+                    Add each new signup to Kit automatically and tag them with the funnel they requested. Open Workspace setup, expand Optional connections, then open Kit under Automations.
                   </p>
                 </div>
 
@@ -630,7 +630,7 @@ export default function HelpCenterContent({
                   {/* Dark Info Box */}
                   <div className="rounded-2xl border border-[#0066B2]/30 bg-[#EFF6FF] dark:border-white/10 dark:bg-[#171717] p-5 text-left shadow-xs">
                     <p className="text-xs text-zinc-700 dark:text-zinc-400 leading-relaxed">
-                      New signups are added or updated by email and receive a tag identifying the lead magnet they requested.
+                      New signups are added or updated by email and receive a tag identifying the funnel they requested.
                     </p>
                   </div>
 
@@ -816,7 +816,7 @@ export default function HelpCenterContent({
                   {/* Dark Info Box */}
                   <div className="rounded-2xl border border-[#0066B2]/30 bg-[#EFF6FF] dark:border-white/10 dark:bg-[#171717] p-5 text-left shadow-xs">
                     <p className="text-xs text-zinc-700 dark:text-zinc-400 leading-relaxed">
-                      Slack receives the signup name, email, lead magnet title, and public page link.
+                      Slack receives the signup name, email, funnel title, and public page link.
                     </p>
                   </div>
 
@@ -959,7 +959,7 @@ export default function HelpCenterContent({
                     <div className="space-y-1">
                       <h4 className="text-sm font-bold text-zinc-900 dark:text-white">Check the public page</h4>
                       <p className="text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed">
-                        Open a page preview and check both links. They open in a new tab from every public lead magnet footer.
+                        Open a page preview and check both links. They open in a new tab from every public funnel footer.
                       </p>
                     </div>
                   </div>
@@ -1105,7 +1105,7 @@ export default function HelpCenterContent({
                     You can skip this completely.
                   </h3>
                   <p className="text-sm text-zinc-700 dark:text-zinc-400 leading-relaxed">
-                    Every published lead magnet can use its included leadmagnets.so link. A custom domain gives you a recognisable branded address, but it is not required to create, publish, deliver, or collect signups.
+                    Every published funnel can use its included funnels.co.in link. A custom domain gives you a recognisable branded address, but it is not required to create, publish, deliver, or collect signups.
                   </p>
                 </div>
 
@@ -1178,7 +1178,7 @@ export default function HelpCenterContent({
                   </div>
 
                   <p className="text-sm text-zinc-600 dark:text-zinc-300 leading-relaxed">
-                    Integration controls where your pages live, where emails come from, and which other tools receive new signups. You do not need to connect every option before creating a lead magnet.
+                    Integration controls where your pages live, where emails come from, and which other tools receive new signups. You do not need to connect every option before creating a funnel.
                   </p>
                 </div>
 
@@ -1188,7 +1188,7 @@ export default function HelpCenterContent({
                   <div className="rounded-2xl border border-[#0066B2]/30 bg-white text-zinc-900 shadow-xs dark:border-white/10 dark:bg-[#171717] dark:text-white p-4 space-y-1.5 text-left">
                     <h4 className="text-base font-bold text-zinc-900 dark:text-white">Funnels URL</h4>
                     <p className="text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed">
-                      Choose the included leadmagnets.so address used by your published pages.
+                      Choose the included funnels.co.in address used by your published pages.
                     </p>
                   </div>
 
@@ -1220,7 +1220,7 @@ export default function HelpCenterContent({
                   <div className="rounded-2xl border border-[#0066B2]/30 bg-white text-zinc-900 shadow-xs dark:border-white/10 dark:bg-[#171717] dark:text-white p-4 space-y-1.5 text-left">
                     <h4 className="text-base font-bold text-zinc-900 dark:text-white">Legal links</h4>
                     <p className="text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed">
-                      Add your privacy policy and terms to the footer of every public lead magnet page.
+                      Add your privacy policy and terms to the footer of every public funnel page.
                     </p>
                   </div>
                 </div>
@@ -1283,7 +1283,7 @@ export default function HelpCenterContent({
                     <div className="space-y-1">
                       <h4 className="text-sm font-bold text-zinc-900 dark:text-white">Open the email editor</h4>
                       <p className="text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed">
-                        Open a lead magnet and choose the Delivery email tab.
+                        Open a funnel and choose the Delivery email tab.
                       </p>
                     </div>
                   </div>
@@ -1322,7 +1322,7 @@ export default function HelpCenterContent({
                     <div className="space-y-1">
                       <h4 className="text-sm font-bold text-zinc-900 dark:text-white">Preview before sending</h4>
                       <p className="text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed">
-                        Use Preview to check the exact email before publishing the lead magnet.
+                        Use Preview to check the exact email before publishing the funnel.
                       </p>
                     </div>
                   </div>
@@ -1338,11 +1338,11 @@ export default function HelpCenterContent({
                   {/* Bottom Action Button */}
                   <div className="pt-2">
                     <Link
-                      href="/dashboard/leadmagnets"
+                      href="/dashboard/landing-page"
                       onClick={() => setShowHelp(false)}
                       className="inline-flex items-center gap-2 rounded-xl bg-[#0066B2] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#005799] transition-all cursor-pointer shadow-sm"
                     >
-                      <span>Open Lead magnets</span>
+                      <span>Open Funnels</span>
                       <span className="text-base font-bold">→</span>
                     </Link>
                   </div>
@@ -1431,11 +1431,11 @@ export default function HelpCenterContent({
                   {/* Bottom Action Button */}
                   <div className="pt-2">
                     <Link
-                      href="/dashboard/leadmagnets"
+                      href="/dashboard/landing-page"
                       onClick={() => setShowHelp(false)}
                       className="inline-flex items-center gap-2 rounded-xl bg-[#0066B2] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#005799] transition-all cursor-pointer shadow-sm"
                     >
-                      <span>Open Lead magnets</span>
+                      <span>Open Funnels</span>
                       <span className="text-base font-bold">→</span>
                     </Link>
                   </div>
@@ -1456,7 +1456,7 @@ export default function HelpCenterContent({
                   </div>
 
                   <p className="text-sm text-zinc-600 dark:text-zinc-300 leading-relaxed">
-                    Brand settings apply to every public lead magnet and to the editor preview.
+                    Brand settings apply to every public funnel and to the editor preview.
                   </p>
                 </div>
 
@@ -1542,7 +1542,7 @@ export default function HelpCenterContent({
                   </div>
 
                   <p className="text-sm text-zinc-600 dark:text-zinc-300 leading-relaxed">
-                    Control what someone sees on screen immediately after filling out your lead magnet form.
+                    Control what someone sees on screen immediately after filling out your funnel form.
                   </p>
                 </div>
 
@@ -1573,11 +1573,11 @@ export default function HelpCenterContent({
                 {/* Bottom Action Button */}
                 <div className="pt-2">
                   <Link
-                    href="/dashboard/leadmagnets"
+                    href="/dashboard/landing-page"
                     onClick={() => setShowHelp(false)}
                     className="inline-flex items-center gap-2 rounded-xl bg-[#0066B2] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#005799] transition-all cursor-pointer shadow-sm"
                   >
-                    <span>Open Lead magnets</span>
+                    <span>Open Funnels</span>
                     <span className="text-base font-bold">→</span>
                   </Link>
                 </div>
@@ -1637,7 +1637,7 @@ export default function HelpCenterContent({
                     <div className="space-y-1">
                       <h4 className="text-sm font-bold text-zinc-900 dark:text-white">Add it to the Delivery email</h4>
                       <p className="text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed">
-                        Copy its unique link, then paste it into the Delivery email for the lead magnet that should send it.
+                        Copy its unique link, then paste it into the Delivery email for the funnel that should send it.
                       </p>
                     </div>
                   </div>
@@ -1646,7 +1646,7 @@ export default function HelpCenterContent({
                   <div className="rounded-2xl border border-[#0066B2]/30 bg-[#EFF6FF] dark:border-white/10 dark:bg-[#171717] p-5 space-y-1.5 shadow-xs">
                     <h4 className="text-sm font-bold text-zinc-900 dark:text-white">Deleting a resource revokes its link</h4>
                     <p className="text-xs text-zinc-700 dark:text-zinc-400 leading-relaxed">
-                      Anyone using the old link will lose access immediately, so update any lead magnets that still use it.
+                      Anyone using the old link will lose access immediately, so update any funnels that still use it.
                     </p>
                   </div>
 
@@ -1663,7 +1663,7 @@ export default function HelpCenterContent({
                   </div>
                 </div>
               </div>
-            ) : selectedTopic === "Edit and publish a magnet" ? (
+            ) : selectedTopic === "Edit and publish a funnel" ? (
               <div className="max-w-[43rem] mx-auto space-y-6 py-2">
                 {/* Header: BUILD THE FULL JOURNEY */}
                 <div className="space-y-4">
@@ -1673,12 +1673,12 @@ export default function HelpCenterContent({
                     </span>
                     <div>
                       <p className="text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">BUILD THE FULL JOURNEY</p>
-                      <h2 className="text-xl font-bold text-zinc-900 dark:text-white leading-tight">How do I edit and publish a lead magnet?</h2>
+                      <h2 className="text-xl font-bold text-zinc-900 dark:text-white leading-tight">How do I edit and publish a funnel?</h2>
                     </div>
                   </div>
 
                   <p className="text-sm text-zinc-600 dark:text-zinc-300 leading-relaxed">
-                    Each lead magnet has one editor for the page people visit, the email that delivers the resource, any follow-up emails, and what happens after signup. Changes save automatically while you work.
+                    Each funnel has one editor for the page people visit, the email that delivers the resource, any follow-up emails, and what happens after signup. Changes save automatically while you work.
                   </p>
                 </div>
 
@@ -1774,24 +1774,24 @@ export default function HelpCenterContent({
                   {/* Dark Red Warning Card */}
                   <div className="rounded-2xl border border-red-200 bg-red-50/80 dark:border-[#4d2226] dark:bg-[#221617] p-5 shadow-xs">
                     <p className="text-xs text-red-700 dark:text-[#f87171] leading-relaxed">
-                      Deleting a lead magnet removes its public page and cannot be undone. Signups already collected remain in your Leads area.
+                      Deleting a funnel removes its public page and cannot be undone. Signups already collected remain in your Leads area.
                     </p>
                   </div>
 
                   {/* Bottom Action Button */}
                   <div className="pt-2">
                     <Link
-                      href="/dashboard/leadmagnets"
+                      href="/dashboard/landing-page"
                       onClick={() => setShowHelp(false)}
                       className="inline-flex items-center gap-2 rounded-xl bg-[#0066B2] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#005799] transition-all cursor-pointer shadow-sm"
                     >
-                      <span>Open Lead magnets</span>
+                      <span>Open Funnels</span>
                       <span className="text-base font-bold">→</span>
                     </Link>
                   </div>
                 </div>
               </div>
-            ) : selectedTopic === "Create your first lead magnet" ? (
+            ) : selectedTopic === "Create your first funnel" ? (
               <div className="max-w-[43rem] mx-auto space-y-4 py-2">
                 {/* Top Card: Build a direct path from interest to your email list */}
                 <div className="rounded-2xl border border-[#0066B2]/40 bg-[#18181c] bg-[radial-gradient(ellipse_160%_200%_at_left_center,#0B2545_0%,#132A4A_28%,#161F2B_55%,#18181c_100%)] p-6 space-y-4 shadow-sm">
@@ -1882,7 +1882,7 @@ export default function HelpCenterContent({
                       }}
                       className="inline-flex items-center gap-2 rounded-xl bg-[#0066B2] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#005799] transition-all cursor-pointer shadow-sm"
                     >
-                      <span>Create a lead magnet</span>
+                      <span>Create a funnel</span>
                       <span className="text-base font-bold">→</span>
                     </button>
 
@@ -1904,7 +1904,7 @@ export default function HelpCenterContent({
                   </span>
                   <div>
                     <p className="text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">QUALITY BEATS SIZE</p>
-                    <h2 className="text-lg font-bold text-zinc-900 dark:text-white leading-tight">What lead magnets work best?</h2>
+                    <h2 className="text-lg font-bold text-zinc-900 dark:text-white leading-tight">What funnels work best?</h2>
                   </div>
                 </div>
 
@@ -1912,7 +1912,7 @@ export default function HelpCenterContent({
                   There is no single format that wins for every audience. The strongest option is the one that solves one specific problem, is easy to use, and naturally connects to what you help people do next. A concise checklist can be more valuable than a long ebook if it gets someone to a result.
                 </p>
 
-                {/* 2-column Grid of Lead Magnet Format Cards */}
+                {/* 2-column Grid of Funnel Format Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 pt-1">
                   {/* Checklist */}
                   <div className="rounded-2xl border border-[#0066B2]/30 bg-white text-zinc-900 shadow-xs dark:border-white/10 dark:bg-[#171717] dark:text-white p-3.5 sm:p-4 space-y-2.5">
@@ -2065,7 +2065,7 @@ export default function HelpCenterContent({
                   </span>
                   <div>
                     <p className="text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">FROM VISITOR TO SUBSCRIBER</p>
-                    <h2 className="text-lg font-bold text-zinc-900 dark:text-white leading-tight">How do lead magnets work?</h2>
+                    <h2 className="text-lg font-bold text-zinc-900 dark:text-white leading-tight">How do funnels work?</h2>
                   </div>
                 </div>
 
@@ -2159,7 +2159,7 @@ export default function HelpCenterContent({
                   Publishing is only the start. Put the link in your website, social profiles, posts, newsletter, podcast notes, or anywhere else the right people already find you.
                 </div>
               </div>
-            ) : selectedTopic === "Why use a lead magnet?" ? (
+            ) : selectedTopic === "Why use a funnel?" ? (
               <div className="max-w-[43rem] mx-auto space-y-6 py-2">
                 <div className="flex items-center gap-3.5">
                   <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#0066B2]/20 border border-[#0066B2]/40 text-[#0066B2] dark:text-[#38BDF8]">
@@ -2167,12 +2167,12 @@ export default function HelpCenterContent({
                   </span>
                   <div>
                     <p className="text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">GIVE VALUE FIRST</p>
-                    <h2 className="text-lg font-bold text-zinc-900 dark:text-white leading-tight">Why use a lead magnet?</h2>
+                    <h2 className="text-lg font-bold text-zinc-900 dark:text-white leading-tight">Why use a funnel?</h2>
                   </div>
                 </div>
 
                 <p className="text-sm text-zinc-600 dark:text-zinc-300 leading-relaxed">
-                  Most people will not buy or book the first time they find you. A lead magnet asks for a much smaller commitment, so useful attention does not have to disappear when they leave the page.
+                  Most people will not buy or book the first time they find you. A funnel asks for a much smaller commitment, so useful attention does not have to disappear when they leave the page.
                 </p>
 
                 {/* 2x2 Grid of Benefit Cards */}
@@ -2226,7 +2226,7 @@ export default function HelpCenterContent({
                   The subject of the resource also tells you something useful about intent. Someone who requests a pricing template, for example, has shown you the problem they are trying to solve.
                 </p>
               </div>
-            ) : selectedTopic === "What is a lead magnet?" ? (
+            ) : selectedTopic === "What is a funnel?" ? (
               <div className="max-w-[43rem] mx-auto space-y-6 py-2">
                 <div className="flex items-center gap-3.5">
                   <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#0066B2]/20 border border-[#0066B2]/40 text-[#0066B2] dark:text-[#38BDF8]">
@@ -2234,12 +2234,12 @@ export default function HelpCenterContent({
                   </span>
                   <div>
                     <p className="text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">THE SIMPLE DEFINITION</p>
-                    <h2 className="text-lg font-bold text-zinc-900 dark:text-white leading-tight">What is a lead magnet?</h2>
+                    <h2 className="text-lg font-bold text-zinc-900 dark:text-white leading-tight">What is a funnel?</h2>
                   </div>
                 </div>
 
                 <p className="text-sm text-zinc-600 dark:text-zinc-300 leading-relaxed">
-                  A lead magnet is a useful resource or experience offered in exchange for contact information, usually an email address. It gives a potential customer a quick win around a problem you solve, and gives you a relevant reason to follow up with them.
+                  A funnel is a useful resource or experience offered in exchange for contact information, usually an email address. It gives a potential customer a quick win around a problem you solve, and gives you a relevant reason to follow up with them.
                 </p>
 
                 <div className="rounded-2xl border border-[#0066B2]/30 bg-white text-zinc-900 shadow-xs dark:border-white/10 dark:bg-[#171717] dark:text-white p-5 space-y-2">

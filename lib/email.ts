@@ -160,7 +160,7 @@ function getBaseUrl(): string {
   if (process.env.NEXT_PUBLIC_APP_URL) return process.env.NEXT_PUBLIC_APP_URL.replace(/\/$/, "");
   if (process.env.NEXTAUTH_URL) return process.env.NEXTAUTH_URL.replace(/\/$/, "");
   if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL.replace(/\/$/, "")}`;
-  return "https://magnets.bdatech.in";
+  return "https://funnels.co.in";
 }
 
 export function injectTrackingPixel(html: string, tracking: EmailTrackingOptions): string {
@@ -220,7 +220,7 @@ export async function sendMail(
     ).toLowerCase();
 
     const resolvedOwner = ownerEmail || options.tracking?.userEmail || "";
-    const defaultFrom = process.env.SMTP_FROM || "noreply@bdatech.in";
+    const defaultFrom = process.env.SMTP_FROM || "noreply@funnels.co.in";
 
     let finalHtml = options.html;
     if (options.tracking) {

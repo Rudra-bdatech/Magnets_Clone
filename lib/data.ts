@@ -107,7 +107,7 @@ export interface Lead {
   opened?: boolean;
   openedSteps?: string[];
   openedAt?: string;
-  source: "leadmagnets" | "magnets" | "custom-domain" | "integration" | "locked-pdf-otp" | "linkedin-comment" | "linkedin" | (string & {});
+  source: "funnels" | "leadmagnets" | "magnets" | "custom-domain" | "integration" | "locked-pdf-otp" | "linkedin-comment" | "linkedin" | (string & {});
   signedUpAt: string;
   sequence?: string;
   sequenceStep?: string;
@@ -416,7 +416,7 @@ export function getAppUrl(): string {
   if (typeof window !== "undefined" && window.location?.origin) {
     return window.location.origin;
   }
-  return "https://magnets.bdatech.in";
+  return "https://funnels.co.in";
 }
 
 export function getAppDomain(): string {

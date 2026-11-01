@@ -37,7 +37,7 @@ export async function syncUserLinkedInComments(account: any) {
   }
 
   await dbConnect();
-  const rawAppUrl = process.env.NEXT_PUBLIC_APP_URL || "https://magnets.bdatech.in";
+  const rawAppUrl = process.env.NEXT_PUBLIC_APP_URL || "https://funnels.co.in";
   const appUrl = rawAppUrl.replace(/\/+$/, "");
   const userEmail = account.email.trim().toLowerCase();
 

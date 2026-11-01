@@ -137,7 +137,7 @@ export const AutomationsSection = memo(function AutomationsSection({
 
                   <div className="pt-2 border-t border-zinc-200/60 dark:border-white/5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                     <p className="text-[11px] text-zinc-500 dark:text-zinc-400">
-                      Slack receives the name, email, lead magnet title, and a link to the page. It never blocks the signup or resource email.
+                      Slack receives the name, email, funnel title, and a link to the page. It never blocks the signup or resource email.
                     </p>
                     <button
                       type="button"
@@ -266,7 +266,7 @@ export const AutomationsSection = memo(function AutomationsSection({
 
                   <div className="pt-2 border-t border-zinc-200/60 dark:border-white/5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                     <p className="text-[11px] text-zinc-500 dark:text-zinc-400">
-                      Each event includes the lead, signup ID, lead magnet, and public page URL. Zapier never blocks the signup or resource email.
+                      Each event includes the lead, signup ID, funnel, and public page URL. Zapier never blocks the signup or resource email.
                     </p>
                     <button
                       type="button"
@@ -427,7 +427,7 @@ export const AutomationsSection = memo(function AutomationsSection({
                   <h5 className="text-xs font-bold text-zinc-900 dark:text-white flex items-center gap-1.5">
                     Kit
                     <InfoTooltip
-                      content="Add every signup to Kit and tag the lead magnet they requested."
+                      content="Add every signup to Kit and tag the funnel they requested."
                       title="Kit (ConvertKit) Automation"
                       align="start"
                     />
@@ -476,7 +476,7 @@ export const AutomationsSection = memo(function AutomationsSection({
 
                   <div className="pt-2 border-t border-zinc-200/60 dark:border-white/5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                     <p className="text-[11px] text-zinc-500 dark:text-zinc-400">
-                      Kit subscriber sync runs automatically after every lead magnet signup.
+                      Kit subscriber sync runs automatically after every funnel signup.
                     </p>
                     <button
                       type="button"

@@ -12,7 +12,7 @@ export default function LeadMagnetError({
   reset: () => void;
 }) {
   useEffect(() => {
-    console.error("Lead Magnet Route Error Boundary caught error:", error);
+    console.error("Funnel Route Error Boundary caught error:", error);
   }, [error]);
 
   return (
@@ -26,7 +26,7 @@ export default function LeadMagnetError({
       </h1>
 
       <p className="mt-2 max-w-md text-xs text-zinc-600 dark:text-zinc-400">
-        We encountered a temporary issue loading this lead magnet. Please try refreshing or check back in a moment.
+        We encountered a temporary issue loading this funnel. Please try refreshing or check back in a moment.
       </p>
 
       <div className="mt-6 flex items-center gap-3">
