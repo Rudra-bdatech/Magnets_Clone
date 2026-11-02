@@ -520,7 +520,7 @@ export default function AdminUserDetailPage() {
           <div className="bg-white dark:bg-[#171717] border border-zinc-200 dark:border-white/[0.08] rounded-xl p-5">
             <h2 className="text-sm font-semibold text-zinc-900 dark:text-white mb-4">Account Info</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
-              <Row icon={<Calendar className="w-3.5 h-3.5" />} label="Joined" value={user.joinedAt} />
+              <Row icon={<Calendar className="w-3.5 h-3.5" />} label="Joined" value={user.joinedAt ? new Date(user.joinedAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" }) : "—"} />
               <Row
                 icon={<Mail className="w-3.5 h-3.5" />}
                 label="Email Verified"

@@ -77,7 +77,7 @@ export async function GET(request: NextRequest) {
       paymentStatus: a.paymentStatus || "",
       paymentProvider: a.paymentProvider || "",
       emailVerified: Boolean(a.emailVerified),
-      joinedAt: a.joinedAt || "",
+      joinedAt: a._id ? new Date(parseInt(a._id.toString().substring(0, 8), 16) * 1000).toISOString() : (a.joinedAt || ""),
       customDomain: a.customDomain || "",
       linkedinConnected: Boolean(a.linkedinConnected),
       gmailConnected: Boolean(a.gmailOAuth?.connected),

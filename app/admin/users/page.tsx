@@ -260,7 +260,9 @@ export default function AdminUsersPage() {
                       </span>
                     </td>
 
-                    <td className="px-4 py-3 text-zinc-500 dark:text-zinc-400 whitespace-nowrap text-xs">{user.joinedAt}</td>
+                    <td className="px-4 py-3 text-zinc-500 dark:text-zinc-400 whitespace-nowrap text-xs">
+                      {user.joinedAt ? new Date(user.joinedAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" }) : "—"}
+                    </td>
 
                     <td className="px-4 py-3">
                       {user.emailVerified ? (
