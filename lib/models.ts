@@ -350,6 +350,27 @@ const PdfOtpSchema = new Schema({
 PdfOtpSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
 PdfOtpSchema.index({ email: 1, magnetId: 1, used: 1 });
 
+// AuditLog Schema — records every admin action for accountability
+const AuditLogSchema = new Schema({
+  adminEmail: { type: String, required: true, lowercase: true, trim: true, index: true },
+  adminRole: { type: String, required: true },
+  action: {
+    type: String,
+    enum: ["plan_change", "role_change"],
+    required: true,
+    index: true,
+  },
+  targetEmail: { type: String, required: true, lowercase: true, trim: true, index: true },
+  targetName: { type: String, default: "" },
+  before: { type: Schema.Types.Mixed, required: true },
+  after: { type: Schema.Types.Mixed, required: true },
+  createdAt: { type: Date, default: Date.now, index: true },
+});
+
+AuditLogSchema.index({ createdAt: -1 });
+AuditLogSchema.index({ adminEmail: 1, createdAt: -1 });
+AuditLogSchema.index({ targetEmail: 1, createdAt: -1 });
+
 if (process.env.NODE_ENV === "development") {
   delete (mongoose.models as any).Account;
   delete (mongoose.models as any).MagnetPage;
@@ -359,6 +380,7 @@ if (process.env.NODE_ENV === "development") {
   delete (mongoose.models as any).Resource;
   delete (mongoose.models as any).EmailEvent;
   delete (mongoose.models as any).PdfOtp;
+  delete (mongoose.models as any).AuditLog;
 }
 
 export const AccountModel = mongoose.models.Account || mongoose.model("Account", AccountSchema);
@@ -367,3 +389,4 @@ export const LeadModel = mongoose.models.Lead || mongoose.model("Lead", LeadSche
 export const SequenceModel = mongoose.models.Sequence || mongoose.model("Sequence", SequenceSchema);
 export const IntegrationModel = mongoose.models.Integration || mongoose.model("Integration", IntegrationSchema);
 export const PdfOtpModel = mongoose.models.PdfOtp || mongoose.model("PdfOtp", PdfOtpSchema);
+export const AuditLogModel = mongoose.models.AuditLog || mongoose.model("AuditLog", AuditLogSchema);

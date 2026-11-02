@@ -154,6 +154,7 @@ export async function middleware(request: NextRequest) {
     // If internal platform routes (dashboard, login, register, password reset) are accessed on a custom domain, redirect to main platform
     if (
       pathname.startsWith("/dashboard") ||
+      pathname.startsWith("/admin") ||
       pathname.startsWith("/login") ||
       pathname.startsWith("/register") ||
       pathname.startsWith("/reset-password") ||
@@ -176,6 +177,7 @@ export async function middleware(request: NextRequest) {
     const isExcludedPath =
       pathname.startsWith("/api") ||
       pathname.startsWith("/_next") ||
+      pathname.startsWith("/admin") ||
       pathname.startsWith("/pdf-viewer") ||
       pathname.startsWith("/stop") ||
       pathname.startsWith("/r") ||
@@ -206,7 +208,7 @@ export async function middleware(request: NextRequest) {
 
   // Protect /dashboard routes on primary domain — require cryptographically signed session
   // and a verified email. Onboarding creates pages, so it is gated the same way.
-  if (pathname.startsWith("/dashboard") || pathname.startsWith("/register/onboarding")) {
+  if (pathname.startsWith("/dashboard") || pathname.startsWith("/register/onboarding") || pathname.startsWith("/admin")) {
     if (!isValidSession) {
       const loginUrl = new URL("/login", request.url);
       loginUrl.searchParams.set("from", pathname);
