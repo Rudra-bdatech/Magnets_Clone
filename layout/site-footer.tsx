@@ -33,7 +33,7 @@ export default function SiteFooter() {
   const legalCol = columns.find((c) => c.title === "Legal");
 
   return (
-    <footer className="relative overflow-hidden border-t border-zinc-200/80 dark:border-zinc-800/80 bg-[#F0F7FF] dark:bg-[#0a0a0a] text-zinc-600 dark:text-zinc-400">
+    <footer className="relative overflow-hidden border-t border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-[#121215] text-zinc-600 dark:text-zinc-400">
       <div className="mx-auto max-w-7xl px-5 pt-14 sm:px-8 lg:px-10">
         <div className="grid grid-cols-2 gap-10 lg:grid-cols-5">
           <div className="col-span-2 lg:col-span-2">
