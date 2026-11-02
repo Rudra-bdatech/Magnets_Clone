@@ -49,18 +49,18 @@ export const metadata: Metadata = {
     title: "Funnels | High-Converting Funnel Builder",
     description:
       "Create high-converting funnels, capture leads, deliver resources instantly, and follow up automatically.",
-    images: [{ url: "/landing-dashboard.png", width: 1280, height: 720, alt: "Funnels funnel builder dashboard" }],
+    images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "Funnels" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "Funnels | High-Converting Funnel Builder",
     description:
       "Create high-converting funnels, capture leads, deliver resources instantly, and follow up automatically.",
-    images: ["/landing-dashboard.png"],
+    images: ["/og-image.png"],
   },
   icons: {
-    icon: "/brand/gemini-logo-dark.webp",
-    apple: "/brand/gemini-logo-dark.webp",
+    icon: "/brand/funnels-mark-light.png",
+    apple: "/brand/funnels-mark-light.png",
   },
 };
 

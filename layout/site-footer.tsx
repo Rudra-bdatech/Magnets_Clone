@@ -1,4 +1,3 @@
-import Image from "next/image";
 import BrandLogo from "@/components/brand";
 
 const columns = [
@@ -55,35 +54,16 @@ export default function SiteFooter() {
           ))}
         </div>
 
-        <div className="mt-12 flex flex-row items-center justify-between border-t border-zinc-200/80 dark:border-zinc-800/80 py-5 text-xs">
+        <div className="mt-12 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between border-t border-zinc-200/80 dark:border-zinc-800/80 py-5 text-xs">
           <span>© {new Date().getFullYear()} Funnels</span>
-          <span>funnels.co.in</span>
-        </div>
-      </div>
-
-      {/* Crystal-clear vector brand wordmark anchored to the footer bottom */}
-      <div className="pointer-events-none select-none w-full overflow-hidden flex justify-center items-end pt-6 sm:pt-8 -mb-[2.5vw] sm:-mb-[3vw]">
-        <div className="w-full">
-          {/* Light mode vector logo */}
-          <Image
-            src="/brand/funnels-footer-light.svg"
-            alt="Funnels"
-            width={2495}
-            height={541}
-            unoptimized
-            priority
-            className="w-full h-auto object-contain dark:hidden"
-          />
-          {/* Dark mode vector logo */}
-          <Image
-            src="/brand/funnels-footer-dark.svg"
-            alt="Funnels"
-            width={2495}
-            height={541}
-            unoptimized
-            priority
-            className="w-full h-auto object-contain hidden dark:block"
-          />
+          <a
+            href="https://bdatechnologies.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="transition hover:text-zinc-900 dark:hover:text-white"
+          >
+            A Product by BDA Technologies Private Limited
+          </a>
         </div>
       </div>
     </footer>
