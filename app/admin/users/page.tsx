@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { Search, ChevronLeft, ChevronRight, Check, X, AlertTriangle } from "lucide-react";
+import { Search, ChevronLeft, ChevronRight, Check, X, AlertTriangle, ChevronDown } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface AdminUser {
   email: string;
@@ -51,6 +52,148 @@ interface PendingChange {
   field: "plan" | "role";
   from: string;
   to: string;
+}
+
+function useClickOutside(ref: React.RefObject<HTMLElement | null>, onClose: () => void) {
+  useEffect(() => {
+    function handler(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) onClose();
+    }
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [ref, onClose]);
+}
+
+/** Pill-style dropdown used inside each table row for Plan / Role */
+function RowSelect({
+  value,
+  options,
+  colorMap,
+  onChange,
+  disabled,
+}: {
+  value: string;
+  options: string[];
+  colorMap: Record<string, string>;
+  onChange: (v: string) => void;
+  disabled?: boolean;
+}) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  useClickOutside(ref, () => setOpen(false));
+
+  return (
+    <div ref={ref} className="relative inline-block">
+      <button
+        type="button"
+        disabled={disabled}
+        onClick={(e) => { e.stopPropagation(); setOpen((v) => !v); }}
+        className={`flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full transition-opacity disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer select-none ${colorMap[value] || "bg-zinc-100 text-zinc-600 dark:bg-white/10 dark:text-zinc-400"}`}
+      >
+        {value}
+        <ChevronDown className={`w-3 h-3 transition-transform duration-150 ${open ? "rotate-180" : ""}`} />
+      </button>
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: -4 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: -4 }}
+            transition={{ type: "spring", damping: 28, stiffness: 400 }}
+            style={{ transformOrigin: "top left" }}
+            className="absolute left-0 top-full z-50 mt-1.5 min-w-[130px] rounded-xl border border-zinc-200/80 bg-white/95 p-1 shadow-2xl backdrop-blur-xl dark:border-white/10 dark:bg-[#171717]/95"
+          >
+            {options.map((opt) => (
+              <button
+                key={opt}
+                type="button"
+                onClick={(e) => { e.stopPropagation(); onChange(opt); setOpen(false); }}
+                className={`flex w-full items-center justify-between gap-2 rounded-lg px-2.5 py-1.5 text-xs font-medium transition-all cursor-pointer ${
+                  value === opt
+                    ? "bg-[#0066B2]/10 text-[#0066B2] font-semibold dark:bg-[#38BDF8]/15 dark:text-[#38BDF8]"
+                    : "text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-white/5"
+                }`}
+              >
+                {opt}
+                {value === opt && <Check className="w-3 h-3 shrink-0" />}
+              </button>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+/** Filter dropdown used in the top toolbar for All Plans / All Roles */
+function FilterSelect({
+  value,
+  placeholder,
+  options,
+  onChange,
+}: {
+  value: string;
+  placeholder: string;
+  options: string[];
+  onChange: (v: string) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  useClickOutside(ref, () => setOpen(false));
+  const label = value || placeholder;
+
+  return (
+    <div ref={ref} className="relative shrink-0">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className="flex h-9 items-center gap-2 rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#1C1C1F] px-3 text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-white/5 transition shadow-xs cursor-pointer select-none"
+      >
+        <span>{label}</span>
+        <ChevronDown className={`w-3.5 h-3.5 text-zinc-400 transition-transform duration-150 ${open ? "rotate-180" : ""}`} />
+      </button>
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.96, y: -6 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.96, y: -4 }}
+            transition={{ type: "spring", damping: 28, stiffness: 400 }}
+            style={{ transformOrigin: "top right" }}
+            className="absolute right-0 top-full z-50 mt-1.5 min-w-[140px] rounded-xl border border-zinc-200/80 bg-white/95 p-1 shadow-2xl backdrop-blur-xl dark:border-white/10 dark:bg-[#171717]/95"
+          >
+            <button
+              type="button"
+              onClick={() => { onChange(""); setOpen(false); }}
+              className={`flex w-full items-center justify-between gap-2 rounded-lg px-2.5 py-2 text-xs font-medium transition-all cursor-pointer ${
+                !value
+                  ? "bg-[#0066B2]/10 text-[#0066B2] font-semibold dark:bg-[#38BDF8]/15 dark:text-[#38BDF8]"
+                  : "text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-white/5"
+              }`}
+            >
+              {placeholder}
+              {!value && <Check className="w-3 h-3 shrink-0" />}
+            </button>
+            {options.map((opt) => (
+              <button
+                key={opt}
+                type="button"
+                onClick={() => { onChange(opt); setOpen(false); }}
+                className={`flex w-full items-center justify-between gap-2 rounded-lg px-2.5 py-2 text-xs font-medium transition-all cursor-pointer ${
+                  value === opt
+                    ? "bg-[#0066B2]/10 text-[#0066B2] font-semibold dark:bg-[#38BDF8]/15 dark:text-[#38BDF8]"
+                    : "text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-white/5"
+                }`}
+              >
+                {opt}
+                {value === opt && <Check className="w-3 h-3 shrink-0" />}
+              </button>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
 }
 
 export default function AdminUsersPage() {
@@ -153,23 +296,19 @@ export default function AdminUsersPage() {
           />
         </div>
 
-        <select
+        <FilterSelect
           value={planFilter}
-          onChange={(e) => { setPlanFilter(e.target.value); setPage(1); }}
-          className="text-sm border border-zinc-200 dark:border-white/10 rounded-xl px-3 py-2 bg-white dark:bg-[#1C1C1F] text-zinc-700 dark:text-zinc-300 focus:outline-none focus:ring-2 focus:ring-[#0066B2]"
-        >
-          <option value="">All Plans</option>
-          {PLANS.map((p) => <option key={p} value={p}>{p}</option>)}
-        </select>
+          placeholder="All Plans"
+          options={PLANS}
+          onChange={(v) => { setPlanFilter(v); setPage(1); }}
+        />
 
-        <select
+        <FilterSelect
           value={roleFilter}
-          onChange={(e) => { setRoleFilter(e.target.value); setPage(1); }}
-          className="text-sm border border-zinc-200 dark:border-white/10 rounded-xl px-3 py-2 bg-white dark:bg-[#1C1C1F] text-zinc-700 dark:text-zinc-300 focus:outline-none focus:ring-2 focus:ring-[#0066B2]"
-        >
-          <option value="">All Roles</option>
-          {ROLES.map((r) => <option key={r} value={r}>{r}</option>)}
-        </select>
+          placeholder="All Roles"
+          options={ROLES}
+          onChange={(v) => { setRoleFilter(v); setPage(1); }}
+        />
       </div>
 
       {error && (
@@ -225,25 +364,23 @@ export default function AdminUsersPage() {
                     </td>
 
                     <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
-                      <select
+                      <RowSelect
                         value={user.plan}
+                        options={PLANS}
+                        colorMap={PLAN_COLORS}
                         disabled={updating === user.email}
-                        onChange={(e) => requestChange(user, "plan", e.target.value)}
-                        className={`text-xs font-semibold px-2 py-1 rounded-full border-0 cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#0066B2] ${PLAN_COLORS[user.plan] || "bg-zinc-100 text-zinc-600"}`}
-                      >
-                        {PLANS.map((p) => <option key={p} value={p}>{p}</option>)}
-                      </select>
+                        onChange={(v) => requestChange(user, "plan", v)}
+                      />
                     </td>
 
                     <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
-                      <select
+                      <RowSelect
                         value={user.role}
+                        options={ROLES}
+                        colorMap={ROLE_COLORS}
                         disabled={updating === user.email}
-                        onChange={(e) => requestChange(user, "role", e.target.value)}
-                        className={`text-xs font-semibold px-2 py-1 rounded-full border-0 cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#0066B2] ${ROLE_COLORS[user.role] || "bg-zinc-100 text-zinc-600"}`}
-                      >
-                        {ROLES.map((r) => <option key={r} value={r}>{r}</option>)}
-                      </select>
+                        onChange={(v) => requestChange(user, "role", v)}
+                      />
                     </td>
 
                     <td className="px-4 py-3 text-right font-medium text-zinc-700 dark:text-zinc-300">
