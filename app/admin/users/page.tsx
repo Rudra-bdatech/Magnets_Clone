@@ -20,22 +20,29 @@ interface AdminUser {
   hasPaidSubscription: boolean;
   magnetCount: number;
   leadCount: number;
+  storageBytes: number;
 }
 
-const PLANS = ["Free", "Pro", "Growth", "Unlimited"];
+function formatBytes(bytes: number) {
+  if (!bytes) return "0 B";
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  if (bytes < 1024 * 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+  return `${(bytes / (1024 * 1024 * 1024)).toFixed(2)} GB`;
+}
+
+const PLANS = ["Free", "Pro"];
 const ROLES = ["user", "admin", "super_admin"];
 
 const PLAN_COLORS: Record<string, string> = {
-  Free: "bg-gray-100 text-gray-600",
-  Pro: "bg-blue-50 text-blue-700",
-  Growth: "bg-purple-50 text-purple-700",
-  Unlimited: "bg-amber-50 text-amber-700",
+  Free: "bg-zinc-100 text-zinc-600 dark:bg-white/10 dark:text-zinc-400",
+  Pro: "bg-[#0066B2]/10 text-[#0066B2] dark:bg-[#0066B2]/20 dark:text-[#38BDF8]",
 };
 
 const ROLE_COLORS: Record<string, string> = {
-  user: "bg-gray-100 text-gray-600",
-  admin: "bg-green-50 text-green-700",
-  super_admin: "bg-red-50 text-red-700",
+  user: "bg-zinc-100 text-zinc-600 dark:bg-white/10 dark:text-zinc-400",
+  admin: "bg-green-50 text-green-700 dark:bg-green-500/15 dark:text-green-400",
+  super_admin: "bg-red-50 text-red-700 dark:bg-red-500/15 dark:text-red-400",
 };
 
 interface PendingChange {
@@ -127,8 +134,8 @@ export default function AdminUsersPage() {
   return (
     <div className="p-6 max-w-7xl mx-auto">
       <div className="mb-6">
-        <h1 className="text-xl font-semibold text-gray-900">Users</h1>
-        <p className="text-sm text-gray-500 mt-0.5">
+        <h1 className="text-xl font-semibold text-zinc-900 dark:text-white">Users</h1>
+        <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-0.5">
           {total > 0 ? `${total.toLocaleString()} total` : "Loading..."}
         </p>
       </div>
@@ -136,20 +143,20 @@ export default function AdminUsersPage() {
       {/* Filters */}
       <div className="flex flex-wrap gap-3 mb-4">
         <div className="relative flex-1 min-w-56">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 pointer-events-none" />
           <input
             type="text"
             placeholder="Search by name or email…"
             value={search}
             onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-            className="w-full pl-9 pr-3 py-2 text-sm border border-gray-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full pl-9 pr-3 py-2 text-sm border border-zinc-200 dark:border-white/10 rounded-xl bg-white dark:bg-[#1C1C1F] text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-600 focus:outline-none focus:ring-2 focus:ring-[#0066B2] focus:border-transparent"
           />
         </div>
 
         <select
           value={planFilter}
           onChange={(e) => { setPlanFilter(e.target.value); setPage(1); }}
-          className="text-sm border border-gray-200 rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="text-sm border border-zinc-200 dark:border-white/10 rounded-xl px-3 py-2 bg-white dark:bg-[#1C1C1F] text-zinc-700 dark:text-zinc-300 focus:outline-none focus:ring-2 focus:ring-[#0066B2]"
         >
           <option value="">All Plans</option>
           {PLANS.map((p) => <option key={p} value={p}>{p}</option>)}
@@ -158,7 +165,7 @@ export default function AdminUsersPage() {
         <select
           value={roleFilter}
           onChange={(e) => { setRoleFilter(e.target.value); setPage(1); }}
-          className="text-sm border border-gray-200 rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="text-sm border border-zinc-200 dark:border-white/10 rounded-xl px-3 py-2 bg-white dark:bg-[#1C1C1F] text-zinc-700 dark:text-zinc-300 focus:outline-none focus:ring-2 focus:ring-[#0066B2]"
         >
           <option value="">All Roles</option>
           {ROLES.map((r) => <option key={r} value={r}>{r}</option>)}
@@ -166,40 +173,42 @@ export default function AdminUsersPage() {
       </div>
 
       {error && (
-        <div className="mb-4 px-4 py-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">
+        <div className="mb-4 px-4 py-3 bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 rounded-xl text-sm text-red-700 dark:text-red-400">
           {error}
         </div>
       )}
 
       {/* Table */}
-      <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
+      <div className="bg-white dark:bg-[#171717] border border-zinc-200 dark:border-white/[0.08] rounded-xl overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-gray-100 bg-gray-50">
-                <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wide">User</th>
-                <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wide">Plan</th>
-                <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wide">Role</th>
-                <th className="text-right px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wide">Leads</th>
-                <th className="text-right px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wide">Funnels</th>
-                <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wide">Joined</th>
-                <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wide">Verified</th>
+              <tr className="border-b border-zinc-100 dark:border-white/[0.06] bg-zinc-50/80 dark:bg-white/[0.02]">
+                <th className="text-left px-4 py-3 text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">User</th>
+                <th className="text-left px-4 py-3 text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">Plan</th>
+                <th className="text-left px-4 py-3 text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">Role</th>
+                <th className="text-right px-4 py-3 text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">Leads</th>
+                <th className="text-right px-4 py-3 text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">Funnels</th>
+                <th className="text-right px-4 py-3 text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">Storage</th>
+                <th className="text-left px-4 py-3 text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">Joined</th>
+                <th className="text-left px-4 py-3 text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">Verified</th>
+                <th className="px-4 py-3" />
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-50">
+            <tbody className="divide-y divide-zinc-50 dark:divide-white/[0.03]">
               {loading ? (
                 Array.from({ length: 8 }).map((_, i) => (
                   <tr key={i}>
-                    {Array.from({ length: 7 }).map((_, j) => (
+                    {Array.from({ length: 9 }).map((_, j) => (
                       <td key={j} className="px-4 py-3">
-                        <div className="h-4 bg-gray-100 rounded animate-pulse" />
+                        <div className="h-4 bg-zinc-100 dark:bg-white/5 rounded animate-pulse" />
                       </td>
                     ))}
                   </tr>
                 ))
               ) : users.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="px-4 py-12 text-center text-sm text-gray-400">
+                  <td colSpan={7} className="px-4 py-12 text-center text-sm text-zinc-400 dark:text-zinc-500">
                     No users found
                   </td>
                 </tr>
@@ -207,12 +216,12 @@ export default function AdminUsersPage() {
                 users.map((user) => (
                   <tr
                     key={user.email}
-                    className="hover:bg-gray-50 cursor-pointer"
+                    className="hover:bg-[#F0F7FF] dark:hover:bg-white/[0.02] cursor-pointer transition-colors"
                     onClick={() => router.push(`/admin/users/${encodeURIComponent(user.email)}`)}
                   >
                     <td className="px-4 py-3">
-                      <div className="font-medium text-gray-900 truncate max-w-48">{user.name}</div>
-                      <div className="text-xs text-gray-400 truncate max-w-48">{user.email}</div>
+                      <div className="font-medium text-zinc-900 dark:text-white truncate max-w-48">{user.name}</div>
+                      <div className="text-xs text-zinc-400 dark:text-zinc-500 truncate max-w-48">{user.email}</div>
                     </td>
 
                     <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
@@ -220,7 +229,7 @@ export default function AdminUsersPage() {
                         value={user.plan}
                         disabled={updating === user.email}
                         onChange={(e) => requestChange(user, "plan", e.target.value)}
-                        className={`text-xs font-medium px-2 py-1 rounded-full border-0 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 ${PLAN_COLORS[user.plan] || "bg-gray-100 text-gray-600"}`}
+                        className={`text-xs font-semibold px-2 py-1 rounded-full border-0 cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#0066B2] ${PLAN_COLORS[user.plan] || "bg-zinc-100 text-zinc-600"}`}
                       >
                         {PLANS.map((p) => <option key={p} value={p}>{p}</option>)}
                       </select>
@@ -231,28 +240,42 @@ export default function AdminUsersPage() {
                         value={user.role}
                         disabled={updating === user.email}
                         onChange={(e) => requestChange(user, "role", e.target.value)}
-                        className={`text-xs font-medium px-2 py-1 rounded-full border-0 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 ${ROLE_COLORS[user.role] || "bg-gray-100 text-gray-600"}`}
+                        className={`text-xs font-semibold px-2 py-1 rounded-full border-0 cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#0066B2] ${ROLE_COLORS[user.role] || "bg-zinc-100 text-zinc-600"}`}
                       >
                         {ROLES.map((r) => <option key={r} value={r}>{r}</option>)}
                       </select>
                     </td>
 
-                    <td className="px-4 py-3 text-right font-medium text-gray-700">
+                    <td className="px-4 py-3 text-right font-medium text-zinc-700 dark:text-zinc-300">
                       {user.leadCount.toLocaleString()}
                     </td>
 
-                    <td className="px-4 py-3 text-right font-medium text-gray-700">
+                    <td className="px-4 py-3 text-right font-medium text-zinc-700 dark:text-zinc-300">
                       {user.magnetCount}
                     </td>
 
-                    <td className="px-4 py-3 text-gray-500 whitespace-nowrap">{user.joinedAt}</td>
+                    <td className="px-4 py-3 text-right">
+                      <span className={`text-xs font-semibold ${user.storageBytes > 500 * 1024 * 1024 ? "text-red-600 dark:text-red-400" : user.storageBytes > 100 * 1024 * 1024 ? "text-amber-600 dark:text-amber-400" : "text-zinc-600 dark:text-zinc-400"}`}>
+                        {formatBytes(user.storageBytes)}
+                      </span>
+                    </td>
+
+                    <td className="px-4 py-3 text-zinc-500 dark:text-zinc-400 whitespace-nowrap text-xs">{user.joinedAt}</td>
 
                     <td className="px-4 py-3">
                       {user.emailVerified ? (
                         <Check className="w-4 h-4 text-green-500" />
                       ) : (
-                        <X className="w-4 h-4 text-gray-300" />
+                        <X className="w-4 h-4 text-zinc-300 dark:text-zinc-600" />
                       )}
+                    </td>
+                    <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
+                      <button
+                        onClick={() => router.push(`/admin/users/${encodeURIComponent(user.email)}`)}
+                        className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-[#0066B2]/10 text-[#0066B2] dark:bg-[#0066B2]/20 dark:text-[#38BDF8] hover:bg-[#0066B2] hover:text-white dark:hover:bg-[#0066B2] dark:hover:text-white transition-colors whitespace-nowrap"
+                      >
+                        Inspect →
+                      </button>
                     </td>
                   </tr>
                 ))
@@ -263,27 +286,27 @@ export default function AdminUsersPage() {
 
         {/* Pagination */}
         {!loading && total > 25 && (
-          <div className="flex items-center justify-between px-4 py-3 border-t border-gray-100 bg-gray-50">
-            <span className="text-xs text-gray-500">
+          <div className="flex items-center justify-between px-4 py-3 border-t border-zinc-100 dark:border-white/[0.06] bg-zinc-50/60 dark:bg-white/[0.02]">
+            <span className="text-xs text-zinc-500 dark:text-zinc-400">
               {start}–{end} of {total.toLocaleString()}
             </span>
             <div className="flex items-center gap-1">
               <button
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={page === 1}
-                className="p-1.5 rounded-lg hover:bg-gray-200 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                className="p-1.5 rounded-lg hover:bg-[#E2F0FD] dark:hover:bg-white/10 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
               >
-                <ChevronLeft className="w-4 h-4 text-gray-600" />
+                <ChevronLeft className="w-4 h-4 text-zinc-600 dark:text-zinc-400" />
               </button>
-              <span className="text-xs text-gray-600 px-2">
+              <span className="text-xs text-zinc-600 dark:text-zinc-400 px-2">
                 {page} / {pages}
               </span>
               <button
                 onClick={() => setPage((p) => Math.min(pages, p + 1))}
                 disabled={page === pages}
-                className="p-1.5 rounded-lg hover:bg-gray-200 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                className="p-1.5 rounded-lg hover:bg-[#E2F0FD] dark:hover:bg-white/10 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
               >
-                <ChevronRight className="w-4 h-4 text-gray-600" />
+                <ChevronRight className="w-4 h-4 text-zinc-600 dark:text-zinc-400" />
               </button>
             </div>
           </div>
@@ -293,35 +316,35 @@ export default function AdminUsersPage() {
       {/* Confirmation modal */}
       {pending && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6">
+          <div className="bg-white dark:bg-[#1C1C1F] border border-zinc-200 dark:border-white/10 rounded-2xl shadow-2xl w-full max-w-sm p-6">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-9 h-9 rounded-full bg-amber-50 flex items-center justify-center shrink-0">
+              <div className="w-9 h-9 rounded-full bg-amber-50 dark:bg-amber-500/10 flex items-center justify-center shrink-0">
                 <AlertTriangle className="w-4.5 h-4.5 text-amber-500" />
               </div>
-              <h2 className="text-base font-semibold text-gray-900">Confirm Change</h2>
+              <h2 className="text-base font-semibold text-zinc-900 dark:text-white">Confirm Change</h2>
             </div>
 
-            <p className="text-sm text-gray-600 mb-1">
-              You are about to change <span className="font-medium text-gray-900">{pending.name}</span>
+            <p className="text-sm text-zinc-600 dark:text-zinc-400 mb-1">
+              You are about to change <span className="font-medium text-zinc-900 dark:text-white">{pending.name}</span>
             </p>
-            <p className="text-sm text-gray-600 mb-5">
+            <p className="text-sm text-zinc-600 dark:text-zinc-400 mb-5">
               {pending.field === "plan" ? "Plan" : "Role"}:{" "}
-              <span className="font-mono text-red-600 bg-red-50 px-1.5 py-0.5 rounded text-xs">{pending.from}</span>
+              <span className="font-mono text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-500/10 px-1.5 py-0.5 rounded text-xs">{pending.from}</span>
               {" → "}
-              <span className="font-mono text-green-600 bg-green-50 px-1.5 py-0.5 rounded text-xs">{pending.to}</span>
+              <span className="font-mono text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-500/10 px-1.5 py-0.5 rounded text-xs">{pending.to}</span>
             </p>
-            <p className="text-xs text-gray-400 mb-5">This action will be recorded in the audit log.</p>
+            <p className="text-xs text-zinc-400 dark:text-zinc-500 mb-5">This action will be recorded in the audit log.</p>
 
             <div className="flex gap-2">
               <button
                 onClick={() => setPending(null)}
-                className="flex-1 px-4 py-2 text-sm font-medium border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+                className="flex-1 px-4 py-2 text-sm font-medium border border-zinc-200 dark:border-white/10 rounded-xl hover:bg-zinc-50 dark:hover:bg-white/5 text-zinc-700 dark:text-zinc-300 transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={confirmChange}
-                className="flex-1 px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                className="flex-1 px-4 py-2 text-sm font-medium bg-[#0066B2] text-white rounded-xl hover:bg-[#005291] transition-colors"
               >
                 Confirm
               </button>

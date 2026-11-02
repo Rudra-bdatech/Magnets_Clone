@@ -44,11 +44,20 @@ export async function GET(
     return NextResponse.json({ error: "User not found." }, { status: 404 });
   }
 
-  const [magnetCount, leadCount, sequenceCount, resourceCount] = await Promise.all([
-    MagnetPageModel.countDocuments({ userEmail: targetEmail }),
-    LeadModel.countDocuments({ userEmail: targetEmail }),
+  const [magnets, leads, resources, sequenceCount] = await Promise.all([
+    MagnetPageModel.find(
+      { userEmail: targetEmail },
+      { id: 1, name: 1, slug: 1, status: 1, views: 1, signups: 1, template: 1, updatedAt: 1, pdfPages: 1, quizFunnelEnabled: 1, _id: 0 }
+    ).sort({ updatedAt: -1 }).lean(),
+    LeadModel.find(
+      { userEmail: targetEmail },
+      { id: 1, name: 1, email: 1, page: 1, signedUpAt: 1, status: 1, source: 1, _id: 0 }
+    ).sort({ signedUpAt: -1 }).limit(100).lean(),
+    ResourceModel.find(
+      { userEmail: targetEmail },
+      { id: 1, name: 1, size: 1, fileUrl: 1, url: 1, uploadedAt: 1, fileExt: 1, type: 1, _id: 0 }
+    ).sort({ uploadedAt: -1 }).lean(),
     SequenceModel.countDocuments({ userEmail: targetEmail }),
-    ResourceModel.countDocuments({ userEmail: targetEmail }),
   ]);
 
   const computedRole = determineRoleForEmail(account.email);
@@ -58,7 +67,16 @@ export async function GET(
   const { _id, ...rest } = account;
   return NextResponse.json({
     user: { ...rest, role: effectiveRole },
-    stats: { magnetCount, leadCount, sequenceCount, resourceCount },
+    stats: {
+      magnetCount: magnets.length,
+      leadCount: leads.length,
+      sequenceCount,
+      resourceCount: resources.length,
+      storageBytes: (resources as any[]).reduce((sum: number, r: any) => sum + (r.size || 0), 0),
+    },
+    magnets,
+    leads,
+    resources,
   });
 }
 

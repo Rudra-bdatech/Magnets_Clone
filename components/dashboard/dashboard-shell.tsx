@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
-import { FileText, FolderOpen, Users, Sliders, Palette, User, CircleHelp, Menu, X, Search, ChevronRight, HelpCircle, Sun, Moon, Monitor, Bug, Lightbulb, LogOut, BookOpen, Gift, Compass, Send, GitFork, Calendar, Settings, Globe, Mail, Share2, Cpu, Slack, Zap, Link as LinkIcon, BarChart3, PlayCircle, CheckCircle2, ArrowLeft, Sparkles, Rocket, ExternalLink, ListChecks, Loader2, FileLock, Lock, LayoutDashboard, Linkedin, PanelLeftClose, PanelLeftOpen, PanelLeft } from "lucide-react";
+import { FileText, FolderOpen, Users, Sliders, Palette, User, CircleHelp, Menu, X, Search, ChevronRight, HelpCircle, Sun, Moon, Monitor, Bug, Lightbulb, LogOut, BookOpen, Gift, Compass, Send, GitFork, Calendar, Settings, Globe, Mail, Share2, Cpu, Slack, Zap, Link as LinkIcon, BarChart3, PlayCircle, CheckCircle2, ArrowLeft, Sparkles, Rocket, ExternalLink, ListChecks, Loader2, FileLock, Lock, LayoutDashboard, Linkedin, PanelLeftClose, PanelLeftOpen, PanelLeft, ShieldCheck } from "lucide-react";
 import { useState, useEffect, useRef, useMemo, useCallback, createContext, useContext } from "react";
 import ThemeToggle from "@/components/theme-toggle";
 import { toggleThemeWithRipple } from "@/lib/theme-transition";
@@ -416,21 +416,18 @@ export default function DashboardShell({
 
   const computedNav = useMemo(() => {
     const showGetStarted = onboardingStatus !== null && !onboardingStatus.isAllCompleted;
+    const isSuperAdmin = (currentAccount?.role ?? account?.role) === "super_admin";
 
-    if (!showGetStarted) {
-      return baseNavItems;
+    let list = showGetStarted
+      ? [{ href: "/dashboard/get-started", label: "Get Started", icon: Rocket, badge: onboardingStatus ? `${onboardingStatus.completedCount}/${onboardingStatus.totalCount}` : undefined } as { href: string; label: string; icon: any; isModal?: boolean; badge?: string }, ...baseNavItems]
+      : [...baseNavItems];
+
+    if (isSuperAdmin) {
+      list = [...list, { href: "/admin", label: "Super Admin", icon: ShieldCheck }];
     }
 
-    const getStartedItem: { href: string; label: string; icon: any; isModal?: boolean; badge?: string } = {
-      href: "/dashboard/get-started",
-      label: "Get Started",
-      icon: Rocket,
-      badge: onboardingStatus ? `${onboardingStatus.completedCount}/${onboardingStatus.totalCount}` : undefined,
-    };
-
-    const list = [getStartedItem, ...baseNavItems];
     return list;
-  }, [onboardingStatus]);
+  }, [onboardingStatus, currentAccount, account]);
 
   const isCurrentLockedPdf = useMemo(() => {
     if (typeof window === "undefined") return false;

@@ -22,8 +22,8 @@ const ACTION_LABELS: Record<string, string> = {
 };
 
 const ACTION_COLORS: Record<string, string> = {
-  plan_change: "bg-blue-50 text-blue-700",
-  role_change: "bg-amber-50 text-amber-700",
+  plan_change: "bg-[#0066B2]/10 text-[#0066B2] dark:bg-[#0066B2]/20 dark:text-[#38BDF8]",
+  role_change: "bg-amber-50 text-amber-700 dark:bg-amber-500/15 dark:text-amber-400",
 };
 
 function timeAgo(dateStr: string): string {
@@ -74,17 +74,17 @@ export default function AuditLogPage() {
     <div className="p-6 max-w-5xl mx-auto">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
-            <Shield className="w-5 h-5 text-gray-400" />
+          <h1 className="text-xl font-semibold text-zinc-900 dark:text-white flex items-center gap-2">
+            <Shield className="w-5 h-5 text-[#0066B2] dark:text-[#38BDF8]" />
             Audit Log
           </h1>
-          <p className="text-sm text-gray-500 mt-0.5">
+          <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-0.5">
             Every admin action recorded — {total > 0 ? `${total} entries` : "no entries yet"}
           </p>
         </div>
         <button
           onClick={() => setRefreshKey((k) => k + 1)}
-          className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-800 transition-colors"
+          className="flex items-center gap-1.5 text-sm text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white transition-colors"
         >
           <RefreshCw className="w-4 h-4" />
           Refresh
@@ -96,7 +96,7 @@ export default function AuditLogPage() {
         <select
           value={actionFilter}
           onChange={(e) => { setActionFilter(e.target.value); setPage(1); }}
-          className="text-sm border border-gray-200 rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="text-sm border border-zinc-200 dark:border-white/10 rounded-xl px-3 py-2 bg-white dark:bg-[#1C1C1F] text-zinc-700 dark:text-zinc-300 focus:outline-none focus:ring-2 focus:ring-[#0066B2]"
         >
           <option value="">All Actions</option>
           <option value="plan_change">Plan Change</option>
@@ -104,28 +104,28 @@ export default function AuditLogPage() {
         </select>
       </div>
 
-      <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
+      <div className="bg-white dark:bg-[#171717] border border-zinc-200 dark:border-white/[0.08] rounded-xl overflow-hidden">
         {loading ? (
           <div className="p-6 space-y-3">
             {Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="h-14 bg-gray-50 rounded-lg animate-pulse" />
+              <div key={i} className="h-14 bg-zinc-50 dark:bg-white/5 rounded-xl animate-pulse" />
             ))}
           </div>
         ) : entries.length === 0 ? (
           <div className="py-20 text-center">
-            <Shield className="w-8 h-8 text-gray-200 mx-auto mb-3" />
-            <p className="text-sm text-gray-400">No audit entries yet.</p>
-            <p className="text-xs text-gray-300 mt-1">
+            <Shield className="w-8 h-8 text-zinc-200 dark:text-zinc-700 mx-auto mb-3" />
+            <p className="text-sm text-zinc-400 dark:text-zinc-500">No audit entries yet.</p>
+            <p className="text-xs text-zinc-300 dark:text-zinc-600 mt-1">
               Actions like plan and role changes will appear here.
             </p>
           </div>
         ) : (
-          <div className="divide-y divide-gray-50">
+          <div className="divide-y divide-zinc-50 dark:divide-white/[0.04]">
             {entries.map((entry) => (
-              <div key={entry.id} className="flex items-start gap-4 px-5 py-4 hover:bg-gray-50 transition-colors">
+              <div key={entry.id} className="flex items-start gap-4 px-5 py-4 hover:bg-[#F0F7FF] dark:hover:bg-white/[0.02] transition-colors">
                 {/* Action badge */}
                 <div className="pt-0.5 shrink-0">
-                  <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${ACTION_COLORS[entry.action] || "bg-gray-100 text-gray-600"}`}>
+                  <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold ${ACTION_COLORS[entry.action] || "bg-zinc-100 text-zinc-600"}`}>
                     {ACTION_LABELS[entry.action] || entry.action}
                   </span>
                 </div>
@@ -133,24 +133,24 @@ export default function AuditLogPage() {
                 {/* Main content */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <span className="text-sm font-medium text-gray-900">{entry.adminEmail}</span>
-                    <span className="text-xs text-gray-400">changed</span>
+                    <span className="text-sm font-medium text-zinc-900 dark:text-white">{entry.adminEmail}</span>
+                    <span className="text-xs text-zinc-400 dark:text-zinc-500">changed</span>
                     <button
                       onClick={() => router.push(`/admin/users/${encodeURIComponent(entry.targetEmail)}`)}
-                      className="text-sm font-medium text-blue-600 hover:underline truncate max-w-48"
+                      className="text-sm font-medium text-[#0066B2] dark:text-[#38BDF8] hover:underline truncate max-w-48"
                     >
                       {entry.targetName || entry.targetEmail}
                     </button>
                   </div>
 
-                  <div className="flex items-center gap-2 mt-1 text-xs text-gray-500">
+                  <div className="flex items-center gap-2 mt-1 text-xs text-zinc-500 dark:text-zinc-400">
                     {Object.keys(entry.before).map((key) => (
                       <span key={key} className="flex items-center gap-1">
-                        <span className="px-1.5 py-0.5 bg-red-50 text-red-600 rounded font-mono">
+                        <span className="px-1.5 py-0.5 bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400 rounded font-mono">
                           {entry.before[key]}
                         </span>
-                        <span className="text-gray-300">→</span>
-                        <span className="px-1.5 py-0.5 bg-green-50 text-green-600 rounded font-mono">
+                        <span className="text-zinc-300 dark:text-zinc-600">→</span>
+                        <span className="px-1.5 py-0.5 bg-green-50 dark:bg-green-500/10 text-green-600 dark:text-green-400 rounded font-mono">
                           {entry.after[key]}
                         </span>
                       </span>
@@ -159,7 +159,7 @@ export default function AuditLogPage() {
                 </div>
 
                 {/* Time */}
-                <div className="text-xs text-gray-400 shrink-0 pt-0.5" title={new Date(entry.createdAt).toLocaleString()}>
+                <div className="text-xs text-zinc-400 dark:text-zinc-500 shrink-0 pt-0.5" title={new Date(entry.createdAt).toLocaleString()}>
                   {timeAgo(entry.createdAt)}
                 </div>
               </div>
@@ -169,24 +169,24 @@ export default function AuditLogPage() {
 
         {/* Pagination */}
         {!loading && total > 50 && (
-          <div className="flex items-center justify-between px-5 py-3 border-t border-gray-100 bg-gray-50">
-            <span className="text-xs text-gray-500">
+          <div className="flex items-center justify-between px-5 py-3 border-t border-zinc-100 dark:border-white/[0.06] bg-zinc-50/60 dark:bg-white/[0.02]">
+            <span className="text-xs text-zinc-500 dark:text-zinc-400">
               Page {page} of {pages}
             </span>
             <div className="flex items-center gap-1">
               <button
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={page === 1}
-                className="p-1.5 rounded-lg hover:bg-gray-200 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                className="p-1.5 rounded-lg hover:bg-[#E2F0FD] dark:hover:bg-white/10 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
               >
-                <ChevronLeft className="w-4 h-4 text-gray-600" />
+                <ChevronLeft className="w-4 h-4 text-zinc-600 dark:text-zinc-400" />
               </button>
               <button
                 onClick={() => setPage((p) => Math.min(pages, p + 1))}
                 disabled={page === pages}
-                className="p-1.5 rounded-lg hover:bg-gray-200 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                className="p-1.5 rounded-lg hover:bg-[#E2F0FD] dark:hover:bg-white/10 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
               >
-                <ChevronRight className="w-4 h-4 text-gray-600" />
+                <ChevronRight className="w-4 h-4 text-zinc-600 dark:text-zinc-400" />
               </button>
             </div>
           </div>

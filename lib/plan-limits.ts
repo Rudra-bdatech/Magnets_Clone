@@ -23,7 +23,7 @@ export const PLAN_LIMITS: Record<string, PlanTierConfig> = {
     name: "Free Tier",
     badge: "Free Plan",
     leadLimit: 500,
-    storageLimitMb: 500,
+    storageLimitMb: 999999,
     sequencesLimit: 2,
     customDomainAllowed: false,
   },
@@ -31,15 +31,16 @@ export const PLAN_LIMITS: Record<string, PlanTierConfig> = {
     name: "Pro Plan",
     badge: "Pro Plan Active",
     leadLimit: 2500,
-    storageLimitMb: 1024, // 1 GB
+    storageLimitMb: 999999,
     sequencesLimit: 5,
     customDomainAllowed: true,
   },
+  // Growth and Unlimited kept for future use but not exposed in UI
   Growth: {
     name: "Growth Plan",
     badge: "Growth Plan Active",
     leadLimit: 10000,
-    storageLimitMb: 5120, // 5 GB
+    storageLimitMb: 999999,
     sequencesLimit: 20,
     customDomainAllowed: true,
   },
@@ -47,7 +48,7 @@ export const PLAN_LIMITS: Record<string, PlanTierConfig> = {
     name: "Unlimited Enterprise",
     badge: "Enterprise Active",
     leadLimit: 100000,
-    storageLimitMb: 51200, // 50 GB
+    storageLimitMb: 999999,
     sequencesLimit: 100,
     customDomainAllowed: true,
   },

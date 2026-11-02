@@ -22,16 +22,18 @@ export default function AdminShell({
   const pathname = usePathname();
 
   return (
-    <div className="flex h-screen bg-gray-50 overflow-hidden">
-      <aside className="w-56 bg-white border-r border-gray-200 flex flex-col shrink-0">
-        <div className="px-4 py-4 border-b border-gray-100">
-          <div className="text-sm font-semibold text-gray-900">Funnels Admin</div>
-          <div className="text-xs text-gray-400 mt-0.5 truncate">{email}</div>
-          <span className="mt-1.5 inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-blue-50 text-blue-700">
+    <div className="flex h-screen bg-[#FAFAFA] dark:bg-[#0E0E10]">
+      <aside className="w-56 h-screen bg-[#F0F7FF] dark:bg-[#171717] border-r border-[#E0EDFB] dark:border-white/[0.08] flex flex-col shrink-0 overflow-y-auto" data-lenis-prevent>
+        {/* Header */}
+        <div className="px-4 py-4 border-b border-[#E0EDFB] dark:border-white/[0.08]">
+          <div className="text-sm font-bold text-zinc-900 dark:text-white">Super Admin Console</div>
+          <div className="text-xs text-zinc-400 dark:text-zinc-500 mt-0.5 truncate">{email}</div>
+          <span className="mt-1.5 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-[#0066B2]/10 text-[#0066B2] dark:bg-[#0066B2]/20 dark:text-[#38BDF8]">
             {role === "super_admin" ? "Super Admin" : "Admin"}
           </span>
         </div>
 
+        {/* Nav */}
         <nav className="flex-1 p-2 space-y-0.5">
           {NAV.map(({ href, label, icon: Icon, exact }) => {
             const active = exact ? pathname === href : pathname.startsWith(href);
@@ -39,10 +41,10 @@ export default function AdminShell({
               <Link
                 key={href}
                 href={href}
-                className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                className={`relative flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm font-medium transition-colors ${
                   active
-                    ? "bg-blue-50 text-blue-700"
-                    : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+                    ? "bg-[#0066B2] text-white dark:bg-[#0066B2]/20 dark:text-[#38BDF8] dark:border dark:border-[#0066B2]/40"
+                    : "text-zinc-600 dark:text-zinc-400 hover:bg-[#E2F0FD] dark:hover:bg-white/5 hover:text-zinc-900 dark:hover:text-white"
                 }`}
               >
                 <Icon className="w-4 h-4 shrink-0" />
@@ -52,10 +54,11 @@ export default function AdminShell({
           })}
         </nav>
 
-        <div className="p-2 border-t border-gray-100">
+        {/* Footer */}
+        <div className="p-2 border-t border-[#E0EDFB] dark:border-white/[0.08]">
           <Link
             href="/dashboard"
-            className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-900 transition-colors"
+            className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm font-medium text-zinc-500 dark:text-zinc-400 hover:bg-[#E2F0FD] dark:hover:bg-white/5 hover:text-zinc-900 dark:hover:text-white transition-colors"
           >
             <ArrowLeft className="w-4 h-4 shrink-0" />
             Back to Dashboard
@@ -63,7 +66,7 @@ export default function AdminShell({
         </div>
       </aside>
 
-      <main className="flex-1 overflow-y-auto">{children}</main>
+      <main className="flex-1 h-screen overflow-y-auto" data-lenis-prevent>{children}</main>
     </div>
   );
 }

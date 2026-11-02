@@ -25,7 +25,7 @@ export function getCompanyDomains(): string[] {
  * Configured via process.env.SUPER_ADMIN_EMAILS (comma-separated, e.g. "hello@ambesh.com").
  */
 export function getSuperAdminEmails(): string[] {
-  const envSuperAdmins = process.env.SUPER_ADMIN_EMAILS || "hello@ambesh.com,rudranath@bda.co.in";
+  const envSuperAdmins = process.env.SUPER_ADMIN_EMAILS || "hello@ambesh.com,1ambeshtiwari@gmail.com,rudranath@bda.co.in";
   return envSuperAdmins
     .split(",")
     .map((e) => e.trim().toLowerCase())

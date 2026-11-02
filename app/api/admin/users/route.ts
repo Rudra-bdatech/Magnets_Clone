@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { dbConnect } from "@/lib/mongodb";
-import { AccountModel, MagnetPageModel, LeadModel } from "@/lib/models";
+import { AccountModel, MagnetPageModel, LeadModel, ResourceModel } from "@/lib/models";
 import { requireAdmin, isAdminSession } from "@/lib/admin-auth";
 import { determineRoleForEmail } from "@/lib/roles";
 
@@ -46,7 +46,7 @@ export async function GET(request: NextRequest) {
 
   const emails = (accounts as any[]).map((a) => a.email);
 
-  const [magnetCounts, leadCounts] = await Promise.all([
+  const [magnetCounts, leadCounts, storageCounts] = await Promise.all([
     MagnetPageModel.aggregate([
       { $match: { userEmail: { $in: emails } } },
       { $group: { _id: "$userEmail", count: { $sum: 1 } } },
@@ -55,10 +55,15 @@ export async function GET(request: NextRequest) {
       { $match: { userEmail: { $in: emails } } },
       { $group: { _id: "$userEmail", count: { $sum: 1 } } },
     ]),
+    ResourceModel.aggregate([
+      { $match: { userEmail: { $in: emails } } },
+      { $group: { _id: "$userEmail", totalBytes: { $sum: "$size" } } },
+    ]),
   ]);
 
   const magnetMap = new Map<string, number>(magnetCounts.map((m: any) => [m._id, m.count]));
   const leadMap = new Map<string, number>(leadCounts.map((l: any) => [l._id, l.count]));
+  const storageMap = new Map<string, number>(storageCounts.map((s: any) => [s._id, s.totalBytes]));
 
   const users = (accounts as any[]).map((a) => {
     const computedRole = determineRoleForEmail(a.email);
@@ -80,6 +85,7 @@ export async function GET(request: NextRequest) {
       hasPaidSubscription: Boolean(a.stripeSubscriptionId || a.chargebeeSubscriptionId),
       magnetCount: magnetMap.get(a.email) || 0,
       leadCount: leadMap.get(a.email) || 0,
+      storageBytes: storageMap.get(a.email) || 0,
     };
   });
 
