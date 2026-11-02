@@ -99,9 +99,9 @@ export default function SiteFooter() {
             href="https://bdatechnologies.com"
             target="_blank"
             rel="noopener noreferrer"
-            className="transition hover:text-zinc-900 dark:hover:text-white text-right"
+            className="text-right inline-flex items-center"
           >
-            A Product by BDA Technologies
+            <span className="shiny-text font-medium">A Product by BDA Technologies</span>
           </a>
         </div>
       </div>

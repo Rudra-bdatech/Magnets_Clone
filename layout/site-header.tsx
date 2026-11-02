@@ -27,7 +27,7 @@ function NavLink({ href, children }: { href: string; children: React.ReactNode }
   return (
     <a
       href={href}
-      className="transition hover:text-[#0066B2] dark:hover:text-white"
+      className="transition hover:text-zinc-950 dark:hover:text-white"
       onClick={(e) => {
         e.preventDefault();
         smoothScrollTo(id);
@@ -62,7 +62,7 @@ export default function SiteHeader() {
         <div className="flex items-center gap-1 sm:gap-2 shrink-0">
           <ThemeToggle variant="ghost" />
           <a
-            className="hidden h-10 items-center px-3 text-sm font-semibold text-zinc-700 dark:text-zinc-300 transition hover:text-[#0066B2] dark:hover:text-white sm:inline-flex"
+            className="hidden h-10 items-center px-3 text-sm font-semibold text-zinc-700 dark:text-zinc-300 transition hover:text-zinc-950 dark:hover:text-white sm:inline-flex"
             href="/login"
           >
             Sign in
@@ -116,7 +116,7 @@ export default function SiteHeader() {
                   <a
                     key={id}
                     href={`#${id}`}
-                    className="py-2 border-b border-zinc-100 dark:border-zinc-800/60 transition hover:text-[#0066B2]"
+                    className="py-2 border-b border-zinc-100 dark:border-zinc-800/60 transition hover:text-zinc-950 dark:hover:text-white"
                     onClick={(e) => {
                       e.preventDefault();
                       setMobileMenuOpen(false);

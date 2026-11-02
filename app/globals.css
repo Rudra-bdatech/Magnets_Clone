@@ -11,6 +11,7 @@
 .font-manrope {
   font-family: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
 }
+
 :root {
   --spotlight-border: rgba(0, 102, 178, 0.45);
   --spotlight-surface: rgba(0, 102, 178, 0.05);
@@ -1871,7 +1872,7 @@ textarea {
 }
 
 .lm-split-desc,
-  .animate-m3-wave {
+.animate-m3-wave {
   opacity: 0;
   transform: translateY(8px);
   transition: opacity 0.5s cubic-bezier(.2, .8, .2, 1) 0.25s, transform 0.5s cubic-bezier(.2, .8, .2, 1) 0.25s;
@@ -1905,6 +1906,7 @@ textarea {
   0% {
     transform: translate3d(-24px, 0, 0);
   }
+
   100% {
     transform: translate3d(0, 0, 0);
   }
@@ -1940,4 +1942,52 @@ html.theme-transitioning *,
 html.theme-transitioning *::before,
 html.theme-transitioning *::after {
   transition: none !important;
+}
+
+
+/* ChatGPT-style Shiny Shimmering Text */
+@keyframes shiny-text {
+  0% {
+    background-position: 200% 0;
+  }
+
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.shiny-text {
+  background: linear-gradient(90deg,
+      #52525b 0%,
+      #52525b 20%,
+      #000000 50%,
+      #52525b 80%,
+      #52525b 100%);
+  background-size: 200% auto;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  animation: shiny-text 5.5s linear infinite;
+  display: inline-block;
+  white-space: nowrap;
+  transition: opacity 0.3s ease;
+}
+
+.dark .shiny-text {
+  background: linear-gradient(90deg,
+      rgba(255, 255, 255, 0.55) 0%,
+      rgba(255, 255, 255, 0.55) 20%,
+      #ffffff 50%,
+      rgba(255, 255, 255, 0.55) 80%,
+      rgba(255, 255, 255, 0.55) 100%);
+  background-size: 200% auto;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+
+.shiny-text:hover {
+  opacity: 1;
 }
