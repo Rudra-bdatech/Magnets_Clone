@@ -2,7 +2,7 @@ import { dbConnect } from "@/lib/mongodb";
 import { AuditLogModel } from "@/lib/models";
 import type { AdminRole } from "@/lib/admin-auth";
 
-export type AuditAction = "plan_change" | "role_change";
+export type AuditAction = "plan_change" | "role_change" | "funnel_pause" | "funnel_restore" | "funnel_delete";
 
 interface LogEntry {
   adminEmail: string;

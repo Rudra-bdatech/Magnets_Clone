@@ -356,7 +356,7 @@ const AuditLogSchema = new Schema({
   adminRole: { type: String, required: true },
   action: {
     type: String,
-    enum: ["plan_change", "role_change"],
+    enum: ["plan_change", "role_change", "funnel_pause", "funnel_restore", "funnel_delete"],
     required: true,
     index: true,
   },

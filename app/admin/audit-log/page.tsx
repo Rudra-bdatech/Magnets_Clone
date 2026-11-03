@@ -8,7 +8,7 @@ interface AuditEntry {
   id: string;
   adminEmail: string;
   adminRole: string;
-  action: "plan_change" | "role_change";
+  action: "plan_change" | "role_change" | "funnel_pause" | "funnel_restore" | "funnel_delete";
   targetEmail: string;
   targetName: string;
   before: Record<string, string>;
@@ -19,11 +19,17 @@ interface AuditEntry {
 const ACTION_LABELS: Record<string, string> = {
   plan_change: "Plan Change",
   role_change: "Role Change",
+  funnel_pause: "Funnel Paused",
+  funnel_restore: "Funnel Restored",
+  funnel_delete: "Funnel Deleted",
 };
 
 const ACTION_COLORS: Record<string, string> = {
   plan_change: "bg-[#0066B2]/10 text-[#0066B2] dark:bg-[#0066B2]/20 dark:text-[#38BDF8]",
   role_change: "bg-amber-50 text-amber-700 dark:bg-amber-500/15 dark:text-amber-400",
+  funnel_pause: "bg-amber-50 text-amber-700 dark:bg-amber-500/15 dark:text-amber-400",
+  funnel_restore: "bg-emerald-50 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-400",
+  funnel_delete: "bg-red-50 text-red-600 dark:bg-red-500/15 dark:text-red-400",
 };
 
 function timeAgo(dateStr: string): string {
@@ -101,6 +107,9 @@ export default function AuditLogPage() {
           <option value="">All Actions</option>
           <option value="plan_change">Plan Change</option>
           <option value="role_change">Role Change</option>
+          <option value="funnel_pause">Funnel Paused</option>
+          <option value="funnel_restore">Funnel Restored</option>
+          <option value="funnel_delete">Funnel Deleted</option>
         </select>
       </div>
 
