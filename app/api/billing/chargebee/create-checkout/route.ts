@@ -85,37 +85,60 @@ export async function POST(req: Request) {
     }
 
     // 4. Create a real Chargebee Hosted Payment Page (Product Catalog 2.0 - One-Time Payment)
-    const itemPriceId = PLAN_PRICING.PRO_INR.itemPriceId || "pro-lifetime-4999-INR";
-    const checkoutParams: any = {
-      subscription_items: [
-        {
-          item_price_id: itemPriceId,
-          quantity: 1,
-          billing_cycles: 1,
-        },
-      ],
-      billing_cycles: 1,
-      customer: {
-        email: account.email,
-        first_name: (account.name || account.username || "").split(" ")[0] || "",
-        last_name: (account.name || account.username || "").split(" ").slice(1).join(" ") || "",
-      },
-      redirect_url: `${appUrl}/api/billing/chargebee/success`,
-      cancel_url: `${appUrl}/dashboard/integration`,
-      pass_thru_content: JSON.stringify({
-        userId: account._id.toString(),
-        userEmail: account.email,
-        plan: "Pro",
-        coupon: cleanCoupon || null,
-      }),
+    const itemPriceId = PLAN_PRICING.PRO_INR.itemPriceId || "funnels-custom-domain";
+    const customerData = {
+      email: account.email,
+      first_name: (account.name || account.username || "").split(" ")[0] || "",
+      last_name: (account.name || account.username || "").split(" ").slice(1).join(" ") || "",
     };
+    const passThru = JSON.stringify({
+      userId: account._id.toString(),
+      userEmail: account.email,
+      plan: "Pro",
+      coupon: cleanCoupon || null,
+    });
 
-    if (cleanCoupon) {
-      checkoutParams.coupon_ids = [cleanCoupon];
+    let page: any = null;
+
+    // Try checkoutOneTimeForItems first (for Chargebee one-time Charges)
+    try {
+      const oneTimeParams: any = {
+        item_prices: {
+          item_price_id: [itemPriceId],
+          quantity: [1],
+        },
+        customer: customerData,
+        redirect_url: `${appUrl}/api/billing/chargebee/success`,
+        cancel_url: `${appUrl}/dashboard/integration`,
+        pass_thru_content: passThru,
+      };
+      if (cleanCoupon) {
+        oneTimeParams.coupon_ids = [cleanCoupon];
+      }
+      const res = await (cb as any).hostedPage.checkoutOneTimeForItems(oneTimeParams);
+      page = res.hosted_page;
+    } catch (oneTimeErr: any) {
+      console.warn("[Chargebee Checkout]: checkoutOneTimeForItems fallback to checkoutNewForItems:", oneTimeErr?.message);
+      const subParams: any = {
+        subscription_items: [
+          {
+            item_price_id: itemPriceId,
+            quantity: 1,
+            billing_cycles: 1,
+          },
+        ],
+        billing_cycles: 1,
+        customer: customerData,
+        redirect_url: `${appUrl}/api/billing/chargebee/success`,
+        cancel_url: `${appUrl}/dashboard/integration`,
+        pass_thru_content: passThru,
+      };
+      if (cleanCoupon) {
+        subParams.coupon_ids = [cleanCoupon];
+      }
+      const res = await (cb as any).hostedPage.checkoutNewForItems(subParams);
+      page = res.hosted_page;
     }
-
-    const result = await (cb as any).hostedPage.checkoutNewForItems(checkoutParams);
-    const page = result.hosted_page;
 
     const isCouponApplied = Boolean(cleanCoupon);
     const chargedAmount = isCouponApplied ? 1 : PLAN_PRICING.PRO_INR.amount;

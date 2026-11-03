@@ -11,6 +11,9 @@ export const dynamic = "force-dynamic";
 const PRO_ITEM_PRICE_IDS = new Set<string>([
   PLAN_PRICING.PRO_INR.itemPriceId,
   PLAN_PRICING.PRO_USD.itemPriceId,
+  "funnels-custom-domain",
+  "funnels-pro-domain-onetime",
+  "pro-lifetime-4999-INR",
 ]);
 
 function safeEqual(a: string, b: string): boolean {
