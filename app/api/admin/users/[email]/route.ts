@@ -51,7 +51,7 @@ export async function GET(
     MagnetPageModel.find(
       { userEmail: targetEmail },
       { id: 1, name: 1, slug: 1, status: 1, views: 1, signups: 1, template: 1, createdAt: 1, updatedAt: 1, pdfPages: 1, quizFunnelEnabled: 1, _id: 0 }
-    ).sort({ updatedAt: -1 }).lean(),
+    ).sort({ createdAt: -1 }).lean(),
     LeadModel.find(
       { userEmail: targetEmail },
       { id: 1, name: 1, email: 1, page: 1, signedUpAt: 1, status: 1, source: 1, _id: 0 }

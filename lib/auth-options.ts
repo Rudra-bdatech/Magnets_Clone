@@ -121,6 +121,7 @@ export const authOptions: NextAuthOptions = {
             isNewAccount: true,
             needsOnboarding: true,
             emailVerified: providerVerified ? new Date() : null,
+            lastLoginAt: new Date(),
             // If signing up via LinkedIn OAuth, mark their LinkedIn as connected for identity
             ...(isLinkedIn && {
               linkedinConnected: true,
