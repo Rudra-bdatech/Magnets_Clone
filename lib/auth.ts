@@ -99,8 +99,9 @@ async function resolveSession(): Promise<ResolvedSession | null> {
           const { dbConnect } = await import("@/lib/mongodb");
           const { AccountModel } = await import("@/lib/models");
           await dbConnect();
-          const acc = await AccountModel.findOne({ email: cleanEmail }, { tokenVersion: 1, emailVerified: 1 }).lean();
+          const acc = await AccountModel.findOne({ email: cleanEmail }, { tokenVersion: 1, emailVerified: 1, suspended: 1 }).lean();
           if (!acc) return null; // Account was deleted
+          if ((acc as any).suspended) return null; // Account was suspended
           const expectedVersion = (acc as any).tokenVersion ?? 0;
           const actualVersion = session.tokenVersion ?? 0;
           if (actualVersion < expectedVersion) return null; // Session was revoked (e.g. password changed)
@@ -124,12 +125,13 @@ async function resolveSession(): Promise<ResolvedSession | null> {
         const { dbConnect } = await import("@/lib/mongodb");
         const { AccountModel } = await import("@/lib/models");
         await dbConnect();
-        acc = await AccountModel.findOne({ email: cleanEmail }, { emailVerified: 1, tokenVersion: 1 }).lean();
+        acc = await AccountModel.findOne({ email: cleanEmail }, { emailVerified: 1, tokenVersion: 1, suspended: 1 }).lean();
       } catch (dbErr) {
         // Without the DB we cannot confirm verification, so treat the session as unverified
         return { email: cleanEmail, emailVerified: false };
       }
       if (!acc) return null; // Account was deleted
+      if (acc.suspended) return null; // Account was suspended
       // Revoked by a password reset/change after this Google sign-in
       if (((nextAuthSession as any).tokenVersion ?? 0) < (acc.tokenVersion ?? 0)) return null;
       return { email: cleanEmail, emailVerified: Boolean(acc.emailVerified) };

@@ -32,7 +32,7 @@ export async function GET(request: NextRequest) {
     email: 1, name: 1, plan: 1, role: 1, paymentStatus: 1, paymentProvider: 1,
     emailVerified: 1, joinedAt: 1, customDomain: 1, linkedinConnected: 1,
     "gmailOAuth.connected": 1, "customSmtp.enabled": 1, "customSmtp.isVerified": 1,
-    stripeSubscriptionId: 1, chargebeeSubscriptionId: 1,
+    stripeSubscriptionId: 1, chargebeeSubscriptionId: 1, suspended: 1,
   };
 
   const [accounts, total] = await Promise.all([
@@ -83,6 +83,7 @@ export async function GET(request: NextRequest) {
       gmailConnected: Boolean(a.gmailOAuth?.connected),
       smtpConnected: Boolean(a.customSmtp?.enabled && a.customSmtp?.isVerified),
       hasPaidSubscription: Boolean(a.stripeSubscriptionId || a.chargebeeSubscriptionId),
+      suspended: Boolean(a.suspended),
       magnetCount: magnetMap.get(a.email) || 0,
       leadCount: leadMap.get(a.email) || 0,
       storageBytes: storageMap.get(a.email) || 0,

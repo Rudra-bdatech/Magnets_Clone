@@ -10,6 +10,7 @@ interface AdminUser {
   name: string;
   plan: string;
   role: string;
+  suspended?: boolean;
   paymentStatus: string;
   paymentProvider: string;
   emailVerified: boolean;
@@ -359,7 +360,14 @@ export default function AdminUsersPage() {
                     onClick={() => router.push(`/admin/users/${encodeURIComponent(user.email)}`)}
                   >
                     <td className="px-4 py-3">
-                      <div className="font-medium text-zinc-900 dark:text-white truncate max-w-48">{user.name}</div>
+                      <div className="flex items-center gap-1.5">
+                        <div className="font-medium text-zinc-900 dark:text-white truncate max-w-48">{user.name}</div>
+                        {user.suspended && (
+                          <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-red-100 text-red-700 dark:bg-red-500/20 dark:text-red-400 shrink-0">
+                            Suspended
+                          </span>
+                        )}
+                      </div>
                       <div className="text-xs text-zinc-400 dark:text-zinc-500 truncate max-w-48">{user.email}</div>
                     </td>
 

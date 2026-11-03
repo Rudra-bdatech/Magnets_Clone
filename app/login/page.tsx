@@ -31,6 +31,9 @@ function LoginForm() {
     if (authError === "OAuthCallback" || authError === "OAuthSignin") {
       return "Sign-in was interrupted. Please try again.";
     }
+    if (authError === "suspended" || authError === "AccountSuspended") {
+      return "This account has been suspended. Please contact support.";
+    }
     if (authError === "AccessDenied") {
       return "Access was cancelled or denied. Please try again.";
     }

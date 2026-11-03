@@ -85,7 +85,7 @@ export const authOptions: NextAuthOptions = {
         let existing = await AccountModel.findOne({ email: cleanEmail });
 
         if (existing?.suspended) {
-          return false;
+          return "/login?error=suspended";
         }
 
         // Track last login time for existing accounts on every OAuth sign-in

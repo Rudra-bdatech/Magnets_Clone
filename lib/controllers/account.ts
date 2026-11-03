@@ -578,6 +578,10 @@ export async function handleLogin(data: any) {
   if (!account) {
     return NextResponse.json({ error: "No account found with this email. Sign up instead." }, { status: 400 });
   }
+
+  if (account.suspended) {
+    return NextResponse.json({ error: "This account has been suspended. Please contact support." }, { status: 403 });
+  }
   const { isValid, needsRehash } = await comparePassword(password, account.password);
   if (!isValid) {
     return NextResponse.json({ error: "Incorrect password." }, { status: 400 });
@@ -688,7 +692,7 @@ export async function handleSendResetEmail(data: any) {
 
   // Production security best practice (OWASP):
   // Return success without leaking whether an account exists to prevent account enumeration.
-  if (!account) {
+  if (!account || account.suspended) {
     return NextResponse.json({
       success: true,
       message: "If an account exists with this email, a reset password link has been sent."
@@ -819,6 +823,10 @@ export async function handleResetPassword(data: any) {
 
   if (!account) {
     return NextResponse.json({ error: "Password reset token is invalid or has expired." }, { status: 400 });
+  }
+
+  if (account.suspended) {
+    return NextResponse.json({ error: "This account has been suspended. Please contact support." }, { status: 403 });
   }
 
   account.password = await hashPassword(newPassword);
