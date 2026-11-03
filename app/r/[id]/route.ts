@@ -7,6 +7,7 @@ import { v2 as cloudinary } from "cloudinary";
 import { isPrivateOrReservedUrl } from "@/lib/ssrf";
 import { getAuthenticatedUserEmail } from "@/lib/auth";
 import { verifyMagnetAccess, withMagnetAccess } from "@/lib/magnet-access";
+import { determineRoleForEmail } from "@/lib/roles";
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -61,10 +62,15 @@ export async function GET(
   const resourceId = params.id;
   // Links handed to leads carry ?t=<access token>; without it only the owner may download
   const hasToken = verifyMagnetAccess(resourceId, req.nextUrl.searchParams.get("t"));
-  const isOwnerOf = async (ownerEmail?: string | null) => {
+  const isOwnerOrAdmin = async (ownerEmail?: string | null) => {
+    const sessionEmail = await getAuthenticatedUserEmail();
+    if (!sessionEmail) return false;
     const owner = (ownerEmail || "").toLowerCase().trim();
-    if (!owner) return false;
-    return (await getAuthenticatedUserEmail()) === owner;
+    if (owner && sessionEmail === owner) return true;
+    const computedRole = determineRoleForEmail(sessionEmail);
+    if (computedRole === "super_admin" || computedRole === "admin") return true;
+    const account = await AccountModel.findOne({ email: sessionEmail }, { role: 1 }).lean();
+    return account?.role === "admin" || account?.role === "super_admin";
   };
   const denied = () => NextResponse.redirect(new URL("/", req.url), 302);
   // ?inline=1 serves the file for in-page viewing (dashboard PDF viewer) instead of downloading it
@@ -88,7 +94,7 @@ export async function GET(
 
       if (page) {
         const unpublished = page.status === "draft" || page.status === "paused";
-        if ((!hasToken || unpublished) && !(await isOwnerOf(page.userEmail))) {
+        if ((!hasToken || unpublished) && !(await isOwnerOrAdmin(page.userEmail))) {
           // Send visitors to the signup form instead of handing out the deliverable
           const owner: any = page.userEmail
             ? await AccountModel.findOne({ email: page.userEmail.toLowerCase().trim() }, { username: 1 }).lean()
@@ -129,7 +135,7 @@ export async function GET(
             .lean();
         }
       }
-    } else if (!hasToken && !(await isOwnerOf(resource.userEmail))) {
+    } else if (!hasToken && !(await isOwnerOrAdmin(resource.userEmail))) {
       return denied();
     } else if (resource.userEmail) {
       linkedPage = await MagnetPageModel.findOne({

@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
+import { FileViewerModal } from "@/components/assets/FileViewerModal";
 import {
-  ArrowLeft, Mail, Calendar, Globe, CreditCard, ExternalLink,
+  ArrowLeft, Mail, Calendar, Globe, CreditCard, ExternalLink, Eye,
   FileText, FolderOpen, Users, Settings, Lock,
 } from "lucide-react";
 
@@ -138,6 +139,7 @@ export default function AdminUserDetailPage() {
   const email = decodeURIComponent(params.email as string);
 
   const [user, setUser] = useState<UserDetail | null>(null);
+  const [previewResource, setPreviewResource] = useState<Resource | null>(null);
   const [stats, setStats] = useState<Stats | null>(null);
   const [magnets, setMagnets] = useState<Magnet[]>([]);
   const [leads, setLeads] = useState<Lead[]>([]);
@@ -389,9 +391,15 @@ export default function AdminUserDetailPage() {
               </thead>
               <tbody className="divide-y divide-zinc-50 dark:divide-white/[0.03]">
                 {resources.map((r) => (
-                  <tr key={r.id} className="hover:bg-[#F0F7FF] dark:hover:bg-white/[0.02] transition-colors">
+                  <tr
+                    key={r.id}
+                    onClick={() => setPreviewResource(r)}
+                    className="hover:bg-[#F0F7FF] dark:hover:bg-white/[0.03] cursor-pointer transition-colors group"
+                  >
                     <td className="px-4 py-3">
-                      <div className="font-medium text-zinc-900 dark:text-white max-w-64 truncate">{r.name}</div>
+                      <div className="font-medium text-zinc-900 dark:text-white max-w-64 truncate group-hover:text-[#0066B2] dark:group-hover:text-[#38BDF8] transition-colors">
+                        {r.name}
+                      </div>
                     </td>
                     <td className="px-4 py-3 text-xs text-zinc-400 dark:text-zinc-500 uppercase">{r.fileExt || r.type || "—"}</td>
                     <td className="px-4 py-3 text-right text-zinc-500 dark:text-zinc-400 text-xs">{formatBytes(r.size)}</td>
@@ -399,17 +407,28 @@ export default function AdminUserDetailPage() {
                       {r.uploadedAt ? new Date(r.uploadedAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }) : "—"}
                     </td>
                     <td className="px-4 py-3">
-                      {(r.fileUrl || r.url) && (
-                        <a
-                          href={r.fileUrl || r.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-[#0066B2] dark:text-[#38BDF8] hover:opacity-70 transition-opacity"
-                          title="Preview file"
+                      <div className="flex items-center justify-end gap-2" onClick={(e) => e.stopPropagation()}>
+                        <button
+                          type="button"
+                          onClick={() => setPreviewResource(r)}
+                          className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold text-[#0066B2] dark:text-[#38BDF8] bg-[#0066B2]/10 hover:bg-[#0066B2]/20 dark:bg-[#38BDF8]/10 dark:hover:bg-[#38BDF8]/20 transition-colors cursor-pointer"
+                          title="Preview inside website"
                         >
-                          <ExternalLink className="w-3.5 h-3.5" />
-                        </a>
-                      )}
+                          <Eye className="w-3.5 h-3.5" />
+                          Preview
+                        </button>
+                        {(r.fileUrl || r.url) && (
+                          <a
+                            href={r.fileUrl || r.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="p-1 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 transition-colors"
+                            title="Open raw file in new tab"
+                          >
+                            <ExternalLink className="w-3.5 h-3.5" />
+                          </a>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -574,6 +593,12 @@ export default function AdminUserDetailPage() {
           </div>
         </div>
       )}
+
+      {/* In-app Document & PDF Preview Lightbox */}
+      <FileViewerModal
+        resource={previewResource ? { id: previewResource.id, name: previewResource.name, url: previewResource.url || previewResource.fileUrl, fileUrl: previewResource.fileUrl } : null}
+        onClose={() => setPreviewResource(null)}
+      />
     </div>
   );
 }

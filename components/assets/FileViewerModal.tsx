@@ -5,16 +5,17 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X, ExternalLink, Download, Loader2 } from "lucide-react";
 
 interface FileViewerModalProps {
-  resource: { id: string; name: string; url: string } | null;
+  resource: { id: string; name: string; url: string; fileUrl?: string } | null;
   onClose: () => void;
 }
 
 /** Adds ?inline=1 so /r/[id] serves the file for viewing instead of downloading it. */
 function inlineUrl(url: string): string {
+  if (!url) return "";
   return `${url}${url.includes("?") ? "&" : "?"}inline=1`;
 }
 
-/** Opens an asset in the browser's built-in PDF viewer without leaving the page. */
+/** Opens an asset in the browser's built-in PDF viewer or image viewer without leaving the page. */
 export function FileViewerModal({ resource, onClose }: FileViewerModalProps) {
   const [loaded, setLoaded] = useState(false);
 
@@ -30,6 +31,12 @@ export function FileViewerModal({ resource, onClose }: FileViewerModalProps) {
       document.body.style.overflow = prevOverflow;
     };
   }, [resource, onClose]);
+
+  const targetUrl = resource?.url || resource?.fileUrl || "";
+  const isImage = resource
+    ? /\.(jpe?g|png|webp|gif|svg)(\?.*)?$/i.test(targetUrl) ||
+      /\.(jpe?g|png|webp|gif|svg)$/i.test(resource.name)
+    : false;
 
   return (
     <AnimatePresence>
@@ -55,14 +62,15 @@ export function FileViewerModal({ resource, onClose }: FileViewerModalProps) {
                 {resource.name}
               </h2>
               <a
-                href={resource.url}
+                href={resource.fileUrl || resource.url}
+                download={resource.name}
                 title="Download"
                 className="inline-flex h-8 w-8 items-center justify-center rounded-xl text-zinc-600 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-white/10"
               >
                 <Download className="h-4 w-4" />
               </a>
               <a
-                href={inlineUrl(resource.url)}
+                href={isImage ? (resource.fileUrl || targetUrl) : inlineUrl(targetUrl)}
                 target="_blank"
                 rel="noopener noreferrer"
                 title="Open in new tab"
@@ -79,19 +87,32 @@ export function FileViewerModal({ resource, onClose }: FileViewerModalProps) {
                 <X className="h-4 w-4" />
               </button>
             </div>
-            <div className="relative flex-1 bg-zinc-100 dark:bg-zinc-950">
+            <div className="relative flex-1 bg-zinc-100 dark:bg-zinc-950 overflow-auto">
               {!loaded && (
                 <div className="absolute inset-0 flex items-center justify-center">
                   <Loader2 className="h-6 w-6 animate-spin text-zinc-400" />
                 </div>
               )}
-              <iframe
-                key={resource.id}
-                src={inlineUrl(resource.url)}
-                title={resource.name}
-                onLoad={() => setLoaded(true)}
-                className="h-full w-full border-0"
-              />
+              {isImage ? (
+                <div className="flex h-full w-full items-center justify-center p-4">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    key={resource.id}
+                    src={resource.fileUrl || targetUrl}
+                    alt={resource.name}
+                    onLoad={() => setLoaded(true)}
+                    className="max-h-full max-w-full object-contain rounded-lg shadow-sm"
+                  />
+                </div>
+              ) : (
+                <iframe
+                  key={resource.id}
+                  src={inlineUrl(targetUrl)}
+                  title={resource.name}
+                  onLoad={() => setLoaded(true)}
+                  className="h-full w-full border-0"
+                />
+              )}
             </div>
           </motion.div>
         </motion.div>
