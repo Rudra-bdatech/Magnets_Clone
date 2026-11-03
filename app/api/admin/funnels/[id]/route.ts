@@ -22,7 +22,7 @@ export async function GET(
       createdAt: 1, publishedAt: 1, updatedAt: 1,
       quizFunnelEnabled: 1, hasVariantB: 1, testStarted: 1,
       variantAViews: 1, variantASignups: 1, variantBViews: 1, variantBSignups: 1,
-      pdfPages: 1, pdfPageCount: 1, pdfTitle: 1,
+      pdfPages: 1, pdfPageCount: 1, pdfTitle: 1, pdfFreePages: 1, pdfUrl: 1,
       sequenceEnabled: 1, afterSignupOption: 1, destinationUrl: 1,
       enableAiPersonalizedDeliverable: 1,
       formTitle: 1, formButtonText: 1,

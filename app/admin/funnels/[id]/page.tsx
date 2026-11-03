@@ -34,7 +34,9 @@ interface FunnelDetail {
   variantBViews: number;
   variantBSignups: number;
   pdfPageCount: number;
+  pdfFreePages: number;
   pdfTitle: string;
+  pdfUrl: string;
   sequenceEnabled: boolean;
   afterSignupOption: string;
   destinationUrl: string;
@@ -289,7 +291,36 @@ export default function FunnelDetailPage() {
               <InfoRow label="Quiz Funnel" value={<span className="text-emerald-600 dark:text-emerald-400 font-semibold">Enabled</span>} />
             )}
             {funnel.pdfPageCount > 0 && (
-              <InfoRow label="Locked PDF" value={`${funnel.pdfPageCount} pages — ${funnel.pdfTitle || "Untitled"}`} />
+              <>
+                <InfoRow label="PDF Title" value={funnel.pdfTitle || "Untitled"} />
+                <InfoRow
+                  label="Pages"
+                  value={
+                    <span>
+                      <span className="text-zinc-400 dark:text-zinc-500">{funnel.pdfPageCount} total</span>
+                      {" · "}
+                      <span className="text-emerald-600 dark:text-emerald-400 font-semibold">{funnel.pdfFreePages || 0} free preview</span>
+                      {" · "}
+                      <span className="text-red-500 dark:text-red-400 font-semibold">{funnel.pdfPageCount - (funnel.pdfFreePages || 0)} locked</span>
+                    </span>
+                  }
+                />
+                {funnel.pdfUrl && (
+                  <InfoRow
+                    label="PDF File"
+                    value={
+                      <a
+                        href={funnel.pdfUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-[#0066B2] dark:text-[#38BDF8] hover:underline flex items-center gap-1"
+                      >
+                        Open PDF <ExternalLink className="w-3 h-3 shrink-0" />
+                      </a>
+                    }
+                  />
+                )}
+              </>
             )}
             {funnel.hasVariantB && (
               <>
