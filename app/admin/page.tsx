@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Users, FileText, TrendingUp, UserCheck, UserPlus, LayoutDashboard } from "lucide-react";
+import { Users, FileText, TrendingUp, UserPlus, LayoutDashboard } from "lucide-react";
 
 interface Stats {
   totalUsers: number;
@@ -41,24 +41,26 @@ function KpiCard({
   value,
   sub,
   icon: Icon,
-  accent,
+  iconClass,
+  badgeClass,
 }: {
   label: string;
   value: number | string;
   sub?: string;
   icon: React.ElementType;
-  accent?: string;
+  iconClass: string;
+  badgeClass: string;
 }) {
   return (
-    <div className="bg-white dark:bg-[#171717] border border-zinc-200 dark:border-white/[0.08] rounded-xl p-5">
+    <div className="bg-white/90 dark:bg-[#171717] border border-[#0066B2]/10 dark:border-white/[0.08] rounded-2xl p-4 sm:p-5 shadow-sm hover:shadow-md hover:border-[#0066B2]/20 dark:hover:border-white/[0.14] transition-all duration-200">
       <div className="flex items-start justify-between mb-3">
-        <p className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">{label}</p>
-        <span className={`p-2 rounded-lg ${accent || "bg-[#0066B2]/10 dark:bg-[#0066B2]/20"}`}>
-          <Icon className={`w-4 h-4 ${accent ? "" : "text-[#0066B2] dark:text-[#38BDF8]"}`} />
+        <p className="text-[10px] font-bold text-zinc-400 dark:text-zinc-400 uppercase tracking-widest leading-none">{label}</p>
+        <span className={`flex h-9 w-9 items-center justify-center rounded-xl border ${badgeClass}`}>
+          <Icon className={`w-4 h-4 ${iconClass}`} />
         </span>
       </div>
-      <p className="text-3xl font-bold text-zinc-900 dark:text-white">{typeof value === "number" ? value.toLocaleString() : value}</p>
-      {sub && <p className="text-xs text-zinc-400 dark:text-zinc-500 mt-1">{sub}</p>}
+      <p className="text-3xl font-extrabold text-zinc-900 dark:text-white tracking-tight">{typeof value === "number" ? value.toLocaleString() : value}</p>
+      {sub && <p className="text-xs text-zinc-400 dark:text-zinc-500 mt-1.5">{sub}</p>}
     </div>
   );
 }
@@ -116,47 +118,57 @@ export default function AdminOverviewPage() {
         <KpiCard
           label="Total Users"
           value={stats.totalUsers}
+          sub="all registered accounts"
           icon={Users}
+          iconClass="text-[#0066B2] dark:text-[#38BDF8]"
+          badgeClass="border-[#0066B2]/30 bg-[#EFF6FF] dark:border-white/10 dark:bg-white/5"
         />
         <KpiCard
           label="New (30d)"
           value={stats.newUsersLast30}
           sub="joined in last 30 days"
           icon={UserPlus}
-          accent="bg-green-50 dark:bg-green-500/10"
+          iconClass="text-emerald-600 dark:text-emerald-400"
+          badgeClass="border-emerald-500/30 bg-emerald-50 dark:border-white/10 dark:bg-white/5"
         />
         <KpiCard
           label="Total Funnels"
           value={stats.totalMagnets}
+          sub="across all users"
           icon={FileText}
-          accent="bg-purple-50 dark:bg-purple-500/10"
+          iconClass="text-violet-600 dark:text-violet-400"
+          badgeClass="border-violet-500/30 bg-violet-50 dark:border-white/10 dark:bg-white/5"
         />
         <KpiCard
           label="Total Leads"
           value={stats.totalLeads}
+          sub="platform-wide signups"
           icon={TrendingUp}
-          accent="bg-amber-50 dark:bg-amber-500/10"
+          iconClass="text-amber-600 dark:text-amber-400"
+          badgeClass="border-amber-500/30 bg-amber-50 dark:border-white/10 dark:bg-white/5"
         />
       </div>
 
       {/* Breakdown cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {/* By Plan */}
-        <div className="bg-white dark:bg-[#171717] border border-zinc-200 dark:border-white/[0.08] rounded-xl p-5">
-          <h2 className="text-sm font-semibold text-zinc-900 dark:text-white mb-4">Users by Plan</h2>
-          <div className="space-y-3">
+        <div className="bg-white/90 dark:bg-[#171717] border border-[#0066B2]/10 dark:border-white/[0.08] rounded-2xl p-5 shadow-sm">
+          <h2 className="text-xs font-bold text-zinc-400 dark:text-zinc-400 uppercase tracking-widest mb-4">Users by Plan</h2>
+          <div className="space-y-4">
             {PLAN_ORDER.map((plan) => {
               const count = stats.byPlan[plan] || 0;
               const pct = Math.round((count / totalPlanUsers) * 100);
               return (
                 <div key={plan}>
-                  <div className="flex items-center justify-between mb-1">
-                    <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${PLAN_COLORS[plan]}`}>{plan}</span>
-                    <span className="text-xs text-zinc-500 dark:text-zinc-400">{count.toLocaleString()} <span className="text-zinc-300 dark:text-zinc-600">({pct}%)</span></span>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <span className={`text-xs font-semibold px-2.5 py-0.5 rounded-full ${PLAN_COLORS[plan]}`}>{plan}</span>
+                    <span className="text-xs font-bold text-zinc-700 dark:text-zinc-300 tabular-nums">
+                      {count.toLocaleString()} <span className="font-normal text-zinc-400 dark:text-zinc-500">({pct}%)</span>
+                    </span>
                   </div>
-                  <div className="h-1.5 bg-zinc-100 dark:bg-white/[0.06] rounded-full overflow-hidden">
+                  <div className="h-2 bg-zinc-100 dark:bg-white/[0.06] rounded-full overflow-hidden">
                     <div
-                      className={`h-full rounded-full transition-all ${PLAN_BAR[plan]}`}
+                      className={`h-full rounded-full transition-all duration-700 ease-out ${PLAN_BAR[plan]}`}
                       style={{ width: `${pct}%` }}
                     />
                   </div>
@@ -167,21 +179,23 @@ export default function AdminOverviewPage() {
         </div>
 
         {/* By Role */}
-        <div className="bg-white dark:bg-[#171717] border border-zinc-200 dark:border-white/[0.08] rounded-xl p-5">
-          <h2 className="text-sm font-semibold text-zinc-900 dark:text-white mb-4">Users by Role</h2>
-          <div className="space-y-3">
+        <div className="bg-white/90 dark:bg-[#171717] border border-[#0066B2]/10 dark:border-white/[0.08] rounded-2xl p-5 shadow-sm">
+          <h2 className="text-xs font-bold text-zinc-400 dark:text-zinc-400 uppercase tracking-widest mb-4">Users by Role</h2>
+          <div className="space-y-4">
             {["user", "admin", "super_admin"].map((role) => {
               const count = stats.byRole[role] || 0;
               const pct = Math.round((count / totalRoleUsers) * 100);
               return (
                 <div key={role}>
-                  <div className="flex items-center justify-between mb-1">
-                    <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${ROLE_COLORS[role]}`}>{ROLE_LABELS[role]}</span>
-                    <span className="text-xs text-zinc-500 dark:text-zinc-400">{count.toLocaleString()} <span className="text-zinc-300 dark:text-zinc-600">({pct}%)</span></span>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <span className={`text-xs font-semibold px-2.5 py-0.5 rounded-full ${ROLE_COLORS[role]}`}>{ROLE_LABELS[role]}</span>
+                    <span className="text-xs font-bold text-zinc-700 dark:text-zinc-300 tabular-nums">
+                      {count.toLocaleString()} <span className="font-normal text-zinc-400 dark:text-zinc-500">({pct}%)</span>
+                    </span>
                   </div>
-                  <div className="h-1.5 bg-zinc-100 dark:bg-white/[0.06] rounded-full overflow-hidden">
+                  <div className="h-2 bg-zinc-100 dark:bg-white/[0.06] rounded-full overflow-hidden">
                     <div
-                      className={`h-full rounded-full transition-all ${
+                      className={`h-full rounded-full transition-all duration-700 ease-out ${
                         role === "super_admin" ? "bg-red-400 dark:bg-red-500" :
                         role === "admin" ? "bg-green-400 dark:bg-green-500" :
                         "bg-zinc-300 dark:bg-zinc-600"
