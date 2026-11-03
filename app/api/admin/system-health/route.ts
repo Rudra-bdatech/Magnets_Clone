@@ -114,18 +114,37 @@ export async function GET() {
     }),
   ]);
 
-  // Infer sequence cron staleness from last email sent time
+  // Infer sequence cron health from lead queue state.
+  // Key rule: overdue leads = 0 means the cron is keeping up perfectly, regardless of
+  // when the last email was sent (the queue may simply have been empty).
   const lastSentAt = (lastEmailEvent as any)?.createdAt ?? null;
   let sequenceCronStatus: "healthy" | "warn" | "stale" | "unknown" = "unknown";
   let lastSentMinutesAgo: number | null = null;
 
   if (lastSentAt) {
     lastSentMinutesAgo = Math.floor((now.getTime() - new Date(lastSentAt).getTime()) / 60000);
-    if (overdueLeads > 50 && lastSentMinutesAgo > 120)  sequenceCronStatus = "stale";
-    else if (overdueLeads > 20 || lastSentMinutesAgo > 60) sequenceCronStatus = "warn";
-    else sequenceCronStatus = "healthy";
-  } else if (activeSequenceLeads > 0) {
-    // Has active leads but never sent — cron may not be configured
+  }
+
+  if (staleLockedLeads > 0) {
+    // Stale locks = cron crashed mid-run
+    sequenceCronStatus = "stale";
+  } else if (overdueLeads > 50) {
+    // Large backlog = cron is not running
+    sequenceCronStatus = "stale";
+  } else if (overdueLeads > 10) {
+    // Growing backlog = cron is slow or intermittent
+    sequenceCronStatus = "warn";
+  } else if (pendingEmailLeads > 20) {
+    // Many stuck leads
+    sequenceCronStatus = "warn";
+  } else if (overdueLeads === 0 || activeSequenceLeads === 0) {
+    // Queue is clear — cron is healthy (or nothing to do)
+    sequenceCronStatus = "healthy";
+  } else if (lastSentAt) {
+    // Has some overdue leads but within normal range
+    sequenceCronStatus = "healthy";
+  } else {
+    // Has active leads but has never sent anything — cron may not be configured
     sequenceCronStatus = "stale";
   }
 
