@@ -47,7 +47,7 @@ export async function GET(
     return NextResponse.json({ error: "User not found." }, { status: 404 });
   }
 
-  const [magnets, leads, resources, sequenceCount] = await Promise.all([
+  const [magnets, leads, resources, sequences] = await Promise.all([
     MagnetPageModel.find(
       { userEmail: targetEmail },
       { id: 1, name: 1, slug: 1, status: 1, views: 1, signups: 1, template: 1, updatedAt: 1, pdfPages: 1, quizFunnelEnabled: 1, _id: 0 }
@@ -60,7 +60,10 @@ export async function GET(
       { userEmail: targetEmail },
       { id: 1, name: 1, size: 1, fileUrl: 1, url: 1, uploadedAt: 1, fileExt: 1, type: 1, _id: 0 }
     ).sort({ uploadedAt: -1 }).lean(),
-    SequenceModel.countDocuments({ userEmail: targetEmail }),
+    SequenceModel.find(
+      { userEmail: targetEmail },
+      { id: 1, name: 1, pageId: 1, status: 1, "emails.id": 1, stats: 1, _id: 0 }
+    ).lean(),
   ]);
 
   const computedRole = determineRoleForEmail(account.email);
@@ -73,13 +76,14 @@ export async function GET(
     stats: {
       magnetCount: magnets.length,
       leadCount: leads.length,
-      sequenceCount,
+      sequenceCount: sequences.length,
       resourceCount: resources.length,
       storageBytes: (resources as any[]).reduce((sum: number, r: any) => sum + (r.size || 0), 0),
     },
     magnets,
     leads,
     resources,
+    sequences,
   });
 }
 

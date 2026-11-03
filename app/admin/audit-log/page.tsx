@@ -8,7 +8,15 @@ interface AuditEntry {
   id: string;
   adminEmail: string;
   adminRole: string;
-  action: "plan_change" | "role_change" | "funnel_pause" | "funnel_restore" | "funnel_delete";
+  action:
+    | "plan_change"
+    | "role_change"
+    | "funnel_pause"
+    | "funnel_restore"
+    | "funnel_delete"
+    | "account_suspend"
+    | "account_unsuspend"
+    | "account_delete";
   targetEmail: string;
   targetName: string;
   before: Record<string, string>;
@@ -22,6 +30,9 @@ const ACTION_LABELS: Record<string, string> = {
   funnel_pause: "Funnel Paused",
   funnel_restore: "Funnel Restored",
   funnel_delete: "Funnel Deleted",
+  account_suspend: "Account Suspended",
+  account_unsuspend: "Account Restored",
+  account_delete: "Account Deleted",
 };
 
 const ACTION_COLORS: Record<string, string> = {
@@ -30,6 +41,9 @@ const ACTION_COLORS: Record<string, string> = {
   funnel_pause: "bg-amber-50 text-amber-700 dark:bg-amber-500/15 dark:text-amber-400",
   funnel_restore: "bg-emerald-50 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-400",
   funnel_delete: "bg-red-50 text-red-600 dark:bg-red-500/15 dark:text-red-400",
+  account_suspend: "bg-amber-50 text-amber-700 dark:bg-amber-500/15 dark:text-amber-400",
+  account_unsuspend: "bg-emerald-50 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-400",
+  account_delete: "bg-red-50 text-red-600 dark:bg-red-500/15 dark:text-red-400",
 };
 
 function timeAgo(dateStr: string): string {
@@ -110,6 +124,9 @@ export default function AuditLogPage() {
           <option value="funnel_pause">Funnel Paused</option>
           <option value="funnel_restore">Funnel Restored</option>
           <option value="funnel_delete">Funnel Deleted</option>
+          <option value="account_suspend">Account Suspended</option>
+          <option value="account_unsuspend">Account Restored</option>
+          <option value="account_delete">Account Deleted</option>
         </select>
       </div>
 

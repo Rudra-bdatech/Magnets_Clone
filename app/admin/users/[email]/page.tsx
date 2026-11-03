@@ -71,6 +71,21 @@ interface Resource {
   type: string;
 }
 
+interface Sequence {
+  id: string;
+  name: string;
+  pageId: string;
+  status: "draft" | "live";
+  emails: { id: string }[];
+  stats: {
+    signedUp: number;
+    delivered: number;
+    opened: number;
+    replied: number;
+    stopped: number;
+  };
+}
+
 interface Stats {
   magnetCount: number;
   leadCount: number;
@@ -127,6 +142,7 @@ function formatBytes(bytes: number) {
 
 const TABS = [
   { key: "funnels", label: "Funnels & Pages", icon: FileText },
+  { key: "sequences", label: "Sequences", icon: Mail },
   { key: "assets", label: "Uploaded Assets", icon: FolderOpen },
   { key: "leads", label: "Leads Captured", icon: Users },
   { key: "account", label: "Account & Plan", icon: Settings },
@@ -145,6 +161,7 @@ export default function AdminUserDetailPage() {
   const [magnets, setMagnets] = useState<Magnet[]>([]);
   const [leads, setLeads] = useState<Lead[]>([]);
   const [resources, setResources] = useState<Resource[]>([]);
+  const [sequences, setSequences] = useState<Sequence[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [plan, setPlan] = useState("");
@@ -164,6 +181,7 @@ export default function AdminUserDetailPage() {
         setMagnets(data.magnets || []);
         setLeads(data.leads || []);
         setResources(data.resources || []);
+        setSequences(data.sequences || []);
         setPlan(data.user.plan || "Free");
         setRole(data.user.role || "user");
       })
@@ -420,6 +438,72 @@ export default function AdminUserDetailPage() {
                 })}
               </tbody>
             </table>
+          )}
+        </div>
+      )}
+
+      {/* Tab: Sequences */}
+      {tab === "sequences" && (
+        <div className="bg-white dark:bg-[#171717] border border-zinc-200 dark:border-white/[0.08] rounded-xl overflow-hidden">
+          {sequences.length === 0 ? (
+            <div className="py-16 text-center">
+              <Mail className="w-8 h-8 text-zinc-200 dark:text-zinc-700 mx-auto mb-3" />
+              <p className="text-sm text-zinc-400 dark:text-zinc-500">No sequences built yet.</p>
+            </div>
+          ) : (
+            <>
+              <div className="px-4 py-3 border-b border-zinc-100 dark:border-white/[0.06] bg-zinc-50/80 dark:bg-white/[0.02]">
+                <p className="text-xs text-zinc-400 dark:text-zinc-500">{sequences.length} sequence{sequences.length !== 1 ? "s" : ""}</p>
+              </div>
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-zinc-100 dark:border-white/[0.06]">
+                    <th className="text-left px-4 py-3 text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">Name</th>
+                    <th className="text-left px-4 py-3 text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">Status</th>
+                    <th className="text-right px-4 py-3 text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">Steps</th>
+                    <th className="text-right px-4 py-3 text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">Enrolled</th>
+                    <th className="text-right px-4 py-3 text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">Delivered</th>
+                    <th className="text-right px-4 py-3 text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">Opened</th>
+                    <th className="text-right px-4 py-3 text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">Stopped</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-zinc-50 dark:divide-white/[0.03]">
+                  {sequences.map((s) => {
+                    const linkedFunnel = magnets.find((m) => m.id === s.pageId);
+                    return (
+                      <tr key={s.id} className="hover:bg-[#F0F7FF] dark:hover:bg-white/[0.02] transition-colors">
+                        <td className="px-4 py-3">
+                          <div className="font-medium text-zinc-900 dark:text-white max-w-56 truncate">{s.name}</div>
+                          {linkedFunnel && (
+                            <div className="text-xs text-zinc-400 dark:text-zinc-500 mt-0.5 truncate">
+                              Linked to: {linkedFunnel.name}
+                            </div>
+                          )}
+                        </td>
+                        <td className="px-4 py-3">
+                          <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-semibold ${s.status === "live" ? "bg-green-50 text-green-700 dark:bg-green-500/15 dark:text-green-400" : "bg-zinc-100 text-zinc-500 dark:bg-white/10 dark:text-zinc-400"}`}>
+                            {s.status}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3 text-right text-zinc-700 dark:text-zinc-300 tabular-nums">{s.emails?.length || 0}</td>
+                        <td className="px-4 py-3 text-right text-zinc-700 dark:text-zinc-300 tabular-nums">{s.stats?.signedUp || 0}</td>
+                        <td className="px-4 py-3 text-right text-zinc-700 dark:text-zinc-300 tabular-nums">{s.stats?.delivered || 0}</td>
+                        <td className="px-4 py-3 text-right tabular-nums">
+                          <span className={(s.stats?.opened || 0) > 0 ? "text-emerald-600 dark:text-emerald-400 font-semibold" : "text-zinc-400 dark:text-zinc-500"}>
+                            {s.stats?.opened || 0}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3 text-right tabular-nums">
+                          <span className={(s.stats?.stopped || 0) > 0 ? "text-red-500 dark:text-red-400" : "text-zinc-400 dark:text-zinc-500"}>
+                            {s.stats?.stopped || 0}
+                          </span>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </>
           )}
         </div>
       )}
