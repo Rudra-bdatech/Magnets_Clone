@@ -5,7 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { FileViewerModal } from "@/components/assets/FileViewerModal";
 import {
   ArrowLeft, Mail, Calendar, Globe, CreditCard, ExternalLink, Eye,
-  FileText, FolderOpen, Users, Settings, Lock,
+  FileText, FolderOpen, Users, Settings, Lock, ShieldOff, ShieldCheck, Trash2, AlertTriangle,
 } from "lucide-react";
 
 interface UserDetail {
@@ -34,6 +34,7 @@ interface UserDetail {
   brandName: string;
   username: string;
   avatar: string | null;
+  suspended: boolean;
 }
 
 interface Magnet {
@@ -150,6 +151,9 @@ export default function AdminUserDetailPage() {
   const [role, setRole] = useState("");
   const [saveMsg, setSaveMsg] = useState("");
   const [tab, setTab] = useState<TabKey>("funnels");
+  const [confirmModal, setConfirmModal] = useState<"suspend" | "unsuspend" | "delete" | null>(null);
+  const [actionLoading, setActionLoading] = useState(false);
+  const [actionMsg, setActionMsg] = useState("");
 
   useEffect(() => {
     fetch(`/api/admin/users/${encodeURIComponent(email)}`)
@@ -193,6 +197,40 @@ export default function AdminUserDetailPage() {
     } finally {
       setSaving(false);
       setTimeout(() => setSaveMsg(""), 3000);
+    }
+  }
+
+  async function handleSuspend(action: "suspend" | "unsuspend") {
+    setActionLoading(true);
+    setActionMsg("");
+    try {
+      const res = await fetch(`/api/admin/users/${encodeURIComponent(email)}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Action failed");
+      setUser((prev) => prev ? { ...prev, suspended: data.suspended } : prev);
+      setConfirmModal(null);
+    } catch (err: any) {
+      setActionMsg(err.message);
+    } finally {
+      setActionLoading(false);
+    }
+  }
+
+  async function handleDelete() {
+    setActionLoading(true);
+    setActionMsg("");
+    try {
+      const res = await fetch(`/api/admin/users/${encodeURIComponent(email)}`, { method: "DELETE" });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Delete failed");
+      router.push("/admin/users");
+    } catch (err: any) {
+      setActionMsg(err.message);
+      setActionLoading(false);
     }
   }
 
@@ -242,13 +280,40 @@ export default function AdminUserDetailPage() {
             <div className="text-sm text-zinc-400 dark:text-zinc-500">{user.email}</div>
           </div>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
+          {user.suspended && (
+            <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-red-100 text-red-700 dark:bg-red-500/20 dark:text-red-400 flex items-center gap-1">
+              <ShieldOff className="w-3 h-3" /> Suspended
+            </span>
+          )}
           <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${user.role === "super_admin" ? "bg-red-50 text-red-700 dark:bg-red-500/15 dark:text-red-400" : user.role === "admin" ? "bg-green-50 text-green-700 dark:bg-green-500/15 dark:text-green-400" : "bg-zinc-100 text-zinc-500 dark:bg-white/10 dark:text-zinc-400"}`}>
             {user.role === "super_admin" ? "Super Admin" : user.role === "admin" ? "Admin" : "User"}
           </span>
-          <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${user.plan === "Unlimited" ? "bg-amber-50 text-amber-700 dark:bg-amber-500/15 dark:text-amber-400" : user.plan === "Growth" ? "bg-purple-50 text-purple-700 dark:bg-purple-500/15 dark:text-purple-400" : user.plan === "Pro" ? "bg-[#0066B2]/10 text-[#0066B2] dark:bg-[#0066B2]/20 dark:text-[#38BDF8]" : "bg-zinc-100 text-zinc-500 dark:bg-white/10 dark:text-zinc-400"}`}>
+          <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${user.plan === "Pro" ? "bg-[#0066B2]/10 text-[#0066B2] dark:bg-[#0066B2]/20 dark:text-[#38BDF8]" : "bg-zinc-100 text-zinc-500 dark:bg-white/10 dark:text-zinc-400"}`}>
             {user.plan || "Free"}
           </span>
+          {/* Action buttons */}
+          {user.suspended ? (
+            <button
+              onClick={() => setConfirmModal("unsuspend")}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-xl bg-emerald-50 text-emerald-700 hover:bg-emerald-100 dark:bg-emerald-500/10 dark:text-emerald-400 dark:hover:bg-emerald-500/20 transition-colors"
+            >
+              <ShieldCheck className="w-3.5 h-3.5" /> Unsuspend
+            </button>
+          ) : (
+            <button
+              onClick={() => setConfirmModal("suspend")}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-xl bg-amber-50 text-amber-700 hover:bg-amber-100 dark:bg-amber-500/10 dark:text-amber-400 dark:hover:bg-amber-500/20 transition-colors"
+            >
+              <ShieldOff className="w-3.5 h-3.5" /> Suspend
+            </button>
+          )}
+          <button
+            onClick={() => setConfirmModal("delete")}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-xl bg-red-50 text-red-600 hover:bg-red-100 dark:bg-red-500/10 dark:text-red-400 dark:hover:bg-red-500/20 transition-colors"
+          >
+            <Trash2 className="w-3.5 h-3.5" /> Delete Account
+          </button>
         </div>
       </div>
 
@@ -599,6 +664,72 @@ export default function AdminUserDetailPage() {
         resource={previewResource ? { id: previewResource.id, name: previewResource.name, url: previewResource.url || previewResource.fileUrl, fileUrl: previewResource.fileUrl } : null}
         onClose={() => setPreviewResource(null)}
       />
+
+      {/* Confirm Modal */}
+      {confirmModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm px-4">
+          <div className="bg-white dark:bg-[#1C1C1F] rounded-2xl shadow-xl w-full max-w-md p-6 border border-zinc-200 dark:border-white/[0.08]">
+            <div className="flex items-center gap-3 mb-4">
+              <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${confirmModal === "delete" ? "bg-red-100 dark:bg-red-500/15" : confirmModal === "suspend" ? "bg-amber-100 dark:bg-amber-500/15" : "bg-emerald-100 dark:bg-emerald-500/15"}`}>
+                {confirmModal === "delete" && <Trash2 className="w-5 h-5 text-red-600 dark:text-red-400" />}
+                {confirmModal === "suspend" && <ShieldOff className="w-5 h-5 text-amber-600 dark:text-amber-400" />}
+                {confirmModal === "unsuspend" && <ShieldCheck className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />}
+              </div>
+              <div>
+                <h3 className="text-base font-bold text-zinc-900 dark:text-white">
+                  {confirmModal === "suspend" && "Suspend Account"}
+                  {confirmModal === "unsuspend" && "Unsuspend Account"}
+                  {confirmModal === "delete" && "Delete Account"}
+                </h3>
+                <p className="text-xs text-zinc-400 dark:text-zinc-500">{user.email}</p>
+              </div>
+            </div>
+
+            <p className="text-sm text-zinc-500 dark:text-zinc-400 mb-5">
+              {confirmModal === "suspend" && (
+                <><strong className="text-zinc-900 dark:text-white">{user.name}</strong> will be immediately blocked from logging in. Their data stays intact and can be restored anytime.</>
+              )}
+              {confirmModal === "unsuspend" && (
+                <>This will restore full access for <strong className="text-zinc-900 dark:text-white">{user.name}</strong>. They will be able to log in immediately.</>
+              )}
+              {confirmModal === "delete" && (
+                <>Permanently delete <strong className="text-zinc-900 dark:text-white">{user.name}</strong> and <strong>all their data</strong> — funnels, leads, assets, sequences. <span className="text-red-500 font-semibold">This cannot be undone.</span></>
+              )}
+            </p>
+
+            {actionMsg && (
+              <div className="mb-4 flex items-center gap-2 text-sm text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-500/10 rounded-xl px-3 py-2">
+                <AlertTriangle className="w-4 h-4 shrink-0" />
+                {actionMsg}
+              </div>
+            )}
+
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => { setConfirmModal(null); setActionMsg(""); }}
+                disabled={actionLoading}
+                className="px-4 py-2 text-sm font-medium rounded-xl border border-zinc-200 dark:border-white/[0.08] text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-white/5 transition-colors disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => confirmModal === "delete" ? handleDelete() : handleSuspend(confirmModal)}
+                disabled={actionLoading}
+                className={`px-4 py-2 text-sm font-semibold rounded-xl text-white transition-colors disabled:opacity-50 ${
+                  confirmModal === "delete" ? "bg-red-600 hover:bg-red-700" :
+                  confirmModal === "suspend" ? "bg-amber-500 hover:bg-amber-600" :
+                  "bg-emerald-600 hover:bg-emerald-700"
+                }`}
+              >
+                {actionLoading ? "Please wait…" :
+                  confirmModal === "delete" ? "Yes, Delete Everything" :
+                  confirmModal === "suspend" ? "Yes, Suspend" :
+                  "Yes, Restore Access"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -69,6 +69,7 @@ const AccountSchema = new Schema({
   spfVerified: { type: Boolean, default: false },
   dkimVerified: { type: Boolean, default: false },
   tokenVersion: { type: Number, default: 0 },
+  suspended: { type: Boolean, default: false },
   // LinkedIn Comment Automation
   linkedinWebhookSecret: { type: String, default: "" },
   linkedinConnected: { type: Boolean, default: false },

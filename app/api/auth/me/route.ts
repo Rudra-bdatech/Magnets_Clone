@@ -80,6 +80,12 @@ export async function GET() {
       return response;
     }
 
+    if ((account as any).suspended) {
+      const response = NextResponse.json({ authenticated: false, suspended: true, user: null }, { status: 401 });
+      clearAuthCookie(response);
+      return response;
+    }
+
     // Security check: If password was changed or session was revoked, reject stale token
     // (a Google session is checked too, or this route would re-issue a cookie for it)
     if (token || emailFromNextAuth) {

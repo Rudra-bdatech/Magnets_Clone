@@ -84,6 +84,10 @@ export const authOptions: NextAuthOptions = {
         // Check if user account already exists in MongoDB
         let existing = await AccountModel.findOne({ email: cleanEmail });
 
+        if (existing?.suspended) {
+          return false;
+        }
+
         if (!existing) {
           const baseName = user.name || user.email.split("@")[0];
           const rawUsername = baseName.toLowerCase().replace(/[^a-z0-9]+/g, "").slice(0, 15) || "user";

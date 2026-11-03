@@ -1,9 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { dbConnect } from "@/lib/mongodb";
-import { AccountModel, MagnetPageModel, LeadModel, SequenceModel, ResourceModel } from "@/lib/models";
+import { AccountModel, MagnetPageModel, LeadModel, SequenceModel, ResourceModel, IntegrationModel, EmailEventModel, PdfOtpModel } from "@/lib/models";
 import { requireAdmin, isAdminSession } from "@/lib/admin-auth";
 import { determineRoleForEmail } from "@/lib/roles";
 import { logAdminAction } from "@/lib/audit-log";
+import { deleteCloudinaryAssets } from "@/lib/cloudinary";
+import { removeDomainFromVercel } from "@/lib/domain-verify";
+import { revokeGmailAccess } from "@/lib/gmail-oauth";
 
 const ALLOWED_PLANS = ["Free", "Pro", "Growth", "Unlimited"];
 const ALLOWED_ROLES = ["user", "admin", "super_admin"];
@@ -96,10 +99,40 @@ export async function PATCH(
     return NextResponse.json({ error: "Invalid JSON body." }, { status: 400 });
   }
 
-  const { plan, role } = body as { plan?: string; role?: string };
+  const { plan, role, action } = body as { plan?: string; role?: string; action?: string };
 
-  if (!plan && !role) {
-    return NextResponse.json({ error: "Provide plan or role to update." }, { status: 400 });
+  if (!plan && !role && !action) {
+    return NextResponse.json({ error: "Provide plan, role, or action to update." }, { status: 400 });
+  }
+
+  // Suspend / unsuspend — any admin can do this
+  if (action === "suspend" || action === "unsuspend") {
+    await dbConnect();
+    const target = await AccountModel.findOne({ email: targetEmail }, { email: 1, name: 1, suspended: 1 }).lean() as any;
+    if (!target) return NextResponse.json({ error: "User not found." }, { status: 404 });
+    if (targetEmail === auth.email) return NextResponse.json({ error: "You cannot suspend yourself." }, { status: 400 });
+
+    const isSuspending = action === "suspend";
+    const updateFields: any = { suspended: isSuspending };
+    // Increment tokenVersion on suspend so all existing sessions are immediately invalidated
+    if (isSuspending) updateFields.$inc = { tokenVersion: 1 };
+
+    await AccountModel.findOneAndUpdate(
+      { email: targetEmail },
+      isSuspending ? { $set: { suspended: true }, $inc: { tokenVersion: 1 } } : { $set: { suspended: false } }
+    );
+
+    await logAdminAction({
+      adminEmail: auth.email,
+      adminRole: auth.role,
+      action: isSuspending ? "account_suspend" : "account_unsuspend",
+      targetEmail: target.email,
+      targetName: target.name || "",
+      before: { suspended: String(!isSuspending) },
+      after: { suspended: String(isSuspending) },
+    });
+
+    return NextResponse.json({ success: true, suspended: isSuspending });
   }
 
   if (role && auth.role !== "super_admin") {
@@ -149,7 +182,6 @@ export async function PATCH(
     return NextResponse.json({ error: "User not found." }, { status: 404 });
   }
 
-  // Log each field that changed as a separate audit entry
   if (plan && plan !== target.plan) {
     await logAdminAction({
       adminEmail: auth.email,
@@ -180,4 +212,94 @@ export async function PATCH(
     plan: updated.plan,
     role: updated.role,
   });
+}
+
+export async function DELETE(
+  _request: NextRequest,
+  { params }: { params: { email: string } }
+) {
+  const auth = await requireAdmin();
+  if (!isAdminSession(auth)) return auth;
+
+  if (auth.role !== "super_admin") {
+    return NextResponse.json({ error: "Only super_admin can delete user accounts." }, { status: 403 });
+  }
+
+  const targetEmail = decodeURIComponent(params.email).trim().toLowerCase();
+
+  if (targetEmail === auth.email) {
+    return NextResponse.json({ error: "You cannot delete your own account." }, { status: 400 });
+  }
+
+  await dbConnect();
+
+  const account = await AccountModel.findOne({ email: targetEmail }).lean() as any;
+  if (!account) return NextResponse.json({ error: "User not found." }, { status: 404 });
+
+  const userPages = await MagnetPageModel.find({ userEmail: targetEmail }).lean() as any[];
+  const userResources = await ResourceModel.find({ userEmail: targetEmail }).lean() as any[];
+
+  const userPageIds: string[] = [];
+  const allAssets: string[] = [];
+
+  if (account.logo) allAssets.push(account.logo);
+  if (account.avatar) allAssets.push(account.avatar);
+  if (account.faviconUrl) allAssets.push(account.faviconUrl);
+  if (account.ogImageUrl) allAssets.push(account.ogImageUrl);
+
+  userPages.forEach((p: any) => {
+    if (p.id) userPageIds.push(p.id);
+    if (p._id) userPageIds.push(p._id.toString());
+    if (p.imageUrl) allAssets.push(p.imageUrl);
+    if (p.variantBImage) allAssets.push(p.variantBImage);
+    if (p.assetUrl) allAssets.push(p.assetUrl);
+    if (Array.isArray(p.pdfPages)) p.pdfPages.forEach((u: string) => { if (u) allAssets.push(u); });
+  });
+
+  userResources.forEach((r: any) => {
+    const u = r.fileUrl || r.url;
+    if (u) allAssets.push(u);
+  });
+
+  // Release external resources (best-effort, never block deletion)
+  await Promise.all([
+    revokeGmailAccess(account.gmailOAuth?.refreshToken),
+    account.customDomain ? removeDomainFromVercel(account.customDomain, account.customSubdomain || "get") : null,
+  ]);
+
+  // Wipe all DB collections for this user
+  await Promise.all([
+    AccountModel.deleteOne({ email: targetEmail }),
+    MagnetPageModel.deleteMany({ userEmail: targetEmail }),
+    LeadModel.deleteMany({
+      $or: [
+        { userEmail: targetEmail },
+        ...(userPageIds.length > 0 ? [{ pageId: { $in: userPageIds }, userEmail: { $in: [null, ""] } }] : []),
+      ],
+    }),
+    SequenceModel.deleteMany({ userEmail: targetEmail }),
+    IntegrationModel.deleteMany({ userEmail: targetEmail }),
+    ResourceModel.deleteMany({ userEmail: targetEmail }),
+    EmailEventModel.deleteMany({ userEmail: targetEmail }),
+    ...(userPageIds.length > 0 ? [PdfOtpModel.deleteMany({ magnetId: { $in: userPageIds } })] : []),
+  ]);
+
+  // Cloudinary cleanup (fire-and-forget — never block the response)
+  if (allAssets.length > 0) {
+    deleteCloudinaryAssets(allAssets, targetEmail).catch((err) =>
+      console.error("[admin/delete-user] Cloudinary cleanup error:", err)
+    );
+  }
+
+  await logAdminAction({
+    adminEmail: auth.email,
+    adminRole: auth.role,
+    action: "account_delete",
+    targetEmail,
+    targetName: account.name || "",
+    before: { plan: account.plan || "Free", role: account.role || "user" },
+    after: { deleted: "true" },
+  });
+
+  return NextResponse.json({ success: true });
 }
