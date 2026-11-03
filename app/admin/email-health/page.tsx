@@ -170,7 +170,7 @@ export default function EmailHealthPage() {
     else setRefreshing(true);
     setError("");
     try {
-      const res = await fetch(`/api/admin/email-health?period=${period}`);
+      const res = await fetch(`/api/admin/email-health?period=${period}`, silent ? { cache: "reload" } : {});
       if (!res.ok) throw new Error("Failed to load email health data");
       setData(await res.json());
     } catch (e: any) {

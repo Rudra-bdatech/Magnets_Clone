@@ -150,5 +150,5 @@ export async function GET() {
     unknownStatusProUsers: statusMap["unknown"] || 0,
 
     recentConversions: conversions,
-  });
+  }, { headers: { "Cache-Control": "private, max-age=60" } });
 }

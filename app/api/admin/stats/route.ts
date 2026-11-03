@@ -40,5 +40,5 @@ export async function GET() {
     totalLeads,
     byPlan: byPlanMap,
     byRole: byRoleMap,
-  });
+  }, { headers: { "Cache-Control": "private, max-age=60" } });
 }

@@ -144,7 +144,7 @@ export default function RevenuePage() {
     else setRefreshing(true);
     setError("");
     try {
-      const res = await fetch("/api/admin/revenue");
+      const res = await fetch("/api/admin/revenue", silent ? { cache: "reload" } : {});
       if (!res.ok) throw new Error("Failed to load revenue data");
       setData(await res.json());
     } catch (e: any) {

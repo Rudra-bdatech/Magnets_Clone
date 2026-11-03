@@ -165,6 +165,7 @@ export async function GET() {
   return NextResponse.json({
     generatedAt: now.toISOString(),
 
+
     sequenceCron: {
       status: sequenceCronStatus,
       cronLastRunAt: lastSentAt,
@@ -195,5 +196,5 @@ export async function GET() {
       activeCount: sslActiveCount,
       failedDomains: sslFailed,
     },
-  });
+  }, { headers: { "Cache-Control": "private, max-age=60" } });
 }

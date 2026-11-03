@@ -165,5 +165,5 @@ export async function GET(request: NextRequest) {
     problems,
     failedSequences,
     pendingLeads,
-  });
+  }, { headers: { "Cache-Control": "private, max-age=60" } });
 }

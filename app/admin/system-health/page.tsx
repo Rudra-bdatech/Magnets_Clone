@@ -173,7 +173,7 @@ export default function SystemHealthPage() {
     else setRefreshing(true);
     setError("");
     try {
-      const res = await fetch("/api/admin/system-health");
+      const res = await fetch("/api/admin/system-health", silent ? { cache: "reload" } : {});
       if (!res.ok) throw new Error("Failed to load system health");
       setData(await res.json());
     } catch (e: any) {

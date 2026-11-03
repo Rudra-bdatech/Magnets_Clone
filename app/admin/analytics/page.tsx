@@ -148,7 +148,7 @@ export default function AnalyticsPage() {
     else setRefreshing(true);
     setError("");
     try {
-      const res = await fetch("/api/admin/analytics");
+      const res = await fetch("/api/admin/analytics", silent ? { cache: "reload" } : {});
       if (!res.ok) throw new Error("Failed to load analytics");
       setData(await res.json());
     } catch (e: any) {

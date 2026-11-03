@@ -175,5 +175,5 @@ export async function GET() {
       template: t._id || "classic",
       count: t.count,
     })),
-  });
+  }, { headers: { "Cache-Control": "private, max-age=60" } });
 }
