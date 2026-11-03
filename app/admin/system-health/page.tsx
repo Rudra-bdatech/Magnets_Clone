@@ -14,6 +14,7 @@ interface SequenceCron {
   status: "healthy" | "warn" | "stale" | "unknown";
   lastSentAt: string | null;
   lastSentMinutesAgo: number | null;
+  cronLastRunAt: string | null;
   overdueLeads: number;
   staleLockedLeads: number;
   currentlyLockedLeads: number;
@@ -259,9 +260,8 @@ export default function SystemHealthPage() {
             title="Sequence Drip Processor"
             icon={Mail}
             status={seqStatus}
-            lastRunLabel="Last email sent"
-            lastRunValue={timeAgo(sc.lastSentAt)}
-            note="Last-run time is inferred from the most recent sent EmailEvent — the cron doesn't store its run log in the database."
+            lastRunLabel="Last run"
+            lastRunValue={timeAgo(sc.cronLastRunAt)}
           >
             <div className="space-y-2 mt-2">
               {[

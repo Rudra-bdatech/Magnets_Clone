@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { dbConnect } from "@/lib/mongodb";
 import { isAuthorizedCronRequest } from "@/lib/cron-auth";
 import { emailLinkBaseUrl, signDownloadLinks } from "@/lib/magnet-access";
-import { LeadModel, MagnetPageModel, AccountModel, EmailEventModel } from "@/lib/models";
+import { LeadModel, MagnetPageModel, AccountModel, EmailEventModel, CronLogModel } from "@/lib/models";
 import { sendMail } from "@/lib/email";
 import { parseFlexibleDate } from "@/lib/utils";
 import { getPlanLimits } from "@/lib/plan-limits";
@@ -465,6 +465,13 @@ export async function GET(req: NextRequest) {
     }
 
     if (debugLogs.length > 0) console.log("[cron/process-sequences]", JSON.stringify(debugLogs));
+
+    // Record run timestamp for the admin System Health panel — fire-and-forget, never blocks
+    CronLogModel.updateOne(
+      { name: "process-sequences" },
+      { $set: { lastRunAt: new Date(), lastStatus: "ok" } },
+      { upsert: true }
+    ).catch(() => {});
 
     return NextResponse.json({
       success: true,

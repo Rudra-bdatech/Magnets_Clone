@@ -371,6 +371,13 @@ AuditLogSchema.index({ createdAt: -1 });
 AuditLogSchema.index({ adminEmail: 1, createdAt: -1 });
 AuditLogSchema.index({ targetEmail: 1, createdAt: -1 });
 
+// CronLog Schema — one document per cron job, updated by the cron route itself on every run
+const CronLogSchema = new Schema({
+  name:       { type: String, required: true, unique: true },
+  lastRunAt:  { type: Date, default: null },
+  lastStatus: { type: String, default: "ok" },
+});
+
 if (process.env.NODE_ENV === "development") {
   delete (mongoose.models as any).Account;
   delete (mongoose.models as any).MagnetPage;
@@ -381,6 +388,7 @@ if (process.env.NODE_ENV === "development") {
   delete (mongoose.models as any).EmailEvent;
   delete (mongoose.models as any).PdfOtp;
   delete (mongoose.models as any).AuditLog;
+  delete (mongoose.models as any).CronLog;
 }
 
 export const AccountModel = mongoose.models.Account || mongoose.model("Account", AccountSchema);
@@ -390,3 +398,4 @@ export const SequenceModel = mongoose.models.Sequence || mongoose.model("Sequenc
 export const IntegrationModel = mongoose.models.Integration || mongoose.model("Integration", IntegrationSchema);
 export const PdfOtpModel = mongoose.models.PdfOtp || mongoose.model("PdfOtp", PdfOtpSchema);
 export const AuditLogModel = mongoose.models.AuditLog || mongoose.model("AuditLog", AuditLogSchema);
+export const CronLogModel = mongoose.models.CronLog || mongoose.model("CronLog", CronLogSchema);

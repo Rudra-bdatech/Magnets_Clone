@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { dbConnect } from "@/lib/mongodb";
-import { LeadModel, AccountModel, EmailEventModel } from "@/lib/models";
+import { LeadModel, AccountModel, EmailEventModel, CronLogModel } from "@/lib/models";
 import { requireAdmin, isAdminSession } from "@/lib/admin-auth";
 
 export async function GET() {
@@ -13,7 +13,7 @@ export async function GET() {
 
   const [
     // Sequence cron signals
-    lastEmailEvent,
+    cronLog,
     overdueLeads,
     staleLockedLeads,
     currentlyLockedLeads,
@@ -35,11 +35,8 @@ export async function GET() {
     // General queue size
     activeSequenceLeads,
   ] = await Promise.all([
-    // Last time the sequence cron successfully sent an email
-    EmailEventModel.findOne(
-      { eventType: "sent" },
-      { createdAt: 1 }
-    ).sort({ createdAt: -1 }).lean(),
+    // Last time the sequence cron ran (written by the cron route itself)
+    CronLogModel.findOne({ name: "process-sequences" }, { lastRunAt: 1 }).lean(),
 
     // Leads that are due but haven't been processed (seqNextAt is in the past)
     LeadModel.countDocuments({
@@ -116,8 +113,8 @@ export async function GET() {
 
   // Infer sequence cron health from lead queue state.
   // Key rule: overdue leads = 0 means the cron is keeping up perfectly, regardless of
-  // when the last email was sent (the queue may simply have been empty).
-  const lastSentAt = (lastEmailEvent as any)?.createdAt ?? null;
+  // when the last run was (the queue may simply have been empty).
+  const lastSentAt = (cronLog as any)?.lastRunAt ?? null;
   let sequenceCronStatus: "healthy" | "warn" | "stale" | "unknown" = "unknown";
   let lastSentMinutesAgo: number | null = null;
 
@@ -170,6 +167,7 @@ export async function GET() {
 
     sequenceCron: {
       status: sequenceCronStatus,
+      cronLastRunAt: lastSentAt,
       lastSentAt,
       lastSentMinutesAgo,
       overdueLeads,
