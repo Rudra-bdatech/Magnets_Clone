@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Users, LayoutDashboard, Shield, ArrowLeft, TrendingUp, Layers, BarChart2 } from "lucide-react";
+import { Users, LayoutDashboard, Shield, ArrowLeft, TrendingUp, Layers, BarChart2, Mail } from "lucide-react";
 
 const NAV = [
   { href: "/admin", label: "Overview", icon: LayoutDashboard, exact: true },
@@ -10,6 +10,7 @@ const NAV = [
   { href: "/admin/funnels", label: "Funnels", icon: Layers },
   { href: "/admin/revenue", label: "Revenue", icon: TrendingUp },
   { href: "/admin/analytics", label: "Analytics", icon: BarChart2 },
+  { href: "/admin/email-health", label: "Email Health", icon: Mail },
   { href: "/admin/audit-log", label: "Audit Log", icon: Shield },
 ];
 
