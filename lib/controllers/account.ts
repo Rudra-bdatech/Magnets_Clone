@@ -585,8 +585,9 @@ export async function handleLogin(data: any) {
 
   if (needsRehash) {
     account.password = await hashPassword(password);
-    await account.save();
   }
+  account.lastLoginAt = new Date();
+  await account.save();
 
   // Set the HttpOnly session cookie right here — identity is verified above.
   // Sensitive fields (password, tokens, LinkedIn session cookies) are completely sanitized.

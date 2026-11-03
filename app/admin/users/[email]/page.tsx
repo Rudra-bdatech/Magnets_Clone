@@ -92,6 +92,9 @@ interface Stats {
   sequenceCount: number;
   resourceCount: number;
   storageBytes: number;
+  lastLoginAt: string | null;
+  lastFunnelCreatedAt: string | null;
+  lastLeadReceivedAt: string | null;
 }
 
 const PLANS = ["Free", "Pro"];
@@ -689,6 +692,9 @@ export default function AdminUserDetailPage() {
             <h2 className="text-sm font-semibold text-zinc-900 dark:text-white mb-4">Account Info</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
               <Row icon={<Calendar className="w-3.5 h-3.5" />} label="Joined" value={user.joinedAt ? new Date(user.joinedAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" }) : "—"} />
+              <Row icon={<Calendar className="w-3.5 h-3.5 text-blue-500" />} label="Last Login" value={stats.lastLoginAt ? new Date(stats.lastLoginAt).toLocaleString("en-IN", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit", hour12: true }) : "Never"} />
+              <Row icon={<FileText className="w-3.5 h-3.5 text-violet-500" />} label="Last Funnel Created" value={stats.lastFunnelCreatedAt ? new Date(stats.lastFunnelCreatedAt).toLocaleString("en-IN", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit", hour12: true }) : "—"} />
+              <Row icon={<Users className="w-3.5 h-3.5 text-emerald-500" />} label="Last Lead Received" value={stats.lastLeadReceivedAt ? new Date(stats.lastLeadReceivedAt).toLocaleString("en-IN", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit", hour12: true }) : "—"} />
               <Row
                 icon={<Mail className="w-3.5 h-3.5" />}
                 label="Email Verified"

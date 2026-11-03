@@ -88,6 +88,11 @@ export const authOptions: NextAuthOptions = {
           return false;
         }
 
+        // Track last login time for existing accounts on every OAuth sign-in
+        if (existing) {
+          await AccountModel.updateOne({ email: cleanEmail }, { $set: { lastLoginAt: new Date() } });
+        }
+
         if (!existing) {
           const baseName = user.name || user.email.split("@")[0];
           const rawUsername = baseName.toLowerCase().replace(/[^a-z0-9]+/g, "").slice(0, 15) || "user";

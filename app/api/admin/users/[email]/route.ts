@@ -50,7 +50,7 @@ export async function GET(
   const [magnets, leads, resources, sequences] = await Promise.all([
     MagnetPageModel.find(
       { userEmail: targetEmail },
-      { id: 1, name: 1, slug: 1, status: 1, views: 1, signups: 1, template: 1, updatedAt: 1, pdfPages: 1, quizFunnelEnabled: 1, _id: 0 }
+      { id: 1, name: 1, slug: 1, status: 1, views: 1, signups: 1, template: 1, createdAt: 1, updatedAt: 1, pdfPages: 1, quizFunnelEnabled: 1, _id: 0 }
     ).sort({ updatedAt: -1 }).lean(),
     LeadModel.find(
       { userEmail: targetEmail },
@@ -79,6 +79,9 @@ export async function GET(
       sequenceCount: sequences.length,
       resourceCount: resources.length,
       storageBytes: (resources as any[]).reduce((sum: number, r: any) => sum + (r.size || 0), 0),
+      lastLoginAt: account.lastLoginAt ?? null,
+      lastFunnelCreatedAt: (magnets as any[]).length > 0 ? (magnets as any[])[0].createdAt ?? (magnets as any[])[0].updatedAt ?? null : null,
+      lastLeadReceivedAt: (leads as any[]).length > 0 ? (leads as any[])[0].signedUpAt ?? null : null,
     },
     magnets,
     leads,
