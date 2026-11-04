@@ -12,6 +12,7 @@ const PRO_ITEM_PRICE_IDS = new Set<string>([
   PLAN_PRICING.PRO_INR.itemPriceId,
   PLAN_PRICING.PRO_USD.itemPriceId,
   "funnels-custom-domain",
+  "funnels-custom-domain-INR",
   "funnels-pro-domain-onetime",
   "pro-lifetime-4999-INR",
 ]);
