@@ -67,12 +67,22 @@ export default function AdminShell({
         window.requestAnimationFrame(() => {
           const mainEl = mainRef.current;
           const isDesktop = window.innerWidth >= 768;
-          const scrollY =
-            isDesktop && mainEl
-              ? mainEl.scrollTop
-              : (window.scrollY || document.documentElement.scrollTop || 0);
 
-          setIsScrolled(scrollY > 20);
+          if (isDesktop) {
+            const scrollY = mainEl ? mainEl.scrollTop : 0;
+            setIsScrolled(scrollY > 40);
+          } else {
+            // Mobile: detect the exact pixel moment the page's large h1 header slides completely behind the 48px sticky navbar
+            const h1El = mainEl?.querySelector("h1");
+            if (h1El) {
+              const rect = h1El.getBoundingClientRect();
+              setIsScrolled(rect.bottom <= 48);
+            } else {
+              const scrollY = window.scrollY || document.documentElement.scrollTop || 0;
+              setIsScrolled(scrollY > 45);
+            }
+          }
+
           ticking = false;
         });
         ticking = true;
