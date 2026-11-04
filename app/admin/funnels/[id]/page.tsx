@@ -36,7 +36,6 @@ interface FunnelDetail {
   pdfPageCount: number;
   pdfFreePages: number;
   pdfTitle: string;
-  pdfUrl: string;
   sequenceEnabled: boolean;
   afterSignupOption: string;
   destinationUrl: string;
@@ -305,21 +304,6 @@ export default function FunnelDetailPage() {
                     </span>
                   }
                 />
-                {funnel.pdfUrl && (
-                  <InfoRow
-                    label="PDF File"
-                    value={
-                      <a
-                        href={funnel.pdfUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-[#0066B2] dark:text-[#38BDF8] hover:underline flex items-center gap-1"
-                      >
-                        Open PDF <ExternalLink className="w-3 h-3 shrink-0" />
-                      </a>
-                    }
-                  />
-                )}
               </>
             )}
             {funnel.hasVariantB && (
