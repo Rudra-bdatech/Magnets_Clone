@@ -1246,7 +1246,7 @@ export default function AdminUsersPage() {
                 animate={{ y: 0, opacity: 1 }}
                 exit={{ y: "100%", opacity: 0 }}
                 transition={{ type: "spring", damping: 30, stiffness: 350 }}
-                className="relative z-10 bg-white dark:bg-[#1C1C1F] rounded-t-3xl sm:rounded-2xl shadow-2xl w-full max-w-sm p-5 pb-8 sm:p-6 border-t sm:border border-zinc-200 dark:border-white/10"
+                className="relative z-10 bg-white dark:bg-[#1C1C1F] rounded-t-3xl sm:rounded-2xl shadow-2xl w-full max-w-full sm:max-w-md p-5 pb-8 sm:p-6 border-t sm:border border-zinc-200 dark:border-white/10"
               >
                 <div className="sm:hidden w-10 h-1 bg-zinc-300 dark:bg-white/20 rounded-full mx-auto mb-3" />
                 <div className="flex items-center gap-3 mb-4">
