@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { Search, ChevronLeft, ChevronRight, Check, X, AlertTriangle, ChevronDown } from "lucide-react";
+import { Search, ChevronLeft, ChevronRight, Check, X, AlertTriangle, ChevronDown, Calendar } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface AdminUser {
@@ -197,6 +197,184 @@ function FilterSelect({
   );
 }
 
+const DATE_PRESETS = [
+  { value: "", label: "All Time" },
+  { value: "7d", label: "Last 7 Days" },
+  { value: "30d", label: "Last 30 Days" },
+  { value: "90d", label: "Last 90 Days" },
+];
+
+/** Date range filter dropdown with quick presets and custom start/end date inputs */
+function DateRangeFilter({
+  dateRange,
+  startDate,
+  endDate,
+  onChange,
+}: {
+  dateRange: string;
+  startDate: string;
+  endDate: string;
+  onChange: (range: string, start?: string, end?: string) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const [tempStart, setTempStart] = useState(startDate);
+  const [tempEnd, setTempEnd] = useState(endDate);
+  const ref = useRef<HTMLDivElement>(null);
+  useClickOutside(ref, () => setOpen(false));
+
+  useEffect(() => {
+    setTempStart(startDate);
+    setTempEnd(endDate);
+  }, [startDate, endDate, open]);
+
+  // Compute button label
+  let displayLabel = "All Time";
+  if (dateRange === "7d") displayLabel = "Last 7 Days";
+  else if (dateRange === "30d") displayLabel = "Last 30 Days";
+  else if (dateRange === "90d") displayLabel = "Last 90 Days";
+  else if (dateRange === "custom" && (startDate || endDate)) {
+    const s = startDate ? new Date(startDate).toLocaleDateString("en-US", { month: "short", day: "numeric" }) : "";
+    const e = endDate ? new Date(endDate).toLocaleDateString("en-US", { month: "short", day: "numeric" }) : "";
+    displayLabel = s && e ? `${s} – ${e}` : s ? `From ${s}` : `Until ${e}`;
+  }
+
+  const isFiltered = Boolean(dateRange);
+
+  return (
+    <div ref={ref} className="relative shrink-0">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className={`flex h-9 items-center gap-2 rounded-xl border px-3 text-xs sm:text-sm font-medium transition shadow-xs cursor-pointer select-none ${
+          isFiltered
+            ? "border-[#0066B2]/40 bg-[#0066B2]/10 text-[#0066B2] dark:border-[#38BDF8]/40 dark:bg-[#38BDF8]/15 dark:text-[#38BDF8]"
+            : "border-zinc-200 dark:border-white/10 bg-white dark:bg-[#1C1C1F] text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-white/5"
+        }`}
+      >
+        <Calendar className="w-3.5 h-3.5 text-zinc-400 shrink-0" />
+        <span className="truncate max-w-[130px] sm:max-w-none">{displayLabel}</span>
+        {isFiltered ? (
+          <span
+            onClick={(e) => {
+              e.stopPropagation();
+              onChange("", "", "");
+              setOpen(false);
+            }}
+            className="rounded-full hover:bg-black/10 dark:hover:bg-white/10 p-0.5 ml-0.5"
+            title="Clear date filter"
+          >
+            <X className="w-3 h-3 text-current" />
+          </span>
+        ) : (
+          <ChevronDown
+            className={`w-3.5 h-3.5 text-zinc-400 transition-transform duration-150 ${
+              open ? "rotate-180" : ""
+            }`}
+          />
+        )}
+      </button>
+
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.96, y: -6 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.96, y: -4 }}
+            transition={{ type: "spring", damping: 28, stiffness: 400 }}
+            style={{ transformOrigin: "top right" }}
+            className="absolute right-0 top-full z-50 mt-1.5 w-64 sm:w-72 max-w-[calc(100vw-2rem)] rounded-2xl border border-zinc-200/80 bg-white/95 p-2 shadow-2xl backdrop-blur-xl dark:border-white/10 dark:bg-[#171717]/95"
+          >
+            {/* Quick Presets */}
+            <div className="space-y-0.5">
+              {DATE_PRESETS.map((preset) => {
+                const active = dateRange === preset.value;
+                return (
+                  <button
+                    key={preset.value}
+                    type="button"
+                    onClick={() => {
+                      onChange(preset.value, "", "");
+                      setOpen(false);
+                    }}
+                    className={`flex w-full items-center justify-between gap-2 rounded-xl px-2.5 py-2 text-xs font-medium transition-all cursor-pointer ${
+                      active
+                        ? "bg-[#0066B2]/10 text-[#0066B2] font-semibold dark:bg-[#38BDF8]/15 dark:text-[#38BDF8]"
+                        : "text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-white/5"
+                    }`}
+                  >
+                    <span>{preset.label}</span>
+                    {active && <Check className="w-3.5 h-3.5 shrink-0" />}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Custom Range Section */}
+            <div className="mt-2 pt-2 border-t border-zinc-100 dark:border-white/[0.08]">
+              <div className="px-2 py-1 text-[11px] font-bold text-zinc-400 uppercase tracking-wider mb-1.5">
+                Custom Range
+              </div>
+
+              <div className="space-y-2 px-1">
+                <div>
+                  <label className="text-[10px] text-zinc-500 dark:text-zinc-400 block mb-0.5 font-medium">
+                    From
+                  </label>
+                  <input
+                    type="date"
+                    value={tempStart}
+                    onChange={(e) => setTempStart(e.target.value)}
+                    className="w-full text-xs px-2.5 py-1.5 rounded-lg border border-zinc-200 dark:border-white/10 bg-zinc-50 dark:bg-white/[0.04] text-zinc-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-[#0066B2] dark:[color-scheme:dark]"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-[10px] text-zinc-500 dark:text-zinc-400 block mb-0.5 font-medium">
+                    To
+                  </label>
+                  <input
+                    type="date"
+                    value={tempEnd}
+                    onChange={(e) => setTempEnd(e.target.value)}
+                    className="w-full text-xs px-2.5 py-1.5 rounded-lg border border-zinc-200 dark:border-white/10 bg-zinc-50 dark:bg-white/[0.04] text-zinc-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-[#0066B2] dark:[color-scheme:dark]"
+                  />
+                </div>
+
+                <div className="flex items-center gap-2 pt-1">
+                  <button
+                    type="button"
+                    disabled={!tempStart && !tempEnd}
+                    onClick={() => {
+                      if (!tempStart && !tempEnd) return;
+                      onChange("custom", tempStart, tempEnd);
+                      setOpen(false);
+                    }}
+                    className="flex-1 py-1.5 px-3 rounded-lg bg-[#0066B2] text-white text-xs font-semibold hover:bg-[#005596] disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
+                  >
+                    Apply Range
+                  </button>
+                  {dateRange === "custom" && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        onChange("", "", "");
+                        setOpen(false);
+                      }}
+                      className="py-1.5 px-2.5 rounded-lg text-xs font-medium text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-colors cursor-pointer"
+                    >
+                      Reset
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
 export default function AdminUsersPage() {
   const router = useRouter();
   const [users, setUsers] = useState<AdminUser[]>([]);
@@ -206,6 +384,9 @@ export default function AdminUsersPage() {
   const [search, setSearch] = useState("");
   const [planFilter, setPlanFilter] = useState("");
   const [roleFilter, setRoleFilter] = useState("");
+  const [dateFilter, setDateFilter] = useState("");
+  const [customStartDate, setCustomStartDate] = useState("");
+  const [customEndDate, setCustomEndDate] = useState("");
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState<string | null>(null);
   const [error, setError] = useState("");
@@ -220,6 +401,9 @@ export default function AdminUsersPage() {
         ...(search && { search }),
         ...(planFilter && { plan: planFilter }),
         ...(roleFilter && { role: roleFilter }),
+        ...(dateFilter && { dateRange: dateFilter }),
+        ...(customStartDate && { startDate: customStartDate }),
+        ...(customEndDate && { endDate: customEndDate }),
       });
       const res = await fetch(`/api/admin/users?${params}`);
       if (!res.ok) throw new Error("Failed to load users");
@@ -232,7 +416,7 @@ export default function AdminUsersPage() {
     } finally {
       setLoading(false);
     }
-  }, [page, search, planFilter, roleFilter]);
+  }, [page, search, planFilter, roleFilter, dateFilter, customStartDate, customEndDate]);
 
   useEffect(() => {
     const t = setTimeout(fetchUsers, search ? 300 : 0);
@@ -276,24 +460,24 @@ export default function AdminUsersPage() {
   const end = Math.min(page * 25, total);
 
   return (
-    <div className="p-6 max-w-7xl mx-auto">
-      <div className="mb-6">
-        <h1 className="text-xl font-semibold text-zinc-900 dark:text-white">Users</h1>
-        <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-0.5">
-          {total > 0 ? `${total.toLocaleString()} total` : "Loading..."}
+    <div className="p-3.5 sm:p-6 max-w-7xl mx-auto">
+      <div className="mb-5 sm:mb-6">
+        <h1 className="text-xl sm:text-2xl font-bold text-zinc-900 dark:text-white tracking-tight">Users</h1>
+        <p className="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 mt-0.5">
+          {total > 0 ? `${total.toLocaleString()} total accounts` : "Loading users..."}
         </p>
       </div>
 
       {/* Filters */}
-      <div className="flex flex-wrap gap-3 mb-4">
-        <div className="relative flex-1 min-w-56">
+      <div className="flex flex-wrap gap-2.5 sm:gap-3 mb-4">
+        <div className="relative flex-1 min-w-44 sm:min-w-56">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 pointer-events-none" />
           <input
             type="text"
             placeholder="Search by name or email…"
             value={search}
             onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-            className="w-full pl-9 pr-3 py-2 text-sm border border-zinc-200 dark:border-white/10 rounded-xl bg-white dark:bg-[#1C1C1F] text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-600 focus:outline-none focus:ring-2 focus:ring-[#0066B2] focus:border-transparent"
+            className="w-full pl-9 pr-3 py-2 text-sm border border-zinc-200 dark:border-white/10 rounded-xl bg-white dark:bg-[#1C1C1F] text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-600 focus:outline-none focus:ring-2 focus:ring-[#0066B2] focus:border-transparent shadow-xs"
           />
         </div>
 
@@ -309,6 +493,18 @@ export default function AdminUsersPage() {
           placeholder="All Roles"
           options={ROLES}
           onChange={(v) => { setRoleFilter(v); setPage(1); }}
+        />
+
+        <DateRangeFilter
+          dateRange={dateFilter}
+          startDate={customStartDate}
+          endDate={customEndDate}
+          onChange={(range, start, end) => {
+            setDateFilter(range);
+            setCustomStartDate(start || "");
+            setCustomEndDate(end || "");
+            setPage(1);
+          }}
         />
       </div>
 
@@ -348,7 +544,7 @@ export default function AdminUsersPage() {
                 ))
               ) : users.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="px-4 py-12 text-center text-sm text-zinc-400 dark:text-zinc-500">
+                  <td colSpan={9} className="px-4 py-12 text-center text-sm text-zinc-400 dark:text-zinc-500">
                     No users found
                   </td>
                 </tr>

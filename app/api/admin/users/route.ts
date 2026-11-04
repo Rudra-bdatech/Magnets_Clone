@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import mongoose from "mongoose";
 import { dbConnect } from "@/lib/mongodb";
 import { AccountModel, MagnetPageModel, LeadModel, ResourceModel } from "@/lib/models";
 import { requireAdmin, isAdminSession } from "@/lib/admin-auth";
@@ -17,6 +18,9 @@ export async function GET(request: NextRequest) {
   const search = searchParams.get("search")?.trim() || "";
   const planFilter = searchParams.get("plan") || "";
   const roleFilter = searchParams.get("role") || "";
+  const dateRange = searchParams.get("dateRange") || "";
+  const startDateStr = searchParams.get("startDate") || "";
+  const endDateStr = searchParams.get("endDate") || "";
 
   const query: Record<string, any> = {};
   if (search) {
@@ -27,6 +31,42 @@ export async function GET(request: NextRequest) {
   }
   if (planFilter) query.plan = planFilter;
   if (roleFilter) query.role = roleFilter;
+
+  // Date Range Filtering using ObjectId timestamp encoding
+  let startDate: Date | null = null;
+  let endDate: Date | null = null;
+
+  if (dateRange === "7d") {
+    startDate = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+  } else if (dateRange === "30d") {
+    startDate = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+  } else if (dateRange === "90d") {
+    startDate = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000);
+  } else if (dateRange === "custom") {
+    if (startDateStr) startDate = new Date(startDateStr);
+    if (endDateStr) {
+      endDate = new Date(endDateStr);
+      endDate.setHours(23, 59, 59, 999);
+    }
+  }
+
+  function dateToObjectId(date: Date, padHex: string): mongoose.Types.ObjectId {
+    const timestamp = Math.floor(date.getTime() / 1000);
+    const hex = timestamp.toString(16).padStart(8, "0") + padHex;
+    return new mongoose.Types.ObjectId(hex);
+  }
+
+  if (startDate && endDate) {
+    const minId = dateToObjectId(startDate, "0000000000000000");
+    const maxId = dateToObjectId(endDate, "ffffffffffffffff");
+    query._id = { $gte: minId, $lte: maxId };
+  } else if (startDate) {
+    const minId = dateToObjectId(startDate, "0000000000000000");
+    query._id = { $gte: minId };
+  } else if (endDate) {
+    const maxId = dateToObjectId(endDate, "ffffffffffffffff");
+    query._id = { $lte: maxId };
+  }
 
   const projection = {
     email: 1, name: 1, plan: 1, role: 1, paymentStatus: 1, paymentProvider: 1,
