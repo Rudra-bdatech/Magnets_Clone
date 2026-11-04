@@ -72,16 +72,27 @@ function RowSelect({
   colorMap,
   onChange,
   disabled,
+  title = "Select Option",
 }: {
   value: string;
   options: string[];
   colorMap: Record<string, string>;
   onChange: (v: string) => void;
   disabled?: boolean;
+  title?: string;
 }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   useClickOutside(ref, () => setOpen(false));
+
+  useEffect(() => {
+    if (open && typeof window !== "undefined" && window.innerWidth < 640) {
+      document.body.style.overflow = "hidden";
+      return () => {
+        document.body.style.overflow = "";
+      };
+    }
+  }, [open]);
 
   return (
     <div ref={ref} className="relative inline-block">
@@ -94,32 +105,87 @@ function RowSelect({
         {value}
         <ChevronDown className={`w-3 h-3 transition-transform duration-150 ${open ? "rotate-180" : ""}`} />
       </button>
+
       <AnimatePresence>
         {open && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: -4 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: -4 }}
-            transition={{ type: "spring", damping: 28, stiffness: 400 }}
-            style={{ transformOrigin: "top left" }}
-            className="absolute left-0 top-full z-50 mt-1.5 min-w-[130px] rounded-xl border border-zinc-200/80 bg-white/95 p-1 shadow-2xl backdrop-blur-xl dark:border-white/10 dark:bg-[#171717]/95"
-          >
-            {options.map((opt) => (
-              <button
-                key={opt}
-                type="button"
-                onClick={(e) => { e.stopPropagation(); onChange(opt); setOpen(false); }}
-                className={`flex w-full items-center justify-between gap-2 rounded-lg px-2.5 py-1.5 text-xs font-medium transition-all cursor-pointer ${
-                  value === opt
-                    ? "bg-[#0066B2]/10 text-[#0066B2] font-semibold dark:bg-[#38BDF8]/15 dark:text-[#38BDF8]"
-                    : "text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-white/5"
-                }`}
-              >
-                {opt}
-                {value === opt && <Check className="w-3 h-3 shrink-0" />}
-              </button>
-            ))}
-          </motion.div>
+          <>
+            {/* Mobile Sheet Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={(e) => { e.stopPropagation(); setOpen(false); }}
+              className="sm:hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-xs"
+            />
+
+            {/* Mobile Bottom Sheet (< sm) */}
+            <motion.div
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "100%" }}
+              transition={{ type: "spring", damping: 30, stiffness: 350 }}
+              onClick={(e) => e.stopPropagation()}
+              className="sm:hidden fixed inset-x-0 bottom-0 z-50 rounded-t-3xl bg-white dark:bg-[#1C1C1F] border-t border-zinc-200 dark:border-white/10 p-4 pb-8 shadow-2xl max-h-[80vh] overflow-y-auto"
+            >
+              <div className="w-10 h-1 bg-zinc-300 dark:bg-white/20 rounded-full mx-auto mb-3" />
+              <div className="flex items-center justify-between pb-2 mb-2 border-b border-zinc-100 dark:border-white/[0.08] px-1">
+                <span className="text-sm font-bold text-zinc-900 dark:text-white">
+                  {title}
+                </span>
+                <button
+                  type="button"
+                  onClick={(e) => { e.stopPropagation(); setOpen(false); }}
+                  className="p-1 rounded-lg text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+
+              <div className="space-y-1">
+                {options.map((opt) => (
+                  <button
+                    key={opt}
+                    type="button"
+                    onClick={(e) => { e.stopPropagation(); onChange(opt); setOpen(false); }}
+                    className={`flex w-full items-center justify-between gap-2 rounded-xl px-3.5 py-3 text-sm font-medium transition-colors cursor-pointer ${
+                      value === opt
+                        ? "bg-[#0066B2]/10 text-[#0066B2] font-semibold dark:bg-[#38BDF8]/15 dark:text-[#38BDF8]"
+                        : "text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-white/5"
+                    }`}
+                  >
+                    <span>{opt}</span>
+                    {value === opt && <Check className="w-4 h-4 shrink-0" />}
+                  </button>
+                ))}
+              </div>
+            </motion.div>
+
+            {/* Desktop Anchored Popover (sm:) */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: -4 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: -4 }}
+              transition={{ type: "spring", damping: 28, stiffness: 400 }}
+              style={{ transformOrigin: "top left" }}
+              className="hidden sm:block absolute left-0 top-full z-50 mt-1.5 min-w-[130px] rounded-xl border border-zinc-200/80 bg-white/95 p-1 shadow-2xl backdrop-blur-xl dark:border-white/10 dark:bg-[#171717]/95"
+            >
+              {options.map((opt) => (
+                <button
+                  key={opt}
+                  type="button"
+                  onClick={(e) => { e.stopPropagation(); onChange(opt); setOpen(false); }}
+                  className={`flex w-full items-center justify-between gap-2 rounded-lg px-2.5 py-1.5 text-xs font-medium transition-all cursor-pointer ${
+                    value === opt
+                      ? "bg-[#0066B2]/10 text-[#0066B2] font-semibold dark:bg-[#38BDF8]/15 dark:text-[#38BDF8]"
+                      : "text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-white/5"
+                  }`}
+                >
+                  {opt}
+                  {value === opt && <Check className="w-3 h-3 shrink-0" />}
+                </button>
+              ))}
+            </motion.div>
+          </>
         )}
       </AnimatePresence>
     </div>
@@ -141,56 +207,132 @@ function FilterSelect({
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   useClickOutside(ref, () => setOpen(false));
+
+  useEffect(() => {
+    if (open && typeof window !== "undefined" && window.innerWidth < 640) {
+      document.body.style.overflow = "hidden";
+      return () => {
+        document.body.style.overflow = "";
+      };
+    }
+  }, [open]);
+
   const label = value || placeholder;
 
   return (
-    <div ref={ref} className="relative shrink-0">
+    <div ref={ref} className="relative shrink-0 w-full sm:w-auto">
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="flex h-9 items-center gap-2 rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#1C1C1F] px-3 text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-white/5 transition shadow-xs cursor-pointer select-none"
+        className="w-full sm:w-auto flex h-9 items-center justify-between sm:justify-start gap-1.5 sm:gap-2 rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#1C1C1F] px-2.5 sm:px-3 text-xs sm:text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-white/5 transition shadow-xs cursor-pointer select-none"
       >
-        <span>{label}</span>
-        <ChevronDown className={`w-3.5 h-3.5 text-zinc-400 transition-transform duration-150 ${open ? "rotate-180" : ""}`} />
+        <span className="truncate">{label}</span>
+        <ChevronDown className={`w-3.5 h-3.5 text-zinc-400 shrink-0 transition-transform duration-150 ${open ? "rotate-180" : ""}`} />
       </button>
+
       <AnimatePresence>
         {open && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.96, y: -6 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.96, y: -4 }}
-            transition={{ type: "spring", damping: 28, stiffness: 400 }}
-            style={{ transformOrigin: "top right" }}
-            className="absolute right-0 top-full z-50 mt-1.5 min-w-[140px] rounded-xl border border-zinc-200/80 bg-white/95 p-1 shadow-2xl backdrop-blur-xl dark:border-white/10 dark:bg-[#171717]/95"
-          >
-            <button
-              type="button"
-              onClick={() => { onChange(""); setOpen(false); }}
-              className={`flex w-full items-center justify-between gap-2 rounded-lg px-2.5 py-2 text-xs font-medium transition-all cursor-pointer ${
-                !value
-                  ? "bg-[#0066B2]/10 text-[#0066B2] font-semibold dark:bg-[#38BDF8]/15 dark:text-[#38BDF8]"
-                  : "text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-white/5"
-              }`}
+          <>
+            {/* Mobile Sheet Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setOpen(false)}
+              className="sm:hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-xs"
+            />
+
+            {/* Mobile Bottom Sheet (< sm) */}
+            <motion.div
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "100%" }}
+              transition={{ type: "spring", damping: 30, stiffness: 350 }}
+              className="sm:hidden fixed inset-x-0 bottom-0 z-50 rounded-t-3xl bg-white dark:bg-[#1C1C1F] border-t border-zinc-200 dark:border-white/10 p-4 pb-8 shadow-2xl max-h-[80vh] overflow-y-auto"
             >
-              {placeholder}
-              {!value && <Check className="w-3 h-3 shrink-0" />}
-            </button>
-            {options.map((opt) => (
+              <div className="w-10 h-1 bg-zinc-300 dark:bg-white/20 rounded-full mx-auto mb-3" />
+              <div className="flex items-center justify-between pb-2 mb-2 border-b border-zinc-100 dark:border-white/[0.08] px-1">
+                <span className="text-sm font-bold text-zinc-900 dark:text-white">
+                  {placeholder.replace("All ", "Select ")}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setOpen(false)}
+                  className="p-1 rounded-lg text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+
+              <div className="space-y-1">
+                <button
+                  type="button"
+                  onClick={() => { onChange(""); setOpen(false); }}
+                  className={`flex w-full items-center justify-between gap-2 rounded-xl px-3.5 py-3 text-sm font-medium transition-colors cursor-pointer ${
+                    !value
+                      ? "bg-[#0066B2]/10 text-[#0066B2] font-semibold dark:bg-[#38BDF8]/15 dark:text-[#38BDF8]"
+                      : "text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-white/5"
+                  }`}
+                >
+                  <span>{placeholder}</span>
+                  {!value && <Check className="w-4 h-4 shrink-0" />}
+                </button>
+                {options.map((opt) => (
+                  <button
+                    key={opt}
+                    type="button"
+                    onClick={() => { onChange(opt); setOpen(false); }}
+                    className={`flex w-full items-center justify-between gap-2 rounded-xl px-3.5 py-3 text-sm font-medium transition-colors cursor-pointer ${
+                      value === opt
+                        ? "bg-[#0066B2]/10 text-[#0066B2] font-semibold dark:bg-[#38BDF8]/15 dark:text-[#38BDF8]"
+                        : "text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-white/5"
+                    }`}
+                  >
+                    <span>{opt}</span>
+                    {value === opt && <Check className="w-4 h-4 shrink-0" />}
+                  </button>
+                ))}
+              </div>
+            </motion.div>
+
+            {/* Desktop Anchored Popover (sm:) */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.96, y: -6 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.96, y: -4 }}
+              transition={{ type: "spring", damping: 28, stiffness: 400 }}
+              style={{ transformOrigin: "top right" }}
+              className="hidden sm:block absolute right-0 top-full z-50 mt-1.5 min-w-[140px] rounded-xl border border-zinc-200/80 bg-white/95 p-1 shadow-2xl backdrop-blur-xl dark:border-white/10 dark:bg-[#171717]/95"
+            >
               <button
-                key={opt}
                 type="button"
-                onClick={() => { onChange(opt); setOpen(false); }}
+                onClick={() => { onChange(""); setOpen(false); }}
                 className={`flex w-full items-center justify-between gap-2 rounded-lg px-2.5 py-2 text-xs font-medium transition-all cursor-pointer ${
-                  value === opt
+                  !value
                     ? "bg-[#0066B2]/10 text-[#0066B2] font-semibold dark:bg-[#38BDF8]/15 dark:text-[#38BDF8]"
                     : "text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-white/5"
                 }`}
               >
-                {opt}
-                {value === opt && <Check className="w-3 h-3 shrink-0" />}
+                {placeholder}
+                {!value && <Check className="w-3 h-3 shrink-0" />}
               </button>
-            ))}
-          </motion.div>
+              {options.map((opt) => (
+                <button
+                  key={opt}
+                  type="button"
+                  onClick={() => { onChange(opt); setOpen(false); }}
+                  className={`flex w-full items-center justify-between gap-2 rounded-lg px-2.5 py-2 text-xs font-medium transition-all cursor-pointer ${
+                    value === opt
+                      ? "bg-[#0066B2]/10 text-[#0066B2] font-semibold dark:bg-[#38BDF8]/15 dark:text-[#38BDF8]"
+                      : "text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-white/5"
+                  }`}
+                >
+                  {opt}
+                  {value === opt && <Check className="w-3 h-3 shrink-0" />}
+                </button>
+              ))}
+            </motion.div>
+          </>
         )}
       </AnimatePresence>
     </div>
@@ -227,6 +369,15 @@ function DateRangeFilter({
     setTempEnd(endDate);
   }, [startDate, endDate, open]);
 
+  useEffect(() => {
+    if (open && typeof window !== "undefined" && window.innerWidth < 640) {
+      document.body.style.overflow = "hidden";
+      return () => {
+        document.body.style.overflow = "";
+      };
+    }
+  }, [open]);
+
   // Compute button label
   let displayLabel = "All Time";
   if (dateRange === "7d") displayLabel = "Last 7 Days";
@@ -245,14 +396,18 @@ function DateRangeFilter({
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className={`flex h-9 items-center gap-2 rounded-xl border px-3 text-xs sm:text-sm font-medium transition shadow-xs cursor-pointer select-none ${
+        title={isFiltered ? `Date: ${displayLabel}` : "Filter by date"}
+        className={`flex h-9 items-center justify-center gap-1.5 sm:gap-2 rounded-xl border px-2.5 sm:px-3 text-xs sm:text-sm font-medium transition shadow-xs cursor-pointer select-none shrink-0 ${
           isFiltered
             ? "border-[#0066B2]/40 bg-[#0066B2]/10 text-[#0066B2] dark:border-[#38BDF8]/40 dark:bg-[#38BDF8]/15 dark:text-[#38BDF8]"
             : "border-zinc-200 dark:border-white/10 bg-white dark:bg-[#1C1C1F] text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-white/5"
         }`}
       >
-        <Calendar className="w-3.5 h-3.5 text-zinc-400 shrink-0" />
-        <span className="truncate max-w-[130px] sm:max-w-none">{displayLabel}</span>
+        <Calendar className="w-4 h-4 text-zinc-500 dark:text-zinc-400 shrink-0" />
+        {isFiltered && (
+          <span className="sm:hidden w-1.5 h-1.5 rounded-full bg-[#0066B2] dark:bg-[#38BDF8] shrink-0" />
+        )}
+        <span className="hidden sm:inline truncate max-w-[130px] sm:max-w-none">{displayLabel}</span>
         {isFiltered ? (
           <span
             onClick={(e) => {
@@ -260,14 +415,14 @@ function DateRangeFilter({
               onChange("", "", "");
               setOpen(false);
             }}
-            className="rounded-full hover:bg-black/10 dark:hover:bg-white/10 p-0.5 ml-0.5"
+            className="hidden sm:inline-flex rounded-full hover:bg-black/10 dark:hover:bg-white/10 p-0.5 ml-0.5"
             title="Clear date filter"
           >
             <X className="w-3 h-3 text-current" />
           </span>
         ) : (
           <ChevronDown
-            className={`w-3.5 h-3.5 text-zinc-400 transition-transform duration-150 ${
+            className={`hidden sm:inline-block w-3.5 h-3.5 text-zinc-400 transition-transform duration-150 ${
               open ? "rotate-180" : ""
             }`}
           />
@@ -276,99 +431,219 @@ function DateRangeFilter({
 
       <AnimatePresence>
         {open && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.96, y: -6 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.96, y: -4 }}
-            transition={{ type: "spring", damping: 28, stiffness: 400 }}
-            style={{ transformOrigin: "top right" }}
-            className="absolute right-0 top-full z-50 mt-1.5 w-64 sm:w-72 max-w-[calc(100vw-2rem)] rounded-2xl border border-zinc-200/80 bg-white/95 p-2 shadow-2xl backdrop-blur-xl dark:border-white/10 dark:bg-[#171717]/95"
-          >
-            {/* Quick Presets */}
-            <div className="space-y-0.5">
-              {DATE_PRESETS.map((preset) => {
-                const active = dateRange === preset.value;
-                return (
-                  <button
-                    key={preset.value}
-                    type="button"
-                    onClick={() => {
-                      onChange(preset.value, "", "");
-                      setOpen(false);
-                    }}
-                    className={`flex w-full items-center justify-between gap-2 rounded-xl px-2.5 py-2 text-xs font-medium transition-all cursor-pointer ${
-                      active
-                        ? "bg-[#0066B2]/10 text-[#0066B2] font-semibold dark:bg-[#38BDF8]/15 dark:text-[#38BDF8]"
-                        : "text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-white/5"
-                    }`}
-                  >
-                    <span>{preset.label}</span>
-                    {active && <Check className="w-3.5 h-3.5 shrink-0" />}
-                  </button>
-                );
-              })}
-            </div>
+          <>
+            {/* Mobile Sheet Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setOpen(false)}
+              className="sm:hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-xs"
+            />
 
-            {/* Custom Range Section */}
-            <div className="mt-2 pt-2 border-t border-zinc-100 dark:border-white/[0.08]">
-              <div className="px-2 py-1 text-[11px] font-bold text-zinc-400 uppercase tracking-wider mb-1.5">
-                Custom Range
+            {/* Mobile Bottom Sheet (< sm) - 100% immune to screen width or button wrapping */}
+            <motion.div
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "100%" }}
+              transition={{ type: "spring", damping: 30, stiffness: 350 }}
+              className="sm:hidden fixed inset-x-0 bottom-0 z-50 rounded-t-3xl bg-white dark:bg-[#1C1C1F] border-t border-zinc-200 dark:border-white/10 p-4 pb-8 shadow-2xl max-h-[85vh] overflow-y-auto"
+            >
+              <div className="w-10 h-1 bg-zinc-300 dark:bg-white/20 rounded-full mx-auto mb-3" />
+              <div className="flex items-center justify-between pb-2 mb-3 border-b border-zinc-100 dark:border-white/[0.08] px-1">
+                <span className="text-sm font-bold text-zinc-900 dark:text-white">
+                  Filter by Date
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setOpen(false)}
+                  className="p-1 rounded-lg text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200"
+                >
+                  <X className="w-4 h-4" />
+                </button>
               </div>
 
-              <div className="space-y-2 px-1">
-                <div>
-                  <label className="text-[10px] text-zinc-500 dark:text-zinc-400 block mb-0.5 font-medium">
-                    From
-                  </label>
-                  <input
-                    type="date"
-                    value={tempStart}
-                    onChange={(e) => setTempStart(e.target.value)}
-                    className="w-full text-xs px-2.5 py-1.5 rounded-lg border border-zinc-200 dark:border-white/10 bg-zinc-50 dark:bg-white/[0.04] text-zinc-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-[#0066B2] dark:[color-scheme:dark]"
-                  />
-                </div>
-
-                <div>
-                  <label className="text-[10px] text-zinc-500 dark:text-zinc-400 block mb-0.5 font-medium">
-                    To
-                  </label>
-                  <input
-                    type="date"
-                    value={tempEnd}
-                    onChange={(e) => setTempEnd(e.target.value)}
-                    className="w-full text-xs px-2.5 py-1.5 rounded-lg border border-zinc-200 dark:border-white/10 bg-zinc-50 dark:bg-white/[0.04] text-zinc-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-[#0066B2] dark:[color-scheme:dark]"
-                  />
-                </div>
-
-                <div className="flex items-center gap-2 pt-1">
-                  <button
-                    type="button"
-                    disabled={!tempStart && !tempEnd}
-                    onClick={() => {
-                      if (!tempStart && !tempEnd) return;
-                      onChange("custom", tempStart, tempEnd);
-                      setOpen(false);
-                    }}
-                    className="flex-1 py-1.5 px-3 rounded-lg bg-[#0066B2] text-white text-xs font-semibold hover:bg-[#005596] disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
-                  >
-                    Apply Range
-                  </button>
-                  {dateRange === "custom" && (
+              {/* Presets */}
+              <div className="space-y-1">
+                {DATE_PRESETS.map((preset) => {
+                  const active = dateRange === preset.value;
+                  return (
                     <button
+                      key={preset.value}
                       type="button"
                       onClick={() => {
-                        onChange("", "", "");
+                        onChange(preset.value, "", "");
                         setOpen(false);
                       }}
-                      className="py-1.5 px-2.5 rounded-lg text-xs font-medium text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-colors cursor-pointer"
+                      className={`flex w-full items-center justify-between gap-2 rounded-xl px-3.5 py-3 text-sm font-medium transition-colors cursor-pointer ${
+                        active
+                          ? "bg-[#0066B2]/10 text-[#0066B2] font-semibold dark:bg-[#38BDF8]/15 dark:text-[#38BDF8]"
+                          : "text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-white/5"
+                      }`}
                     >
-                      Reset
+                      <span>{preset.label}</span>
+                      {active && <Check className="w-4 h-4 shrink-0" />}
                     </button>
-                  )}
+                  );
+                })}
+              </div>
+
+              {/* Custom Range Section */}
+              <div className="mt-4 pt-3 border-t border-zinc-100 dark:border-white/[0.08]">
+                <div className="text-[11px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider mb-2 px-1">
+                  Custom Range
+                </div>
+
+                <div className="space-y-3">
+                  <div>
+                    <label className="text-xs text-zinc-500 dark:text-zinc-400 block mb-1 font-medium">
+                      From
+                    </label>
+                    <input
+                      type="date"
+                      value={tempStart}
+                      onChange={(e) => setTempStart(e.target.value)}
+                      className="w-full text-sm px-3 py-2 rounded-xl border border-zinc-200 dark:border-white/10 bg-zinc-50 dark:bg-white/[0.04] text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#0066B2] dark:[color-scheme:dark]"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-xs text-zinc-500 dark:text-zinc-400 block mb-1 font-medium">
+                      To
+                    </label>
+                    <input
+                      type="date"
+                      value={tempEnd}
+                      onChange={(e) => setTempEnd(e.target.value)}
+                      className="w-full text-sm px-3 py-2 rounded-xl border border-zinc-200 dark:border-white/10 bg-zinc-50 dark:bg-white/[0.04] text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#0066B2] dark:[color-scheme:dark]"
+                    />
+                  </div>
+
+                  <div className="flex items-center gap-2 pt-1">
+                    <button
+                      type="button"
+                      disabled={!tempStart && !tempEnd}
+                      onClick={() => {
+                        if (!tempStart && !tempEnd) return;
+                        onChange("custom", tempStart, tempEnd);
+                        setOpen(false);
+                      }}
+                      className="flex-1 py-2.5 px-4 rounded-xl bg-[#0066B2] text-white text-sm font-semibold hover:bg-[#005596] disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
+                    >
+                      Apply Range
+                    </button>
+                    {dateRange === "custom" && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          onChange("", "", "");
+                          setOpen(false);
+                        }}
+                        className="py-2.5 px-3 rounded-xl text-sm font-medium text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-colors cursor-pointer"
+                      >
+                        Reset
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
-          </motion.div>
+            </motion.div>
+
+            {/* Desktop Anchored Popover (sm:) */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.96, y: -6 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.96, y: -4 }}
+              transition={{ type: "spring", damping: 28, stiffness: 400 }}
+              style={{ transformOrigin: "top right" }}
+              className="hidden sm:block absolute right-0 top-full z-50 mt-1.5 w-72 rounded-2xl border border-zinc-200/80 bg-white/95 p-2 shadow-2xl backdrop-blur-xl dark:border-white/10 dark:bg-[#171717]/95"
+            >
+              {/* Quick Presets */}
+              <div className="space-y-0.5">
+                {DATE_PRESETS.map((preset) => {
+                  const active = dateRange === preset.value;
+                  return (
+                    <button
+                      key={preset.value}
+                      type="button"
+                      onClick={() => {
+                        onChange(preset.value, "", "");
+                        setOpen(false);
+                      }}
+                      className={`flex w-full items-center justify-between gap-2 rounded-xl px-2.5 py-2 text-xs font-medium transition-all cursor-pointer ${
+                        active
+                          ? "bg-[#0066B2]/10 text-[#0066B2] font-semibold dark:bg-[#38BDF8]/15 dark:text-[#38BDF8]"
+                          : "text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-white/5"
+                      }`}
+                    >
+                      <span>{preset.label}</span>
+                      {active && <Check className="w-3.5 h-3.5 shrink-0" />}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Custom Range Section */}
+              <div className="mt-2 pt-2 border-t border-zinc-100 dark:border-white/[0.08]">
+                <div className="px-2 py-1 text-[11px] font-bold text-zinc-400 uppercase tracking-wider mb-1.5">
+                  Custom Range
+                </div>
+
+                <div className="space-y-2 px-1">
+                  <div>
+                    <label className="text-[10px] text-zinc-500 dark:text-zinc-400 block mb-0.5 font-medium">
+                      From
+                    </label>
+                    <input
+                      type="date"
+                      value={tempStart}
+                      onChange={(e) => setTempStart(e.target.value)}
+                      className="w-full text-xs px-2.5 py-1.5 rounded-lg border border-zinc-200 dark:border-white/10 bg-zinc-50 dark:bg-white/[0.04] text-zinc-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-[#0066B2] dark:[color-scheme:dark]"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-[10px] text-zinc-500 dark:text-zinc-400 block mb-0.5 font-medium">
+                      To
+                    </label>
+                    <input
+                      type="date"
+                      value={tempEnd}
+                      onChange={(e) => setTempEnd(e.target.value)}
+                      className="w-full text-xs px-2.5 py-1.5 rounded-lg border border-zinc-200 dark:border-white/10 bg-zinc-50 dark:bg-white/[0.04] text-zinc-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-[#0066B2] dark:[color-scheme:dark]"
+                    />
+                  </div>
+
+                  <div className="flex items-center gap-2 pt-1">
+                    <button
+                      type="button"
+                      disabled={!tempStart && !tempEnd}
+                      onClick={() => {
+                        if (!tempStart && !tempEnd) return;
+                        onChange("custom", tempStart, tempEnd);
+                        setOpen(false);
+                      }}
+                      className="flex-1 py-1.5 px-3 rounded-lg bg-[#0066B2] text-white text-xs font-semibold hover:bg-[#005596] disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
+                    >
+                      Apply Range
+                    </button>
+                    {dateRange === "custom" && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          onChange("", "", "");
+                          setOpen(false);
+                        }}
+                        className="py-1.5 px-2.5 rounded-lg text-xs font-medium text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-colors cursor-pointer"
+                      >
+                        Reset
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </>
         )}
       </AnimatePresence>
     </div>
@@ -469,8 +744,8 @@ export default function AdminUsersPage() {
       </div>
 
       {/* Filters */}
-      <div className="flex flex-wrap gap-2.5 sm:gap-3 mb-4">
-        <div className="relative flex-1 min-w-44 sm:min-w-56">
+      <div className="flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3 mb-4">
+        <div className="relative flex-1 min-w-0">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 pointer-events-none" />
           <input
             type="text"
@@ -481,31 +756,37 @@ export default function AdminUsersPage() {
           />
         </div>
 
-        <FilterSelect
-          value={planFilter}
-          placeholder="All Plans"
-          options={PLANS}
-          onChange={(v) => { setPlanFilter(v); setPage(1); }}
-        />
+        <div className="flex items-center gap-2 w-full sm:w-auto">
+          <div className="flex-1 sm:flex-none min-w-0">
+            <FilterSelect
+              value={planFilter}
+              placeholder="All Plans"
+              options={PLANS}
+              onChange={(v) => { setPlanFilter(v); setPage(1); }}
+            />
+          </div>
 
-        <FilterSelect
-          value={roleFilter}
-          placeholder="All Roles"
-          options={ROLES}
-          onChange={(v) => { setRoleFilter(v); setPage(1); }}
-        />
+          <div className="flex-1 sm:flex-none min-w-0">
+            <FilterSelect
+              value={roleFilter}
+              placeholder="All Roles"
+              options={ROLES}
+              onChange={(v) => { setRoleFilter(v); setPage(1); }}
+            />
+          </div>
 
-        <DateRangeFilter
-          dateRange={dateFilter}
-          startDate={customStartDate}
-          endDate={customEndDate}
-          onChange={(range, start, end) => {
-            setDateFilter(range);
-            setCustomStartDate(start || "");
-            setCustomEndDate(end || "");
-            setPage(1);
-          }}
-        />
+          <DateRangeFilter
+            dateRange={dateFilter}
+            startDate={customStartDate}
+            endDate={customEndDate}
+            onChange={(range, start, end) => {
+              setDateFilter(range);
+              setCustomStartDate(start || "");
+              setCustomEndDate(end || "");
+              setPage(1);
+            }}
+          />
+        </div>
       </div>
 
       {error && (
@@ -514,9 +795,163 @@ export default function AdminUsersPage() {
         </div>
       )}
 
-      {/* Table */}
-      <div className="bg-white dark:bg-[#171717] border border-zinc-200 dark:border-white/[0.08] rounded-xl overflow-hidden">
-        <div className="overflow-x-auto">
+      {/* Table & Mobile Card List */}
+      <div className="bg-white dark:bg-[#171717] border border-zinc-200 dark:border-white/[0.08] rounded-2xl overflow-hidden shadow-xs">
+        {/* Mobile Card List (md:hidden) - Full width, zero horizontal scrolling */}
+        <div className="md:hidden divide-y divide-zinc-100 dark:divide-white/[0.06]">
+          {loading ? (
+            Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="p-3.5 space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-9 h-9 rounded-full bg-zinc-100 dark:bg-white/5 animate-pulse shrink-0" />
+                    <div className="space-y-1.5">
+                      <div className="w-28 h-4 bg-zinc-100 dark:bg-white/5 rounded animate-pulse" />
+                      <div className="w-36 h-3 bg-zinc-100 dark:bg-white/5 rounded animate-pulse" />
+                    </div>
+                  </div>
+                  <div className="w-14 h-6 bg-zinc-100 dark:bg-white/5 rounded-lg animate-pulse" />
+                </div>
+                <div className="h-14 bg-zinc-50 dark:bg-white/[0.02] rounded-xl animate-pulse" />
+                <div className="flex justify-between items-center pt-0.5">
+                  <div className="flex gap-2">
+                    <div className="w-16 h-6 bg-zinc-100 dark:bg-white/5 rounded-full animate-pulse" />
+                    <div className="w-16 h-6 bg-zinc-100 dark:bg-white/5 rounded-full animate-pulse" />
+                  </div>
+                  <div className="w-16 h-3 bg-zinc-100 dark:bg-white/5 rounded animate-pulse" />
+                </div>
+              </div>
+            ))
+          ) : users.length === 0 ? (
+            <div className="px-4 py-12 text-center text-sm text-zinc-400 dark:text-zinc-500">
+              No users found
+            </div>
+          ) : (
+            users.map((user) => (
+              <div
+                key={user.email}
+                onClick={() => router.push(`/admin/users/${encodeURIComponent(user.email)}`)}
+                className="p-3.5 hover:bg-[#F0F7FF]/50 dark:hover:bg-white/[0.02] active:bg-[#E2F0FD]/60 dark:active:bg-white/[0.04] transition-colors cursor-pointer space-y-2.5"
+              >
+                {/* Top Row: User Identity Header + Quick Inspect */}
+                <div className="flex items-start justify-between gap-2">
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <div className="w-9 h-9 rounded-full bg-gradient-to-br from-zinc-100 to-zinc-200 dark:from-white/10 dark:to-white/5 text-zinc-700 dark:text-zinc-200 font-bold text-xs flex items-center justify-center shrink-0 border border-zinc-200/60 dark:border-white/10 shadow-xs">
+                      {user.name ? user.name.slice(0, 2).toUpperCase() : "U"}
+                    </div>
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <span className="font-semibold text-sm text-zinc-900 dark:text-white truncate">
+                          {user.name || "Unnamed"}
+                        </span>
+                        {user.emailVerified ? (
+                          <span title="Verified email">
+                            <Check className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+                          </span>
+                        ) : (
+                          <span title="Unverified email">
+                            <X className="w-3.5 h-3.5 text-zinc-400 shrink-0" />
+                          </span>
+                        )}
+                        {user.suspended && (
+                          <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-red-100 text-red-700 dark:bg-red-500/20 dark:text-red-400 shrink-0">
+                            Suspended
+                          </span>
+                        )}
+                      </div>
+                      <div className="text-xs text-zinc-400 dark:text-zinc-500 truncate">
+                        {user.email}
+                      </div>
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      router.push(`/admin/users/${encodeURIComponent(user.email)}`);
+                    }}
+                    className="flex items-center gap-0.5 text-xs font-semibold px-2.5 py-1 rounded-lg bg-[#0066B2]/10 text-[#0066B2] dark:bg-[#0066B2]/20 dark:text-[#38BDF8] hover:bg-[#0066B2] hover:text-white dark:hover:bg-[#0066B2] dark:hover:text-white transition-colors shrink-0"
+                  >
+                    Inspect
+                    <ChevronRight className="w-3 h-3" />
+                  </button>
+                </div>
+
+                {/* Middle Row: 3-Metric Clean Snapshot */}
+                <div className="grid grid-cols-3 gap-1.5 py-2 px-2.5 rounded-xl bg-zinc-50/80 dark:bg-white/[0.03] border border-zinc-100 dark:border-white/[0.05] text-center">
+                  <div>
+                    <div className="text-[10px] uppercase font-bold text-zinc-400 dark:text-zinc-500 tracking-wider">
+                      Leads
+                    </div>
+                    <div className="text-xs font-bold text-zinc-800 dark:text-zinc-200 mt-0.5">
+                      {user.leadCount.toLocaleString()}
+                    </div>
+                  </div>
+                  <div className="border-x border-zinc-200/60 dark:border-white/10">
+                    <div className="text-[10px] uppercase font-bold text-zinc-400 dark:text-zinc-500 tracking-wider">
+                      Funnels
+                    </div>
+                    <div className="text-xs font-bold text-zinc-800 dark:text-zinc-200 mt-0.5">
+                      {user.magnetCount}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-[10px] uppercase font-bold text-zinc-400 dark:text-zinc-500 tracking-wider">
+                      Storage
+                    </div>
+                    <div
+                      className={`text-xs font-bold mt-0.5 ${
+                        user.storageBytes > 500 * 1024 * 1024
+                          ? "text-red-600 dark:text-red-400"
+                          : user.storageBytes > 100 * 1024 * 1024
+                          ? "text-amber-600 dark:text-amber-400"
+                          : "text-zinc-800 dark:text-zinc-200"
+                      }`}
+                    >
+                      {formatBytes(user.storageBytes)}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Bottom Row: Controls (Plan & Role) + Joined Date */}
+                <div className="flex items-center justify-between gap-2 pt-0.5">
+                  <div className="flex items-center gap-1.5 flex-wrap" onClick={(e) => e.stopPropagation()}>
+                    <RowSelect
+                      value={user.plan}
+                      options={PLANS}
+                      colorMap={PLAN_COLORS}
+                      disabled={updating === user.email}
+                      title={`Change Plan for ${user.name || user.email}`}
+                      onChange={(v) => requestChange(user, "plan", v)}
+                    />
+                    <RowSelect
+                      value={user.role}
+                      options={ROLES}
+                      colorMap={ROLE_COLORS}
+                      disabled={updating === user.email}
+                      title={`Change Role for ${user.name || user.email}`}
+                      onChange={(v) => requestChange(user, "role", v)}
+                    />
+                  </div>
+
+                  <div className="text-[11px] text-zinc-400 dark:text-zinc-500 shrink-0">
+                    {user.joinedAt
+                      ? new Date(user.joinedAt).toLocaleDateString("en-IN", {
+                          day: "numeric",
+                          month: "short",
+                          year: "2-digit",
+                        })
+                      : "—"}
+                  </div>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+
+        {/* Desktop Table (hidden md:block) */}
+        <div className="hidden md:block overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-zinc-100 dark:border-white/[0.06] bg-zinc-50/80 dark:bg-white/[0.02]">
@@ -573,6 +1008,7 @@ export default function AdminUsersPage() {
                         options={PLANS}
                         colorMap={PLAN_COLORS}
                         disabled={updating === user.email}
+                        title="Change Plan"
                         onChange={(v) => requestChange(user, "plan", v)}
                       />
                     </td>
@@ -583,6 +1019,7 @@ export default function AdminUsersPage() {
                         options={ROLES}
                         colorMap={ROLE_COLORS}
                         disabled={updating === user.email}
+                        title="Change Role"
                         onChange={(v) => requestChange(user, "role", v)}
                       />
                     </td>
