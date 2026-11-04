@@ -346,7 +346,7 @@ export default function AuditLogPage() {
       </div>
 
       {/* Audit Log Entries Container */}
-      <div className="bg-white dark:bg-[#171717] border border-zinc-200/80 dark:border-white/[0.08] rounded-2xl overflow-hidden shadow-sm">
+      <div className="bg-white/90 dark:bg-[#171717] border border-[#0066B2]/15 dark:border-white/[0.08] rounded-2xl overflow-hidden shadow-md dark:shadow-none backdrop-blur-sm">
         {loading ? (
           <div className="p-4 sm:p-6 space-y-3">
             {Array.from({ length: 6 }).map((_, i) => (

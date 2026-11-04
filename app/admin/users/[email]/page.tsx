@@ -110,7 +110,7 @@ function Badge({ label, active }: { label: string; active: boolean }) {
 
 function StatCard({ label, value }: { label: string; value: number }) {
   return (
-    <div className="bg-white dark:bg-[#171717] border border-zinc-200 dark:border-white/[0.08] rounded-2xl p-3.5 sm:p-4 shadow-xs">
+    <div className="bg-white/90 dark:bg-[#171717] border border-[#0066B2]/15 dark:border-white/[0.08] rounded-2xl p-3.5 sm:p-4 shadow-md dark:shadow-none backdrop-blur-sm">
       <div className="text-xl sm:text-2xl font-bold tracking-tight text-zinc-900 dark:text-white">{value.toLocaleString()}</div>
       <div className="text-[11px] sm:text-xs text-zinc-500 dark:text-zinc-400 mt-0.5 font-medium uppercase tracking-wider">{label}</div>
     </div>
@@ -301,7 +301,7 @@ export default function AdminUserDetailPage() {
       </button>
 
       {/* Header / Identity Bento */}
-      <div className="bg-white dark:bg-[#171717] border border-zinc-200 dark:border-white/[0.08] rounded-2xl p-4 sm:p-5 mb-5 shadow-xs">
+      <div className="bg-white/90 dark:bg-[#171717] border border-[#0066B2]/15 dark:border-white/[0.08] rounded-2xl p-4 sm:p-5 mb-5 shadow-md dark:shadow-none backdrop-blur-sm">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center gap-3 min-w-0">
             <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-[#0066B2]/15 to-[#0066B2]/5 dark:from-[#38BDF8]/20 dark:to-[#38BDF8]/5 text-[#0066B2] dark:text-[#38BDF8] flex items-center justify-center font-bold text-base shrink-0 border border-[#0066B2]/20 dark:border-[#38BDF8]/20 shadow-xs">
@@ -394,7 +394,7 @@ export default function AdminUserDetailPage() {
           <>
             {/* Mobile Tab Switcher (< md) - Apple native segmented pill */}
             <div className="md:hidden mb-5">
-              <div className="flex items-center gap-1.5 p-1 rounded-2xl bg-white dark:bg-[#171717] border border-zinc-200 dark:border-white/[0.08] shadow-xs">
+              <div className="flex items-center gap-1.5 p-1 rounded-2xl bg-white/90 dark:bg-[#171717] border border-[#0066B2]/15 dark:border-white/[0.08] shadow-md dark:shadow-none backdrop-blur-sm">
                 <button
                   type="button"
                   onClick={() => {
@@ -551,7 +551,7 @@ export default function AdminUserDetailPage() {
 
       {/* Tab: Funnels & Landing Pages */}
       {tab === "funnels" && (
-        <div className="bg-white dark:bg-[#171717] border border-zinc-200 dark:border-white/[0.08] rounded-2xl overflow-hidden shadow-xs">
+        <div className="bg-white/90 dark:bg-[#171717] border border-[#0066B2]/15 dark:border-white/[0.08] rounded-2xl overflow-hidden shadow-md dark:shadow-none backdrop-blur-sm">
           {magnets.length === 0 ? (
             <div className="py-16 text-center">
               <FileText className="w-8 h-8 text-zinc-200 dark:text-zinc-700 mx-auto mb-3" />
@@ -693,7 +693,7 @@ export default function AdminUserDetailPage() {
 
       {/* Tab: Sequences */}
       {tab === "sequences" && (
-        <div className="bg-white dark:bg-[#171717] border border-zinc-200 dark:border-white/[0.08] rounded-2xl overflow-hidden shadow-xs">
+        <div className="bg-white/90 dark:bg-[#171717] border border-[#0066B2]/15 dark:border-white/[0.08] rounded-2xl overflow-hidden shadow-md dark:shadow-none backdrop-blur-sm">
           {sequences.length === 0 ? (
             <div className="py-16 text-center">
               <Mail className="w-8 h-8 text-zinc-200 dark:text-zinc-700 mx-auto mb-3" />
@@ -810,7 +810,7 @@ export default function AdminUserDetailPage() {
 
       {/* Tab: Uploaded Assets */}
       {tab === "assets" && (
-        <div className="bg-white dark:bg-[#171717] border border-zinc-200 dark:border-white/[0.08] rounded-2xl overflow-hidden shadow-xs">
+        <div className="bg-white/90 dark:bg-[#171717] border border-[#0066B2]/15 dark:border-white/[0.08] rounded-2xl overflow-hidden shadow-md dark:shadow-none backdrop-blur-sm">
           {resources.length > 0 && (
             <div className="px-4 py-3 border-b border-zinc-100 dark:border-white/[0.06] bg-zinc-50/80 dark:bg-white/[0.02] flex items-center justify-between">
               <p className="text-xs text-zinc-400 dark:text-zinc-500 font-medium">{resources.length} file{resources.length !== 1 ? "s" : ""}</p>
@@ -889,7 +889,7 @@ export default function AdminUserDetailPage() {
 
       {/* Tab: Leads Captured */}
       {tab === "leads" && (
-        <div className="bg-white dark:bg-[#171717] border border-zinc-200 dark:border-white/[0.08] rounded-2xl p-6 sm:p-8 text-center shadow-xs">
+        <div className="bg-white/90 dark:bg-[#171717] border border-[#0066B2]/15 dark:border-white/[0.08] rounded-2xl p-6 sm:p-8 text-center shadow-md dark:shadow-none backdrop-blur-sm">
           <Users className="w-8 h-8 text-zinc-300 dark:text-zinc-600 mx-auto mb-3" />
           <div className="text-3xl font-bold tracking-tight text-zinc-900 dark:text-white mb-1">
             {(stats?.leadCount ?? 0).toLocaleString()}
@@ -907,7 +907,7 @@ export default function AdminUserDetailPage() {
       {tab === "account" && (
         <div className="space-y-4">
           {/* Plan & Role editor */}
-          <div className="bg-white dark:bg-[#171717] border border-zinc-200 dark:border-white/[0.08] rounded-2xl p-4 sm:p-5 shadow-xs">
+          <div className="bg-white/90 dark:bg-[#171717] border border-[#0066B2]/15 dark:border-white/[0.08] rounded-2xl p-4 sm:p-5 shadow-md dark:shadow-none backdrop-blur-sm">
             <h2 className="text-sm font-semibold text-zinc-900 dark:text-white mb-4">Plan & Role</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
               <div>
@@ -950,7 +950,7 @@ export default function AdminUserDetailPage() {
           </div>
 
           {/* Account Info */}
-          <div className="bg-white dark:bg-[#171717] border border-zinc-200 dark:border-white/[0.08] rounded-2xl p-4 sm:p-5 shadow-xs">
+          <div className="bg-white/90 dark:bg-[#171717] border border-[#0066B2]/15 dark:border-white/[0.08] rounded-2xl p-4 sm:p-5 shadow-md dark:shadow-none backdrop-blur-sm">
             <h2 className="text-sm font-semibold text-zinc-900 dark:text-white mb-3">Account Info</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
               <Row icon={<Calendar className="w-3.5 h-3.5" />} label="Joined" value={user.joinedAt ? new Date(user.joinedAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" }) : "—"} />

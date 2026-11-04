@@ -64,7 +64,7 @@ function StatCard({
     indigo: "bg-indigo-50 text-indigo-600 dark:bg-indigo-900/25 dark:text-indigo-400",
   };
   return (
-    <div className="bg-white dark:bg-[#171717] rounded-2xl border border-zinc-200/80 dark:border-white/[0.08] p-3.5 sm:p-5 shadow-xs flex flex-col justify-between">
+    <div className="bg-white/90 dark:bg-[#171717] rounded-2xl border border-[#0066B2]/15 dark:border-white/[0.08] p-3.5 sm:p-5 shadow-md dark:shadow-none backdrop-blur-sm flex flex-col justify-between">
       <div className="flex items-start justify-between gap-2.5">
         <div className="flex-1 min-w-0">
           <p className="text-[10px] sm:text-xs font-semibold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider truncate">
@@ -267,7 +267,7 @@ export default function RevenuePage() {
       {/* Middle Section: Apple Bento Breakdown Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5 sm:gap-6">
         {/* Payment Providers */}
-        <div className="bg-white dark:bg-[#171717] rounded-2xl border border-zinc-200/80 dark:border-white/[0.08] p-4 sm:p-5 shadow-xs">
+        <div className="bg-white/90 dark:bg-[#171717] rounded-2xl border border-[#0066B2]/15 dark:border-white/[0.08] p-4 sm:p-5 shadow-md dark:shadow-none backdrop-blur-sm">
           <h2 className="text-xs sm:text-sm font-bold text-zinc-900 dark:text-white uppercase tracking-wider mb-3.5">
             Pro — Payment Provider
           </h2>
@@ -294,7 +294,7 @@ export default function RevenuePage() {
         </div>
 
         {/* Payment Status */}
-        <div className="bg-white dark:bg-[#171717] rounded-2xl border border-zinc-200/80 dark:border-white/[0.08] p-4 sm:p-5 shadow-xs">
+        <div className="bg-white/90 dark:bg-[#171717] rounded-2xl border border-[#0066B2]/15 dark:border-white/[0.08] p-4 sm:p-5 shadow-md dark:shadow-none backdrop-blur-sm">
           <h2 className="text-xs sm:text-sm font-bold text-zinc-900 dark:text-white uppercase tracking-wider mb-3.5">
             Pro — Payment Status
           </h2>
@@ -327,7 +327,7 @@ export default function RevenuePage() {
         </div>
 
         {/* User Funnel */}
-        <div className="bg-white dark:bg-[#171717] rounded-2xl border border-zinc-200/80 dark:border-white/[0.08] p-4 sm:p-5 shadow-xs">
+        <div className="bg-white/90 dark:bg-[#171717] rounded-2xl border border-[#0066B2]/15 dark:border-white/[0.08] p-4 sm:p-5 shadow-md dark:shadow-none backdrop-blur-sm">
           <h2 className="text-xs sm:text-sm font-bold text-zinc-900 dark:text-white uppercase tracking-wider mb-3.5">
             User Funnel
           </h2>
@@ -359,7 +359,7 @@ export default function RevenuePage() {
       </div>
 
       {/* Recent Conversions Bento Section */}
-      <div className="bg-white dark:bg-[#171717] rounded-2xl border border-zinc-200/80 dark:border-white/[0.08] overflow-hidden shadow-xs">
+      <div className="bg-white/90 dark:bg-[#171717] rounded-2xl border border-[#0066B2]/15 dark:border-white/[0.08] overflow-hidden shadow-md dark:shadow-none backdrop-blur-sm">
         <div className="px-4 sm:px-5 py-3.5 border-b border-zinc-100 dark:border-white/[0.06] flex items-center justify-between">
           <h2 className="text-xs sm:text-sm font-bold text-zinc-900 dark:text-white flex items-center gap-2">
             <ArrowUpRight className="w-4 h-4 text-emerald-500 shrink-0" />

@@ -97,7 +97,7 @@ function IntegrationCard({
   };
 
   return (
-    <div className="bg-white dark:bg-[#171717] rounded-2xl border border-zinc-200/80 dark:border-white/[0.08] p-3.5 sm:p-4 shadow-xs flex flex-col justify-between">
+    <div className="bg-white/90 dark:bg-[#171717] rounded-2xl border border-[#0066B2]/15 dark:border-white/[0.08] p-3.5 sm:p-4 shadow-md dark:shadow-none backdrop-blur-sm flex flex-col justify-between">
       <div>
         <div className="flex items-start justify-between gap-2.5 mb-1.5">
           <div className="flex items-center gap-2.5 min-w-0">
@@ -300,7 +300,7 @@ export default function AnalyticsPage() {
       {/* 5. Custom Domain */}
       <section>
         <SectionHeader title="Custom Domain Health" sub="Domain setup and verification status across all users" />
-        <div className="bg-white dark:bg-[#171717] rounded-2xl border border-zinc-200/80 dark:border-white/[0.08] overflow-hidden shadow-xs">
+        <div className="bg-white/90 dark:bg-[#171717] rounded-2xl border border-[#0066B2]/15 dark:border-white/[0.08] overflow-hidden shadow-md dark:shadow-none backdrop-blur-sm">
           <div className="divide-y divide-zinc-100 dark:divide-white/[0.06]">
             {(
               [
@@ -411,7 +411,7 @@ export default function AnalyticsPage() {
           title="Funnel Template Distribution"
           sub="Which templates users are building their funnels on"
         />
-        <div className="bg-white dark:bg-[#171717] rounded-2xl border border-zinc-200/80 dark:border-white/[0.08] p-4 sm:p-5 space-y-3.5 shadow-xs">
+        <div className="bg-white/90 dark:bg-[#171717] rounded-2xl border border-[#0066B2]/15 dark:border-white/[0.08] p-4 sm:p-5 space-y-3.5 shadow-md dark:shadow-none backdrop-blur-sm">
           {templateBreakdown.length === 0 ? (
             <p className="text-sm text-zinc-400 dark:text-zinc-500 text-center py-8">No funnel data yet.</p>
           ) : (

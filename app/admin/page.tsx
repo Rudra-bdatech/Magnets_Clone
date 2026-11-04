@@ -164,7 +164,7 @@ function AppleKpiCard({
       whileHover={onClick ? { y: -2 } : {}}
       whileTap={onClick ? { scale: 0.98 } : {}}
       onClick={onClick}
-      className={`group relative flex flex-col justify-between p-3.5 sm:p-5 rounded-2xl sm:rounded-3xl bg-white/80 dark:bg-[#171717]/90 backdrop-blur-xl border border-zinc-200/70 dark:border-white/[0.08] shadow-xs hover:border-[#0066B2]/30 dark:hover:border-white/20 hover:shadow-md transition-all duration-200 select-none ${
+      className={`group relative flex flex-col justify-between p-3.5 sm:p-5 rounded-2xl sm:rounded-3xl bg-white/90 dark:bg-[#171717] backdrop-blur-sm border border-[#0066B2]/15 dark:border-white/[0.08] shadow-md dark:shadow-none hover:border-[#0066B2]/30 dark:hover:border-white/20 hover:shadow-lg transition-all duration-200 select-none ${
         onClick ? "cursor-pointer" : ""
       } ${className}`}
     >
@@ -345,7 +345,7 @@ export default function AdminOverviewPage() {
       {/* Breakdown Cards Section (By Plan & By Role) */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* By Plan Bento Card */}
-        <div className="p-4 sm:p-5 rounded-2xl sm:rounded-3xl bg-white/80 dark:bg-[#171717]/90 backdrop-blur-xl border border-zinc-200/70 dark:border-white/[0.08] shadow-xs">
+        <div className="p-4 sm:p-5 rounded-2xl sm:rounded-3xl bg-white/90 dark:bg-[#171717] backdrop-blur-sm border border-[#0066B2]/15 dark:border-white/[0.08] shadow-md dark:shadow-none">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest">
               Users by Plan
@@ -387,7 +387,7 @@ export default function AdminOverviewPage() {
         </div>
 
         {/* By Role Bento Card */}
-        <div className="p-4 sm:p-5 rounded-2xl sm:rounded-3xl bg-white/80 dark:bg-[#171717]/90 backdrop-blur-xl border border-zinc-200/70 dark:border-white/[0.08] shadow-xs flex flex-col justify-between">
+        <div className="p-4 sm:p-5 rounded-2xl sm:rounded-3xl bg-white/90 dark:bg-[#171717] backdrop-blur-sm border border-[#0066B2]/15 dark:border-white/[0.08] shadow-md dark:shadow-none flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest">
@@ -463,7 +463,7 @@ export default function AdminOverviewPage() {
       {storage && (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6 items-start">
           {/* Storage Usage Bento Card (Clean Standalone Card on Left) */}
-          <div className="lg:col-span-7 p-4 sm:p-5 rounded-2xl sm:rounded-3xl bg-white/80 dark:bg-[#171717]/90 backdrop-blur-xl border border-zinc-200/70 dark:border-white/[0.08] shadow-xs flex flex-col justify-between">
+          <div className="lg:col-span-7 p-4 sm:p-5 rounded-2xl sm:rounded-3xl bg-white/90 dark:bg-[#171717] backdrop-blur-sm border border-[#0066B2]/15 dark:border-white/[0.08] shadow-md dark:shadow-none flex flex-col justify-between">
             <div>
               <div className="flex items-center justify-between gap-2.5 mb-4">
                 <div className="flex items-center gap-2">
@@ -605,7 +605,7 @@ export default function AdminOverviewPage() {
       )}
 
       {/* Admin Quick Launchpad */}
-      <div className="p-4 sm:p-5 rounded-2xl sm:rounded-3xl bg-white/80 dark:bg-[#171717]/90 backdrop-blur-xl border border-zinc-200/70 dark:border-white/[0.08] shadow-xs">
+      <div className="p-4 sm:p-5 rounded-2xl sm:rounded-3xl bg-white/90 dark:bg-[#171717] backdrop-blur-sm border border-[#0066B2]/15 dark:border-white/[0.08] shadow-md dark:shadow-none">
         <h2 className="text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest mb-3">
           Quick Launchpad
         </h2>

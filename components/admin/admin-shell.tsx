@@ -329,7 +329,7 @@ export default function AdminShell({
         {/* Scrollable Page Body */}
         <main
           ref={mainRef}
-          className="flex-1 overflow-y-auto overflow-x-hidden min-w-0 w-full"
+          className="flex-1 overflow-y-auto overflow-x-hidden min-w-0 w-full bg-gradient-to-b from-[#EFF6FF]/40 via-[#F8FBFF] to-[#F8FBFF] dark:bg-none dark:bg-[#0E0E10]"
           data-lenis-prevent
         >
           {children}

@@ -194,7 +194,7 @@ export default function FunnelDetailPage() {
       </button>
 
       {/* Header Bento Card */}
-      <div className="bg-white dark:bg-[#171717] rounded-2xl border border-zinc-200 dark:border-white/[0.08] p-4 sm:p-6 shadow-xs">
+      <div className="bg-white/90 dark:bg-[#171717] rounded-2xl border border-[#0066B2]/15 dark:border-white/[0.08] p-4 sm:p-6 shadow-md dark:shadow-none backdrop-blur-sm">
         <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2.5 flex-wrap mb-1.5">
@@ -280,7 +280,7 @@ export default function FunnelDetailPage() {
       {/* Two-column info cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
         {/* Settings */}
-        <div className="bg-white dark:bg-[#171717] rounded-2xl border border-zinc-200 dark:border-white/[0.08] p-4 sm:p-5 shadow-xs">
+        <div className="bg-white/90 dark:bg-[#171717] rounded-2xl border border-[#0066B2]/15 dark:border-white/[0.08] p-4 sm:p-5 shadow-md dark:shadow-none backdrop-blur-sm">
           <h2 className="text-sm font-semibold text-zinc-900 dark:text-white mb-3 flex items-center gap-2">
             <Settings className="w-4 h-4 text-zinc-400" />
             Funnel Settings
@@ -293,7 +293,7 @@ export default function FunnelDetailPage() {
 
         {/* Dates + Features */}
         <div className="space-y-4">
-          <div className="bg-white dark:bg-[#171717] rounded-2xl border border-zinc-200 dark:border-white/[0.08] p-4 sm:p-5 shadow-xs">
+          <div className="bg-white/90 dark:bg-[#171717] rounded-2xl border border-[#0066B2]/15 dark:border-white/[0.08] p-4 sm:p-5 shadow-md dark:shadow-none backdrop-blur-sm">
             <h2 className="text-sm font-semibold text-zinc-900 dark:text-white mb-3 flex items-center gap-2">
               <Calendar className="w-4 h-4 text-zinc-400" />
               Dates
@@ -304,7 +304,7 @@ export default function FunnelDetailPage() {
           </div>
 
           {/* Special features */}
-          <div className="bg-white dark:bg-[#171717] rounded-2xl border border-zinc-200 dark:border-white/[0.08] p-4 sm:p-5 shadow-xs">
+          <div className="bg-white/90 dark:bg-[#171717] rounded-2xl border border-[#0066B2]/15 dark:border-white/[0.08] p-4 sm:p-5 shadow-md dark:shadow-none backdrop-blur-sm">
             <h2 className="text-sm font-semibold text-zinc-900 dark:text-white mb-3 flex items-center gap-2">
               <Layers className="w-4 h-4 text-zinc-400" />
               Features

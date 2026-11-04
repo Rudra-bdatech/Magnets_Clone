@@ -113,7 +113,7 @@ function KpiCard({
     danger:  "text-red-600 dark:text-red-400",
   };
   return (
-    <div className="bg-white dark:bg-[#171717] rounded-2xl border border-zinc-200/80 dark:border-white/[0.08] p-3.5 sm:p-4 shadow-xs flex flex-col justify-between">
+    <div className="bg-white/90 dark:bg-[#171717] rounded-2xl border border-[#0066B2]/15 dark:border-white/[0.08] p-3.5 sm:p-4 shadow-md dark:shadow-none backdrop-blur-sm flex flex-col justify-between">
       <div className="flex items-start justify-between gap-2.5">
         <div className="flex-1 min-w-0">
           <p className="text-[10px] sm:text-xs font-semibold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider truncate">
@@ -320,7 +320,7 @@ export default function EmailHealthPage() {
           </div>
         </div>
 
-        <div className="bg-white dark:bg-[#171717] rounded-2xl border border-zinc-200/80 dark:border-white/[0.08] overflow-hidden shadow-xs">
+        <div className="bg-white/90 dark:bg-[#171717] rounded-2xl border border-[#0066B2]/15 dark:border-white/[0.08] overflow-hidden shadow-md dark:shadow-none backdrop-blur-sm">
           {perUser.length === 0 ? (
             <div className="py-16 text-center px-4">
               <Inbox className="w-8 h-8 text-zinc-300 dark:text-zinc-700 mx-auto mb-3" />
@@ -466,7 +466,7 @@ export default function EmailHealthPage() {
           Last 50 problem events in the past {period} days
         </p>
 
-        <div className="bg-white dark:bg-[#171717] rounded-2xl border border-zinc-200/80 dark:border-white/[0.08] overflow-hidden shadow-xs">
+        <div className="bg-white/90 dark:bg-[#171717] rounded-2xl border border-[#0066B2]/15 dark:border-white/[0.08] overflow-hidden shadow-md dark:shadow-none backdrop-blur-sm">
           {problems.length === 0 ? (
             <div className="py-16 text-center px-4">
               <CheckCircle className="w-8 h-8 text-emerald-400 mx-auto mb-3" />
@@ -559,7 +559,7 @@ export default function EmailHealthPage() {
           Leads with <code className="font-mono bg-zinc-100 dark:bg-white/5 px-1.5 py-0.5 rounded text-xs">seqFailCount &gt; 3</code> — sequence engine could not deliver after multiple retries
         </p>
 
-        <div className="bg-white dark:bg-[#171717] rounded-2xl border border-zinc-200/80 dark:border-white/[0.08] overflow-hidden shadow-xs">
+        <div className="bg-white/90 dark:bg-[#171717] rounded-2xl border border-[#0066B2]/15 dark:border-white/[0.08] overflow-hidden shadow-md dark:shadow-none backdrop-blur-sm">
           {failedSequences.length === 0 ? (
             <div className="py-16 text-center px-4">
               <CheckCircle className="w-8 h-8 text-emerald-400 mx-auto mb-3" />

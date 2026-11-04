@@ -413,7 +413,7 @@ export default function FunnelsPage() {
       </div>
 
       {/* Content Container */}
-      <div className="bg-white dark:bg-[#171717] rounded-2xl border border-zinc-200 dark:border-white/[0.08] overflow-hidden shadow-xs">
+      <div className="bg-white/90 dark:bg-[#171717] rounded-2xl border border-[#0066B2]/15 dark:border-white/[0.08] overflow-hidden shadow-md dark:shadow-none backdrop-blur-sm">
         {loading ? (
           <div className="p-4 space-y-3">
             {Array.from({ length: 6 }).map((_, i) => (

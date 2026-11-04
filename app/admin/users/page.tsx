@@ -796,7 +796,7 @@ export default function AdminUsersPage() {
       )}
 
       {/* Table & Mobile Card List */}
-      <div className="bg-white dark:bg-[#171717] border border-zinc-200 dark:border-white/[0.08] rounded-2xl overflow-hidden shadow-xs">
+      <div className="bg-white/90 dark:bg-[#171717] border border-[#0066B2]/15 dark:border-white/[0.08] rounded-2xl overflow-hidden shadow-md dark:shadow-none backdrop-blur-sm">
         {/* Mobile Card List (md:hidden) - Full width, zero horizontal scrolling */}
         <div className="md:hidden divide-y divide-zinc-100 dark:divide-white/[0.06]">
           {loading ? (

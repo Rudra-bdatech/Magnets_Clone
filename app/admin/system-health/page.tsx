@@ -114,7 +114,7 @@ function MetricCard({
     danger:  "text-red-600 dark:text-red-400",
   };
   return (
-    <div className="bg-white dark:bg-[#171717] rounded-2xl border border-zinc-200/80 dark:border-white/[0.08] p-3.5 sm:p-4 shadow-sm flex flex-col justify-between">
+    <div className="bg-white/90 dark:bg-[#171717] rounded-2xl border border-[#0066B2]/15 dark:border-white/[0.08] p-3.5 sm:p-4 shadow-md dark:shadow-none backdrop-blur-sm flex flex-col justify-between">
       <div>
         <div className="flex items-center justify-between gap-2 mb-2 sm:mb-2.5">
           <div className={`p-2 rounded-xl shrink-0 ${iconCls[status]}`}>
@@ -148,7 +148,7 @@ function CronCard({
     unknown: "border-zinc-200/80 dark:border-white/[0.08]",
   };
   return (
-    <div className={`bg-white dark:bg-[#171717] rounded-2xl border-2 ${borderCls[status]} p-4 sm:p-5 shadow-sm`}>
+    <div className={`bg-white/90 dark:bg-[#171717] rounded-2xl border-2 ${borderCls[status]} p-4 sm:p-5 shadow-md dark:shadow-none backdrop-blur-sm`}>
       <div className="flex items-start justify-between gap-3 mb-3.5">
         <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
           <div className="shrink-0">
@@ -390,7 +390,7 @@ export default function SystemHealthPage() {
           </div>
         </div>
 
-        <div className="bg-white dark:bg-[#171717] rounded-2xl border border-zinc-200/80 dark:border-white/[0.08] overflow-hidden shadow-sm">
+        <div className="bg-white/90 dark:bg-[#171717] rounded-2xl border border-[#0066B2]/15 dark:border-white/[0.08] overflow-hidden shadow-md dark:shadow-none backdrop-blur-sm">
           {failedSequences.groups.length === 0 ? (
             <div className="py-12 sm:py-14 text-center px-4">
               <CheckCircle className="w-8 h-8 text-emerald-400 mx-auto mb-2.5" />
@@ -530,7 +530,7 @@ export default function SystemHealthPage() {
           </div>
         </div>
 
-        <div className="bg-white dark:bg-[#171717] rounded-2xl border border-zinc-200/80 dark:border-white/[0.08] overflow-hidden shadow-sm">
+        <div className="bg-white/90 dark:bg-[#171717] rounded-2xl border border-[#0066B2]/15 dark:border-white/[0.08] overflow-hidden shadow-md dark:shadow-none backdrop-blur-sm">
           {sslHealth.failedDomains.length === 0 ? (
             <div className="py-12 sm:py-14 text-center px-4">
               <ShieldCheck className="w-8 h-8 text-emerald-400 mx-auto mb-2.5" />
