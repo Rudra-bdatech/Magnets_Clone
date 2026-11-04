@@ -346,7 +346,7 @@ export default function FunnelsPage() {
   }
 
   return (
-    <div className="p-3.5 sm:p-6 md:p-8 max-w-7xl mx-auto">
+    <div className="p-3.5 sm:p-6 md:p-8 pb-20 sm:pb-8 max-w-7xl mx-auto touch-pan-y">
       {/* Header */}
       <div className="flex items-center justify-between gap-3 mb-5 sm:mb-6">
         <div className="min-w-0">

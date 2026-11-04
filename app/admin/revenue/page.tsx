@@ -208,7 +208,7 @@ export default function RevenuePage() {
     : "0.0";
 
   return (
-    <div className="p-3.5 sm:p-6 md:p-8 space-y-5 sm:space-y-6 max-w-7xl mx-auto">
+    <div className="p-3.5 sm:p-6 md:p-8 pb-20 sm:pb-8 space-y-5 sm:space-y-6 max-w-7xl mx-auto touch-pan-y">
       {/* Header */}
       <div className="flex items-center justify-between gap-3">
         <div className="min-w-0">

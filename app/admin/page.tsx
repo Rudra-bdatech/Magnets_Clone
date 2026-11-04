@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import {
@@ -145,6 +144,7 @@ function AppleKpiCard({
   badgeClass,
   progress,
   progressColor,
+  href,
   onClick,
   className = "",
 }: {
@@ -156,18 +156,14 @@ function AppleKpiCard({
   badgeClass: string;
   progress?: number;
   progressColor?: string;
+  href?: string;
   onClick?: () => void;
   className?: string;
 }) {
-  return (
-    <motion.div
-      whileHover={onClick ? { y: -2 } : {}}
-      whileTap={onClick ? { scale: 0.98 } : {}}
-      onClick={onClick}
-      className={`group relative flex flex-col justify-between p-3.5 sm:p-5 rounded-2xl sm:rounded-3xl bg-white/90 dark:bg-[#171717] backdrop-blur-sm border border-[#0066B2]/15 dark:border-white/[0.08] shadow-md dark:shadow-none hover:border-[#0066B2]/30 dark:hover:border-white/20 hover:shadow-lg transition-all duration-200 select-none ${
-        onClick ? "cursor-pointer" : ""
-      } ${className}`}
-    >
+  const isClickable = !!(href || onClick);
+
+  const cardContent = (
+    <>
       <div>
         <div className="flex items-center justify-between mb-2.5 sm:mb-3">
           <p className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest leading-none truncate pr-1">
@@ -208,13 +204,31 @@ function AppleKpiCard({
         {sub && (
           <p className="text-[11px] text-zinc-500 dark:text-zinc-400 truncate flex items-center justify-between">
             <span>{sub}</span>
-            {onClick && (
+            {isClickable && (
               <ArrowUpRight className="w-3 h-3 text-zinc-400 group-hover:text-[#0066B2] dark:group-hover:text-[#38BDF8] shrink-0 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
             )}
           </p>
         )}
       </div>
-    </motion.div>
+    </>
+  );
+
+  const baseClasses = `group relative flex flex-col justify-between p-3.5 sm:p-5 rounded-2xl sm:rounded-3xl bg-white/90 dark:bg-[#171717] backdrop-blur-sm border border-[#0066B2]/15 dark:border-white/[0.08] shadow-md dark:shadow-none hover:border-[#0066B2]/30 dark:hover:border-white/20 hover:shadow-lg transition-all duration-200 touch-pan-y ${
+    isClickable ? "cursor-pointer active:scale-[0.98]" : ""
+  } ${className}`;
+
+  if (href) {
+    return (
+      <Link href={href} className={baseClasses}>
+        {cardContent}
+      </Link>
+    );
+  }
+
+  return (
+    <div onClick={onClick} className={baseClasses}>
+      {cardContent}
+    </div>
   );
 }
 
@@ -223,7 +237,6 @@ function AppleKpiCard({
 // ─────────────────────────────────────────────
 
 export default function AdminOverviewPage() {
-  const router = useRouter();
   const [stats, setStats] = useState<Stats | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -242,7 +255,7 @@ export default function AdminOverviewPage() {
 
   if (loading) {
     return (
-      <div className="p-3.5 sm:p-6 lg:p-8 max-w-7xl mx-auto space-y-4 sm:space-y-6 w-full min-w-0">
+      <div className="p-3.5 sm:p-6 lg:p-8 pb-24 sm:pb-12 max-w-7xl mx-auto space-y-4 sm:space-y-6 w-full min-w-0 touch-pan-y">
         <div className="h-7 w-36 bg-zinc-200/70 dark:bg-white/5 rounded-xl animate-pulse" />
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
           {Array.from({ length: 5 }).map((_, i) => (
@@ -275,12 +288,7 @@ export default function AdminOverviewPage() {
   const storage = stats.storage;
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.22, ease: "easeOut" }}
-      className="p-3.5 sm:p-6 lg:p-8 max-w-7xl mx-auto space-y-4 sm:space-y-6 w-full min-w-0"
-    >
+    <div className="p-3.5 sm:p-6 lg:p-8 pb-24 sm:pb-12 max-w-7xl mx-auto space-y-4 sm:space-y-6 w-full min-w-0 touch-pan-y">
       {/* Header section */}
       <div>
         <h1 className="text-xl sm:text-2xl font-bold text-zinc-900 dark:text-white tracking-tight flex items-center gap-2">
@@ -298,7 +306,7 @@ export default function AdminOverviewPage() {
           icon={Users}
           iconClass="text-[#0066B2] dark:text-[#38BDF8]"
           badgeClass="border-[#0066B2]/20 bg-[#0066B2]/10 text-[#0066B2] dark:border-white/10 dark:bg-white/5"
-          onClick={() => router.push("/admin/users")}
+          href="/admin/users"
         />
 
         <AppleKpiCard
@@ -317,7 +325,7 @@ export default function AdminOverviewPage() {
           icon={FileText}
           iconClass="text-violet-600 dark:text-violet-400"
           badgeClass="border-violet-500/20 bg-violet-50 text-violet-600 dark:border-white/10 dark:bg-white/5"
-          onClick={() => router.push("/admin/funnels")}
+          href="/admin/funnels"
         />
 
         <AppleKpiCard
@@ -338,7 +346,7 @@ export default function AdminOverviewPage() {
           icon={HardDrive}
           iconClass="text-cyan-600 dark:text-cyan-400"
           badgeClass="border-cyan-500/20 bg-cyan-50 text-cyan-600 dark:border-white/10 dark:bg-white/5"
-          onClick={() => router.push("/admin/users")}
+          href="/admin/users"
         />
       </div>
 
@@ -563,10 +571,10 @@ export default function AdminOverviewPage() {
                     .slice(0, 2)
                     .toUpperCase();
                   return (
-                    <div
+                    <Link
                       key={u.email}
-                      onClick={() => router.push(`/admin/users/${encodeURIComponent(u.email)}`)}
-                      className="group flex items-center justify-between py-2.5 px-3 rounded-xl hover:bg-zinc-200/50 dark:hover:bg-white/[0.06] cursor-pointer transition-colors"
+                      href={`/admin/users/${encodeURIComponent(u.email)}`}
+                      className="group flex items-center justify-between py-2.5 px-3 rounded-xl hover:bg-zinc-200/50 dark:hover:bg-white/[0.06] cursor-pointer transition-colors active:scale-[0.98]"
                     >
                       <div className="flex items-center gap-2.5 min-w-0 pr-2">
                         <span
@@ -591,7 +599,7 @@ export default function AdminOverviewPage() {
                           {u.files} {u.files === 1 ? "file" : "files"}
                         </span>
                       </div>
-                    </div>
+                    </Link>
                   );
                 })}
               </div>
@@ -635,6 +643,6 @@ export default function AdminOverviewPage() {
           })}
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }

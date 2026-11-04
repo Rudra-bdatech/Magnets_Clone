@@ -52,24 +52,43 @@ export default function AdminShell({
     if (mainRef.current) {
       mainRef.current.scrollTop = 0;
     }
+    if (typeof window !== "undefined") {
+      window.scrollTo({ top: 0, left: 0 });
+    }
     setIsScrolled(false);
   }, [pathname]);
 
-  // iOS-style scroll listener on the scrollable main container
+  // Scroll listener that handles both window scroll (mobile) and container scroll (desktop)
   useEffect(() => {
-    const mainEl = mainRef.current;
-    if (!mainEl) return;
+    let ticking = false;
 
     const handleScroll = () => {
-      // 36px threshold: right as the page content scrolls past the top padding
-      setIsScrolled(mainEl.scrollTop > 36);
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const mainEl = mainRef.current;
+          const isDesktop = window.innerWidth >= 768;
+          const scrollY =
+            isDesktop && mainEl
+              ? mainEl.scrollTop
+              : (window.scrollY || document.documentElement.scrollTop || 0);
+
+          setIsScrolled(scrollY > 20);
+          ticking = false;
+        });
+        ticking = true;
+      }
     };
 
-    mainEl.addEventListener("scroll", handleScroll, { passive: true });
+    const mainEl = mainRef.current;
+    if (mainEl) {
+      mainEl.addEventListener("scroll", handleScroll, { passive: true });
+    }
+    window.addEventListener("scroll", handleScroll, { passive: true });
     handleScroll();
 
     return () => {
-      mainEl.removeEventListener("scroll", handleScroll);
+      if (mainEl) mainEl.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("scroll", handleScroll);
     };
   }, [pathname]);
 
@@ -118,7 +137,7 @@ export default function AdminShell({
   }
 
   return (
-    <div className="flex h-screen w-full bg-[#FAFAFA] dark:bg-[#0E0E10] overflow-hidden">
+    <div className="flex min-h-[100dvh] md:h-screen md:overflow-hidden w-full bg-[#FAFAFA] dark:bg-[#0E0E10]">
       {/* Desktop Sidebar (hidden on mobile, visible on md+) */}
       <aside
         className="hidden md:flex w-60 h-screen bg-[#F0F7FF] dark:bg-[#171717] border-r border-[#E0EDFB] dark:border-white/[0.08] flex-col shrink-0 overflow-y-auto select-none"
@@ -322,7 +341,7 @@ export default function AdminShell({
       </AnimatePresence>
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
+      <div className="flex-1 flex flex-col min-w-0 min-h-[100dvh] md:h-screen md:overflow-hidden">
         {/* Mobile Header Bar (md:hidden) */}
         <header
           className={`sticky top-0 z-30 flex h-12 shrink-0 items-center justify-between px-3 sm:px-4 md:hidden transition-all duration-200 w-full max-w-full border-b ${
@@ -369,7 +388,7 @@ export default function AdminShell({
         {/* Scrollable Page Body */}
         <main
           ref={mainRef}
-          className="flex-1 overflow-y-auto overflow-x-hidden min-w-0 w-full bg-gradient-to-b from-[#EFF6FF]/40 via-[#F8FBFF] to-[#F8FBFF] dark:bg-none dark:bg-[#0E0E10]"
+          className="flex-1 min-w-0 w-full md:overflow-y-auto md:overflow-x-hidden overscroll-y-contain [-webkit-overflow-scrolling:touch] touch-pan-y bg-gradient-to-b from-[#EFF6FF]/40 via-[#F8FBFF] to-[#F8FBFF] dark:bg-none dark:bg-[#0E0E10]"
           data-lenis-prevent
         >
           {children}

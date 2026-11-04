@@ -735,7 +735,7 @@ export default function AdminUsersPage() {
   const end = Math.min(page * 25, total);
 
   return (
-    <div className="p-3.5 sm:p-6 max-w-7xl mx-auto">
+    <div className="p-3.5 sm:p-6 pb-20 sm:pb-8 max-w-7xl mx-auto touch-pan-y">
       <div className="mb-5 sm:mb-6">
         <h1 className="text-xl sm:text-2xl font-bold text-zinc-900 dark:text-white tracking-tight">Users</h1>
         <p className="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 mt-0.5">
