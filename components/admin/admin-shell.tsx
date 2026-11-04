@@ -43,6 +43,7 @@ export default function AdminShell({
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [hoveredNavHref, setHoveredNavHref] = useState<string | null>(null);
   const mainRef = useRef<HTMLElement>(null);
 
   // Close mobile drawer on route change & reset scroll
@@ -148,41 +149,80 @@ export default function AdminShell({
         </div>
 
         {/* Nav */}
-        <nav className="flex-1 p-3 space-y-1.5" aria-label="Admin Navigation">
+        <nav
+          className="flex-1 p-3 space-y-1"
+          aria-label="Admin Navigation"
+          onMouseLeave={() => setHoveredNavHref(null)}
+        >
           {NAV.map(({ href, label, icon: Icon, exact }) => {
             const active = isNavActive(href, exact);
+            const isHovered = hoveredNavHref === href;
             return (
-              <Link
+              <div
                 key={href}
-                href={href}
-                className={`group relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 min-h-[40px] ${
-                  active
-                    ? "bg-[#0066B2] text-white shadow-xs dark:bg-[#0066B2]/20 dark:text-[#38BDF8] dark:border dark:border-[#0066B2]/40"
-                    : "text-zinc-600 dark:text-zinc-300 hover:bg-[#E2F0FD] dark:hover:bg-white/[0.06] hover:text-zinc-900 dark:hover:text-white active:scale-[0.99]"
-                }`}
+                className="relative group flex items-center justify-center"
+                onMouseEnter={() => setHoveredNavHref(href)}
               >
-                <Icon
-                  className={`w-4 h-4 shrink-0 transition-transform duration-150 ${
-                    active
-                      ? "scale-105"
-                      : "text-zinc-400 dark:text-zinc-400 group-hover:text-zinc-800 dark:group-hover:text-zinc-200 group-hover:scale-105"
-                  }`}
-                />
-                <span className="truncate">{label}</span>
-              </Link>
+                <motion.div
+                  className="w-full"
+                  whileTap={{ scale: 0.96 }}
+                  transition={{ type: "spring", stiffness: 600, damping: 28 }}
+                >
+                  <Link
+                    href={href}
+                    className={`relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors cursor-pointer min-h-[40px] select-none ${
+                      active
+                        ? "text-white font-bold dark:text-white"
+                        : "text-zinc-600 dark:text-zinc-400 dark:hover:text-white"
+                    }`}
+                  >
+                    {/* Active Page Solid Pill */}
+                    {active && (
+                      <motion.div
+                        layoutId="adminNavActivePill"
+                        transition={{ type: "spring", stiffness: 600, damping: 34 }}
+                        className="absolute inset-0 rounded-xl bg-[#0066B2] shadow-xs dark:bg-[#0066B2]/20 dark:border dark:border-[#0066B2]/40"
+                      />
+                    )}
+
+                    {/* Hover Morphing Spring Pill */}
+                    {!active && isHovered && (
+                      <motion.div
+                        layoutId="adminNavHoverPill"
+                        transition={{ type: "spring", stiffness: 800, damping: 38, mass: 0.2 }}
+                        className="absolute inset-0 rounded-xl bg-[#E2F0FD] dark:bg-white/5"
+                      />
+                    )}
+
+                    <Icon
+                      className={`w-4 h-4 shrink-0 relative z-10 transition-transform duration-150 ${
+                        active
+                          ? "text-white scale-105"
+                          : "text-zinc-400 dark:text-zinc-400 group-hover:text-zinc-800 dark:group-hover:text-zinc-200 group-hover:scale-105"
+                      }`}
+                    />
+                    <span className="truncate relative z-10">{label}</span>
+                  </Link>
+                </motion.div>
+              </div>
             );
           })}
         </nav>
 
         {/* Footer */}
         <div className="p-3 border-t border-[#E0EDFB] dark:border-white/[0.08] mt-auto">
-          <Link
-            href="/dashboard"
-            className="group flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-medium text-zinc-500 dark:text-zinc-400 hover:bg-[#E2F0FD] dark:hover:bg-white/[0.06] hover:text-zinc-900 dark:hover:text-white transition-all duration-150"
+          <motion.div
+            whileTap={{ scale: 0.96 }}
+            transition={{ type: "spring", stiffness: 600, damping: 28 }}
           >
-            <ArrowLeft className="w-4 h-4 shrink-0 text-zinc-400 group-hover:text-zinc-700 dark:group-hover:text-zinc-200 transition-transform group-hover:-translate-x-0.5" />
-            <span className="truncate">Back to Dashboard</span>
-          </Link>
+            <Link
+              href="/dashboard"
+              className="group flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-medium text-zinc-500 dark:text-zinc-400 hover:bg-[#E2F0FD] dark:hover:bg-white/[0.06] hover:text-zinc-900 dark:hover:text-white transition-all duration-150"
+            >
+              <ArrowLeft className="w-4 h-4 shrink-0 text-zinc-400 group-hover:text-zinc-700 dark:group-hover:text-zinc-200 transition-transform group-hover:-translate-x-0.5" />
+              <span className="truncate">Back to Dashboard</span>
+            </Link>
+          </motion.div>
         </div>
       </aside>
 
