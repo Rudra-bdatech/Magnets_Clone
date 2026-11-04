@@ -1645,7 +1645,7 @@ export default function DashboardShell({
           )}
         </div>
         <CommandMenu isOpen={isCommandMenuOpen} onClose={() => setIsCommandMenuOpen(false)} />
-        <GmailSyncTour />
+        {/* <GmailSyncTour /> */}
       </ExpandableScreen>
     </SidebarContext.Provider>
   );

@@ -3,7 +3,7 @@
 import React, { useState, useEffect, memo } from "react";
 import {
   Mail, ChevronDown, Eye, EyeOff, Check, RefreshCw, Loader2, AlertCircle,
-  Unlink, ExternalLink, ShieldCheck, Zap
+  Unlink, ShieldCheck, Zap
 } from "lucide-react";
 import { type Account } from "@/lib/data";
 import { InfoTooltip } from "@/components/ui/info-tooltip";
@@ -34,8 +34,6 @@ export const EmailSenderSection = memo(function EmailSenderSection({
   const [testing, setTesting] = useState(false);
   const [saving, setSaving] = useState(false);
   const [disconnectingSmtp, setDisconnectingSmtp] = useState(false);
-  const [disconnectingGmail, setDisconnectingGmail] = useState(false);
-  const [gmailConnectFailed, setGmailConnectFailed] = useState(false);
 
   const [smtpForm, setSmtpForm] = useState({
     host: "",
@@ -46,34 +44,6 @@ export const EmailSenderSection = memo(function EmailSenderSection({
     fromEmail: "",
     fromName: account?.name || "",
   });
-
-  // Handle OAuth redirect query params
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    const url = new URL(window.location.href);
-    const gmailSuccess = url.searchParams.get("gmail");
-    const gmailError = url.searchParams.get("gmailError");
-
-    if (gmailSuccess === "connected") {
-      addToast("Gmail connected successfully! 🎉", "success");
-      // Fetch updated account state
-      fetch("/api/data", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "getAccountByEmail", data: {} }),
-      })
-        .then((r) => r.json())
-        .then((res) => { if (res?.account) setAccount(res.account); })
-        .catch(() => {});
-      url.searchParams.delete("gmail");
-      window.history.replaceState({}, "", url.toString());
-    } else if (gmailError) {
-      // Shown inline on the Gmail card so it stays visible next to the retry button
-      setGmailConnectFailed(true);
-      url.searchParams.delete("gmailError");
-      window.history.replaceState({}, "", url.toString());
-    }
-  }, [addToast, setAccount]);
 
   // Pre-fill form if account already has custom SMTP
   useEffect(() => {
@@ -172,28 +142,6 @@ export const EmailSenderSection = memo(function EmailSenderSection({
     }
   };
 
-  const handleConnectGmail = () => {
-    setGmailConnectFailed(false);
-    window.location.href = "/api/account/gmail/connect";
-  };
-
-  const handleDisconnectGmail = async () => {
-    setDisconnectingGmail(true);
-    try {
-      await fetch("/api/account/gmail/disconnect", { method: "POST" });
-      setAccount((prev) => prev ? ({
-        ...prev,
-        gmailOAuth: { connected: false, gmailAddress: "", fromName: "" },
-      }) : prev);
-      addToast("Gmail disconnected", "info");
-    } catch {
-      addToast("Failed to disconnect Gmail", "error");
-    } finally {
-      setDisconnectingGmail(false);
-    }
-  };
-
-  const gmailConnected = account?.gmailOAuth?.connected && !!account?.gmailOAuth?.gmailAddress;
   const smtpConnected = account?.customSmtp?.isVerified && account?.customSmtp?.enabled;
 
   return (
@@ -203,123 +151,27 @@ export const EmailSenderSection = memo(function EmailSenderSection({
         <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 flex items-center gap-1.5">
           EMAIL SENDER
           <InfoTooltip
-            content="Connect your own Gmail or SMTP to send emails from your domain. For security and zero cost, each user sends through their connected account."
+            content="Emails to your leads are sent via Funnels' verified servers by default. Connect your own SMTP to send from your own domain instead."
             title="Email Sender"
             align="start"
           />
         </p>
-        {!gmailConnected && !smtpConnected && (
-          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-800">
-            <AlertCircle size={11} /> Gmail Sync Required to Send Leads
+        {smtpConnected && (
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
+            Custom SMTP Active
           </span>
         )}
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 items-stretch">
+      <div className="grid grid-cols-1 gap-3 items-stretch">
 
-        {/* ─── Gmail OAuth2 Card ─────────────────────────────────────────────── */}
-        <div data-tour="gmail-connect" className="rounded-2xl border border-[#0066B2]/30 bg-white dark:border-white/[0.08] dark:bg-[#171717] dark:shadow-none overflow-hidden shadow-md flex flex-col justify-between h-full">
-          <div className="p-4 flex flex-col justify-between h-full">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white dark:bg-[#121212] border border-zinc-200/90 dark:border-white/10 shadow-xs overflow-hidden p-2">
-                  <svg className="h-full w-full object-contain" viewBox="0 0 24 24">
-                    <path
-                      fill="#4285F4"
-                      d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-                    />
-                    <path
-                      fill="#34A853"
-                      d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                    />
-                    <path
-                      fill="#FBBC05"
-                      d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"
-                    />
-                    <path
-                      fill="#EA4335"
-                      d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
-                    />
-                  </svg>
-                </div>
-                <div>
-                  <h5 className="text-xs font-bold text-zinc-900 dark:text-white flex items-center gap-1.5">
-                    Connect Gmail
-                    <InfoTooltip
-                      content="Sign in with Google to send emails from your Gmail account. Works with Gmail & Google Workspace."
-                      title="Gmail OAuth2"
-                      align="start"
-                    />
-                  </h5>
-                  {gmailConnected ? (
-                    <p className="text-[11px] text-emerald-600 dark:text-emerald-400 mt-0.5 flex items-center gap-1">
-                      <ShieldCheck size={11} /> {account?.gmailOAuth?.gmailAddress}
-                    </p>
-                  ) : (
-                    <p className="text-[11px] text-zinc-400 mt-0.5">Send from your Gmail address</p>
-                  )}
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                {gmailConnected ? (
-                  <>
-                    <span className="hidden sm:inline-flex items-center gap-1 text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 rounded-full px-2 py-0.5 border border-emerald-200 dark:border-emerald-700">
-                      <Check size={10} /> Connected
-                    </span>
-                    <button
-                      onClick={handleDisconnectGmail}
-                      disabled={disconnectingGmail}
-                      className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-medium text-zinc-400 hover:text-rose-400 border border-transparent hover:border-rose-500/20 hover:bg-rose-500/10 transition-all cursor-pointer active:scale-95 disabled:opacity-50"
-                      title="Disconnect Gmail"
-                    >
-                      {disconnectingGmail ? <Loader2 size={11} className="animate-spin" /> : <Unlink size={11} />}
-                      Disconnect
-                    </button>
-                  </>
-                ) : (
-                  <button
-                    onClick={handleConnectGmail}
-                    className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold bg-[#0066B2] text-white hover:bg-[#0055A0] transition shadow-sm"
-                  >
-                    <ExternalLink size={12} />
-                    Connect Gmail
-                  </button>
-                )}
-              </div>
-            </div>
-            {gmailConnected && (
-              <div className="mt-3.5 rounded-xl bg-emerald-500/[0.06] dark:bg-emerald-500/[0.08] border border-emerald-500/20 dark:border-emerald-500/25 px-3 py-2.5 shadow-[0_0_15px_rgba(16,185,129,0.05)]">
-                <p className="text-[11px] text-emerald-700 dark:text-emerald-300 leading-relaxed flex items-center gap-2">
-                  <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 font-bold text-[10px] tracking-wide uppercase shrink-0">
-                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                    Active
-                  </span>
-                  <span>
-                    All emails will be sent from <strong className="text-zinc-800 dark:text-zinc-100 font-semibold">{account?.gmailOAuth?.gmailAddress}</strong> and sync with your Sent folder.
-                  </span>
-                </p>
-              </div>
-            )}
-            {!gmailConnected && gmailConnectFailed && (
-              <div className="mt-3 rounded-xl bg-amber-50 dark:bg-amber-900/15 border border-amber-200 dark:border-amber-700/40 px-3 py-2.5 flex gap-2">
-                <AlertCircle size={13} className="text-amber-500 shrink-0 mt-0.5" />
-                <p className="text-[11px] text-amber-700 dark:text-amber-300 leading-relaxed">
-                  Google sign-in didn&apos;t finish. Try again and allow the send permission.
-                </p>
-              </div>
-            )}
-            {!gmailConnected && (
-              <div className="mt-3 rounded-xl bg-blue-50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-800/30 px-3 py-2.5">
-                <p className="text-[11px] text-blue-600 dark:text-blue-300 leading-relaxed">
-                  <span className="font-bold">Recommended.</span> No passwords needed. Just sign in with Google. We only ask to send, never to read your inbox.
-                </p>
-              </div>
-            )}
-          </div>
-        </div>
+        {/* ─── Gmail OAuth2 Card (commented out — Gmail OAuth approval not available) ─── */}
+        {/* <div data-tour="gmail-connect" className="rounded-2xl border border-[#0066B2]/30 bg-white dark:border-white/[0.08] dark:bg-[#171717] dark:shadow-none overflow-hidden shadow-md flex flex-col justify-between h-full">
+          ...
+        </div> */}
 
         {/* ─── Custom SMTP Card ─────────────────────────────────────────────── */}
-        <div className={`rounded-2xl border border-[#0066B2]/30 bg-white dark:border-white/[0.08] dark:bg-[#171717] dark:shadow-none overflow-hidden shadow-md transition-all duration-300 ease-in-out flex flex-col justify-between ${showSmtp ? "md:col-span-2" : "h-full"}`}>
+        <div className="rounded-2xl border border-[#0066B2]/30 bg-white dark:border-white/[0.08] dark:bg-[#171717] dark:shadow-none overflow-hidden shadow-md transition-all duration-300 ease-in-out flex flex-col justify-between">
           <div
             onClick={() => setShowSmtp((v) => !v)}
             className="p-4 flex items-center justify-between hover:bg-[#EFF6FF] dark:hover:bg-white/[0.04] transition-colors cursor-pointer"
@@ -353,7 +205,7 @@ export const EmailSenderSection = memo(function EmailSenderSection({
                     <ShieldCheck size={11} /> {account?.customSmtp?.fromEmail || account?.customSmtp?.user}
                   </p>
                 ) : (
-                  <p className="text-[11px] text-zinc-400 mt-0.5">Gmail, Outlook, SendGrid, Resend…</p>
+                  <p className="text-[11px] text-zinc-400 mt-0.5">Optional — send from your own domain</p>
                 )}
               </div>
             </div>

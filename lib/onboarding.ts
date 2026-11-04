@@ -43,11 +43,6 @@ export function computeOnboardingStatus({
     account?.customDomain
   );
 
-  const hasEmailConnected = Boolean(
-    account?.gmailOAuth?.connected ||
-    (account?.customSmtp?.enabled && account?.customSmtp?.isVerified)
-  );
-
   const steps: OnboardingStep[] = [
     {
       id: "create-magnet",
@@ -61,10 +56,10 @@ export function computeOnboardingStatus({
     },
     {
       id: "connect-email",
-      title: "Connect your Gmail or SMTP",
-      description: "Link your Gmail account or custom SMTP so automated emails and resources are sent to your leads.",
-      done: hasEmailConnected,
-      ctaText: hasEmailConnected ? "Connected ✓" : "Connect Gmail",
+      title: "Email delivery is ready",
+      description: "Emails to your leads are sent automatically via Funnels' verified mail servers. Optionally connect your own SMTP to send from your domain.",
+      done: true,
+      ctaText: "Email Settings",
       href: "/dashboard/settings?tab=email",
       category: "Email Delivery",
       iconName: "Mail",

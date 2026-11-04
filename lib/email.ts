@@ -2,7 +2,6 @@ import nodemailer from "nodemailer";
 import { dbConnect } from "@/lib/mongodb";
 import { AccountModel, EmailEventModel } from "@/lib/models";
 import { decrypt } from "@/lib/encryption";
-import { isCompanyAccount } from "@/lib/roles";
 import { buildUnsubscribeUrls } from "@/lib/unsubscribe";
 import { emailLinkBaseUrl } from "@/lib/magnet-access";
 import { isValidEmailAddress } from "@/lib/email-guard";
@@ -220,7 +219,11 @@ export async function sendMail(
     ).toLowerCase();
 
     const resolvedOwner = ownerEmail || options.tracking?.userEmail || "";
-    const defaultFrom = process.env.SMTP_FROM || "noreply@funnels.co.in";
+    const defaultFrom = process.env.SMTP_FROM || (
+      process.env.NODE_ENV === "production"
+        ? "no-reply@mail.funnels.co.in"
+        : "non-reply@bdatech.in"
+    );
 
     let finalHtml = options.html;
     if (options.tracking) {
@@ -333,17 +336,13 @@ export async function sendMail(
       }
     }
 
-    // Priority 3: Platform Fallback (Restricted to Internal Company Staff / Admins OR System Transactional Emails)
-    const isCompanyStaff = isCompanyAccount(resolvedOwner, account?.role);
-    if (!isCompanyStaff && !options.isTransactional) {
-      const blockedMsg = "Sender email is not configured. Please connect your Gmail or custom SMTP in Settings to deliver emails to your leads.";
-      console.warn(`[email] Platform fallback blocked for external user: "${resolvedOwner || 'unknown'}". Prompting to connect Gmail.`);
-      return ownerSenderFailed
-        ? { success: false, error: "Sending through your connected email account failed.", errorCode: "SEND_FAILED" }
-        : { success: false, error: blockedMsg, errorCode: "NO_SENDER" };
+    // Priority 3: Platform Fallback — all users fall through to the company SMTP/SES server.
+    // In production, SMTP_FROM=no-reply@mail.funnels.co.in (Amazon SES, ap-south-1).
+    // In UAT/dev, SMTP_FROM=non-reply@bdatech.in (SocketLabs).
+    if (ownerSenderFailed) {
+      console.warn(`[email] Owner sender failed for "${resolvedOwner || 'unknown'}"; falling back to platform SMTP.`);
     }
 
-    // Platform Fallback (SocketLabs / default company SMTP for internal accounts)
     const platformTrans = getPlatformTransporter();
     const platformFrom = options.from || `Funnels <${defaultFrom}>`;
 
@@ -356,7 +355,7 @@ export async function sendMail(
       headers: extraHeaders,
     });
 
-    console.log(`[PLATFORM-ADMIN] Email sent:`, info.messageId, "to:", options.to, "for company staff:", resolvedOwner);
+    console.log(`[PLATFORM-SMTP] Email sent:`, info.messageId, "to:", options.to, "owner:", resolvedOwner || "none");
     await logEmailEvent(options, recipientClean, info.messageId);
     return { success: true, messageId: info.messageId };
   } catch (error: any) {
