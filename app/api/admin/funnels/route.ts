@@ -36,7 +36,9 @@ export async function GET(request: NextRequest) {
     views: 1, signups: 1, conversionRate: 1, template: 1,
     createdAt: 1, publishedAt: 1,
     quizFunnelEnabled: 1, hasVariantB: 1, testStarted: 1,
-    pdfPages: 1,
+    // pdfPages excluded — it is an array of Cloudinary image URLs for each locked PDF page.
+    // pdfPageCount is a single integer that tells us whether a locked PDF exists.
+    pdfPageCount: 1,
   };
 
   const [funnels, total] = await Promise.all([
@@ -61,7 +63,7 @@ export async function GET(request: NextRequest) {
     createdAt: f.createdAt || "",
     publishedAt: f.publishedAt || null,
     isQuiz: Boolean(f.quizFunnelEnabled),
-    isLockedPdf: Array.isArray(f.pdfPages) && f.pdfPages.length > 0,
+    isLockedPdf: (f.pdfPageCount || 0) > 0,
     hasVariantB: Boolean(f.hasVariantB),
     testStarted: Boolean(f.testStarted),
   }));

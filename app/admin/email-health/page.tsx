@@ -26,7 +26,8 @@ interface UserStat {
 
 interface Problem {
   eventType: "bounced" | "complained";
-  userEmail: string; recipientEmail: string;
+  userEmail: string;
+  // recipientEmail intentionally absent — API does not return lead personal data
   subject: string; sequenceId: string;
   pageId: string; createdAt: string;
 }
@@ -35,7 +36,7 @@ interface FailedSequence {
   sequenceId: string; userEmail: string;
   pageId: string; failedLeads: number;
   maxFailCount: number; lastError: string;
-  sampleEmails: string[];
+  // sampleEmails intentionally absent — API does not return lead personal data
 }
 
 interface EmailHealthData {
@@ -476,7 +477,7 @@ export default function EmailHealthPage() {
               {/* Mobile Card List (md:hidden) — Apple Bento Event Rows */}
               <div className="md:hidden divide-y divide-zinc-100 dark:divide-white/[0.06]">
                 {problems.map((prob, i) => (
-                  <div key={`${prob.recipientEmail}-${prob.createdAt}-${i}`} className="p-3.5 space-y-2">
+                  <div key={`${prob.userEmail}-${prob.createdAt}-${i}`} className="p-3.5 space-y-2">
                     <div className="flex items-center justify-between gap-2">
                       <EventTypeBadge type={prob.eventType} />
                       <span className="text-[11px] text-zinc-400 dark:text-zinc-500 font-medium">
@@ -485,9 +486,6 @@ export default function EmailHealthPage() {
                     </div>
 
                     <div className="space-y-1">
-                      <div className="text-xs font-mono text-zinc-800 dark:text-zinc-200 truncate">
-                        {prob.recipientEmail || "—"}
-                      </div>
                       <div className="text-xs text-zinc-500 dark:text-zinc-400 truncate">
                         Subject: <span className="text-zinc-700 dark:text-zinc-300 font-medium">{prob.subject || "(no subject)"}</span>
                       </div>
@@ -514,7 +512,6 @@ export default function EmailHealthPage() {
                     <tr className="border-b border-zinc-100 dark:border-white/[0.06] bg-zinc-50 dark:bg-white/[0.02]">
                       <th className="text-left px-4 py-3 text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">Type</th>
                       <th className="text-left px-4 py-3 text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">Time</th>
-                      <th className="text-left px-4 py-3 text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">Recipient</th>
                       <th className="text-left px-4 py-3 text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">Owner</th>
                       <th className="text-left px-4 py-3 text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">Subject</th>
                     </tr>
@@ -522,7 +519,7 @@ export default function EmailHealthPage() {
                   <tbody>
                     {problems.map((prob, i) => (
                       <tr
-                        key={`${prob.recipientEmail}-${prob.createdAt}-${i}`}
+                        key={`${prob.userEmail}-${prob.createdAt}-${i}`}
                         className="border-b border-zinc-100 dark:border-white/[0.04] hover:bg-zinc-50 dark:hover:bg-white/[0.02] transition-colors last:border-b-0"
                       >
                         <td className="px-4 py-3">
@@ -530,9 +527,6 @@ export default function EmailHealthPage() {
                         </td>
                         <td className="px-4 py-3 text-xs text-zinc-500 dark:text-zinc-400 whitespace-nowrap">
                           {timeAgo(prob.createdAt)}
-                        </td>
-                        <td className="px-4 py-3 text-xs font-mono text-zinc-600 dark:text-zinc-400 max-w-40 truncate">
-                          {prob.recipientEmail || "—"}
                         </td>
                         <td className="px-4 py-3">
                           <button
