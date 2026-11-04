@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -19,7 +19,6 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import BrandLogo from "@/components/brand";
 import ThemeToggle from "@/components/theme-toggle";
-import { createTickPlayer, type TickPlayer } from "@/lib/tick-sound";
 
 const NAV = [
   { href: "/admin", label: "Overview", icon: LayoutDashboard, exact: true },
@@ -44,17 +43,7 @@ export default function AdminShell({
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const tickPlayerRef = useRef<TickPlayer | null>(null);
   const mainRef = useRef<HTMLElement>(null);
-
-  const playTick = useCallback(() => {
-    try {
-      if (!tickPlayerRef.current) {
-        tickPlayerRef.current = createTickPlayer();
-      }
-      tickPlayerRef.current?.play();
-    } catch (_) {}
-  }, []);
 
   // Close mobile drawer on route change & reset scroll
   useEffect(() => {
@@ -208,10 +197,7 @@ export default function AdminShell({
               exit={{ opacity: 0 }}
               transition={{ duration: 0.22, ease: "easeInOut" }}
               className="fixed inset-0 bg-black/45 backdrop-blur-sm cursor-pointer"
-              onClick={() => {
-                playTick();
-                setMenuOpen(false);
-              }}
+              onClick={() => setMenuOpen(false)}
             />
 
             {/* Apple-grade Spring Drawer Panel */}
@@ -228,10 +214,7 @@ export default function AdminShell({
                 <Link
                   href="/admin"
                   aria-label="Admin Overview"
-                  onClick={() => {
-                    playTick();
-                    setMenuOpen(false);
-                  }}
+                  onClick={() => setMenuOpen(false)}
                   className="flex items-center"
                 >
                   <BrandLogo height="h-8" />
@@ -240,10 +223,7 @@ export default function AdminShell({
                   type="button"
                   aria-label="Close menu"
                   className="flex h-8 w-8 items-center justify-center rounded-full bg-zinc-200/70 hover:bg-zinc-300/80 text-zinc-600 hover:text-zinc-900 dark:bg-white/10 dark:hover:bg-white/20 dark:text-zinc-300 dark:hover:text-white transition-all active:scale-90 cursor-pointer"
-                  onClick={() => {
-                    playTick();
-                    setMenuOpen(false);
-                  }}
+                  onClick={() => setMenuOpen(false)}
                 >
                   <X className="h-4 w-4" strokeWidth={2.2} aria-hidden="true" />
                 </button>
@@ -271,10 +251,7 @@ export default function AdminShell({
                     <Link
                       key={href}
                       href={href}
-                      onClick={() => {
-                        playTick();
-                        setMenuOpen(false);
-                      }}
+                      onClick={() => setMenuOpen(false)}
                       className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all min-h-[44px] ${
                         active
                           ? "bg-[#0066B2] text-white shadow-sm shadow-[#0066B2]/20 dark:bg-[#0066B2]/25 dark:text-[#38BDF8] dark:border dark:border-[#0066B2]/40"
@@ -292,10 +269,7 @@ export default function AdminShell({
               <div className="pt-3 border-t border-[#E0EDFB] dark:border-white/[0.08] space-y-2 shrink-0">
                 <Link
                   href="/dashboard"
-                  onClick={() => {
-                    playTick();
-                    setMenuOpen(false);
-                  }}
+                  onClick={() => setMenuOpen(false)}
                   className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-medium text-zinc-600 dark:text-zinc-400 hover:bg-[#E2F0FD] dark:hover:bg-white/5 hover:text-zinc-900 dark:hover:text-white transition-colors min-h-[44px]"
                 >
                   <ArrowLeft className="w-4 h-4 shrink-0" />
@@ -322,10 +296,7 @@ export default function AdminShell({
               type="button"
               aria-label="Open menu"
               className="flex h-9 w-9 items-center justify-center rounded-lg text-zinc-700 dark:text-zinc-300 md:hidden hover:bg-zinc-100/80 dark:hover:bg-white/10 active:scale-90 transition-all cursor-pointer shrink-0"
-              onClick={() => {
-                playTick();
-                setMenuOpen(true);
-              }}
+              onClick={() => setMenuOpen(true)}
             >
               <Menu className="h-5.5 w-5.5" aria-hidden="true" strokeWidth={2} />
             </button>
