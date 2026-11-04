@@ -62,10 +62,11 @@ export async function GET(
     return NextResponse.json({ error: "User not found." }, { status: 404 });
   }
 
-  const [magnets, resources, sequences, leadCount] = await Promise.all([
+  const [magnetsRaw, resources, sequences, leadCount] = await Promise.all([
     MagnetPageModel.find(
       { userEmail: targetEmail },
-      { id: 1, name: 1, slug: 1, status: 1, views: 1, signups: 1, template: 1, createdAt: 1, updatedAt: 1, pdfPages: 1, quizFunnelEnabled: 1, _id: 0 }
+      // pdfPages excluded — it is an array of Cloudinary URLs for locked PDF pages (file content)
+      { id: 1, name: 1, slug: 1, status: 1, views: 1, signups: 1, template: 1, createdAt: 1, updatedAt: 1, pdfPageCount: 1, quizFunnelEnabled: 1, _id: 0 }
     ).sort({ createdAt: -1 }).lean(),
     // No fileUrl/url — admin has no need to open or download user files
     ResourceModel.find(
@@ -79,6 +80,21 @@ export async function GET(
     // Count only — individual lead names/emails are third-party personal data
     LeadModel.countDocuments({ userEmail: targetEmail }),
   ]);
+
+  // Map magnets to safe objects — derive isLockedPdf boolean, never forward pdfPages URLs
+  const magnets = (magnetsRaw as any[]).map((m) => ({
+    id: m.id,
+    name: m.name,
+    slug: m.slug || "",
+    status: m.status || "draft",
+    views: m.views || 0,
+    signups: m.signups || 0,
+    template: m.template || "template1",
+    createdAt: m.createdAt || "",
+    updatedAt: m.updatedAt || "",
+    isLockedPdf: (m.pdfPageCount || 0) > 0,
+    quizFunnelEnabled: Boolean(m.quizFunnelEnabled),
+  }));
 
   const computedRole = determineRoleForEmail(account.email);
   const effectiveRole =

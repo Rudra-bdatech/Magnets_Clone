@@ -49,7 +49,7 @@ interface Magnet {
   signups: number;
   template: string;
   updatedAt: string;
-  pdfPages: string[];
+  isLockedPdf: boolean;
   quizFunnelEnabled: boolean;
 }
 
@@ -383,7 +383,7 @@ export default function AdminUserDetailPage() {
               </thead>
               <tbody className="divide-y divide-zinc-50 dark:divide-white/[0.03]">
                 {magnets.map((m) => {
-                  const isLockedPdf = Array.isArray(m.pdfPages) && m.pdfPages.length > 0;
+                  const isLockedPdf = m.isLockedPdf;
                   const typeLabel = isLockedPdf ? "Locked PDF" : m.quizFunnelEnabled ? "Quiz" : "Landing Page";
                   const convRate = m.views > 0 ? ((m.signups / m.views) * 100).toFixed(1) : "—";
                   return (

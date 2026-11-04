@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import {
   ArrowLeft, Eye, Users, Zap, FileText, HelpCircle, Layers,
-  PauseCircle, PlayCircle, Trash2, ExternalLink, Calendar,
+  PauseCircle, PlayCircle, Trash2, Calendar,
   BarChart2, Settings, AlertTriangle,
 } from "lucide-react";
 
@@ -18,11 +18,6 @@ interface FunnelDetail {
   signups: number;
   conversionRate: number;
   template: string;
-  headline: string;
-  subheadline: string;
-  pitch: string;
-  cta: string;
-  imageUrl: string | null;
   createdAt: string;
   publishedAt: string | null;
   updatedAt: string;
@@ -33,16 +28,12 @@ interface FunnelDetail {
   variantASignups: number;
   variantBViews: number;
   variantBSignups: number;
+  isLockedPdf: boolean;
   pdfPageCount: number;
   pdfFreePages: number;
   pdfTitle: string;
   sequenceEnabled: boolean;
-  afterSignupOption: string;
-  destinationUrl: string;
   enableAiPersonalizedDeliverable: boolean;
-  formTitle: string;
-  formButtonText: string;
-  accent: string;
 }
 
 const STATUS_STYLES = {
@@ -252,17 +243,6 @@ export default function FunnelDetailPage() {
             Funnel Settings
           </h2>
           <InfoRow label="Template" value={funnel.template} />
-          <InfoRow label="CTA Button" value={funnel.cta} />
-          <InfoRow label="Form Title" value={funnel.formTitle} />
-          <InfoRow label="Form Button" value={funnel.formButtonText} />
-          <InfoRow label="After Signup" value={funnel.afterSignupOption} />
-          {funnel.destinationUrl && (
-            <InfoRow label="Destination URL" value={
-              <a href={funnel.destinationUrl} target="_blank" rel="noopener noreferrer" className="text-[#0066B2] dark:text-[#38BDF8] hover:underline flex items-center gap-1 truncate">
-                {funnel.destinationUrl} <ExternalLink className="w-3 h-3 shrink-0" />
-              </a>
-            } />
-          )}
           <InfoRow label="Sequence Active" value={funnel.sequenceEnabled ? "Yes" : "No"} />
           <InfoRow label="Sequences" value={sequenceCount.toString()} />
           <InfoRow label="AI Personalized" value={funnel.enableAiPersonalizedDeliverable ? "Enabled" : "Off"} />
@@ -326,15 +306,6 @@ export default function FunnelDetailPage() {
         </div>
       </div>
 
-      {/* Content preview (read-only) */}
-      {(funnel.headline || funnel.subheadline || funnel.pitch) && (
-        <div className="bg-white dark:bg-[#171717] rounded-xl border border-zinc-200 dark:border-white/[0.08] p-5">
-          <h2 className="text-sm font-semibold text-zinc-900 dark:text-white mb-3">Content (read-only)</h2>
-          {funnel.headline && <InfoRow label="Headline" value={funnel.headline} />}
-          {funnel.subheadline && <InfoRow label="Subheadline" value={funnel.subheadline} />}
-          {funnel.pitch && <InfoRow label="Pitch / Description" value={<span className="whitespace-pre-line">{funnel.pitch}</span>} />}
-        </div>
-      )}
 
       {/* Confirm Modal */}
       {confirmModal && (

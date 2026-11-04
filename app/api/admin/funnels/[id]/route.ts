@@ -13,20 +13,20 @@ export async function GET(
 
   await dbConnect();
 
+  // Explicit inclusion projection — no content fields (headline/pitch/copy = business IP),
+  // no file URLs (pdfPages = Cloudinary image URLs of locked PDF pages).
+  // pdfPageCount/pdfTitle/pdfFreePages are metadata only — no actual file access.
   const funnel = await MagnetPageModel.findOne(
     { id: params.id },
     {
       id: 1, userEmail: 1, name: 1, slug: 1, status: 1,
       views: 1, signups: 1, conversionRate: 1, template: 1,
-      headline: 1, subheadline: 1, pitch: 1, cta: 1, imageUrl: 1,
       createdAt: 1, publishedAt: 1, updatedAt: 1,
       quizFunnelEnabled: 1, hasVariantB: 1, testStarted: 1,
       variantAViews: 1, variantASignups: 1, variantBViews: 1, variantBSignups: 1,
-      pdfPages: 1, pdfPageCount: 1, pdfTitle: 1, pdfFreePages: 1,
-      sequenceEnabled: 1, afterSignupOption: 1, destinationUrl: 1,
-      enableAiPersonalizedDeliverable: 1,
-      formTitle: 1, formButtonText: 1,
-      accent: 1,
+      pdfPageCount: 1, pdfTitle: 1, pdfFreePages: 1,
+      // pdfPages excluded — it is an array of Cloudinary image URLs for each locked PDF page
+      sequenceEnabled: 1, enableAiPersonalizedDeliverable: 1,
     }
   ).lean() as any;
 
@@ -39,8 +39,38 @@ export async function GET(
     SequenceModel.countDocuments({ pageId: params.id }),
   ]);
 
-  const { _id, ...rest } = funnel;
-  return NextResponse.json({ funnel: rest, leadCount, sequenceCount });
+  // Build response explicitly — never spread the raw document
+  return NextResponse.json({
+    funnel: {
+      id: funnel.id,
+      userEmail: funnel.userEmail || "",
+      name: funnel.name,
+      slug: funnel.slug || "",
+      status: funnel.status || "draft",
+      views: funnel.views || 0,
+      signups: funnel.signups || 0,
+      conversionRate: funnel.conversionRate || 0,
+      template: funnel.template || "template1",
+      createdAt: funnel.createdAt || "",
+      publishedAt: funnel.publishedAt || null,
+      updatedAt: funnel.updatedAt || "",
+      quizFunnelEnabled: Boolean(funnel.quizFunnelEnabled),
+      hasVariantB: Boolean(funnel.hasVariantB),
+      testStarted: Boolean(funnel.testStarted),
+      variantAViews: funnel.variantAViews || 0,
+      variantASignups: funnel.variantASignups || 0,
+      variantBViews: funnel.variantBViews || 0,
+      variantBSignups: funnel.variantBSignups || 0,
+      isLockedPdf: (funnel.pdfPageCount || 0) > 0,
+      pdfPageCount: funnel.pdfPageCount || 0,
+      pdfTitle: funnel.pdfTitle || "",
+      pdfFreePages: funnel.pdfFreePages || 0,
+      sequenceEnabled: Boolean(funnel.sequenceEnabled),
+      enableAiPersonalizedDeliverable: Boolean(funnel.enableAiPersonalizedDeliverable),
+    },
+    leadCount,
+    sequenceCount,
+  });
 }
 
 export async function PATCH(
