@@ -67,7 +67,8 @@ export async function GET(request: NextRequest) {
         createdAt: { $gte: periodStart },
       },
       {
-        userEmail: 1, recipientEmail: 1, eventType: 1,
+        // recipientEmail excluded — lead personal data; admin needs delivery stats only
+        userEmail: 1, eventType: 1,
         subject: 1, createdAt: 1, sequenceId: 1, pageId: 1, messageId: 1,
       }
     )
@@ -88,7 +89,7 @@ export async function GET(request: NextRequest) {
           maxFailCount: { $max: "$seqFailCount" },
           lastError:    { $first: "$seqLastError" },
           pageId:       { $first: "$pageId" },
-          sampleEmails: { $push: "$email" },
+          // sampleEmails excluded — individual lead emails are third-party personal data
         },
       },
       { $sort: { failedLeads: -1, maxFailCount: -1 } },
@@ -139,23 +140,23 @@ export async function GET(request: NextRequest) {
   }));
 
   const problems = (recentProblems as any[]).map((e) => ({
-    eventType:      e.eventType,
-    userEmail:      e.userEmail    || "",
-    recipientEmail: e.recipientEmail || "",
-    subject:        e.subject      || "(no subject)",
-    sequenceId:     e.sequenceId   || "",
-    pageId:         e.pageId       || "",
-    createdAt:      e.createdAt,
+    eventType:  e.eventType,
+    userEmail:  e.userEmail  || "",
+    // recipientEmail omitted — lead's personal email address; not needed for admin diagnostics
+    subject:    e.subject    || "(no subject)",
+    sequenceId: e.sequenceId || "",
+    pageId:     e.pageId     || "",
+    createdAt:  e.createdAt,
   }));
 
   const failedSequences = (failedLeadGroups as any[]).map((g) => ({
-    sequenceId:  g._id.sequenceId || "",
-    userEmail:   g._id.userEmail  || "",
-    pageId:      g.pageId         || "",
-    failedLeads: g.failedLeads,
+    sequenceId:   g._id.sequenceId || "",
+    userEmail:    g._id.userEmail  || "",
+    pageId:       g.pageId         || "",
+    failedLeads:  g.failedLeads,
     maxFailCount: g.maxFailCount,
-    lastError:   g.lastError      || "",
-    sampleEmails: (g.sampleEmails as string[]).slice(0, 3),
+    lastError:    g.lastError      || "",
+    // sampleEmails omitted — lead email addresses are third-party personal data
   }));
 
   return NextResponse.json({
