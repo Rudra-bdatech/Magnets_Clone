@@ -255,7 +255,7 @@ export default function AdminOverviewPage() {
 
   if (loading) {
     return (
-      <div className="p-3.5 sm:p-6 lg:p-8 pb-24 sm:pb-12 max-w-7xl mx-auto space-y-4 sm:space-y-6 w-full min-w-0 touch-pan-y">
+      <div className="p-3.5 sm:p-6 lg:p-8 max-w-7xl mx-auto space-y-4 sm:space-y-6 w-full min-w-0 touch-pan-y">
         <div className="h-7 w-36 bg-zinc-200/70 dark:bg-white/5 rounded-xl animate-pulse" />
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
           {Array.from({ length: 5 }).map((_, i) => (
@@ -288,7 +288,7 @@ export default function AdminOverviewPage() {
   const storage = stats.storage;
 
   return (
-    <div className="p-3.5 sm:p-6 lg:p-8 pb-24 sm:pb-12 max-w-7xl mx-auto space-y-4 sm:space-y-6 w-full min-w-0 touch-pan-y">
+    <div className="p-3.5 sm:p-6 lg:p-8 max-w-7xl mx-auto space-y-4 sm:space-y-6 w-full min-w-0 touch-pan-y">
       {/* Header section */}
       <div>
         <h1 className="text-xl sm:text-2xl font-bold text-zinc-900 dark:text-white tracking-tight flex items-center gap-2">

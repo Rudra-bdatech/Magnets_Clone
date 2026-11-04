@@ -290,7 +290,7 @@ export default function AdminUserDetailPage() {
   const hasChanges = plan !== user.plan || role !== user.role;
 
   return (
-    <div className="p-3.5 sm:p-6 max-w-5xl mx-auto">
+    <div className="p-3.5 sm:p-6 md:p-8 max-w-5xl mx-auto touch-pan-y">
       {/* Back button */}
       <button
         onClick={() => router.push("/admin/users")}

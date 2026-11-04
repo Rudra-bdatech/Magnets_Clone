@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
+import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
 import { Search, ChevronLeft, ChevronRight, Check, X, AlertTriangle, ChevronDown, Calendar } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -82,112 +83,178 @@ function RowSelect({
   title?: string;
 }) {
   const [open, setOpen] = useState(false);
+  const [openUpward, setOpenUpward] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   useClickOutside(ref, () => setOpen(false));
 
   useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
     if (open && typeof window !== "undefined" && window.innerWidth < 640) {
+      const prevOverflow = document.body.style.overflow;
       document.body.style.overflow = "hidden";
       return () => {
-        document.body.style.overflow = "";
+        document.body.style.overflow = prevOverflow;
       };
     }
   }, [open]);
 
+  const toggleOpen = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!open && ref.current) {
+      const rect = ref.current.getBoundingClientRect();
+      const spaceBelow = window.innerHeight - rect.bottom;
+      setOpenUpward(spaceBelow < 150);
+    }
+    setOpen((v) => !v);
+  };
+
   return (
-    <div ref={ref} className="relative inline-block">
+    <div ref={ref} className={`relative inline-block ${open ? "z-50" : "z-10"}`}>
       <button
         type="button"
         disabled={disabled}
-        onClick={(e) => { e.stopPropagation(); setOpen((v) => !v); }}
-        className={`flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full transition-opacity disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer select-none ${colorMap[value] || "bg-zinc-100 text-zinc-600 dark:bg-white/10 dark:text-zinc-400"}`}
+        onClick={toggleOpen}
+        className={`flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full transition-opacity disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer select-none active:scale-95 ${colorMap[value] || "bg-zinc-100 text-zinc-600 dark:bg-white/10 dark:text-zinc-400"}`}
       >
         {value}
         <ChevronDown className={`w-3 h-3 transition-transform duration-150 ${open ? "rotate-180" : ""}`} />
       </button>
 
+      {/* Desktop Anchored Popover (sm:) */}
       <AnimatePresence>
         {open && (
-          <>
-            {/* Mobile Sheet Backdrop */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={(e) => { e.stopPropagation(); setOpen(false); }}
-              className="sm:hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-xs"
+          <div className="hidden sm:block">
+            <div
+              className="fixed inset-0 z-40 bg-transparent"
+              onClick={(e) => {
+                e.stopPropagation();
+                setOpen(false);
+              }}
             />
 
-            {/* Mobile Bottom Sheet (< sm) */}
             <motion.div
-              initial={{ y: "100%" }}
-              animate={{ y: 0 }}
-              exit={{ y: "100%" }}
-              transition={{ type: "spring", damping: 30, stiffness: 350 }}
-              onClick={(e) => e.stopPropagation()}
-              className="sm:hidden fixed inset-x-0 bottom-0 z-50 rounded-t-3xl bg-white dark:bg-[#1C1C1F] border-t border-zinc-200 dark:border-white/10 p-4 pb-8 shadow-2xl max-h-[80vh] overflow-y-auto"
-            >
-              <div className="w-10 h-1 bg-zinc-300 dark:bg-white/20 rounded-full mx-auto mb-3" />
-              <div className="flex items-center justify-between pb-2 mb-2 border-b border-zinc-100 dark:border-white/[0.08] px-1">
-                <span className="text-sm font-bold text-zinc-900 dark:text-white">
-                  {title}
-                </span>
-                <button
-                  type="button"
-                  onClick={(e) => { e.stopPropagation(); setOpen(false); }}
-                  className="p-1 rounded-lg text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
-
-              <div className="space-y-1">
-                {options.map((opt) => (
-                  <button
-                    key={opt}
-                    type="button"
-                    onClick={(e) => { e.stopPropagation(); onChange(opt); setOpen(false); }}
-                    className={`flex w-full items-center justify-between gap-2 rounded-xl px-3.5 py-3 text-sm font-medium transition-colors cursor-pointer ${
-                      value === opt
-                        ? "bg-[#0066B2]/10 text-[#0066B2] font-semibold dark:bg-[#38BDF8]/15 dark:text-[#38BDF8]"
-                        : "text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-white/5"
-                    }`}
-                  >
-                    <span>{opt}</span>
-                    {value === opt && <Check className="w-4 h-4 shrink-0" />}
-                  </button>
-                ))}
-              </div>
-            </motion.div>
-
-            {/* Desktop Anchored Popover (sm:) */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: -4 }}
+              initial={{ opacity: 0, scale: 0.95, y: openUpward ? 4 : -4 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: -4 }}
-              transition={{ type: "spring", damping: 28, stiffness: 400 }}
-              style={{ transformOrigin: "top left" }}
-              className="hidden sm:block absolute left-0 top-full z-50 mt-1.5 min-w-[130px] rounded-xl border border-zinc-200/80 bg-white/95 p-1 shadow-2xl backdrop-blur-xl dark:border-white/10 dark:bg-[#171717]/95"
+              exit={{ opacity: 0, scale: 0.95, y: openUpward ? 4 : -4 }}
+              transition={{ type: "spring", damping: 28, stiffness: 450 }}
+              style={{ transformOrigin: openUpward ? "bottom left" : "top left" }}
+              className={`absolute left-0 z-50 min-w-[130px] rounded-xl border border-zinc-200/90 dark:border-white/10 bg-white/95 dark:bg-[#1C1C1F]/95 p-1 shadow-2xl backdrop-blur-xl ${
+                openUpward ? "bottom-full mb-1.5" : "top-full mt-1.5"
+              }`}
+              onClick={(e) => e.stopPropagation()}
             >
               {options.map((opt) => (
                 <button
                   key={opt}
                   type="button"
-                  onClick={(e) => { e.stopPropagation(); onChange(opt); setOpen(false); }}
-                  className={`flex w-full items-center justify-between gap-2 rounded-lg px-2.5 py-1.5 text-xs font-medium transition-all cursor-pointer ${
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onChange(opt);
+                    setOpen(false);
+                  }}
+                  className={`flex w-full items-center justify-between gap-2 rounded-lg px-2.5 py-2 text-xs font-medium transition-all cursor-pointer ${
                     value === opt
                       ? "bg-[#0066B2]/10 text-[#0066B2] font-semibold dark:bg-[#38BDF8]/15 dark:text-[#38BDF8]"
-                      : "text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-white/5"
+                      : "text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-white/5 active:bg-zinc-200/60 dark:active:bg-white/10"
                   }`}
                 >
-                  {opt}
-                  {value === opt && <Check className="w-3 h-3 shrink-0" />}
+                  <span>{opt}</span>
+                  {value === opt && <Check className="w-3.5 h-3.5 text-[#0066B2] dark:text-[#38BDF8] shrink-0" />}
                 </button>
               ))}
             </motion.div>
-          </>
+          </div>
         )}
       </AnimatePresence>
+
+      {/* Mobile Bottom Sheet (portaled directly to document.body so it pops up from bottom of device screen) */}
+      {mounted && typeof document !== "undefined" && createPortal(
+        <AnimatePresence>
+          {open && (
+            <div className="sm:hidden fixed inset-0 z-[100] flex items-end justify-center pointer-events-auto">
+              {/* Dimmed Backdrop */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setOpen(false);
+                }}
+                className="fixed inset-0 bg-black/60 backdrop-blur-xs cursor-pointer"
+              />
+
+              {/* Bottom Sheet Card */}
+              <motion.div
+                initial={{ y: "100%" }}
+                animate={{ y: 0 }}
+                exit={{ y: "100%" }}
+                transition={{ type: "spring", damping: 30, stiffness: 350 }}
+                className="relative z-10 w-full rounded-t-3xl bg-white dark:bg-[#1C1C1F] border-t border-zinc-200 dark:border-white/10 p-5 pb-8 shadow-2xl overscroll-contain"
+                onClick={(e) => e.stopPropagation()}
+              >
+                {/* Pull grab handle */}
+                <div className="w-10 h-1 bg-zinc-300 dark:bg-white/20 rounded-full mx-auto mb-3" />
+
+                {/* Header */}
+                <div className="flex items-center justify-between pb-3 mb-3 border-b border-zinc-100 dark:border-white/[0.08]">
+                  <div>
+                    <h3 className="text-sm font-bold text-zinc-900 dark:text-white">{title}</h3>
+                    <p className="text-xs text-zinc-400 dark:text-zinc-500 mt-0.5">Select an option to update</p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setOpen(false)}
+                    className="p-1.5 rounded-lg text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+
+                {/* Options List */}
+                <div className="space-y-1.5">
+                  {options.map((opt) => {
+                    const isSelected = value === opt;
+                    return (
+                      <button
+                        key={opt}
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onChange(opt);
+                          setOpen(false);
+                        }}
+                        className={`flex w-full items-center justify-between gap-3 rounded-xl p-3 text-sm font-semibold transition-all cursor-pointer border ${
+                          isSelected
+                            ? "bg-[#0066B2]/10 border-[#0066B2]/30 text-[#0066B2] dark:bg-[#38BDF8]/15 dark:border-[#38BDF8]/30 dark:text-[#38BDF8]"
+                            : "border-zinc-200/80 dark:border-white/10 text-zinc-800 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-white/5 active:scale-[0.99]"
+                        }`}
+                      >
+                        <div className="flex items-center gap-2.5">
+                          <span className={`text-xs font-semibold px-2.5 py-0.5 rounded-full ${colorMap[opt] || "bg-zinc-100 text-zinc-600 dark:bg-white/10 dark:text-zinc-400"}`}>
+                            {opt}
+                          </span>
+                        </div>
+                        {isSelected && (
+                          <div className="w-5 h-5 rounded-full bg-[#0066B2] dark:bg-[#38BDF8] flex items-center justify-center text-white shrink-0">
+                            <Check className="w-3.5 h-3.5 stroke-[3]" />
+                          </div>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
     </div>
   );
 }
@@ -205,104 +272,65 @@ function FilterSelect({
   onChange: (v: string) => void;
 }) {
   const [open, setOpen] = useState(false);
+  const [openUpward, setOpenUpward] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   useClickOutside(ref, () => setOpen(false));
 
   useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
     if (open && typeof window !== "undefined" && window.innerWidth < 640) {
+      const prevOverflow = document.body.style.overflow;
       document.body.style.overflow = "hidden";
       return () => {
-        document.body.style.overflow = "";
+        document.body.style.overflow = prevOverflow;
       };
     }
   }, [open]);
 
+  const toggleOpen = () => {
+    if (!open && ref.current) {
+      const rect = ref.current.getBoundingClientRect();
+      const spaceBelow = window.innerHeight - rect.bottom;
+      setOpenUpward(spaceBelow < 180);
+    }
+    setOpen((v) => !v);
+  };
+
   const label = value || placeholder;
 
   return (
-    <div ref={ref} className="relative shrink-0 w-full sm:w-auto">
+    <div ref={ref} className={`relative shrink-0 w-full sm:w-auto ${open ? "z-50" : "z-10"}`}>
       <button
         type="button"
-        onClick={() => setOpen((v) => !v)}
-        className="w-full sm:w-auto flex h-9 items-center justify-between sm:justify-start gap-1.5 sm:gap-2 rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#1C1C1F] px-2.5 sm:px-3 text-xs sm:text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-white/5 transition shadow-xs cursor-pointer select-none"
+        onClick={toggleOpen}
+        className="w-full sm:w-auto flex h-9 items-center justify-between sm:justify-start gap-1.5 sm:gap-2 rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#1C1C1F] px-2.5 sm:px-3 text-xs sm:text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-white/5 transition shadow-xs cursor-pointer select-none active:scale-[0.98]"
       >
         <span className="truncate">{label}</span>
         <ChevronDown className={`w-3.5 h-3.5 text-zinc-400 shrink-0 transition-transform duration-150 ${open ? "rotate-180" : ""}`} />
       </button>
 
+      {/* Desktop Popover (hidden sm:block) */}
       <AnimatePresence>
         {open && (
-          <>
-            {/* Mobile Sheet Backdrop */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
+          <div className="hidden sm:block">
+            <div
+              className="fixed inset-0 z-40 bg-transparent"
               onClick={() => setOpen(false)}
-              className="sm:hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-xs"
             />
 
-            {/* Mobile Bottom Sheet (< sm) */}
             <motion.div
-              initial={{ y: "100%" }}
-              animate={{ y: 0 }}
-              exit={{ y: "100%" }}
-              transition={{ type: "spring", damping: 30, stiffness: 350 }}
-              className="sm:hidden fixed inset-x-0 bottom-0 z-50 rounded-t-3xl bg-white dark:bg-[#1C1C1F] border-t border-zinc-200 dark:border-white/10 p-4 pb-8 shadow-2xl max-h-[80vh] overflow-y-auto"
-            >
-              <div className="w-10 h-1 bg-zinc-300 dark:bg-white/20 rounded-full mx-auto mb-3" />
-              <div className="flex items-center justify-between pb-2 mb-2 border-b border-zinc-100 dark:border-white/[0.08] px-1">
-                <span className="text-sm font-bold text-zinc-900 dark:text-white">
-                  {placeholder.replace("All ", "Select ")}
-                </span>
-                <button
-                  type="button"
-                  onClick={() => setOpen(false)}
-                  className="p-1 rounded-lg text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
-
-              <div className="space-y-1">
-                <button
-                  type="button"
-                  onClick={() => { onChange(""); setOpen(false); }}
-                  className={`flex w-full items-center justify-between gap-2 rounded-xl px-3.5 py-3 text-sm font-medium transition-colors cursor-pointer ${
-                    !value
-                      ? "bg-[#0066B2]/10 text-[#0066B2] font-semibold dark:bg-[#38BDF8]/15 dark:text-[#38BDF8]"
-                      : "text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-white/5"
-                  }`}
-                >
-                  <span>{placeholder}</span>
-                  {!value && <Check className="w-4 h-4 shrink-0" />}
-                </button>
-                {options.map((opt) => (
-                  <button
-                    key={opt}
-                    type="button"
-                    onClick={() => { onChange(opt); setOpen(false); }}
-                    className={`flex w-full items-center justify-between gap-2 rounded-xl px-3.5 py-3 text-sm font-medium transition-colors cursor-pointer ${
-                      value === opt
-                        ? "bg-[#0066B2]/10 text-[#0066B2] font-semibold dark:bg-[#38BDF8]/15 dark:text-[#38BDF8]"
-                        : "text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-white/5"
-                    }`}
-                  >
-                    <span>{opt}</span>
-                    {value === opt && <Check className="w-4 h-4 shrink-0" />}
-                  </button>
-                ))}
-              </div>
-            </motion.div>
-
-            {/* Desktop Anchored Popover (sm:) */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.96, y: -6 }}
+              initial={{ opacity: 0, scale: 0.96, y: openUpward ? 4 : -4 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.96, y: -4 }}
-              transition={{ type: "spring", damping: 28, stiffness: 400 }}
-              style={{ transformOrigin: "top right" }}
-              className="hidden sm:block absolute right-0 top-full z-50 mt-1.5 min-w-[140px] rounded-xl border border-zinc-200/80 bg-white/95 p-1 shadow-2xl backdrop-blur-xl dark:border-white/10 dark:bg-[#171717]/95"
+              exit={{ opacity: 0, scale: 0.96, y: openUpward ? 4 : -4 }}
+              transition={{ type: "spring", damping: 28, stiffness: 450 }}
+              style={{ transformOrigin: openUpward ? "bottom left" : "top left" }}
+              className={`absolute left-0 sm:left-auto sm:right-0 z-50 min-w-[140px] w-full sm:w-auto rounded-xl border border-zinc-200/90 dark:border-white/10 bg-white/95 dark:bg-[#1C1C1F]/95 p-1 shadow-2xl backdrop-blur-xl ${
+                openUpward ? "bottom-full mb-1.5" : "top-full mt-1.5"
+              }`}
             >
               <button
                 type="button"
@@ -310,11 +338,11 @@ function FilterSelect({
                 className={`flex w-full items-center justify-between gap-2 rounded-lg px-2.5 py-2 text-xs font-medium transition-all cursor-pointer ${
                   !value
                     ? "bg-[#0066B2]/10 text-[#0066B2] font-semibold dark:bg-[#38BDF8]/15 dark:text-[#38BDF8]"
-                    : "text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-white/5"
+                    : "text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-white/5 active:bg-zinc-200/60 dark:active:bg-white/10"
                 }`}
               >
-                {placeholder}
-                {!value && <Check className="w-3 h-3 shrink-0" />}
+                <span>{placeholder}</span>
+                {!value && <Check className="w-3.5 h-3.5 text-[#0066B2] dark:text-[#38BDF8] shrink-0" />}
               </button>
               {options.map((opt) => (
                 <button
@@ -324,17 +352,88 @@ function FilterSelect({
                   className={`flex w-full items-center justify-between gap-2 rounded-lg px-2.5 py-2 text-xs font-medium transition-all cursor-pointer ${
                     value === opt
                       ? "bg-[#0066B2]/10 text-[#0066B2] font-semibold dark:bg-[#38BDF8]/15 dark:text-[#38BDF8]"
-                      : "text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-white/5"
+                      : "text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-white/5 active:bg-zinc-200/60 dark:active:bg-white/10"
                   }`}
                 >
-                  {opt}
-                  {value === opt && <Check className="w-3 h-3 shrink-0" />}
+                  <span>{opt}</span>
+                  {value === opt && <Check className="w-3.5 h-3.5 text-[#0066B2] dark:text-[#38BDF8] shrink-0" />}
                 </button>
               ))}
             </motion.div>
-          </>
+          </div>
         )}
       </AnimatePresence>
+
+      {/* Mobile Bottom Sheet (portaled to document.body) */}
+      {mounted && typeof document !== "undefined" && createPortal(
+        <AnimatePresence>
+          {open && (
+            <div className="sm:hidden fixed inset-0 z-[100] flex items-end justify-center pointer-events-auto">
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                onClick={() => setOpen(false)}
+                className="fixed inset-0 bg-black/60 backdrop-blur-xs cursor-pointer"
+              />
+
+              <motion.div
+                initial={{ y: "100%" }}
+                animate={{ y: 0 }}
+                exit={{ y: "100%" }}
+                transition={{ type: "spring", damping: 30, stiffness: 350 }}
+                className="relative z-10 w-full rounded-t-3xl bg-white dark:bg-[#1C1C1F] border-t border-zinc-200 dark:border-white/10 p-5 pb-8 shadow-2xl overscroll-contain"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className="w-10 h-1 bg-zinc-300 dark:bg-white/20 rounded-full mx-auto mb-3" />
+
+                <div className="flex items-center justify-between pb-3 mb-3 border-b border-zinc-100 dark:border-white/[0.08]">
+                  <h3 className="text-sm font-bold text-zinc-900 dark:text-white">{placeholder}</h3>
+                  <button
+                    type="button"
+                    onClick={() => setOpen(false)}
+                    className="p-1.5 rounded-lg text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+
+                <div className="space-y-1.5">
+                  <button
+                    type="button"
+                    onClick={() => { onChange(""); setOpen(false); }}
+                    className={`flex w-full items-center justify-between gap-3 rounded-xl p-3 text-sm font-semibold transition-all cursor-pointer border ${
+                      !value
+                        ? "bg-[#0066B2]/10 border-[#0066B2]/30 text-[#0066B2] dark:bg-[#38BDF8]/15 dark:border-[#38BDF8]/30 dark:text-[#38BDF8]"
+                        : "border-zinc-200/80 dark:border-white/10 text-zinc-800 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-white/5"
+                    }`}
+                  >
+                    <span>{placeholder}</span>
+                    {!value && <Check className="w-4 h-4 text-[#0066B2] dark:text-[#38BDF8] shrink-0" />}
+                  </button>
+                  {options.map((opt) => (
+                    <button
+                      key={opt}
+                      type="button"
+                      onClick={() => { onChange(opt); setOpen(false); }}
+                      className={`flex w-full items-center justify-between gap-3 rounded-xl p-3 text-sm font-semibold transition-all cursor-pointer border ${
+                        value === opt
+                          ? "bg-[#0066B2]/10 border-[#0066B2]/30 text-[#0066B2] dark:bg-[#38BDF8]/15 dark:border-[#38BDF8]/30 dark:text-[#38BDF8]"
+                          : "border-zinc-200/80 dark:border-white/10 text-zinc-800 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-white/5"
+                      }`}
+                    >
+                      <span>{opt}</span>
+                      {value === opt && <Check className="w-4 h-4 text-[#0066B2] dark:text-[#38BDF8] shrink-0" />}
+                    </button>
+                  ))}
+                </div>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
     </div>
   );
 }
@@ -361,8 +460,13 @@ function DateRangeFilter({
   const [open, setOpen] = useState(false);
   const [tempStart, setTempStart] = useState(startDate);
   const [tempEnd, setTempEnd] = useState(endDate);
+  const [mounted, setMounted] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   useClickOutside(ref, () => setOpen(false));
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     setTempStart(startDate);
@@ -371,9 +475,10 @@ function DateRangeFilter({
 
   useEffect(() => {
     if (open && typeof window !== "undefined" && window.innerWidth < 640) {
+      const prevOverflow = document.body.style.overflow;
       document.body.style.overflow = "hidden";
       return () => {
-        document.body.style.overflow = "";
+        document.body.style.overflow = prevOverflow;
       };
     }
   }, [open]);
@@ -429,134 +534,17 @@ function DateRangeFilter({
         )}
       </button>
 
+      {/* Desktop Anchored Popover (sm:) */}
       <AnimatePresence>
         {open && (
-          <>
-            {/* Mobile Sheet Backdrop */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setOpen(false)}
-              className="sm:hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-xs"
-            />
-
-            {/* Mobile Bottom Sheet (< sm) - 100% immune to screen width or button wrapping */}
-            <motion.div
-              initial={{ y: "100%" }}
-              animate={{ y: 0 }}
-              exit={{ y: "100%" }}
-              transition={{ type: "spring", damping: 30, stiffness: 350 }}
-              className="sm:hidden fixed inset-x-0 bottom-0 z-50 rounded-t-3xl bg-white dark:bg-[#1C1C1F] border-t border-zinc-200 dark:border-white/10 p-4 pb-8 shadow-2xl max-h-[85vh] overflow-y-auto"
-            >
-              <div className="w-10 h-1 bg-zinc-300 dark:bg-white/20 rounded-full mx-auto mb-3" />
-              <div className="flex items-center justify-between pb-2 mb-3 border-b border-zinc-100 dark:border-white/[0.08] px-1">
-                <span className="text-sm font-bold text-zinc-900 dark:text-white">
-                  Filter by Date
-                </span>
-                <button
-                  type="button"
-                  onClick={() => setOpen(false)}
-                  className="p-1 rounded-lg text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
-
-              {/* Presets */}
-              <div className="space-y-1">
-                {DATE_PRESETS.map((preset) => {
-                  const active = dateRange === preset.value;
-                  return (
-                    <button
-                      key={preset.value}
-                      type="button"
-                      onClick={() => {
-                        onChange(preset.value, "", "");
-                        setOpen(false);
-                      }}
-                      className={`flex w-full items-center justify-between gap-2 rounded-xl px-3.5 py-3 text-sm font-medium transition-colors cursor-pointer ${
-                        active
-                          ? "bg-[#0066B2]/10 text-[#0066B2] font-semibold dark:bg-[#38BDF8]/15 dark:text-[#38BDF8]"
-                          : "text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-white/5"
-                      }`}
-                    >
-                      <span>{preset.label}</span>
-                      {active && <Check className="w-4 h-4 shrink-0" />}
-                    </button>
-                  );
-                })}
-              </div>
-
-              {/* Custom Range Section */}
-              <div className="mt-4 pt-3 border-t border-zinc-100 dark:border-white/[0.08]">
-                <div className="text-[11px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider mb-2 px-1">
-                  Custom Range
-                </div>
-
-                <div className="space-y-3">
-                  <div>
-                    <label className="text-xs text-zinc-500 dark:text-zinc-400 block mb-1 font-medium">
-                      From
-                    </label>
-                    <input
-                      type="date"
-                      value={tempStart}
-                      onChange={(e) => setTempStart(e.target.value)}
-                      className="w-full text-sm px-3 py-2 rounded-xl border border-zinc-200 dark:border-white/10 bg-zinc-50 dark:bg-white/[0.04] text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#0066B2] dark:[color-scheme:dark]"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="text-xs text-zinc-500 dark:text-zinc-400 block mb-1 font-medium">
-                      To
-                    </label>
-                    <input
-                      type="date"
-                      value={tempEnd}
-                      onChange={(e) => setTempEnd(e.target.value)}
-                      className="w-full text-sm px-3 py-2 rounded-xl border border-zinc-200 dark:border-white/10 bg-zinc-50 dark:bg-white/[0.04] text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#0066B2] dark:[color-scheme:dark]"
-                    />
-                  </div>
-
-                  <div className="flex items-center gap-2 pt-1">
-                    <button
-                      type="button"
-                      disabled={!tempStart && !tempEnd}
-                      onClick={() => {
-                        if (!tempStart && !tempEnd) return;
-                        onChange("custom", tempStart, tempEnd);
-                        setOpen(false);
-                      }}
-                      className="flex-1 py-2.5 px-4 rounded-xl bg-[#0066B2] text-white text-sm font-semibold hover:bg-[#005596] disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
-                    >
-                      Apply Range
-                    </button>
-                    {dateRange === "custom" && (
-                      <button
-                        type="button"
-                        onClick={() => {
-                          onChange("", "", "");
-                          setOpen(false);
-                        }}
-                        className="py-2.5 px-3 rounded-xl text-sm font-medium text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-colors cursor-pointer"
-                      >
-                        Reset
-                      </button>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-
-            {/* Desktop Anchored Popover (sm:) */}
+          <div className="hidden sm:block">
             <motion.div
               initial={{ opacity: 0, scale: 0.96, y: -6 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.96, y: -4 }}
               transition={{ type: "spring", damping: 28, stiffness: 400 }}
               style={{ transformOrigin: "top right" }}
-              className="hidden sm:block absolute right-0 top-full z-50 mt-1.5 w-72 rounded-2xl border border-zinc-200/80 bg-white/95 p-2 shadow-2xl backdrop-blur-xl dark:border-white/10 dark:bg-[#171717]/95"
+              className="absolute right-0 top-full z-50 mt-1.5 w-72 rounded-2xl border border-zinc-200/80 bg-white/95 p-2 shadow-2xl backdrop-blur-xl dark:border-white/10 dark:bg-[#171717]/95"
             >
               {/* Quick Presets */}
               <div className="space-y-0.5">
@@ -643,9 +631,136 @@ function DateRangeFilter({
                 </div>
               </div>
             </motion.div>
-          </>
+          </div>
         )}
       </AnimatePresence>
+
+      {/* Mobile Bottom Sheet (portaled to document.body) */}
+      {mounted && typeof document !== "undefined" && createPortal(
+        <AnimatePresence>
+          {open && (
+            <div className="sm:hidden fixed inset-0 z-[100] flex items-end justify-center pointer-events-auto">
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                onClick={() => setOpen(false)}
+                className="fixed inset-0 bg-black/60 backdrop-blur-xs cursor-pointer"
+              />
+
+              <motion.div
+                initial={{ y: "100%" }}
+                animate={{ y: 0 }}
+                exit={{ y: "100%" }}
+                transition={{ type: "spring", damping: 30, stiffness: 350 }}
+                className="relative z-10 w-full rounded-t-3xl bg-white dark:bg-[#1C1C1F] border-t border-zinc-200 dark:border-white/10 p-4 pb-8 shadow-2xl max-h-[85vh] overflow-y-auto overscroll-contain [-webkit-overflow-scrolling:touch] touch-pan-y"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className="w-10 h-1 bg-zinc-300 dark:bg-white/20 rounded-full mx-auto mb-3" />
+                <div className="flex items-center justify-between pb-2 mb-3 border-b border-zinc-100 dark:border-white/[0.08] px-1">
+                  <span className="text-sm font-bold text-zinc-900 dark:text-white">
+                    Filter by Date
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setOpen(false)}
+                    className="p-1 rounded-lg text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+
+                {/* Presets */}
+                <div className="space-y-1">
+                  {DATE_PRESETS.map((preset) => {
+                    const active = dateRange === preset.value;
+                    return (
+                      <button
+                        key={preset.value}
+                        type="button"
+                        onClick={() => {
+                          onChange(preset.value, "", "");
+                          setOpen(false);
+                        }}
+                        className={`flex w-full items-center justify-between gap-2 rounded-xl px-3.5 py-3 text-sm font-medium transition-colors cursor-pointer ${
+                          active
+                            ? "bg-[#0066B2]/10 text-[#0066B2] font-semibold dark:bg-[#38BDF8]/15 dark:text-[#38BDF8]"
+                            : "text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-white/5"
+                        }`}
+                      >
+                        <span>{preset.label}</span>
+                        {active && <Check className="w-4 h-4 shrink-0" />}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Custom Range Section */}
+                <div className="mt-4 pt-3 border-t border-zinc-100 dark:border-white/[0.08]">
+                  <div className="text-[11px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider mb-2 px-1">
+                    Custom Range
+                  </div>
+
+                  <div className="space-y-3">
+                    <div>
+                      <label className="text-xs text-zinc-500 dark:text-zinc-400 block mb-1 font-medium">
+                        From
+                      </label>
+                      <input
+                        type="date"
+                        value={tempStart}
+                        onChange={(e) => setTempStart(e.target.value)}
+                        className="w-full text-sm px-3 py-2 rounded-xl border border-zinc-200 dark:border-white/10 bg-zinc-50 dark:bg-white/[0.04] text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#0066B2] dark:[color-scheme:dark]"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="text-xs text-zinc-500 dark:text-zinc-400 block mb-1 font-medium">
+                        To
+                      </label>
+                      <input
+                        type="date"
+                        value={tempEnd}
+                        onChange={(e) => setTempEnd(e.target.value)}
+                        className="w-full text-sm px-3 py-2 rounded-xl border border-zinc-200 dark:border-white/10 bg-zinc-50 dark:bg-white/[0.04] text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#0066B2] dark:[color-scheme:dark]"
+                      />
+                    </div>
+
+                    <div className="flex items-center gap-2 pt-1">
+                      <button
+                        type="button"
+                        disabled={!tempStart && !tempEnd}
+                        onClick={() => {
+                          if (!tempStart && !tempEnd) return;
+                          onChange("custom", tempStart, tempEnd);
+                          setOpen(false);
+                        }}
+                        className="flex-1 py-2.5 px-4 rounded-xl bg-[#0066B2] text-white text-sm font-semibold hover:bg-[#005596] disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
+                      >
+                        Apply Range
+                      </button>
+                      {dateRange === "custom" && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            onChange("", "", "");
+                            setOpen(false);
+                          }}
+                          className="py-2.5 px-3 rounded-xl text-sm font-medium text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-colors cursor-pointer"
+                        >
+                          Reset
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
     </div>
   );
 }
@@ -666,6 +781,21 @@ export default function AdminUsersPage() {
   const [updating, setUpdating] = useState<string | null>(null);
   const [error, setError] = useState("");
   const [pending, setPending] = useState<PendingChange | null>(null);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (pending && typeof window !== "undefined" && window.innerWidth < 640) {
+      const prevOverflow = document.body.style.overflow;
+      document.body.style.overflow = "hidden";
+      return () => {
+        document.body.style.overflow = prevOverflow;
+      };
+    }
+  }, [pending]);
 
   const fetchUsers = useCallback(async () => {
     setLoading(true);
@@ -735,7 +865,7 @@ export default function AdminUsersPage() {
   const end = Math.min(page * 25, total);
 
   return (
-    <div className="p-3.5 sm:p-6 pb-20 sm:pb-8 max-w-7xl mx-auto touch-pan-y">
+    <div className="p-3.5 sm:p-6 md:p-8 max-w-7xl mx-auto touch-pan-y">
       <div className="mb-5 sm:mb-6">
         <h1 className="text-xl sm:text-2xl font-bold text-zinc-900 dark:text-white tracking-tight">Users</h1>
         <p className="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 mt-0.5">
@@ -831,7 +961,7 @@ export default function AdminUsersPage() {
               <div
                 key={user.email}
                 onClick={() => router.push(`/admin/users/${encodeURIComponent(user.email)}`)}
-                className="p-3.5 hover:bg-[#F0F7FF]/50 dark:hover:bg-white/[0.02] active:bg-[#E2F0FD]/60 dark:active:bg-white/[0.04] transition-colors cursor-pointer space-y-2.5"
+                className="p-3.5 hover:bg-[#F0F7FF]/50 dark:hover:bg-white/[0.02] active:bg-[#E2F0FD]/60 dark:active:bg-white/[0.04] transition-colors cursor-pointer space-y-2.5 touch-pan-y"
               >
                 {/* Top Row: User Identity Header + Quick Inspect */}
                 <div className="flex items-start justify-between gap-2">
@@ -1074,17 +1204,19 @@ export default function AdminUsersPage() {
               <button
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={page === 1}
-                className="p-1.5 rounded-lg hover:bg-[#E2F0FD] dark:hover:bg-white/10 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                aria-label="Previous page"
+                className="p-2 min-h-[36px] min-w-[36px] flex items-center justify-center rounded-lg hover:bg-[#E2F0FD] dark:hover:bg-white/10 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
               >
                 <ChevronLeft className="w-4 h-4 text-zinc-600 dark:text-zinc-400" />
               </button>
-              <span className="text-xs text-zinc-600 dark:text-zinc-400 px-2">
+              <span className="text-xs text-zinc-600 dark:text-zinc-400 px-2 tabular-nums">
                 {page} / {pages}
               </span>
               <button
                 onClick={() => setPage((p) => Math.min(pages, p + 1))}
                 disabled={page === pages}
-                className="p-1.5 rounded-lg hover:bg-[#E2F0FD] dark:hover:bg-white/10 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                aria-label="Next page"
+                className="p-2 min-h-[36px] min-w-[36px] flex items-center justify-center rounded-lg hover:bg-[#E2F0FD] dark:hover:bg-white/10 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
               >
                 <ChevronRight className="w-4 h-4 text-zinc-600 dark:text-zinc-400" />
               </button>
@@ -1093,44 +1225,69 @@ export default function AdminUsersPage() {
         )}
       </div>
 
-      {/* Confirmation modal */}
-      {pending && (
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-[#1C1C1F] border border-zinc-200 dark:border-white/10 rounded-2xl shadow-2xl w-full max-w-sm p-6">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-9 h-9 rounded-full bg-amber-50 dark:bg-amber-500/10 flex items-center justify-center shrink-0">
-                <AlertTriangle className="w-4.5 h-4.5 text-amber-500" />
-              </div>
-              <h2 className="text-base font-semibold text-zinc-900 dark:text-white">Confirm Change</h2>
-            </div>
-
-            <p className="text-sm text-zinc-600 dark:text-zinc-400 mb-1">
-              You are about to change <span className="font-medium text-zinc-900 dark:text-white">{pending.name}</span>
-            </p>
-            <p className="text-sm text-zinc-600 dark:text-zinc-400 mb-5">
-              {pending.field === "plan" ? "Plan" : "Role"}:{" "}
-              <span className="font-mono text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-500/10 px-1.5 py-0.5 rounded text-xs">{pending.from}</span>
-              {" → "}
-              <span className="font-mono text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-500/10 px-1.5 py-0.5 rounded text-xs">{pending.to}</span>
-            </p>
-            <p className="text-xs text-zinc-400 dark:text-zinc-500 mb-5">This action will be recorded in the audit log.</p>
-
-            <div className="flex gap-2">
-              <button
+      {/* Confirmation modal - Adaptive Bottom Sheet on Mobile, Centered Modal on Desktop */}
+      {mounted && typeof document !== "undefined" && createPortal(
+        <AnimatePresence>
+          {pending && (
+            <div className="fixed inset-0 z-[110] flex items-end sm:items-center justify-center p-0 sm:p-4 pointer-events-auto">
+              {/* Dimmed Backdrop */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
                 onClick={() => setPending(null)}
-                className="flex-1 px-4 py-2 text-sm font-medium border border-zinc-200 dark:border-white/10 rounded-xl hover:bg-zinc-50 dark:hover:bg-white/5 text-zinc-700 dark:text-zinc-300 transition-colors"
+                className="fixed inset-0 bg-black/60 backdrop-blur-xs cursor-pointer"
+              />
+
+              {/* Modal Box */}
+              <motion.div
+                initial={{ y: "100%", opacity: 0.8 }}
+                animate={{ y: 0, opacity: 1 }}
+                exit={{ y: "100%", opacity: 0 }}
+                transition={{ type: "spring", damping: 30, stiffness: 350 }}
+                className="relative z-10 bg-white dark:bg-[#1C1C1F] rounded-t-3xl sm:rounded-2xl shadow-2xl w-full max-w-sm p-5 pb-8 sm:p-6 border-t sm:border border-zinc-200 dark:border-white/10"
               >
-                Cancel
-              </button>
-              <button
-                onClick={confirmChange}
-                className="flex-1 px-4 py-2 text-sm font-medium bg-[#0066B2] text-white rounded-xl hover:bg-[#005291] transition-colors"
-              >
-                Confirm
-              </button>
+                <div className="sm:hidden w-10 h-1 bg-zinc-300 dark:bg-white/20 rounded-full mx-auto mb-3" />
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-9 h-9 rounded-full bg-amber-50 dark:bg-amber-500/10 flex items-center justify-center shrink-0">
+                    <AlertTriangle className="w-4.5 h-4.5 text-amber-500" />
+                  </div>
+                  <h2 className="text-base font-semibold text-zinc-900 dark:text-white">Confirm Change</h2>
+                </div>
+
+                <p className="text-sm text-zinc-600 dark:text-zinc-400 mb-1">
+                  You are about to change <span className="font-medium text-zinc-900 dark:text-white">{pending.name}</span>
+                </p>
+                <p className="text-sm text-zinc-600 dark:text-zinc-400 mb-5">
+                  {pending.field === "plan" ? "Plan" : "Role"}:{" "}
+                  <span className="font-mono text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-500/10 px-1.5 py-0.5 rounded text-xs">{pending.from}</span>
+                  {" → "}
+                  <span className="font-mono text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-500/10 px-1.5 py-0.5 rounded text-xs">{pending.to}</span>
+                </p>
+                <p className="text-xs text-zinc-400 dark:text-zinc-500 mb-5">This action will be recorded in the audit log.</p>
+
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setPending(null)}
+                    className="flex-1 px-4 py-2.5 text-sm font-medium border border-zinc-200 dark:border-white/10 rounded-xl hover:bg-zinc-50 dark:hover:bg-white/5 text-zinc-700 dark:text-zinc-300 transition-colors cursor-pointer"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    onClick={confirmChange}
+                    className="flex-1 px-4 py-2.5 text-sm font-medium bg-[#0066B2] text-white rounded-xl hover:bg-[#005291] transition-colors cursor-pointer"
+                  >
+                    Confirm
+                  </button>
+                </div>
+              </motion.div>
             </div>
-          </div>
-        </div>
+          )}
+        </AnimatePresence>,
+        document.body
       )}
     </div>
   );
