@@ -131,43 +131,54 @@ export default function AdminShell({
     <div className="flex h-screen w-full bg-[#FAFAFA] dark:bg-[#0E0E10] overflow-hidden">
       {/* Desktop Sidebar (hidden on mobile, visible on md+) */}
       <aside
-        className="hidden md:flex w-56 lg:w-60 h-screen bg-[#F0F7FF] dark:bg-[#171717] border-r border-[#E0EDFB] dark:border-white/[0.08] flex-col shrink-0 overflow-y-auto select-none"
+        className="hidden md:flex w-60 h-screen bg-[#F0F7FF] dark:bg-[#171717] border-r border-[#E0EDFB] dark:border-white/[0.08] flex-col shrink-0 overflow-y-auto select-none"
         data-lenis-prevent
       >
         {/* Header */}
         <div className="p-4 border-b border-[#E0EDFB] dark:border-white/[0.08]">
-          <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center justify-between mb-3.5">
             <Link href="/admin" aria-label="Admin Overview" className="flex items-center">
               <BrandLogo height="h-7" />
             </Link>
             <ThemeToggle size="sm" />
           </div>
-          <div className="text-sm font-bold text-zinc-900 dark:text-white truncate">
-            Super Admin Console
+
+          {/* Account Identity Chip */}
+          <div className="px-3 py-2 rounded-xl bg-white/70 dark:bg-white/[0.03] border border-[#E0EDFB] dark:border-white/[0.06] shadow-xs">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold text-zinc-900 dark:text-white">Admin Console</span>
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-60" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+              </span>
+            </div>
+            <p className="text-[11px] text-zinc-500 dark:text-zinc-400 truncate mt-0.5" title={email}>
+              {email}
+            </p>
           </div>
-          <div className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5 truncate" title={email}>
-            {email}
-          </div>
-          <span className="mt-2 inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-[#0066B2]/10 text-[#0066B2] dark:bg-[#0066B2]/20 dark:text-[#38BDF8]">
-            {role === "super_admin" ? "Super Admin" : "Admin"}
-          </span>
         </div>
 
         {/* Nav */}
-        <nav className="flex-1 p-2 space-y-1">
+        <nav className="flex-1 p-3 space-y-1.5" aria-label="Admin Navigation">
           {NAV.map(({ href, label, icon: Icon, exact }) => {
             const active = isNavActive(href, exact);
             return (
               <Link
                 key={href}
                 href={href}
-                className={`relative flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm font-medium transition-colors ${
+                className={`group relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 min-h-[40px] ${
                   active
-                    ? "bg-[#0066B2] text-white shadow-sm dark:bg-[#0066B2]/25 dark:text-[#38BDF8] dark:border dark:border-[#0066B2]/40"
-                    : "text-zinc-600 dark:text-zinc-400 hover:bg-[#E2F0FD] dark:hover:bg-white/5 hover:text-zinc-900 dark:hover:text-white"
+                    ? "bg-[#0066B2] text-white shadow-xs dark:bg-[#0066B2]/20 dark:text-[#38BDF8] dark:border dark:border-[#0066B2]/40"
+                    : "text-zinc-600 dark:text-zinc-300 hover:bg-[#E2F0FD] dark:hover:bg-white/[0.06] hover:text-zinc-900 dark:hover:text-white active:scale-[0.99]"
                 }`}
               >
-                <Icon className="w-4 h-4 shrink-0" />
+                <Icon
+                  className={`w-4 h-4 shrink-0 transition-transform duration-150 ${
+                    active
+                      ? "scale-105"
+                      : "text-zinc-400 dark:text-zinc-400 group-hover:text-zinc-800 dark:group-hover:text-zinc-200 group-hover:scale-105"
+                  }`}
+                />
                 <span className="truncate">{label}</span>
               </Link>
             );
@@ -175,12 +186,12 @@ export default function AdminShell({
         </nav>
 
         {/* Footer */}
-        <div className="p-2 border-t border-[#E0EDFB] dark:border-white/[0.08]">
+        <div className="p-3 border-t border-[#E0EDFB] dark:border-white/[0.08] mt-auto">
           <Link
             href="/dashboard"
-            className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm font-medium text-zinc-500 dark:text-zinc-400 hover:bg-[#E2F0FD] dark:hover:bg-white/5 hover:text-zinc-900 dark:hover:text-white transition-colors"
+            className="group flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-medium text-zinc-500 dark:text-zinc-400 hover:bg-[#E2F0FD] dark:hover:bg-white/[0.06] hover:text-zinc-900 dark:hover:text-white transition-all duration-150"
           >
-            <ArrowLeft className="w-4 h-4 shrink-0" />
+            <ArrowLeft className="w-4 h-4 shrink-0 text-zinc-400 group-hover:text-zinc-700 dark:group-hover:text-zinc-200 transition-transform group-hover:-translate-x-0.5" />
             <span className="truncate">Back to Dashboard</span>
           </Link>
         </div>
@@ -239,16 +250,15 @@ export default function AdminShell({
               </div>
 
               {/* Admin Profile Box */}
-              <div className="mb-3 px-3 py-2.5 rounded-2xl bg-white/70 dark:bg-white/[0.04] border border-[#E0EDFB] dark:border-white/[0.06] shrink-0">
-                <div className="flex items-center justify-between gap-1.5">
-                  <span className="text-xs font-bold text-zinc-900 dark:text-white truncate">
-                    Super Admin Console
-                  </span>
-                  <span className="shrink-0 inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#0066B2]/10 text-[#0066B2] dark:bg-[#0066B2]/20 dark:text-[#38BDF8]">
-                    {role === "super_admin" ? "Super Admin" : "Admin"}
+              <div className="mb-3 px-3 py-2 rounded-xl bg-white/70 dark:bg-white/[0.03] border border-[#E0EDFB] dark:border-white/[0.06] shadow-xs shrink-0">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-zinc-900 dark:text-white">Admin Console</span>
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-60" />
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
                   </span>
                 </div>
-                <p className="text-[11px] text-zinc-500 dark:text-zinc-400 mt-1 truncate" title={email}>
+                <p className="text-[11px] text-zinc-500 dark:text-zinc-400 truncate mt-0.5" title={email}>
                   {email}
                 </p>
               </div>
