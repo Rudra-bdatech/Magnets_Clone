@@ -71,7 +71,7 @@ export async function GET() {
       { $match: { userEmail: { $exists: true, $ne: "" } } },
       { $group: { _id: "$userEmail", totalBytes: { $sum: "$size" }, totalFiles: { $sum: 1 } } },
       { $sort: { totalBytes: -1 } },
-      { $limit: 5 },
+      { $limit: 15 },
     ]),
     getCloudinaryUsageSafe(),
   ]);
