@@ -22,24 +22,39 @@ export async function GET(
 
   await dbConnect();
 
+  // Explicit inclusion projection — only the fields the admin panel legitimately needs.
+  // Never use an exclusion list here: any new field added to the schema would leak by default.
+  // Raw tokens, keys, webhook URLs, session cookies, and encrypted credentials are intentionally
+  // absent; we derive boolean "connected" flags from them below instead.
   const account = await AccountModel.findOne(
     { email: targetEmail },
-    // Exclude all sensitive credentials
     {
-      password: 0,
-      resetPasswordToken: 0,
-      resetPasswordExpires: 0,
-      emailVerifyTokenHash: 0,
-      emailVerifyExpires: 0,
-      linkedinLiAt: 0,
-      linkedinJSessionId: 0,
-      linkedinWebhookSecret: 0,
-      "customSmtp.pass": 0,
-      "gmailOAuth.accessToken": 0,
-      "gmailOAuth.refreshToken": 0,
-      notifyEmailTokenHash: 0,
-      notifyEmailTokenExpires: 0,
-      stripeCheckoutSessionId: 0,
+      // Identity & profile
+      email: 1, name: 1, brandName: 1, username: 1, avatar: 1,
+      // Plan, role & billing
+      plan: 1, role: 1, suspended: 1,
+      paymentStatus: 1, paymentProvider: 1, lastPaymentDate: 1,
+      stripeCustomerId: 1, stripeSubscriptionId: 1,
+      chargebeeCustomerId: 1, chargebeeSubscriptionId: 1, chargebeeInvoiceId: 1,
+      // Account state
+      emailVerified: 1, joinedAt: 1, lastLoginAt: 1,
+      // Domain
+      customDomain: 1, customSubdomain: 1, domainVerified: 1, cnameVerified: 1,
+      sslStatus: 1, spfVerified: 1, dkimVerified: 1,
+      // Integrations — connected/status booleans and display-safe strings only
+      "gmailOAuth.connected": 1, "gmailOAuth.gmailAddress": 1,
+      "customSmtp.enabled": 1, "customSmtp.isVerified": 1, "customSmtp.host": 1,
+      linkedinConnected: 1, linkedinAccountName: 1,
+      calendarConnected: 1, calendarProvider: 1,
+      kitConnected: 1,
+      // Fetched only to derive boolean flags — raw values are never forwarded to the response
+      slackWebhookUrl: 1, zapierWebhookUrl: 1, pipedriveApiToken: 1, kitApiKey: 1,
+      // Notification (confirmed address only — pending + token hash excluded)
+      notifyEmail: 1,
+      // Public tracking IDs (not secrets)
+      ga4MeasurementId: 1, metaPixelId: 1,
+      // Display settings
+      senderDisplayName: 1,
     }
   ).lean() as any;
 
@@ -47,44 +62,94 @@ export async function GET(
     return NextResponse.json({ error: "User not found." }, { status: 404 });
   }
 
-  const [magnets, leads, resources, sequences] = await Promise.all([
+  const [magnets, resources, sequences, leadCount] = await Promise.all([
     MagnetPageModel.find(
       { userEmail: targetEmail },
       { id: 1, name: 1, slug: 1, status: 1, views: 1, signups: 1, template: 1, createdAt: 1, updatedAt: 1, pdfPages: 1, quizFunnelEnabled: 1, _id: 0 }
     ).sort({ createdAt: -1 }).lean(),
-    LeadModel.find(
-      { userEmail: targetEmail },
-      { id: 1, name: 1, email: 1, page: 1, signedUpAt: 1, status: 1, source: 1, _id: 0 }
-    ).sort({ signedUpAt: -1 }).limit(100).lean(),
+    // No fileUrl/url — admin has no need to open or download user files
     ResourceModel.find(
       { userEmail: targetEmail },
-      { id: 1, name: 1, size: 1, fileUrl: 1, url: 1, uploadedAt: 1, fileExt: 1, type: 1, _id: 0 }
+      { id: 1, name: 1, size: 1, uploadedAt: 1, fileExt: 1, type: 1, _id: 0 }
     ).sort({ uploadedAt: -1 }).lean(),
     SequenceModel.find(
       { userEmail: targetEmail },
       { id: 1, name: 1, pageId: 1, status: 1, "emails.id": 1, stats: 1, _id: 0 }
     ).lean(),
+    // Count only — individual lead names/emails are third-party personal data
+    LeadModel.countDocuments({ userEmail: targetEmail }),
   ]);
 
   const computedRole = determineRoleForEmail(account.email);
   const effectiveRole =
     computedRole === "super_admin" ? "super_admin" : (account.role || computedRole);
 
-  const { _id, ...rest } = account;
+  // Build the user object explicitly — never spread the raw account document.
+  // Integration existence is surfaced as boolean flags; raw tokens/URLs are dropped here.
+  const user = {
+    email: account.email,
+    name: account.name,
+    brandName: account.brandName || "",
+    username: account.username || "",
+    avatar: account.avatar || null,
+    plan: account.plan || "Free",
+    role: effectiveRole,
+    suspended: Boolean(account.suspended),
+    paymentStatus: account.paymentStatus || "",
+    paymentProvider: account.paymentProvider || "",
+    lastPaymentDate: account.lastPaymentDate || null,
+    stripeCustomerId: account.stripeCustomerId || "",
+    stripeSubscriptionId: account.stripeSubscriptionId || "",
+    chargebeeCustomerId: account.chargebeeCustomerId || "",
+    chargebeeSubscriptionId: account.chargebeeSubscriptionId || "",
+    chargebeeInvoiceId: account.chargebeeInvoiceId || "",
+    emailVerified: account.emailVerified || null,
+    joinedAt: account.joinedAt || "",
+    customDomain: account.customDomain || "",
+    customSubdomain: account.customSubdomain || "get",
+    domainVerified: Boolean(account.domainVerified),
+    cnameVerified: Boolean(account.cnameVerified),
+    sslStatus: account.sslStatus || "pending",
+    spfVerified: Boolean(account.spfVerified),
+    dkimVerified: Boolean(account.dkimVerified),
+    gmailOAuth: {
+      connected: Boolean(account.gmailOAuth?.connected),
+      gmailAddress: account.gmailOAuth?.gmailAddress || "",
+    },
+    customSmtp: {
+      enabled: Boolean(account.customSmtp?.enabled),
+      isVerified: Boolean(account.customSmtp?.isVerified),
+      host: account.customSmtp?.host || "",
+    },
+    linkedinConnected: Boolean(account.linkedinConnected),
+    linkedinAccountName: account.linkedinAccountName || "",
+    calendarConnected: Boolean(account.calendarConnected),
+    calendarProvider: account.calendarProvider || "",
+    kitConnected: Boolean(account.kitConnected || account.kitApiKey),
+    // Derived boolean flags — raw webhook URLs and API tokens are intentionally dropped
+    slackConnected: Boolean(account.slackWebhookUrl),
+    zapierConnected: Boolean(account.zapierWebhookUrl),
+    pipedriveConnected: Boolean(account.pipedriveApiToken),
+    notifyEmail: account.notifyEmail || "",
+    ga4MeasurementId: account.ga4MeasurementId || "",
+    metaPixelId: account.metaPixelId || "",
+    senderDisplayName: account.senderDisplayName || "",
+  };
+
   return NextResponse.json({
-    user: { ...rest, role: effectiveRole },
+    user,
     stats: {
       magnetCount: magnets.length,
-      leadCount: leads.length,
+      leadCount,
       sequenceCount: sequences.length,
       resourceCount: resources.length,
       storageBytes: (resources as any[]).reduce((sum: number, r: any) => sum + (r.size || 0), 0),
       lastLoginAt: account.lastLoginAt ?? null,
       lastFunnelCreatedAt: (magnets as any[]).length > 0 ? (magnets as any[])[0].createdAt ?? (magnets as any[])[0].updatedAt ?? null : null,
-      lastLeadReceivedAt: (leads as any[]).length > 0 ? (leads as any[])[0].signedUpAt ?? null : null,
+      lastLeadReceivedAt: null, // not fetching individual leads — count only
     },
     magnets,
-    leads,
+    leads: [],   // individual lead personal data not surfaced to admin
     resources,
     sequences,
   });

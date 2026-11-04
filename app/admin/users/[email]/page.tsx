@@ -2,9 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { FileViewerModal } from "@/components/assets/FileViewerModal";
 import {
-  ArrowLeft, Mail, Calendar, Globe, CreditCard, ExternalLink, Eye,
+  ArrowLeft, Mail, Calendar, Globe, CreditCard, ExternalLink,
   FileText, FolderOpen, Users, Settings, Lock, ShieldOff, ShieldCheck, Trash2, AlertTriangle,
 } from "lucide-react";
 
@@ -29,8 +28,12 @@ interface UserDetail {
   stripeSubscriptionId: string;
   chargebeeCustomerId: string;
   chargebeeSubscriptionId: string;
-  slackWebhookUrl: string;
-  zapierWebhookUrl: string;
+  // Integration flags — booleans only; raw tokens/URLs are never sent to the admin panel
+  slackConnected: boolean;
+  zapierConnected: boolean;
+  pipedriveConnected: boolean;
+  kitConnected: boolean;
+  calendarConnected: boolean;
   brandName: string;
   username: string;
   avatar: string | null;
@@ -50,22 +53,10 @@ interface Magnet {
   quizFunnelEnabled: boolean;
 }
 
-interface Lead {
-  id: string;
-  name: string;
-  email: string;
-  page: string;
-  signedUpAt: string;
-  status: string;
-  source: string;
-}
-
 interface Resource {
   id: string;
   name: string;
   size: number;
-  fileUrl: string;
-  url: string;
   uploadedAt: string;
   fileExt: string;
   type: string;
@@ -159,10 +150,8 @@ export default function AdminUserDetailPage() {
   const email = decodeURIComponent(params.email as string);
 
   const [user, setUser] = useState<UserDetail | null>(null);
-  const [previewResource, setPreviewResource] = useState<Resource | null>(null);
   const [stats, setStats] = useState<Stats | null>(null);
   const [magnets, setMagnets] = useState<Magnet[]>([]);
-  const [leads, setLeads] = useState<Lead[]>([]);
   const [resources, setResources] = useState<Resource[]>([]);
   const [sequences, setSequences] = useState<Sequence[]>([]);
   const [loading, setLoading] = useState(true);
@@ -182,7 +171,6 @@ export default function AdminUserDetailPage() {
         setUser(data.user);
         setStats(data.stats);
         setMagnets(data.magnets || []);
-        setLeads(data.leads || []);
         setResources(data.resources || []);
         setSequences(data.sequences || []);
         setPlan(data.user.plan || "Free");
@@ -538,49 +526,18 @@ export default function AdminUserDetailPage() {
                   <th className="text-left px-4 py-3 text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">Type</th>
                   <th className="text-right px-4 py-3 text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">Size</th>
                   <th className="text-left px-4 py-3 text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">Uploaded</th>
-                  <th className="px-4 py-3" />
                 </tr>
               </thead>
               <tbody className="divide-y divide-zinc-50 dark:divide-white/[0.03]">
                 {resources.map((r) => (
-                  <tr
-                    key={r.id}
-                    onClick={() => setPreviewResource(r)}
-                    className="hover:bg-[#F0F7FF] dark:hover:bg-white/[0.03] cursor-pointer transition-colors group"
-                  >
+                  <tr key={r.id} className="hover:bg-[#F0F7FF] dark:hover:bg-white/[0.02] transition-colors">
                     <td className="px-4 py-3">
-                      <div className="font-medium text-zinc-900 dark:text-white max-w-64 truncate group-hover:text-[#0066B2] dark:group-hover:text-[#38BDF8] transition-colors">
-                        {r.name}
-                      </div>
+                      <div className="font-medium text-zinc-900 dark:text-white max-w-64 truncate">{r.name}</div>
                     </td>
                     <td className="px-4 py-3 text-xs text-zinc-400 dark:text-zinc-500 uppercase">{r.fileExt || r.type || "—"}</td>
                     <td className="px-4 py-3 text-right text-zinc-500 dark:text-zinc-400 text-xs">{formatBytes(r.size)}</td>
                     <td className="px-4 py-3 text-zinc-500 dark:text-zinc-400 text-xs whitespace-nowrap">
                       {r.uploadedAt ? new Date(r.uploadedAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }) : "—"}
-                    </td>
-                    <td className="px-4 py-3">
-                      <div className="flex items-center justify-end gap-2" onClick={(e) => e.stopPropagation()}>
-                        <button
-                          type="button"
-                          onClick={() => setPreviewResource(r)}
-                          className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold text-[#0066B2] dark:text-[#38BDF8] bg-[#0066B2]/10 hover:bg-[#0066B2]/20 dark:bg-[#38BDF8]/10 dark:hover:bg-[#38BDF8]/20 transition-colors cursor-pointer"
-                          title="Preview inside website"
-                        >
-                          <Eye className="w-3.5 h-3.5" />
-                          Preview
-                        </button>
-                        {(r.fileUrl || r.url) && (
-                          <a
-                            href={r.fileUrl || r.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="p-1 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 transition-colors"
-                            title="Open raw file in new tab"
-                          >
-                            <ExternalLink className="w-3.5 h-3.5" />
-                          </a>
-                        )}
-                      </div>
                     </td>
                   </tr>
                 ))}
@@ -590,56 +547,19 @@ export default function AdminUserDetailPage() {
         </div>
       )}
 
-      {/* Tab: Leads Captured */}
+      {/* Tab: Leads Captured — count only; individual lead personal data is not surfaced to admin */}
       {tab === "leads" && (
-        <div className="bg-white dark:bg-[#171717] border border-zinc-200 dark:border-white/[0.08] rounded-xl overflow-hidden">
-          {leads.length === 0 ? (
-            <div className="py-16 text-center">
-              <Users className="w-8 h-8 text-zinc-200 dark:text-zinc-700 mx-auto mb-3" />
-              <p className="text-sm text-zinc-400 dark:text-zinc-500">No leads captured yet.</p>
-            </div>
-          ) : (
-            <>
-              <div className="px-4 py-3 border-b border-zinc-100 dark:border-white/[0.06] bg-zinc-50/80 dark:bg-white/[0.02]">
-                <p className="text-xs text-zinc-400 dark:text-zinc-500">Showing latest {leads.length} leads</p>
-              </div>
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b border-zinc-100 dark:border-white/[0.06]">
-                    <th className="text-left px-4 py-3 text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">Lead</th>
-                    <th className="text-left px-4 py-3 text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">Page</th>
-                    <th className="text-left px-4 py-3 text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">Source</th>
-                    <th className="text-left px-4 py-3 text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">Status</th>
-                    <th className="text-left px-4 py-3 text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">Signed Up</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-zinc-50 dark:divide-white/[0.03]">
-                  {leads.map((l) => (
-                    <tr key={l.id} className="hover:bg-[#F0F7FF] dark:hover:bg-white/[0.02] transition-colors">
-                      <td className="px-4 py-3">
-                        <div className="font-medium text-zinc-900 dark:text-white">{l.name}</div>
-                        <div className="text-xs text-zinc-400 dark:text-zinc-500">{l.email}</div>
-                      </td>
-                      <td className="px-4 py-3 text-zinc-500 dark:text-zinc-400 text-xs max-w-40 truncate">{l.page}</td>
-                      <td className="px-4 py-3 text-xs text-zinc-400 dark:text-zinc-500">{l.source || "—"}</td>
-                      <td className="px-4 py-3">
-                        <span className={`text-xs px-2 py-0.5 rounded-full font-semibold ${
-                          l.status === "delivered" || l.status === "opened"
-                            ? "bg-green-50 text-green-700 dark:bg-green-500/15 dark:text-green-400"
-                            : l.status === "stopped"
-                              ? "bg-red-50 text-red-600 dark:bg-red-500/10 dark:text-red-400"
-                              : "bg-zinc-100 text-zinc-500 dark:bg-white/10 dark:text-zinc-400"
-                        }`}>
-                          {l.status}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3 text-zinc-500 dark:text-zinc-400 text-xs whitespace-nowrap">{l.signedUpAt}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </>
-          )}
+        <div className="bg-white dark:bg-[#171717] border border-zinc-200 dark:border-white/[0.08] rounded-xl p-8 text-center">
+          <Users className="w-8 h-8 text-zinc-300 dark:text-zinc-600 mx-auto mb-3" />
+          <div className="text-3xl font-bold text-zinc-900 dark:text-white mb-1">
+            {(stats?.leadCount ?? 0).toLocaleString()}
+          </div>
+          <p className="text-sm text-zinc-400 dark:text-zinc-500">
+            {stats?.leadCount === 1 ? "lead captured" : "leads captured"}
+          </p>
+          <p className="text-xs text-zinc-300 dark:text-zinc-600 mt-3 max-w-xs mx-auto">
+            Individual lead details are private to the account holder and are not accessible from the admin panel.
+          </p>
         </div>
       )}
 
@@ -732,8 +652,11 @@ export default function AdminUserDetailPage() {
               <Badge label="Gmail" active={Boolean(user.gmailOAuth?.connected)} />
               <Badge label="Custom SMTP" active={Boolean(user.customSmtp?.isVerified)} />
               <Badge label="LinkedIn" active={Boolean(user.linkedinConnected)} />
-              <Badge label="Slack" active={Boolean(user.slackWebhookUrl && !user.slackWebhookUrl.includes("****"))} />
-              <Badge label="Zapier" active={Boolean(user.zapierWebhookUrl && !user.zapierWebhookUrl.includes("****"))} />
+              <Badge label="Slack" active={Boolean(user.slackConnected)} />
+              <Badge label="Zapier" active={Boolean(user.zapierConnected)} />
+              <Badge label="Pipedrive" active={Boolean(user.pipedriveConnected)} />
+              <Badge label="Kit" active={Boolean(user.kitConnected)} />
+              <Badge label="Calendar" active={Boolean(user.calendarConnected)} />
               <Badge label="Custom Domain" active={Boolean(user.customDomain && user.cnameVerified)} />
             </div>
             {user.gmailOAuth?.connected && user.gmailOAuth?.gmailAddress && (
@@ -748,12 +671,6 @@ export default function AdminUserDetailPage() {
           </div>
         </div>
       )}
-
-      {/* In-app Document & PDF Preview Lightbox */}
-      <FileViewerModal
-        resource={previewResource ? { id: previewResource.id, name: previewResource.name, url: previewResource.url || previewResource.fileUrl, fileUrl: previewResource.fileUrl } : null}
-        onClose={() => setPreviewResource(null)}
-      />
 
       {/* Confirm Modal */}
       {confirmModal && (
