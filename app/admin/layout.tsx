@@ -17,9 +17,9 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 
   const computedRole = determineRoleForEmail(email);
   const effectiveRole =
-    computedRole === "super_admin" ? "super_admin" : (account.role || computedRole);
+    computedRole === "super_admin" || account.role === "super_admin" ? "super_admin" : "user";
 
-  if (effectiveRole !== "admin" && effectiveRole !== "super_admin") {
+  if (effectiveRole !== "super_admin") {
     redirect("/dashboard");
   }
 

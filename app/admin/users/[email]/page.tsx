@@ -91,7 +91,7 @@ interface Stats {
 }
 
 const PLANS = ["Free", "Pro"];
-const ROLES = ["user", "admin", "super_admin"];
+const ROLES = ["user", "super_admin"];
 
 const STATUS_COLORS: Record<string, string> = {
   live: "bg-green-50 text-green-700 dark:bg-green-500/15 dark:text-green-400",
@@ -317,8 +317,8 @@ export default function AdminUserDetailPage() {
                     <ShieldOff className="w-3 h-3" /> Suspended
                   </span>
                 )}
-                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0 ${user.role === "super_admin" ? "bg-red-50 text-red-700 dark:bg-red-500/15 dark:text-red-400" : user.role === "admin" ? "bg-green-50 text-green-700 dark:bg-green-500/15 dark:text-green-400" : "bg-zinc-100 text-zinc-600 dark:bg-white/10 dark:text-zinc-400"}`}>
-                  {user.role === "super_admin" ? "Super Admin" : user.role === "admin" ? "Admin" : "User"}
+                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0 ${user.role === "super_admin" ? "bg-red-50 text-red-700 dark:bg-red-500/15 dark:text-red-400" : "bg-zinc-100 text-zinc-600 dark:bg-white/10 dark:text-zinc-400"}`}>
+                  {user.role === "super_admin" ? "Super Admin" : "User"}
                 </span>
                 <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0 ${user.plan === "Pro" ? "bg-[#0066B2]/10 text-[#0066B2] dark:bg-[#0066B2]/20 dark:text-[#38BDF8]" : "bg-zinc-100 text-zinc-600 dark:bg-white/10 dark:text-zinc-400"}`}>
                   {user.plan || "Free"}

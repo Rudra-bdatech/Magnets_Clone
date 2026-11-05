@@ -36,7 +36,7 @@ function formatBytes(bytes: number) {
 }
 
 const PLANS = ["Free", "Pro"];
-const ROLES = ["user", "admin", "super_admin"];
+const ROLES = ["user", "super_admin"];
 
 const PLAN_COLORS: Record<string, string> = {
   Free: "bg-zinc-100 text-zinc-600 dark:bg-white/10 dark:text-zinc-400",
@@ -45,7 +45,6 @@ const PLAN_COLORS: Record<string, string> = {
 
 const ROLE_COLORS: Record<string, string> = {
   user: "bg-zinc-100 text-zinc-600 dark:bg-white/10 dark:text-zinc-400",
-  admin: "bg-green-50 text-green-700 dark:bg-green-500/15 dark:text-green-400",
   super_admin: "bg-red-50 text-red-700 dark:bg-red-500/15 dark:text-red-400",
 };
 

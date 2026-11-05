@@ -7,7 +7,7 @@ const AccountSchema = new Schema({
   email: { type: String, required: true, unique: true, lowercase: true, trim: true },
   username: { type: String, required: true, unique: true },
   password: { type: String, default: "" },
-  role: { type: String, enum: ["user", "admin", "super_admin"], default: "user" },
+  role: { type: String, enum: ["user", "super_admin"], default: "user" },
   plan: { type: String, default: "Free" },
   // Billing, written by the Stripe/Chargebee webhooks. Must be declared here: mongoose drops
   // undeclared paths from updates, and the cancel/refund handlers look accounts up by these ids.

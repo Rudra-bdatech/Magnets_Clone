@@ -490,10 +490,10 @@ export const DomainSection = memo(function DomainSection({
               align="start"
             />
           </span>
-          {planLimits.badge === "Internal Staff Access" ? (
+          {planLimits.badge === "Super Admin Access" || planLimits.badge === "Internal Staff Access" ? (
             <span className={`${badgeBase} ${badgeTone.purple}`}>
               <ShieldCheck className="h-3 w-3" />
-              Internal Staff Access
+              Super Admin Access
             </span>
           ) : isCustomDomainLocked ? (
             <span className={`${badgeBase} ${badgeTone.warning}`}>

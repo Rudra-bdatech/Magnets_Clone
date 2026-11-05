@@ -10,8 +10,8 @@ export interface PlanTierConfig {
 }
 
 export const STAFF_ENTERPRISE_PLAN: PlanTierConfig = {
-  name: "Enterprise Admin",
-  badge: "Internal Staff Access",
+  name: "Super Admin",
+  badge: "Super Admin Access",
   leadLimit: 1000000,
   storageLimitMb: 102400, // 100 GB
   sequencesLimit: 1000,

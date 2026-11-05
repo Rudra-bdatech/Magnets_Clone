@@ -4,7 +4,7 @@ import { dbConnect } from "@/lib/mongodb";
 import { AccountModel } from "@/lib/models";
 import { determineRoleForEmail } from "@/lib/roles";
 
-export type AdminRole = "admin" | "super_admin";
+export type AdminRole = "super_admin";
 
 interface AdminSession {
   email: string;
@@ -12,7 +12,7 @@ interface AdminSession {
 }
 
 /**
- * Verifies the caller is admin or super_admin.
+ * Verifies the caller is super_admin.
  * Role is always checked against the DB — the session token only carries email.
  * Returns the session on success, or a ready-to-return NextResponse on failure.
  */
@@ -33,13 +33,13 @@ export async function requireAdmin(): Promise<AdminSession | NextResponse> {
   const computedRole = determineRoleForEmail(email);
   const effectiveRole = computedRole === "super_admin"
     ? "super_admin"
-    : ((account.role as string) || computedRole);
+    : (account.role === "super_admin" ? "super_admin" : "user");
 
-  if (effectiveRole !== "admin" && effectiveRole !== "super_admin") {
-    return NextResponse.json({ error: "Forbidden. Admin access required." }, { status: 403 });
+  if (effectiveRole !== "super_admin") {
+    return NextResponse.json({ error: "Forbidden. Super admin access required." }, { status: 403 });
   }
 
-  return { email, role: effectiveRole as AdminRole };
+  return { email, role: "super_admin" };
 }
 
 export function isAdminSession(result: AdminSession | NextResponse): result is AdminSession {

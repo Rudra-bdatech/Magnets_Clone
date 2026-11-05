@@ -9,7 +9,7 @@ import { removeDomainFromVercel } from "@/lib/domain-verify";
 import { revokeGmailAccess } from "@/lib/gmail-oauth";
 
 const ALLOWED_PLANS = ["Free", "Pro", "Growth", "Unlimited"];
-const ALLOWED_ROLES = ["user", "admin", "super_admin"];
+const ALLOWED_ROLES = ["user", "super_admin"];
 
 export async function GET(
   _request: NextRequest,
@@ -98,7 +98,7 @@ export async function GET(
 
   const computedRole = determineRoleForEmail(account.email);
   const effectiveRole =
-    computedRole === "super_admin" ? "super_admin" : (account.role || computedRole);
+    computedRole === "super_admin" || account.role === "super_admin" ? "super_admin" : "user";
 
   // Build the user object explicitly — never spread the raw account document.
   // Integration existence is surfaced as boolean flags; raw tokens/URLs are dropped here.

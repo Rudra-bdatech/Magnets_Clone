@@ -122,12 +122,10 @@ const PLAN_BAR: Record<string, string> = {
 };
 const ROLE_COLORS: Record<string, string> = {
   user: "bg-zinc-100 text-zinc-600 dark:bg-white/10 dark:text-zinc-400",
-  admin: "bg-green-50 text-green-700 dark:bg-green-500/15 dark:text-green-400",
   super_admin: "bg-red-50 text-red-700 dark:bg-red-500/15 dark:text-red-400",
 };
 const ROLE_LABELS: Record<string, string> = {
   user: "User",
-  admin: "Admin",
   super_admin: "Super Admin",
 };
 
@@ -407,7 +405,7 @@ export default function AdminOverviewPage() {
             </div>
 
             <div className="space-y-3.5">
-              {["user", "admin", "super_admin"].map((role) => {
+              {["user", "super_admin"].map((role) => {
                 const count = stats.byRole[role] || 0;
                 const pct = Math.round((count / totalRoleUsers) * 100);
                 return (
@@ -431,8 +429,6 @@ export default function AdminOverviewPage() {
                         className={`h-full rounded-full ${
                           role === "super_admin"
                             ? "bg-red-500"
-                            : role === "admin"
-                            ? "bg-green-500"
                             : "bg-zinc-400 dark:bg-zinc-600"
                         }`}
                       />
@@ -444,18 +440,12 @@ export default function AdminOverviewPage() {
           </div>
 
           {/* Quick role summary row */}
-          <div className="mt-4 pt-3.5 border-t border-zinc-100 dark:border-white/[0.06] grid grid-cols-3 gap-2 text-center">
+          <div className="mt-4 pt-3.5 border-t border-zinc-100 dark:border-white/[0.06] grid grid-cols-2 gap-2 text-center">
             <div className="p-2 rounded-xl bg-zinc-50/70 dark:bg-white/[0.02]">
               <p className="text-base font-bold text-zinc-900 dark:text-white tabular-nums">
                 {stats.byRole["super_admin"] || 0}
               </p>
-              <p className="text-[10px] text-zinc-400 uppercase font-medium">Super</p>
-            </div>
-            <div className="p-2 rounded-xl bg-zinc-50/70 dark:bg-white/[0.02]">
-              <p className="text-base font-bold text-zinc-900 dark:text-white tabular-nums">
-                {stats.byRole["admin"] || 0}
-              </p>
-              <p className="text-[10px] text-zinc-400 uppercase font-medium">Admins</p>
+              <p className="text-[10px] text-zinc-400 uppercase font-medium">Super Admin</p>
             </div>
             <div className="p-2 rounded-xl bg-zinc-50/70 dark:bg-white/[0.02]">
               <p className="text-base font-bold text-zinc-900 dark:text-white tabular-nums">

@@ -51,7 +51,11 @@ export function sanitizeAccount(accountDoc: any) {
   acc.pipedriveApiToken = maskSecret(acc.pipedriveApiToken);
   acc.kitApiKey = maskSecret(acc.kitApiKey);
   const computedRole = determineRoleForEmail(acc.email);
-  acc.role = computedRole === "super_admin" ? "super_admin" : (acc.role || computedRole);
+  const effectiveStoredRole = acc.role === "super_admin" ? "super_admin" : "user";
+  acc.role = computedRole === "super_admin" ? "super_admin" : effectiveStoredRole;
+  if (accountDoc.role === "admin") {
+    AccountModel.updateOne({ email: acc.email, role: "admin" }, { $set: { role: "user" } }).catch(() => { });
+  }
   // Strip encrypted secrets — never send raw credentials to the client
   if (acc.customSmtp) {
     acc.customSmtp = {
