@@ -9,6 +9,7 @@ import {
   ChevronDown, Check, X, Mail, Calendar, AlertTriangle,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { ApplePagination } from "@/components/ui/ApplePagination";
 
 interface Funnel {
   id: string;
@@ -714,31 +715,15 @@ export default function FunnelsPage() {
 
         {/* Pagination */}
         {!loading && pages > 1 && (
-          <div className="flex items-center justify-between px-4 sm:px-5 py-3 border-t border-zinc-100 dark:border-white/[0.06] bg-zinc-50/60 dark:bg-white/[0.02]">
-            <span className="text-xs text-zinc-500 dark:text-zinc-400 font-medium">
-              Page {page} of {pages} · {total.toLocaleString()} funnels
-            </span>
-            <div className="flex items-center gap-1.5">
-              <button
-                type="button"
-                onClick={() => setPage((p) => Math.max(1, p - 1))}
-                disabled={page === 1}
-                className="p-2 sm:p-1.5 rounded-xl border border-zinc-200/80 dark:border-white/[0.08] hover:bg-[#E2F0FD] dark:hover:bg-white/10 active:scale-90 disabled:opacity-30 disabled:cursor-not-allowed transition-all cursor-pointer"
-                title="Previous page"
-              >
-                <ChevronLeft className="w-4 h-4 text-zinc-600 dark:text-zinc-400" />
-              </button>
-              <button
-                type="button"
-                onClick={() => setPage((p) => Math.min(pages, p + 1))}
-                disabled={page === pages}
-                className="p-2 sm:p-1.5 rounded-xl border border-zinc-200/80 dark:border-white/[0.08] hover:bg-[#E2F0FD] dark:hover:bg-white/10 active:scale-90 disabled:opacity-30 disabled:cursor-not-allowed transition-all cursor-pointer"
-                title="Next page"
-              >
-                <ChevronRight className="w-4 h-4 text-zinc-600 dark:text-zinc-400" />
-              </button>
-            </div>
-          </div>
+          <ApplePagination
+            currentPage={page}
+            totalPages={pages}
+            totalItems={total}
+            pageSize={Math.ceil(total / pages) || 25}
+            onPageChange={(p) => setPage(p)}
+            itemLabel="funnel"
+            itemLabelPlural="funnels"
+          />
         )}
       </div>
 

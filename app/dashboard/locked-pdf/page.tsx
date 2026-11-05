@@ -51,6 +51,7 @@ import {
 import type { Account, MagnetPage } from "@/lib/data";
 import { getMagnetSortTimestamp } from "@/lib/utils";
 import { AppleCheckbox } from "@/components/leads/AppleCheckbox";
+import { ApplePagination } from "@/components/ui/ApplePagination";
 
 import type { SequenceEmailItem } from "@/components/leadmagnets/edit/SequenceTab";
 import LockedPdfSetup from "@/components/leadmagnets/locked-pdf-setup";
@@ -399,10 +400,23 @@ export default function LockedPdfPage() {
     return list;
   }, [lockedPdfPages, statusFilter, search, sortBy]);
 
+  // Pagination State
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const totalPages = Math.ceil(filtered.length / pageSize) || 1;
+  const paginatedItems = useMemo(() => {
+    const start = (currentPage - 1) * pageSize;
+    return filtered.slice(start, start + pageSize);
+  }, [filtered, currentPage, pageSize]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [search, statusFilter, sortBy, pageSize]);
+
   // Saved Locked PDFs for cards grid
   const savedLockedPdfPages = useMemo(() => {
-    return filtered;
-  }, [filtered]);
+    return paginatedItems;
+  }, [paginatedItems]);
 
   // Active selected locked PDF page object
   const activePage = useMemo(() => {
@@ -984,6 +998,7 @@ export default function LockedPdfPage() {
         <LayoutGroup id="locked-pdf-workspace">
           <div className={`mx-auto w-full flex-1 px-3.5 sm:px-6 py-4 sm:py-6 lg:px-8 flex flex-col lg:flex-row gap-4 sm:gap-6 items-start min-w-0 transition-[max-width] duration-[220ms] ease-[cubic-bezier(0.16,1,0.3,1)] will-change-[max-width] ${isCollapsed ? "max-w-[1440px]" : "max-w-7xl"}`}>
             <motion.div
+              id="locked-pdf-list-container"
               layout
               transition={{ layout: { type: "spring", stiffness: 450, damping: 32, mass: 0.6 } }}
               className={`flex flex-col space-y-4 min-w-0 max-w-full ${
@@ -1259,6 +1274,7 @@ export default function LockedPdfPage() {
               ) : viewMode === "grid" ? (
                 <motion.div
                   key="grid-view"
+                  data-pagination-container="locked-pdf-grid"
                   initial={{ opacity: 0, y: 6, scale: 0.995 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: -6, scale: 0.995 }}
@@ -1272,7 +1288,7 @@ export default function LockedPdfPage() {
                         : "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
                     }`}
                   >
-                    {filtered.map((pdf) => {
+                    {paginatedItems.map((pdf) => {
                       const isSelected = activePage?.id === pdf.id;
                       const isChecked = checkedIds.includes(pdf.id);
                       const shareUrl = typeof window !== "undefined"
@@ -1498,6 +1514,7 @@ export default function LockedPdfPage() {
                 /* Table View */
                 <motion.div
                   key="table-view"
+                  data-pagination-container="locked-pdf-table"
                   initial={{ opacity: 0, y: 6, scale: 0.995 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: -6, scale: 0.995 }}
@@ -1543,7 +1560,7 @@ export default function LockedPdfPage() {
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-[#0066B2]/8 bg-white dark:divide-white/[0.05] dark:bg-[#171717]">
-                        {filtered.map((pdf) => {
+                        {paginatedItems.map((pdf) => {
                           const isSelected = activePage?.id === pdf.id;
                           const isChecked = checkedIds.includes(pdf.id);
                           const shareUrl = typeof window !== "undefined"
@@ -1664,7 +1681,7 @@ export default function LockedPdfPage() {
 
                   {/* MOBILE Stream List View (block md:hidden) - Senior Responsive Architecture */}
                   <div className="block md:hidden p-3 space-y-2.5">
-                    {filtered.map((pdf) => {
+                    {paginatedItems.map((pdf) => {
                       const isSelected = activePage?.id === pdf.id;
                       const isChecked = checkedIds.includes(pdf.id);
                       const shareUrl = typeof window !== "undefined"
@@ -1822,6 +1839,27 @@ export default function LockedPdfPage() {
                 </motion.div>
               )}
             </AnimatePresence>
+
+            {(totalPages > 1 || filtered.length > 10) && (
+              <div className="mt-2">
+                <ApplePagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  totalItems={filtered.length}
+                  pageSize={pageSize}
+                  onPageChange={(page) => setCurrentPage(page)}
+                  onPageSizeChange={(newSize) => {
+                    setPageSize(newSize);
+                    setCurrentPage(1);
+                  }}
+                  pageSizeOptions={[10, 25, 50]}
+                  itemLabel="locked PDF"
+                  itemLabelPlural="locked PDFs"
+                  prefixRows="Rows:"
+                  scrollTargetId="locked-pdf-list-container"
+                />
+              </div>
+            )}
           </motion.div>
 
           {/* Right Fixed Sticky Inspector Card (Only rendered when a PDF is selected) */}

@@ -9,6 +9,7 @@ import {
   CheckCircle2, UserX, Activity,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { ApplePagination } from "@/components/ui/ApplePagination";
 
 interface AuditEntry {
   id: string;
@@ -472,29 +473,16 @@ export default function AuditLogPage() {
 
         {/* Pagination */}
         {!loading && total > 50 && (
-          <div className="flex items-center justify-between px-4 sm:px-5 py-3 border-t border-zinc-100 dark:border-white/[0.06] bg-zinc-50/60 dark:bg-white/[0.02]">
-            <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400">
-              Page {page} of {pages}
-            </span>
-            <div className="flex items-center gap-1.5">
-              <button
-                onClick={() => setPage((p) => Math.max(1, p - 1))}
-                disabled={page === 1}
-                className="px-3 py-1.5 rounded-xl border border-zinc-200/80 dark:border-white/10 bg-white dark:bg-[#1C1C1F] hover:bg-zinc-50 dark:hover:bg-white/5 disabled:opacity-40 disabled:cursor-not-allowed transition-all text-xs font-semibold text-zinc-700 dark:text-zinc-300 flex items-center gap-1 active:scale-95 cursor-pointer shadow-xs"
-              >
-                <ChevronLeft className="w-3.5 h-3.5" />
-                <span>Prev</span>
-              </button>
-              <button
-                onClick={() => setPage((p) => Math.min(pages, p + 1))}
-                disabled={page === pages}
-                className="px-3 py-1.5 rounded-xl border border-zinc-200/80 dark:border-white/10 bg-white dark:bg-[#1C1C1F] hover:bg-zinc-50 dark:hover:bg-white/5 disabled:opacity-40 disabled:cursor-not-allowed transition-all text-xs font-semibold text-zinc-700 dark:text-zinc-300 flex items-center gap-1 active:scale-95 cursor-pointer shadow-xs"
-              >
-                <span>Next</span>
-                <ChevronRight className="w-3.5 h-3.5" />
-              </button>
-            </div>
-          </div>
+          <ApplePagination
+            currentPage={page}
+            totalPages={pages}
+            totalItems={total}
+            pageSize={50}
+            onPageChange={(p) => setPage(p)}
+            itemLabel="log"
+            itemLabelPlural="logs"
+            className="rounded-t-none rounded-b-2xl border-t border-b-0 border-x-0 bg-zinc-50/60 dark:bg-white/[0.02]"
+          />
         )}
       </div>
     </div>

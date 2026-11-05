@@ -29,6 +29,7 @@ import { getAppUrl } from "@/lib/data";
 import type { Account, MagnetPage, Lead, LinkedInPostCampaign } from "@/lib/data";
 import { formatDateOnly } from "@/lib/utils";
 import { useSidebar } from "@/components/dashboard/dashboard-shell";
+import { ApplePagination } from "@/components/ui/ApplePagination";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -1262,33 +1263,18 @@ export default function LinkedInAutomationPage() {
                     </div>
                   )}
 
-                  {/* Pagination Footer (when > 5 posts exist) */}
+                  {/* Pagination Footer */}
                   {totalPostPages > 1 && (
-                    <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 mt-4 border-t border-zinc-100 dark:border-white/5 text-xs text-zinc-500 dark:text-[#9B9085]">
-                      <span className="text-center sm:text-left">
-                        Showing {startIndex + 1}–{Math.min(startIndex + POSTS_PER_PAGE, filteredPosts.length)} of {filteredPosts.length} posts
-                      </span>
-                      <div className="flex items-center justify-center gap-2 w-full sm:w-auto">
-                        <button
-                          type="button"
-                          disabled={currentPage === 1}
-                          onClick={() => setPostPage((prev) => Math.max(1, prev - 1))}
-                          className="flex-1 sm:flex-initial px-3 py-1.5 rounded-lg border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#1E1E22] hover:bg-zinc-50 dark:hover:bg-white/5 font-semibold text-zinc-700 dark:text-zinc-300 disabled:opacity-40 disabled:cursor-not-allowed transition"
-                        >
-                          Previous
-                        </button>
-                        <span className="font-semibold text-zinc-800 dark:text-zinc-200 px-1 whitespace-nowrap shrink-0">
-                          {currentPage} / {totalPostPages}
-                        </span>
-                        <button
-                          type="button"
-                          disabled={currentPage === totalPostPages}
-                          onClick={() => setPostPage((prev) => Math.min(totalPostPages, prev + 1))}
-                          className="flex-1 sm:flex-initial px-3 py-1.5 rounded-lg border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#1E1E22] hover:bg-zinc-50 dark:hover:bg-white/5 font-semibold text-zinc-700 dark:text-zinc-300 disabled:opacity-40 disabled:cursor-not-allowed transition"
-                        >
-                          Next
-                        </button>
-                      </div>
+                    <div className="pt-4 mt-4 border-t border-zinc-100 dark:border-white/5">
+                      <ApplePagination
+                        currentPage={currentPage}
+                        totalPages={totalPostPages}
+                        totalItems={filteredPosts.length}
+                        pageSize={POSTS_PER_PAGE}
+                        onPageChange={(page) => setPostPage(page)}
+                        itemLabel="post"
+                        itemLabelPlural="posts"
+                      />
                     </div>
                   )}
                 </div>

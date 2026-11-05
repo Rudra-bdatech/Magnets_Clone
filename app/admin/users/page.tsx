@@ -5,6 +5,7 @@ import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
 import { Search, ChevronLeft, ChevronRight, Check, X, AlertTriangle, ChevronDown, Calendar } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { ApplePagination } from "@/components/ui/ApplePagination";
 
 interface AdminUser {
   email: string;
@@ -861,9 +862,6 @@ export default function AdminUsersPage() {
     }
   }
 
-  const start = (page - 1) * 25 + 1;
-  const end = Math.min(page * 25, total);
-
   return (
     <div className="p-3.5 sm:p-6 md:p-8 max-w-7xl mx-auto touch-pan-y">
       <div className="mb-5 sm:mb-6">
@@ -1196,32 +1194,16 @@ export default function AdminUsersPage() {
 
         {/* Pagination */}
         {!loading && total > 25 && (
-          <div className="flex items-center justify-between px-4 py-3 border-t border-zinc-100 dark:border-white/[0.06] bg-zinc-50/60 dark:bg-white/[0.02]">
-            <span className="text-xs text-zinc-500 dark:text-zinc-400">
-              {start}–{end} of {total.toLocaleString()}
-            </span>
-            <div className="flex items-center gap-1">
-              <button
-                onClick={() => setPage((p) => Math.max(1, p - 1))}
-                disabled={page === 1}
-                aria-label="Previous page"
-                className="p-2 min-h-[36px] min-w-[36px] flex items-center justify-center rounded-lg hover:bg-[#E2F0FD] dark:hover:bg-white/10 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-              >
-                <ChevronLeft className="w-4 h-4 text-zinc-600 dark:text-zinc-400" />
-              </button>
-              <span className="text-xs text-zinc-600 dark:text-zinc-400 px-2 tabular-nums">
-                {page} / {pages}
-              </span>
-              <button
-                onClick={() => setPage((p) => Math.min(pages, p + 1))}
-                disabled={page === pages}
-                aria-label="Next page"
-                className="p-2 min-h-[36px] min-w-[36px] flex items-center justify-center rounded-lg hover:bg-[#E2F0FD] dark:hover:bg-white/10 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-              >
-                <ChevronRight className="w-4 h-4 text-zinc-600 dark:text-zinc-400" />
-              </button>
-            </div>
-          </div>
+          <ApplePagination
+            currentPage={page}
+            totalPages={pages}
+            totalItems={total}
+            pageSize={25}
+            onPageChange={(p) => setPage(p)}
+            itemLabel="user"
+            itemLabelPlural="users"
+            className="rounded-t-none rounded-b-2xl border-t border-b-0 border-x-0 bg-zinc-50/60 dark:bg-white/[0.02]"
+          />
         )}
       </div>
 
