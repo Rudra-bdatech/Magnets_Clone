@@ -12,6 +12,7 @@ import { TableRow } from "@tiptap/extension-table-row";
 import { TableCell } from "@tiptap/extension-table-cell";
 import { TableHeader } from "@tiptap/extension-table-header";
 import { TextAlign } from "@tiptap/extension-text-align";
+import { TableDropdownMenu, TableFloatingControls } from "./TableFloatingControls";
 import {
   Undo2,
   Redo2,
@@ -54,9 +55,11 @@ export default function SequenceRichEditor({
   includeResourceLink = false,
 }: SequenceRichEditorProps) {
   const [activeMenu, setActiveMenu] = useState<"headings" | "color" | "lists" | "align" | "table" | null>(null);
+  const [tableGridHover, setTableGridHover] = useState<{ rows: number; cols: number }>({ rows: 1, cols: 1 });
   const [showInsertResourceMenu, setShowInsertResourceMenu] = useState(false);
   const [hostedResources, setHostedResources] = useState<any[]>([]);
   const toolbarRef = useRef<HTMLDivElement>(null);
+  const editorContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const res = loadResources();
@@ -155,7 +158,7 @@ export default function SequenceRichEditor({
   }, [formattedInitialContent, editor]);
 
   return (
-    <div className={`rounded-xl border shadow-xs overflow-hidden transition-colors ${
+    <div className={`rounded-xl border shadow-xs overflow-visible transition-colors ${
       themeMode === "dark" ? "border-zinc-800 bg-[#121212]" : "border-zinc-200/90 bg-white"
     }`}>
       {/* Formatting Toolbar */}
@@ -552,121 +555,52 @@ export default function SequenceRichEditor({
           </button>
           {activeMenu === "table" && (
             <div className="absolute left-0 top-full pt-1 z-50">
-              <div className={`w-44 rounded-lg border shadow-lg p-1 flex flex-col space-y-0.5 ${
-                themeMode === "dark" ? "border-zinc-800 bg-[#1e1e1e] text-white" : "border-zinc-200 bg-white text-zinc-800"
-              }`}>
-                {editor?.isActive("table") ? (
-                  <>
-                    <div className="px-2 py-1 text-[10px] font-bold text-zinc-400 uppercase tracking-wider">TABLE CONTROLS</div>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        editor?.chain().focus().addRowBefore().run();
-                        setActiveMenu(null);
-                      }}
-                      className="flex items-center gap-2 text-left px-2.5 py-1.5 text-xs rounded hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer"
-                    >
-                      <Plus className="h-3 w-3 text-zinc-400" /> Add Row Above
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        editor?.chain().focus().addRowAfter().run();
-                        setActiveMenu(null);
-                      }}
-                      className="flex items-center gap-2 text-left px-2.5 py-1.5 text-xs rounded hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer"
-                    >
-                      <Plus className="h-3 w-3 text-zinc-400" /> Add Row Below
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        editor?.chain().focus().deleteRow().run();
-                        setActiveMenu(null);
-                      }}
-                      className="flex items-center gap-2 text-left px-2.5 py-1.5 text-xs text-rose-500 rounded hover:bg-rose-500/10 cursor-pointer"
-                    >
-                      <Trash2 className="h-3 w-3" /> Delete Row
-                    </button>
-                    <div className="h-px bg-zinc-200 dark:bg-zinc-700/50 my-1" />
-                    <button
-                      type="button"
-                      onClick={() => {
-                        editor?.chain().focus().addColumnBefore().run();
-                        setActiveMenu(null);
-                      }}
-                      className="flex items-center gap-2 text-left px-2.5 py-1.5 text-xs rounded hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer"
-                    >
-                      <Plus className="h-3 w-3 text-zinc-400" /> Add Column Left
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        editor?.chain().focus().addColumnAfter().run();
-                        setActiveMenu(null);
-                      }}
-                      className="flex items-center gap-2 text-left px-2.5 py-1.5 text-xs rounded hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer"
-                    >
-                      <Plus className="h-3 w-3 text-zinc-400" /> Add Column Right
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        editor?.chain().focus().deleteColumn().run();
-                        setActiveMenu(null);
-                      }}
-                      className="flex items-center gap-2 text-left px-2.5 py-1.5 text-xs text-rose-500 rounded hover:bg-rose-500/10 cursor-pointer"
-                    >
-                      <Trash2 className="h-3 w-3" /> Delete Column
-                    </button>
-                    <div className="h-px bg-zinc-200 dark:bg-zinc-700/50 my-1" />
-                    <button
-                      type="button"
-                      onClick={() => {
-                        editor?.chain().focus().deleteTable().run();
-                        setActiveMenu(null);
-                      }}
-                      className="flex items-center gap-2 text-left px-2.5 py-1.5 text-xs text-rose-600 font-bold rounded hover:bg-rose-500/10 cursor-pointer"
-                    >
-                      <Trash2 className="h-3.5 w-3.5" /> Delete Table
-                    </button>
-                  </>
-                ) : (
-                  <>
-                    <div className="px-2 py-1 text-[10px] font-bold text-zinc-400 uppercase tracking-wider">INSERT TABLE</div>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        editor?.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run();
-                        setActiveMenu(null);
-                      }}
-                      className="text-left px-2.5 py-1.5 text-xs rounded hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer"
-                    >
-                      Grid 3 × 3 Table
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        editor?.chain().focus().insertTable({ rows: 2, cols: 2, withHeaderRow: true }).run();
-                        setActiveMenu(null);
-                      }}
-                      className="text-left px-2.5 py-1.5 text-xs rounded hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer"
-                    >
-                      Grid 2 × 2 Table
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        editor?.chain().focus().insertTable({ rows: 4, cols: 4, withHeaderRow: true }).run();
-                        setActiveMenu(null);
-                      }}
-                      className="text-left px-2.5 py-1.5 text-xs rounded hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer"
-                    >
-                      Grid 4 × 4 Table
-                    </button>
-                  </>
-                )}
-              </div>
+              {editor?.isActive("table") ? (
+                <TableDropdownMenu
+                  editor={editor}
+                  onClose={() => setActiveMenu(null)}
+                  themeMode={themeMode}
+                />
+              ) : (
+                <div className={`w-[212px] rounded-xl border shadow-xl p-3 flex flex-col items-center select-none ${
+                  themeMode === "dark" ? "border-zinc-800 bg-[#1e1e1e] text-white" : "border-zinc-200 bg-white text-zinc-800"
+                }`}>
+                  <div
+                    className="grid grid-cols-8 gap-1"
+                    onMouseLeave={() => setTableGridHover({ rows: 1, cols: 1 })}
+                  >
+                    {Array.from({ length: 8 }).map((_, rIdx) =>
+                      Array.from({ length: 8 }).map((_, cIdx) => {
+                        const r = rIdx + 1;
+                        const c = cIdx + 1;
+                        const isSelected = r <= tableGridHover.rows && c <= tableGridHover.cols;
+                        return (
+                          <button
+                            key={`${r}-${c}`}
+                            type="button"
+                            onMouseEnter={() => setTableGridHover({ rows: r, cols: c })}
+                            onClick={() => {
+                              editor?.chain().focus().insertTable({ rows: r, cols: c, withHeaderRow: true }).run();
+                              setActiveMenu(null);
+                              setTableGridHover({ rows: 1, cols: 1 });
+                            }}
+                            className={`w-5 h-5 shrink-0 p-0 m-0 rounded-[4px] border transition-colors cursor-pointer ${
+                                      isSelected
+                                        ? "bg-[#ecf2fe] border-[#7cacf8] dark:bg-blue-500/25 dark:border-blue-400"
+                                        : "bg-[#f0f4f9] border-transparent dark:bg-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700"
+                                    }`}
+                                    title={`${r} × ${c} Table`}
+                            aria-label={`${r} by ${c} table`}
+                          />
+                        );
+                      })
+                    )}
+                  </div>
+                  <div className="pt-2 text-xs font-medium text-zinc-600 dark:text-zinc-300">
+                    {tableGridHover.rows}×{tableGridHover.cols}
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -837,10 +771,15 @@ export default function SequenceRichEditor({
       </div>
 
       {/* Editor Content Area */}
-      <div className="p-3 sm:p-4 text-xs sm:text-sm">
+      <div ref={editorContainerRef} className="relative p-3 sm:p-4 text-xs sm:text-sm pb-14">
         <EditorContent
           editor={editor}
           className="prose prose-sm dark:prose-invert max-w-none font-sans focus:outline-none min-h-[200px]"
+        />
+        <TableFloatingControls
+          editor={editor}
+          containerRef={editorContainerRef}
+          themeMode={themeMode}
         />
       </div>
     </div>

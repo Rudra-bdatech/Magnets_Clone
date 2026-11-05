@@ -1060,7 +1060,7 @@ export default function SequenceEditor() {
                           Email Body Preview
                         </label>
                         <div
-                          className="rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#121212] p-4 text-xs text-zinc-700 dark:text-zinc-300 prose prose-sm dark:prose-invert max-w-none shadow-inner min-h-[100px]"
+                          className="rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#121212] p-4 text-xs text-zinc-700 dark:text-zinc-300 prose prose-sm dark:prose-invert max-w-none shadow-inner min-h-[100px] email-rendered-content"
                           dangerouslySetInnerHTML={{
                             __html: emailsWithBody[selectedFlowNodeIndex].body || "<span class='italic text-zinc-400'>No body text yet. Switch to Step List to write your email content.</span>"
                           }}
@@ -1420,7 +1420,7 @@ export default function SequenceEditor() {
                                   </span>
                                 </div>
                                 <div
-                                  className="prose prose-sm dark:prose-invert max-w-none text-zinc-800 dark:text-zinc-200 font-sans leading-relaxed pt-1 text-xs"
+                                  className="prose prose-sm dark:prose-invert max-w-none text-zinc-800 dark:text-zinc-200 font-sans leading-relaxed pt-1 text-xs email-rendered-content"
                                   dangerouslySetInnerHTML={{
                                     __html: (email.body || "")
                                       .replace(/\{first_name\}/g, "Alex")

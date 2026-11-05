@@ -1203,21 +1203,23 @@ textarea {
 .ProseMirror table {
   border-collapse: collapse;
   table-layout: fixed;
-  width: 100%;
+  width: calc(100% - 32px);
+  max-width: calc(100% - 32px);
   margin: 16px 0;
-  overflow: hidden;
   border-radius: 8px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid #d4d4d8;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
 }
 
 .dark .ProseMirror table {
-  border-color: #27272a;
+  border-color: #3f3f46;
+  box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.4);
 }
 
 .ProseMirror td,
 .ProseMirror th {
   min-width: 1em;
-  border: 1px solid #e2e8f0;
+  border: 1px solid #d4d4d8;
   padding: 10px 14px;
   vertical-align: top;
   text-align: left;
@@ -1229,7 +1231,7 @@ textarea {
 
 .dark .ProseMirror td,
 .dark .ProseMirror th {
-  border-color: #27272a;
+  border-color: #3f3f46;
 }
 
 .ProseMirror th {
@@ -1240,8 +1242,16 @@ textarea {
 }
 
 .dark .ProseMirror th {
-  background-color: #1e1e24;
+  background-color: #1a1a20;
   color: #f4f4f5;
+}
+
+.ProseMirror td {
+  background-color: #ffffff;
+}
+
+.dark .ProseMirror td {
+  background-color: #121216;
 }
 
 .ProseMirror .selectedCell:after {
@@ -1282,50 +1292,73 @@ textarea {
   line-height: 1.65;
 }
 
-.email-rendered-content table {
-  border-collapse: collapse;
-  table-layout: auto;
-  width: 100%;
-  margin: 16px 0;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  overflow: hidden;
+.email-rendered-content table,
+.prose table {
+  border-collapse: collapse !important;
+  table-layout: fixed !important;
+  width: 100% !important;
+  margin: 16px 0 !important;
+  border: 1px solid #d4d4d8 !important;
+  border-radius: 8px !important;
+  overflow: hidden !important;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
 }
 
-.dark .email-rendered-content table {
-  border-color: #27272a;
+.dark .email-rendered-content table,
+.dark .prose table {
+  border-color: #3f3f46 !important;
+  box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.4);
 }
 
 .email-rendered-content th,
-.email-rendered-content td {
-  border: 1px solid #e2e8f0;
-  padding: 10px 14px;
-  text-align: left;
-  vertical-align: top;
-  font-size: 13px;
-  line-height: 1.5;
+.email-rendered-content td,
+.prose th,
+.prose td {
+  border: 1px solid #d4d4d8 !important;
+  padding: 10px 14px !important;
+  text-align: left !important;
+  vertical-align: top !important;
+  font-size: 13px !important;
+  line-height: 1.5 !important;
+  box-sizing: border-box !important;
 }
 
 .dark .email-rendered-content th,
-.dark .email-rendered-content td {
-  border-color: #27272a;
+.dark .email-rendered-content td,
+.dark .prose th,
+.dark .prose td {
+  border-color: #3f3f46 !important;
 }
 
-.email-rendered-content th {
-  font-weight: 700;
-  background-color: #f8fafc;
-  color: #0f172a;
+.email-rendered-content th,
+.prose th {
+  font-weight: 700 !important;
+  background-color: #f8fafc !important;
+  color: #0f172a !important;
 }
 
-.dark .email-rendered-content th {
-  background-color: #1e1e24;
-  color: #f4f4f5;
+.dark .email-rendered-content th,
+.dark .prose th {
+  background-color: #1a1a20 !important;
+  color: #f4f4f5 !important;
+}
+
+.email-rendered-content td,
+.prose td {
+  background-color: #ffffff !important;
+}
+
+.dark .email-rendered-content td,
+.dark .prose td {
+  background-color: #121216 !important;
 }
 
 .email-rendered-content td p,
-.email-rendered-content th p {
+.email-rendered-content th p,
+.prose td p,
+.prose th p {
   margin: 0 !important;
-  line-height: 1.5;
+  line-height: 1.5 !important;
 }
 
 .email-rendered-content hr {
