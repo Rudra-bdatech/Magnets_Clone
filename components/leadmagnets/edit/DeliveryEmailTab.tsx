@@ -38,6 +38,7 @@ import {
 } from "lucide-react";
 import { type Account } from "@/lib/data";
 import { TableDropdownMenu, TableFloatingControls } from "@/components/sequences/TableFloatingControls";
+import InsertPhotoModal from "@/components/sequences/InsertPhotoModal";
 
 export interface DeliveryEmailTabProps {
   account: Account | null;
@@ -149,6 +150,7 @@ export default function DeliveryEmailTab({
 
   const [activeMenu, setActiveMenu] = React.useState<"headings" | "color" | "lists" | "align" | "table" | null>(null);
   const [tableGridHover, setTableGridHover] = React.useState<{ rows: number; cols: number }>({ rows: 1, cols: 1 });
+  const [showInsertPhotoModal, setShowInsertPhotoModal] = React.useState(false);
   const toolbarRef = React.useRef<HTMLDivElement>(null);
   const editorContainerRef = React.useRef<HTMLDivElement>(null);
 
@@ -469,12 +471,7 @@ export default function DeliveryEmailTab({
                 {/* Insert Image */}
                 <button
                   type="button"
-                  onClick={() => {
-                    const url = prompt("Enter Image URL:");
-                    if (url && editor) {
-                      editor.chain().focus().setImage({ src: url }).run();
-                    }
-                  }}
+                  onClick={() => setShowInsertPhotoModal(true)}
                   title="Insert Image"
                   className="p-1.5 rounded transition hover:bg-zinc-200 dark:hover:bg-zinc-800 cursor-pointer"
                 >
@@ -717,6 +714,18 @@ export default function DeliveryEmailTab({
                 ) : (
                   renderEmailBlockEditor(emailBody, setEmailBody, false)
                 )}
+                <InsertPhotoModal
+                  isOpen={showInsertPhotoModal}
+                  onClose={() => setShowInsertPhotoModal(false)}
+                  onInsert={(imgUrl) => {
+                    if (editor) {
+                      editor.chain().focus().setImage({ src: imgUrl }).run();
+                    } else {
+                      setEmailBody((prev) => prev + `\n<img src="${imgUrl}" alt="image" />\n`);
+                    }
+                  }}
+                  themeMode={account?.themeMode || "light"}
+                />
                 <TableFloatingControls
                   editor={editor}
                   containerRef={editorContainerRef}

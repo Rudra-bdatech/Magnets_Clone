@@ -44,6 +44,7 @@ import { type Account } from "@/lib/data";
 import { loadResources } from "@/lib/store";
 import { WheelPicker } from "@/components/motion/wheel-picker";
 import { TableDropdownMenu, TableFloatingControls } from "@/components/sequences/TableFloatingControls";
+import InsertPhotoModal from "@/components/sequences/InsertPhotoModal";
 
 export interface SequenceEmailItem {
   id: string;
@@ -97,6 +98,7 @@ export default function SequenceTab({
   const [activeMenu, setActiveMenu] = useState<"headings" | "color" | "lists" | "align" | "table" | null>(null);
   const [tableGridHover, setTableGridHover] = useState<{ rows: number; cols: number }>({ rows: 1, cols: 1 });
   const [showInsertResourceMenu, setShowInsertResourceMenu] = useState(false);
+  const [showInsertPhotoModal, setShowInsertPhotoModal] = useState(false);
   const [hostedResources, setHostedResources] = useState<any[]>(initialResources || []);
   const toolbarRef = useRef<HTMLDivElement>(null);
   const editorContainerRef = useRef<HTMLDivElement>(null);
@@ -721,12 +723,7 @@ export default function SequenceTab({
                       <button
                         type="button"
                         disabled={!sequenceEnabled}
-                        onClick={() => {
-                          const url = prompt("Enter Image URL:");
-                          if (url && editor) {
-                            editor.chain().focus().setImage({ src: url }).run();
-                          }
-                        }}
+                        onClick={() => setShowInsertPhotoModal(true)}
                         title="Insert Image"
                         className="p-1.5 rounded transition hover:bg-zinc-200 dark:hover:bg-zinc-800 cursor-pointer disabled:opacity-50"
                       >
@@ -973,6 +970,16 @@ export default function SequenceTab({
                       <EditorContent
                         editor={editor}
                         className={`prose ${(account?.themeMode || "light") === "dark" ? "prose-invert text-zinc-100" : "text-zinc-800"} max-w-none text-sm leading-relaxed outline-none focus:outline-none focus:ring-0 ring-0 border-none min-h-[140px]`}
+                      />
+                      <InsertPhotoModal
+                        isOpen={showInsertPhotoModal}
+                        onClose={() => setShowInsertPhotoModal(false)}
+                        onInsert={(imgUrl) => {
+                          if (editor) {
+                            editor.chain().focus().setImage({ src: imgUrl }).run();
+                          }
+                        }}
+                        themeMode={account?.themeMode || "light"}
                       />
                       <TableFloatingControls
                         editor={editor}

@@ -13,6 +13,7 @@ import { TableCell } from "@tiptap/extension-table-cell";
 import { TableHeader } from "@tiptap/extension-table-header";
 import { TextAlign } from "@tiptap/extension-text-align";
 import { TableDropdownMenu, TableFloatingControls } from "./TableFloatingControls";
+import InsertPhotoModal from "./InsertPhotoModal";
 import {
   Undo2,
   Redo2,
@@ -57,6 +58,7 @@ export default function SequenceRichEditor({
   const [activeMenu, setActiveMenu] = useState<"headings" | "color" | "lists" | "align" | "table" | null>(null);
   const [tableGridHover, setTableGridHover] = useState<{ rows: number; cols: number }>({ rows: 1, cols: 1 });
   const [showInsertResourceMenu, setShowInsertResourceMenu] = useState(false);
+  const [showInsertPhotoModal, setShowInsertPhotoModal] = useState(false);
   const [hostedResources, setHostedResources] = useState<any[]>([]);
   const toolbarRef = useRef<HTMLDivElement>(null);
   const editorContainerRef = useRef<HTMLDivElement>(null);
@@ -196,15 +198,13 @@ export default function SequenceRichEditor({
   }, [formattedInitialContent, editor]);
 
   return (
-    <div className={`rounded-xl border shadow-xs overflow-visible transition-colors ${
-      currentThemeMode === "dark" ? "border-zinc-800 bg-[#121212] text-white" : "border-zinc-200/90 bg-white text-zinc-900"
-    }`}>
+    <div className={`rounded-xl border shadow-xs overflow-visible transition-colors ${currentThemeMode === "dark" ? "border-zinc-800 bg-[#121212] text-white" : "border-zinc-200/90 bg-white text-zinc-900"
+      }`}>
       {/* Formatting Toolbar */}
       <div
         ref={toolbarRef}
-        className={`rounded-t-[11px] flex flex-wrap items-center gap-1 border-b px-2 sm:px-3 py-1.5 text-xs font-semibold select-none ${
-          currentThemeMode === "dark" ? "border-zinc-800 bg-[#171717] text-zinc-300" : "border-zinc-200 bg-[#F9F9FB] text-zinc-600"
-        }`}
+        className={`rounded-t-[11px] flex flex-wrap items-center gap-1 border-b px-2 sm:px-3 py-1.5 text-xs font-semibold select-none ${currentThemeMode === "dark" ? "border-zinc-800 bg-[#171717] text-zinc-300" : "border-zinc-200 bg-[#F9F9FB] text-zinc-600"
+          }`}
       >
         {/* Undo Button */}
         <button
@@ -237,18 +237,16 @@ export default function SequenceRichEditor({
             disabled={disabled}
             title="Styles & Headings"
             onClick={() => setActiveMenu((m) => (m === "headings" ? null : "headings"))}
-            className={`flex items-center gap-1 px-2 py-1 rounded hover:bg-zinc-200 dark:hover:bg-zinc-800 transition cursor-pointer text-zinc-700 dark:text-zinc-200 ${
-              activeMenu === "headings" ? "bg-zinc-200 dark:bg-zinc-800" : ""
-            } disabled:opacity-50`}
+            className={`flex items-center gap-1 px-2 py-1 rounded hover:bg-zinc-200 dark:hover:bg-zinc-800 transition cursor-pointer text-zinc-700 dark:text-zinc-200 ${activeMenu === "headings" ? "bg-zinc-200 dark:bg-zinc-800" : ""
+              } disabled:opacity-50`}
           >
             <Type className="h-3.5 w-3.5" />
             <ChevronDown className="h-3 w-3 text-zinc-400" />
           </button>
           {activeMenu === "headings" && (
             <div className="absolute left-0 top-full pt-1 z-50">
-              <div className={`w-52 rounded-xl border shadow-xl p-1.5 flex flex-col space-y-0.5 ${
-                currentThemeMode === "dark" ? "border-zinc-800 bg-[#1e1e1e] text-white" : "border-zinc-200 bg-white text-zinc-800"
-              }`}>
+              <div className={`w-52 rounded-xl border shadow-xl p-1.5 flex flex-col space-y-0.5 ${currentThemeMode === "dark" ? "border-zinc-800 bg-[#1e1e1e] text-white" : "border-zinc-200 bg-white text-zinc-800"
+                }`}>
                 <button
                   type="button"
                   onClick={() => {
@@ -306,9 +304,8 @@ export default function SequenceRichEditor({
           disabled={disabled}
           onClick={() => editor?.chain().focus().toggleBold().run()}
           title="Bold (Ctrl+B)"
-          className={`p-1.5 rounded transition hover:bg-zinc-200 dark:hover:bg-zinc-800 cursor-pointer ${
-            editor?.isActive("bold") ? "bg-[#0066B2]/20 text-[#0066B2] dark:text-[#38BDF8]" : ""
-          } disabled:opacity-50`}
+          className={`p-1.5 rounded transition hover:bg-zinc-200 dark:hover:bg-zinc-800 cursor-pointer ${editor?.isActive("bold") ? "bg-[#0066B2]/20 text-[#0066B2] dark:text-[#38BDF8]" : ""
+            } disabled:opacity-50`}
         >
           <span className="font-extrabold text-sm">B</span>
         </button>
@@ -319,9 +316,8 @@ export default function SequenceRichEditor({
           disabled={disabled}
           onClick={() => editor?.chain().focus().toggleItalic().run()}
           title="Italic (Ctrl+I)"
-          className={`p-1.5 rounded transition hover:bg-zinc-200 dark:hover:bg-zinc-800 cursor-pointer ${
-            editor?.isActive("italic") ? "bg-[#0066B2]/20 text-[#0066B2] dark:text-[#38BDF8]" : ""
-          } disabled:opacity-50`}
+          className={`p-1.5 rounded transition hover:bg-zinc-200 dark:hover:bg-zinc-800 cursor-pointer ${editor?.isActive("italic") ? "bg-[#0066B2]/20 text-[#0066B2] dark:text-[#38BDF8]" : ""
+            } disabled:opacity-50`}
         >
           <span className="italic font-serif text-sm">I</span>
         </button>
@@ -332,9 +328,8 @@ export default function SequenceRichEditor({
           disabled={disabled}
           onClick={() => editor?.chain().focus().toggleStrike().run()}
           title="Strikethrough (Ctrl+Shift+X)"
-          className={`p-1.5 rounded transition hover:bg-zinc-200 dark:hover:bg-zinc-800 cursor-pointer ${
-            editor?.isActive("strike") ? "bg-[#0066B2]/20 text-[#0066B2] dark:text-[#38BDF8]" : ""
-          } disabled:opacity-50`}
+          className={`p-1.5 rounded transition hover:bg-zinc-200 dark:hover:bg-zinc-800 cursor-pointer ${editor?.isActive("strike") ? "bg-[#0066B2]/20 text-[#0066B2] dark:text-[#38BDF8]" : ""
+            } disabled:opacity-50`}
         >
           <Strikethrough className="h-3.5 w-3.5" />
         </button>
@@ -345,9 +340,8 @@ export default function SequenceRichEditor({
           disabled={disabled}
           onClick={() => editor?.chain().focus().toggleBlockquote().run()}
           title="Quote / Callout"
-          className={`p-1.5 rounded transition hover:bg-zinc-200 dark:hover:bg-zinc-800 cursor-pointer ${
-            editor?.isActive("blockquote") ? "bg-[#0066B2]/20 text-[#0066B2] dark:text-[#38BDF8]" : ""
-          } disabled:opacity-50`}
+          className={`p-1.5 rounded transition hover:bg-zinc-200 dark:hover:bg-zinc-800 cursor-pointer ${editor?.isActive("blockquote") ? "bg-[#0066B2]/20 text-[#0066B2] dark:text-[#38BDF8]" : ""
+            } disabled:opacity-50`}
         >
           <Quote className="h-3.5 w-3.5" />
         </button>
@@ -359,9 +353,8 @@ export default function SequenceRichEditor({
             disabled={disabled}
             title="Text & Background Color"
             onClick={() => setActiveMenu((m) => (m === "color" ? null : "color"))}
-            className={`flex items-center gap-0.5 p-1.5 rounded hover:bg-zinc-200 dark:hover:bg-zinc-800 transition cursor-pointer ${
-              activeMenu === "color" ? "bg-zinc-200 dark:bg-zinc-800" : ""
-            } disabled:opacity-50`}
+            className={`flex items-center gap-0.5 p-1.5 rounded hover:bg-zinc-200 dark:hover:bg-zinc-800 transition cursor-pointer ${activeMenu === "color" ? "bg-zinc-200 dark:bg-zinc-800" : ""
+              } disabled:opacity-50`}
           >
             <span
               className="font-extrabold text-xs underline decoration-2"
@@ -406,29 +399,26 @@ export default function SequenceRichEditor({
             disabled={disabled}
             title="Lists"
             onClick={() => setActiveMenu((m) => (m === "lists" ? null : "lists"))}
-            className={`flex items-center gap-1 px-1.5 py-1 rounded hover:bg-zinc-200 dark:hover:bg-zinc-800 transition cursor-pointer ${
-              activeMenu === "lists" || editor?.isActive("bulletList") || editor?.isActive("orderedList")
+            className={`flex items-center gap-1 px-1.5 py-1 rounded hover:bg-zinc-200 dark:hover:bg-zinc-800 transition cursor-pointer ${activeMenu === "lists" || editor?.isActive("bulletList") || editor?.isActive("orderedList")
                 ? "bg-[#0066B2]/20 text-[#0066B2] dark:text-[#38BDF8]"
                 : ""
-            } disabled:opacity-50`}
+              } disabled:opacity-50`}
           >
             <List className="h-3.5 w-3.5" />
             <ChevronDown className="h-3 w-3 text-zinc-400" />
           </button>
           {activeMenu === "lists" && (
             <div className="absolute left-0 top-full pt-1 z-50">
-              <div className={`w-52 rounded-xl border shadow-xl p-1.5 flex flex-col space-y-0.5 ${
-                currentThemeMode === "dark" ? "border-zinc-800 bg-[#1e1e1e] text-white" : "border-zinc-200 bg-white text-zinc-800"
-              }`}>
+              <div className={`w-52 rounded-xl border shadow-xl p-1.5 flex flex-col space-y-0.5 ${currentThemeMode === "dark" ? "border-zinc-800 bg-[#1e1e1e] text-white" : "border-zinc-200 bg-white text-zinc-800"
+                }`}>
                 <button
                   type="button"
                   onClick={() => {
                     editor?.chain().focus().toggleBulletList().run();
                     setActiveMenu(null);
                   }}
-                  className={`flex items-center justify-between px-2.5 py-1.5 text-xs rounded hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer font-medium ${
-                    editor?.isActive("bulletList") ? "font-bold text-[#0066B2] dark:text-[#38BDF8]" : ""
-                  }`}
+                  className={`flex items-center justify-between px-2.5 py-1.5 text-xs rounded hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer font-medium ${editor?.isActive("bulletList") ? "font-bold text-[#0066B2] dark:text-[#38BDF8]" : ""
+                    }`}
                 >
                   <span>Bulleted List</span>
                   <span className="text-[10px] text-zinc-400 font-mono font-normal">Ctrl+Shift+8</span>
@@ -439,9 +429,8 @@ export default function SequenceRichEditor({
                     editor?.chain().focus().toggleOrderedList().run();
                     setActiveMenu(null);
                   }}
-                  className={`flex items-center justify-between px-2.5 py-1.5 text-xs rounded hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer font-medium ${
-                    editor?.isActive("orderedList") ? "font-bold text-[#0066B2] dark:text-[#38BDF8]" : ""
-                  }`}
+                  className={`flex items-center justify-between px-2.5 py-1.5 text-xs rounded hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer font-medium ${editor?.isActive("orderedList") ? "font-bold text-[#0066B2] dark:text-[#38BDF8]" : ""
+                    }`}
                 >
                   <span>Numbered List</span>
                   <span className="text-[10px] text-zinc-400 font-mono font-normal">Ctrl+Shift+7</span>
@@ -458,11 +447,10 @@ export default function SequenceRichEditor({
             disabled={disabled}
             title="Alignment"
             onClick={() => setActiveMenu((m) => (m === "align" ? null : "align"))}
-            className={`flex items-center gap-1 px-1.5 py-1 rounded hover:bg-zinc-200 dark:hover:bg-zinc-800 transition cursor-pointer ${
-              activeMenu === "align" || editor?.isActive({ textAlign: "center" }) || editor?.isActive({ textAlign: "right" })
+            className={`flex items-center gap-1 px-1.5 py-1 rounded hover:bg-zinc-200 dark:hover:bg-zinc-800 transition cursor-pointer ${activeMenu === "align" || editor?.isActive({ textAlign: "center" }) || editor?.isActive({ textAlign: "right" })
                 ? "bg-[#0066B2]/20 text-[#0066B2] dark:text-[#38BDF8]"
                 : ""
-            } disabled:opacity-50`}
+              } disabled:opacity-50`}
           >
             {editor?.isActive({ textAlign: "right" }) ? (
               <AlignRight className="h-3.5 w-3.5" />
@@ -475,20 +463,18 @@ export default function SequenceRichEditor({
           </button>
           {activeMenu === "align" && (
             <div className="absolute left-0 top-full pt-1 z-50">
-              <div className={`w-48 rounded-xl border shadow-xl p-1.5 flex flex-col space-y-0.5 ${
-                currentThemeMode === "dark" ? "border-zinc-800 bg-[#1e1e1e] text-white" : "border-zinc-200 bg-white text-zinc-800"
-              }`}>
+              <div className={`w-48 rounded-xl border shadow-xl p-1.5 flex flex-col space-y-0.5 ${currentThemeMode === "dark" ? "border-zinc-800 bg-[#1e1e1e] text-white" : "border-zinc-200 bg-white text-zinc-800"
+                }`}>
                 <button
                   type="button"
                   onClick={() => {
                     editor?.chain().focus().setTextAlign("left").run();
                     setActiveMenu(null);
                   }}
-                  className={`flex items-center justify-between px-2.5 py-1.5 text-xs rounded hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer ${
-                    !editor?.isActive({ textAlign: "center" }) && !editor?.isActive({ textAlign: "right" })
+                  className={`flex items-center justify-between px-2.5 py-1.5 text-xs rounded hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer ${!editor?.isActive({ textAlign: "center" }) && !editor?.isActive({ textAlign: "right" })
                       ? "font-bold text-[#0066B2] dark:text-[#38BDF8]"
                       : ""
-                  }`}
+                    }`}
                 >
                   <span className="flex items-center gap-2"><AlignLeft className="h-3.5 w-3.5" /> Left</span>
                   <span className="text-[10px] text-zinc-400 font-mono font-normal">Ctrl+Shift+L</span>
@@ -499,9 +485,8 @@ export default function SequenceRichEditor({
                     editor?.chain().focus().setTextAlign("center").run();
                     setActiveMenu(null);
                   }}
-                  className={`flex items-center justify-between px-2.5 py-1.5 text-xs rounded hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer ${
-                    editor?.isActive({ textAlign: "center" }) ? "font-bold text-[#0066B2] dark:text-[#38BDF8]" : ""
-                  }`}
+                  className={`flex items-center justify-between px-2.5 py-1.5 text-xs rounded hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer ${editor?.isActive({ textAlign: "center" }) ? "font-bold text-[#0066B2] dark:text-[#38BDF8]" : ""
+                    }`}
                 >
                   <span className="flex items-center gap-2"><AlignCenter className="h-3.5 w-3.5" /> Center</span>
                   <span className="text-[10px] text-zinc-400 font-mono font-normal">Ctrl+Shift+E</span>
@@ -512,9 +497,8 @@ export default function SequenceRichEditor({
                     editor?.chain().focus().setTextAlign("right").run();
                     setActiveMenu(null);
                   }}
-                  className={`flex items-center justify-between px-2.5 py-1.5 text-xs rounded hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer ${
-                    editor?.isActive({ textAlign: "right" }) ? "font-bold text-[#0066B2] dark:text-[#38BDF8]" : ""
-                  }`}
+                  className={`flex items-center justify-between px-2.5 py-1.5 text-xs rounded hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer ${editor?.isActive({ textAlign: "right" }) ? "font-bold text-[#0066B2] dark:text-[#38BDF8]" : ""
+                    }`}
                 >
                   <span className="flex items-center gap-2"><AlignRight className="h-3.5 w-3.5" /> Right</span>
                   <span className="text-[10px] text-zinc-400 font-mono font-normal">Ctrl+Shift+R</span>
@@ -530,12 +514,7 @@ export default function SequenceRichEditor({
         <button
           type="button"
           disabled={disabled}
-          onClick={() => {
-            const url = prompt("Enter Image URL:");
-            if (url && editor) {
-              editor.chain().focus().setImage({ src: url }).run();
-            }
-          }}
+          onClick={() => setShowInsertPhotoModal(true)}
           title="Insert Image"
           className="p-1.5 rounded transition hover:bg-zinc-200 dark:hover:bg-zinc-800 cursor-pointer disabled:opacity-50"
         >
@@ -581,9 +560,8 @@ export default function SequenceRichEditor({
             disabled={disabled}
             title="Table Controls"
             onClick={() => setActiveMenu((m) => (m === "table" ? null : "table"))}
-            className={`p-1.5 rounded transition hover:bg-zinc-200 dark:hover:bg-zinc-800 cursor-pointer ${
-              activeMenu === "table" || editor?.isActive("table") ? "bg-[#0066B2]/20 text-[#0066B2] dark:text-[#38BDF8]" : ""
-            } disabled:opacity-50`}
+            className={`p-1.5 rounded transition hover:bg-zinc-200 dark:hover:bg-zinc-800 cursor-pointer ${activeMenu === "table" || editor?.isActive("table") ? "bg-[#0066B2]/20 text-[#0066B2] dark:text-[#38BDF8]" : ""
+              } disabled:opacity-50`}
           >
             <TableIcon className="h-3.5 w-3.5" />
           </button>
@@ -596,9 +574,8 @@ export default function SequenceRichEditor({
                   themeMode={currentThemeMode}
                 />
               ) : (
-                <div className={`w-[212px] rounded-xl border shadow-xl p-3 flex flex-col items-center select-none ${
-                  currentThemeMode === "dark" ? "border-zinc-800 bg-[#1e1e1e] text-white" : "border-zinc-200 bg-white text-zinc-800"
-                }`}>
+                <div className={`w-[212px] rounded-xl border shadow-xl p-3 flex flex-col items-center select-none ${currentThemeMode === "dark" ? "border-zinc-800 bg-[#1e1e1e] text-white" : "border-zinc-200 bg-white text-zinc-800"
+                  }`}>
                   <div
                     className="grid grid-cols-8 gap-1"
                     onMouseLeave={() => setTableGridHover({ rows: 1, cols: 1 })}
@@ -618,12 +595,11 @@ export default function SequenceRichEditor({
                               setActiveMenu(null);
                               setTableGridHover({ rows: 1, cols: 1 });
                             }}
-                            className={`w-5 h-5 shrink-0 p-0 m-0 rounded-[4px] border transition-colors cursor-pointer ${
-                                      isSelected
-                                        ? "bg-[#ecf2fe] border-[#7cacf8] dark:bg-blue-500/25 dark:border-blue-400"
-                                        : "bg-[#f0f4f9] border-transparent dark:bg-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700"
-                                    }`}
-                                    title={`${r} × ${c} Table`}
+                            className={`w-5 h-5 shrink-0 p-0 m-0 rounded-[4px] border transition-colors cursor-pointer ${isSelected
+                                ? "bg-[#ecf2fe] border-[#7cacf8] dark:bg-blue-500/25 dark:border-blue-400"
+                                : "bg-[#f0f4f9] border-transparent dark:bg-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700"
+                              }`}
+                            title={`${r} × ${c} Table`}
                             aria-label={`${r} by ${c} table`}
                           />
                         );
@@ -681,9 +657,8 @@ export default function SequenceRichEditor({
             }
           }}
           title={editor?.isActive("link") ? "Edit or Remove Hyperlink (Ctrl+K)" : "Insert Hyperlink (Ctrl+K)"}
-          className={`p-1.5 rounded transition hover:bg-zinc-200 dark:hover:bg-zinc-800 cursor-pointer ${
-            editor?.isActive("link") ? "bg-[#0066B2]/20 text-[#0066B2] dark:text-[#38BDF8]" : ""
-          } disabled:opacity-50`}
+          className={`p-1.5 rounded transition hover:bg-zinc-200 dark:hover:bg-zinc-800 cursor-pointer ${editor?.isActive("link") ? "bg-[#0066B2]/20 text-[#0066B2] dark:text-[#38BDF8]" : ""
+            } disabled:opacity-50`}
         >
           <Link2 className="h-3.5 w-3.5" />
         </button>
@@ -716,9 +691,8 @@ export default function SequenceRichEditor({
               <ChevronDown className="h-3 w-3" />
             </button>
             {showInsertResourceMenu && (
-              <div className={`absolute left-0 top-full mt-1 w-64 rounded-xl border p-1.5 shadow-xl z-50 ${
-                currentThemeMode === "dark" ? "border-zinc-800 bg-[#1e1e1e] text-white" : "border-zinc-200 bg-white text-zinc-900"
-              }`}>
+              <div className={`absolute left-0 top-full mt-1 w-64 rounded-xl border p-1.5 shadow-xl z-50 ${currentThemeMode === "dark" ? "border-zinc-800 bg-[#1e1e1e] text-white" : "border-zinc-200 bg-white text-zinc-900"
+                }`}>
                 <div className="px-2 py-1 text-[10px] font-bold text-zinc-400 uppercase tracking-wider">
                   Available Files & Downloads
                 </div>
@@ -809,6 +783,16 @@ export default function SequenceRichEditor({
         <EditorContent
           editor={editor}
           className={`prose prose-sm ${currentThemeMode === "dark" ? "prose-invert text-zinc-100" : "text-zinc-800"} max-w-none font-sans focus:outline-none min-h-[140px]`}
+        />
+        <InsertPhotoModal
+          isOpen={showInsertPhotoModal}
+          onClose={() => setShowInsertPhotoModal(false)}
+          onInsert={(imgUrl) => {
+            if (editor) {
+              editor.chain().focus().setImage({ src: imgUrl }).run();
+            }
+          }}
+          themeMode={currentThemeMode}
         />
         <TableFloatingControls
           editor={editor}
