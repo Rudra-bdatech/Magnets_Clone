@@ -47,12 +47,28 @@ import { AppleCheckbox } from "@/components/leads/AppleCheckbox";
 import { LeadToastContainer, type Toast } from "@/components/leads/LeadToastContainer";
 import { DeleteLeadModal } from "@/components/leads/DeleteLeadModal";
 import { BulkDeleteModal } from "@/components/leads/BulkDeleteModal";
+import { AppleSelect } from "@/components/leads/AppleSelect";
 
 import { AddLeadModal } from "@/components/leads/AddLeadModal";
 import { ImportCsvModal } from "@/components/leads/ImportCsvModal";
 import { LeadDetailsModal } from "@/components/leads/LeadDetailsModal";
 
 import { formatDateOnly, parseFlexibleDate } from "@/lib/utils";
+
+function getPageNumbers(currentPage: number, totalPages: number): (number | string)[] {
+  if (totalPages <= 5) {
+    return Array.from({ length: totalPages }, (_, i) => i + 1);
+  }
+  const pages: (number | string)[] = [];
+  if (currentPage <= 3) {
+    pages.push(1, 2, 3, 4, "…", totalPages);
+  } else if (currentPage >= totalPages - 2) {
+    pages.push(1, "…", totalPages - 3, totalPages - 2, totalPages - 1, totalPages);
+  } else {
+    pages.push(1, "…", currentPage - 1, currentPage, currentPage + 1, "…", totalPages);
+  }
+  return pages;
+}
 
 function generateSafeId() {
   if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
@@ -1785,7 +1801,7 @@ function parseCsvLine(line: string): string[] {
             </div>
 
             {/* ========================================================================= */}
-            {/* 5. DESKTOP Pagination (hidden md:flex) - Preserved 100% Unchanged         */}
+            {/* 5. DESKTOP Pagination (hidden md:flex) - Apple-Style Layout & Animation   */}
             {/* ========================================================================= */}
             {filtered.length > 0 && (
               <div className="hidden md:flex flex-col sm:flex-row items-center justify-between gap-3 px-4 sm:px-6 py-2.5 border-t border-[#0066B2]/20 dark:border-white/[0.06] bg-[#F8FBFF]/50 dark:bg-[#151515] text-xs text-zinc-600 dark:text-zinc-400">
@@ -1801,7 +1817,7 @@ function parseCsvLine(line: string): string[] {
                         <strong className="text-zinc-900 dark:text-white">{(currentPage - 1) * pageSize + 1}</strong>
                       ) : (
                         <>
-                          <strong className="text-zinc-900 dark:text-white">{(currentPage - 1) * pageSize + 1}</strong> to{" "}
+                          <strong className="text-zinc-900 dark:text-white">{(currentPage - 1) * pageSize + 1}</strong>-
                           <strong className="text-zinc-900 dark:text-white">{Math.min(currentPage * pageSize, filtered.length)}</strong>
                         </>
                       )}{" "}
@@ -1811,52 +1827,76 @@ function parseCsvLine(line: string): string[] {
                 </div>
 
                 <div className="flex items-center gap-4">
-                  <div className="flex items-center gap-1.5">
-                    <span>Per page:</span>
-                    <select
-                      value={pageSize}
-                      onChange={(e) => {
-                        setPageSize(Number(e.target.value));
-                        setCurrentPage(1);
-                      }}
-                      className="rounded-lg border border-zinc-200 bg-white px-2 py-0.5 text-xs font-semibold text-zinc-700 dark:border-white/10 dark:bg-white/5 dark:text-zinc-200 focus:outline-none cursor-pointer"
-                    >
-                      <option value={10}>10</option>
-                      <option value={25}>25</option>
-                      <option value={50}>50</option>
-                    </select>
-                  </div>
+                  {totalPages > 1 && (
+                    <div className="flex items-center gap-1">
+                      <button
+                        type="button"
+                        disabled={currentPage === 1}
+                        onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                        className="flex h-7 w-7 items-center justify-center rounded-full text-zinc-400 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-white/10 disabled:opacity-30 disabled:hover:bg-transparent disabled:cursor-not-allowed transition-all cursor-pointer active:scale-95"
+                        title="Previous page"
+                      >
+                        <ChevronLeft className="h-4 w-4" />
+                      </button>
 
-                  <div className="flex items-center gap-1">
-                    <button
-                      type="button"
-                      disabled={currentPage === 1}
-                      onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                      className="flex h-7 w-7 items-center justify-center rounded-lg border border-zinc-200 bg-white text-zinc-600 hover:bg-zinc-50 disabled:opacity-40 dark:border-white/10 dark:bg-white/5 dark:text-zinc-200 dark:hover:bg-white/10 transition cursor-pointer"
-                    >
-                      <ChevronLeft className="h-3.5 w-3.5" />
-                    </button>
-                    <span className="px-2 font-semibold text-zinc-900 dark:text-white text-xs">
-                      {currentPage} / {totalPages}
-                    </span>
-                    <button
-                      type="button"
-                      disabled={currentPage >= totalPages}
-                      onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-                      className="flex h-7 w-7 items-center justify-center rounded-lg border border-zinc-200 bg-white text-zinc-600 hover:bg-zinc-50 disabled:opacity-40 dark:border-white/10 dark:bg-white/5 dark:text-zinc-200 dark:hover:bg-white/10 transition cursor-pointer"
-                    >
-                      <ChevronRight className="h-3.5 w-3.5" />
-                    </button>
-                  </div>
+                      <div className="flex items-center gap-1">
+                        {getPageNumbers(currentPage, totalPages).map((p, idx) => {
+                          if (typeof p === "string") {
+                            return (
+                              <span key={`desk-ellipsis-${idx}`} className="px-1 text-xs text-zinc-400 dark:text-zinc-500 select-none">
+                                …
+                              </span>
+                            );
+                          }
+                          const isActive = p === currentPage;
+                          return (
+                            <button
+                              key={`desk-page-${p}`}
+                              type="button"
+                              onClick={() => setCurrentPage(p)}
+                              className={`min-w-[28px] h-7 px-2.5 rounded-full text-xs transition-all cursor-pointer select-none active:scale-95 flex items-center justify-center ${
+                                isActive
+                                  ? "bg-zinc-900 text-white dark:bg-white dark:text-black font-bold shadow-sm"
+                                  : "text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-white/10 font-semibold"
+                              }`}
+                            >
+                              {p}
+                            </button>
+                          );
+                        })}
+                      </div>
+
+                      <button
+                        type="button"
+                        disabled={currentPage >= totalPages}
+                        onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                        className="flex h-7 w-7 items-center justify-center rounded-full text-zinc-400 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-white/10 disabled:opacity-30 disabled:hover:bg-transparent disabled:cursor-not-allowed transition-all cursor-pointer active:scale-95"
+                        title="Next page"
+                      >
+                        <ChevronRight className="h-4 w-4" />
+                      </button>
+                    </div>
+                  )}
+
+                  <AppleSelect
+                    value={pageSize}
+                    options={[10, 25, 50]}
+                    onChange={(newSize) => {
+                      setPageSize(newSize);
+                      setCurrentPage(1);
+                    }}
+                    prefix="Rows:"
+                  />
                 </div>
               </div>
             )}
 
             {/* ========================================================================= */}
-            {/* 5. MOBILE Pagination (flex md:hidden) - Ergonomic Thumb Buttons           */}
+            {/* 5. MOBILE Pagination (flex md:hidden) - Apple-Style Layout & Animation    */}
             {/* ========================================================================= */}
             {filtered.length > 0 && (
               <div className="flex md:hidden flex-col gap-2.5 p-3.5 border-t border-zinc-200/80 dark:border-white/[0.06] bg-[#F8FBFF]/50 dark:bg-[#151515]">
+                {/* Row 1: Showing info on left, Apple Rows dropdown on right */}
                 <div className="flex items-center justify-between text-xs text-zinc-600 dark:text-zinc-400">
                   <div>
                     {filtered.length <= pageSize ? (
@@ -1878,46 +1918,69 @@ function parseCsvLine(line: string): string[] {
                       </>
                     )}
                   </div>
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-[11px]">Rows:</span>
-                    <select
-                      value={pageSize}
-                      onChange={(e) => {
-                        setPageSize(Number(e.target.value));
-                        setCurrentPage(1);
-                      }}
-                      className="rounded-lg border border-zinc-200 bg-white px-2 py-0.5 text-xs font-semibold text-zinc-700 dark:border-white/10 dark:bg-white/5 dark:text-zinc-200 focus:outline-none cursor-pointer"
+
+                  <AppleSelect
+                    value={pageSize}
+                    options={[10, 25, 50]}
+                    onChange={(newSize) => {
+                      setPageSize(newSize);
+                      setCurrentPage(1);
+                    }}
+                    prefix="Rows:"
+                  />
+                </div>
+
+                {/* Row 2: Apple-style Centered Numbered Pagination < (1) 2 3 > */}
+                {totalPages > 1 && (
+                  <div className="flex items-center justify-center gap-1.5 pt-1 border-t border-zinc-100 dark:border-white/[0.06]">
+                    <button
+                      type="button"
+                      disabled={currentPage === 1}
+                      onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                      className="flex h-7 w-7 items-center justify-center rounded-full text-zinc-400 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-white/10 disabled:opacity-30 disabled:hover:bg-transparent disabled:cursor-not-allowed transition-all cursor-pointer active:scale-95"
+                      title="Previous page"
                     >
-                      <option value={10}>10</option>
-                      <option value={25}>25</option>
-                      <option value={50}>50</option>
-                    </select>
+                      <ChevronLeft className="h-4 w-4" />
+                    </button>
+
+                    <div className="flex items-center gap-1">
+                      {getPageNumbers(currentPage, totalPages).map((p, idx) => {
+                        if (typeof p === "string") {
+                          return (
+                            <span key={`mob-ellipsis-${idx}`} className="px-1 text-xs text-zinc-400 dark:text-zinc-500 select-none">
+                              …
+                            </span>
+                          );
+                        }
+                        const isActive = p === currentPage;
+                        return (
+                          <button
+                            key={`mob-page-${p}`}
+                            type="button"
+                            onClick={() => setCurrentPage(p)}
+                            className={`min-w-[28px] h-7 px-2.5 rounded-full text-xs transition-all cursor-pointer select-none active:scale-95 flex items-center justify-center ${
+                              isActive
+                                ? "bg-zinc-900 text-white dark:bg-white dark:text-black font-bold shadow-sm"
+                                : "text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-white/10 font-semibold"
+                            }`}
+                          >
+                            {p}
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    <button
+                      type="button"
+                      disabled={currentPage >= totalPages}
+                      onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                      className="flex h-7 w-7 items-center justify-center rounded-full text-zinc-400 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-white/10 disabled:opacity-30 disabled:hover:bg-transparent disabled:cursor-not-allowed transition-all cursor-pointer active:scale-95"
+                      title="Next page"
+                    >
+                      <ChevronRight className="h-4 w-4" />
+                    </button>
                   </div>
-                </div>
-
-                <div className="flex items-center justify-between gap-2 pt-0.5">
-                  <button
-                    type="button"
-                    disabled={currentPage === 1}
-                    onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                    className="flex-1 flex items-center justify-center gap-1 py-2 px-3 rounded-xl border border-zinc-200 bg-white text-xs font-bold text-zinc-700 hover:bg-zinc-50 disabled:opacity-40 dark:border-white/10 dark:bg-white/5 dark:text-zinc-200 dark:hover:bg-white/10 transition shadow-2xs cursor-pointer"
-                  >
-                    <ChevronLeft className="h-4 w-4" /> Previous
-                  </button>
-
-                  <span className="px-3 text-xs font-bold text-zinc-900 dark:text-white shrink-0">
-                    {currentPage} / {totalPages}
-                  </span>
-
-                  <button
-                    type="button"
-                    disabled={currentPage >= totalPages}
-                    onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-                    className="flex-1 flex items-center justify-center gap-1 py-2 px-3 rounded-xl border border-zinc-200 bg-white text-xs font-bold text-zinc-700 hover:bg-zinc-50 disabled:opacity-40 dark:border-white/10 dark:bg-white/5 dark:text-zinc-200 dark:hover:bg-white/10 transition shadow-2xs cursor-pointer"
-                  >
-                    Next <ChevronRight className="h-4 w-4" />
-                  </button>
-                </div>
+                )}
               </div>
             )}
           </div>

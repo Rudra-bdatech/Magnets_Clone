@@ -27,6 +27,7 @@ import {
   Share2,
   SlidersHorizontal,
   ChevronDown,
+  ChevronLeft,
   Lock,
   ChevronRight,
   FileText,
@@ -78,7 +79,13 @@ const MagnetCard = React.memo(
     return (
       <motion.div
         whileTap={{ scale: 0.985 }}
-        onClick={() => onSelect(page.id)}
+        onClick={() => {
+          if (isSelectMode || anyChecked) {
+            onToggleCheck(page.id);
+          } else {
+            onSelect(page.id);
+          }
+        }}
         className={`group relative rounded-2xl border cursor-pointer overflow-hidden flex flex-col will-change-transform transition-all duration-200 ${isChecked
           ? "border-[#0066B2] dark:border-blue-500 bg-white dark:bg-[#171717] ring-2 ring-[#0066B2]/40 dark:ring-blue-500/40 shadow-[0_8px_30px_rgba(0,102,178,0.12)]"
           : isSelected
@@ -396,8 +403,13 @@ export default function PagesPage() {
   }, [filtered, checkedIds]);
 
   const handleSelectPage = useCallback((id: string) => {
+    if (isMobile) {
+      setSelectedPageId(id);
+      setMobileInspectorOpen(true);
+      return;
+    }
     setSelectedPageId((prev) => (prev === id ? null : id));
-  }, []);
+  }, [isMobile]);
 
   const handleOpenMobileDetails = useCallback((id: string, e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
@@ -1146,68 +1158,152 @@ export default function PagesPage() {
               </AnimatePresence>
 
               {filtered.length > 0 && (
-                <div className={`flex flex-col sm:flex-row items-center ${filtered.length > 10 ? "justify-between" : "justify-center"} gap-3 px-2 py-3 text-xs`}>
-                  <p className="text-zinc-500 dark:text-zinc-400 text-[11px] font-medium text-center">
-                    {itemsPerPage === "all" || filtered.length <= (itemsPerPage as number) ? (
-                      <>
-                        Showing <span className="font-bold text-zinc-900 dark:text-white">{filtered.length}</span> {filtered.length === 1 ? "funnel" : "funnels"}
-                      </>
-                    ) : (
-                      <>
-                        Showing{" "}
-                        <span className="font-bold text-zinc-900 dark:text-white">
-                          {(currentPage - 1) * (itemsPerPage as number) + 1}
-                        </span>{" "}
-                        to{" "}
-                        <span className="font-bold text-zinc-900 dark:text-white">
-                          {Math.min(currentPage * (itemsPerPage as number), filtered.length)}
-                        </span>{" "}
-                        of <span className="font-bold text-zinc-900 dark:text-white">{filtered.length}</span> funnels
-                      </>
-                    )}
-                  </p>
+                <div className="w-full rounded-2xl border border-[#0066B2]/10 dark:border-white/[0.08] bg-white/70 dark:bg-[#171717]/80 backdrop-blur-xs p-3 sm:px-4 sm:py-3 shadow-xs mt-2">
+                  {/* MOBILE (< sm) Layout: Specifically engineered for small devices like Moto G4 (360px) */}
+                  <div className="flex sm:hidden flex-col gap-2.5 w-full">
+                    {/* Top Row: Showing count & Show size selector */}
+                    <div className="flex items-center justify-between gap-2 text-xs">
+                      <p className="text-zinc-500 dark:text-zinc-400 text-[11px] font-medium min-w-0 truncate">
+                        {itemsPerPage === "all" || filtered.length <= (itemsPerPage as number) ? (
+                          <>
+                            Showing <strong className="font-bold text-zinc-900 dark:text-white">{filtered.length}</strong> {filtered.length === 1 ? "funnel" : "funnels"}
+                          </>
+                        ) : (
+                          <>
+                            Showing{" "}
+                            <strong className="font-bold text-zinc-900 dark:text-white">
+                              {(currentPage - 1) * (itemsPerPage as number) + 1 === Math.min(currentPage * (itemsPerPage as number), filtered.length)
+                                ? `${Math.min(currentPage * (itemsPerPage as number), filtered.length)}`
+                                : `${(currentPage - 1) * (itemsPerPage as number) + 1}–${Math.min(currentPage * (itemsPerPage as number), filtered.length)}`}
+                            </strong>{" "}
+                            of <strong className="font-bold text-zinc-900 dark:text-white">{filtered.length}</strong> funnels
+                          </>
+                        )}
+                      </p>
 
-                  {filtered.length > 10 && (
-                    <div className="flex items-center gap-2">
-                      <div className="flex items-center gap-1 bg-zinc-100 dark:bg-zinc-800/60 p-0.5 rounded-xl text-[11px]">
-                        <span className="text-[10px] text-zinc-500 px-1.5 font-medium">Show:</span>
-                        {([10, 25, 50, "all"] as const).map((size) => (
-                          <button
-                            key={size}
-                            onClick={() => setItemsPerPage(size)}
-                            className={`px-2 py-0.5 rounded-lg font-semibold transition ${itemsPerPage === size
-                              ? "bg-white dark:bg-[#171717] text-[#0066B2] dark:text-[#38BDF8] shadow-xs"
-                              : "text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200"
-                              }`}
-                          >
-                            {size === "all" ? "All" : size}
-                          </button>
-                        ))}
-                      </div>
-
-                      {itemsPerPage !== "all" && totalPagesCount > 1 && (
-                        <div className="flex items-center gap-1.5 ml-2">
-                          <button
-                            disabled={currentPage === 1}
-                            onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
-                            className="px-2.5 py-1 rounded-xl border border-zinc-200 dark:border-white/10 bg-zinc-50 dark:bg-[#171717] text-zinc-700 dark:text-zinc-300 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-zinc-100 dark:hover:bg-zinc-800 font-semibold transition text-[11px]"
-                          >
-                            Previous
-                          </button>
-                          <span className="text-[11px] font-bold text-zinc-700 dark:text-zinc-300 px-1">
-                            {currentPage} / {totalPagesCount}
-                          </span>
-                          <button
-                            disabled={currentPage === totalPagesCount}
-                            onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPagesCount))}
-                            className="px-2.5 py-1 rounded-xl border border-zinc-200 dark:border-white/10 bg-zinc-50 dark:bg-[#171717] text-zinc-700 dark:text-zinc-300 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-zinc-100 dark:hover:bg-zinc-800 font-semibold transition text-[11px]"
-                          >
-                            Next
-                          </button>
+                      {filtered.length > 10 && (
+                        <div className="flex items-center gap-1 bg-zinc-100 dark:bg-zinc-800/80 p-0.5 rounded-xl text-[11px] shrink-0">
+                          <span className="text-[10px] text-zinc-500 px-1 font-medium">Show:</span>
+                          {([10, 25, 50, "all"] as const).map((size) => (
+                            <button
+                              key={size}
+                              type="button"
+                              onClick={() => {
+                                setItemsPerPage(size);
+                                setCurrentPage(1);
+                              }}
+                              className={`px-1.5 py-0.5 rounded-lg font-semibold transition cursor-pointer text-[10.5px] ${itemsPerPage === size
+                                ? "bg-white dark:bg-[#171717] text-[#0066B2] dark:text-[#38BDF8] shadow-2xs font-bold"
+                                : "text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200"
+                                }`}
+                            >
+                              {size === "all" ? "All" : size}
+                            </button>
+                          ))}
                         </div>
                       )}
                     </div>
-                  )}
+
+                    {/* Bottom Row: Ergonomic full-width mobile pagination controls */}
+                    {itemsPerPage !== "all" && totalPagesCount > 1 && (
+                      <div className="flex items-center justify-between gap-2 pt-1 border-t border-zinc-100 dark:border-white/[0.06]">
+                        <button
+                          type="button"
+                          disabled={currentPage === 1}
+                          onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
+                          className="flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#1f1f23] text-xs font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-zinc-800 disabled:opacity-40 disabled:cursor-not-allowed transition shadow-2xs cursor-pointer active:scale-98"
+                        >
+                          <ChevronLeft className="h-3.5 w-3.5" />
+                          <span>Previous</span>
+                        </button>
+
+                        <div className="px-3 py-1.5 rounded-xl bg-zinc-100 dark:bg-zinc-800/70 text-xs font-bold text-zinc-800 dark:text-zinc-200 whitespace-nowrap shrink-0 select-none">
+                          <span>{currentPage}</span>
+                          <span className="text-zinc-400 mx-1">/</span>
+                          <span>{totalPagesCount}</span>
+                        </div>
+
+                        <button
+                          type="button"
+                          disabled={currentPage === totalPagesCount}
+                          onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPagesCount))}
+                          className="flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#1f1f23] text-xs font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-zinc-800 disabled:opacity-40 disabled:cursor-not-allowed transition shadow-2xs cursor-pointer active:scale-98"
+                        >
+                          <span>Next</span>
+                          <ChevronRight className="h-3.5 w-3.5" />
+                        </button>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* DESKTOP (>= sm) Layout: Preserved and perfected */}
+                  <div className={`hidden sm:flex items-center ${filtered.length > 10 ? "justify-between" : "justify-center"} gap-4 text-xs`}>
+                    <p className="text-zinc-500 dark:text-zinc-400 text-xs font-medium">
+                      {itemsPerPage === "all" || filtered.length <= (itemsPerPage as number) ? (
+                        <>
+                          Showing <strong className="font-bold text-zinc-900 dark:text-white">{filtered.length}</strong> {filtered.length === 1 ? "funnel" : "funnels"}
+                        </>
+                      ) : (
+                        <>
+                          Showing{" "}
+                          <strong className="font-bold text-zinc-900 dark:text-white">
+                            {(currentPage - 1) * (itemsPerPage as number) + 1 === Math.min(currentPage * (itemsPerPage as number), filtered.length)
+                              ? `${Math.min(currentPage * (itemsPerPage as number), filtered.length)}`
+                              : `${(currentPage - 1) * (itemsPerPage as number) + 1}–${Math.min(currentPage * (itemsPerPage as number), filtered.length)}`}
+                          </strong>{" "}
+                          of <strong className="font-bold text-zinc-900 dark:text-white">{filtered.length}</strong> funnels
+                        </>
+                      )}
+                    </p>
+
+                    {filtered.length > 10 && (
+                      <div className="flex items-center gap-2.5">
+                        <div className="flex items-center gap-1 bg-zinc-100 dark:bg-zinc-800/60 p-0.5 rounded-xl text-[11px]">
+                          <span className="text-[10px] text-zinc-500 px-1.5 font-medium">Show:</span>
+                          {([10, 25, 50, "all"] as const).map((size) => (
+                            <button
+                              key={size}
+                              type="button"
+                              onClick={() => {
+                                setItemsPerPage(size);
+                                setCurrentPage(1);
+                              }}
+                              className={`px-2 py-0.5 rounded-lg font-semibold transition cursor-pointer ${itemsPerPage === size
+                                ? "bg-white dark:bg-[#171717] text-[#0066B2] dark:text-[#38BDF8] shadow-xs font-bold"
+                                : "text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200"
+                                }`}
+                            >
+                              {size === "all" ? "All" : size}
+                            </button>
+                          ))}
+                        </div>
+
+                        {itemsPerPage !== "all" && totalPagesCount > 1 && (
+                          <div className="flex items-center gap-1.5 ml-1">
+                            <button
+                              type="button"
+                              disabled={currentPage === 1}
+                              onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
+                              className="px-2.5 py-1 rounded-xl border border-zinc-200 dark:border-white/10 bg-zinc-50 dark:bg-[#171717] text-zinc-700 dark:text-zinc-300 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-zinc-100 dark:hover:bg-zinc-800 font-semibold transition text-[11px] cursor-pointer"
+                            >
+                              Previous
+                            </button>
+                            <span className="text-[11px] font-bold text-zinc-700 dark:text-zinc-300 px-1.5 whitespace-nowrap shrink-0 select-none">
+                              {currentPage} / {totalPagesCount}
+                            </span>
+                            <button
+                              type="button"
+                              disabled={currentPage === totalPagesCount}
+                              onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPagesCount))}
+                              className="px-2.5 py-1 rounded-xl border border-zinc-200 dark:border-white/10 bg-zinc-50 dark:bg-[#171717] text-zinc-700 dark:text-zinc-300 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-zinc-100 dark:hover:bg-zinc-800 font-semibold transition text-[11px] cursor-pointer"
+                            >
+                              Next
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
                 </div>
               )}
             </motion.div>
