@@ -132,7 +132,7 @@ export default function SequenceRichEditor({
     editable: !disabled,
     editorProps: {
       attributes: {
-        class: "outline-none focus:outline-none focus:ring-0 min-h-[200px] text-xs sm:text-sm font-sans leading-relaxed",
+        class: "outline-none focus:outline-none focus:ring-0 min-h-[140px] text-xs sm:text-sm font-sans leading-relaxed",
       },
       handleKeyDown: (view, event) => {
         // Alignment shortcuts (Ctrl+Shift+L, Ctrl+Shift+E, Ctrl+Shift+R)
@@ -805,10 +805,10 @@ export default function SequenceRichEditor({
       </div>
 
       {/* Editor Content Area */}
-      <div ref={editorContainerRef} className="rounded-b-[11px] relative p-3 sm:p-4 text-xs sm:text-sm pb-14">
+      <div ref={editorContainerRef} className="rounded-b-[11px] relative p-3 sm:p-4 text-xs sm:text-sm">
         <EditorContent
           editor={editor}
-          className={`prose prose-sm ${currentThemeMode === "dark" ? "prose-invert text-zinc-100" : "text-zinc-800"} max-w-none font-sans focus:outline-none min-h-[200px]`}
+          className={`prose prose-sm ${currentThemeMode === "dark" ? "prose-invert text-zinc-100" : "text-zinc-800"} max-w-none font-sans focus:outline-none min-h-[140px]`}
         />
         <TableFloatingControls
           editor={editor}

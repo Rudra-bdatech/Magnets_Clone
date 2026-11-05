@@ -140,7 +140,7 @@ export default function SequenceTab({
     immediatelyRender: false,
     editorProps: {
       attributes: {
-        class: "outline-none focus:outline-none focus:ring-0 min-h-[220px]",
+        class: "outline-none focus:outline-none focus:ring-0 min-h-[140px]",
       },
       handleKeyDown: (view, event) => {
         if ((event.ctrlKey || event.metaKey) && event.shiftKey) {
@@ -969,10 +969,10 @@ export default function SequenceTab({
                     </div>
 
                     {/* Tiptap Rich Text Body Editor Container */}
-                    <div ref={editorContainerRef} className="relative p-4 min-h-[220px] pb-14">
+                    <div ref={editorContainerRef} className="relative p-4 min-h-[140px]">
                       <EditorContent
                         editor={editor}
-                        className={`prose ${(account?.themeMode || "light") === "dark" ? "prose-invert text-zinc-100" : "text-zinc-800"} max-w-none text-sm leading-relaxed outline-none focus:outline-none focus:ring-0 ring-0 border-none min-h-[220px]`}
+                        className={`prose ${(account?.themeMode || "light") === "dark" ? "prose-invert text-zinc-100" : "text-zinc-800"} max-w-none text-sm leading-relaxed outline-none focus:outline-none focus:ring-0 ring-0 border-none min-h-[140px]`}
                       />
                       <TableFloatingControls
                         editor={editor}

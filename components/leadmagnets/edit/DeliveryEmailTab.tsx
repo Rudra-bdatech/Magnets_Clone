@@ -88,7 +88,7 @@ export default function DeliveryEmailTab({
     immediatelyRender: false,
     editorProps: {
       attributes: {
-        class: "outline-none focus:outline-none focus:ring-0 min-h-[220px]",
+        class: "outline-none focus:outline-none focus:ring-0 min-h-[140px]",
       },
       handleKeyDown: (view, event) => {
         if ((event.ctrlKey || event.metaKey) && event.shiftKey) {
@@ -177,7 +177,7 @@ export default function DeliveryEmailTab({
         onChange={(e) => onValChange(e.target.value)}
         placeholder="Write your email body content here... Use {name} for subscriber name."
         rows={10}
-        className={`w-full p-2 bg-transparent outline-none resize-y min-h-[220px] font-sans text-sm leading-relaxed transition ${isDisabled ? "opacity-50 cursor-not-allowed" : ""
+        className={`w-full p-2 bg-transparent outline-none resize-y min-h-[140px] font-sans text-sm leading-relaxed transition ${isDisabled ? "opacity-50 cursor-not-allowed" : ""
           } ${(account?.themeMode || "light") === "dark" ? "text-zinc-100 placeholder:text-zinc-600" : "text-zinc-800 placeholder:text-zinc-400"}`}
       />
     );
@@ -708,11 +708,11 @@ export default function DeliveryEmailTab({
               </div>
 
               {/* Tiptap Rich Text Body Editor Container */}
-              <div ref={editorContainerRef} className="relative p-4 min-h-[220px] pb-14">
+              <div ref={editorContainerRef} className="relative p-4 min-h-[140px]">
                 {editor ? (
                   <EditorContent
                     editor={editor}
-                    className={`prose ${(account?.themeMode || "light") === "dark" ? "prose-invert text-zinc-100" : "text-zinc-800"} max-w-none text-sm leading-relaxed outline-none focus:outline-none focus:ring-0 ring-0 border-none min-h-[220px]`}
+                    className={`prose ${(account?.themeMode || "light") === "dark" ? "prose-invert text-zinc-100" : "text-zinc-800"} max-w-none text-sm leading-relaxed outline-none focus:outline-none focus:ring-0 ring-0 border-none min-h-[140px]`}
                   />
                 ) : (
                   renderEmailBlockEditor(emailBody, setEmailBody, false)

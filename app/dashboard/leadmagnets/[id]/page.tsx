@@ -1523,7 +1523,7 @@ export default function EditLeadMagnetPage() {
         onChange={(e) => onValChange(e.target.value)}
         placeholder="Write your email body content here... Use {name} for subscriber name."
         rows={10}
-        className={`w-full p-2 bg-transparent outline-none resize-y min-h-[220px] font-sans text-sm leading-relaxed transition ${isDisabled ? "opacity-50 cursor-not-allowed" : ""
+        className={`w-full p-2 bg-transparent outline-none resize-y min-h-[140px] font-sans text-sm leading-relaxed transition ${isDisabled ? "opacity-50 cursor-not-allowed" : ""
           } ${(account?.themeMode || "light") === "dark" ? "text-zinc-100 placeholder:text-zinc-600" : "text-zinc-800 placeholder:text-zinc-400"}`}
       />
     );

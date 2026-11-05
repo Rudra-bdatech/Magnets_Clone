@@ -1180,7 +1180,7 @@ textarea {
   border: none !important;
   box-shadow: none !important;
   ring: 0 !important;
-  min-height: 220px;
+  min-height: 140px;
 }
 
 /* ─── TipTap & Prose Typography Fixes (Bold & Color Inheritance) ────────── */
