@@ -2039,12 +2039,40 @@ export default function EditLeadMagnetPage() {
             setSubheadline(data.subheadline);
             if (data.pitch) setPitch(data.pitch);
             if (data.bullets) setBullets(data.bullets);
+            if (data.cta) setFormButtonText(data.cta);
+
+            // Populate delivery email with AI copy if available
+            const firstEmail = Array.isArray(data.emails) && data.emails[0] ? data.emails[0] : null;
+            const newEmailSubject = firstEmail?.subject || emailSubject;
+            const newEmailBody = firstEmail?.body || emailBody;
+            if (firstEmail?.subject) setEmailSubject(newEmailSubject);
+            if (firstEmail?.body) setEmailBody(newEmailBody);
+
+            // Populate follow-up sequence emails if available
+            let newSeqEmails = sequenceEmails;
+            if (Array.isArray(data.emails) && data.emails.length > 1) {
+              newSeqEmails = data.emails.slice(1).map((em: any, idx: number) => ({
+                id: em.id || `em_${Date.now()}_${idx + 2}`,
+                subject: em.subject || `Follow-up ${idx + 1}`,
+                delayDays: idx === 0 ? 1 : (idx === 1 ? 3 : 5),
+                delayUnit: "days" as const,
+                previewText: em.previewText || "",
+                body: em.body || `<p>Hey {name},</p><p>${em.subject}</p>`,
+              }));
+              setSequenceEmails(newSeqEmails);
+              setSequenceEnabled(true);
+            }
 
             update({
               headline: data.headline,
               subheadline: data.subheadline,
               pitch: data.pitch,
               bullets: data.bullets,
+              formButtonText: data.cta || formButtonText,
+              emailSubject: newEmailSubject,
+              emailBody: newEmailBody,
+              sequenceEmails: newSeqEmails,
+              sequenceEnabled: Array.isArray(data.emails) && data.emails.length > 1 ? true : sequenceEnabled,
             });
           }}
         />

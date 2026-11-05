@@ -35,7 +35,14 @@ export async function POST(req: Request) {
       process.env.GOOGLE_API_KEY;
 
     if (apiKey) {
-      const candidateModels = ["gemini-flash-lite-latest", "gemini-3.5-flash-lite", "gemini-3.1-flash-lite", "gemini-3.8-flash"];
+      const candidateModels = [
+        "gemini-flash-lite-latest",
+        "gemini-1.5-flash",
+        "gemini-2.0-flash",
+        "gemini-1.5-pro",
+        "gemini-3.5-flash-lite",
+        "gemini-3.8-flash"
+      ];
       const genAI = new GoogleGenerativeAI(apiKey);
 
       const prompt = `You are a world-class copywriter and conversion rate optimization expert. 
@@ -60,6 +67,7 @@ Respond ONLY with a valid JSON object with the following fields:
     {
       "id": "em_1",
       "subject": "Catchy email subject line delivering the lead magnet",
+      "body": "<p>Hey {name},</p><p>Thank you for requesting this! Click the link below to get instant access:</p><p><a href=\"{resource_link}\">▶ Access Your Resource Here</a></p>",
       "delayLabel": "Immediate",
       "delayMinutes": 0,
       "status": "live",
@@ -69,6 +77,7 @@ Respond ONLY with a valid JSON object with the following fields:
     {
       "id": "em_2",
       "subject": "Email 2 subject addressing the #1 objection or mistake",
+      "body": "<p>Hey {name},</p><p>Most people make one critical mistake when starting out. Here is the exact framework to avoid it and see results immediately...</p>",
       "delayLabel": "1 day after signup",
       "delayMinutes": 1440,
       "status": "live",
@@ -78,6 +87,7 @@ Respond ONLY with a valid JSON object with the following fields:
     {
       "id": "em_3",
       "subject": "Email 3 subject offering quick win / bonus resource",
+      "body": "<p>Hey {name},</p><p>Here is an extra high-value bonus workflow you can plug in right away today...</p>",
       "delayLabel": "3 days after signup",
       "delayMinutes": 4320,
       "status": "draft",

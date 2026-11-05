@@ -127,16 +127,7 @@ export default function AfterSignupTab({
   const labelCls = `text-xs font-semibold block mb-1 ${isDark ? "text-zinc-300" : "text-zinc-700"}`;
 
   return (
-    <div className="space-y-4">
-      {/* Canvas Outer Wrapper */}
-      <div
-        className={`rounded-2xl border p-3 sm:p-5 transition-colors duration-200 ${
-          isDark
-            ? "border-white/10 bg-[#121212] text-white"
-            : "border-zinc-200/70 bg-[#F9F9FB] text-zinc-900"
-        }`}
-      >
-        <div className="mx-auto max-w-4xl space-y-4">
+    <div className="mx-auto max-w-4xl space-y-4">
 
           {/* ── Top Options Card ─────────────────────────────────────────── */}
           <div className={`rounded-2xl border p-4 sm:p-6 shadow-xs space-y-4 transition-colors duration-200 ${cardBg}`}>
@@ -501,8 +492,6 @@ export default function AfterSignupTab({
             )}
           </div>
 
-        </div>
-      </div>
     </div>
   );
 }

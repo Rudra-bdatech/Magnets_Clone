@@ -208,10 +208,7 @@ export default function SequenceTab({
   }, [selectedSequenceIndex, activeEmail?.id, editor]);
 
   return (
-    <div className="space-y-6">
-      {/* Canvas Outer Wrapper - Adapts dynamically to Brand Theme Mode */}
-      <div className={`rounded-2xl border p-4 sm:p-6 transition-colors duration-200 ${(account?.themeMode || "light") === "dark" ? "border-white/10 bg-[#121212] text-white" : "border-zinc-200/70 bg-[#F9F9FB] text-zinc-900"}`}>
-        <div className="mx-auto max-w-7xl space-y-6">
+    <div className="mx-auto max-w-7xl space-y-6">
 
           {/* Top Control Card - Left Panel Background (#18181B) in Dark Mode */}
           <div className={`rounded-2xl border p-5 sm:p-6 shadow-xs space-y-4 transition-colors duration-200 ${(account?.themeMode || "light") === "dark" ? "border-white/10 bg-[#171717] text-white" : "border-zinc-200 bg-white text-zinc-900"}`}>
@@ -994,7 +991,5 @@ export default function SequenceTab({
             )}
           </div>
         </div>
-      </div>
-    </div>
   );
 }

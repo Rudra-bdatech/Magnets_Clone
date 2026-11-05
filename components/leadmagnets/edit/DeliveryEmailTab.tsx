@@ -186,12 +186,9 @@ export default function DeliveryEmailTab({
   };
 
   return (
-    <div className="space-y-6">
-      {/* Canvas Outer Wrapper - Adapts dynamically to Brand Theme Mode */}
-      <div className={`rounded-2xl border p-4 sm:p-8 transition-colors duration-200 ${(account?.themeMode || "light") === "dark" ? "border-white/10 bg-[#121212] text-white" : "border-zinc-200/70 bg-[#F9F9FB] text-zinc-900"}`}>
-
-        {/* Inner Card Container */}
-        <div className={`mx-auto max-w-4xl rounded-2xl border p-6 sm:p-8 shadow-xs space-y-6 transition-colors duration-200 ${(account?.themeMode || "light") === "dark" ? "border-white/10 bg-[#171717] text-white" : "border-zinc-200 bg-white text-zinc-900"}`}>
+    <div className="mx-auto max-w-4xl space-y-6">
+      {/* Inner Card Container */}
+      <div className={`rounded-2xl border p-6 sm:p-8 shadow-xs space-y-6 transition-colors duration-200 ${(account?.themeMode || "light") === "dark" ? "border-white/10 bg-[#171717] text-white" : "border-zinc-200 bg-white text-zinc-900"}`}>
 
           {/* Top Header Bar inside Card */}
           <div className={`flex flex-wrap items-center justify-between gap-3 border-b pb-4 ${(account?.themeMode || "light") === "dark" ? "border-white/10" : "border-zinc-200"}`}>
@@ -737,19 +734,17 @@ export default function DeliveryEmailTab({
 
         </div>
 
-        {/* Bottom Banner Card */}
-        <div className={`mt-6 mx-auto max-w-4xl rounded-2xl p-6 flex items-center justify-center shadow-lg transition-colors duration-200 ${(account?.themeMode || "light") === "dark" ? "bg-[#121212]" : "bg-zinc-100/90 border border-zinc-200"}`}>
-          <button className={`flex items-center gap-2.5 rounded-xl px-4 py-2.5 text-xs font-bold shadow-md transition cursor-pointer ${(account?.themeMode || "light") === "dark" ? "bg-white/5 text-white border border-white/10 hover:bg-white/10" : "bg-white text-zinc-900 border border-zinc-200 hover:bg-zinc-50"}`}>
-            <img
-              key={(account?.themeMode || "light")}
-              src={(account?.themeMode || "light") === "dark" ? "/brand/funnels-mark-dark.png" : "/brand/funnels-mark-light.png"}
-              alt="Funnels"
-              className="h-5 w-5 object-contain shrink-0"
-            />
-            <span>Build yours free with Funnels</span>
-          </button>
-        </div>
-
+      {/* Bottom Banner Card */}
+      <div className={`rounded-2xl p-6 flex items-center justify-center shadow-lg transition-colors duration-200 ${(account?.themeMode || "light") === "dark" ? "border border-white/10 bg-[#171717]" : "bg-zinc-100/90 border border-zinc-200"}`}>
+        <button className={`flex items-center gap-2.5 rounded-xl px-4 py-2.5 text-xs font-bold shadow-md transition cursor-pointer ${(account?.themeMode || "light") === "dark" ? "bg-white/5 text-white border border-white/10 hover:bg-white/10" : "bg-white text-zinc-900 border border-zinc-200 hover:bg-zinc-50"}`}>
+          <img
+            key={(account?.themeMode || "light")}
+            src={(account?.themeMode || "light") === "dark" ? "/brand/funnels-mark-dark.png" : "/brand/funnels-mark-light.png"}
+            alt="Funnels"
+            className="h-5 w-5 object-contain shrink-0"
+          />
+          <span>Build yours free with Funnels</span>
+        </button>
       </div>
     </div>
   );
