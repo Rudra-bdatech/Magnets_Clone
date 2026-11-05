@@ -311,14 +311,20 @@ export default function TemplatesPage() {
   }, [businessName, brandColor, themeMode, highlightIntensity, templateId, logo, account]);
 
   const latestPage = useMemo(() => {
-    // Search backward without creating extra array instances
-    for (let i = allPages.length - 1; i >= 0; i--) {
-      const p = allPages[i];
-      if ((p.template as string) === templateId && p.status === "live") return p;
+    const getPageTime = (p: MagnetPage) => {
+      if ((p as any).updatedAt === "Just now") return Date.now();
+      const t = new Date((p as any).updatedAt || (p as any).publishedAt || (p as any).createdAt || 0).getTime();
+      return isNaN(t) ? 0 : t;
+    };
+
+    const liveMatches = allPages.filter(p => (p.template as string) === templateId && p.status === "live");
+    if (liveMatches.length > 0) {
+      return liveMatches.sort((a, b) => getPageTime(b) - getPageTime(a))[0];
     }
-    for (let i = allPages.length - 1; i >= 0; i--) {
-      const p = allPages[i];
-      if ((p.template as string) === templateId) return p;
+
+    const anyMatches = allPages.filter(p => (p.template as string) === templateId);
+    if (anyMatches.length > 0) {
+      return anyMatches.sort((a, b) => getPageTime(b) - getPageTime(a))[0];
     }
 
     if (stateLatestPage && (stateLatestPage.template as string) === templateId) {

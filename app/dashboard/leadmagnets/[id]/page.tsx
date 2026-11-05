@@ -1298,12 +1298,14 @@ export default function EditLeadMagnetPage() {
       pdfUrl: lockedPdfUrl || (current as any)?.pdfUrl || (page as any)?.pdfUrl || "",
       pdfPageCount: lockedPdfPageCount || (current as any)?.pdfPageCount || (page as any)?.pdfPageCount || lockedPdfPages.length,
       template: (templateId as any),
+      updatedAt: new Date().toISOString(),
       ...patch
     };
     pageRef.current = next;
     setPage(next);
     const all = loadPages().map((p) => (p.id === next.id ? next : p));
     savePages(all);
+    if (typeof window !== "undefined") window.dispatchEvent(new Event("storage"));
     const userEmail = account?.email || (typeof window !== "undefined" ? localStorage.getItem("currentUserEmail") : null);
     if (userEmail && next.id) {
       fetch("/api/data", {
