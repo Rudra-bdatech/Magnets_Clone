@@ -188,23 +188,33 @@ export default function DeliveryEmailTab({
   return (
     <div className="mx-auto max-w-4xl space-y-6">
       {/* Inner Card Container */}
-      <div className={`rounded-2xl border p-6 sm:p-8 shadow-xs space-y-6 transition-colors duration-200 ${(account?.themeMode || "light") === "dark" ? "border-white/10 bg-[#171717] text-white" : "border-zinc-200 bg-white text-zinc-900"}`}>
+      <div className={`rounded-xl sm:rounded-2xl border p-3.5 sm:p-6 md:p-8 shadow-xs space-y-4 sm:space-y-6 transition-colors duration-200 ${(account?.themeMode || "light") === "dark" ? "border-white/10 bg-[#171717] text-white" : "border-zinc-200 bg-white text-zinc-900"}`}>
 
           {/* Top Header Bar inside Card */}
-          <div className={`flex flex-wrap items-center justify-between gap-3 border-b pb-4 ${(account?.themeMode || "light") === "dark" ? "border-white/10" : "border-zinc-200"}`}>
-            <div className={`flex items-center gap-2 text-sm font-bold ${(account?.themeMode || "light") === "dark" ? "text-white" : "text-zinc-800"}`}>
-              <Mail className="h-4 w-4 text-zinc-400" />
-              <span>Delivery email</span>
+          <div className={`flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 border-b pb-3.5 ${(account?.themeMode || "light") === "dark" ? "border-white/10" : "border-zinc-200"}`}>
+            <div className="flex items-center justify-between w-full sm:w-auto">
+              <div className={`flex items-center gap-2 text-sm font-bold ${(account?.themeMode || "light") === "dark" ? "text-white" : "text-zinc-800"}`}>
+                <Mail className="h-4 w-4 text-zinc-400 shrink-0" />
+                <span>Delivery email</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowEmailPreviewModal(true)}
+                className={`sm:hidden flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-xs font-bold transition shadow-xs cursor-pointer ${(account?.themeMode || "light") === "dark" ? "border-white/10 bg-white/5 text-white hover:bg-white/10" : "border-zinc-200 bg-white text-zinc-800 hover:bg-zinc-50"}`}
+              >
+                <Eye className="h-3.5 w-3.5" />
+                <span>Preview</span>
+              </button>
             </div>
 
-            <div className="flex items-center gap-3">
-              <span className="text-xs text-zinc-400 font-mono">
+            <div className="flex items-center justify-between sm:justify-end gap-3 w-full sm:w-auto">
+              <span className="text-[11px] sm:text-xs text-zinc-400 font-mono truncate">
                 Funnels &lt;hello@mail.funnels.so&gt;
               </span>
               <button
                 type="button"
                 onClick={() => setShowEmailPreviewModal(true)}
-                className={`flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-bold transition shadow-xs cursor-pointer ${(account?.themeMode || "light") === "dark" ? "border-white/10 bg-white/5 text-white hover:bg-white/10" : "border-zinc-200 bg-white text-zinc-800 hover:bg-zinc-50"}`}
+                className={`hidden sm:flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-bold transition shadow-xs cursor-pointer ${(account?.themeMode || "light") === "dark" ? "border-white/10 bg-white/5 text-white hover:bg-white/10" : "border-zinc-200 bg-white text-zinc-800 hover:bg-zinc-50"}`}
               >
                 <Eye className="h-3.5 w-3.5" />
                 <span>Preview</span>
@@ -220,7 +230,7 @@ export default function DeliveryEmailTab({
               value={emailSubject}
               onChange={(e) => setEmailSubject(e.target.value)}
               placeholder="What people see in the inbox"
-              className={`w-full text-2xl sm:text-3xl font-extrabold bg-transparent outline-none border-b border-transparent focus:border-[#FE6F34] transition py-1 ${(account?.themeMode || "light") === "dark" ? "text-white placeholder:text-zinc-600" : "text-zinc-800 placeholder:text-zinc-300"}`}
+              className={`w-full text-lg sm:text-2xl md:text-3xl font-extrabold bg-transparent outline-none border-b border-transparent focus:border-[#FE6F34] transition py-1 ${(account?.themeMode || "light") === "dark" ? "text-white placeholder:text-zinc-600" : "text-zinc-800 placeholder:text-zinc-300"}`}
             />
           </div>
 
@@ -244,16 +254,16 @@ export default function DeliveryEmailTab({
             <label className={`text-xs font-bold block ${(account?.themeMode || "light") === "dark" ? "text-zinc-400" : "text-zinc-700"}`}>Body</label>
 
             {/* Rich Text Editor Container */}
-            <div className={`rounded-2xl border shadow-xs ${(account?.themeMode || "light") === "dark" ? "border-[#27272A] bg-[#18181B]" : "border-zinc-200/90 bg-white"}`}>
+            <div className={`rounded-xl sm:rounded-2xl border shadow-xs ${(account?.themeMode || "light") === "dark" ? "border-[#27272A] bg-[#18181B]" : "border-zinc-200/90 bg-white"}`}>
               {/* Toolbar matching exact screenshot design */}
-              <div ref={toolbarRef} className={`rounded-t-[15px] flex flex-wrap items-center gap-1.5 border-b px-3 py-2 text-xs font-semibold select-none ${(account?.themeMode || "light") === "dark" ? "border-white/10 bg-[#151515] text-zinc-300" : "border-zinc-200 bg-[#F9F9FB] text-zinc-600"}`}>
+              <div ref={toolbarRef} className={`rounded-t-[11px] sm:rounded-t-[15px] flex flex-wrap items-center gap-1 sm:gap-1.5 border-b p-1.5 sm:px-3 sm:py-2 text-xs font-semibold select-none ${(account?.themeMode || "light") === "dark" ? "border-white/10 bg-[#151515] text-zinc-300" : "border-zinc-200 bg-[#F9F9FB] text-zinc-600"}`}>
                 {/* Undo Button */}
                 <button
                   type="button"
                   disabled={!editor?.can().undo()}
                   onClick={() => editor?.chain().focus().undo().run()}
                   title="Undo (Ctrl+Z)"
-                  className="p-1.5 rounded transition hover:bg-zinc-200 dark:hover:bg-zinc-800 cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
+                  className="p-1 sm:p-1.5 rounded transition hover:bg-zinc-200 dark:hover:bg-zinc-800 cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
                 >
                   <Undo2 className="h-3.5 w-3.5" />
                 </button>
@@ -264,7 +274,7 @@ export default function DeliveryEmailTab({
                   disabled={!editor?.can().redo()}
                   onClick={() => editor?.chain().focus().redo().run()}
                   title="Redo (Ctrl+Y)"
-                  className="p-1.5 rounded transition hover:bg-zinc-200 dark:hover:bg-zinc-800 cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
+                  className="p-1 sm:p-1.5 rounded transition hover:bg-zinc-200 dark:hover:bg-zinc-800 cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
                 >
                   <Redo2 className="h-3.5 w-3.5" />
                 </button>
@@ -384,7 +394,7 @@ export default function DeliveryEmailTab({
                     editor.chain().focus().clearNodes().unsetAllMarks().unsetTextAlign().run();
                   }}
                   title="Clear Format"
-                  className="p-1.5 rounded transition hover:bg-zinc-200 dark:hover:bg-zinc-800 cursor-pointer"
+                  className="p-1 sm:p-1.5 rounded transition hover:bg-zinc-200 dark:hover:bg-zinc-800 cursor-pointer"
                 >
                   <Eraser className="h-3.5 w-3.5" />
                 </button>
@@ -470,7 +480,7 @@ export default function DeliveryEmailTab({
                   type="button"
                   onClick={() => setShowInsertPhotoModal(true)}
                   title="Insert Image"
-                  className="p-1.5 rounded transition hover:bg-zinc-200 dark:hover:bg-zinc-800 cursor-pointer"
+                  className="p-1 sm:p-1.5 rounded transition hover:bg-zinc-200 dark:hover:bg-zinc-800 cursor-pointer"
                 >
                   <ImageIcon className="h-3.5 w-3.5" />
                 </button>
@@ -505,7 +515,7 @@ export default function DeliveryEmailTab({
                     }
                   }}
                   title="Insert Video"
-                  className="p-1.5 rounded transition hover:bg-zinc-200 dark:hover:bg-zinc-800 cursor-pointer"
+                  className="p-1 sm:p-1.5 rounded transition hover:bg-zinc-200 dark:hover:bg-zinc-800 cursor-pointer"
                 >
                   <Video className="h-3.5 w-3.5" />
                 </button>
@@ -634,7 +644,7 @@ export default function DeliveryEmailTab({
                     }
                   }}
                   title="Insert Horizontal Divider"
-                  className="p-1.5 rounded transition hover:bg-zinc-200 dark:hover:bg-zinc-800 cursor-pointer text-zinc-700 dark:text-zinc-200"
+                  className="p-1 sm:p-1.5 rounded transition hover:bg-zinc-200 dark:hover:bg-zinc-800 cursor-pointer text-zinc-700 dark:text-zinc-200"
                 >
                   <Minus className="h-3.5 w-3.5" />
                 </button>
@@ -648,12 +658,12 @@ export default function DeliveryEmailTab({
                     onClick={() => setShowInsertResourceMenu((v) => !v)}
                     className="hover:text-[#38BDF8] text-[#0066B2] dark:text-[#38BDF8] font-semibold transition px-2 py-1 rounded bg-[#EFF6FF] dark:bg-[#0066B2]/20 flex items-center gap-1 cursor-pointer"
                   >
-                    <span>+ Insert Resource</span>
+                    <span className="hidden sm:inline">+ Insert Resource</span><span className="sm:hidden">+ Resource</span>
                     <ChevronDown className="h-3 w-3" />
                   </button>
 
                   {showInsertResourceMenu && (
-                    <div className={`absolute right-0 top-full mt-1.5 w-72 max-h-72 rounded-xl border p-1.5 shadow-xl z-50 flex flex-col overflow-hidden ${(account?.themeMode || "light") === "dark" ? "border-[#27272A] bg-[#1E1E24] text-white" : "border-zinc-200 bg-white text-zinc-800"}`}>
+                    <div className={`absolute right-0 top-full mt-1.5 w-[calc(100vw-3.5rem)] max-w-72 sm:w-72 max-h-72 rounded-xl border p-1.5 shadow-xl z-50 flex flex-col overflow-hidden ${(account?.themeMode || "light") === "dark" ? "border-[#27272A] bg-[#1E1E24] text-white" : "border-zinc-200 bg-white text-zinc-800"}`}>
                       {/* Sticky Header */}
                       <div className={`px-2 py-1.5 text-[10px] font-bold text-zinc-400 uppercase tracking-wider flex items-center justify-between border-b pb-1.5 mb-1 shrink-0 ${(account?.themeMode || "light") === "dark" ? "border-[#27272A] bg-[#1E1E24]" : "border-zinc-100 bg-white"}`}>
                         <span>{isLockedPdf ? "SELECT LOCKED PDF" : "SELECT HOSTED RESOURCE"}</span>
@@ -702,7 +712,7 @@ export default function DeliveryEmailTab({
               </div>
 
               {/* Tiptap Rich Text Body Editor Container */}
-              <div ref={editorContainerRef} className="relative p-4 min-h-[140px]">
+              <div ref={editorContainerRef} className="relative p-3 sm:p-4 min-h-[140px]">
                 {editor ? (
                   <EditorContent
                     editor={editor}

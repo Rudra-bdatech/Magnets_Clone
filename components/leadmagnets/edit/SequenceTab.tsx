@@ -211,7 +211,7 @@ export default function SequenceTab({
     <div className="mx-auto max-w-7xl space-y-6">
 
           {/* Top Control Card - Left Panel Background (#18181B) in Dark Mode */}
-          <div className={`rounded-2xl border p-5 sm:p-6 shadow-xs space-y-4 transition-colors duration-200 ${(account?.themeMode || "light") === "dark" ? "border-white/10 bg-[#171717] text-white" : "border-zinc-200 bg-white text-zinc-900"}`}>
+          <div className={`rounded-xl sm:rounded-2xl border p-3.5 sm:p-5 md:p-6 shadow-xs space-y-3 sm:space-y-4 transition-colors duration-200 ${(account?.themeMode || "light") === "dark" ? "border-white/10 bg-[#171717] text-white" : "border-zinc-200 bg-white text-zinc-900"}`}>
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div>
                 <h3 className={`text-base font-extrabold ${(account?.themeMode || "light") === "dark" ? "text-white" : "text-zinc-900"}`}>Follow-up sequence</h3>
@@ -242,7 +242,7 @@ export default function SequenceTab({
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
 
             {/* Left Sidebar List of Sequence Emails */}
-            <div className={`lg:col-span-4 rounded-2xl border p-4 space-y-3 transition-colors duration-200 ${(account?.themeMode || "light") === "dark" ? "border-white/10 bg-[#171717] text-white" : "border-zinc-200 bg-white text-zinc-900"}`}>
+            <div className={`lg:col-span-4 rounded-xl sm:rounded-2xl border p-3 sm:p-4 space-y-3 transition-colors duration-200 ${(account?.themeMode || "light") === "dark" ? "border-white/10 bg-[#171717] text-white" : "border-zinc-200 bg-white text-zinc-900"}`}>
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold uppercase tracking-wider text-zinc-600 dark:text-zinc-400">
                   Sequence emails ({sequenceEmails.length})
@@ -485,9 +485,9 @@ export default function SequenceTab({
                 {/* Body + Tiptap Rich Editor Toolbar (100% Identical to DeliveryEmailTab) */}
                 <div>
                   <label className={`text-xs font-semibold block mb-1.5 ${(account?.themeMode || "light") === "dark" ? "text-zinc-300" : "text-zinc-700"}`}>Body</label>
-                  <div className={`rounded-2xl border shadow-xs ${(account?.themeMode || "light") === "dark" ? "border-[#27272A] bg-[#18181B]" : "border-zinc-200/90 bg-white"}`}>
+                  <div className={`rounded-xl sm:rounded-2xl border shadow-xs ${(account?.themeMode || "light") === "dark" ? "border-[#27272A] bg-[#18181B]" : "border-zinc-200/90 bg-white"}`}>
                     {/* Toolbar matching DeliveryEmailTab exact screenshot design + Insert {name} */}
-                    <div ref={toolbarRef} className={`rounded-t-[15px] flex flex-wrap items-center gap-1.5 border-b px-3 py-2 text-xs font-semibold select-none ${(account?.themeMode || "light") === "dark" ? "border-white/10 bg-[#151515] text-zinc-300" : "border-zinc-200 bg-[#F9F9FB] text-zinc-600"}`}>
+                    <div ref={toolbarRef} className={`rounded-t-[11px] sm:rounded-t-[15px] flex flex-wrap items-center gap-1 sm:gap-1.5 border-b p-1.5 sm:px-3 sm:py-2 text-xs font-semibold select-none ${(account?.themeMode || "light") === "dark" ? "border-white/10 bg-[#151515] text-zinc-300" : "border-zinc-200 bg-[#F9F9FB] text-zinc-600"}`}>
 
                       {/* Undo Button */}
                       <button
@@ -495,7 +495,7 @@ export default function SequenceTab({
                         disabled={!sequenceEnabled || !editor?.can().undo()}
                         onClick={() => editor?.chain().focus().undo().run()}
                         title="Undo (Ctrl+Z)"
-                        className="p-1.5 rounded transition hover:bg-zinc-200 dark:hover:bg-zinc-800 cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
+                        className="p-1 sm:p-1.5 rounded transition hover:bg-zinc-200 dark:hover:bg-zinc-800 cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
                       >
                         <Undo2 className="h-3.5 w-3.5" />
                       </button>
@@ -506,7 +506,7 @@ export default function SequenceTab({
                         disabled={!sequenceEnabled || !editor?.can().redo()}
                         onClick={() => editor?.chain().focus().redo().run()}
                         title="Redo (Ctrl+Y)"
-                        className="p-1.5 rounded transition hover:bg-zinc-200 dark:hover:bg-zinc-800 cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
+                        className="p-1 sm:p-1.5 rounded transition hover:bg-zinc-200 dark:hover:bg-zinc-800 cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
                       >
                         <Redo2 className="h-3.5 w-3.5" />
                       </button>
@@ -633,7 +633,7 @@ export default function SequenceTab({
                           editor.chain().focus().clearNodes().unsetAllMarks().unsetTextAlign().run();
                         }}
                         title="Clear Format"
-                        className="p-1.5 rounded transition hover:bg-zinc-200 dark:hover:bg-zinc-800 cursor-pointer disabled:opacity-50"
+                        className="p-1 sm:p-1.5 rounded transition hover:bg-zinc-200 dark:hover:bg-zinc-800 cursor-pointer disabled:opacity-50"
                       >
                         <Eraser className="h-3.5 w-3.5" />
                       </button>
@@ -722,7 +722,7 @@ export default function SequenceTab({
                         disabled={!sequenceEnabled}
                         onClick={() => setShowInsertPhotoModal(true)}
                         title="Insert Image"
-                        className="p-1.5 rounded transition hover:bg-zinc-200 dark:hover:bg-zinc-800 cursor-pointer disabled:opacity-50"
+                        className="p-1 sm:p-1.5 rounded transition hover:bg-zinc-200 dark:hover:bg-zinc-800 cursor-pointer disabled:opacity-50"
                       >
                         <ImageIcon className="h-3.5 w-3.5" />
                       </button>
@@ -754,7 +754,7 @@ export default function SequenceTab({
                           }
                         }}
                         title="Insert Video"
-                        className="p-1.5 rounded transition hover:bg-zinc-200 dark:hover:bg-zinc-800 cursor-pointer disabled:opacity-50"
+                        className="p-1 sm:p-1.5 rounded transition hover:bg-zinc-200 dark:hover:bg-zinc-800 cursor-pointer disabled:opacity-50"
                       >
                         <Video className="h-3.5 w-3.5" />
                       </button>
@@ -880,7 +880,7 @@ export default function SequenceTab({
                         disabled={!sequenceEnabled}
                         onClick={() => editor?.chain().focus().setHorizontalRule().run()}
                         title="Insert Horizontal Divider"
-                        className="p-1.5 rounded transition hover:bg-zinc-200 dark:hover:bg-zinc-800 cursor-pointer text-zinc-700 dark:text-zinc-200 disabled:opacity-50"
+                        className="p-1 sm:p-1.5 rounded transition hover:bg-zinc-200 dark:hover:bg-zinc-800 cursor-pointer text-zinc-700 dark:text-zinc-200 disabled:opacity-50"
                       >
                         <Minus className="h-3.5 w-3.5" />
                       </button>
@@ -895,12 +895,12 @@ export default function SequenceTab({
                           onClick={() => setShowInsertResourceMenu((v) => !v)}
                           className="hover:text-[#38BDF8] text-[#0066B2] dark:text-[#38BDF8] font-semibold transition px-2 py-1 rounded bg-[#EFF6FF] dark:bg-[#0066B2]/20 flex items-center gap-1 cursor-pointer disabled:opacity-50"
                         >
-                          <span>+ Insert Resource</span>
+                          <span className="hidden sm:inline">+ Insert Resource</span><span className="sm:hidden">+ Resource</span>
                           <ChevronDown className="h-3 w-3" />
                         </button>
 
                         {showInsertResourceMenu && (
-                          <div className={`absolute right-0 top-full mt-1.5 w-72 max-h-72 rounded-xl border p-1.5 shadow-xl z-50 flex flex-col overflow-hidden ${(account?.themeMode || "light") === "dark" ? "border-[#27272A] bg-[#1E1E24] text-white" : "border-zinc-200 bg-white text-zinc-800"}`}>
+                          <div className={`absolute right-0 top-full mt-1.5 w-[calc(100vw-3.5rem)] max-w-72 sm:w-72 max-h-72 rounded-xl border p-1.5 shadow-xl z-50 flex flex-col overflow-hidden ${(account?.themeMode || "light") === "dark" ? "border-[#27272A] bg-[#1E1E24] text-white" : "border-zinc-200 bg-white text-zinc-800"}`}>
                             {/* Sticky Header */}
                             <div className={`px-2 py-1.5 text-[10px] font-bold text-zinc-400 uppercase tracking-wider flex items-center justify-between border-b pb-1.5 mb-1 shrink-0 ${(account?.themeMode || "light") === "dark" ? "border-[#27272A] bg-[#1E1E24]" : "border-zinc-100 bg-white"}`}>
                               <span>{isLockedPdf ? "SELECT LOCKED PDF" : "SELECT HOSTED RESOURCE"}</span>
@@ -963,7 +963,7 @@ export default function SequenceTab({
                     </div>
 
                     {/* Tiptap Rich Text Body Editor Container */}
-                    <div ref={editorContainerRef} className="relative p-4 min-h-[140px]">
+                    <div ref={editorContainerRef} className="relative p-3 sm:p-4 min-h-[140px]">
                       <EditorContent
                         editor={editor}
                         className={`prose ${(account?.themeMode || "light") === "dark" ? "prose-invert text-zinc-100" : "text-zinc-800"} max-w-none text-sm leading-relaxed outline-none focus:outline-none focus:ring-0 ring-0 border-none min-h-[140px]`}

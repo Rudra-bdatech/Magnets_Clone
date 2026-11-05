@@ -1875,7 +1875,7 @@ export default function EditLeadMagnetPage() {
             </div>
 
             {/* Editor Body Tab Content */}
-            <div className={`p-4 sm:p-6 text-zinc-900 dark:text-zinc-100 transition-colors duration-200 ${(account?.themeMode || "light") === "dark" ? "bg-[#121212]" : "bg-[#F8FBFF]"}`}>
+            <div className={`p-2.5 sm:p-4 md:p-6 text-zinc-900 dark:text-zinc-100 transition-colors duration-200 ${(account?.themeMode || "light") === "dark" ? "bg-[#121212]" : "bg-[#F8FBFF]"}`}>
 
               {/* TAB 1: LANDING PAGE EDITOR */}
               {activeTab === "landing" && (
