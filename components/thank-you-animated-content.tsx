@@ -171,6 +171,7 @@ export default function ThankYouAnimatedContent({
   const [clientName, setClientName] = useState("");
   const [clientEmail, setClientEmail] = useState("");
   const [mounted, setMounted] = useState(false);
+  const hasDownload = Boolean(downloadUrl || (resources && resources.length > 0));
 
   // ── Quiz state ────────────────────────────────────────────────────────────
   const [quizCurrentQ, setQuizCurrentQ] = useState(0);
@@ -409,7 +410,8 @@ export default function ThankYouAnimatedContent({
           </p>
         </motion.div>
 
-        {/* Live Delivery Status Timeline Bar */}
+        {/* Live Delivery Status Timeline Bar (Only shown when there is an actual instant download deliverable) */}
+        {hasDownload && (
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -451,6 +453,7 @@ export default function ThankYouAnimatedContent({
             </span>
           </div>
         </motion.div>
+        )}
       </motion.div>
 
       {/* Main Content Cards Container */}
@@ -659,7 +662,7 @@ export default function ThankYouAnimatedContent({
               </span>
             </div>
           </motion.div>
-        ) : (
+        ) : downloadUrl ? (
           <motion.div
             initial={{ y: 25, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
@@ -729,7 +732,7 @@ export default function ThankYouAnimatedContent({
               </span>
             </div>
           </motion.div>
-        )}
+        ) : null}
 
         {/* AI Personalized Output Card (If Prompt Output Exists) */}
         {aiPersonalizedOutput && (

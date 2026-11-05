@@ -464,18 +464,6 @@ export async function handleAddLead(data: any, req: Request, normEmail: string |
             directDownloadUrl = foundPageDoc.assetUrl.trim();
           }
 
-          // 3. Fallback: latest resource for this account
-          if (!directDownloadUrl && ownerEmail) {
-            try {
-              // Page assets (e.g. a locked PDF's file) are never handed out as a deliverable
-              const latestRes = await ResourceModel.findOne({ userEmail: ownerEmail.trim().toLowerCase(), isPageAsset: { $ne: true } }).sort({ uploadedAt: -1 }).lean() as any;
-              if (latestRes && latestRes.url) {
-                directDownloadUrl = latestRes.id ? withMagnetAccess(latestRes.url, latestRes.id) : latestRes.url;
-              } else if (latestRes) {
-                directDownloadUrl = withMagnetAccess(`${appUrl}/r/${latestRes.id}`, latestRes.id);
-              }
-            } catch (_) {}
-          }
 
           const targetUser = ownerAccount?.username || "u";
           const targetSlug = data.pageSlug || data.pageId || "resource";
@@ -571,6 +559,60 @@ export async function handleAddLead(data: any, req: Request, normEmail: string |
             .slice(0, 2)
             .toUpperCase() || "LM";
 
+          const resourceSectionHtml = directDownloadUrl ? `
+                    <!-- Resource row -->
+                    <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color:#f6f8f9; border:1px solid #e2e7ea; border-radius:6px;">
+                      <tr>
+                        <td style="padding:16px;">
+                          <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
+                            <tr>
+                              <!-- File icon -->
+                              <td width="42" valign="middle" style="width:42px;">
+                                <table role="presentation" border="0" cellpadding="0" cellspacing="0">
+                                  <tr>
+                                    <td width="42" height="46" align="center" valign="middle" style="width:42px; height:46px; background-color:#ffffff; border:1px solid #e2e7ea; border-radius:4px; font-family:'DM Sans','Helvetica Neue',Helvetica,Arial,sans-serif; font-size:11px; font-weight:700; color:#0066cc;">
+                                      ${fileTypeLabel}
+                                    </td>
+                                  </tr>
+                                </table>
+                              </td>
+                              <!-- File details -->
+                              <td valign="middle" style="padding-left:14px; font-family:'DM Sans','Helvetica Neue',Helvetica,Arial,sans-serif;">
+                                <p style="margin:0 0 4px 0; font-size:13px; font-weight:600; color:#2a3138; word-break:break-all;">${resourceFileName}</p>
+                                <p style="margin:0; font-size:11px; color:#7b858c;">${fileDocLabel}</p>
+                              </td>
+                              <!-- Tag -->
+                              <td class="hide-mobile" align="right" valign="middle" style="font-family:'DM Sans','Helvetica Neue',Helvetica,Arial,sans-serif;">
+                                <span style="display:inline-block; padding:3px 6px; font-size:9px; font-weight:500; color:#7b858c; border:1px solid #e2e7ea; border-radius:3px;">${fileTypeLabel}</span>
+                              </td>
+                            </tr>
+                          </table>
+                        </td>
+                      </tr>
+                    </table>
+
+                    <!-- Download button -->
+                    <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-top:16px;">
+                      <tr>
+                        <td align="center" style="padding:8px 0 6px 0;">
+                          <table role="presentation" border="0" cellpadding="0" cellspacing="0">
+                            <tr>
+                              <td align="center" bgcolor="#0066cc" style="border-radius:6px; background-color:#0066cc;">
+                                <a href="${resourceAccessUrl}" target="_blank" style="display:inline-block; padding:15px 32px; font-family:'DM Sans','Helvetica Neue',Helvetica,Arial,sans-serif; font-size:14px; font-weight:600; color:#ffffff; text-decoration:none; border-radius:6px; background-color:#0066cc;">
+                                  &#8595;&nbsp;&nbsp;Download resource
+                                </a>
+                              </td>
+                            </tr>
+                          </table>
+                        </td>
+                      </tr>
+                    </table>
+
+                    <!-- Secure note -->
+                    <p style="margin:16px 0 0 0; text-align:center; font-family:'DM Sans','Helvetica Neue',Helvetica,Arial,sans-serif; font-size:10px; color:#7b858c;">
+                      Your resource. Delivered directly.
+                    </p>` : '';
+
           const subscriberHtml = `
 <!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
@@ -646,71 +688,17 @@ export async function handleAddLead(data: any, req: Request, normEmail: string |
                       REQUEST RECEIVED
                     </p>
 
-                    <!-- Heading -->
+                    <!-- Heading (uses subject from Delivery Email tab) -->
                     <h1 class="heading-text" style="margin:0 0 24px 0; font-family:'DM Sans','Helvetica Neue',Helvetica,Arial,sans-serif; font-size:30px; line-height:1.25; font-weight:600; color:#2a3138;">
-                      Here is your resource.
+                      ${escapeHtml(subject)}
                     </h1>
 
-                    <!-- Greeting + copy -->
-                    <p style="margin:0 0 8px 0; font-family:'DM Sans','Helvetica Neue',Helvetica,Arial,sans-serif; font-size:14px; font-weight:500; color:#2a3138;">
-                      Hi ${recipientDisplayName},
-                    </p>
-                    <p style="margin:0 0 26px 0; font-family:'DM Sans','Helvetica Neue',Helvetica,Arial,sans-serif; font-size:14px; line-height:1.8; color:#7b858c;">
-                      Thank you for your interest in <strong>${escapeHtml(safePageTitle)}</strong>. The resource you requested is ready for you below.
-                    </p>
+                    <!-- Body from Delivery Email tab -->
+                    <div style="font-family:'DM Sans','Helvetica Neue',Helvetica,Arial,sans-serif; color:#334155; font-size:15px; line-height:1.7; margin-bottom:${resourceSectionHtml ? '26px' : '0'};">
+                      ${formattedBodyHtml}
+                    </div>
 
-                    <!-- Resource row -->
-                    <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color:#f6f8f9; border:1px solid #e2e7ea; border-radius:6px;">
-                      <tr>
-                        <td style="padding:16px;">
-                          <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
-                            <tr>
-                              <!-- File icon -->
-                              <td width="42" valign="middle" style="width:42px;">
-                                <table role="presentation" border="0" cellpadding="0" cellspacing="0">
-                                  <tr>
-                                    <td width="42" height="46" align="center" valign="middle" style="width:42px; height:46px; background-color:#ffffff; border:1px solid #e2e7ea; border-radius:4px; font-family:'DM Sans','Helvetica Neue',Helvetica,Arial,sans-serif; font-size:11px; font-weight:700; color:#0066cc;">
-                                      ${fileTypeLabel}
-                                    </td>
-                                  </tr>
-                                </table>
-                              </td>
-                              <!-- File details -->
-                              <td valign="middle" style="padding-left:14px; font-family:'DM Sans','Helvetica Neue',Helvetica,Arial,sans-serif;">
-                                <p style="margin:0 0 4px 0; font-size:13px; font-weight:600; color:#2a3138; word-break:break-all;">${resourceFileName}</p>
-                                <p style="margin:0; font-size:11px; color:#7b858c;">${fileDocLabel}</p>
-                              </td>
-                              <!-- Tag -->
-                              <td class="hide-mobile" align="right" valign="middle" style="font-family:'DM Sans','Helvetica Neue',Helvetica,Arial,sans-serif;">
-                                <span style="display:inline-block; padding:3px 6px; font-size:9px; font-weight:500; color:#7b858c; border:1px solid #e2e7ea; border-radius:3px;">${fileTypeLabel}</span>
-                              </td>
-                            </tr>
-                          </table>
-                        </td>
-                      </tr>
-                    </table>
-
-                    <!-- Download button -->
-                    <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-top:16px;">
-                      <tr>
-                        <td align="center" style="padding:8px 0 6px 0;">
-                          <table role="presentation" border="0" cellpadding="0" cellspacing="0">
-                            <tr>
-                              <td align="center" bgcolor="#0066cc" style="border-radius:6px; background-color:#0066cc;">
-                                <a href="${resourceAccessUrl}" target="_blank" style="display:inline-block; padding:15px 32px; font-family:'DM Sans','Helvetica Neue',Helvetica,Arial,sans-serif; font-size:14px; font-weight:600; color:#ffffff; text-decoration:none; border-radius:6px; background-color:#0066cc;">
-                                  &#8595;&nbsp;&nbsp;Download resource
-                                </a>
-                              </td>
-                            </tr>
-                          </table>
-                        </td>
-                      </tr>
-                    </table>
-
-                    <!-- Secure note -->
-                    <p style="margin:16px 0 0 0; text-align:center; font-family:'DM Sans','Helvetica Neue',Helvetica,Arial,sans-serif; font-size:10px; color:#7b858c;">
-                      Your resource. Delivered directly.
-                    </p>
+                    ${resourceSectionHtml}
 
                   </td>
                 </tr>

@@ -111,29 +111,6 @@ export default async function ThankYouPage({
         url: downloadUrl || pageDoc.assetUrl.trim(),
         type: "pdf",
       });
-    } else if (cleanUserEmail) {
-      // Fallback to latest account resource if no specific asset was bound
-      // Page assets (e.g. a locked PDF's file) are never handed out as a deliverable
-      const resourceDoc = await ResourceModel.findOne({ userEmail: cleanUserEmail, isPageAsset: { $ne: true } }).sort({ uploadedAt: -1 }).lean() as any;
-      if (resourceDoc && resourceDoc.id) {
-        downloadUrl = signedDownloadPath(resourceDoc.id);
-        if (resourceDoc.name) resolvedDeliverableName = resourceDoc.name;
-        resolvedResources.push({
-          id: resourceDoc.id,
-          name: resourceDoc.name || resolvedDeliverableName,
-          url: signedDownloadPath(resourceDoc.id),
-          size: resourceDoc.size || "",
-          type: resourceDoc.type || "pdf",
-        });
-      } else if (resourceDoc && resourceDoc.url) {
-        downloadUrl = resourceDoc.url;
-        resolvedResources.push({
-          id: "res_url",
-          name: resourceDoc.name || resolvedDeliverableName,
-          url: resourceDoc.url,
-          type: "pdf",
-        });
-      }
     }
   } catch (err: any) {
     if (err?.message !== "ACCESS_DENIED") console.warn("MongoDB connection fallback in ThankYouPage:", err);
@@ -143,8 +120,6 @@ export default async function ThankYouPage({
   // Fail closed: never render a page we could not load and check
   if (!pageDoc || !accessGranted) notFound();
 
-  // Nothing resolved above: /r/<page id> serves the page's deliverable
-  if (!downloadUrl) downloadUrl = signedDownloadPath(pageDoc.id);
 
   // If page is configured to "Send them elsewhere", redirect directly to destination URL
   if (pageDoc?.afterSignupOption === "elsewhere" && pageDoc?.destinationUrl && pageDoc.destinationUrl.trim()) {
