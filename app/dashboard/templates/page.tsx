@@ -317,12 +317,12 @@ export default function TemplatesPage() {
       return isNaN(t) ? 0 : t;
     };
 
-    const liveMatches = allPages.filter(p => (p.template as string) === templateId && p.status === "live");
+    const liveMatches = allPages.filter(p => normalizeTemplateId(p.template) === templateId && p.status === "live");
     if (liveMatches.length > 0) {
       return liveMatches.sort((a, b) => getPageTime(b) - getPageTime(a))[0];
     }
 
-    const anyMatches = allPages.filter(p => (p.template as string) === templateId);
+    const anyMatches = allPages.filter(p => normalizeTemplateId(p.template) === templateId);
     if (anyMatches.length > 0) {
       return anyMatches.sort((a, b) => getPageTime(b) - getPageTime(a))[0];
     }
