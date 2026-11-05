@@ -43,6 +43,8 @@ export default function AdminShell({
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isHeaderVisible, setIsHeaderVisible] = useState(true);
+  const lastScrollYRef = useRef(0);
   const [hoveredNavHref, setHoveredNavHref] = useState<string | null>(null);
   const mainRef = useRef<HTMLElement>(null);
 
@@ -56,6 +58,8 @@ export default function AdminShell({
       window.scrollTo({ top: 0, left: 0 });
     }
     setIsScrolled(false);
+    setIsHeaderVisible(true);
+    lastScrollYRef.current = 0;
   }, [pathname]);
 
   // Scroll listener that handles both window scroll (mobile) and container scroll (desktop)
@@ -72,15 +76,32 @@ export default function AdminShell({
             const scrollY = mainEl ? mainEl.scrollTop : 0;
             setIsScrolled(scrollY > 40);
           } else {
-            // Mobile: detect the exact pixel moment the page's large h1 header slides completely behind the 48px sticky navbar
-            const h1El = mainEl?.querySelector("h1");
-            if (h1El) {
-              const rect = h1El.getBoundingClientRect();
-              setIsScrolled(rect.bottom <= 48);
+            // Mobile: check overall scroll first to guarantee false when at or near top
+            const scrollY = window.scrollY || document.documentElement.scrollTop || (mainEl ? mainEl.scrollTop : 0) || 0;
+            const diff = scrollY - lastScrollYRef.current;
+
+            if (scrollY <= 15) {
+              setIsScrolled(false);
+              setIsHeaderVisible(true);
             } else {
-              const scrollY = window.scrollY || document.documentElement.scrollTop || 0;
-              setIsScrolled(scrollY > 45);
+              // Auto-hide on scroll down past 45px, auto-reveal on scroll up
+              if (diff > 6 && scrollY > 45) {
+                setIsHeaderVisible(false);
+              } else if (diff < -6) {
+                setIsHeaderVisible(true);
+              }
+
+              // Detect the exact pixel moment the page's large h1 header slides completely behind the 48px sticky navbar
+              const h1El = mainEl?.querySelector("h1");
+              if (h1El) {
+                const rect = h1El.getBoundingClientRect();
+                setIsScrolled(rect.bottom <= 48);
+              } else {
+                setIsScrolled(scrollY > 45);
+              }
             }
+
+            lastScrollYRef.current = scrollY;
           }
 
           ticking = false;
@@ -354,10 +375,8 @@ export default function AdminShell({
       <div className="flex-1 flex flex-col min-w-0 min-h-[100dvh] md:h-screen md:overflow-hidden">
         {/* Mobile Header Bar (md:hidden) */}
         <header
-          className={`sticky top-0 z-30 flex h-12 shrink-0 items-center justify-between px-3 sm:px-4 md:hidden transition-all duration-200 w-full max-w-full border-b ${
-            isScrolled
-              ? "border-zinc-200/80 bg-white/90 dark:bg-[#141417]/90 dark:border-white/10 backdrop-blur-xl shadow-xs"
-              : "border-transparent bg-white/60 dark:bg-[#0E0E10]/60 backdrop-blur-md"
+          className={`sticky top-0 z-30 flex h-12 shrink-0 items-center justify-between px-3 sm:px-4 md:hidden w-full max-w-full border-b border-black/[0.04] dark:border-white/[0.05] bg-white/40 dark:bg-black/40 backdrop-blur-md transition-transform duration-300 ease-in-out ${
+            isHeaderVisible ? "translate-y-0" : "-translate-y-full pointer-events-none"
           }`}
         >
           <div className="flex items-center gap-2.5 min-w-0">

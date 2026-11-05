@@ -125,6 +125,8 @@ export default function DashboardShell({
   const [isCommandMenuOpen, setIsCommandMenuOpen] = useState(false);
 
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isHeaderVisible, setIsHeaderVisible] = useState(true);
+  const lastScrollYRef = useRef(0);
   const mainRef = useRef<HTMLElement>(null);
 
   // Close mobile drawer on route change & reset scroll
@@ -137,6 +139,8 @@ export default function DashboardShell({
       window.scrollTo({ top: 0, left: 0 });
     }
     setIsScrolled(false);
+    setIsHeaderVisible(true);
+    lastScrollYRef.current = 0;
   }, [pathname]);
 
   // Scroll listener that handles both window scroll (mobile) and container scroll (desktop)
@@ -155,25 +159,35 @@ export default function DashboardShell({
           } else {
             // Mobile: check overall scroll first to guarantee false when at or near top
             const scrollY = window.scrollY || document.documentElement.scrollTop || (mainEl ? mainEl.scrollTop : 0) || 0;
+            const diff = scrollY - lastScrollYRef.current;
+
             if (scrollY <= 15) {
               setIsScrolled(false);
-              ticking = false;
-              return;
-            }
-
-            // Mobile: find the first VISIBLE heading (filter out desktop-only headings with display: none)
-            const headings = mainEl ? Array.from(mainEl.querySelectorAll("h1, h2, [data-page-heading]")) : [];
-            const visibleHeading = headings.find((el) => {
-              const rect = el.getBoundingClientRect();
-              return rect.height > 0 && rect.width > 0;
-            });
-
-            if (visibleHeading) {
-              const rect = visibleHeading.getBoundingClientRect();
-              setIsScrolled(rect.bottom <= 48);
+              setIsHeaderVisible(true);
             } else {
-              setIsScrolled(scrollY > 45);
+              // Auto-hide on scroll down past 45px, auto-reveal on scroll up
+              if (diff > 6 && scrollY > 45) {
+                setIsHeaderVisible(false);
+              } else if (diff < -6) {
+                setIsHeaderVisible(true);
+              }
+
+              // Mobile: find the first VISIBLE heading (filter out desktop-only headings with display: none)
+              const headings = mainEl ? Array.from(mainEl.querySelectorAll("h1, h2, [data-page-heading]")) : [];
+              const visibleHeading = headings.find((el) => {
+                const rect = el.getBoundingClientRect();
+                return rect.height > 0 && rect.width > 0;
+              });
+
+              if (visibleHeading) {
+                const rect = visibleHeading.getBoundingClientRect();
+                setIsScrolled(rect.bottom <= 48);
+              } else {
+                setIsScrolled(scrollY > 45);
+              }
             }
+
+            lastScrollYRef.current = scrollY;
           }
 
           ticking = false;
@@ -1455,10 +1469,8 @@ export default function DashboardShell({
 
           <div className="flex min-h-screen min-w-0 flex-1 flex-col bg-[#FAFAFA] dark:bg-[#0E0E10] w-full max-w-full">
             <header
-              className={`dashboard-chrome sticky top-0 z-30 flex h-12 shrink-0 items-center justify-between px-3 sm:px-4 md:hidden transition-all duration-200 w-full max-w-full border-b ${
-                isScrolled
-                  ? "border-zinc-200/80 bg-white/90 dark:bg-[#141417]/90 dark:border-white/10 backdrop-blur-xl shadow-xs"
-                  : "border-transparent bg-white/60 dark:bg-[#0E0E10]/60 backdrop-blur-md"
+              className={`sticky top-0 z-30 flex h-12 shrink-0 items-center justify-between px-3 sm:px-4 md:hidden w-full max-w-full border-b border-black/[0.04] dark:border-white/[0.05] bg-white/40 dark:bg-black/40 backdrop-blur-md transition-transform duration-300 ease-in-out ${
+                isHeaderVisible ? "translate-y-0" : "-translate-y-full pointer-events-none"
               }`}
             >
               <div className="flex items-center gap-2.5 min-w-0">
