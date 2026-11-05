@@ -208,42 +208,45 @@ function BrandSettingsForm({
               size="sm"
             />
           </div>
-          <div className="grid grid-cols-3 gap-1.5 sm:gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2">
             <button
               type="button"
               onClick={() => setThemeMode("light")}
-              className={`flex items-center justify-center gap-1.5 rounded-lg border py-2 px-1 text-xs font-semibold transition touch-manipulation cursor-pointer ${
+              title="Light mode"
+              aria-label="Light mode"
+              className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border transition touch-manipulation cursor-pointer ${
                 themeMode === "light"
                   ? "border-[#0066B2] bg-[#EFF6FF] dark:bg-[#0066B2]/20 text-[#0066B2] dark:text-sky-300 font-bold shadow-xs ring-1 ring-[#0066B2]"
                   : "border-[#E2E8F0] bg-white dark:border-white/10 dark:bg-[#121212] text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-white/10 hover:text-zinc-900 dark:hover:text-white"
               }`}
             >
-              <Sun className="h-3.5 w-3.5 shrink-0" />
-              <span>Light</span>
+              <Sun className="h-4 w-4" />
             </button>
             <button
               type="button"
               onClick={() => setThemeMode("dark")}
-              className={`flex items-center justify-center gap-1.5 rounded-lg border py-2 px-1 text-xs font-semibold transition touch-manipulation cursor-pointer ${
+              title="Dark mode"
+              aria-label="Dark mode"
+              className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border transition touch-manipulation cursor-pointer ${
                 themeMode === "dark"
                   ? "border-[#0066B2] bg-zinc-900 text-white font-bold shadow-xs ring-1 ring-[#0066B2]"
                   : "border-[#E2E8F0] bg-white dark:border-white/10 dark:bg-[#121212] text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-white/10 hover:text-zinc-900 dark:hover:text-white"
               }`}
             >
-              <Moon className="h-3.5 w-3.5 shrink-0" />
-              <span>Dark</span>
+              <Moon className="h-4 w-4" />
             </button>
             <button
               type="button"
               onClick={() => setThemeMode("sync")}
-              className={`flex items-center justify-center gap-1.5 rounded-lg border py-2 px-1 text-xs font-semibold transition touch-manipulation cursor-pointer ${
+              title="Sync with website theme"
+              className={`flex flex-1 items-center justify-center gap-1.5 rounded-lg border h-9 px-2.5 text-xs font-semibold transition touch-manipulation cursor-pointer min-w-0 ${
                 themeMode === "sync"
                   ? "border-[#0066B2] bg-[#EFF6FF] dark:bg-[#0066B2]/20 text-[#0066B2] dark:text-sky-300 font-bold shadow-xs ring-1 ring-[#0066B2]"
                   : "border-[#E2E8F0] bg-white dark:border-white/10 dark:bg-[#121212] text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-white/10 hover:text-zinc-900 dark:hover:text-white"
               }`}
             >
               <Sparkles className="h-3.5 w-3.5 shrink-0 text-[#0066B2] dark:text-sky-400" />
-              <span className="truncate">Sync theme</span>
+              <span className="truncate">Sync with website theme</span>
             </button>
           </div>
           <p className="text-[11px] text-zinc-500 dark:text-zinc-400 mt-1.5 leading-snug">
