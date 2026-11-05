@@ -50,6 +50,45 @@ const baseNavItems: { href: string; label: string; icon: any; isModal?: boolean;
   { href: "/dashboard/templates", label: "Templates", icon: Palette },
 ];
 
+
+const getDashboardPageInfo = (pathname: string, defaultTitle?: string) => {
+  if (pathname === "/dashboard") return { title: "Dashboard", icon: LayoutDashboard };
+  if (pathname.startsWith("/dashboard/settings")) return { title: "Settings", icon: Settings };
+  if (pathname.startsWith("/dashboard/analytics")) return { title: "Analytics", icon: BarChart3 };
+  if (pathname.startsWith("/dashboard/leads")) return { title: "Leads", icon: Users };
+  if (pathname.startsWith("/dashboard/landing-page")) return { title: "Landing Page", icon: FileText };
+  if (pathname.startsWith("/dashboard/locked-pdf")) return { title: "Locked PDF", icon: Lock };
+  if (pathname.startsWith("/dashboard/sequences")) {
+    return {
+      title: pathname === "/dashboard/sequences" ? "Email Sequences" : "Sequence Details",
+      icon: Mail,
+    };
+  }
+  if (pathname.startsWith("/dashboard/assets")) return { title: "Assets", icon: FolderOpen };
+  if (pathname.startsWith("/dashboard/integration") || pathname.startsWith("/dashboard/integrations")) {
+    return { title: "Integration", icon: Sliders };
+  }
+  if (pathname.startsWith("/dashboard/templates") || pathname.startsWith("/dashboard/template")) {
+    return { title: "Templates", icon: Palette };
+  }
+  if (pathname.startsWith("/dashboard/brand")) return { title: "Brand Identity", icon: Sparkles };
+  if (pathname.startsWith("/dashboard/get-started")) return { title: "Get Started", icon: Rocket };
+  if (pathname.startsWith("/dashboard/setup")) return { title: "Setup", icon: Sliders };
+  if (pathname.startsWith("/dashboard/help")) return { title: "Help Center", icon: CircleHelp };
+  if (pathname.startsWith("/dashboard/leadmagnets") || pathname.startsWith("/dashboard/lead-magnets")) {
+    return {
+      title: pathname === "/dashboard/leadmagnets" || pathname === "/dashboard/lead-magnets" ? "Lead Magnets" : "Lead Magnet Details",
+      icon: FileText,
+    };
+  }
+  if (pathname.startsWith("/dashboard/linkedin")) return { title: "LinkedIn", icon: Linkedin };
+  if (pathname.startsWith("/dashboard/signups")) return { title: "Signups", icon: Users };
+  if (pathname.startsWith("/dashboard/hostresources")) return { title: "Host Resources", icon: FolderOpen };
+  if (pathname.startsWith("/admin")) return { title: "Super Admin", icon: ShieldCheck };
+
+  return { title: defaultTitle || "Dashboard", icon: LayoutDashboard };
+};
+
 export default function DashboardShell({
   account,
   title = "Dashboard",
@@ -83,6 +122,82 @@ export default function DashboardShell({
 
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isCommandMenuOpen, setIsCommandMenuOpen] = useState(false);
+
+  const [isScrolled, setIsScrolled] = useState(false);
+  const mainRef = useRef<HTMLElement>(null);
+
+  // Close mobile drawer on route change & reset scroll
+  useEffect(() => {
+    setMenuOpen(false);
+    if (mainRef.current) {
+      mainRef.current.scrollTop = 0;
+    }
+    if (typeof window !== "undefined") {
+      window.scrollTo({ top: 0, left: 0 });
+    }
+    setIsScrolled(false);
+  }, [pathname]);
+
+  // Scroll listener that handles both window scroll (mobile) and container scroll (desktop)
+  useEffect(() => {
+    let ticking = false;
+
+    const handleScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const mainEl = mainRef.current;
+          const isDesktop = window.innerWidth >= 768;
+
+          if (isDesktop) {
+            const scrollY = mainEl ? mainEl.scrollTop : 0;
+            setIsScrolled(scrollY > 40);
+          } else {
+            // Mobile: check overall scroll first to guarantee false when at or near top
+            const scrollY = window.scrollY || document.documentElement.scrollTop || (mainEl ? mainEl.scrollTop : 0) || 0;
+            if (scrollY <= 15) {
+              setIsScrolled(false);
+              ticking = false;
+              return;
+            }
+
+            // Mobile: find the first VISIBLE heading (filter out desktop-only headings with display: none)
+            const headings = mainEl ? Array.from(mainEl.querySelectorAll("h1, h2, [data-page-heading]")) : [];
+            const visibleHeading = headings.find((el) => {
+              const rect = el.getBoundingClientRect();
+              return rect.height > 0 && rect.width > 0;
+            });
+
+            if (visibleHeading) {
+              const rect = visibleHeading.getBoundingClientRect();
+              setIsScrolled(rect.bottom <= 48);
+            } else {
+              setIsScrolled(scrollY > 45);
+            }
+          }
+
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+
+    const mainEl = mainRef.current;
+    if (mainEl) {
+      mainEl.addEventListener("scroll", handleScroll, { passive: true });
+    }
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll();
+
+    return () => {
+      if (mainEl) mainEl.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, [pathname]);
+
+  const { title: pageHeaderTitle, icon: PageHeaderIcon } = useMemo(() => {
+    return getDashboardPageInfo(pathname, title !== "Dashboard" ? title : undefined);
+  }, [pathname, title]);
+
 
   useEffect(() => {
     try {
@@ -223,8 +338,8 @@ export default function DashboardShell({
     const email = "info@bdatechnologies.com";
     const subject = type === "bug" ? "[Bug Report] Issue on Funnels" : "[Feature Request] Suggestion for Funnels";
     const body = type === "bug"
-      ? `Hi Support Team,\n\nI encountered the following issue:\n\n`
-      : `Hi Support Team,\n\nI would like to request the following feature:\n\n`;
+      ? `Hi Support Team,\r\n\r\nI encountered the following issue:\r\n\r\n`
+      : `Hi Support Team,\r\n\r\nI would like to request the following feature:\r\n\r\n`;
 
     const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(email)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
     if (typeof window !== "undefined") {
@@ -1270,25 +1385,49 @@ export default function DashboardShell({
           </AnimatePresence>
 
           <div className="flex min-h-screen min-w-0 flex-1 flex-col bg-[#FAFAFA] dark:bg-[#0E0E10] w-full max-w-full">
-            <header className="dashboard-chrome sticky top-0 z-30 flex h-12 shrink-0 items-center justify-between border-b border-zinc-200/70 bg-white/75 dark:bg-[#141417]/75 dark:border-white/10 backdrop-blur-xl supports-[backdrop-filter]:bg-white/60 dark:supports-[backdrop-filter]:bg-[#141417]/60 px-4 sm:px-6 md:hidden transition-colors w-full max-w-full">
-              <div className="flex items-center gap-2.5">
+            <header
+              className={`dashboard-chrome sticky top-0 z-30 flex h-12 shrink-0 items-center justify-between px-3 sm:px-4 md:hidden transition-all duration-200 w-full max-w-full border-b ${
+                isScrolled
+                  ? "border-zinc-200/80 bg-white/90 dark:bg-[#141417]/90 dark:border-white/10 backdrop-blur-xl shadow-xs"
+                  : "border-transparent bg-white/60 dark:bg-[#0E0E10]/60 backdrop-blur-md"
+              }`}
+            >
+              <div className="flex items-center gap-2.5 min-w-0">
                 <button
+                  type="button"
                   aria-label="Open menu"
                   data-tour="mobile-menu"
-                  className="flex h-9 w-9 items-center justify-center rounded-lg text-zinc-700 dark:text-zinc-300 md:hidden hover:bg-zinc-100/80 dark:hover:bg-white/10 active:scale-90 transition-all cursor-pointer"
+                  className="flex h-9 w-9 items-center justify-center rounded-lg text-zinc-700 dark:text-zinc-300 md:hidden hover:bg-zinc-100/80 dark:hover:bg-white/10 active:scale-90 transition-all cursor-pointer shrink-0"
                   onClick={() => setMenuOpen(true)}
                 >
                   <Menu className="h-5.5 w-5.5" aria-hidden="true" strokeWidth={2} />
                 </button>
-                <Link href="/dashboard" aria-label="Dashboard" className="flex items-center">
-                  <BrandLogo height="h-7" />
-                </Link>
+
+                {/* Scroll-Aware Title (iOS Large Title style: smoothly appears when user scrolls past header) */}
+                <AnimatePresence>
+                  {isScrolled && (
+                    <motion.div
+                      key={pathname}
+                      initial={{ opacity: 0, y: 6 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -4 }}
+                      transition={{ duration: 0.18, ease: "easeOut" }}
+                      className="flex items-center gap-2 min-w-0"
+                    >
+                      <PageHeaderIcon className="h-4 w-4 text-[#0066B2] dark:text-[#38BDF8] shrink-0" />
+                      <span className="text-sm font-semibold text-zinc-900 dark:text-white truncate">
+                        {pageHeaderTitle}
+                      </span>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
-              <div className="flex items-center gap-2">
-                <ThemeToggle />
+
+              <div className="flex items-center gap-2 shrink-0">
+                <ThemeToggle size="sm" />
               </div>
             </header>
-            <main className="min-w-0 flex-1 bg-[#FAFAF8] dark:bg-[#0E0E10] w-full max-w-full">
+            <main ref={mainRef} className="min-w-0 flex-1 bg-[#FAFAF8] dark:bg-[#0E0E10] w-full max-w-full">
               <AnimatePresence mode="wait" initial={false}>
                 <motion.div
                   key={pathname}
