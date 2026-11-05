@@ -5,6 +5,7 @@ import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { FileText, FolderOpen, Users, Sliders, Palette, User, CircleHelp, Menu, X, Search, ChevronRight, HelpCircle, Sun, Moon, Monitor, Bug, Lightbulb, LogOut, BookOpen, Gift, Compass, Send, GitFork, Calendar, Settings, Globe, Mail, Share2, Cpu, Slack, Zap, Link as LinkIcon, BarChart3, PlayCircle, CheckCircle2, ArrowLeft, Sparkles, Rocket, ExternalLink, ListChecks, Loader2, FileLock, Lock, LayoutDashboard, Linkedin, PanelLeftClose, PanelLeftOpen, PanelLeft, ShieldCheck } from "lucide-react";
 import { useState, useEffect, useRef, useMemo, useCallback, createContext, useContext } from "react";
+import { createPortal } from "react-dom";
 import ThemeToggle from "@/components/theme-toggle";
 import { toggleThemeWithRipple } from "@/lib/theme-transition";
 import { createTickPlayer, type TickPlayer } from "@/lib/tick-sound";
@@ -272,8 +273,9 @@ export default function DashboardShell({
       const target = event.target as Node;
       const clickedInsideDesktop = profileMenuRef.current?.contains(target);
       const clickedInsideMobileDrawer = mobileDrawerProfileMenuRef.current?.contains(target);
+      const clickedInsideBottomSheet = (target as HTMLElement)?.closest?.('[data-bottom-sheet]');
 
-      if (!clickedInsideDesktop && !clickedInsideMobileDrawer) {
+      if (!clickedInsideDesktop && !clickedInsideMobileDrawer && !clickedInsideBottomSheet) {
         setShowProfileMenu(false);
         setShowDrawerProfileMenu(false);
       }
@@ -287,6 +289,16 @@ export default function DashboardShell({
       document.removeEventListener("touchstart", handleClickOutside);
     };
   }, [showProfileMenu, showDrawerProfileMenu]);
+
+  useEffect(() => {
+    if (showDrawerProfileMenu && typeof window !== "undefined") {
+      const prevOverflow = document.body.style.overflow;
+      document.body.style.overflow = "hidden";
+      return () => {
+        document.body.style.overflow = prevOverflow;
+      };
+    }
+  }, [showDrawerProfileMenu]);
   const [dark, setDark] = useState(false);
   const [themeMode, setThemeMode] = useState<"light" | "dark" | "system">("system");
   const [showCreateMagnetModal, setShowCreateMagnetModal] = useState(false);
@@ -351,6 +363,11 @@ export default function DashboardShell({
   };
 
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+  const dismissSheet = useCallback((callback: () => void) => {
+    setShowDrawerProfileMenu(false);
+    setTimeout(callback, 240);
+  }, []);
 
   const handleLogout = async () => {
     if (isLoggingOut) return;
@@ -1216,143 +1233,6 @@ export default function DashboardShell({
 
                   {/* Bottom Profile Section in Mobile Drawer */}
                   <div ref={mobileDrawerProfileMenuRef} className="pt-3 relative">
-                    <AnimatePresence>
-                      {showDrawerProfileMenu && (
-                        <motion.div
-                          initial={{ opacity: 0, scale: 0.95, y: 4 }}
-                          animate={{ opacity: 1, scale: 1, y: 0 }}
-                          exit={{ opacity: 0, scale: 0.95, y: 4 }}
-                          transition={{ duration: 0.15, ease: [0.16, 1, 0.3, 1] }}
-                          style={{ transformOrigin: "bottom left" }}
-                          className="absolute bottom-full mb-2 left-0 w-full rounded-2xl border border-zinc-200/80 bg-white/95 p-1.5 shadow-2xl backdrop-blur-md z-50 text-zinc-900 flex flex-col gap-0.5 dark:border-white/10 dark:bg-[#171717]/95 dark:text-white dark:shadow-[0_12px_36px_-6px_rgba(0,0,0,0.6),0_0_0_1px_rgba(255,255,255,0.06)]"
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          {/* Theme Switcher Segmented Control */}
-                          <div className="relative flex items-center justify-between p-1 bg-zinc-100/90 dark:bg-zinc-900/80 rounded-xl border border-zinc-200/80 dark:border-zinc-800/90 mb-1 select-none">
-                            {(["light", "dark", "system"] as const).map((mode) => {
-                              const Icon = mode === "light" ? Sun : mode === "dark" ? Moon : Monitor;
-                              const isActive = themeMode === mode;
-                              return (
-                                <button
-                                  key={mode}
-                                  type="button"
-                                  title={`${mode.charAt(0).toUpperCase() + mode.slice(1)} mode`}
-                                  onClick={(e) => applyThemeMode(mode, e)}
-                                  className={`relative flex-1 flex items-center justify-center py-1.5 text-xs font-medium transition-colors duration-150 cursor-pointer z-10 ${isActive
-                                    ? mode === "light"
-                                      ? "text-amber-500 font-semibold"
-                                      : mode === "dark"
-                                        ? "text-sky-400 dark:text-zinc-100 font-semibold"
-                                        : "text-zinc-900 dark:text-white font-semibold"
-                                    : "text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200"
-                                    }`}
-                                >
-                                  {isActive && (
-                                    <motion.div
-                                      layoutId="activeThemePillDrawer"
-                                      transition={{ type: "spring", stiffness: 450, damping: 35 }}
-                                      className="absolute inset-0.5 bg-white dark:bg-white/10 rounded-[9px] shadow-sm border border-black/[0.04] dark:border-white/[0.08]"
-                                    />
-                                  )}
-                                  <span className="relative z-10 flex items-center justify-center">
-                                    <Icon className="h-3.5 w-3.5" strokeWidth={1.85} />
-                                  </span>
-                                </button>
-                              );
-                            })}
-                          </div>
-
-                          <div className="flex flex-col gap-0.5">
-                            {/* Account / User Section */}
-                            <button
-                              type="button"
-                              onClick={() => {
-                                setShowDrawerProfileMenu(false);
-                                setMenuOpen(false);
-                                router.push("/dashboard/settings");
-                              }}
-                              className="flex items-center gap-2.5 rounded-[10px] px-2.5 py-2 text-left text-xs font-medium text-zinc-600 hover:bg-[#E2F0FD] hover:text-zinc-900 transition-colors w-full dark:text-zinc-400 dark:hover:bg-zinc-800/80 dark:hover:text-white cursor-pointer"
-                            >
-                              <span className="flex h-4 w-4 shrink-0 items-center justify-center">
-                                <User className="h-4 w-4 text-zinc-500 dark:text-zinc-400" strokeWidth={1.85} />
-                              </span>
-                              <span>Account</span>
-                            </button>
-
-                            {/* Semantic Divider between Account and Support */}
-                            <div className="my-1 border-t border-zinc-100 dark:border-zinc-800/70" />
-
-                            {/* Support & Feedback Section */}
-                            <button
-                              type="button"
-                              onClick={() => {
-                                setShowDrawerProfileMenu(false);
-                                setMenuOpen(false);
-                                setShowHelp(true);
-                              }}
-                              className="flex items-center gap-2.5 rounded-[10px] px-2.5 py-2 text-left text-xs font-medium text-zinc-600 hover:bg-[#E2F0FD] hover:text-zinc-900 transition-colors w-full dark:text-zinc-400 dark:hover:bg-zinc-800/80 dark:hover:text-white cursor-pointer"
-                            >
-                              <span className="flex h-4 w-4 shrink-0 items-center justify-center">
-                                <CircleHelp className="h-4 w-4 text-zinc-500 dark:text-zinc-400" strokeWidth={1.85} />
-                              </span>
-                              <span>Help</span>
-                            </button>
-
-                            <button
-                              type="button"
-                              onClick={() => {
-                                setShowDrawerProfileMenu(false);
-                                openGmailCompose("bug");
-                              }}
-                              className="flex items-center gap-2.5 rounded-[10px] px-2.5 py-2 text-left text-xs font-medium text-zinc-600 hover:bg-[#E2F0FD] hover:text-zinc-900 transition-colors w-full dark:text-zinc-400 dark:hover:bg-zinc-800/80 dark:hover:text-white cursor-pointer"
-                            >
-                              <span className="flex h-4 w-4 shrink-0 items-center justify-center">
-                                <Bug className="h-4 w-4 text-zinc-500 dark:text-zinc-400" strokeWidth={1.85} />
-                              </span>
-                              <span>Report a bug</span>
-                            </button>
-
-                            <button
-                              type="button"
-                              onClick={() => {
-                                setShowDrawerProfileMenu(false);
-                                openGmailCompose("feature");
-                              }}
-                              className="flex items-center gap-2.5 rounded-[10px] px-2.5 py-2 text-left text-xs font-medium text-zinc-600 hover:bg-[#E2F0FD] hover:text-zinc-900 transition-colors w-full dark:text-zinc-400 dark:hover:bg-zinc-800/80 dark:hover:text-white cursor-pointer"
-                            >
-                              <span className="flex h-4 w-4 shrink-0 items-center justify-center">
-                                <Sparkles className="h-4 w-4 text-zinc-500 dark:text-zinc-400" strokeWidth={1.85} />
-                              </span>
-                              <span>Request a feature</span>
-                            </button>
-                          </div>
-
-                          {/* Divider before Destructive Action */}
-                          <div className="my-1 border-t border-zinc-100 dark:border-zinc-800/70" />
-
-                          <button
-                            type="button"
-                            disabled={isLoggingOut}
-                            onClick={() => {
-                              setShowDrawerProfileMenu(false);
-                              setMenuOpen(false);
-                              handleLogout();
-                            }}
-                            className="flex items-center gap-2.5 rounded-[10px] px-2.5 py-2 text-left text-xs font-medium text-rose-600 hover:bg-rose-50/80 transition-colors w-full dark:text-rose-400 dark:hover:bg-rose-950/30 cursor-pointer disabled:opacity-50"
-                          >
-                            <span className="flex h-4 w-4 shrink-0 items-center justify-center">
-                              {isLoggingOut ? (
-                                <Loader2 className="h-4 w-4 animate-spin text-rose-500" />
-                              ) : (
-                                <LogOut className="h-4 w-4 text-rose-500 dark:text-rose-400" strokeWidth={1.85} />
-                              )}
-                            </span>
-                            <span>{isLoggingOut ? "Signing out..." : "Sign out"}</span>
-                          </button>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-
                     <button
                       type="button"
                       onClick={() => setShowDrawerProfileMenu(!showDrawerProfileMenu)}
@@ -1378,6 +1258,195 @@ export default function DashboardShell({
                         <p className="truncate text-[10px] text-zinc-500 leading-tight mt-0.5 dark:text-zinc-400">{displayAccount.email}</p>
                       </div>
                     </button>
+
+                    {/* Apple-grade Mobile Bottom Action Sheet (Portaled to document.body) */}
+                    {mounted && typeof document !== "undefined" && createPortal(
+                      <AnimatePresence>
+                        {showDrawerProfileMenu && (
+                          <div data-bottom-sheet="true" className="fixed inset-0 z-[120] flex items-end justify-center pointer-events-auto">
+                            {/* Native Apple-grade Dimmed Frosted Backdrop */}
+                            <motion.div
+                              initial={{ opacity: 0 }}
+                              animate={{ opacity: 1 }}
+                              exit={{ opacity: 0 }}
+                              transition={{ duration: 0.22, ease: "easeOut" }}
+                              onClick={() => setShowDrawerProfileMenu(false)}
+                              className="fixed inset-0 bg-black/60 backdrop-blur-md cursor-pointer"
+                            />
+
+                            {/* Apple-style Bottom Sheet with Deep OLED Frosted Glass Surface */}
+                            <motion.div
+                              initial={{ y: "100%" }}
+                              animate={{ y: 0 }}
+                              exit={{ y: "100%" }}
+                              transition={{ type: "spring", damping: 32, stiffness: 400, mass: 0.8 }}
+                              className="relative z-10 w-full max-w-md rounded-t-[28px] bg-white/95 dark:bg-[#121214]/95 backdrop-blur-2xl border-t border-zinc-200/90 dark:border-white/[0.08] p-4 pt-3 pb-6 sm:pb-7 shadow-[0_-12px_40px_rgba(0,0,0,0.35)] dark:shadow-[0_-16px_50px_rgba(0,0,0,0.9)] overscroll-contain max-h-[82vh] overflow-y-auto touch-pan-y"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              {/* Grab Handle Pill */}
+                              <div className="w-9 h-1 bg-zinc-300 dark:bg-white/20 rounded-full mx-auto mb-3" />
+
+                              {/* User Header Profile Row */}
+                              <div className="flex items-center justify-between gap-3 pb-3 mb-3 border-b border-zinc-100 dark:border-white/[0.06]">
+                                <div className="flex items-center gap-3 min-w-0">
+                                  {displayAccount.avatar && !avatarError ? (
+                                    <img
+                                      src={displayAccount.avatar}
+                                      alt={displayAccount.name}
+                                      referrerPolicy="no-referrer"
+                                      onError={() => setAvatarError(true)}
+                                      className="h-10 w-10 shrink-0 rounded-full object-cover border border-zinc-200/80 dark:border-white/10 shadow-xs"
+                                    />
+                                  ) : (
+                                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#0066B2] text-xs font-bold text-white dark:bg-white dark:text-[#0066B2] shadow-xs">
+                                      {displayAccount.name.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase() || "RK"}
+                                    </span>
+                                  )}
+                                  <div className="min-w-0">
+                                    <p className="truncate text-sm font-semibold text-zinc-900 dark:text-zinc-100 leading-tight">
+                                      {displayAccount.name}
+                                    </p>
+                                    <p className="truncate text-[11px] text-zinc-500 dark:text-zinc-400 mt-0.5">
+                                      {displayAccount.email}
+                                    </p>
+                                  </div>
+                                </div>
+
+                                <button
+                                  type="button"
+                                  onClick={() => setShowDrawerProfileMenu(false)}
+                                  className="h-7 w-7 rounded-full flex items-center justify-center bg-zinc-100 hover:bg-zinc-200 dark:bg-white/[0.06] dark:hover:bg-white/10 text-zinc-500 dark:text-zinc-400 transition cursor-pointer active:scale-95"
+                                  aria-label="Close"
+                                >
+                                  <X className="h-3.5 w-3.5" />
+                                </button>
+                              </div>
+
+                              {/* Appearance Segmented Control */}
+                              <div className="mb-3">
+                                <div className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider mb-1.5 px-0.5">
+                                  Appearance
+                                </div>
+                                <div className="relative flex items-center justify-between p-0.5 bg-zinc-100 dark:bg-black/40 rounded-xl border border-zinc-200/70 dark:border-white/[0.06] select-none">
+                                  {(["light", "dark", "system"] as const).map((mode) => {
+                                    const Icon = mode === "light" ? Sun : mode === "dark" ? Moon : Monitor;
+                                    const isActive = themeMode === mode;
+                                    return (
+                                      <button
+                                        key={mode}
+                                        type="button"
+                                        onClick={(e) => applyThemeMode(mode, e)}
+                                        className={`relative flex-1 flex items-center justify-center gap-1.5 py-1.5 text-[11px] font-semibold transition-colors duration-150 cursor-pointer z-10 capitalize ${
+                                          isActive
+                                            ? "text-zinc-900 dark:text-white"
+                                            : "text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200"
+                                        }`}
+                                      >
+                                        {isActive && (
+                                          <motion.div
+                                            layoutId="activeThemePillBottomSheet"
+                                            transition={{ type: "spring", stiffness: 450, damping: 35 }}
+                                            className="absolute inset-0.5 bg-white dark:bg-[#1E1E22] rounded-[10px] shadow-xs border border-black/[0.04] dark:border-white/[0.08]"
+                                          />
+                                        )}
+                                        <Icon className="h-3.5 w-3.5 relative z-10 shrink-0" strokeWidth={2} />
+                                        <span className="relative z-10">{mode}</span>
+                                      </button>
+                                    );
+                                  })}
+                                </div>
+                              </div>
+
+                              {/* Unified Grouped Navigation Actions */}
+                              <div className="rounded-xl border border-zinc-200/80 dark:border-white/[0.06] bg-zinc-50/60 dark:bg-white/[0.025] divide-y divide-zinc-200/60 dark:divide-white/[0.04] overflow-hidden mb-3">
+                                <button
+                                  type="button"
+                                  onClick={() => dismissSheet(() => {
+                                    setMenuOpen(false);
+                                    router.push("/dashboard/settings");
+                                  })}
+                                  className="flex w-full items-center justify-between py-2.5 px-3 text-left text-xs font-medium text-zinc-800 dark:text-zinc-200 hover:bg-zinc-100/70 dark:hover:bg-white/5 active:bg-zinc-200/60 dark:active:bg-white/10 transition cursor-pointer"
+                                >
+                                  <div className="flex items-center gap-2.5">
+                                    <div className="w-7 h-7 rounded-lg bg-zinc-200/60 dark:bg-white/[0.06] text-zinc-700 dark:text-zinc-300 flex items-center justify-center shrink-0">
+                                      <User className="h-3.5 w-3.5" />
+                                    </div>
+                                    <span>Account Settings</span>
+                                  </div>
+                                  <ChevronRight className="h-3.5 w-3.5 text-zinc-400 dark:text-zinc-500" />
+                                </button>
+
+                                <button
+                                  type="button"
+                                  onClick={() => dismissSheet(() => {
+                                    setMenuOpen(false);
+                                    setShowHelp(true);
+                                  })}
+                                  className="flex w-full items-center justify-between py-2.5 px-3 text-left text-xs font-medium text-zinc-800 dark:text-zinc-200 hover:bg-zinc-100/70 dark:hover:bg-white/5 active:bg-zinc-200/60 dark:active:bg-white/10 transition cursor-pointer"
+                                >
+                                  <div className="flex items-center gap-2.5">
+                                    <div className="w-7 h-7 rounded-lg bg-zinc-200/60 dark:bg-white/[0.06] text-zinc-700 dark:text-zinc-300 flex items-center justify-center shrink-0">
+                                      <CircleHelp className="h-3.5 w-3.5" />
+                                    </div>
+                                    <span>Help & Support</span>
+                                  </div>
+                                  <ChevronRight className="h-3.5 w-3.5 text-zinc-400 dark:text-zinc-500" />
+                                </button>
+
+                                <button
+                                  type="button"
+                                  onClick={() => dismissSheet(() => openGmailCompose("bug"))}
+                                  className="flex w-full items-center justify-between py-2.5 px-3 text-left text-xs font-medium text-zinc-800 dark:text-zinc-200 hover:bg-zinc-100/70 dark:hover:bg-white/5 active:bg-zinc-200/60 dark:active:bg-white/10 transition cursor-pointer"
+                                >
+                                  <div className="flex items-center gap-2.5">
+                                    <div className="w-7 h-7 rounded-lg bg-zinc-200/60 dark:bg-white/[0.06] text-zinc-700 dark:text-zinc-300 flex items-center justify-center shrink-0">
+                                      <Bug className="h-3.5 w-3.5" />
+                                    </div>
+                                    <span>Report a Bug</span>
+                                  </div>
+                                  <ChevronRight className="h-3.5 w-3.5 text-zinc-400 dark:text-zinc-500" />
+                                </button>
+
+                                <button
+                                  type="button"
+                                  onClick={() => dismissSheet(() => openGmailCompose("feature"))}
+                                  className="flex w-full items-center justify-between py-2.5 px-3 text-left text-xs font-medium text-zinc-800 dark:text-zinc-200 hover:bg-zinc-100/70 dark:hover:bg-white/5 active:bg-zinc-200/60 dark:active:bg-white/10 transition cursor-pointer"
+                                >
+                                  <div className="flex items-center gap-2.5">
+                                    <div className="w-7 h-7 rounded-lg bg-zinc-200/60 dark:bg-white/[0.06] text-zinc-700 dark:text-zinc-300 flex items-center justify-center shrink-0">
+                                      <Sparkles className="h-3.5 w-3.5" />
+                                    </div>
+                                    <span>Request a Feature</span>
+                                  </div>
+                                  <ChevronRight className="h-3.5 w-3.5 text-zinc-400 dark:text-zinc-500" />
+                                </button>
+                              </div>
+
+                              {/* Crisp, High-Contrast Red Sign Out Action */}
+                              <button
+                                type="button"
+                                disabled={isLoggingOut}
+                                onClick={() => {
+                                  dismissSheet(() => {
+                                    setMenuOpen(false);
+                                    handleLogout();
+                                  });
+                                }}
+                                className="w-full py-2.5 px-3 rounded-xl bg-red-500/[0.07] hover:bg-red-500/[0.14] text-red-600 dark:text-red-400 font-semibold text-xs flex items-center justify-center gap-2 border border-red-500/20 active:scale-[0.98] transition cursor-pointer disabled:opacity-50"
+                              >
+                                {isLoggingOut ? (
+                                  <Loader2 className="h-3.5 w-3.5 animate-spin text-red-500" />
+                                ) : (
+                                  <LogOut className="h-3.5 w-3.5 text-red-500 dark:text-red-400" strokeWidth={2} />
+                                )}
+                                <span>{isLoggingOut ? "Signing out..." : "Sign out"}</span>
+                              </button>
+                            </motion.div>
+                          </div>
+                        )}
+                      </AnimatePresence>,
+                      document.body
+                    )}
                   </div>
                 </motion.div>
               </div>
