@@ -4,8 +4,8 @@ import React, { useState, useEffect, useRef } from "react";
 import { useEditor, EditorContent } from "@tiptap/react";
 import { StarterKit } from "@tiptap/starter-kit";
 import { Link as LinkExtension } from "@tiptap/extension-link";
-import { TextStyle } from "@tiptap/extension-text-style";
-import { Color } from "@tiptap/extension-color";
+import { TextStyle, Color, BackgroundColor } from "@tiptap/extension-text-style";
+import GmailColorPicker from "./GmailColorPicker";
 import { Image as ImageExtension } from "@tiptap/extension-image";
 import { Table as TableExtension } from "@tiptap/extension-table";
 import { TableRow } from "@tiptap/extension-table-row";
@@ -164,6 +164,7 @@ export default function SequenceRichEditor({
       }),
       TextStyle,
       Color,
+      BackgroundColor,
       ImageExtension,
       TableExtension.configure({ resizable: true }),
       TableRow,
@@ -351,37 +352,33 @@ export default function SequenceRichEditor({
           <Quote className="h-3.5 w-3.5" />
         </button>
 
-        {/* Text Color: A */}
+        {/* Text & Background Color: A (Gmail Style) */}
         <div className="relative">
           <button
             type="button"
             disabled={disabled}
-            title="Text Color"
+            title="Text & Background Color"
             onClick={() => setActiveMenu((m) => (m === "color" ? null : "color"))}
             className={`flex items-center gap-0.5 p-1.5 rounded hover:bg-zinc-200 dark:hover:bg-zinc-800 transition cursor-pointer ${
               activeMenu === "color" ? "bg-zinc-200 dark:bg-zinc-800" : ""
             } disabled:opacity-50`}
           >
-            <span className="font-extrabold text-xs underline decoration-2 decoration-[#0066B2]">A</span>
+            <span
+              className="font-extrabold text-xs underline decoration-2"
+              style={{
+                textDecorationColor: editor?.getAttributes("textStyle").color || "#0066B2",
+              }}
+            >
+              A
+            </span>
           </button>
           {activeMenu === "color" && (
             <div className="absolute left-0 top-full pt-1 z-50">
-              <div className={`flex gap-1.5 p-2 rounded-lg border shadow-lg ${
-                currentThemeMode === "dark" ? "border-zinc-800 bg-[#1e1e1e]" : "border-zinc-200 bg-white"
-              }`}>
-                {["#18181b", "#0066B2", "#2563eb", "#059669", "#dc2626", "#d97706", "#7c3aed"].map((color) => (
-                  <button
-                    key={color}
-                    type="button"
-                    onClick={() => {
-                      editor?.chain().focus().setColor(color).run();
-                      setActiveMenu(null);
-                    }}
-                    className="h-4 w-4 rounded-full border border-black/10 cursor-pointer hover:scale-110 transition"
-                    style={{ backgroundColor: color }}
-                  />
-                ))}
-              </div>
+              <GmailColorPicker
+                editor={editor}
+                onClose={() => setActiveMenu(null)}
+                themeMode={currentThemeMode}
+              />
             </div>
           )}
         </div>

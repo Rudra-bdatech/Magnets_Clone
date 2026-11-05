@@ -1199,6 +1199,15 @@ textarea {
   color: inherit !important;
 }
 
+/* ─── TipTap Highlight / Background Color Rendering ────────── */
+.ProseMirror span[style*="background-color"],
+.email-rendered-content span[style*="background-color"] {
+  border-radius: 2px;
+  padding: 1px 3px;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+
 /* ─── Tiptap Table Styling — Clean Email Table Layout ──────────────────────── */
 .ProseMirror table {
   border-collapse: collapse;
