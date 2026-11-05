@@ -55,6 +55,7 @@ import {
   syncWithDatabase,
 } from "@/lib/store";
 import { htmlToPlainText } from "@/lib/utils";
+import SequenceRichEditor from "@/components/sequences/SequenceRichEditor";
 
 const standardDelays = [
   { label: "Instantly", minutes: 0 },
@@ -75,6 +76,7 @@ const standardDelays = [
 
 interface ExtendedSequenceEmail extends SequenceEmail {
   body?: string;
+  previewText?: string;
 }
 
 export default function SequenceEditor() {
@@ -212,11 +214,11 @@ export default function SequenceEditor() {
                 : e.delayLabel,
               sent: stepDelivered,
               opened: stepOpened,
-              body: htmlToPlainText(
+              previewText: pageEmail?.previewText || (e as any).previewText || "",
+              body:
                 pageEmail?.body ||
                 (e as any).body ||
-                `Hi {first_name},\n\nHope you find ${pageFound?.name || "this resource"} valuable!\n\nBest regards,`
-              ),
+                `Hi {first_name},\n\nHope you find ${pageFound?.name || "this resource"} valuable!\n\nBest regards,`,
             };
           });
         }
@@ -282,10 +284,10 @@ export default function SequenceEditor() {
                   status: (pageFound.sequenceEnabled === false ? "draft" : "live") as "draft" | "live",
                   sent: stepDelivered,
                   opened: stepOpened,
-                  body: htmlToPlainText(
+                  previewText: e.previewText || "",
+                  body:
                     e.body ||
-                    `Hi {first_name},\n\nHere is your link to ${pageFound.name}.\n\nBest regards,`
-                  ),
+                    `Hi {first_name},\n\nHere is your link to ${pageFound.name}.\n\nBest regards,`,
                 };
               })
             : [
@@ -333,6 +335,7 @@ export default function SequenceEditor() {
       setEmailsWithBody(
         foundLocal.emails.map((e) => ({
           ...e,
+          previewText: (e as any).previewText || "",
           body: (e as any).body || "Hi {first_name},\n\nThank you for signing up!\n\nBest,",
         }))
       );
@@ -351,6 +354,7 @@ export default function SequenceEditor() {
           setEmailsWithBody(
             resolvedRemote.emails.map((e) => ({
               ...e,
+              previewText: (e as any).previewText || "",
               body: (e as any).body || "Hi {first_name},\n\nThank you for signing up!\n\nBest,",
             }))
           );
@@ -557,6 +561,7 @@ export default function SequenceEditor() {
           data: {
             recipientEmail: account.email,
             subject: targetEmail.subject || "Sequence Follow-up",
+            previewText: targetEmail.previewText || "",
             bodyText: (targetEmail.body || "")
               .replace(/\{first_name\}/g, account.name || "Subscriber")
               .replace(/\{name\}/g, account.name || "Subscriber")
@@ -1035,16 +1040,31 @@ export default function SequenceEditor() {
                         />
                       </div>
 
+                      {/* Preview Text input */}
+                      <div>
+                        <label className="block text-[10px] font-bold uppercase tracking-wider text-zinc-400 mb-1">
+                          Preview Text (Preheader)
+                        </label>
+                        <input
+                          type="text"
+                          value={emailsWithBody[selectedFlowNodeIndex].previewText || ""}
+                          onChange={(e) => patchEmail(emailsWithBody[selectedFlowNodeIndex].id, { previewText: e.target.value })}
+                          placeholder="A short teaser shown after the subject in inboxes..."
+                          className="w-full rounded-xl border border-zinc-200 dark:border-white/10 bg-zinc-50 dark:bg-[#121212] p-2.5 text-xs font-semibold text-zinc-900 dark:text-white outline-none focus:border-[#0066B2]"
+                        />
+                      </div>
+
                       {/* Live Rendered Email HTML Body Preview Card */}
                       <div>
                         <label className="block text-[10px] font-bold uppercase tracking-wider text-zinc-400 mb-1">
                           Email Body Preview
                         </label>
-                        <div className="rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#121212] p-4 text-xs text-zinc-700 dark:text-zinc-300 space-y-2 whitespace-pre-wrap shadow-inner min-h-[100px]">
-                          {emailsWithBody[selectedFlowNodeIndex].body || (
-                            <span className="italic text-zinc-400">No body text yet. Switch to Step List to write your email content.</span>
-                          )}
-                        </div>
+                        <div
+                          className="rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#121212] p-4 text-xs text-zinc-700 dark:text-zinc-300 prose prose-sm dark:prose-invert max-w-none shadow-inner min-h-[100px]"
+                          dangerouslySetInnerHTML={{
+                            __html: emailsWithBody[selectedFlowNodeIndex].body || "<span class='italic text-zinc-400'>No body text yet. Switch to Step List to write your email content.</span>"
+                          }}
+                        />
                       </div>
                     </div>
                   )}
@@ -1297,6 +1317,20 @@ export default function SequenceEditor() {
                           </div>
                         </div>
 
+                        {/* Preview Text Input Row */}
+                        <div className="mt-2.5 space-y-1">
+                          <label className="block text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+                            Preview Text (Inbox Preheader)
+                          </label>
+                          <input
+                            type="text"
+                            value={email.previewText || ""}
+                            onChange={(e) => patchEmail(email.id, { previewText: e.target.value })}
+                            placeholder="A short teaser shown after the subject in the inbox..."
+                            className="w-full rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#121212] p-2.5 sm:p-3 text-xs sm:text-sm font-medium text-zinc-900 dark:text-white placeholder-zinc-400 focus:border-[#0066B2] focus:outline-none shadow-xs"
+                          />
+                        </div>
+
                         {/* Expandable Email Body & Preview Section */}
                         {isExpanded && (
                           <div className="mt-3 sm:mt-4 pt-3.5 space-y-3 animate-in fade-in duration-200">
@@ -1361,32 +1395,40 @@ export default function SequenceEditor() {
                             </div>
 
                             {currentTab === "edit" ? (
-                              <textarea
-                                rows={6}
-                                value={htmlToPlainText(email.body || "")}
-                                onChange={(e) => patchEmail(email.id, { body: e.target.value })}
-                                placeholder="Write your email content here..."
-                                className="w-full rounded-xl border border-zinc-200 dark:border-white/10 bg-zinc-50 dark:bg-[#121212] p-2.5 sm:p-3 text-xs sm:text-sm font-medium text-zinc-800 dark:text-zinc-200 placeholder-zinc-400 focus:border-[#0066B2] focus:outline-none font-sans leading-relaxed"
+                              <SequenceRichEditor
+                                key={email.id}
+                                initialContent={email.body || ""}
+                                onChange={(html) => patchEmail(email.id, { body: html })}
+                                themeMode={account?.themeMode || "dark"}
+                                includeResourceLink={Boolean(attachedPage)}
                               />
                             ) : (
                               <div className="rounded-xl border border-zinc-200/80 dark:border-white/10 bg-zinc-50/80 dark:bg-[#121212] p-3 sm:p-4 text-xs space-y-3">
-                                <div className="text-[10px] sm:text-[11px] font-semibold text-zinc-400 pb-2 flex justify-between items-center gap-2">
+                                <div className="text-[10px] sm:text-[11px] font-semibold text-zinc-400 pb-2 flex justify-between items-center gap-2 border-b border-zinc-200 dark:border-white/10">
                                   <div className="truncate">
                                     From: {account?.name || "Your Brand"} &lt;{account?.email || "hello@yourbrand.com"}&gt;
                                     <br />
-                                    Subject: <span className="text-zinc-800 dark:text-zinc-200">{email.subject}</span>
+                                    Subject: <span className="text-zinc-800 dark:text-zinc-200 font-bold">{email.subject}</span>
+                                    {email.previewText && (
+                                      <div className="text-[10px] text-zinc-400 mt-0.5 truncate">
+                                        Preheader: {email.previewText}
+                                      </div>
+                                    )}
                                   </div>
                                   <span className="text-[9px] sm:text-[10px] bg-emerald-500/10 text-emerald-500 px-2 py-0.5 rounded-full font-bold shrink-0">
                                     Preview Mode
                                   </span>
                                 </div>
-                                <div className="whitespace-pre-wrap text-zinc-800 dark:text-zinc-200 font-sans leading-relaxed pt-1 text-xs">
-                                  {(email.body || "")
-                                    .replace(/\{first_name\}/g, "Alex")
-                                    .replace(/\{name\}/g, "Alex")
-                                    .replace(/\{resource_link\}/g, attachedPage ? `https://funnels.co.in/${account?.username || "demo"}/${attachedPage.slug}` : "https://download-resource.com")}
-                                </div>
-                                <div className="pt-2 text-[10px] text-zinc-400 flex items-center justify-between gap-2">
+                                <div
+                                  className="prose prose-sm dark:prose-invert max-w-none text-zinc-800 dark:text-zinc-200 font-sans leading-relaxed pt-1 text-xs"
+                                  dangerouslySetInnerHTML={{
+                                    __html: (email.body || "")
+                                      .replace(/\{first_name\}/g, "Alex")
+                                      .replace(/\{name\}/g, "Alex")
+                                      .replace(/\{resource_link\}/g, attachedPage ? `https://funnels.co.in/${account?.username || "demo"}/${attachedPage.slug}` : "https://download-resource.com")
+                                  }}
+                                />
+                                <div className="pt-2 text-[10px] text-zinc-400 flex items-center justify-between gap-2 border-t border-zinc-200/60 dark:border-white/10">
                                   <span className="truncate">No longer want these emails? <span className="text-rose-500 underline cursor-pointer">Unsubscribe</span></span>
                                   <span className="shrink-0">Stop link attached</span>
                                 </div>

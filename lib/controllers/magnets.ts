@@ -292,7 +292,9 @@ export async function handleSendTestSequenceEmail(data: any, normEmail: string |
   const rawSubject = String(data?.subject || "Test Sequence Email");
   const escapedSubject = escapeHtml(rawSubject);
   const rawBody = String(data?.bodyText || "This is a test preview of your sequence email.");
-  const bodyText = escapeHtml(rawBody).replace(/\n/g, "<br/>");
+  const hasHtmlTags = /<[a-z][\s\S]*>/i.test(rawBody);
+  const bodyText = hasHtmlTags ? rawBody : escapeHtml(rawBody).replace(/\n/g, "<br/>");
+  const previewText = data?.previewText ? String(data.previewText).trim() : "";
 
   const appUrl = (process.env.NEXTAUTH_URL || "https://funnels.co.in").replace(/\/+$/, "");
   const logoUrl = `${appUrl}/brand/custom-logo-light.png`;

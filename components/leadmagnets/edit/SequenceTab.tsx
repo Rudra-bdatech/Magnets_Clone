@@ -26,6 +26,8 @@ import {
   Sparkles,
   Lock,
   Zap,
+  Quote,
+  List,
 } from "lucide-react";
 import { useEditor, EditorContent } from "@tiptap/react";
 import { StarterKit } from "@tiptap/starter-kit";
@@ -137,10 +139,32 @@ export default function SequenceTab({
       attributes: {
         class: "outline-none focus:outline-none focus:ring-0 min-h-[220px]",
       },
+      handleKeyDown: (view, event) => {
+        if ((event.ctrlKey || event.metaKey) && event.shiftKey) {
+          if (event.key === "L" || event.key === "l") {
+            event.preventDefault();
+            view.dispatch(view.state.tr);
+            editor?.chain().focus().setTextAlign("left").run();
+            return true;
+          }
+          if (event.key === "E" || event.key === "e") {
+            event.preventDefault();
+            editor?.chain().focus().setTextAlign("center").run();
+            return true;
+          }
+          if (event.key === "R" || event.key === "r") {
+            event.preventDefault();
+            editor?.chain().focus().setTextAlign("right").run();
+            return true;
+          }
+        }
+        return false;
+      },
     },
     extensions: [
       StarterKit.configure({
         heading: { levels: [1, 2, 3] },
+        blockquote: {},
       }),
       TextStyle,
       Color,
@@ -460,14 +484,38 @@ export default function SequenceTab({
                   <label className={`text-xs font-semibold block mb-1.5 ${(account?.themeMode || "light") === "dark" ? "text-zinc-300" : "text-zinc-700"}`}>Body</label>
                   <div className={`rounded-2xl border shadow-xs ${(account?.themeMode || "light") === "dark" ? "border-[#27272A] bg-[#18181B]" : "border-zinc-200/90 bg-white"}`}>
                     {/* Toolbar matching DeliveryEmailTab exact screenshot design + Insert {name} */}
-                    <div ref={toolbarRef} className={`flex flex-wrap items-center gap-1.5 border-b px-3 py-2 text-xs font-semibold ${(account?.themeMode || "light") === "dark" ? "border-white/10 bg-[#151515] text-zinc-300" : "border-zinc-200 bg-[#F9F9FB] text-zinc-600"}`}>
+                    <div ref={toolbarRef} className={`flex flex-wrap items-center gap-1.5 border-b px-3 py-2 text-xs font-semibold select-none ${(account?.themeMode || "light") === "dark" ? "border-white/10 bg-[#151515] text-zinc-300" : "border-zinc-200 bg-[#F9F9FB] text-zinc-600"}`}>
 
-                      {/* Headings Dropdown: T ⌄ */}
+                      {/* Undo Button */}
+                      <button
+                        type="button"
+                        disabled={!sequenceEnabled || !editor?.can().undo()}
+                        onClick={() => editor?.chain().focus().undo().run()}
+                        title="Undo (Ctrl+Z)"
+                        className="p-1.5 rounded transition hover:bg-zinc-200 dark:hover:bg-zinc-800 cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
+                      >
+                        <Undo2 className="h-3.5 w-3.5" />
+                      </button>
+
+                      {/* Redo Button */}
+                      <button
+                        type="button"
+                        disabled={!sequenceEnabled || !editor?.can().redo()}
+                        onClick={() => editor?.chain().focus().redo().run()}
+                        title="Redo (Ctrl+Y)"
+                        className="p-1.5 rounded transition hover:bg-zinc-200 dark:hover:bg-zinc-800 cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
+                      >
+                        <Redo2 className="h-3.5 w-3.5" />
+                      </button>
+
+                      <div className={`h-4 w-px mx-0.5 ${(account?.themeMode || "light") === "dark" ? "bg-white/10" : "bg-zinc-300"}`} />
+
+                      {/* Headings & Styles Dropdown: T ⌄ */}
                       <div className="relative">
                         <button
                           type="button"
                           disabled={!sequenceEnabled}
-                          title="Headings"
+                          title="Styles & Headings"
                           onClick={() => setActiveMenu((m) => m === "headings" ? null : "headings")}
                           className={`flex items-center gap-1 px-2 py-1 rounded hover:bg-zinc-200 dark:hover:bg-zinc-800 transition cursor-pointer text-zinc-700 dark:text-zinc-200 ${activeMenu === "headings" ? "bg-zinc-200 dark:bg-zinc-800" : ""} disabled:opacity-50`}
                         >
@@ -476,11 +524,23 @@ export default function SequenceTab({
                         </button>
                         {activeMenu === "headings" && (
                           <div className="absolute left-0 top-full pt-1 z-50">
-                            <div className={`w-32 rounded-lg border shadow-lg p-1 flex flex-col ${(account?.themeMode || "light") === "dark" ? "border-white/10 bg-[#171717] text-white" : "border-zinc-200 bg-white text-zinc-800"}`}>
-                              <button type="button" onClick={() => { editor?.chain().focus().setParagraph().run(); setActiveMenu(null); }} className="text-left px-2.5 py-1.5 text-xs rounded hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer">Paragraph</button>
-                              <button type="button" onClick={() => { editor?.chain().focus().toggleHeading({ level: 1 }).run(); setActiveMenu(null); }} className="text-left px-2.5 py-1.5 text-xs font-bold rounded hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer">Heading 1</button>
-                              <button type="button" onClick={() => { editor?.chain().focus().toggleHeading({ level: 2 }).run(); setActiveMenu(null); }} className="text-left px-2.5 py-1.5 text-xs font-semibold rounded hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer">Heading 2</button>
-                              <button type="button" onClick={() => { editor?.chain().focus().toggleHeading({ level: 3 }).run(); setActiveMenu(null); }} className="text-left px-2.5 py-1.5 text-xs font-medium rounded hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer">Heading 3</button>
+                            <div className={`w-52 rounded-xl border shadow-xl p-1.5 flex flex-col space-y-0.5 ${(account?.themeMode || "light") === "dark" ? "border-zinc-800 bg-[#1e1e1e] text-white" : "border-zinc-200 bg-white text-zinc-800"}`}>
+                              <button type="button" onClick={() => { editor?.chain().focus().setParagraph().run(); setActiveMenu(null); }} className="flex items-center justify-between px-2.5 py-1.5 text-xs rounded hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer">
+                                <span>Paragraph</span>
+                                <span className="text-[10px] text-zinc-400 font-mono">Ctrl+Alt+0</span>
+                              </button>
+                              <button type="button" onClick={() => { editor?.chain().focus().toggleHeading({ level: 1 }).run(); setActiveMenu(null); }} className="flex items-center justify-between px-2.5 py-1.5 text-xs font-bold rounded hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer">
+                                <span>Heading 1</span>
+                                <span className="text-[10px] text-zinc-400 font-mono font-normal">Ctrl+Alt+1</span>
+                              </button>
+                              <button type="button" onClick={() => { editor?.chain().focus().toggleHeading({ level: 2 }).run(); setActiveMenu(null); }} className="flex items-center justify-between px-2.5 py-1.5 text-xs font-semibold rounded hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer">
+                                <span>Heading 2</span>
+                                <span className="text-[10px] text-zinc-400 font-mono font-normal">Ctrl+Alt+2</span>
+                              </button>
+                              <button type="button" onClick={() => { editor?.chain().focus().toggleHeading({ level: 3 }).run(); setActiveMenu(null); }} className="flex items-center justify-between px-2.5 py-1.5 text-xs font-medium rounded hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer">
+                                <span>Heading 3</span>
+                                <span className="text-[10px] text-zinc-400 font-mono font-normal">Ctrl+Alt+3</span>
+                              </button>
                             </div>
                           </div>
                         )}
@@ -515,10 +575,21 @@ export default function SequenceTab({
                         type="button"
                         disabled={!sequenceEnabled}
                         onClick={() => editor?.chain().focus().toggleStrike().run()}
-                        title="Strikethrough"
+                        title="Strikethrough (Ctrl+Shift+X)"
                         className={`p-1.5 rounded transition hover:bg-zinc-200 dark:hover:bg-zinc-800 cursor-pointer ${editor?.isActive("strike") ? "bg-[#0066B2]/20 text-[#0066B2] dark:text-[#38BDF8]" : ""} disabled:opacity-50`}
                       >
                         <Strikethrough className="h-3.5 w-3.5" />
+                      </button>
+
+                      {/* Blockquote: Quote */}
+                      <button
+                        type="button"
+                        disabled={!sequenceEnabled}
+                        onClick={() => editor?.chain().focus().toggleBlockquote().run()}
+                        title="Quote / Callout"
+                        className={`p-1.5 rounded transition hover:bg-zinc-200 dark:hover:bg-zinc-800 cursor-pointer ${editor?.isActive("blockquote") ? "bg-[#0066B2]/20 text-[#0066B2] dark:text-[#38BDF8]" : ""} disabled:opacity-50`}
+                      >
+                        <Quote className="h-3.5 w-3.5" />
                       </button>
 
                       {/* Text Color: A */}
@@ -572,27 +643,29 @@ export default function SequenceTab({
                           disabled={!sequenceEnabled}
                           title="Lists"
                           onClick={() => setActiveMenu((m) => m === "lists" ? null : "lists")}
-                          className={`flex items-center gap-1 px-1.5 py-1 rounded hover:bg-zinc-200 dark:hover:bg-zinc-800 transition cursor-pointer ${activeMenu === "lists" ? "bg-zinc-200 dark:bg-zinc-800" : ""} disabled:opacity-50`}
+                          className={`flex items-center gap-1 px-1.5 py-1 rounded hover:bg-zinc-200 dark:hover:bg-zinc-800 transition cursor-pointer ${activeMenu === "lists" || editor?.isActive("bulletList") || editor?.isActive("orderedList") ? "bg-[#0066B2]/20 text-[#0066B2] dark:text-[#38BDF8]" : ""} disabled:opacity-50`}
                         >
-                          <span className="text-xs font-bold">⋮=</span>
+                          <List className="h-3.5 w-3.5" />
                           <ChevronDown className="h-3 w-3 text-zinc-400" />
                         </button>
                         {activeMenu === "lists" && (
                           <div className="absolute left-0 top-full pt-1 z-50">
-                            <div className={`w-36 rounded-lg border shadow-lg p-1 flex flex-col ${(account?.themeMode || "light") === "dark" ? "border-white/10 bg-[#171717] text-white" : "border-zinc-200 bg-white text-zinc-800"}`}>
+                            <div className={`w-52 rounded-xl border shadow-xl p-1.5 flex flex-col space-y-0.5 ${(account?.themeMode || "light") === "dark" ? "border-zinc-800 bg-[#1e1e1e] text-white" : "border-zinc-200 bg-white text-zinc-800"}`}>
                               <button
                                 type="button"
                                 onClick={() => { editor?.chain().focus().toggleBulletList().run(); setActiveMenu(null); }}
-                                className="text-left px-2.5 py-1.5 text-xs rounded hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer font-medium"
+                                className={`flex items-center justify-between px-2.5 py-1.5 text-xs rounded hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer font-medium ${editor?.isActive("bulletList") ? "font-bold text-[#0066B2] dark:text-[#38BDF8]" : ""}`}
                               >
-                                Bullet List
+                                <span>Bulleted List</span>
+                                <span className="text-[10px] text-zinc-400 font-mono font-normal">Ctrl+Shift+8</span>
                               </button>
                               <button
                                 type="button"
                                 onClick={() => { editor?.chain().focus().toggleOrderedList().run(); setActiveMenu(null); }}
-                                className="text-left px-2.5 py-1.5 text-xs rounded hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer font-medium"
+                                className={`flex items-center justify-between px-2.5 py-1.5 text-xs rounded hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer font-medium ${editor?.isActive("orderedList") ? "font-bold text-[#0066B2] dark:text-[#38BDF8]" : ""}`}
                               >
-                                Numbered List
+                                <span>Numbered List</span>
+                                <span className="text-[10px] text-zinc-400 font-mono font-normal">Ctrl+Shift+7</span>
                               </button>
                             </div>
                           </div>
@@ -604,7 +677,7 @@ export default function SequenceTab({
                         <button
                           type="button"
                           disabled={!sequenceEnabled}
-                          title="Text Align"
+                          title="Alignment"
                           onClick={() => setActiveMenu((m) => m === "align" ? null : "align")}
                           className={`flex items-center gap-1 px-1.5 py-1 rounded hover:bg-zinc-200 dark:hover:bg-zinc-800 transition cursor-pointer ${activeMenu === "align" || editor?.isActive({ textAlign: "center" }) || editor?.isActive({ textAlign: "right" }) ? "bg-[#0066B2]/20 text-[#0066B2] dark:text-[#38BDF8]" : ""} disabled:opacity-50`}
                         >
@@ -619,10 +692,19 @@ export default function SequenceTab({
                         </button>
                         {activeMenu === "align" && (
                           <div className="absolute left-0 top-full pt-1 z-50">
-                            <div className={`w-32 rounded-lg border shadow-lg p-1 flex flex-col ${(account?.themeMode || "light") === "dark" ? "border-[#27272A] bg-[#1E1E24] text-white" : "border-zinc-200 bg-white text-zinc-800"}`}>
-                              <button type="button" onClick={() => { editor?.chain().focus().setTextAlign("left").run(); setActiveMenu(null); }} className={`flex items-center gap-2 px-2.5 py-1.5 text-xs rounded hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer ${!editor?.isActive({ textAlign: "center" }) && !editor?.isActive({ textAlign: "right" }) ? "font-bold text-[#0066B2] dark:text-[#38BDF8]" : ""}`}><AlignLeft className="h-3.5 w-3.5" /> Left</button>
-                              <button type="button" onClick={() => { editor?.chain().focus().setTextAlign("center").run(); setActiveMenu(null); }} className={`flex items-center gap-2 px-2.5 py-1.5 text-xs rounded hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer ${editor?.isActive({ textAlign: "center" }) ? "font-bold text-[#0066B2] dark:text-[#38BDF8]" : ""}`}><AlignCenter className="h-3.5 w-3.5" /> Center</button>
-                              <button type="button" onClick={() => { editor?.chain().focus().setTextAlign("right").run(); setActiveMenu(null); }} className={`flex items-center gap-2 px-2.5 py-1.5 text-xs rounded hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer ${editor?.isActive({ textAlign: "right" }) ? "font-bold text-[#0066B2] dark:text-[#38BDF8]" : ""}`}><AlignRight className="h-3.5 w-3.5" /> Right</button>
+                            <div className={`w-48 rounded-xl border shadow-xl p-1.5 flex flex-col space-y-0.5 ${(account?.themeMode || "light") === "dark" ? "border-zinc-800 bg-[#1e1e1e] text-white" : "border-zinc-200 bg-white text-zinc-800"}`}>
+                              <button type="button" onClick={() => { editor?.chain().focus().setTextAlign("left").run(); setActiveMenu(null); }} className={`flex items-center justify-between px-2.5 py-1.5 text-xs rounded hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer ${!editor?.isActive({ textAlign: "center" }) && !editor?.isActive({ textAlign: "right" }) ? "font-bold text-[#0066B2] dark:text-[#38BDF8]" : ""}`}>
+                                <span className="flex items-center gap-2"><AlignLeft className="h-3.5 w-3.5" /> Left</span>
+                                <span className="text-[10px] text-zinc-400 font-mono font-normal">Ctrl+Shift+L</span>
+                              </button>
+                              <button type="button" onClick={() => { editor?.chain().focus().setTextAlign("center").run(); setActiveMenu(null); }} className={`flex items-center justify-between px-2.5 py-1.5 text-xs rounded hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer ${editor?.isActive({ textAlign: "center" }) ? "font-bold text-[#0066B2] dark:text-[#38BDF8]" : ""}`}>
+                                <span className="flex items-center gap-2"><AlignCenter className="h-3.5 w-3.5" /> Center</span>
+                                <span className="text-[10px] text-zinc-400 font-mono font-normal">Ctrl+Shift+E</span>
+                              </button>
+                              <button type="button" onClick={() => { editor?.chain().focus().setTextAlign("right").run(); setActiveMenu(null); }} className={`flex items-center justify-between px-2.5 py-1.5 text-xs rounded hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer ${editor?.isActive({ textAlign: "right" }) ? "font-bold text-[#0066B2] dark:text-[#38BDF8]" : ""}`}>
+                                <span className="flex items-center gap-2"><AlignRight className="h-3.5 w-3.5" /> Right</span>
+                                <span className="text-[10px] text-zinc-400 font-mono font-normal">Ctrl+Shift+R</span>
+                              </button>
                             </div>
                           </div>
                         )}
@@ -766,7 +848,7 @@ export default function SequenceTab({
                             editor.chain().focus().insertContent(`<a href="${formattedUrl}" target="_blank" rel="noopener noreferrer">${finalLabel}</a>`).run();
                           }
                         }}
-                        title={editor?.isActive("link") ? "Edit or Remove Hyperlink" : "Insert Hyperlink"}
+                        title={editor?.isActive("link") ? "Edit or Remove Hyperlink (Ctrl+K)" : "Insert Hyperlink (Ctrl+K)"}
                         className={`p-1.5 rounded transition hover:bg-zinc-200 dark:hover:bg-zinc-800 cursor-pointer ${editor?.isActive("link") ? "bg-[#0066B2]/20 text-[#0066B2] dark:text-[#38BDF8]" : ""} disabled:opacity-50`}
                       >
                         <Link2 className="h-3.5 w-3.5" />
