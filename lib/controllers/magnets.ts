@@ -331,6 +331,9 @@ export async function handleSendTestSequenceEmail(data: any, normEmail: string |
     img { -ms-interpolation-mode: bicubic; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; }
     body { margin: 0 !important; padding: 0 !important; width: 100% !important; }
     a[x-apple-data-detectors] { color: inherit !important; text-decoration: none !important; }
+    .email-body-content table { border-collapse: collapse !important; width: 100% !important; margin: 16px 0 !important; border: 1px solid #d4d4d8 !important; }
+    .email-body-content th, .email-body-content td { border: 1px solid #d4d4d8 !important; padding: 10px 14px !important; text-align: left !important; vertical-align: top !important; font-size: 14px !important; word-break: break-word !important; overflow-wrap: anywhere !important; }
+    .email-body-content th { background-color: #f8fafc !important; font-weight: 700 !important; color: #0f172a !important; }
     @media screen and (max-width: 600px) {
       .email-container { width: 100% !important; }
       .card-padding { padding: 28px 22px 22px 22px !important; }
@@ -375,7 +378,7 @@ export async function handleSendTestSequenceEmail(data: any, normEmail: string |
                       ${escapedSubject}
                     </h1>
 
-                    <div style="font-family:'DM Sans','Helvetica Neue',Helvetica,Arial,sans-serif; color:#334155; font-size:15px; line-height:1.7;">
+                    <div class="email-body-content" style="font-family:'DM Sans','Helvetica Neue',Helvetica,Arial,sans-serif; color:#334155; font-size:15px; line-height:1.7; word-break:break-word; overflow-wrap:anywhere;">
                       ${bodyText}
                     </div>
 

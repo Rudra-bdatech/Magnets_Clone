@@ -246,7 +246,7 @@ export default function DeliveryEmailTab({
             {/* Rich Text Editor Container */}
             <div className={`rounded-2xl border shadow-xs ${(account?.themeMode || "light") === "dark" ? "border-[#27272A] bg-[#18181B]" : "border-zinc-200/90 bg-white"}`}>
               {/* Toolbar matching exact screenshot design */}
-              <div ref={toolbarRef} className={`flex flex-wrap items-center gap-1.5 border-b px-3 py-2 text-xs font-semibold select-none ${(account?.themeMode || "light") === "dark" ? "border-white/10 bg-[#151515] text-zinc-300" : "border-zinc-200 bg-[#F9F9FB] text-zinc-600"}`}>
+              <div ref={toolbarRef} className={`rounded-t-[15px] flex flex-wrap items-center gap-1.5 border-b px-3 py-2 text-xs font-semibold select-none ${(account?.themeMode || "light") === "dark" ? "border-white/10 bg-[#151515] text-zinc-300" : "border-zinc-200 bg-[#F9F9FB] text-zinc-600"}`}>
                 {/* Undo Button */}
                 <button
                   type="button"

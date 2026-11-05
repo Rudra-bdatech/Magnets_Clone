@@ -1227,6 +1227,8 @@ textarea {
   position: relative;
   font-size: 14px;
   line-height: 1.5;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .dark .ProseMirror td,
@@ -1290,6 +1292,8 @@ textarea {
 /* ─── Email Rendered & Preview Content Styling (Tables, Lists, Format) ────── */
 .email-rendered-content {
   line-height: 1.65;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .email-rendered-content table,
@@ -1321,6 +1325,10 @@ textarea {
   font-size: 13px !important;
   line-height: 1.5 !important;
   box-sizing: border-box !important;
+  overflow-wrap: anywhere !important;
+  word-break: break-word !important;
+  word-wrap: break-word !important;
+  white-space: normal !important;
 }
 
 .dark .email-rendered-content th,
@@ -1335,6 +1343,8 @@ textarea {
   font-weight: 700 !important;
   background-color: #f8fafc !important;
   color: #0f172a !important;
+  overflow-wrap: anywhere !important;
+  word-break: break-word !important;
 }
 
 .dark .email-rendered-content th,
@@ -1346,6 +1356,8 @@ textarea {
 .email-rendered-content td,
 .prose td {
   background-color: #ffffff !important;
+  overflow-wrap: anywhere !important;
+  word-break: break-word !important;
 }
 
 .dark .email-rendered-content td,
@@ -1359,6 +1371,18 @@ textarea {
 .prose th p {
   margin: 0 !important;
   line-height: 1.5 !important;
+  overflow-wrap: anywhere !important;
+  word-break: break-word !important;
+  word-wrap: break-word !important;
+  white-space: normal !important;
+}
+
+.email-rendered-content td *,
+.email-rendered-content th *,
+.prose td *,
+.prose th * {
+  overflow-wrap: anywhere !important;
+  word-break: break-word !important;
 }
 
 .email-rendered-content hr {

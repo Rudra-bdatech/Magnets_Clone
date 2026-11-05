@@ -287,11 +287,16 @@ export async function sendMail(
           }
         } catch (gmailErr: any) {
           console.warn("[email] Gmail OAuth2 failed, falling through:", gmailErr);
-          // A revoked grant means Gmail is simply no longer connected; anything else is a failed attempt.
-          if (gmailErr?.code !== "invalid_grant") ownerSenderFailed = true;
-          // invalid_grant = the user revoked access, changed their password, or the token expired.
-          // Mark Gmail as disconnected so the dashboard prompts them to reconnect.
-          if (gmailErr?.code === "invalid_grant" && account?._id) {
+          const isGrantRevoked =
+            gmailErr?.code === "invalid_grant" ||
+            gmailErr?.code === "unauthorized_client" ||
+            gmailErr?.message?.includes("Unauthorized");
+
+          if (!isGrantRevoked) ownerSenderFailed = true;
+
+          // invalid_grant or unauthorized_client = token is expired/revoked.
+          // Mark Gmail as disconnected so it falls back to standard BDA SMTP cleanly.
+          if (isGrantRevoked && account?._id) {
             await AccountModel.updateOne(
               { _id: account._id },
               { $set: { "gmailOAuth.connected": false, "gmailOAuth.accessToken": "", "gmailOAuth.refreshToken": "" } }

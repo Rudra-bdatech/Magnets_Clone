@@ -1399,7 +1399,7 @@ export default function SequenceEditor() {
                                 key={email.id}
                                 initialContent={email.body || ""}
                                 onChange={(html) => patchEmail(email.id, { body: html })}
-                                themeMode={account?.themeMode || "dark"}
+                                themeMode={account?.themeMode || "light"}
                                 includeResourceLink={Boolean(attachedPage)}
                               />
                             ) : (

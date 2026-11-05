@@ -51,7 +51,7 @@ export default function SequenceRichEditor({
   onChange,
   placeholder = "Write your email content here...",
   disabled = false,
-  themeMode = "dark",
+  themeMode = "light",
   includeResourceLink = false,
 }: SequenceRichEditorProps) {
   const [activeMenu, setActiveMenu] = useState<"headings" | "color" | "lists" | "align" | "table" | null>(null);
@@ -60,6 +60,43 @@ export default function SequenceRichEditor({
   const [hostedResources, setHostedResources] = useState<any[]>([]);
   const toolbarRef = useRef<HTMLDivElement>(null);
   const editorContainerRef = useRef<HTMLDivElement>(null);
+
+  // Dynamic theme detection that syncs with document.documentElement ("dark" class)
+  const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
+    if (typeof document !== "undefined") {
+      return document.documentElement.classList.contains("dark");
+    }
+    return themeMode === "dark";
+  });
+
+  useEffect(() => {
+    const checkDark = () => {
+      if (typeof document !== "undefined") {
+        setIsDarkMode(document.documentElement.classList.contains("dark"));
+      } else {
+        setIsDarkMode(themeMode === "dark");
+      }
+    };
+    checkDark();
+
+    window.addEventListener("leadmagnets-theme-changed", checkDark);
+    window.addEventListener("storage", checkDark);
+
+    const observer = new MutationObserver(() => {
+      checkDark();
+    });
+    if (typeof document !== "undefined") {
+      observer.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+    }
+
+    return () => {
+      window.removeEventListener("leadmagnets-theme-changed", checkDark);
+      window.removeEventListener("storage", checkDark);
+      observer.disconnect();
+    };
+  }, [themeMode]);
+
+  const currentThemeMode = isDarkMode ? "dark" : "light";
 
   useEffect(() => {
     const res = loadResources();
@@ -159,13 +196,13 @@ export default function SequenceRichEditor({
 
   return (
     <div className={`rounded-xl border shadow-xs overflow-visible transition-colors ${
-      themeMode === "dark" ? "border-zinc-800 bg-[#121212]" : "border-zinc-200/90 bg-white"
+      currentThemeMode === "dark" ? "border-zinc-800 bg-[#121212] text-white" : "border-zinc-200/90 bg-white text-zinc-900"
     }`}>
       {/* Formatting Toolbar */}
       <div
         ref={toolbarRef}
-        className={`flex flex-wrap items-center gap-1 border-b px-2 sm:px-3 py-1.5 text-xs font-semibold select-none ${
-          themeMode === "dark" ? "border-zinc-800 bg-[#171717] text-zinc-300" : "border-zinc-200 bg-[#F9F9FB] text-zinc-600"
+        className={`rounded-t-[11px] flex flex-wrap items-center gap-1 border-b px-2 sm:px-3 py-1.5 text-xs font-semibold select-none ${
+          currentThemeMode === "dark" ? "border-zinc-800 bg-[#171717] text-zinc-300" : "border-zinc-200 bg-[#F9F9FB] text-zinc-600"
         }`}
       >
         {/* Undo Button */}
@@ -190,7 +227,7 @@ export default function SequenceRichEditor({
           <Redo2 className="h-3.5 w-3.5" />
         </button>
 
-        <div className={`h-4 w-px mx-0.5 ${themeMode === "dark" ? "bg-zinc-800" : "bg-zinc-300"}`} />
+        <div className={`h-4 w-px mx-0.5 ${currentThemeMode === "dark" ? "bg-zinc-800" : "bg-zinc-300"}`} />
 
         {/* Headings & Styles Dropdown: T ⌄ */}
         <div className="relative">
@@ -209,7 +246,7 @@ export default function SequenceRichEditor({
           {activeMenu === "headings" && (
             <div className="absolute left-0 top-full pt-1 z-50">
               <div className={`w-52 rounded-xl border shadow-xl p-1.5 flex flex-col space-y-0.5 ${
-                themeMode === "dark" ? "border-zinc-800 bg-[#1e1e1e] text-white" : "border-zinc-200 bg-white text-zinc-800"
+                currentThemeMode === "dark" ? "border-zinc-800 bg-[#1e1e1e] text-white" : "border-zinc-200 bg-white text-zinc-800"
               }`}>
                 <button
                   type="button"
@@ -260,7 +297,7 @@ export default function SequenceRichEditor({
           )}
         </div>
 
-        <div className={`h-4 w-px mx-0.5 ${themeMode === "dark" ? "bg-zinc-800" : "bg-zinc-300"}`} />
+        <div className={`h-4 w-px mx-0.5 ${currentThemeMode === "dark" ? "bg-zinc-800" : "bg-zinc-300"}`} />
 
         {/* Bold: B */}
         <button
@@ -330,7 +367,7 @@ export default function SequenceRichEditor({
           {activeMenu === "color" && (
             <div className="absolute left-0 top-full pt-1 z-50">
               <div className={`flex gap-1.5 p-2 rounded-lg border shadow-lg ${
-                themeMode === "dark" ? "border-zinc-800 bg-[#1e1e1e]" : "border-zinc-200 bg-white"
+                currentThemeMode === "dark" ? "border-zinc-800 bg-[#1e1e1e]" : "border-zinc-200 bg-white"
               }`}>
                 {["#18181b", "#0066B2", "#2563eb", "#059669", "#dc2626", "#d97706", "#7c3aed"].map((color) => (
                   <button
@@ -363,7 +400,7 @@ export default function SequenceRichEditor({
           <Eraser className="h-3.5 w-3.5" />
         </button>
 
-        <div className={`h-4 w-px mx-0.5 ${themeMode === "dark" ? "bg-zinc-800" : "bg-zinc-300"}`} />
+        <div className={`h-4 w-px mx-0.5 ${currentThemeMode === "dark" ? "bg-zinc-800" : "bg-zinc-300"}`} />
 
         {/* Lists: ⋮= ⌄ */}
         <div className="relative">
@@ -384,7 +421,7 @@ export default function SequenceRichEditor({
           {activeMenu === "lists" && (
             <div className="absolute left-0 top-full pt-1 z-50">
               <div className={`w-52 rounded-xl border shadow-xl p-1.5 flex flex-col space-y-0.5 ${
-                themeMode === "dark" ? "border-zinc-800 bg-[#1e1e1e] text-white" : "border-zinc-200 bg-white text-zinc-800"
+                currentThemeMode === "dark" ? "border-zinc-800 bg-[#1e1e1e] text-white" : "border-zinc-200 bg-white text-zinc-800"
               }`}>
                 <button
                   type="button"
@@ -442,7 +479,7 @@ export default function SequenceRichEditor({
           {activeMenu === "align" && (
             <div className="absolute left-0 top-full pt-1 z-50">
               <div className={`w-48 rounded-xl border shadow-xl p-1.5 flex flex-col space-y-0.5 ${
-                themeMode === "dark" ? "border-zinc-800 bg-[#1e1e1e] text-white" : "border-zinc-200 bg-white text-zinc-800"
+                currentThemeMode === "dark" ? "border-zinc-800 bg-[#1e1e1e] text-white" : "border-zinc-200 bg-white text-zinc-800"
               }`}>
                 <button
                   type="button"
@@ -490,7 +527,7 @@ export default function SequenceRichEditor({
           )}
         </div>
 
-        <div className={`h-4 w-px mx-0.5 ${themeMode === "dark" ? "bg-zinc-800" : "bg-zinc-300"}`} />
+        <div className={`h-4 w-px mx-0.5 ${currentThemeMode === "dark" ? "bg-zinc-800" : "bg-zinc-300"}`} />
 
         {/* Insert Image */}
         <button
@@ -559,11 +596,11 @@ export default function SequenceRichEditor({
                 <TableDropdownMenu
                   editor={editor}
                   onClose={() => setActiveMenu(null)}
-                  themeMode={themeMode}
+                  themeMode={currentThemeMode}
                 />
               ) : (
                 <div className={`w-[212px] rounded-xl border shadow-xl p-3 flex flex-col items-center select-none ${
-                  themeMode === "dark" ? "border-zinc-800 bg-[#1e1e1e] text-white" : "border-zinc-200 bg-white text-zinc-800"
+                  currentThemeMode === "dark" ? "border-zinc-800 bg-[#1e1e1e] text-white" : "border-zinc-200 bg-white text-zinc-800"
                 }`}>
                   <div
                     className="grid grid-cols-8 gap-1"
@@ -665,7 +702,7 @@ export default function SequenceRichEditor({
           <Minus className="h-3.5 w-3.5" />
         </button>
 
-        <div className={`h-4 w-px mx-0.5 ${themeMode === "dark" ? "bg-zinc-800" : "bg-zinc-300"}`} />
+        <div className={`h-4 w-px mx-0.5 ${currentThemeMode === "dark" ? "bg-zinc-800" : "bg-zinc-300"}`} />
 
         {/* Resource Insertion Dropdown */}
         {hostedResources && hostedResources.length > 0 && (
@@ -683,7 +720,7 @@ export default function SequenceRichEditor({
             </button>
             {showInsertResourceMenu && (
               <div className={`absolute left-0 top-full mt-1 w-64 rounded-xl border p-1.5 shadow-xl z-50 ${
-                themeMode === "dark" ? "border-zinc-800 bg-[#1e1e1e] text-white" : "border-zinc-200 bg-white text-zinc-900"
+                currentThemeMode === "dark" ? "border-zinc-800 bg-[#1e1e1e] text-white" : "border-zinc-200 bg-white text-zinc-900"
               }`}>
                 <div className="px-2 py-1 text-[10px] font-bold text-zinc-400 uppercase tracking-wider">
                   Available Files & Downloads
@@ -771,15 +808,15 @@ export default function SequenceRichEditor({
       </div>
 
       {/* Editor Content Area */}
-      <div ref={editorContainerRef} className="relative p-3 sm:p-4 text-xs sm:text-sm pb-14">
+      <div ref={editorContainerRef} className="rounded-b-[11px] relative p-3 sm:p-4 text-xs sm:text-sm pb-14">
         <EditorContent
           editor={editor}
-          className="prose prose-sm dark:prose-invert max-w-none font-sans focus:outline-none min-h-[200px]"
+          className={`prose prose-sm ${currentThemeMode === "dark" ? "prose-invert text-zinc-100" : "text-zinc-800"} max-w-none font-sans focus:outline-none min-h-[200px]`}
         />
         <TableFloatingControls
           editor={editor}
           containerRef={editorContainerRef}
-          themeMode={themeMode}
+          themeMode={currentThemeMode}
         />
       </div>
     </div>
