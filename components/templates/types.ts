@@ -8,7 +8,7 @@ export interface TemplateProps {
   mode: TemplateMode;
   page?: Partial<MagnetPage>;
   account?: Partial<Account> | null;
-  themeMode?: "light" | "dark";
+  themeMode?: "light" | "dark" | "sync";
   brandColor?: string;
 
   // Editable Content

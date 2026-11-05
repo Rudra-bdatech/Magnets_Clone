@@ -154,6 +154,27 @@ export default function LockedPdfPage() {
   const [hostedResources, setHostedResources] = useState<any[]>([]);
   const [showAssetPickerModal, setShowAssetPickerModal] = useState(false);
   const [assetSearchQuery, setAssetSearchQuery] = useState("");
+  const assetModalRef = useRef<HTMLDivElement>(null);
+  const assetListRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const modalEl = assetModalRef.current;
+    if (!modalEl || !showAssetPickerModal) return;
+
+    const handleWheel = (e: WheelEvent) => {
+      e.stopPropagation();
+      const listEl = assetListRef.current;
+      if (listEl && listEl.scrollHeight > listEl.clientHeight) {
+        e.preventDefault();
+        listEl.scrollTop += e.deltaY;
+      }
+    };
+
+    modalEl.addEventListener("wheel", handleWheel, { passive: false });
+    return () => {
+      modalEl.removeEventListener("wheel", handleWheel);
+    };
+  }, [showAssetPickerModal, assetSearchQuery]);
   const [selectedHostedPdf, setSelectedHostedPdf] = useState<{ url: string; name: string; timestamp?: number } | null>(null);
   const [enableAiPersonalizedDeliverable, setEnableAiPersonalizedDeliverable] = useState(false);
   const [customPromptQuestion, setCustomPromptQuestion] = useState("");
@@ -2250,10 +2271,11 @@ export default function LockedPdfPage() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.22, ease: "easeOut" }}
-              className="fixed inset-0 z-[9999] flex flex-col justify-end sm:justify-center sm:items-center bg-black/60 backdrop-blur-sm p-0 sm:p-4 overflow-hidden overscroll-contain touch-none"
+              className="fixed inset-0 z-[9999] flex flex-col justify-end sm:justify-center sm:items-center bg-black/60 backdrop-blur-sm p-0 sm:p-4 overflow-hidden"
               onClick={() => setShowAssetPickerModal(false)}
             >
               <motion.div
+                ref={assetModalRef}
                 key="dashboard-asset-picker-sheet"
                 initial={{ opacity: 0, y: 120 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -2299,7 +2321,7 @@ export default function LockedPdfPage() {
                 </div>
 
                 {/* Asset List */}
-                <div className="max-h-80 overflow-y-auto space-y-2 pr-1">
+                <div ref={assetListRef} className="max-h-80 overflow-y-auto space-y-2 pr-1">
                   {hostedResources.length === 0 ? (
                     <div className="py-8 text-center space-y-3">
                       <p className="text-xs text-zinc-400 italic">No hosted assets found in your Assets page.</p>

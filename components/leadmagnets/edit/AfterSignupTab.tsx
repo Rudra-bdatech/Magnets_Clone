@@ -3,6 +3,7 @@
 import React from "react";
 import { Check, ExternalLink, FileText, Plus, Trash2, GripVertical } from "lucide-react";
 import { type Account, type QuizQuestion, type QuizOption } from "@/lib/data";
+import { useIsDarkMode } from "@/lib/use-theme-mode";
 
 export interface AfterSignupTabProps {
   account: Account | null;
@@ -51,7 +52,7 @@ export default function AfterSignupTab({
   quizQuestions,
   setQuizQuestions,
 }: AfterSignupTabProps) {
-  const isDark = (account?.themeMode || "light") === "dark";
+  const isDark = useIsDarkMode(account);
 
   // ── Question helpers ───────────────────────────────────────────────────────
 

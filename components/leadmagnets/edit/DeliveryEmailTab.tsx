@@ -35,8 +35,11 @@ import {
   FileText,
   Plus,
   Trash2,
+  Search,
+  X,
 } from "lucide-react";
 import { type Account } from "@/lib/data";
+import { useEffectiveAccount } from "@/lib/use-theme-mode";
 import { TableDropdownMenu, TableFloatingControls } from "@/components/sequences/TableFloatingControls";
 import InsertPhotoModal from "@/components/sequences/InsertPhotoModal";
 
@@ -64,7 +67,7 @@ export interface DeliveryEmailTabProps {
 }
 
 export default function DeliveryEmailTab({
-  account,
+  account: propAccount,
   setShowEmailPreviewModal,
   emailSubject,
   setEmailSubject,
@@ -85,6 +88,7 @@ export default function DeliveryEmailTab({
   isLockedPdf = false,
   lockedPdfResources = [],
 }: DeliveryEmailTabProps) {
+  const account = useEffectiveAccount(propAccount);
   const internalEditor = useEditor({
     immediatelyRender: false,
     editorProps: {
@@ -151,6 +155,28 @@ export default function DeliveryEmailTab({
   const [activeMenu, setActiveMenu] = React.useState<"headings" | "color" | "lists" | "align" | "table" | null>(null);
   const [tableGridHover, setTableGridHover] = React.useState<{ rows: number; cols: number }>({ rows: 1, cols: 1 });
   const [showInsertPhotoModal, setShowInsertPhotoModal] = React.useState(false);
+  const [resourceSearchQuery, setResourceSearchQuery] = React.useState("");
+  const resourceMenuRef = React.useRef<HTMLDivElement>(null);
+  const resourceListRef = React.useRef<HTMLDivElement>(null);
+
+  React.useEffect(() => {
+    const menuEl = resourceMenuRef.current;
+    if (!menuEl || !showInsertResourceMenu) return;
+
+    const handleWheel = (e: WheelEvent) => {
+      e.stopPropagation();
+      const listEl = resourceListRef.current;
+      if (listEl && listEl.scrollHeight > listEl.clientHeight) {
+        e.preventDefault();
+        listEl.scrollTop += e.deltaY;
+      }
+    };
+
+    menuEl.addEventListener("wheel", handleWheel, { passive: false });
+    return () => {
+      menuEl.removeEventListener("wheel", handleWheel);
+    };
+  }, [showInsertResourceMenu, resourceSearchQuery]);
   const toolbarRef = React.useRef<HTMLDivElement>(null);
   const editorContainerRef = React.useRef<HTMLDivElement>(null);
 
@@ -656,30 +682,79 @@ export default function DeliveryEmailTab({
                   <button
                     type="button"
                     onClick={() => setShowInsertResourceMenu((v) => !v)}
-                    className="hover:text-[#38BDF8] text-[#0066B2] dark:text-[#38BDF8] font-semibold transition px-2 py-1 rounded bg-[#EFF6FF] dark:bg-[#0066B2]/20 flex items-center gap-1 cursor-pointer"
+                    className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold transition-all border cursor-pointer border-zinc-200 bg-white hover:bg-zinc-100 text-zinc-700 hover:text-zinc-900 shadow-2xs dark:border-white/10 dark:bg-white/5 dark:text-zinc-200 dark:hover:bg-white/10 dark:hover:text-white"
                   >
-                    <span className="hidden sm:inline">+ Insert Resource</span><span className="sm:hidden">+ Resource</span>
-                    <ChevronDown className="h-3 w-3" />
+                    <Plus className="h-3 w-3 text-[#0066B2] dark:text-sky-400" />
+                    <span className="hidden sm:inline">Insert Resource</span><span className="sm:hidden">Resource</span>
+                    <ChevronDown className="h-3 w-3 text-zinc-400" />
                   </button>
 
                   {showInsertResourceMenu && (
-                    <div className={`absolute right-0 top-full mt-1.5 w-[calc(100vw-3.5rem)] max-w-72 sm:w-72 max-h-72 rounded-xl border p-1.5 shadow-xl z-50 flex flex-col overflow-hidden ${(account?.themeMode || "light") === "dark" ? "border-[#27272A] bg-[#1E1E24] text-white" : "border-zinc-200 bg-white text-zinc-800"}`}>
+                    <div ref={resourceMenuRef} className={`absolute right-0 top-full mt-1.5 w-[calc(100vw-3.5rem)] max-w-80 sm:w-80 rounded-xl border p-1.5 shadow-2xl z-50 flex flex-col overflow-hidden ${(account?.themeMode || "light") === "dark" ? "border-[#27272A] bg-[#1E1E24] text-white shadow-black/60" : "border-zinc-200 bg-white text-zinc-800 shadow-xl"}`}>
                       {/* Sticky Header */}
-                      <div className={`px-2 py-1.5 text-[10px] font-bold text-zinc-400 uppercase tracking-wider flex items-center justify-between border-b pb-1.5 mb-1 shrink-0 ${(account?.themeMode || "light") === "dark" ? "border-[#27272A] bg-[#1E1E24]" : "border-zinc-100 bg-white"}`}>
+                      <div className={`px-2 py-1.5 text-[10px] font-bold text-zinc-400 uppercase tracking-wider flex items-center justify-between border-b pb-1.5 shrink-0 ${(account?.themeMode || "light") === "dark" ? "border-white/5" : "border-zinc-100"}`}>
                         <span>{isLockedPdf ? "SELECT LOCKED PDF" : "SELECT HOSTED RESOURCE"}</span>
-                        {isLockedPdf && <Lock className="h-3 w-3 text-[#0066B2] dark:text-[#38BDF8]" />}
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-zinc-500/10 text-zinc-400">
+                            {((isLockedPdf ? lockedPdfResources : hostedResources) || []).length}
+                          </span>
+                          {isLockedPdf && <Lock className="h-3 w-3 text-[#0066B2] dark:text-[#38BDF8]" />}
+                        </div>
                       </div>
 
-                      {/* Scrollable Items Container */}
-                      <div className="overflow-y-auto overscroll-contain pr-0.5 space-y-1 max-h-60">
+                      {/* Quick Search Input */}
+                      {((isLockedPdf ? lockedPdfResources : hostedResources) || []).length > 0 && (
+                        <div className="px-1 pt-1.5 pb-1">
+                          <div className={`relative flex items-center rounded-lg border px-2 py-1 text-xs transition ${
+                            (account?.themeMode || "light") === "dark"
+                              ? "border-white/10 bg-zinc-900/80 text-white focus-within:border-[#0066B2]"
+                              : "border-zinc-200 bg-zinc-50 text-zinc-900 focus-within:border-[#0066B2]"
+                          }`}>
+                            <Search className="h-3.5 w-3.5 text-zinc-400 shrink-0 mr-1.5" />
+                            <input
+                              type="text"
+                              value={resourceSearchQuery}
+                              onChange={(e) => setResourceSearchQuery(e.target.value)}
+                              placeholder={isLockedPdf ? "Search PDFs..." : "Search resources..."}
+                              className="w-full bg-transparent text-xs outline-none placeholder:text-zinc-400"
+                              autoFocus
+                            />
+                            {resourceSearchQuery && (
+                              <button
+                                type="button"
+                                onClick={() => setResourceSearchQuery("")}
+                                className="text-zinc-400 hover:text-zinc-200 p-0.5 cursor-pointer"
+                              >
+                                <X className="h-3 w-3" />
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Scrollable Items Container (Max 4-5 items, sleek scrollbar) */}
+                      <div ref={resourceListRef} className="overflow-y-auto overscroll-contain pr-1 space-y-1 max-h-[220px] pb-1 [scrollbar-width:thin] [scrollbar-color:rgba(150,150,150,0.3)_transparent]">
                         {((isLockedPdf ? lockedPdfResources : hostedResources) || []).length === 0 ? (
                           <div className="px-2 py-3 text-xs text-zinc-400 italic text-center">
                             {isLockedPdf
                               ? "No locked PDFs found. Create one in Locked PDFs first!"
                               : "No hosted resources found. Upload one in Hosted resources first!"}
                           </div>
-                        ) : (
-                          ((isLockedPdf ? lockedPdfResources : hostedResources) || []).map((res) => (
+                        ) : (() => {
+                          const raw = (isLockedPdf ? lockedPdfResources : hostedResources) || [];
+                          const filtered = raw.filter((res: any) => {
+                            if (!resourceSearchQuery.trim()) return true;
+                            const q = resourceSearchQuery.toLowerCase().trim();
+                            return (res.name || "").toLowerCase().includes(q) || (res.url || "").toLowerCase().includes(q);
+                          });
+                          if (filtered.length === 0) {
+                            return (
+                              <div className="px-2 py-4 text-xs text-zinc-400 italic text-center">
+                                No matching resources found.
+                              </div>
+                            );
+                          }
+                          return filtered.map((res: any) => (
                             <button
                               key={res.id}
                               type="button"
@@ -690,21 +765,24 @@ export default function DeliveryEmailTab({
                                   setEmailBody((prev) => prev + `\n${res.url}\n`);
                                 }
                                 setShowInsertResourceMenu(false);
+                                setResourceSearchQuery("");
                               }}
-                              className="w-full text-left px-2.5 py-2 rounded-lg hover:bg-[#0066B2]/20 hover:text-[#38BDF8] text-xs transition flex items-start gap-2.5 cursor-pointer group"
+                              className="w-full text-left px-2.5 py-2 rounded-lg transition-colors flex items-start gap-2.5 cursor-pointer group hover:bg-zinc-100 dark:hover:bg-white/10"
                             >
-                              {isLockedPdf ? (
-                                <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-[#0066B2]/10 text-[#0066B2] dark:text-[#38BDF8] group-hover:bg-[#0066B2] group-hover:text-white transition mt-0.5">
-                                  <Lock className="h-3 w-3" />
-                                </div>
-                              ) : null}
+                              <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-zinc-200 dark:border-white/10 bg-zinc-50 dark:bg-white/5 text-zinc-500 dark:text-zinc-400 group-hover:border-[#0066B2]/30 group-hover:text-[#0066B2] dark:group-hover:text-sky-400 transition-colors mt-0.5">
+                                {isLockedPdf ? <Lock className="h-3.5 w-3.5" /> : <FileText className="h-3.5 w-3.5" />}
+                              </div>
                               <div className="flex flex-col gap-0.5 min-w-0 flex-1">
-                                <span className="font-semibold truncate">{res.name}</span>
-                                <span className="text-[10px] text-zinc-400 font-mono truncate">{res.url}</span>
+                                <span className="font-semibold text-xs text-zinc-800 dark:text-zinc-200 group-hover:text-[#0066B2] dark:group-hover:text-sky-300 transition-colors truncate">
+                                  {res.name}
+                                </span>
+                                <span className="text-[10px] text-zinc-400 dark:text-zinc-500 font-mono truncate">
+                                  {res.url}
+                                </span>
                               </div>
                             </button>
-                          ))
-                        )}
+                          ));
+                        })()}
                       </div>
                     </div>
                   )}

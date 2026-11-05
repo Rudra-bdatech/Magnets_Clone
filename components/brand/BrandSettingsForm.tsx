@@ -1,7 +1,7 @@
 "use client";
 
 import React, { memo } from "react";
-import { Palette, Check, Upload, Sun, Moon, Trash2, Loader2 } from "lucide-react";
+import { Palette, Check, Upload, Sun, Moon, Trash2, Loader2, Sparkles } from "lucide-react";
 import { InfoTooltip } from "@/components/ui/info-tooltip";
 
 interface BrandSettingsFormProps {
@@ -15,8 +15,8 @@ interface BrandSettingsFormProps {
   brandColor: string;
   setBrandColor: (val: string) => void;
   presetColors: { name: string; hex: string }[];
-  themeMode: "light" | "dark";
-  setThemeMode: (val: "light" | "dark") => void;
+  themeMode: "light" | "dark" | "sync";
+  setThemeMode: (val: "light" | "dark" | "sync") => void;
   highlightIntensity: number;
   setHighlightIntensity: (val: number) => void;
   hasUnsavedChanges: boolean;
@@ -208,32 +208,51 @@ function BrandSettingsForm({
               size="sm"
             />
           </div>
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-3 gap-1.5 sm:gap-2">
             <button
               type="button"
               onClick={() => setThemeMode("light")}
-              className={`flex items-center justify-center gap-1.5 rounded-md border py-2.5 text-xs font-semibold transition touch-manipulation cursor-pointer ${
+              className={`flex items-center justify-center gap-1.5 rounded-lg border py-2 px-1 text-xs font-semibold transition touch-manipulation cursor-pointer ${
                 themeMode === "light"
-                  ? "border-[#0066B2] bg-[#EFF6FF] dark:bg-[#0066B2]/20 text-zinc-900 dark:text-white font-bold shadow-xs"
+                  ? "border-[#0066B2] bg-[#EFF6FF] dark:bg-[#0066B2]/20 text-[#0066B2] dark:text-sky-300 font-bold shadow-xs ring-1 ring-[#0066B2]"
                   : "border-[#E2E8F0] bg-white dark:border-white/10 dark:bg-[#121212] text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-white/10 hover:text-zinc-900 dark:hover:text-white"
               }`}
             >
-              <Sun className="h-3.5 w-3.5" />
-              Light
+              <Sun className="h-3.5 w-3.5 shrink-0" />
+              <span>Light</span>
             </button>
             <button
               type="button"
               onClick={() => setThemeMode("dark")}
-              className={`flex items-center justify-center gap-1.5 rounded-md border py-2.5 text-xs font-semibold transition touch-manipulation cursor-pointer ${
+              className={`flex items-center justify-center gap-1.5 rounded-lg border py-2 px-1 text-xs font-semibold transition touch-manipulation cursor-pointer ${
                 themeMode === "dark"
-                  ? "border-[#0066B2] bg-zinc-900 text-white font-bold shadow-xs"
+                  ? "border-[#0066B2] bg-zinc-900 text-white font-bold shadow-xs ring-1 ring-[#0066B2]"
                   : "border-[#E2E8F0] bg-white dark:border-white/10 dark:bg-[#121212] text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-white/10 hover:text-zinc-900 dark:hover:text-white"
               }`}
             >
-              <Moon className="h-3.5 w-3.5" />
-              Dark
+              <Moon className="h-3.5 w-3.5 shrink-0" />
+              <span>Dark</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setThemeMode("sync")}
+              className={`flex items-center justify-center gap-1.5 rounded-lg border py-2 px-1 text-xs font-semibold transition touch-manipulation cursor-pointer ${
+                themeMode === "sync"
+                  ? "border-[#0066B2] bg-[#EFF6FF] dark:bg-[#0066B2]/20 text-[#0066B2] dark:text-sky-300 font-bold shadow-xs ring-1 ring-[#0066B2]"
+                  : "border-[#E2E8F0] bg-white dark:border-white/10 dark:bg-[#121212] text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-white/10 hover:text-zinc-900 dark:hover:text-white"
+              }`}
+            >
+              <Sparkles className="h-3.5 w-3.5 shrink-0 text-[#0066B2] dark:text-sky-400" />
+              <span className="truncate">Sync theme</span>
             </button>
           </div>
+          <p className="text-[11px] text-zinc-500 dark:text-zinc-400 mt-1.5 leading-snug">
+            {themeMode === "sync"
+              ? "Default: Landing page automatically matches your website theme."
+              : themeMode === "dark"
+              ? "Landing page is permanently locked to dark mode."
+              : "Landing page is permanently locked to light mode."}
+          </p>
         </div>
 
         {/* Highlight Intensity */}

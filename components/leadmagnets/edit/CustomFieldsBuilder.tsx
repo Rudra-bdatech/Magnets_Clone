@@ -3,6 +3,7 @@
 import React from "react";
 import { Sparkles, Plus, Minus } from "lucide-react";
 import { type Account, type CustomFormField } from "@/lib/data";
+import { useIsDarkMode } from "@/lib/use-theme-mode";
 
 export interface CustomFieldsBuilderProps {
   account: Account | null;
@@ -15,7 +16,7 @@ export default function CustomFieldsBuilder({
   customFormFields,
   setCustomFormFields,
 }: CustomFieldsBuilderProps) {
-  const isDark = (account?.themeMode || "light") === "dark";
+  const isDark = useIsDarkMode(account);
 
   const fieldsList = customFormFields || [];
 

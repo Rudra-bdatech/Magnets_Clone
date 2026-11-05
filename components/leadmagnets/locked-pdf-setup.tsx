@@ -199,6 +199,27 @@ export default function LockedPdfSetup({
   const [showInternalAssetModal, setShowInternalAssetModal] = useState(false);
   const [showRemoveModal, setShowRemoveModal] = useState(false);
   const [internalAssetSearch, setInternalAssetSearch] = useState("");
+  const assetModalRef = useRef<HTMLDivElement>(null);
+  const assetListRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const modalEl = assetModalRef.current;
+    if (!modalEl || !showInternalAssetModal) return;
+
+    const handleWheel = (e: WheelEvent) => {
+      e.stopPropagation();
+      const listEl = assetListRef.current;
+      if (listEl && listEl.scrollHeight > listEl.clientHeight) {
+        e.preventDefault();
+        listEl.scrollTop += e.deltaY;
+      }
+    };
+
+    modalEl.addEventListener("wheel", handleWheel, { passive: false });
+    return () => {
+      modalEl.removeEventListener("wheel", handleWheel);
+    };
+  }, [showInternalAssetModal, internalAssetSearch]);
   const [availableAssets, setAvailableAssets] = useState<any[]>([]);
   const [mounted, setMounted] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -901,10 +922,11 @@ export default function LockedPdfSetup({
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.22, ease: "easeOut" }}
-              className="fixed inset-0 z-[9999] flex flex-col justify-end sm:justify-center sm:items-center bg-black/60 backdrop-blur-sm p-0 sm:p-4 overflow-hidden overscroll-contain touch-none"
+              className="fixed inset-0 z-[9999] flex flex-col justify-end sm:justify-center sm:items-center bg-black/60 backdrop-blur-sm p-0 sm:p-4 overflow-hidden"
               onClick={() => setShowInternalAssetModal(false)}
             >
               <motion.div
+                ref={assetModalRef}
                 key="asset-picker-sheet"
                 initial={{ opacity: 0, y: 120 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -950,7 +972,7 @@ export default function LockedPdfSetup({
                 </div>
 
                 {/* Asset List */}
-                <div className="max-h-80 overflow-y-auto space-y-2 pr-1">
+                <div ref={assetListRef} className="max-h-80 overflow-y-auto space-y-2 pr-1">
                   {filteredAssets.length === 0 ? (
                     <div className="py-8 text-center space-y-3">
                       <p className="text-xs text-zinc-400 italic">

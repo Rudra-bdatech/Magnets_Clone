@@ -35,6 +35,9 @@ import {
   Paperclip,
   List,
   Quote,
+  Search,
+  X,
+  FileText,
 } from "lucide-react";
 import { loadResources } from "@/lib/store";
 
@@ -58,6 +61,28 @@ export default function SequenceRichEditor({
   const [activeMenu, setActiveMenu] = useState<"headings" | "color" | "lists" | "align" | "table" | null>(null);
   const [tableGridHover, setTableGridHover] = useState<{ rows: number; cols: number }>({ rows: 1, cols: 1 });
   const [showInsertResourceMenu, setShowInsertResourceMenu] = useState(false);
+  const [resourceSearchQuery, setResourceSearchQuery] = useState("");
+  const resourceMenuRef = useRef<HTMLDivElement>(null);
+  const resourceListRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const menuEl = resourceMenuRef.current;
+    if (!menuEl || !showInsertResourceMenu) return;
+
+    const handleWheel = (e: WheelEvent) => {
+      e.stopPropagation();
+      const listEl = resourceListRef.current;
+      if (listEl && listEl.scrollHeight > listEl.clientHeight) {
+        e.preventDefault();
+        listEl.scrollTop += e.deltaY;
+      }
+    };
+
+    menuEl.addEventListener("wheel", handleWheel, { passive: false });
+    return () => {
+      menuEl.removeEventListener("wheel", handleWheel);
+    };
+  }, [showInsertResourceMenu, resourceSearchQuery]);
   const [showInsertPhotoModal, setShowInsertPhotoModal] = useState(false);
   const [hostedResources, setHostedResources] = useState<any[]>([]);
   const toolbarRef = useRef<HTMLDivElement>(null);
@@ -684,43 +709,105 @@ export default function SequenceRichEditor({
               disabled={disabled}
               onClick={() => setShowInsertResourceMenu(!showInsertResourceMenu)}
               title="Insert Download Link to Hosted File"
-              className="flex items-center gap-1 rounded bg-[#0066B2]/10 dark:bg-[#0066B2]/20 px-2 py-1 text-xs font-bold text-[#0066B2] dark:text-[#38BDF8] hover:bg-[#0066B2]/20 transition cursor-pointer disabled:opacity-50"
+              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold transition-all border cursor-pointer border-zinc-200 bg-white hover:bg-zinc-100 text-zinc-700 hover:text-zinc-900 shadow-2xs dark:border-white/10 dark:bg-white/5 dark:text-zinc-200 dark:hover:bg-white/10 dark:hover:text-white disabled:opacity-50"
             >
-              <Paperclip className="h-3 w-3" />
-              <span>+ Insert Resource</span>
-              <ChevronDown className="h-3 w-3" />
+              <FileText className="h-3.5 w-3.5 text-[#0066B2] dark:text-sky-400" />
+              <span>Insert Resource</span>
+              <ChevronDown className="h-3 w-3 text-zinc-400" />
             </button>
             {showInsertResourceMenu && (
-              <div className={`absolute left-0 top-full mt-1 w-64 rounded-xl border p-1.5 shadow-xl z-50 ${currentThemeMode === "dark" ? "border-zinc-800 bg-[#1e1e1e] text-white" : "border-zinc-200 bg-white text-zinc-900"
+              <div ref={resourceMenuRef} className={`absolute left-0 top-full mt-1.5 w-72 sm:w-80 rounded-xl border p-1.5 shadow-2xl z-50 flex flex-col overflow-hidden ${currentThemeMode === "dark" ? "border-[#27272A] bg-[#1E1E24] text-white shadow-black/60" : "border-zinc-200 bg-white text-zinc-800 shadow-xl"
                 }`}>
-                <div className="px-2 py-1 text-[10px] font-bold text-zinc-400 uppercase tracking-wider">
-                  Available Files & Downloads
+                <div className={`px-2 py-1.5 text-[10px] font-bold text-zinc-400 uppercase tracking-wider flex items-center justify-between border-b pb-1.5 shrink-0 ${currentThemeMode === "dark" ? "border-white/5" : "border-zinc-100"}`}>
+                  <span>AVAILABLE DOWNLOADS</span>
+                  <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-zinc-500/10 text-zinc-400">
+                    {(hostedResources || []).length}
+                  </span>
                 </div>
-                <div className="max-h-48 overflow-y-auto space-y-0.5">
-                  {hostedResources.map((res) => (
-                    <button
-                      key={res.id}
-                      type="button"
-                      onClick={() => {
-                        const fileUrl = res.url || res.downloadUrl || res.path || "";
-                        const fileName = res.name || res.title || "Download Resource";
-                        if (editor && fileUrl) {
-                          editor
-                            .chain()
-                            .focus()
-                            .insertContent(
-                              `<p><a href="${fileUrl}" target="_blank" rel="noopener noreferrer" style="display:inline-block;padding:8px 16px;background-color:#0066B2;color:#ffffff;text-decoration:none;border-radius:6px;font-weight:bold;">📥 Download ${fileName}</a></p>`
-                            )
-                            .run();
-                        }
-                        setShowInsertResourceMenu(false);
-                      }}
-                      className="w-full text-left px-2.5 py-1.5 text-xs rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition truncate flex items-center justify-between"
-                    >
-                      <span className="truncate">{res.name || res.title || "File"}</span>
-                      <span className="text-[10px] text-zinc-400 uppercase shrink-0 ml-2">Link</span>
-                    </button>
-                  ))}
+
+                {/* Quick Search */}
+                {(hostedResources || []).length > 0 && (
+                  <div className="px-1 pt-1.5 pb-1">
+                    <div className={`relative flex items-center rounded-lg border px-2 py-1 text-xs transition ${
+                      currentThemeMode === "dark"
+                        ? "border-white/10 bg-zinc-900/80 text-white focus-within:border-[#0066B2]"
+                        : "border-zinc-200 bg-zinc-50 text-zinc-900 focus-within:border-[#0066B2]"
+                    }`}>
+                      <Search className="h-3.5 w-3.5 text-zinc-400 shrink-0 mr-1.5" />
+                      <input
+                        type="text"
+                        value={resourceSearchQuery}
+                        onChange={(e) => setResourceSearchQuery(e.target.value)}
+                        placeholder="Search resources..."
+                        className="w-full bg-transparent text-xs outline-none placeholder:text-zinc-400"
+                        autoFocus
+                      />
+                      {resourceSearchQuery && (
+                        <button
+                          type="button"
+                          onClick={() => setResourceSearchQuery("")}
+                          className="text-zinc-400 hover:text-zinc-200 p-0.5 cursor-pointer"
+                        >
+                          <X className="h-3 w-3" />
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Scrollable Items Container (Max 4-5 items, sleek scrollbar) */}
+                <div ref={resourceListRef} className="overflow-y-auto overscroll-contain pr-1 space-y-1 max-h-[220px] pb-1 [scrollbar-width:thin] [scrollbar-color:rgba(150,150,150,0.3)_transparent]">
+                  {(() => {
+                    const raw = hostedResources || [];
+                    const filtered = raw.filter((res: any) => {
+                      if (!resourceSearchQuery.trim()) return true;
+                      const q = resourceSearchQuery.toLowerCase().trim();
+                      const name = res.name || res.title || "";
+                      const url = res.url || res.downloadUrl || res.path || "";
+                      return name.toLowerCase().includes(q) || url.toLowerCase().includes(q);
+                    });
+                    if (filtered.length === 0) {
+                      return (
+                        <div className="px-2 py-4 text-xs text-zinc-400 italic text-center">
+                          No matching resources found.
+                        </div>
+                      );
+                    }
+                    return filtered.map((res: any) => (
+                      <button
+                        key={res.id}
+                        type="button"
+                        onClick={() => {
+                          const fileUrl = res.url || res.downloadUrl || res.path || "";
+                          const fileName = res.name || res.title || "Download Resource";
+                          if (editor && fileUrl) {
+                            editor
+                              .chain()
+                              .focus()
+                              .insertContent(
+                                `<p><a href="${fileUrl}" target="_blank" rel="noopener noreferrer">${fileName}</a></p>`
+                              )
+                              .run();
+                          }
+                          setShowInsertResourceMenu(false);
+                          setResourceSearchQuery("");
+                        }}
+                        className="w-full text-left px-2.5 py-2 rounded-lg transition-colors flex items-start gap-2.5 cursor-pointer group hover:bg-zinc-100 dark:hover:bg-white/10"
+                      >
+                        <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-zinc-200 dark:border-white/10 bg-zinc-50 dark:bg-white/5 text-zinc-500 dark:text-zinc-400 group-hover:border-[#0066B2]/30 group-hover:text-[#0066B2] dark:group-hover:text-sky-400 transition-colors mt-0.5">
+                          <FileText className="h-3.5 w-3.5" />
+                        </div>
+                        <div className="flex flex-col gap-0.5 min-w-0 flex-1">
+                          <span className="font-semibold text-xs text-zinc-800 dark:text-zinc-200 group-hover:text-[#0066B2] dark:group-hover:text-sky-300 transition-colors truncate">
+                            {res.name || res.title || "File"}
+                          </span>
+                          <span className="text-[10px] text-zinc-400 dark:text-zinc-500 font-mono truncate">
+                            {res.url || res.downloadUrl || res.path || ""}
+                          </span>
+                        </div>
+                      </button>
+                    ));
+                  })()}
                 </div>
               </div>
             )}

@@ -155,7 +155,7 @@ export interface Account {
   termsOfService?: string;
   isNewAccount?: boolean;
   hasPassword?: boolean;
-  themeMode?: "light" | "dark";
+  themeMode?: "light" | "dark" | "sync";
   highlightIntensity?: number;
   templateId?: "template1" | "template2" | "template3" | "template4" | "template5" | "template6" | "template7" | string;
   slackWebhookUrl?: string;

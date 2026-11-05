@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useMemo } from "react";
 import {
   BarChart2,
   Image as ImageIcon,
@@ -9,6 +9,7 @@ import {
   Trash2,
 } from "lucide-react";
 import { type MagnetPage, type Account, type CustomFormField } from "@/lib/data";
+import { useIsDarkMode } from "@/lib/use-theme-mode";
 import { savePages, loadPages } from "@/lib/store";
 import TemplateRenderer from "@/components/templates/TemplateRenderer";
 import CustomFieldsBuilder from "@/components/leadmagnets/edit/CustomFieldsBuilder";
@@ -79,7 +80,7 @@ export interface LandingPageTabProps {
 }
 
 export default function LandingPageTab({
-  account,
+  account: propAccount,
   page,
   templateId,
   setTemplateId,
@@ -140,6 +141,18 @@ export default function LandingPageTab({
   uploadingVariantB,
   uploadProgressVariantB,
 }: LandingPageTabProps) {
+  const isWebsiteDark = useIsDarkMode(propAccount);
+  const rawThemeMode = (propAccount?.themeMode as "light" | "dark" | "sync") || "sync";
+  const resolvedTemplateTheme: "light" | "dark" =
+    rawThemeMode === "sync" ? (isWebsiteDark ? "dark" : "light") : rawThemeMode;
+  const isEditorDark = isWebsiteDark;
+
+  const account = useMemo(() => {
+    return {
+      ...(propAccount || {}),
+      themeMode: resolvedTemplateTheme,
+    } as Account;
+  }, [propAccount, resolvedTemplateTheme]);
   if (!page) return null;
 
   if (templateId === "locked-pdf" || page?.template === "locked-pdf") {
@@ -208,22 +221,22 @@ export default function LandingPageTab({
           }`}
           style={{
             backgroundColor: templateId === "template8"
-              ? ((account?.themeMode || "light") === "dark" ? "#0d0e12" : "#eee9df")
+              ? (resolvedTemplateTheme === "dark" ? "#0d0e12" : "#eee9df")
               : templateId === "template7"
-              ? ((account?.themeMode || "light") === "dark" ? "#0d0d0f" : "#f4ff3c")
+              ? (resolvedTemplateTheme === "dark" ? "#0d0d0f" : "#f4ff3c")
               : templateId === "template3"
-              ? ((account?.themeMode || "light") === "dark" ? "#0c120a" : "#f4f6f0")
+              ? (resolvedTemplateTheme === "dark" ? "#0c120a" : "#f4f6f0")
               : templateId === "template2"
-              ? ((account?.themeMode || "light") === "dark" ? "#141416" : "#f3f0e8")
+              ? (resolvedTemplateTheme === "dark" ? "#141416" : "#f3f0e8")
               : templateId === "template1"
-              ? ((account?.themeMode || "light") === "dark" ? "#0c0d11" : "#f8f9fa")
-              : ((account?.themeMode || "light") === "dark" ? "#0E0E10" : "#FAFAFA"),
-            color: (account?.themeMode || "light") === "dark" ? "#ffffff" : "#18181b",
+              ? (resolvedTemplateTheme === "dark" ? "#0c0d11" : "#f8f9fa")
+              : (resolvedTemplateTheme === "dark" ? "#0E0E10" : "#FAFAFA"),
+            color: resolvedTemplateTheme === "dark" ? "#ffffff" : "#18181b",
             backgroundImage: (templateId === "template1" || templateId === "template2" || templateId === "template3" || templateId === "template7" || templateId === "template8")
               ? (templateId === "template1"
                 ? `radial-gradient(620px 380px at 18% 0%, ${(account?.brandColor || "#fb4d6a")}1c, transparent 70%), radial-gradient(520px 320px at 88% 96%, ${(account?.brandColor || "#fb4d6a")}10, transparent 70%)`
                 : "none")
-              : ((account?.themeMode || "light") === "light"
+              : (resolvedTemplateTheme === "light"
                 ? `radial-gradient(circle at 0% 0%, ${account?.brandColor || "#0066B2"}10 0%, transparent 40%), radial-gradient(circle at 100% 100%, ${account?.brandColor || "#0066B2"}08 0%, transparent 40%)`
                 : `radial-gradient(circle at 0% 0%, ${account?.brandColor || "#0066B2"}25 0%, transparent 50%), radial-gradient(circle at 100% 100%, ${account?.brandColor || "#0066B2"}15 0%, transparent 50%)`)
           }}
@@ -239,7 +252,7 @@ export default function LandingPageTab({
                     <div className="h-4 w-4 rounded-md border-2 border-dashed border-[#a1a1aa]" />
                   )}
                 </div>
-                <span className={`text-base sm:text-lg font-black tracking-wider uppercase ${(account?.themeMode || "light") === "dark" ? "text-white" : "text-zinc-900"}`}>
+                <span className={`text-base sm:text-lg font-black tracking-wider uppercase ${resolvedTemplateTheme === "dark" ? "text-white" : "text-zinc-900"}`}>
                   {account?.brandName || account?.name || "BDA"}
                 </span>
               </div>
@@ -261,6 +274,7 @@ export default function LandingPageTab({
             mode="editor"
             page={page}
             account={account}
+            themeMode={resolvedTemplateTheme}
             headline={headline}
             subheadline={subheadline}
             pitch={pitch}
@@ -316,20 +330,20 @@ export default function LandingPageTab({
         </div>
 
         {/* A/B Testing Section */}
-        <div className={`space-y-4 transition-colors duration-200 ${(account?.themeMode || "light") === "dark" ? "text-zinc-100" : "text-zinc-900"}`}>
+        <div className={`space-y-4 transition-colors duration-200 ${isEditorDark ? "text-zinc-100" : "text-zinc-900"}`}>
           {/* Top Header Bar */}
-          <div className={`border-t border-b py-4 my-4 ${(account?.themeMode || "light") === "dark" ? "border-white/10" : "border-zinc-200"}`}>
+          <div className={`border-t border-b py-4 my-4 ${isEditorDark ? "border-white/10" : "border-zinc-200"}`}>
             <div className="flex flex-wrap items-center justify-between gap-4 px-1">
               <div>
                 <div className="flex items-center gap-2.5">
-                  <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${(account?.themeMode || "light") === "dark" ? "bg-white/5 text-zinc-400" : "bg-zinc-100 text-zinc-600"}`}>
+                  <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${isEditorDark ? "bg-white/5 text-zinc-400" : "bg-zinc-100 text-zinc-600"}`}>
                     <BarChart2 className="h-4 w-4" />
                   </div>
-                  <h4 className={`text-sm sm:text-base font-bold ${(account?.themeMode || "light") === "dark" ? "text-white" : "text-zinc-900"}`}>
+                  <h4 className={`text-sm sm:text-base font-bold ${isEditorDark ? "text-white" : "text-zinc-900"}`}>
                     Test title and image
                   </h4>
                 </div>
-                <p className={`text-xs mt-2 ${(account?.themeMode || "light") === "dark" ? "text-zinc-400" : "text-zinc-500"}`}>
+                <p className={`text-xs mt-2 ${isEditorDark ? "text-zinc-400" : "text-zinc-500"}`}>
                   Funnels splits new visitors evenly and keeps each person on the same version for an accurate result.
                 </p>
               </div>
@@ -340,7 +354,7 @@ export default function LandingPageTab({
                   setTestStarted(nextVal);
                   update({ testStarted: nextVal });
                 }}
-                className={`flex items-center gap-2 rounded-xl border px-3.5 py-1.5 text-xs font-semibold transition cursor-pointer shadow-2xs ${(account?.themeMode || "light") === "dark" ? "border-white/10 bg-white/5 text-zinc-300 hover:bg-white/10" : "border-zinc-200 bg-white text-zinc-700 hover:bg-zinc-50"}`}
+                className={`flex items-center gap-2 rounded-xl border px-3.5 py-1.5 text-xs font-semibold transition cursor-pointer shadow-2xs ${isEditorDark ? "border-white/10 bg-white/5 text-zinc-300 hover:bg-white/10" : "border-zinc-200 bg-white text-zinc-700 hover:bg-zinc-50"}`}
               >
                 <span className={`h-2 w-2 rounded-full ${testStarted ? "bg-emerald-500" : "bg-zinc-400"}`} />
                 <span>{testStarted ? "Pause test" : "Start test"}</span>
@@ -351,11 +365,11 @@ export default function LandingPageTab({
           {/* A/B Versions Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Control Variant Card */}
-            <div className={`rounded-2xl border overflow-hidden shadow-xs transition-colors duration-200 ${(account?.themeMode || "light") === "dark" ? "border-white/10 bg-[#171717]" : "border-zinc-200 bg-white"}`}>
+            <div className={`rounded-2xl border overflow-hidden shadow-xs transition-colors duration-200 ${isEditorDark ? "border-white/10 bg-[#171717]" : "border-zinc-200 bg-white"}`}>
               {/* Top Media Area */}
-              <div className={`relative h-64 sm:h-72 w-full flex flex-col items-center justify-center border-b ${(account?.themeMode || "light") === "dark" ? "bg-[#121212] border-white/[0.08]" : "bg-zinc-50 border-zinc-100"}`}>
+              <div className={`relative h-64 sm:h-72 w-full flex flex-col items-center justify-center border-b ${isEditorDark ? "bg-[#121212] border-white/[0.08]" : "bg-zinc-50 border-zinc-100"}`}>
                 <div className="absolute top-4 left-4 z-10">
-                  <span className={`inline-flex items-center rounded-full px-3.5 py-1 text-[11px] font-extrabold uppercase tracking-wider ${(account?.themeMode || "light") === "dark" ? "bg-white text-black" : "bg-black text-white"}`}>
+                  <span className={`inline-flex items-center rounded-full px-3.5 py-1 text-[11px] font-extrabold uppercase tracking-wider ${isEditorDark ? "bg-white text-black" : "bg-black text-white"}`}>
                     {hasVariantB ? "CONTROL · 50%" : "CONTROL · 100%"}
                   </span>
                 </div>
@@ -375,24 +389,24 @@ export default function LandingPageTab({
               </div>
 
               {/* Bottom Section */}
-              <div className={`p-5 space-y-3 ${(account?.themeMode || "light") === "dark" ? "bg-[#171717]" : "bg-white"}`}>
+              <div className={`p-5 space-y-3 ${isEditorDark ? "bg-[#171717]" : "bg-white"}`}>
                 <div>
                   <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 block mb-1">
                     CURRENT PAGE
                   </span>
-                  <h5 className={`text-sm font-black ${(account?.themeMode || "light") === "dark" ? "text-white" : "text-zinc-900"}`}>
+                  <h5 className={`text-sm font-black ${isEditorDark ? "text-white" : "text-zinc-900"}`}>
                     {headline || page.name || "BDA"}
                   </h5>
                 </div>
 
-                <div className={`h-px w-full ${(account?.themeMode || "light") === "dark" ? "bg-white/10" : "bg-zinc-100"}`} />
+                <div className={`h-px w-full ${isEditorDark ? "bg-white/10" : "bg-zinc-100"}`} />
 
                 {testStarted ? (
                   <div className="flex items-center justify-between text-xs pt-0.5 font-medium">
                     <span className="text-emerald-500 font-bold flex items-center gap-1">
                       <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" /> Live Tracking
                     </span>
-                    <span className={`font-semibold ${(account?.themeMode || "light") === "dark" ? "text-zinc-300" : "text-zinc-600"}`}>
+                    <span className={`font-semibold ${isEditorDark ? "text-zinc-300" : "text-zinc-600"}`}>
                       {page?.variantAViews || 0} views · {page?.variantASignups || 0} signups
                     </span>
                   </div>
@@ -406,11 +420,11 @@ export default function LandingPageTab({
 
             {/* Variant B Card if created */}
             {hasVariantB && (
-              <div className={`group animate-card-pop-in rounded-2xl border overflow-hidden shadow-xs transition-all duration-300 ${(account?.themeMode || "light") === "dark" ? "border-white/10 bg-[#171717] hover:border-white/20" : "border-zinc-200 bg-white hover:border-zinc-300"}`}>
+              <div className={`group animate-card-pop-in rounded-2xl border overflow-hidden shadow-xs transition-all duration-300 ${isEditorDark ? "border-white/10 bg-[#171717] hover:border-white/20" : "border-zinc-200 bg-white hover:border-zinc-300"}`}>
                 {/* Top Media Area */}
-                <div className={`relative h-64 sm:h-72 w-full flex flex-col items-center justify-center border-b overflow-hidden ${(account?.themeMode || "light") === "dark" ? "bg-[#121212] border-white/[0.08]" : "bg-zinc-50 border-zinc-100"}`}>
+                <div className={`relative h-64 sm:h-72 w-full flex flex-col items-center justify-center border-b overflow-hidden ${isEditorDark ? "bg-[#121212] border-white/[0.08]" : "bg-zinc-50 border-zinc-100"}`}>
                   <div className="absolute top-4 left-4 z-10">
-                    <span className={`inline-flex items-center rounded-full px-3.5 py-1 text-[11px] font-extrabold uppercase tracking-wider ${(account?.themeMode || "light") === "dark" ? "bg-white/10 text-zinc-200" : "bg-zinc-200 text-zinc-800"}`}>
+                    <span className={`inline-flex items-center rounded-full px-3.5 py-1 text-[11px] font-extrabold uppercase tracking-wider ${isEditorDark ? "bg-white/10 text-zinc-200" : "bg-zinc-200 text-zinc-800"}`}>
                       VERSION B · 50%
                     </span>
                   </div>
@@ -466,7 +480,7 @@ export default function LandingPageTab({
                         e.stopPropagation();
                         variantBFileInputRef.current?.click();
                       }}
-                      className={`flex items-center gap-1.5 rounded-xl px-3.5 py-2 text-xs font-bold shadow-md border transition cursor-pointer pointer-events-auto active:scale-95 disabled:opacity-75 ${(account?.themeMode || "light") === "dark" ? "bg-white/5 hover:bg-white/10 text-zinc-200 border-white/10" : "bg-white hover:bg-zinc-50 text-zinc-800 border-zinc-200"}`}
+                      className={`flex items-center gap-1.5 rounded-xl px-3.5 py-2 text-xs font-bold shadow-md border transition cursor-pointer pointer-events-auto active:scale-95 disabled:opacity-75 ${isEditorDark ? "bg-white/5 hover:bg-white/10 text-zinc-200 border-white/10" : "bg-white hover:bg-zinc-50 text-zinc-800 border-zinc-200"}`}
                     >
                       {uploadingVariantB ? (
                         <Loader2 className="h-4 w-4 animate-spin text-sky-400" />
@@ -484,7 +498,7 @@ export default function LandingPageTab({
                         setVariantBImage(null);
                         setVariantBTitle("");
                       }}
-                      className={`flex items-center gap-1.5 rounded-xl px-3.5 py-2 text-xs font-bold text-red-500 shadow-md border transition cursor-pointer pointer-events-auto active:scale-95 disabled:opacity-50 ${(account?.themeMode || "light") === "dark" ? "bg-white/5 hover:bg-red-950/40 border-white/10" : "bg-white hover:bg-red-50 border-zinc-200"}`}
+                      className={`flex items-center gap-1.5 rounded-xl px-3.5 py-2 text-xs font-bold text-red-500 shadow-md border transition cursor-pointer pointer-events-auto active:scale-95 disabled:opacity-50 ${isEditorDark ? "bg-white/5 hover:bg-red-950/40 border-white/10" : "bg-white hover:bg-red-50 border-zinc-200"}`}
                       title="Remove Version B split test"
                     >
                       <Trash2 className="h-4 w-4 text-red-400" />
@@ -494,7 +508,7 @@ export default function LandingPageTab({
                 </div>
 
                 {/* Bottom Section */}
-                <div className={`p-5 space-y-3 ${(account?.themeMode || "light") === "dark" ? "bg-[#171717]" : "bg-white"}`}>
+                <div className={`p-5 space-y-3 ${isEditorDark ? "bg-[#171717]" : "bg-white"}`}>
                   <div>
                     <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 block mb-1">
                       VERSION TITLE
@@ -510,18 +524,18 @@ export default function LandingPageTab({
                           savePages(loadPages().map((p) => (p.id === next.id ? next : p)));
                         }
                       }}
-                      className={`w-full text-sm font-black outline-none border-b border-transparent focus:border-zinc-400 py-0.5 bg-transparent ${(account?.themeMode || "light") === "dark" ? "text-white" : "text-zinc-900"}`}
+                      className={`w-full text-sm font-black outline-none border-b border-transparent focus:border-zinc-400 py-0.5 bg-transparent ${isEditorDark ? "text-white" : "text-zinc-900"}`}
                     />
                   </div>
 
-                  <div className={`h-px w-full ${(account?.themeMode || "light") === "dark" ? "bg-white/10" : "bg-zinc-100"}`} />
+                  <div className={`h-px w-full ${isEditorDark ? "bg-white/10" : "bg-zinc-100"}`} />
 
                   {testStarted ? (
                     <div className="flex items-center justify-between text-xs pt-0.5 font-medium">
                       <span className="text-emerald-500 font-bold flex items-center gap-1">
                         <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" /> Live Tracking
                       </span>
-                      <span className={`font-semibold ${(account?.themeMode || "light") === "dark" ? "text-zinc-300" : "text-zinc-600"}`}>
+                      <span className={`font-semibold ${isEditorDark ? "text-zinc-300" : "text-zinc-600"}`}>
                         {page?.variantBViews || 0} views · {page?.variantBSignups || 0} signups
                       </span>
                     </div>
@@ -546,7 +560,7 @@ export default function LandingPageTab({
                   savePages(loadPages().map((p) => (p.id === next.id ? next : p)));
                 }
               }}
-              className={`mt-4 flex w-full items-center justify-center gap-1.5 rounded-xl border border-dashed p-3.5 text-xs font-bold transition-all duration-200 active:scale-[0.99] cursor-pointer shadow-2xs ${(account?.themeMode || "light") === "dark" ? "border-white/10 bg-[#171717] hover:bg-white/5 text-zinc-300" : "border-zinc-300 bg-zinc-50 hover:bg-zinc-100 text-zinc-700"}`}
+              className={`mt-4 flex w-full items-center justify-center gap-1.5 rounded-xl border border-dashed p-3.5 text-xs font-bold transition-all duration-200 active:scale-[0.99] cursor-pointer shadow-2xs ${isEditorDark ? "border-white/10 bg-[#171717] hover:bg-white/5 text-zinc-300" : "border-zinc-300 bg-zinc-50 hover:bg-zinc-100 text-zinc-700"}`}
             >
               <Plus className="h-4 w-4 transition-transform duration-200 group-hover:scale-110" />
               <span>Create version B</span>

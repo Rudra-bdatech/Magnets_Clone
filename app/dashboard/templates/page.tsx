@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { Check } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { syncWithDatabase, saveAccount, loadAccount, loadPages } from "@/lib/store";
+import { useIsDarkMode } from "@/lib/use-theme-mode";
 import type { Account, MagnetPage } from "@/lib/data";
 import BrandSettingsForm from "@/components/brand/BrandSettingsForm";
 import BrandTemplatePreview from "@/components/brand/BrandTemplatePreview";
@@ -28,7 +29,10 @@ export default function TemplatesPage() {
   const [loading, setLoading] = useState(true);
   const [businessName, setBusinessName] = useState("");
   const [brandColor, setBrandColor] = useState("#0066B2");
-  const [themeMode, setThemeMode] = useState<"light" | "dark">("light");
+  const [themeMode, setThemeMode] = useState<"light" | "dark" | "sync">("sync");
+  const isWebsiteDark = useIsDarkMode(account);
+  const effectivePreviewTheme: "light" | "dark" =
+    themeMode === "sync" ? (isWebsiteDark ? "dark" : "light") : themeMode;
   const [highlightIntensity, setHighlightIntensity] = useState<number>(100);
   const [templateId, setTemplateId] = useState<string>("template1");
   const [hoveredTemplateTab, setHoveredTemplateTab] = useState<string | null>(null);
@@ -91,7 +95,7 @@ export default function TemplatesPage() {
       setAccount(localAccount);
       setBusinessName(localAccount.brandName || localAccount.name || "");
       setBrandColor(localAccount.brandColor || "#0066B2");
-      setThemeMode(localAccount.themeMode || "light");
+      setThemeMode((localAccount.themeMode as "light" | "dark" | "sync") || "sync");
       setHighlightIntensity(localAccount.highlightIntensity ?? 100);
       setLogo(localAccount.logo || null);
 
@@ -113,7 +117,7 @@ export default function TemplatesPage() {
         setAccount(data.account);
         setBusinessName(data.account.brandName || data.account.name || "");
         setBrandColor(data.account.brandColor || "#0066B2");
-        setThemeMode(data.account.themeMode || "light");
+        setThemeMode((data.account.themeMode as "light" | "dark" | "sync") || "sync");
         setHighlightIntensity(data.account.highlightIntensity ?? 100);
         setLogo(data.account.logo || null);
 
@@ -299,7 +303,7 @@ export default function TemplatesPage() {
     return (
       businessName !== currentBrandName ||
       brandColor !== (account?.brandColor || "#0066B2") ||
-      themeMode !== (account?.themeMode || "light") ||
+      themeMode !== ((account?.themeMode as "light" | "dark" | "sync") || "sync") ||
       highlightIntensity !== (account?.highlightIntensity ?? 100) ||
       templateId !== (account?.templateId || "template1") ||
       logo !== (account?.logo || null)
@@ -462,30 +466,30 @@ export default function TemplatesPage() {
                 <div
                   className={`rounded-2xl border transition-all duration-300 overflow-hidden ${
                     templateId === "template8"
-                      ? (themeMode === "dark"
+                      ? (effectivePreviewTheme === "dark"
                           ? "bg-[#0d0e12] border-[#2e303d] text-white"
                           : "bg-[#eee9df] border-[#141414] text-zinc-900")
                       : templateId === "template3"
-                      ? (themeMode === "dark"
+                      ? (effectivePreviewTheme === "dark"
                           ? "bg-[#0c120a] border-[#242d1e] text-white"
                           : "bg-[#f4f6f0] border-[#d8dfd2] text-zinc-900")
-                      : (themeMode === "dark"
+                      : (effectivePreviewTheme === "dark"
                           ? "bg-[#0E0E10] border-[#2e2e38] text-white"
                           : "bg-[#FAFAFA] border-[#e4e4e7] text-zinc-900")
                   }`}
                   style={{
                     backgroundColor: templateId === "template8"
-                      ? (themeMode === "dark" ? "#0d0e12" : "#eee9df")
+                      ? (effectivePreviewTheme === "dark" ? "#0d0e12" : "#eee9df")
                       : templateId === "template3"
-                      ? (themeMode === "dark" ? "#0c120a" : "#f4f6f0")
+                      ? (effectivePreviewTheme === "dark" ? "#0c120a" : "#f4f6f0")
                       : undefined,
                     backgroundImage: templateId === "template8"
-                      ? (themeMode === "dark"
+                      ? (effectivePreviewTheme === "dark"
                           ? "radial-gradient(rgba(255, 255, 255, 0.15) 1px, transparent 1px)"
                           : "radial-gradient(rgba(20, 20, 20, 0.18) 1px, transparent 1px)")
                       : templateId === "template3"
                       ? "none"
-                      : (themeMode === "light"
+                      : (effectivePreviewTheme === "light"
                           ? `radial-gradient(circle at 0% 0%, ${hexWithAlpha(brandColor, 0.05 + (highlightIntensity / 100) * 0.4)} 0%, transparent 50%), radial-gradient(circle at 100% 100%, ${hexWithAlpha(brandColor, 0.03 + (highlightIntensity / 100) * 0.35)} 0%, transparent 50%)`
                           : `radial-gradient(circle at 0% 0%, ${hexWithAlpha(brandColor, 0.08 + (highlightIntensity / 100) * 0.45)} 0%, transparent 50%), radial-gradient(circle at 100% 100%, ${hexWithAlpha(brandColor, 0.05 + (highlightIntensity / 100) * 0.4)} 0%, transparent 50%)`),
                     backgroundSize: templateId === "template8" ? "18px 18px" : undefined
@@ -503,7 +507,7 @@ export default function TemplatesPage() {
                             <div className="h-5 w-5 rounded-sm border border-dashed border-[#a1a1aa]" />
                           )}
                         </div>
-                        <span className={`text-base font-extrabold tracking-wider uppercase ${themeMode === "dark" ? "text-white" : "text-black"}`}>
+                        <span className={`text-base font-extrabold tracking-wider uppercase ${effectivePreviewTheme === "dark" ? "text-white" : "text-black"}`}>
                           {businessName || "BDA"}
                         </span>
                       </div>
@@ -521,7 +525,7 @@ export default function TemplatesPage() {
                         <BrandTemplatePreview
                           templateId={templateId}
                           latestPage={latestPage}
-                          themeMode={themeMode}
+                          themeMode={effectivePreviewTheme}
                           brandColor={brandColor}
                           highlightIntensity={highlightIntensity}
                           logo={logo}
@@ -532,7 +536,7 @@ export default function TemplatesPage() {
 
                     {/* Footer inside Preview (Hidden for templates with integrated footers) */}
                     {templateId !== "template1" && templateId !== "template2" && templateId !== "template5" && templateId !== "template6" && templateId !== "template7" && templateId !== "template8" && (
-                      <div className={`mt-10 text-center text-[10px] border-t pt-4 transition-all duration-300 ${themeMode === "dark" ? "border-zinc-800 text-zinc-500" : "border-zinc-200 text-zinc-400"
+                      <div className={`mt-10 text-center text-[10px] border-t pt-4 transition-all duration-300 ${effectivePreviewTheme === "dark" ? "border-zinc-800 text-zinc-500" : "border-zinc-200 text-zinc-400"
                         }`}>
                         All rights reserved 2026
                       </div>

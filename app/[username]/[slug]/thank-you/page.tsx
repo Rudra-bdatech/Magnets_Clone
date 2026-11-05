@@ -128,7 +128,8 @@ export default async function ThankYouPage({
     redirect(dest);
   }
 
-  const themeMode = (accountDoc?.themeMode as "light" | "dark") || "light";
+  const rawThemeMode = (accountDoc?.themeMode as "light" | "dark" | "sync") || "sync";
+  const themeMode: "light" | "dark" = rawThemeMode === "sync" ? "light" : rawThemeMode;
   const brandColor = accountDoc?.brandColor || "#0066B2";
   const logo = accountDoc?.logo || null;
   const businessName = accountDoc?.brandName || accountDoc?.name || "Funnels";

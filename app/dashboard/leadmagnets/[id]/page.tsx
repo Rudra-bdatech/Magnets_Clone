@@ -54,6 +54,7 @@ import {
 import { useEffect, useState, useRef, useCallback, useMemo } from "react";
 import { type MagnetPage, type Account } from "@/lib/data";
 import { loadPages, savePages, deletePage, loadAccount, loadResources, syncWithDatabase } from "@/lib/store";
+import { useIsDarkMode, useEffectiveAccount } from "@/lib/use-theme-mode";
 import { getMagnetSortTimestamp } from "@/lib/utils";
 import dynamic from "next/dynamic";
 
@@ -118,6 +119,8 @@ export default function EditLeadMagnetPage() {
     if (typeof window !== "undefined") return loadAccount();
     return null;
   });
+  const isDarkMode = useIsDarkMode(account);
+  const effectiveAccount = useEffectiveAccount(account);
   const [allPages, setAllPages] = useState<MagnetPage[]>(() => {
     if (typeof window !== "undefined") return loadPages();
     return [];
@@ -1524,7 +1527,7 @@ export default function EditLeadMagnetPage() {
         placeholder="Write your email body content here... Use {name} for subscriber name."
         rows={10}
         className={`w-full p-2 bg-transparent outline-none resize-y min-h-[140px] font-sans text-sm leading-relaxed transition ${isDisabled ? "opacity-50 cursor-not-allowed" : ""
-          } ${(account?.themeMode || "light") === "dark" ? "text-zinc-100 placeholder:text-zinc-600" : "text-zinc-800 placeholder:text-zinc-400"}`}
+          } ${isDarkMode ? "text-zinc-100 placeholder:text-zinc-600" : "text-zinc-800 placeholder:text-zinc-400"}`}
       />
     );
   };
@@ -1572,10 +1575,10 @@ export default function EditLeadMagnetPage() {
           </div>
 
           {/* Main Editor Card Frame - Background matches Left Panel in Dark Mode */}
-          <div className={`rounded-2xl border text-zinc-900 dark:text-zinc-100 shadow-2xl overflow-hidden transition-colors duration-200 ${(account?.themeMode || "light") === "dark" ? "border-white/10 bg-[#171717]" : "border-zinc-200 bg-white"}`}>
+          <div className={`rounded-2xl border text-zinc-900 dark:text-zinc-100 shadow-2xl transition-colors duration-200 ${isDarkMode ? "border-white/10 bg-[#171717]" : "border-zinc-200 bg-white"}`}>
 
             {/* Inner Header Bar */}
-            <div className={`border-b px-3.5 py-2.5 sm:py-3 sm:px-6 transition-colors duration-200 ${(account?.themeMode || "light") === "dark" ? "border-white/10 bg-[#171717] text-white" : "border-zinc-200 bg-zinc-50/80 text-zinc-900"}`}>
+            <div className={`rounded-t-2xl border-b px-3.5 py-2.5 sm:py-3 sm:px-6 transition-colors duration-200 ${isDarkMode ? "border-white/10 bg-[#171717] text-white" : "border-zinc-200 bg-zinc-50/80 text-zinc-900"}`}>
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-4">
                 {/* Row 1 (Mobile): Back link & Page Name/Slug + Top-Right Mobile Actions */}
                 <div className="flex items-center justify-between gap-2.5 sm:gap-3 min-w-0 flex-1">
@@ -1583,7 +1586,7 @@ export default function EditLeadMagnetPage() {
                     <Link
                       href={isLockedPdf ? "/dashboard/locked-pdf" : "/dashboard/landing-page"}
                       prefetch={true}
-                      className={`shrink-0 flex items-center gap-1.5 rounded-lg border px-2.5 sm:px-3 py-1.5 text-xs font-bold active:scale-95 transition-all shadow-xs cursor-pointer ${(account?.themeMode || "light") === "dark"
+                      className={`shrink-0 flex items-center gap-1.5 rounded-lg border px-2.5 sm:px-3 py-1.5 text-xs font-bold active:scale-95 transition-all shadow-xs cursor-pointer ${isDarkMode
                         ? "border-white/10 bg-white/5 text-zinc-200 hover:bg-white/10"
                         : "border-zinc-300 bg-white text-zinc-900 hover:bg-zinc-100"
                         }`}
@@ -1593,10 +1596,10 @@ export default function EditLeadMagnetPage() {
                       <span className="sm:hidden">Back</span>
                     </Link>
                     <div className="min-w-0 flex-1 flex flex-col justify-center">
-                      <span className={`text-xs sm:text-sm font-bold leading-tight truncate block ${(account?.themeMode || "light") === "dark" ? "text-white" : "text-zinc-900"}`} title={page?.name || "Document"}>
+                      <span className={`text-xs sm:text-sm font-bold leading-tight truncate block ${isDarkMode ? "text-white" : "text-zinc-900"}`} title={page?.name || "Document"}>
                         {page?.name || "Document"}
                       </span>
-                      <span className={`text-[10px] sm:text-xs leading-none mt-0.5 truncate block font-mono ${(account?.themeMode || "light") === "dark" ? "text-zinc-400" : "text-zinc-500"}`} title={`/${page?.slug || "page"}`}>
+                      <span className={`text-[10px] sm:text-xs leading-none mt-0.5 truncate block font-mono ${isDarkMode ? "text-zinc-400" : "text-zinc-500"}`} title={`/${page?.slug || "page"}`}>
                         /{page?.slug || "page"}
                       </span>
                     </div>
@@ -1623,7 +1626,7 @@ export default function EditLeadMagnetPage() {
                       href={isLockedPdf ? (page ? `/pdf-viewer/${page.id}` : "/dashboard/locked-pdf") : (page ? `/${account?.username || "user"}/${page.slug}` : "/dashboard/landing-page")}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className={`p-1.5 rounded-lg transition cursor-pointer ${(account?.themeMode || "light") === "dark"
+                      className={`p-1.5 rounded-lg transition cursor-pointer ${isDarkMode
                         ? "text-zinc-400 hover:text-white hover:bg-white/10"
                         : "text-zinc-700 hover:text-zinc-900 hover:bg-zinc-200/70"
                         }`}
@@ -1636,7 +1639,7 @@ export default function EditLeadMagnetPage() {
                       <button
                         type="button"
                         onClick={() => setShowMenu(!showMenu)}
-                        className={`p-1.5 rounded-lg transition cursor-pointer ${(account?.themeMode || "light") === "dark"
+                        className={`p-1.5 rounded-lg transition cursor-pointer ${isDarkMode
                           ? "text-zinc-400 hover:text-white hover:bg-white/10"
                           : "text-zinc-700 hover:text-zinc-900 hover:bg-zinc-200/70"
                           }`}
@@ -1711,10 +1714,10 @@ export default function EditLeadMagnetPage() {
                         onClick={handleUndo}
                         disabled={!canUndo}
                         className={`p-1 rounded-md transition ${canUndo
-                          ? ((account?.themeMode || "light") === "dark"
+                          ? (isDarkMode
                             ? "text-zinc-300 hover:text-white hover:bg-white/10 cursor-pointer"
                             : "text-zinc-700 hover:text-zinc-900 hover:bg-zinc-200/70 cursor-pointer")
-                          : ((account?.themeMode || "light") === "dark"
+                          : (isDarkMode
                             ? "text-zinc-600 cursor-not-allowed opacity-30"
                             : "text-zinc-300 cursor-not-allowed opacity-30")
                           }`}
@@ -1727,10 +1730,10 @@ export default function EditLeadMagnetPage() {
                         onClick={handleRedo}
                         disabled={!canRedo}
                         className={`p-1 rounded-md transition ${canRedo
-                          ? ((account?.themeMode || "light") === "dark"
+                          ? (isDarkMode
                             ? "text-zinc-300 hover:text-white hover:bg-white/10 cursor-pointer"
                             : "text-zinc-700 hover:text-zinc-900 hover:bg-zinc-200/70 cursor-pointer")
-                          : ((account?.themeMode || "light") === "dark"
+                          : (isDarkMode
                             ? "text-zinc-600 cursor-not-allowed opacity-30"
                             : "text-zinc-300 cursor-not-allowed opacity-30")
                           }`}
@@ -1746,7 +1749,7 @@ export default function EditLeadMagnetPage() {
                         href={isLockedPdf ? (page ? `/pdf-viewer/${page.id}` : "/dashboard/locked-pdf") : (page ? `/${account?.username || "user"}/${page.slug}` : "/dashboard/landing-page")}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className={`p-1.5 rounded-lg transition cursor-pointer ${(account?.themeMode || "light") === "dark"
+                        className={`p-1.5 rounded-lg transition cursor-pointer ${isDarkMode
                           ? "text-zinc-400 hover:text-white hover:bg-white/10"
                           : "text-zinc-700 hover:text-zinc-900 hover:bg-zinc-200/70"
                           }`}
@@ -1760,7 +1763,7 @@ export default function EditLeadMagnetPage() {
                         <button
                           type="button"
                           onClick={() => setShowMenu(!showMenu)}
-                          className={`p-1.5 rounded-lg transition cursor-pointer ${(account?.themeMode || "light") === "dark"
+                          className={`p-1.5 rounded-lg transition cursor-pointer ${isDarkMode
                             ? "text-zinc-400 hover:text-white hover:bg-[#27272A]"
                             : "text-zinc-700 hover:text-zinc-900 hover:bg-zinc-200/70"
                             }`}
@@ -1772,7 +1775,7 @@ export default function EditLeadMagnetPage() {
                         {showMenu && (
                           <QRCodeDropdown
                             page={page}
-                            account={account}
+                            account={effectiveAccount}
                             isLockedPdf={isLockedPdf}
                             onAnalytics={() => {
                               setShowMenu(false);
@@ -1875,7 +1878,7 @@ export default function EditLeadMagnetPage() {
             </div>
 
             {/* Editor Body Tab Content */}
-            <div className={`p-2.5 sm:p-4 md:p-6 text-zinc-900 dark:text-zinc-100 transition-colors duration-200 ${(account?.themeMode || "light") === "dark" ? "bg-[#121212]" : "bg-[#F8FBFF]"}`}>
+            <div className={`rounded-b-2xl p-2.5 sm:p-4 md:p-6 text-zinc-900 dark:text-zinc-100 transition-colors duration-200 ${isDarkMode ? "bg-[#121212]" : "bg-[#F8FBFF]"}`}>
 
               {/* TAB 1: LANDING PAGE EDITOR */}
               {activeTab === "landing" && (
@@ -1946,7 +1949,7 @@ export default function EditLeadMagnetPage() {
               {/* TAB 2: DELIVERY EMAIL */}
               {activeTab === "email" && (
                 <DeliveryEmailTab
-                  account={account}
+                  account={effectiveAccount}
                   setShowEmailPreviewModal={setShowEmailPreviewModal}
                   emailSubject={emailSubject}
                   setEmailSubject={setEmailSubject}
@@ -1971,7 +1974,7 @@ export default function EditLeadMagnetPage() {
               {/* TAB 3: SEQUENCE */}
               {activeTab === "sequence" && (
                 <SequenceTab
-                  account={account}
+                  account={effectiveAccount}
                   sequenceEnabled={sequenceEnabled}
                   setSequenceEnabled={setSequenceEnabled}
                   stopOnCall={stopOnCall}
@@ -1992,7 +1995,7 @@ export default function EditLeadMagnetPage() {
               {/* TAB 4: AFTER SIGNUP */}
               {activeTab === "after" && (
                 <AfterSignupTab
-                  account={account}
+                  account={effectiveAccount}
                   afterSignupOption={afterSignupOption}
                   setAfterSignupOption={setAfterSignupOption}
                   destinationUrl={destinationUrl}
@@ -2116,7 +2119,7 @@ export default function EditLeadMagnetPage() {
           emailPreviewText={emailPreviewText}
           emailBody={emailBody}
           page={page}
-          account={account}
+          account={effectiveAccount}
           pageId={params.id}
           onClose={() => setShowEmailPreviewModal(false)}
         />

@@ -29,7 +29,7 @@ const AccountSchema = new Schema({
   needsOnboarding: { type: Boolean, default: false },
   privacyPolicy: { type: String, default: "" },
   termsOfService: { type: String, default: "" },
-  themeMode: { type: String, default: "light" },
+  themeMode: { type: String, default: "sync" },
   highlightIntensity: { type: Number, default: 100 },
   templateId: { type: String, default: "template1" },
   slackWebhookUrl: { type: String, default: "" },

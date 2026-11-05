@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { X, Mail, Gift, CheckCircle2, AlertCircle } from "lucide-react";
 import { type Account } from "@/lib/data";
+import { useIsDarkMode } from "@/lib/use-theme-mode";
 
 export interface EmailPreviewModalProps {
   isOpen?: boolean;
@@ -78,7 +79,7 @@ export default function EmailPreviewModal({
     }
   };
 
-  const isDark = (account?.themeMode || "light") === "dark";
+  const isDark = useIsDarkMode(account);
 
   return (
     <div

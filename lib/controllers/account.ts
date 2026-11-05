@@ -431,7 +431,7 @@ export async function handleSaveAccount(data: any, authEmail: string | null) {
       brandColor: data.brandColor || "#0066B2",
       logo: typeof data.logo === "string" && data.logo.trim() ? data.logo.trim() : null,
       avatar: typeof data.avatar === "string" && data.avatar.trim() ? data.avatar.trim() : null,
-      themeMode: data.themeMode === "dark" ? "dark" : "light",
+      themeMode: data.themeMode === "dark" ? "dark" : (data.themeMode === "light" ? "light" : "sync"),
       highlightIntensity: typeof data.highlightIntensity === "number" ? data.highlightIntensity : 100,
       templateId: typeof data.templateId === "string" && data.templateId.trim() ? data.templateId.trim().slice(0, 50) : "template1",
       joinedAt: data.joinedAt || new Date().toLocaleDateString("en-US", { month: "long", year: "numeric" }),
