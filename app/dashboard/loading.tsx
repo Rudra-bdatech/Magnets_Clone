@@ -2,7 +2,7 @@
 
 export default function DashboardLoading() {
   return (
-    <div className="flex flex-col min-h-[calc(100vh-3rem)] bg-[#F8FBFF] dark:bg-[#0E0E10] px-6 py-6 lg:px-8 animate-pulse">
+    <div className="flex flex-col min-h-[calc(100vh-3rem)] bg-[#F8FBFF] dark:bg-[#0a0a0a] px-6 py-6 lg:px-8 animate-pulse">
       {/* ── Header Skeleton ── */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
         <div className="space-y-2">

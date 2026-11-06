@@ -168,7 +168,7 @@ export default function AdminShell({
   }
 
   return (
-    <div className="flex min-h-[100dvh] md:h-screen md:overflow-hidden w-full bg-[#FAFAFA] dark:bg-[#0E0E10]">
+    <div className="flex min-h-[100dvh] md:h-screen md:overflow-hidden w-full bg-[#FAFAFA] dark:bg-[#0a0a0a]">
       {/* Desktop Sidebar (hidden on mobile, visible on md+) */}
       <aside
         className="hidden md:flex w-60 h-screen bg-[#F0F7FF] dark:bg-[#171717] border-r border-[#E0EDFB] dark:border-white/[0.08] flex-col shrink-0 overflow-y-auto select-none"
@@ -417,7 +417,7 @@ export default function AdminShell({
         {/* Scrollable Page Body */}
         <main
           ref={mainRef}
-          className="flex-1 min-w-0 w-full md:overflow-y-auto md:overflow-x-hidden overscroll-y-contain [-webkit-overflow-scrolling:touch] touch-pan-y bg-gradient-to-b from-[#EFF6FF]/40 via-[#F8FBFF] to-[#F8FBFF] dark:bg-none dark:bg-[#0E0E10]"
+          className="flex-1 min-w-0 w-full md:overflow-y-auto md:overflow-x-hidden overscroll-y-contain [-webkit-overflow-scrolling:touch] touch-pan-y bg-gradient-to-b from-[#EFF6FF]/40 via-[#F8FBFF] to-[#F8FBFF] dark:bg-none dark:bg-[#0a0a0a]"
           data-lenis-prevent
         >
           {children}

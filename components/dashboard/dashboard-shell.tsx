@@ -1467,7 +1467,7 @@ export default function DashboardShell({
             )}
           </AnimatePresence>
 
-          <div className="flex min-h-screen min-w-0 flex-1 flex-col bg-[#FAFAFA] dark:bg-[#0E0E10] w-full max-w-full">
+          <div className="flex min-h-screen min-w-0 flex-1 flex-col bg-[#FAFAFA] dark:bg-[#0a0a0a] w-full max-w-full">
             <header
               className={`sticky top-0 z-30 flex h-12 shrink-0 items-center justify-between px-3 sm:px-4 md:hidden w-full max-w-full border-b border-black/[0.04] dark:border-white/[0.05] bg-white/40 dark:bg-black/40 backdrop-blur-md transition-transform duration-300 ease-in-out ${
                 isHeaderVisible ? "translate-y-0" : "-translate-y-full pointer-events-none"
@@ -1508,7 +1508,7 @@ export default function DashboardShell({
                 <ThemeToggle size="sm" />
               </div>
             </header>
-            <main ref={mainRef} className="min-w-0 flex-1 bg-[#FAFAF8] dark:bg-[#0E0E10] w-full max-w-full">
+            <main ref={mainRef} className="min-w-0 flex-1 bg-[#FAFAF8] dark:bg-[#0a0a0a] w-full max-w-full">
               <AnimatePresence mode="wait" initial={false}>
                 <motion.div
                   key={pathname}
