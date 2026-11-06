@@ -3,7 +3,21 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
-import { Search, ChevronLeft, ChevronRight, Check, X, AlertTriangle, ChevronDown, Calendar } from "lucide-react";
+import {
+  Search,
+  ChevronLeft,
+  ChevronRight,
+  Check,
+  X,
+  AlertTriangle,
+  ChevronDown,
+  Calendar,
+  Users,
+  CheckCircle2,
+  CreditCard,
+  Shield,
+  RefreshCw,
+} from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ApplePagination } from "@/components/ui/ApplePagination";
 
@@ -781,6 +795,17 @@ export default function AdminUsersPage() {
   const [updating, setUpdating] = useState<string | null>(null);
   const [error, setError] = useState("");
   const [pending, setPending] = useState<PendingChange | null>(null);
+  const [summary, setSummary] = useState<{
+    totalAccounts: number;
+    verifiedCount: number;
+    paidCount: number;
+    adminCount: number;
+  }>({
+    totalAccounts: 0,
+    verifiedCount: 0,
+    paidCount: 0,
+    adminCount: 0,
+  });
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -816,6 +841,9 @@ export default function AdminUsersPage() {
       setUsers(data.users);
       setTotal(data.total);
       setPages(data.pages);
+      if (data.summary) {
+        setSummary(data.summary);
+      }
     } catch {
       setError("Could not load users. Please refresh.");
     } finally {
@@ -863,11 +891,87 @@ export default function AdminUsersPage() {
 
   return (
     <div className="p-3.5 sm:p-6 md:p-8 max-w-7xl mx-auto touch-pan-y">
-      <div className="mb-5 sm:mb-6">
-        <h1 className="text-xl sm:text-2xl font-bold text-zinc-900 dark:text-white tracking-tight">Users</h1>
-        <p className="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 mt-0.5">
-          {total > 0 ? `${total.toLocaleString()} total accounts` : "Loading users..."}
-        </p>
+      {/* Top Header */}
+      <div className="flex items-center justify-between gap-3 mb-4 sm:mb-6">
+        <div>
+          <h1 className="text-xl sm:text-2xl font-bold text-zinc-900 dark:text-white tracking-tight">Users</h1>
+        </div>
+
+        <button
+          type="button"
+          onClick={fetchUsers}
+          disabled={loading}
+          className="inline-flex items-center justify-center gap-1.5 h-8 sm:h-9 px-2.5 sm:px-3 text-xs font-medium rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#1C1C1F] text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-white/5 active:scale-95 transition shadow-xs cursor-pointer disabled:opacity-50 shrink-0"
+          title="Refresh users"
+        >
+          <RefreshCw className={`w-3.5 h-3.5 text-zinc-400 ${loading ? "animate-spin text-[#0066B2] dark:text-[#38BDF8]" : ""}`} />
+          <span className="hidden sm:inline">Refresh</span>
+        </button>
+      </div>
+
+      {/* KPI Glance Bar */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3 mb-4 sm:mb-6">
+        {/* Total Accounts */}
+        <div className="bg-white/90 dark:bg-[#171717] rounded-2xl border border-[#0066B2]/15 dark:border-white/[0.08] p-3 sm:p-4 shadow-md dark:shadow-none backdrop-blur-sm flex items-center justify-between">
+          <div className="min-w-0 pr-1">
+            <div className="text-[10px] sm:text-[11px] font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider truncate">
+              Total Accounts
+            </div>
+            <div className="text-base sm:text-lg font-bold text-zinc-900 dark:text-white font-mono tabular-nums mt-0.5">
+              {(summary.totalAccounts || total).toLocaleString()}
+            </div>
+          </div>
+          <div className="w-8 h-8 rounded-xl bg-zinc-100 dark:bg-white/[0.05] flex items-center justify-center text-zinc-500 dark:text-zinc-400 shrink-0">
+            <Users className="w-4 h-4" />
+          </div>
+        </div>
+
+        {/* Verified Accounts */}
+        <div className="bg-white/90 dark:bg-[#171717] rounded-2xl border border-[#0066B2]/15 dark:border-white/[0.08] p-3 sm:p-4 shadow-md dark:shadow-none backdrop-blur-sm flex items-center justify-between">
+          <div className="min-w-0 pr-1">
+            <div className="text-[10px] sm:text-[11px] font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider truncate">
+              Verified Users
+            </div>
+            <div className="text-base sm:text-lg font-bold text-emerald-600 dark:text-emerald-400 font-mono tabular-nums mt-0.5 flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+              <span>{summary.verifiedCount.toLocaleString()}</span>
+            </div>
+          </div>
+          <div className="w-8 h-8 rounded-xl bg-emerald-500/10 dark:bg-emerald-500/15 flex items-center justify-center text-emerald-600 dark:text-emerald-400 shrink-0">
+            <CheckCircle2 className="w-4 h-4" />
+          </div>
+        </div>
+
+        {/* Paid / Pro Users */}
+        <div className="bg-white/90 dark:bg-[#171717] rounded-2xl border border-[#0066B2]/15 dark:border-white/[0.08] p-3 sm:p-4 shadow-md dark:shadow-none backdrop-blur-sm flex items-center justify-between">
+          <div className="min-w-0 pr-1">
+            <div className="text-[10px] sm:text-[11px] font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider truncate">
+              Paid Subscriptions
+            </div>
+            <div className="text-base sm:text-lg font-bold text-[#0066B2] dark:text-[#38BDF8] font-mono tabular-nums mt-0.5">
+              {summary.paidCount.toLocaleString()}
+            </div>
+          </div>
+          <div className="w-8 h-8 rounded-xl bg-[#0066B2]/10 dark:bg-[#38BDF8]/15 flex items-center justify-center text-[#0066B2] dark:text-[#38BDF8] shrink-0">
+            <CreditCard className="w-4 h-4" />
+          </div>
+        </div>
+
+        {/* Admins & Staff */}
+        <div className="bg-white/90 dark:bg-[#171717] rounded-2xl border border-[#0066B2]/15 dark:border-white/[0.08] p-3 sm:p-4 shadow-md dark:shadow-none backdrop-blur-sm flex items-center justify-between">
+          <div className="min-w-0 pr-1">
+            <div className="text-[10px] sm:text-[11px] font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider truncate">
+              <span className="sm:hidden">Super Admins</span>
+              <span className="hidden sm:inline">Admins & Staff</span>
+            </div>
+            <div className="text-base sm:text-lg font-bold text-red-600 dark:text-red-400 font-mono tabular-nums mt-0.5">
+              {summary.adminCount.toLocaleString()}
+            </div>
+          </div>
+          <div className="w-8 h-8 rounded-xl bg-red-500/10 dark:bg-red-500/15 flex items-center justify-center text-red-600 dark:text-red-400 shrink-0">
+            <Shield className="w-4 h-4" />
+          </div>
+        </div>
       </div>
 
       {/* Filters */}

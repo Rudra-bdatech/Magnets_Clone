@@ -75,13 +75,53 @@ export async function GET(request: NextRequest) {
     stripeSubscriptionId: 1, chargebeeSubscriptionId: 1, suspended: 1,
   };
 
-  const [accounts, total] = await Promise.all([
+  const [accounts, total, summaryAgg] = await Promise.all([
     AccountModel.find(query, projection)
       .sort({ _id: -1 })
       .skip((page - 1) * PAGE_SIZE)
       .limit(PAGE_SIZE)
       .lean(),
     AccountModel.countDocuments(query),
+    AccountModel.aggregate([
+      { $match: query },
+      {
+        $group: {
+          _id: null,
+          verifiedCount: {
+            $sum: { $cond: [{ $eq: ["$emailVerified", true] }, 1, 0] },
+          },
+          paidCount: {
+            $sum: {
+              $cond: [
+                {
+                  $or: [
+                    { $gt: ["$stripeSubscriptionId", null] },
+                    { $gt: ["$chargebeeSubscriptionId", null] },
+                    { $and: [{ $ne: ["$plan", "Free"] }, { $ne: ["$plan", ""] }, { $ne: ["$plan", null] }] },
+                  ],
+                },
+                1,
+                0,
+              ],
+            },
+          },
+          adminCount: {
+            $sum: {
+              $cond: [
+                {
+                  $or: [
+                    { $eq: ["$role", "super_admin"] },
+                    { $eq: ["$role", "admin"] },
+                  ],
+                },
+                1,
+                0,
+              ],
+            },
+          },
+        },
+      },
+    ]),
   ]);
 
   const emails = (accounts as any[]).map((a) => a.email);
@@ -130,5 +170,18 @@ export async function GET(request: NextRequest) {
     };
   });
 
-  return NextResponse.json({ users, total, page, pages: Math.ceil(total / PAGE_SIZE) });
+  const summary = {
+    totalAccounts: total,
+    verifiedCount: summaryAgg[0]?.verifiedCount || 0,
+    paidCount: summaryAgg[0]?.paidCount || 0,
+    adminCount: summaryAgg[0]?.adminCount || 0,
+  };
+
+  return NextResponse.json({
+    users,
+    total,
+    page,
+    pages: Math.ceil(total / PAGE_SIZE),
+    summary,
+  });
 }
