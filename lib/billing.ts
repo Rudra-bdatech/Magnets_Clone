@@ -40,7 +40,7 @@ export const PLAN_PRICING = {
     name: "Pro Plan Lifetime (One-Time)",
     displayPrice: "₹4,999",
     // Item Price ID from Chargebee Product Catalog → Item Prices
-    itemPriceId: process.env.CHARGEBEE_ITEM_PRICE_ID_INR || "funnels-custom-domain-INR",
+    itemPriceId: (process.env.CHARGEBEE_ITEM_PRICE_ID_INR && process.env.CHARGEBEE_ITEM_PRICE_ID_INR !== "funnels-custom-domain" ? process.env.CHARGEBEE_ITEM_PRICE_ID_INR : "funnels-custom-domain-INR"),
   },
   PRO_USD: {
     amount: 29,

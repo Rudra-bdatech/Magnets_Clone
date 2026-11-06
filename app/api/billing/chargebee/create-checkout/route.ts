@@ -85,7 +85,8 @@ export async function POST(req: Request) {
     }
 
     // 4. Create a real Chargebee Hosted Payment Page (Product Catalog 2.0 - One-Time Payment)
-    const itemPriceId = PLAN_PRICING.PRO_INR.itemPriceId || "funnels-custom-domain-INR";
+    const rawPriceId = PLAN_PRICING.PRO_INR.itemPriceId || "funnels-custom-domain-INR";
+    const itemPriceId = rawPriceId === "funnels-custom-domain" ? "funnels-custom-domain-INR" : rawPriceId;
     const customerData = {
       email: account.email,
       first_name: (account.name || account.username || "").split(" ")[0] || "",
