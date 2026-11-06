@@ -6,6 +6,8 @@ import { useRouter, useParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowLeft,
+  ChevronLeft,
+  HelpCircle,
   Pencil,
   Sparkles,
   Users,
@@ -412,9 +414,8 @@ export default function AnalyticsLinearView({
                     key={r}
                     type="button"
                     onClick={() => setTimeRange(r)}
-                    className={`relative z-10 px-3.5 py-1.5 rounded-lg font-mono text-[11px] font-semibold transition-colors duration-200 cursor-pointer ${
-                      isActive ? "text-zinc-900 dark:text-white" : "text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200"
-                    }`}
+                    className={`relative z-10 px-3.5 py-1.5 rounded-lg font-mono text-[11px] font-semibold transition-colors duration-200 cursor-pointer ${isActive ? "text-zinc-900 dark:text-white" : "text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200"
+                      }`}
                   >
                     {isActive && (
                       <motion.div
@@ -472,137 +473,90 @@ export default function AnalyticsLinearView({
           </div>
         </motion.header>
 
-        {/* 1. MOBILE HEADER BAR */}
+        {/* 1. MOBILE HEADER BAR (True Native Mobile Navigation Bar) */}
         <motion.header
           variants={itemVariants}
-          className="flex md:hidden flex-col gap-2.5"
+          className="flex md:hidden flex-col gap-2"
         >
-          {isPerMagnet ? (
-            <>
-              {/* Row 1: Native Mobile Navigation Bar (Back Link + Edit & Export Actions) */}
-              <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center justify-between gap-2 h-10">
+            {/* Left: Clean Back Button (icon only) + Title & Funnel Name */}
+            <div className="flex items-center gap-1.5 min-w-0">
+              {isPerMagnet && (
                 <Link
                   href={backHref}
                   onClick={(e) => {
                     e.preventDefault();
                     window.location.href = backHref;
                   }}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white dark:bg-[#171717] border border-zinc-200/80 dark:border-white/[0.08] text-xs font-semibold text-zinc-700 dark:text-zinc-200 shadow-2xs hover:bg-zinc-50 dark:hover:bg-zinc-800/80 transition-all select-none"
+                  className="flex h-9 w-9 items-center justify-center rounded-full text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-white/10 active:scale-90 transition-all select-none shrink-0 -ml-1.5"
+                  aria-label="Back"
                 >
-                  <ArrowLeft className="h-3.5 w-3.5 text-zinc-500" />
-                  <span>{isLockedPdf ? "Locked PDFs" : "Landing Page"}</span>
+                  <ChevronLeft className="h-6 w-6 stroke-[2.2]" />
                 </Link>
-
+              )}
+              <div className="min-w-0 flex flex-col justify-center">
                 <div className="flex items-center gap-1.5">
-                  {targetMagnetId && (
-                    <Link
-                      href={editHref}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        window.location.href = editHref;
-                      }}
-                      className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-[#0066B2] text-white font-bold text-xs shadow-2xs hover:bg-[#005291] transition-all select-none"
-                    >
-                      <Pencil className="h-3.5 w-3.5" />
-                      <span>Edit</span>
-                    </Link>
-                  )}
-                  <motion.button
-                    whileTap={{ scale: 0.95 }}
+                  <h1 className="text-xl font-black tracking-tight text-zinc-900 dark:text-white truncate leading-tight">
+                    Analytics
+                  </h1>
+                  <button
                     type="button"
-                    onClick={exportToCSV}
-                    title="Export CSV"
-                    className="flex h-8 w-8 items-center justify-center rounded-xl bg-white dark:bg-[#171717] border border-zinc-200/80 dark:border-white/[0.08] text-zinc-700 dark:text-zinc-200 shadow-2xs cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-800/80 transition-all shrink-0"
+                    onClick={onOpenHelp}
+                    title="Analytics Guide"
+                    className="flex h-5 w-5 items-center justify-center rounded-full border border-zinc-200/90 dark:border-white/[0.15] bg-white dark:bg-[#171717] text-[11px] font-semibold text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white active:scale-90 transition-all select-none cursor-pointer shrink-0 shadow-2xs"
                   >
-                    <Download className="h-3.5 w-3.5 text-zinc-500" />
-                  </motion.button>
+                    ?
+                  </button>
                 </div>
-              </div>
-
-              {/* Row 2: Page Title + Funnel Subtitle on Left, Calendar Time Range Button on Right */}
-              <div className="flex items-center justify-between gap-3 pt-0.5">
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-2">
-                    <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight text-zinc-900 dark:text-white">
-                      Analytics
-                    </h1>
-                    <button
-                      type="button"
-                      onClick={onOpenHelp}
-                      className="cursor-pointer flex h-5 w-5 items-center justify-center rounded-full border border-zinc-200 dark:border-white/[0.12] bg-white dark:bg-[#171717] text-[11px] font-mono text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-all shadow-2xs"
-                      title="Analytics Help"
-                    >
-                      ?
-                    </button>
-                  </div>
-                  {page?.name && (
-                    <p className="text-xs text-zinc-500 dark:text-zinc-400 font-medium truncate max-w-[210px] mt-0.5">
-                      {page.name}
-                    </p>
-                  )}
-                </div>
-
-                {/* Native Calendar Time Range Pill Button */}
-                <motion.button
-                  whileTap={{ scale: 0.95 }}
-                  type="button"
-                  onClick={() => setMobileTimeRangeOpen(true)}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white dark:bg-[#171717] border border-zinc-200/80 dark:border-white/[0.1] text-xs font-semibold text-zinc-800 dark:text-zinc-100 shadow-2xs cursor-pointer active:bg-zinc-50 dark:active:bg-zinc-800/80 transition-all select-none shrink-0"
-                  aria-label="Select time range"
-                >
-                  <Calendar className="h-3.5 w-3.5 text-[#0066B2] dark:text-sky-400 shrink-0" />
-                  <span className="font-semibold text-zinc-900 dark:text-white">
-                    {timeRangeLabels[timeRange].short}
-                  </span>
-                  <ChevronDown className="h-3 w-3 text-zinc-400 dark:text-zinc-500 shrink-0" />
-                </motion.button>
-              </div>
-            </>
-          ) : (
-            /* General Analytics Page (1 Clean Row) */
-            <div className="flex items-center justify-between gap-2">
-              <div className="flex items-center gap-2">
-                <h1 className="text-2xl font-extrabold tracking-tight text-zinc-900 dark:text-white">
-                  Analytics
-                </h1>
-                <button
-                  type="button"
-                  onClick={onOpenHelp}
-                  className="cursor-pointer flex h-5 w-5 items-center justify-center rounded-full border border-zinc-200 dark:border-white/[0.12] bg-white dark:bg-[#171717] text-[11px] font-mono text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-all shadow-2xs"
-                  title="Analytics Help"
-                >
-                  ?
-                </button>
-              </div>
-
-              {/* Top Right Actions on Mobile: [📅 30D ▾] [↓ Export] */}
-              <div className="flex items-center gap-2">
-                <motion.button
-                  whileTap={{ scale: 0.95 }}
-                  type="button"
-                  onClick={() => setMobileTimeRangeOpen(true)}
-                  className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-white dark:bg-[#171717] border border-zinc-200/80 dark:border-white/[0.1] text-xs font-semibold text-zinc-800 dark:text-zinc-100 shadow-2xs cursor-pointer active:bg-zinc-50 dark:active:bg-zinc-800/80 transition-all select-none"
-                  aria-label="Select time range"
-                >
-                  <Calendar className="h-3.5 w-3.5 text-[#0066B2] dark:text-sky-400 shrink-0" />
-                  <span className="font-semibold text-zinc-900 dark:text-white">
-                    {timeRangeLabels[timeRange].short}
-                  </span>
-                  <ChevronDown className="h-3 w-3 text-zinc-400 dark:text-zinc-500 shrink-0" />
-                </motion.button>
-
-                <motion.button
-                  whileTap={{ scale: 0.95 }}
-                  type="button"
-                  onClick={exportToCSV}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white dark:bg-[#171717] border border-zinc-200/80 dark:border-white/[0.1] text-xs font-semibold text-zinc-700 dark:text-zinc-200 shadow-2xs cursor-pointer active:bg-zinc-50 dark:active:bg-zinc-800/80 transition-all shrink-0"
-                >
-                  <Download className="h-3.5 w-3.5 text-zinc-400" />
-                  <span>Export</span>
-                </motion.button>
+                {isPerMagnet && page?.name && (
+                  <p className="text-[11px] text-zinc-500 dark:text-zinc-400 font-medium truncate max-w-[130px] sm:max-w-[200px] leading-none mt-0.5">
+                    {page.name}
+                  </p>
+                )}
               </div>
             </div>
-          )}
+
+            {/* Right: Date Pill [📅 30D ▾] + Action Icons [✎] [⤓] */}
+            <div className="flex items-center gap-1 shrink-0">
+              {/* Native Calendar Filter Pill */}
+              <motion.button
+                whileTap={{ scale: 0.95 }}
+                type="button"
+                onClick={() => setMobileTimeRangeOpen(true)}
+                className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-full bg-zinc-100 dark:bg-white/[0.08] hover:bg-zinc-200/80 dark:hover:bg-white/[0.12] text-xs font-semibold text-zinc-800 dark:text-zinc-200 border border-zinc-200/60 dark:border-white/[0.08] transition-all select-none cursor-pointer"
+                aria-label="Select time range"
+              >
+                <Calendar className="h-3.5 w-3.5 text-[#0066B2] dark:text-sky-400 shrink-0" />
+                <span className="font-semibold text-zinc-900 dark:text-white">
+                  {timeRangeLabels[timeRange].short}
+                </span>
+                <ChevronDown className="h-3 w-3 text-zinc-400 shrink-0" />
+              </motion.button>
+
+              {isPerMagnet && targetMagnetId && (
+                <Link
+                  href={editHref}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    window.location.href = editHref;
+                  }}
+                  className="flex h-8 w-8 items-center justify-center rounded-full text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-white/10 active:scale-90 transition-all select-none"
+                  title="Edit funnel"
+                >
+                  <Pencil className="h-4 w-4" />
+                </Link>
+              )}
+
+              <button
+                type="button"
+                onClick={exportToCSV}
+                title="Export CSV"
+                className="flex h-8 w-8 items-center justify-center rounded-full text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-white/10 active:scale-90 transition-all select-none cursor-pointer"
+              >
+                <Download className="h-4 w-4" />
+              </button>
+            </div>
+          </div>
         </motion.header>
 
         {/* 2. CORE 4 METRIC CARDS (Matches Dashboard Compact Horizontal Row) */}
@@ -679,8 +633,8 @@ export default function AnalyticsLinearView({
               {/* Variant A */}
               <div
                 className={`p-4 rounded-xl border space-y-2 transition-all ${!isBWinning
-                    ? "border-emerald-500/40 bg-emerald-50/60 dark:bg-emerald-950/10"
-                    : "border-zinc-200/80 bg-zinc-50/60 dark:border-white/[0.08] dark:bg-[#121212]"
+                  ? "border-emerald-500/40 bg-emerald-50/60 dark:bg-emerald-950/10"
+                  : "border-zinc-200/80 bg-zinc-50/60 dark:border-white/[0.08] dark:bg-[#121212]"
                   }`}
               >
                 <div className="flex items-center justify-between">
@@ -713,8 +667,8 @@ export default function AnalyticsLinearView({
               {/* Variant B */}
               <div
                 className={`p-4 rounded-xl border space-y-2 transition-all ${isBWinning
-                    ? "border-emerald-500/40 bg-emerald-50/60 dark:bg-emerald-950/10"
-                    : "border-zinc-200/80 bg-zinc-50/60 dark:border-white/[0.08] dark:bg-[#121212]"
+                  ? "border-emerald-500/40 bg-emerald-50/60 dark:bg-emerald-950/10"
+                  : "border-zinc-200/80 bg-zinc-50/60 dark:border-white/[0.08] dark:bg-[#121212]"
                   }`}
               >
                 <div className="flex items-center justify-between">
@@ -907,11 +861,10 @@ export default function AnalyticsLinearView({
                         }
                         setMobileTimeRangeOpen(false);
                       }}
-                      className={`w-full flex items-center justify-between p-3.5 rounded-2xl border transition-all cursor-pointer ${
-                        isActive
-                          ? "bg-blue-50/80 border-[#0066B2]/40 dark:bg-blue-950/40 dark:border-blue-500/40 text-zinc-900 dark:text-white"
-                          : "bg-zinc-50/80 dark:bg-white/[0.03] border-transparent hover:bg-zinc-100 dark:hover:bg-white/[0.06] text-zinc-700 dark:text-zinc-300"
-                      }`}
+                      className={`w-full flex items-center justify-between p-3.5 rounded-2xl border transition-all cursor-pointer ${isActive
+                        ? "bg-blue-50/80 border-[#0066B2]/40 dark:bg-blue-950/40 dark:border-blue-500/40 text-zinc-900 dark:text-white"
+                        : "bg-zinc-50/80 dark:bg-white/[0.03] border-transparent hover:bg-zinc-100 dark:hover:bg-white/[0.06] text-zinc-700 dark:text-zinc-300"
+                        }`}
                     >
                       <div className="flex flex-col text-left">
                         <span className="text-sm font-semibold flex items-center gap-2">

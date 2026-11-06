@@ -54,8 +54,10 @@ const baseNavItems: { href: string; label: string; icon: any; isModal?: boolean;
 
 const getDashboardPageInfo = (pathname: string, defaultTitle?: string) => {
   if (pathname === "/dashboard") return { title: "Dashboard", icon: LayoutDashboard };
+  if (pathname.includes("/analytics") || pathname.endsWith("/analytics") || pathname.startsWith("/dashboard/analytics")) {
+    return { title: "Analytics", icon: BarChart3 };
+  }
   if (pathname.startsWith("/dashboard/settings")) return { title: "Settings", icon: Settings };
-  if (pathname.startsWith("/dashboard/analytics")) return { title: "Analytics", icon: BarChart3 };
   if (pathname.startsWith("/dashboard/leads")) return { title: "Leads", icon: Users };
   if (pathname.startsWith("/dashboard/landing-page")) return { title: "Landing Page", icon: FileText };
   if (pathname.startsWith("/dashboard/locked-pdf")) return { title: "Locked PDF", icon: Lock };
