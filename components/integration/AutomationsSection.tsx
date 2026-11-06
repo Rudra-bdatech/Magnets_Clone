@@ -78,9 +78,11 @@ export const AutomationsSection = memo(function AutomationsSection({
                   </h5>
                 </div>
               </div>
-              <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-[#0066B2]/30 bg-white text-zinc-500 shadow-sm dark:border-white/10 dark:bg-[#121212] transition-transform duration-300">
-                <ChevronDown className={`h-3.5 w-3.5 transition-transform duration-300 ${openSections["slack-webhook"] ? "rotate-180" : ""}`} />
-              </div>
+              <ChevronDown
+                className={`h-4 w-4 shrink-0 text-zinc-400 dark:text-zinc-500 transition-transform duration-300 ${
+                  openSections["slack-webhook"] ? "rotate-180 text-zinc-800 dark:text-zinc-200" : ""
+                }`}
+              />
             </div>
 
             {/* Expanded Webhook Input Panel with Grid Height Animation */}
@@ -202,9 +204,11 @@ export const AutomationsSection = memo(function AutomationsSection({
                   </h5>
                 </div>
               </div>
-              <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-[#0066B2]/30 bg-white text-zinc-500 shadow-sm dark:border-white/10 dark:bg-[#121212] transition-transform duration-300">
-                <ChevronDown className={`h-3.5 w-3.5 transition-transform duration-300 ${openSections["zapier-webhook"] ? "rotate-180" : ""}`} />
-              </div>
+              <ChevronDown
+                className={`h-4 w-4 shrink-0 text-zinc-400 dark:text-zinc-500 transition-transform duration-300 ${
+                  openSections["zapier-webhook"] ? "rotate-180 text-zinc-800 dark:text-zinc-200" : ""
+                }`}
+              />
             </div>
 
             {/* Expanded Zapier Webhook Input Panel with Grid Height Animation */}
@@ -331,9 +335,11 @@ export const AutomationsSection = memo(function AutomationsSection({
                   </h5>
                 </div>
               </div>
-              <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-[#0066B2]/30 bg-white text-zinc-500 shadow-sm dark:border-white/10 dark:bg-[#121212] transition-transform duration-300">
-                <ChevronDown className={`h-3.5 w-3.5 transition-transform duration-300 ${openSections["pipedrive-webhook"] ? "rotate-180" : ""}`} />
-              </div>
+              <ChevronDown
+                className={`h-4 w-4 shrink-0 text-zinc-400 dark:text-zinc-500 transition-transform duration-300 ${
+                  openSections["pipedrive-webhook"] ? "rotate-180 text-zinc-800 dark:text-zinc-200" : ""
+                }`}
+              />
             </div>
 
             {/* Expanded Pipedrive API Token Panel with Smooth Height Animation */}
@@ -434,9 +440,11 @@ export const AutomationsSection = memo(function AutomationsSection({
                   </h5>
                 </div>
               </div>
-              <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-[#0066B2]/30 bg-white text-zinc-500 shadow-sm dark:border-white/10 dark:bg-[#121212] transition-transform duration-300">
-                <ChevronDown className={`h-3.5 w-3.5 transition-transform duration-300 ${openSections["kit-webhook"] ? "rotate-180" : ""}`} />
-              </div>
+              <ChevronDown
+                className={`h-4 w-4 shrink-0 text-zinc-400 dark:text-zinc-500 transition-transform duration-300 ${
+                  openSections["kit-webhook"] ? "rotate-180 text-zinc-800 dark:text-zinc-200" : ""
+                }`}
+              />
             </div>
 
             {/* Expanded Kit Authorization Panel with Smooth Height Animation */}
