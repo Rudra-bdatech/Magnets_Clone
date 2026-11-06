@@ -16,12 +16,15 @@ export async function GET(request: NextRequest) {
   const search = searchParams.get("search")?.trim() || "";
   const statusFilter = searchParams.get("status") || "";
   const templateFilter = searchParams.get("template") || "";
+  const sortBy = searchParams.get("sortBy") || "createdAt";
+  const sortOrder = searchParams.get("sortOrder") === "asc" ? 1 : -1;
 
   const query: Record<string, any> = {};
   if (search) {
     query.$or = [
       { name: { $regex: search, $options: "i" } },
       { userEmail: { $regex: search, $options: "i" } },
+      { slug: { $regex: search, $options: "i" } },
     ];
   }
   if (statusFilter) query.status = statusFilter;
@@ -41,13 +44,34 @@ export async function GET(request: NextRequest) {
     pdfPageCount: 1,
   };
 
-  const [funnels, total] = await Promise.all([
+  let sortCriteria: Record<string, 1 | -1> = { _id: -1 };
+  if (sortBy === "views") sortCriteria = { views: sortOrder, _id: -1 };
+  else if (sortBy === "signups") sortCriteria = { signups: sortOrder, _id: -1 };
+  else if (sortBy === "conversionRate") sortCriteria = { conversionRate: sortOrder, _id: -1 };
+  else if (sortBy === "name") sortCriteria = { name: sortOrder };
+  else if (sortBy === "status") sortCriteria = { status: sortOrder, _id: -1 };
+  else if (sortBy === "createdAt") sortCriteria = { _id: sortOrder };
+
+  const [funnels, total, aggStats] = await Promise.all([
     MagnetPageModel.find(query, projection)
-      .sort({ _id: -1 })
+      .sort(sortCriteria)
       .skip((page - 1) * PAGE_SIZE)
       .limit(PAGE_SIZE)
       .lean(),
     MagnetPageModel.countDocuments(query),
+    MagnetPageModel.aggregate([
+      { $match: query },
+      {
+        $group: {
+          _id: null,
+          totalViews: { $sum: "$views" },
+          totalSignups: { $sum: "$signups" },
+          liveCount: {
+            $sum: { $cond: [{ $eq: ["$status", "live"] }, 1, 0] },
+          },
+        },
+      },
+    ]),
   ]);
 
   const result = (funnels as any[]).map((f) => ({
@@ -68,5 +92,17 @@ export async function GET(request: NextRequest) {
     testStarted: Boolean(f.testStarted),
   }));
 
-  return NextResponse.json({ funnels: result, total, page, pages: Math.ceil(total / PAGE_SIZE) });
+  const summary = {
+    totalViews: aggStats[0]?.totalViews || 0,
+    totalSignups: aggStats[0]?.totalSignups || 0,
+    liveCount: aggStats[0]?.liveCount || 0,
+  };
+
+  return NextResponse.json({
+    funnels: result,
+    total,
+    page,
+    pages: Math.ceil(total / PAGE_SIZE),
+    summary,
+  });
 }
