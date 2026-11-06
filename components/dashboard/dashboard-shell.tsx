@@ -125,7 +125,6 @@ export default function DashboardShell({
   const [isCommandMenuOpen, setIsCommandMenuOpen] = useState(false);
 
   const [isScrolled, setIsScrolled] = useState(false);
-  const [isHeaderVisible, setIsHeaderVisible] = useState(true);
   const lastScrollYRef = useRef(0);
   const mainRef = useRef<HTMLElement>(null);
 
@@ -139,7 +138,6 @@ export default function DashboardShell({
       window.scrollTo({ top: 0, left: 0 });
     }
     setIsScrolled(false);
-    setIsHeaderVisible(true);
     lastScrollYRef.current = 0;
   }, [pathname]);
 
@@ -163,15 +161,7 @@ export default function DashboardShell({
 
             if (scrollY <= 15) {
               setIsScrolled(false);
-              setIsHeaderVisible(true);
             } else {
-              // Auto-hide on scroll down past 45px, auto-reveal on scroll up
-              if (diff > 6 && scrollY > 45) {
-                setIsHeaderVisible(false);
-              } else if (diff < -6) {
-                setIsHeaderVisible(true);
-              }
-
               // Mobile: find the first VISIBLE heading (filter out desktop-only headings with display: none)
               const headings = mainEl ? Array.from(mainEl.querySelectorAll("h1, h2, [data-page-heading]")) : [];
               const visibleHeading = headings.find((el) => {
@@ -1469,9 +1459,7 @@ export default function DashboardShell({
 
           <div className="flex min-h-screen min-w-0 flex-1 flex-col bg-[#FAFAFA] dark:bg-[#0a0a0a] w-full max-w-full">
             <header
-              className={`sticky top-0 z-30 flex h-12 shrink-0 items-center justify-between px-3 sm:px-4 md:hidden w-full max-w-full border-b border-black/[0.04] dark:border-white/[0.05] bg-white/40 dark:bg-black/40 backdrop-blur-md transition-transform duration-300 ease-in-out ${
-                isHeaderVisible ? "translate-y-0" : "-translate-y-full pointer-events-none"
-              }`}
+              className="sticky top-0 z-30 flex h-12 shrink-0 items-center justify-between px-3 sm:px-4 md:hidden w-full max-w-full border-b border-black/[0.04] dark:border-white/[0.05] bg-white/40 dark:bg-black/40 backdrop-blur-md"
             >
               <div className="flex items-center gap-2.5 min-w-0">
                 <button
