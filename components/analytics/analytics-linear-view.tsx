@@ -3,7 +3,7 @@
 import React, { useState, useCallback, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter, useParams } from "next/navigation";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowLeft,
   Pencil,
@@ -22,6 +22,10 @@ import {
   ChevronRight,
   TrendingUp,
   Eye,
+  Calendar,
+  ChevronDown,
+  Check,
+  X,
 } from "lucide-react";
 import AnalyticsChart, { type TimeRange } from "./analytics-chart";
 import { type MagnetPage, type Account, type Lead } from "@/lib/data";
@@ -36,6 +40,13 @@ interface AnalyticsLinearViewProps {
   onOpenHelp: () => void;
   isPerMagnet?: boolean;
 }
+
+const timeRangeLabels: Record<TimeRange, { short: string; label: string; description: string }> = {
+  "7d": { short: "7D", label: "Last 7 Days", description: "Past week performance" },
+  "30d": { short: "30D", label: "Last 30 Days", description: "Past month summary" },
+  "90d": { short: "90D", label: "Last 90 Days", description: "Past quarter trends" },
+  all: { short: "ALL", label: "All Time", description: "Complete historical data" },
+};
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -70,6 +81,7 @@ export default function AnalyticsLinearView({
   const targetMagnetId = page?.id || (params?.id as string);
 
   const [timeRange, setTimeRange] = useState<TimeRange>("30d");
+  const [mobileTimeRangeOpen, setMobileTimeRangeOpen] = useState(false);
   const [statsInRange, setStatsInRange] = useState({ visitsInRange: 0, signupsInRange: 0 });
   const chartCardRef = useRef<HTMLDivElement>(null);
 
@@ -465,106 +477,132 @@ export default function AnalyticsLinearView({
           variants={itemVariants}
           className="flex md:hidden flex-col gap-2.5"
         >
-          <div className="flex items-center justify-between gap-2">
-            <div className="flex items-center gap-2">
-              <h1 className="text-2xl font-extrabold tracking-tight text-zinc-900 dark:text-white">
-                Analytics
-              </h1>
-              <button
-                type="button"
-                onClick={onOpenHelp}
-                className="cursor-pointer flex h-5 w-5 items-center justify-center rounded-full border border-zinc-200 dark:border-white/[0.12] bg-white dark:bg-[#171717] text-[11px] font-mono text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-all"
-                title="Analytics Help"
-              >
-                ?
-              </button>
-            </div>
-
-            {/* Top Right Actions on Mobile */}
-            {isPerMagnet ? (
-              <div className="flex items-center gap-1.5">
+          {isPerMagnet ? (
+            <>
+              {/* Row 1: Native Mobile Navigation Bar (Back Link + Edit & Export Actions) */}
+              <div className="flex items-center justify-between gap-2">
                 <Link
                   href={backHref}
                   onClick={(e) => {
                     e.preventDefault();
                     window.location.href = backHref;
                   }}
-                  className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-white dark:bg-[#171717] border border-zinc-200/80 dark:border-white/[0.08] text-xs font-semibold text-zinc-700 dark:text-zinc-200 shadow-xs"
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white dark:bg-[#171717] border border-zinc-200/80 dark:border-white/[0.08] text-xs font-semibold text-zinc-700 dark:text-zinc-200 shadow-2xs hover:bg-zinc-50 dark:hover:bg-zinc-800/80 transition-all select-none"
                 >
-                  <ArrowLeft className="h-3 w-3 text-zinc-400" />
+                  <ArrowLeft className="h-3.5 w-3.5 text-zinc-500" />
                   <span>{isLockedPdf ? "Locked PDFs" : "Landing Page"}</span>
                 </Link>
-                {targetMagnetId && (
-                  <Link
-                    href={editHref}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      window.location.href = editHref;
-                    }}
-                    className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-[#0066B2] text-white font-bold text-xs shadow-xs"
+
+                <div className="flex items-center gap-1.5">
+                  {targetMagnetId && (
+                    <Link
+                      href={editHref}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        window.location.href = editHref;
+                      }}
+                      className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-[#0066B2] text-white font-bold text-xs shadow-2xs hover:bg-[#005291] transition-all select-none"
+                    >
+                      <Pencil className="h-3.5 w-3.5" />
+                      <span>Edit</span>
+                    </Link>
+                  )}
+                  <motion.button
+                    whileTap={{ scale: 0.95 }}
+                    type="button"
+                    onClick={exportToCSV}
+                    title="Export CSV"
+                    className="flex h-8 w-8 items-center justify-center rounded-xl bg-white dark:bg-[#171717] border border-zinc-200/80 dark:border-white/[0.08] text-zinc-700 dark:text-zinc-200 shadow-2xs cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-800/80 transition-all shrink-0"
                   >
-                    <Pencil className="h-3 w-3" />
-                    <span>Edit</span>
-                  </Link>
-                )}
+                    <Download className="h-3.5 w-3.5 text-zinc-500" />
+                  </motion.button>
+                </div>
+              </div>
+
+              {/* Row 2: Page Title + Funnel Subtitle on Left, Calendar Time Range Button on Right */}
+              <div className="flex items-center justify-between gap-3 pt-0.5">
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2">
+                    <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight text-zinc-900 dark:text-white">
+                      Analytics
+                    </h1>
+                    <button
+                      type="button"
+                      onClick={onOpenHelp}
+                      className="cursor-pointer flex h-5 w-5 items-center justify-center rounded-full border border-zinc-200 dark:border-white/[0.12] bg-white dark:bg-[#171717] text-[11px] font-mono text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-all shadow-2xs"
+                      title="Analytics Help"
+                    >
+                      ?
+                    </button>
+                  </div>
+                  {page?.name && (
+                    <p className="text-xs text-zinc-500 dark:text-zinc-400 font-medium truncate max-w-[210px] mt-0.5">
+                      {page.name}
+                    </p>
+                  )}
+                </div>
+
+                {/* Native Calendar Time Range Pill Button */}
                 <motion.button
-                  whileTap={{ scale: 0.96 }}
+                  whileTap={{ scale: 0.95 }}
                   type="button"
-                  onClick={exportToCSV}
-                  title="Export CSV"
-                  className="flex h-8 w-8 items-center justify-center rounded-xl bg-white dark:bg-[#171717] border border-zinc-200/80 dark:border-white/[0.08] text-zinc-700 dark:text-zinc-200 shadow-xs cursor-pointer shrink-0"
+                  onClick={() => setMobileTimeRangeOpen(true)}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white dark:bg-[#171717] border border-zinc-200/80 dark:border-white/[0.1] text-xs font-semibold text-zinc-800 dark:text-zinc-100 shadow-2xs cursor-pointer active:bg-zinc-50 dark:active:bg-zinc-800/80 transition-all select-none shrink-0"
+                  aria-label="Select time range"
                 >
-                  <Download className="h-3.5 w-3.5 text-zinc-400" />
+                  <Calendar className="h-3.5 w-3.5 text-[#0066B2] dark:text-sky-400 shrink-0" />
+                  <span className="font-semibold text-zinc-900 dark:text-white">
+                    {timeRangeLabels[timeRange].short}
+                  </span>
+                  <ChevronDown className="h-3 w-3 text-zinc-400 dark:text-zinc-500 shrink-0" />
                 </motion.button>
               </div>
-            ) : (
-              <motion.button
-                whileTap={{ scale: 0.96 }}
-                type="button"
-                onClick={exportToCSV}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white dark:bg-[#171717] border border-zinc-200/80 dark:border-white/[0.08] text-xs font-semibold text-zinc-700 dark:text-zinc-200 shadow-xs cursor-pointer shrink-0"
-              >
-                <Download className="h-3.5 w-3.5 text-zinc-400" />
-                <span>Export</span>
-              </motion.button>
-            )}
-          </div>
+            </>
+          ) : (
+            /* General Analytics Page (1 Clean Row) */
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <h1 className="text-2xl font-extrabold tracking-tight text-zinc-900 dark:text-white">
+                  Analytics
+                </h1>
+                <button
+                  type="button"
+                  onClick={onOpenHelp}
+                  className="cursor-pointer flex h-5 w-5 items-center justify-center rounded-full border border-zinc-200 dark:border-white/[0.12] bg-white dark:bg-[#171717] text-[11px] font-mono text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-all shadow-2xs"
+                  title="Analytics Help"
+                >
+                  ?
+                </button>
+              </div>
 
-          {isPerMagnet && page?.name && (
-            <p className="text-xs text-zinc-500 dark:text-zinc-400 font-medium">
-              {page.name}
-            </p>
-          )}
+              {/* Top Right Actions on Mobile: [📅 30D ▾] [↓ Export] */}
+              <div className="flex items-center gap-2">
+                <motion.button
+                  whileTap={{ scale: 0.95 }}
+                  type="button"
+                  onClick={() => setMobileTimeRangeOpen(true)}
+                  className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-white dark:bg-[#171717] border border-zinc-200/80 dark:border-white/[0.1] text-xs font-semibold text-zinc-800 dark:text-zinc-100 shadow-2xs cursor-pointer active:bg-zinc-50 dark:active:bg-zinc-800/80 transition-all select-none"
+                  aria-label="Select time range"
+                >
+                  <Calendar className="h-3.5 w-3.5 text-[#0066B2] dark:text-sky-400 shrink-0" />
+                  <span className="font-semibold text-zinc-900 dark:text-white">
+                    {timeRangeLabels[timeRange].short}
+                  </span>
+                  <ChevronDown className="h-3 w-3 text-zinc-400 dark:text-zinc-500 shrink-0" />
+                </motion.button>
 
-          {/* Timeframe on Mobile (Full Width Segmented Bar) */}
-          <div className="w-full pt-0.5">
-            <div className="relative w-full flex items-center p-1 rounded-xl bg-white/80 dark:bg-[#171717] border border-zinc-200/80 dark:border-white/[0.08] text-xs shadow-xs backdrop-blur-sm">
-              {(["7d", "30d", "90d", "all"] as TimeRange[]).map((r) => {
-                const isActive = timeRange === r;
-                return (
-                  <button
-                    key={r}
-                    type="button"
-                    onClick={() => setTimeRange(r)}
-                    className={`relative z-10 flex-1 py-1.5 rounded-lg font-mono text-[11px] font-semibold text-center transition-colors duration-200 cursor-pointer ${
-                      isActive ? "text-zinc-900 dark:text-white" : "text-zinc-500 dark:text-zinc-400"
-                    }`}
-                  >
-                    {isActive && (
-                      <motion.div
-                        layoutId="analyticsActiveTimeframePillMobile"
-                        transition={{ type: "spring", stiffness: 450, damping: 32 }}
-                        className="absolute inset-0 rounded-lg bg-zinc-100 dark:bg-white/[0.12] border border-zinc-200/80 dark:border-white/[0.16] shadow-xs"
-                      />
-                    )}
-                    <span className="relative z-10">
-                      {r === "7d" ? "7D" : r === "30d" ? "30D" : r === "90d" ? "90D" : "ALL"}
-                    </span>
-                  </button>
-                );
-              })}
+                <motion.button
+                  whileTap={{ scale: 0.95 }}
+                  type="button"
+                  onClick={exportToCSV}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white dark:bg-[#171717] border border-zinc-200/80 dark:border-white/[0.1] text-xs font-semibold text-zinc-700 dark:text-zinc-200 shadow-2xs cursor-pointer active:bg-zinc-50 dark:active:bg-zinc-800/80 transition-all shrink-0"
+                >
+                  <Download className="h-3.5 w-3.5 text-zinc-400" />
+                  <span>Export</span>
+                </motion.button>
+              </div>
             </div>
-          </div>
+          )}
         </motion.header>
 
         {/* 2. CORE 4 METRIC CARDS (Matches Dashboard Compact Horizontal Row) */}
@@ -804,6 +842,101 @@ export default function AnalyticsLinearView({
           </div>
         </motion.div>
       </div>
+
+      {/* ── Native Mobile Time Range Bottom Sheet ── */}
+      <AnimatePresence>
+        {mobileTimeRangeOpen && (
+          <div className="fixed inset-0 z-50 md:hidden flex flex-col justify-end">
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.18 }}
+              onClick={() => setMobileTimeRangeOpen(false)}
+              className="fixed inset-0 bg-black/60 backdrop-blur-xs"
+            />
+
+            {/* Sheet Content */}
+            <motion.div
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "100%" }}
+              transition={{ type: "spring", stiffness: 420, damping: 36 }}
+              className="relative z-10 w-full rounded-t-[26px] bg-white dark:bg-[#161619] border-t border-zinc-200/90 dark:border-white/10 shadow-2xl p-5 pb-8 safe-area-bottom select-none"
+            >
+              {/* Drag Handle Indicator */}
+              <div className="w-10 h-1 bg-zinc-300 dark:bg-zinc-700 rounded-full mx-auto mb-4" />
+
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2.5">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-900/60">
+                    <Calendar className="h-4 w-4 text-[#0066B2] dark:text-sky-400" />
+                  </div>
+                  <div>
+                    <h3 className="text-base font-bold text-zinc-900 dark:text-white">
+                      Time Range
+                    </h3>
+                    <p className="text-xs text-zinc-500 dark:text-zinc-400">
+                      Filter dashboard analytics
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setMobileTimeRangeOpen(false)}
+                  className="p-1.5 rounded-full text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-white/10 transition-colors cursor-pointer"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+
+              <div className="space-y-2">
+                {(["7d", "30d", "90d", "all"] as TimeRange[]).map((r) => {
+                  const isActive = timeRange === r;
+                  const item = timeRangeLabels[r];
+                  return (
+                    <motion.button
+                      key={r}
+                      whileTap={{ scale: 0.98 }}
+                      type="button"
+                      onClick={() => {
+                        setTimeRange(r);
+                        if (typeof window !== "undefined" && "vibrate" in navigator) {
+                          navigator.vibrate?.(12);
+                        }
+                        setMobileTimeRangeOpen(false);
+                      }}
+                      className={`w-full flex items-center justify-between p-3.5 rounded-2xl border transition-all cursor-pointer ${
+                        isActive
+                          ? "bg-blue-50/80 border-[#0066B2]/40 dark:bg-blue-950/40 dark:border-blue-500/40 text-zinc-900 dark:text-white"
+                          : "bg-zinc-50/80 dark:bg-white/[0.03] border-transparent hover:bg-zinc-100 dark:hover:bg-white/[0.06] text-zinc-700 dark:text-zinc-300"
+                      }`}
+                    >
+                      <div className="flex flex-col text-left">
+                        <span className="text-sm font-semibold flex items-center gap-2">
+                          {item.label}
+                          <span className="text-[10px] font-mono px-1.5 py-0.5 rounded-md bg-zinc-200/70 dark:bg-white/10 text-zinc-600 dark:text-zinc-300">
+                            {item.short}
+                          </span>
+                        </span>
+                        <span className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
+                          {item.description}
+                        </span>
+                      </div>
+                      {isActive && (
+                        <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[#0066B2] text-white shadow-xs">
+                          <Check className="h-3.5 w-3.5 stroke-[2.5]" />
+                        </div>
+                      )}
+                    </motion.button>
+                  );
+                })}
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }
