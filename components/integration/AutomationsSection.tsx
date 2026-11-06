@@ -61,7 +61,7 @@ export const AutomationsSection = memo(function AutomationsSection({
           <div className={`${openSections["slack-webhook"] ? "md:col-span-2" : "md:col-span-1"} rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#171717] overflow-hidden shadow-md dark:shadow-none backdrop-blur-sm transition-all duration-300 ease-in-out`}>
             <div
               onClick={() => toggle("slack-webhook")}
-              className="p-4 flex items-center justify-between hover:bg-[#EFF6FF] dark:hover:bg-white/[0.04] transition-colors cursor-pointer"
+              className="p-3.5 sm:p-4 flex items-center justify-between hover:bg-[#EFF6FF] dark:hover:bg-white/[0.04] transition-colors cursor-pointer"
             >
               <div className="flex items-center gap-3">
                 <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#F3E8FF] border border-[#E9D5FF] dark:bg-[#251838] overflow-hidden p-1.5">
@@ -88,7 +88,7 @@ export const AutomationsSection = memo(function AutomationsSection({
             {/* Expanded Webhook Input Panel with Grid Height Animation */}
             <div className={`grid transition-all duration-300 ease-in-out ${openSections["slack-webhook"] ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"}`}>
               <div className="overflow-hidden">
-                <div className="px-5 pb-5 pt-2 border-t border-zinc-100 dark:border-white/5 space-y-4 bg-zinc-50/50 dark:bg-[#121212]/50">
+                <div className="px-3.5 sm:px-5 pb-4 sm:pb-5 pt-2.5 sm:pt-3 border-t border-zinc-100 dark:border-white/5 space-y-4 bg-zinc-50/50 dark:bg-[#121212]/50">
                   <div>
                     <label className="block text-xs font-semibold text-zinc-700 dark:text-zinc-400 mb-2">
                       Slack incoming-webhook URL
@@ -187,7 +187,7 @@ export const AutomationsSection = memo(function AutomationsSection({
           <div className={`${openSections["zapier-webhook"] ? "md:col-span-2" : "md:col-span-1"} rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#171717] overflow-hidden shadow-md dark:shadow-none backdrop-blur-sm transition-all duration-300 ease-in-out`}>
             <div
               onClick={() => toggle("zapier-webhook")}
-              className="p-4 flex items-center justify-between hover:bg-[#EFF6FF] dark:hover:bg-white/[0.04] transition-colors cursor-pointer"
+              className="p-3.5 sm:p-4 flex items-center justify-between hover:bg-[#EFF6FF] dark:hover:bg-white/[0.04] transition-colors cursor-pointer"
             >
               <div className="flex items-center gap-3">
                 <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#FFF0EB] text-[#FF4F00] border border-[#FFDCD0] dark:bg-[#33180F] dark:border-[#522518]">
@@ -214,7 +214,7 @@ export const AutomationsSection = memo(function AutomationsSection({
             {/* Expanded Zapier Webhook Input Panel with Grid Height Animation */}
             <div className={`grid transition-all duration-300 ease-in-out ${openSections["zapier-webhook"] ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"}`}>
               <div className="overflow-hidden">
-                <div className="px-5 pb-5 pt-3 border-t border-zinc-100 dark:border-white/5 space-y-4 bg-zinc-50/50 dark:bg-[#121212]/50">
+                <div className="px-3.5 sm:px-5 pb-4 sm:pb-5 pt-2.5 sm:pt-3 border-t border-zinc-100 dark:border-white/5 space-y-4 bg-zinc-50/50 dark:bg-[#121212]/50">
                   {/* Instruction Note Box */}
                   <div className="rounded-xl border border-zinc-200 bg-white dark:border-white/10 dark:bg-[#121212] p-3 text-xs text-zinc-600 dark:text-zinc-400">
                     In Zapier, choose <strong className="text-zinc-900 dark:text-white font-semibold">Webhooks by Zapier</strong> as the trigger, select <strong className="text-zinc-900 dark:text-white font-semibold">Catch Hook</strong>, then copy its webhook URL.
@@ -318,7 +318,7 @@ export const AutomationsSection = memo(function AutomationsSection({
           <div className={`${openSections["pipedrive-webhook"] ? "md:col-span-2" : "md:col-span-1"} rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#171717] overflow-hidden shadow-md dark:shadow-none backdrop-blur-sm transition-all duration-300 ease-in-out`}>
             <div
               onClick={() => toggle("pipedrive-webhook")}
-              className="p-4 flex items-center justify-between hover:bg-[#EFF6FF] dark:hover:bg-white/[0.04] transition-colors cursor-pointer"
+              className="p-3.5 sm:p-4 flex items-center justify-between hover:bg-[#EFF6FF] dark:hover:bg-white/[0.04] transition-colors cursor-pointer"
             >
               <div className="flex items-center gap-3">
                 <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#DCFCE7] border border-[#BBF7D0] dark:bg-[#0f2e1b] overflow-hidden p-1.5">
@@ -345,7 +345,7 @@ export const AutomationsSection = memo(function AutomationsSection({
             {/* Expanded Pipedrive API Token Panel with Smooth Height Animation */}
             <div className={`grid transition-all duration-300 ease-in-out ${openSections["pipedrive-webhook"] ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"}`}>
               <div className="overflow-hidden">
-                <div className="px-5 pb-5 pt-3 border-t border-zinc-100 dark:border-white/5 space-y-4 bg-zinc-50/50 dark:bg-[#121212]/50">
+                <div className="px-3.5 sm:px-5 pb-4 sm:pb-5 pt-2.5 sm:pt-3 border-t border-zinc-100 dark:border-white/5 space-y-4 bg-zinc-50/50 dark:bg-[#121212]/50">
                   <div>
                     <label className="block text-xs font-semibold text-zinc-700 dark:text-zinc-400 mb-2">
                       Pipedrive API token
@@ -423,7 +423,7 @@ export const AutomationsSection = memo(function AutomationsSection({
           <div className={`${openSections["kit-webhook"] ? "md:col-span-2" : "md:col-span-1"} rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#171717] overflow-hidden shadow-md dark:shadow-none backdrop-blur-sm transition-all duration-300 ease-in-out`}>
             <div
               onClick={() => toggle("kit-webhook")}
-              className="p-4 flex items-center justify-between hover:bg-[#EFF6FF] dark:hover:bg-white/[0.04] transition-colors cursor-pointer"
+              className="p-3.5 sm:p-4 flex items-center justify-between hover:bg-[#EFF6FF] dark:hover:bg-white/[0.04] transition-colors cursor-pointer"
             >
               <div className="flex items-center gap-3">
                 <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#FFE4E6] text-[#E11D48] border border-[#FECDD3] dark:bg-[#331118]">
@@ -450,7 +450,7 @@ export const AutomationsSection = memo(function AutomationsSection({
             {/* Expanded Kit Authorization Panel with Smooth Height Animation */}
             <div className={`grid transition-all duration-300 ease-in-out ${openSections["kit-webhook"] ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"}`}>
               <div className="overflow-hidden">
-                <div className="px-5 pb-5 pt-3 border-t border-zinc-100 dark:border-white/5 space-y-4 bg-zinc-50/50 dark:bg-[#121212]/50">
+                <div className="px-3.5 sm:px-5 pb-4 sm:pb-5 pt-2.5 sm:pt-3 border-t border-zinc-100 dark:border-white/5 space-y-4 bg-zinc-50/50 dark:bg-[#121212]/50">
                   <div>
                     <label className="block text-xs font-semibold text-zinc-700 dark:text-zinc-400 mb-2">
                       Kit API Secret / Key

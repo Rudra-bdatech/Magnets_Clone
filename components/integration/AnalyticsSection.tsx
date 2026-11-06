@@ -48,7 +48,7 @@ export const AnalyticsSection = memo(function AnalyticsSection({
       <button
         type="button"
         onClick={onToggle}
-        className="flex w-full items-center justify-between p-4 text-left hover:bg-[#EFF6FF] dark:hover:bg-white/[0.04] transition-colors cursor-pointer"
+        className="flex w-full items-center justify-between p-3.5 sm:p-4 text-left hover:bg-[#EFF6FF] dark:hover:bg-white/[0.04] transition-colors cursor-pointer"
       >
         <div className="flex items-center gap-3 min-w-0 flex-1">
           <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-emerald-500/30 bg-[#F0FDF4] text-emerald-600 dark:border-emerald-500/30 dark:bg-[#0f2e1b]">
@@ -77,7 +77,7 @@ export const AnalyticsSection = memo(function AnalyticsSection({
         </div>
       </button>
       {isOpen && (
-        <div className="border-t border-[#0066B2]/10 dark:border-white/[0.06] px-5 py-5 space-y-4">
+        <div className="border-t border-[#0066B2]/10 dark:border-white/[0.06] px-3 sm:px-5 py-4 sm:py-5 space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* GA4 Measurement ID */}
             <div>

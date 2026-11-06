@@ -380,7 +380,7 @@ export default function WorkspaceSetupPage() {
                 </div>
               </button>
               {openSections["connections"] && (
-                <div className="border-t border-[#0066B2]/10 bg-white/50 dark:border-white/[0.06] dark:bg-[#121212]/50 px-5 py-5 space-y-6">
+                <div className="border-t border-[#0066B2]/10 bg-white/50 dark:border-white/[0.06] dark:bg-[#121212]/50 px-3 sm:px-5 py-4 sm:py-5 space-y-6">
                   {/* Automations (Slack, Zapier, Pipedrive, Kit, Substack) */}
                   <AutomationsSection
                     account={account}
