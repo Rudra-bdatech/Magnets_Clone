@@ -612,7 +612,7 @@ export default function AnalyticsLinearView({
             totalSignups={signupsCount}
             leads={leads}
             range={timeRange}
-            title={`Visits over the ${rangeLabel}`}
+            title={timeRange === "all" ? "Visits over all time" : `Visits over the ${rangeLabel}`}
             subtitle="Each bar is one day. Orange shows conversions."
             onDataCalculated={handleDataCalculated}
           />

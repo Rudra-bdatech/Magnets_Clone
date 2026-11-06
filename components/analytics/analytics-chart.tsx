@@ -279,14 +279,14 @@ export default function AnalyticsChart({
       <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0066B2]/[0.02] to-transparent dark:hidden" />
 
       {/* Header */}
-      <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div className="flex items-center gap-2.5">
+      <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3">
+        <div className="flex items-center gap-2 min-w-0">
           <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-[#0066B2]/30 bg-[#EFF6FF] dark:border-white/10 dark:bg-white/5">
             <BarChart2 className="h-4 w-4 text-[#0066B2] dark:text-zinc-200" />
           </div>
-          <h3 className="text-sm font-bold text-zinc-900 dark:text-white flex items-center gap-2">
-            {title}
-            <span className="text-[10px] font-semibold px-2 py-0.5 rounded-md bg-zinc-100 dark:bg-white/[0.08] text-zinc-600 dark:text-zinc-400 uppercase tracking-wide">
+          <h3 className="text-xs sm:text-sm font-bold text-zinc-900 dark:text-white flex items-center gap-1.5 sm:gap-2 truncate min-w-0">
+            <span className="truncate">{title}</span>
+            <span className="text-[10px] font-semibold px-1.5 sm:px-2 py-0.5 rounded-md bg-zinc-100 dark:bg-white/[0.08] text-zinc-600 dark:text-zinc-400 uppercase tracking-wide shrink-0">
               {range}
             </span>
             <InfoTooltip
@@ -296,44 +296,44 @@ export default function AnalyticsChart({
           </h3>
         </div>
 
-        <div className="flex items-center justify-between sm:justify-end gap-3 sm:gap-4">
+        <div className="flex items-center justify-between sm:justify-end gap-2 sm:gap-4 shrink-0">
           {/* Informative Legend */}
-          <div className="flex items-center gap-3 text-xs text-zinc-600 dark:text-zinc-400 font-medium">
+          <div className="flex items-center gap-2.5 sm:gap-3 text-[11px] sm:text-xs text-zinc-600 dark:text-zinc-400 font-medium whitespace-nowrap shrink-0">
             <span className="flex items-center gap-1.5">
-              <span className="h-2 w-2 rounded-xs bg-[#0066B2] dark:bg-sky-400" />
-              Total Visits
+              <span className="h-2 w-2 rounded-xs bg-[#0066B2] dark:bg-sky-400 shrink-0" />
+              <span>Total Visits</span>
             </span>
             <span className="flex items-center gap-1.5">
-              <span className="h-2 w-2 rounded-xs bg-[#FE6F34]" />
-              Conversions
+              <span className="h-2 w-2 rounded-xs bg-[#FE6F34] shrink-0" />
+              <span>Conversions</span>
             </span>
           </div>
 
           {/* Clean Segmented Control Switcher */}
           {hasData && (
-            <div className="flex items-center p-0.5 rounded-lg bg-zinc-100 dark:bg-white/[0.06] border border-zinc-200/80 dark:border-white/[0.08] text-xs">
+            <div className="flex items-center p-0.5 rounded-lg bg-zinc-100 dark:bg-white/[0.06] border border-zinc-200/80 dark:border-white/[0.08] text-xs shrink-0">
               <button
                 type="button"
                 onClick={() => setChartMode("bar")}
-                className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-md text-[11px] font-semibold transition-all ${
+                className={`flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1 rounded-md text-[11px] font-semibold transition-all cursor-pointer ${
                   chartMode === "bar"
                     ? "bg-white dark:bg-white/10 text-zinc-900 dark:text-white shadow-xs"
                     : "text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200"
                 }`}
               >
-                <BarChart2 className="h-3.5 w-3.5" />
+                <BarChart2 className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
                 <span>Bars</span>
               </button>
               <button
                 type="button"
                 onClick={() => setChartMode("line")}
-                className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-md text-[11px] font-semibold transition-all ${
+                className={`flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1 rounded-md text-[11px] font-semibold transition-all cursor-pointer ${
                   chartMode === "line"
                     ? "bg-white dark:bg-white/10 text-zinc-900 dark:text-white shadow-xs"
                     : "text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200"
                 }`}
               >
-                <TrendingUp className="h-3.5 w-3.5" />
+                <TrendingUp className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
                 <span>Area</span>
               </button>
             </div>
@@ -415,52 +415,52 @@ export default function AnalyticsChart({
             <div className="absolute inset-0 pointer-events-none">
               {/* Max / 100% line */}
               <div className="absolute inset-x-0 top-3.5 border-b border-zinc-200/60 dark:border-zinc-800/60">
-                <span className="absolute right-2.5 -top-2 text-[10px] font-mono font-medium text-zinc-400 dark:text-zinc-500 bg-zinc-50/80 dark:bg-[#121212]/80 px-1 rounded-xs">
+                <span className="absolute right-2 -top-2 text-[10px] font-mono font-medium text-zinc-400 dark:text-zinc-500 bg-zinc-50/90 dark:bg-[#121212]/90 px-1 rounded-xs">
                   {formatYValue(maxVal)}
                 </span>
               </div>
               {/* 75% line */}
               <div className="absolute inset-x-0 top-[31%] border-b border-zinc-200/30 dark:border-zinc-800/30">
-                <span className="absolute right-2.5 -top-2 text-[10px] font-mono font-medium text-zinc-400/70 dark:text-zinc-500/70 bg-zinc-50/80 dark:bg-[#121212]/80 px-1 rounded-xs">
+                <span className="absolute right-2 -top-2 text-[10px] font-mono font-medium text-zinc-400/70 dark:text-zinc-500/70 bg-zinc-50/90 dark:bg-[#121212]/90 px-1 rounded-xs">
                   {formatYValue(maxVal * 0.75)}
                 </span>
               </div>
               {/* Mid / 50% line */}
               <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 border-b border-zinc-200/40 dark:border-zinc-800/40">
-                <span className="absolute right-2.5 -top-2 text-[10px] font-mono font-medium text-zinc-400/80 dark:text-zinc-500/80 bg-zinc-50/80 dark:bg-[#121212]/80 px-1 rounded-xs">
+                <span className="absolute right-2 -top-2 text-[10px] font-mono font-medium text-zinc-400/80 dark:text-zinc-500/80 bg-zinc-50/90 dark:bg-[#121212]/90 px-1 rounded-xs">
                   {formatYValue(maxVal / 2)}
                 </span>
               </div>
               {/* 25% line */}
               <div className="absolute inset-x-0 top-[69%] border-b border-zinc-200/30 dark:border-zinc-800/30">
-                <span className="absolute right-2.5 -top-2 text-[10px] font-mono font-medium text-zinc-400/70 dark:text-zinc-500/70 bg-zinc-50/80 dark:bg-[#121212]/80 px-1 rounded-xs">
+                <span className="absolute right-2 -top-2 text-[10px] font-mono font-medium text-zinc-400/70 dark:text-zinc-500/70 bg-zinc-50/90 dark:bg-[#121212]/90 px-1 rounded-xs">
                   {formatYValue(maxVal * 0.25)}
                 </span>
               </div>
               {/* Baseline / 0 line */}
               <div className="absolute inset-x-0 bottom-2.5 border-b border-zinc-200/40 dark:border-zinc-800/40">
-                <span className="absolute right-2.5 -top-2 text-[10px] font-mono font-medium text-zinc-400/70 dark:text-zinc-600 bg-zinc-50/80 dark:bg-[#121212]/80 px-1 rounded-xs">
+                <span className="absolute right-2 -top-2 text-[10px] font-mono font-medium text-zinc-400/70 dark:text-zinc-600 bg-zinc-50/90 dark:bg-[#121212]/90 px-1 rounded-xs">
                   0
                 </span>
               </div>
             </div>
 
-            {/* Direct label for the peak day, always visible (not hover-gated) */}
+            {/* Direct label for the peak day, always visible (clamped away from right-edge Y-axis numbers) */}
             {peakIsMeaningful && safeHoveredIndex === null && (
               <div
                 style={{
-                  left: `${Math.max(6, Math.min(94, (peakIndex / Math.max(1, days.length - 1)) * 100))}%`,
+                  left: `${Math.max(10, Math.min(76, (peakIndex / Math.max(1, days.length - 1)) * 100))}%`,
                 }}
                 className="pointer-events-none absolute top-1.5 -translate-x-1/2 z-10"
               >
-                <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-[#0066B2]/10 dark:bg-[#38BDF8]/10 border border-[#0066B2]/20 dark:border-[#38BDF8]/25 text-[9px] font-bold uppercase tracking-wide text-[#0066B2] dark:text-[#38BDF8] whitespace-nowrap">
+                <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-[#0066B2]/10 dark:bg-[#38BDF8]/10 border border-[#0066B2]/20 dark:border-[#38BDF8]/25 text-[9px] font-bold uppercase tracking-wide text-[#0066B2] dark:text-[#38BDF8] whitespace-nowrap shadow-xs">
                   Peak · {peakDay.visits}
                 </div>
               </div>
             )}
 
             {chartMode === "line" ? (
-              <div className="relative h-full w-full">
+              <div className="relative h-full w-full pr-7 sm:pr-8">
                 <svg viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none" className="w-full h-full">
                   <defs>
                     <linearGradient id="visitGradClean" x1="0" y1="0" x2="0" y2="1">
@@ -545,11 +545,11 @@ export default function AnalyticsChart({
                 {activeDay && safeHoveredIndex !== null && (
                   <div
                     style={{
-                      left: `${Math.max(8, Math.min(92, (safeHoveredIndex / Math.max(1, days.length - 1)) * 100))}%`,
+                      left: `${Math.max(12, Math.min(84, (safeHoveredIndex / Math.max(1, days.length - 1)) * 100))}%`,
                     }}
                     className="pointer-events-none absolute top-2 -translate-x-1/2 z-20 transition-all duration-75"
                   >
-                    <div className="flex items-center gap-2 px-2.5 py-1 rounded-md bg-zinc-900/95 dark:bg-zinc-800/95 text-white text-[11px] font-medium shadow-lg border border-zinc-700/60 backdrop-blur-md whitespace-nowrap">
+                    <div className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-2.5 py-1 rounded-md bg-zinc-900/95 dark:bg-zinc-800/95 text-white text-[10px] sm:text-[11px] font-medium shadow-lg border border-zinc-700/60 backdrop-blur-md whitespace-nowrap">
                       <span className="font-semibold text-zinc-300">{activeDay.label}:</span>
                       <span className="text-[#38BDF8] font-bold">{activeDay.visits}v</span>
                       <span className="text-zinc-500">/</span>
@@ -571,16 +571,84 @@ export default function AnalyticsChart({
                 </div>
               </div>
             ) : (
-              <div className="h-full w-full flex items-end justify-between gap-1 sm:gap-1.5 pt-6 pb-2.5 px-2 sm:px-4 relative">
-                {/* Floating Tooltip in Bar Mode */}
+              <div className="relative h-full w-full pr-7 sm:pr-8">
+                <svg viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none" className="w-full h-full">
+                  {days.map((day, idx) => {
+                    const slotWidth = width / days.length;
+                    const barWidth =
+                      days.length <= 7
+                        ? Math.min(32, slotWidth * 0.45)
+                        : days.length <= 14
+                          ? Math.min(22, slotWidth * 0.55)
+                          : days.length <= 31
+                            ? Math.min(14, slotWidth * 0.65)
+                            : days.length <= 90
+                              ? Math.max(3, slotWidth * 0.75)
+                              : Math.max(1.8, slotWidth * 0.8);
+
+                    const xCenter = idx * slotWidth + slotWidth / 2;
+                    const x = xCenter - barWidth / 2;
+                    const plotBottom = height - 14;
+                    const plotHeight = height - 28;
+
+                    const visitH = day.visits > 0 ? Math.max(5, (day.visits / maxVal) * plotHeight) : 0;
+                    const yVisit = plotBottom - visitH;
+
+                    const signupH = day.signups > 0 ? Math.max(5, (day.signups / maxVal) * plotHeight) : 0;
+                    const ySignup = plotBottom - signupH;
+
+                    const isHovered = safeHoveredIndex === idx;
+
+                    return (
+                      <g key={day.isoDate + idx}>
+                        {day.visits === 0 ? (
+                          <rect
+                            x={x}
+                            y={plotBottom - 1.5}
+                            width={barWidth}
+                            height={2}
+                            rx={1}
+                            className="fill-zinc-300 dark:fill-zinc-800 transition-colors"
+                          />
+                        ) : (
+                          <rect
+                            x={x}
+                            y={yVisit}
+                            width={barWidth}
+                            height={visitH}
+                            rx={barWidth > 4 ? 2 : 1}
+                            className={
+                              isHovered
+                                ? "fill-[#0066B2] dark:fill-[#38BDF8] transition-colors"
+                                : "fill-zinc-300 dark:fill-zinc-700 transition-colors"
+                            }
+                          />
+                        )}
+
+                        {day.signups > 0 && (
+                          <rect
+                            x={x}
+                            y={ySignup}
+                            width={barWidth}
+                            height={signupH}
+                            rx={barWidth > 4 ? 2 : 1}
+                            className="fill-[#FE6F34] transition-colors"
+                          />
+                        )}
+                      </g>
+                    );
+                  })}
+                </svg>
+
+                {/* Direct Floating Tooltip in Bar Mode */}
                 {activeDay && safeHoveredIndex !== null && (
                   <div
                     style={{
-                      left: `${Math.max(8, Math.min(92, (safeHoveredIndex / Math.max(1, days.length - 1)) * 100))}%`,
+                      left: `${Math.max(12, Math.min(84, (safeHoveredIndex / Math.max(1, days.length - 1)) * 100))}%`,
                     }}
                     className="pointer-events-none absolute top-2 -translate-x-1/2 z-20 transition-all duration-75"
                   >
-                    <div className="flex items-center gap-2 px-2.5 py-1 rounded-md bg-zinc-900/95 dark:bg-zinc-800/95 text-white text-[11px] font-medium shadow-lg border border-zinc-700/60 backdrop-blur-md whitespace-nowrap">
+                    <div className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-2.5 py-1 rounded-md bg-zinc-900/95 dark:bg-zinc-800/95 text-white text-[10px] sm:text-[11px] font-medium shadow-lg border border-zinc-700/60 backdrop-blur-md whitespace-nowrap">
                       <span className="font-semibold text-zinc-300">{activeDay.label}:</span>
                       <span className="text-[#38BDF8] font-bold">{activeDay.visits}v</span>
                       <span className="text-zinc-500">/</span>
@@ -589,53 +657,24 @@ export default function AnalyticsChart({
                   </div>
                 )}
 
-                {days.map((day, idx) => {
-                  const visitHeightPct = day.visits > 0 ? Math.max(7, (day.visits / maxVal) * 100) : 0;
-                  const signupHeightPct = day.signups > 0 ? Math.max(7, (day.signups / maxVal) * 100) : 0;
-                  const isHovered = hoveredIndex === idx;
-
-                  return (
+                {/* Interactive Slices */}
+                <div className="absolute inset-0 flex items-stretch">
+                  {days.map((_, i) => (
                     <div
-                      key={day.isoDate + idx}
-                      onClick={() => setHoveredIndex(idx)}
-                      onMouseEnter={() => setHoveredIndex(idx)}
+                      key={i}
+                      onClick={() => setHoveredIndex(i)}
+                      onMouseEnter={() => setHoveredIndex(i)}
                       onMouseLeave={() => setHoveredIndex(null)}
-                      className="relative flex-1 h-full flex items-end justify-center cursor-pointer group"
-                    >
-                      <div className="w-full max-w-[10px] sm:max-w-[16px] h-full flex items-end justify-center relative rounded-t-sm overflow-hidden">
-                        {day.visits > 0 ? (
-                          <div
-                            style={{ height: `${visitHeightPct}%` }}
-                            className={`w-full transition-all duration-150 rounded-t-sm ${
-                              isHovered
-                                ? "bg-[#0066B2] dark:bg-[#38BDF8]"
-                                : "bg-zinc-300 dark:bg-zinc-700 border-t border-x border-zinc-400/40 dark:border-zinc-600/60 group-hover:bg-[#0066B2]/70 dark:group-hover:bg-[#38BDF8]/70"
-                            }`}
-                          />
-                        ) : (
-                          <div className="w-full h-1 bg-zinc-200 dark:bg-zinc-800 rounded-full group-hover:bg-zinc-400 dark:group-hover:bg-zinc-600 transition-colors" />
-                        )}
-
-                        {day.signups > 0 && (
-                          <div
-                            style={{ height: `${signupHeightPct}%` }}
-                            className={`absolute bottom-0 w-full rounded-t-sm transition-all duration-150 ${
-                              isHovered
-                                ? "bg-[#FE6F34] shadow-[0_0_8px_rgba(254,111,52,0.6)]"
-                                : "bg-gradient-to-t from-[#FE6F34] to-[#FF854D] border-t border-orange-200/50 group-hover:from-[#FE6F34] group-hover:to-[#FFA06A]"
-                            }`}
-                          />
-                        )}
-                      </div>
-                    </div>
-                  );
-                })}
+                      className="flex-1 cursor-pointer"
+                    />
+                  ))}
+                </div>
               </div>
             )}
           </div>
 
           {/* X-Axis Date Ticks */}
-          <div className="flex justify-between text-[10px] sm:text-[11px] text-zinc-500 dark:text-zinc-400 font-medium px-1">
+          <div className="flex justify-between text-[10px] sm:text-[11px] text-zinc-500 dark:text-zinc-400 font-medium px-1 pr-7 sm:pr-8">
             <span>{days[0].label}</span>
             <span className="hidden sm:inline">{days[Math.floor(numDays * 0.25)].label}</span>
             <span>{days[Math.floor(numDays * 0.5)].label}</span>
