@@ -362,7 +362,7 @@ export default function FunnelDetailPage() {
               onClick={() => {
                 if (!actionLoading) setConfirmModal(null);
               }}
-              className="fixed inset-0 bg-black/60 backdrop-blur-xs cursor-pointer"
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm cursor-pointer"
             />
 
             {/* Modal Sheet */}

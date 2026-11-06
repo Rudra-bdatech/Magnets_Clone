@@ -191,7 +191,7 @@ function FilterSelect({
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2, ease: "easeOut" }}
               onClick={() => setOpen(false)}
-              className="sm:hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-xs cursor-pointer"
+              className="sm:hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm cursor-pointer"
             />
 
             {/* Mobile Bottom Action Sheet (< sm) */}
@@ -200,7 +200,7 @@ function FilterSelect({
               animate={{ y: 0 }}
               exit={{ y: "100%" }}
               transition={{ type: "spring", damping: 30, stiffness: 350 }}
-              className="sm:hidden fixed inset-x-0 bottom-0 z-50 rounded-t-3xl bg-white dark:bg-[#1C1C1F] border-t border-zinc-200 dark:border-white/10 p-4 pb-8 shadow-2xl max-h-[75vh] overflow-y-auto"
+              className="sm:hidden fixed inset-x-0 bottom-0 z-[51] rounded-t-3xl bg-white dark:bg-[#1C1C1F] border-t border-zinc-200 dark:border-white/10 p-4 pb-8 shadow-2xl max-h-[75vh] overflow-y-auto"
             >
               <div className="w-10 h-1 bg-zinc-300 dark:bg-white/20 rounded-full mx-auto mb-3" />
               <div className="flex items-center justify-between pb-2 mb-2 border-b border-zinc-100 dark:border-white/[0.08] px-1">
@@ -1370,7 +1370,7 @@ export default function FunnelsPage() {
               onClick={() => {
                 if (!actionLoading) setConfirmModal(null);
               }}
-              className="fixed inset-0 bg-black/60 backdrop-blur-xs cursor-pointer"
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm cursor-pointer"
             />
 
             <motion.div
@@ -1491,7 +1491,7 @@ export default function FunnelsPage() {
               onClick={() => {
                 if (!actionLoading) setBatchModal(null);
               }}
-              className="fixed inset-0 bg-black/60 backdrop-blur-xs cursor-pointer"
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm cursor-pointer"
             />
 
             <motion.div
