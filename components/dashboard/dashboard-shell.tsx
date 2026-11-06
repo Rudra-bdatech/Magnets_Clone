@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
-import { FileText, FolderOpen, Users, Sliders, Palette, User, CircleHelp, Menu, X, Search, ChevronRight, HelpCircle, Sun, Moon, Monitor, Bug, Lightbulb, LogOut, BookOpen, Gift, Compass, Send, GitFork, Calendar, Settings, Globe, Mail, Share2, Cpu, Slack, Zap, Link as LinkIcon, BarChart3, PlayCircle, CheckCircle2, ArrowLeft, Sparkles, Rocket, ExternalLink, ListChecks, Loader2, FileLock, Lock, LayoutDashboard, Linkedin, PanelLeftClose, PanelLeftOpen, PanelLeft, ShieldCheck } from "lucide-react";
+import { FileText, FolderOpen, Users, Sliders, Palette, User, CircleHelp, Menu, X, Search, ChevronRight, HelpCircle, Sun, Moon, Monitor, Smartphone, Bug, Lightbulb, LogOut, BookOpen, Gift, Compass, Send, GitFork, Calendar, Settings, Globe, Mail, Share2, Cpu, Slack, Zap, Link as LinkIcon, BarChart3, PlayCircle, CheckCircle2, ArrowLeft, Sparkles, Rocket, ExternalLink, ListChecks, Loader2, FileLock, Lock, LayoutDashboard, Linkedin, PanelLeftClose, PanelLeftOpen, PanelLeft, ShieldCheck } from "lucide-react";
 import { useState, useEffect, useRef, useMemo, useCallback, createContext, useContext } from "react";
 import { createPortal } from "react-dom";
 import ThemeToggle from "@/components/theme-toggle";
@@ -1333,7 +1333,7 @@ export default function DashboardShell({
                                 </div>
                                 <div className="relative flex items-center justify-between p-0.5 bg-zinc-100 dark:bg-black/40 rounded-xl border border-zinc-200/70 dark:border-white/[0.06] select-none">
                                   {(["light", "dark", "system"] as const).map((mode) => {
-                                    const Icon = mode === "light" ? Sun : mode === "dark" ? Moon : Monitor;
+                                    const Icon = mode === "light" ? Sun : mode === "dark" ? Moon : Smartphone;
                                     const isActive = themeMode === mode;
                                     return (
                                       <button
