@@ -236,7 +236,7 @@ export default function RevenuePage() {
         <StatCard
           label="MRR (USD)"
           value={`$${data.mrrUsd.toLocaleString()}`}
-          sub={`${data.stripeProUsers} Stripe × $29`}
+          sub={`${data.stripeProUsers} Stripe × $67`}
           icon={DollarSign}
           color="green"
         />

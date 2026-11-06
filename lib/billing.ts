@@ -43,11 +43,11 @@ export const PLAN_PRICING = {
     itemPriceId: (process.env.CHARGEBEE_ITEM_PRICE_ID_INR && process.env.CHARGEBEE_ITEM_PRICE_ID_INR !== "funnels-custom-domain" ? process.env.CHARGEBEE_ITEM_PRICE_ID_INR : "funnels-custom-domain-INR"),
   },
   PRO_USD: {
-    amount: 29,
-    amountCents: 2900,     // kept for Stripe (1 USD = 100 cents)
+    amount: 67,
+    amountCents: 6700,     // kept for Stripe (1 USD = 100 cents)
     currency: "USD",
-    name: "Pro Plan Monthly (Global)",
-    displayPrice: "$29",
+    name: "Pro Plan Lifetime (Global)",
+    displayPrice: "$67",
     itemPriceId: process.env.CHARGEBEE_ITEM_PRICE_ID_USD || "pro-monthly-USD",
   },
 } as const;

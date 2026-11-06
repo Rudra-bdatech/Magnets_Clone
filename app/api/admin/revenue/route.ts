@@ -110,9 +110,9 @@ export async function GET() {
   }
 
   // Revenue estimates
-  // Stripe Pro = $29/month USD recurring
-  const mrrUsd = stripeProUsers * 29;
-  // Chargebee Pro: could be INR ₹4,999 one-time or USD $29/month — estimate conservatively
+  // Stripe Pro = $67/month USD recurring
+  const mrrUsd = stripeProUsers * 67;
+  // Chargebee Pro: could be INR ₹4,999 one-time or USD $67/month — estimate conservatively
   // We show estimated totals with a note
   const estimatedInrLifetime = chargebeeProUsers * 4999; // INR (one-time)
 
@@ -137,7 +137,7 @@ export async function GET() {
     recentSignups,
 
     // Revenue breakdown
-    stripeProUsers,      // USD $29/month recurring
+    stripeProUsers,      // USD $67/month recurring
     chargebeeProUsers,   // INR ₹4,999 one-time (primarily)
     otherProUsers,
 

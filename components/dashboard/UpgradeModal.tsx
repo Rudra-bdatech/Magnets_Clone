@@ -135,7 +135,7 @@ export function UpgradeModal({
     }
   };
 
-  // ── 2. Handle Stripe Checkout ($29 USD) ───────────────────────────────────
+  // ── 2. Handle Stripe Checkout ($67 USD) ───────────────────────────────────
   const handleStripeCheckout = async () => {
     if (checkoutInFlight.current) return;
     checkoutInFlight.current = true;
@@ -543,8 +543,8 @@ export function UpgradeModal({
                             </>
                           ) : (
                             <>
-                              <span className="text-xl font-black text-zinc-900 dark:text-white">$29</span>
-                              <span className="text-[11px] text-zinc-500 dark:text-zinc-400"> / month</span>
+                              <span className="text-xl font-black text-zinc-900 dark:text-white">$67</span>
+                              <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded">One-Time • Lifetime</span>
                               <span className="text-[10px] text-zinc-400 dark:text-zinc-500 ml-auto hidden sm:inline">
                                 Global Cards
                               </span>
@@ -601,7 +601,7 @@ export function UpgradeModal({
                             </>
                           ) : (
                             <>
-                              <span>Pay with Global Card ($29)</span>
+                              <span>Pay with Global Card ($67 One-Time)</span>
                               <ArrowRight className="h-3 w-3" />
                             </>
                           )}

@@ -57,26 +57,24 @@ export async function POST(req: Request) {
       .digest("hex")
       .slice(0, 12)}`;
 
-    // Create live Stripe Checkout Session ($29 USD)
+    // Create live Stripe Checkout Session ($67 USD One-Time Lifetime)
     const session = await stripe.checkout.sessions.create({
       line_items: [
         {
           price_data: {
             currency: PLAN_PRICING.PRO_USD.currency.toLowerCase(),
             product_data: {
-              name: "Magnets Pro Plan (Monthly)",
+              name: "Funnels Pro Plan (Lifetime License)",
               description: "Custom Domains, Unlimited Leads, Zero Watermarks, and Edge SSL.",
               images: [`${origin}/logo.png`],
             },
-            unit_amount: PLAN_PRICING.PRO_USD.amountCents, // $29.00 = 2900 cents
-            recurring: {
-              interval: "month",
-            },
+            unit_amount: PLAN_PRICING.PRO_USD.amountCents, // $67.00 = 6700 cents
+            
           },
           quantity: 1,
         },
       ],
-      mode: "subscription",
+      mode: "payment",
       customer_email: account.email,
       client_reference_id: account._id.toString(),
       metadata: {
@@ -99,7 +97,7 @@ export async function POST(req: Request) {
   } catch (error: any) {
     console.error("[Stripe Checkout Session Error]:", error);
     return NextResponse.json(
-      { error: "Failed to start card checkout. Please try again." },
+      { error: error?.message || "Failed to start card checkout. Please try again." },
       { status: 500 }
     );
   }
