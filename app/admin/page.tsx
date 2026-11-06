@@ -253,9 +253,9 @@ export default function AdminOverviewPage() {
 
   if (loading) {
     return (
-      <div className="p-3.5 sm:p-6 lg:p-8 max-w-7xl mx-auto space-y-4 sm:space-y-6 w-full min-w-0 touch-pan-y">
+      <div className="p-3.5 sm:p-6 lg:p-8 max-w-7xl mx-auto space-y-4 sm:space-y-5 w-full min-w-0 touch-pan-y">
         <div className="h-7 w-36 bg-zinc-200/70 dark:bg-white/5 rounded-xl animate-pulse" />
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-5">
           {Array.from({ length: 5 }).map((_, i) => (
             <div
               key={i}
@@ -265,7 +265,7 @@ export default function AdminOverviewPage() {
             />
           ))}
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
           <div className="h-56 bg-zinc-200/60 dark:bg-white/5 rounded-2xl sm:rounded-3xl animate-pulse" />
           <div className="h-56 bg-zinc-200/60 dark:bg-white/5 rounded-2xl sm:rounded-3xl animate-pulse" />
         </div>
@@ -286,7 +286,7 @@ export default function AdminOverviewPage() {
   const storage = stats.storage;
 
   return (
-    <div className="p-3.5 sm:p-6 lg:p-8 max-w-7xl mx-auto space-y-4 sm:space-y-6 w-full min-w-0 touch-pan-y">
+    <div className="p-3.5 sm:p-6 lg:p-8 max-w-7xl mx-auto space-y-4 sm:space-y-5 w-full min-w-0 touch-pan-y">
       {/* Header section */}
       <div>
         <h1 className="text-xl sm:text-2xl font-bold text-zinc-900 dark:text-white tracking-tight flex items-center gap-2">
@@ -296,7 +296,7 @@ export default function AdminOverviewPage() {
       </div>
 
       {/* KPI Bento Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-5">
         <AppleKpiCard
           label="Total Users"
           value={totalUsersAnimated}
@@ -349,7 +349,7 @@ export default function AdminOverviewPage() {
       </div>
 
       {/* Breakdown Cards Section (By Plan & By Role) */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
         {/* By Plan Bento Card */}
         <div className="p-4 sm:p-5 rounded-2xl sm:rounded-3xl bg-white/90 dark:bg-[#171717] backdrop-blur-sm border border-[#0066B2]/15 dark:border-white/[0.08] shadow-md dark:shadow-none">
           <div className="flex items-center justify-between mb-4">
@@ -459,9 +459,9 @@ export default function AdminOverviewPage() {
 
       {/* Storage & Top Consumers Section */}
       {storage && (
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6 items-start">
-          {/* Storage Usage Bento Card (Clean Standalone Card on Left) */}
-          <div className="lg:col-span-7 p-4 sm:p-5 rounded-2xl sm:rounded-3xl bg-white/90 dark:bg-[#171717] backdrop-blur-sm border border-[#0066B2]/15 dark:border-white/[0.08] shadow-md dark:shadow-none flex flex-col justify-between">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5 items-stretch">
+          {/* Storage Usage Bento Card */}
+          <div className="p-4 sm:p-5 rounded-2xl sm:rounded-3xl bg-white/90 dark:bg-[#171717] backdrop-blur-sm border border-[#0066B2]/15 dark:border-white/[0.08] shadow-md dark:shadow-none flex flex-col justify-between">
             <div>
               <div className="flex items-center justify-between gap-2.5 mb-4">
                 <div className="flex items-center gap-2">
@@ -540,64 +540,66 @@ export default function AdminOverviewPage() {
             </div>
           </div>
 
-          {/* Top Storage Consumers (Top 3 for perfect vertical alignment with left card) */}
-          <div className="lg:col-span-5 flex flex-col justify-between">
-            <div className="flex items-center justify-between mb-2.5 px-1">
-              <h2 className="text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest">
-                Top Consumers
-              </h2>
-              <Link
-                href="/admin/users"
-                className="text-[11px] font-semibold text-[#0066B2] dark:text-[#38BDF8] hover:underline flex items-center gap-1"
-              >
-                View all <ArrowUpRight className="w-3 h-3" />
-              </Link>
-            </div>
-
-            {storage.topUsers && storage.topUsers.length > 0 ? (
-              <div className="space-y-1.5">
-                {storage.topUsers.slice(0, 3).map((u) => {
-                  const initials = (u.name || u.email || "U")
-                    .slice(0, 2)
-                    .toUpperCase();
-                  return (
-                    <Link
-                      key={u.email}
-                      href={`/admin/users/${encodeURIComponent(u.email)}`}
-                      className="group flex items-center justify-between py-2.5 px-3 rounded-xl hover:bg-zinc-200/50 dark:hover:bg-white/[0.06] cursor-pointer transition-colors active:scale-[0.98]"
-                    >
-                      <div className="flex items-center gap-2.5 min-w-0 pr-2">
-                        <span
-                          className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-[10px] font-bold border ${getAvatarPalette(
-                            u.email
-                          )}`}
-                        >
-                          {initials}
-                        </span>
-                        <div className="min-w-0">
-                          <p className="font-semibold text-xs text-zinc-900 dark:text-zinc-100 truncate group-hover:text-[#0066B2] dark:group-hover:text-[#38BDF8]">
-                            {u.name || u.email.split("@")[0]}
-                          </p>
-                          <p className="text-[10px] text-zinc-400 dark:text-zinc-500 truncate">{u.email}</p>
-                        </div>
-                      </div>
-                      <div className="text-right shrink-0">
-                        <span className="font-bold text-xs text-zinc-900 dark:text-white block tabular-nums">
-                          {formatBytes(u.bytes)}
-                        </span>
-                        <span className="text-[10px] text-zinc-400">
-                          {u.files} {u.files === 1 ? "file" : "files"}
-                        </span>
-                      </div>
-                    </Link>
-                  );
-                })}
+          {/* Top Storage Consumers Bento Card */}
+          <div className="p-4 sm:p-5 rounded-2xl sm:rounded-3xl bg-white/90 dark:bg-[#171717] backdrop-blur-sm border border-[#0066B2]/15 dark:border-white/[0.08] shadow-md dark:shadow-none flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest">
+                  Top Consumers
+                </h2>
+                <Link
+                  href="/admin/users"
+                  className="text-xs font-semibold text-[#0066B2] dark:text-[#38BDF8] hover:underline flex items-center gap-1"
+                >
+                  View all <ArrowUpRight className="w-3.5 h-3.5" />
+                </Link>
               </div>
-            ) : (
-              <p className="text-xs text-zinc-400 dark:text-zinc-500 py-6 text-center">
-                No uploads recorded yet
-              </p>
-            )}
+
+              {storage.topUsers && storage.topUsers.length > 0 ? (
+                <div className="space-y-1.5">
+                  {storage.topUsers.slice(0, 3).map((u) => {
+                    const initials = (u.name || u.email || "U")
+                      .slice(0, 2)
+                      .toUpperCase();
+                    return (
+                      <Link
+                        key={u.email}
+                        href={`/admin/users/${encodeURIComponent(u.email)}`}
+                        className="group flex items-center justify-between py-2 px-2.5 rounded-xl hover:bg-zinc-100 dark:hover:bg-white/[0.04] cursor-pointer transition-colors active:scale-[0.98]"
+                      >
+                        <div className="flex items-center gap-2.5 min-w-0 pr-2">
+                          <span
+                            className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-[10px] font-bold border ${getAvatarPalette(
+                              u.email
+                            )}`}
+                          >
+                            {initials}
+                          </span>
+                          <div className="min-w-0">
+                            <p className="font-semibold text-xs text-zinc-900 dark:text-zinc-100 truncate group-hover:text-[#0066B2] dark:group-hover:text-[#38BDF8]">
+                              {u.name || u.email.split("@")[0]}
+                            </p>
+                            <p className="text-[10px] text-zinc-400 dark:text-zinc-500 truncate">{u.email}</p>
+                          </div>
+                        </div>
+                        <div className="text-right shrink-0">
+                          <span className="font-bold text-xs text-zinc-900 dark:text-white block tabular-nums">
+                            {formatBytes(u.bytes)}
+                          </span>
+                          <span className="text-[10px] text-zinc-400">
+                            {u.files} {u.files === 1 ? "file" : "files"}
+                          </span>
+                        </div>
+                      </Link>
+                    );
+                  })}
+                </div>
+              ) : (
+                <p className="text-xs text-zinc-400 dark:text-zinc-500 py-6 text-center">
+                  No uploads recorded yet
+                </p>
+              )}
+            </div>
           </div>
         </div>
       )}
@@ -607,7 +609,7 @@ export default function AdminOverviewPage() {
         <h2 className="text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest mb-3">
           Quick Launchpad
         </h2>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
           {[
             { label: "Users", href: "/admin/users", icon: Users },
             { label: "Funnels", href: "/admin/funnels", icon: FileText },
