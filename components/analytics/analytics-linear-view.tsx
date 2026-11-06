@@ -801,26 +801,34 @@ export default function AnalyticsLinearView({
       <AnimatePresence>
         {mobileTimeRangeOpen && (
           <div className="fixed inset-0 z-50 md:hidden flex flex-col justify-end">
-            {/* Backdrop */}
+            {/* Backdrop with Frosted Blur */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.18 }}
+              transition={{ duration: 0.2 }}
               onClick={() => setMobileTimeRangeOpen(false)}
-              className="fixed inset-0 bg-black/60 backdrop-blur-xs"
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm"
             />
 
-            {/* Sheet Content */}
+            {/* Sheet Content with Swipe-to-Dismiss */}
             <motion.div
+              drag="y"
+              dragConstraints={{ top: 0 }}
+              dragElastic={0.2}
+              onDragEnd={(_, { offset, velocity }) => {
+                if (offset.y > 80 || velocity.y > 350) {
+                  setMobileTimeRangeOpen(false);
+                }
+              }}
               initial={{ y: "100%" }}
               animate={{ y: 0 }}
               exit={{ y: "100%" }}
-              transition={{ type: "spring", stiffness: 420, damping: 36 }}
+              transition={{ type: "spring", stiffness: 400, damping: 35 }}
               className="relative z-10 w-full rounded-t-[26px] bg-white dark:bg-[#161619] border-t border-zinc-200/90 dark:border-white/10 shadow-2xl p-5 pb-8 safe-area-bottom select-none"
             >
-              {/* Drag Handle Indicator */}
-              <div className="w-10 h-1 bg-zinc-300 dark:bg-zinc-700 rounded-full mx-auto mb-4" />
+              {/* Interactive Drag Handle */}
+              <div className="w-10 h-1.5 bg-zinc-300 dark:bg-zinc-700 rounded-full mx-auto mb-4 cursor-grab active:cursor-grabbing touch-none" />
 
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2.5">
