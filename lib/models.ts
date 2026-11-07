@@ -389,6 +389,24 @@ const CronLogSchema = new Schema({
   lastStatus: { type: String, default: "ok" },
 });
 
+// VisitorLog Schema — anonymous landing page visitor tracking (IP, geo, browser, referrer)
+const VisitorLogSchema = new Schema({
+  ts:          { type: Number, required: true },
+  ip:          { type: String, default: "" },
+  country:     { type: String, default: "" },
+  countryCode: { type: String, default: "" },
+  city:        { type: String, default: "" },
+  region:      { type: String, default: "" },
+  browser:     { type: String, default: "Unknown" },
+  os:          { type: String, default: "Unknown" },
+  device:      { type: String, default: "Desktop" },
+  referrer:    { type: String, default: "direct" },
+  page:        { type: String, default: "/" },
+  createdAt:   { type: Date, default: Date.now, index: true },
+});
+VisitorLogSchema.index({ createdAt: -1 });
+VisitorLogSchema.index({ country: 1, createdAt: -1 });
+
 if (process.env.NODE_ENV === "development") {
   delete (mongoose.models as any).Account;
   delete (mongoose.models as any).MagnetPage;
@@ -400,6 +418,7 @@ if (process.env.NODE_ENV === "development") {
   delete (mongoose.models as any).PdfOtp;
   delete (mongoose.models as any).AuditLog;
   delete (mongoose.models as any).CronLog;
+  delete (mongoose.models as any).VisitorLog;
 }
 
 export const AccountModel = mongoose.models.Account || mongoose.model("Account", AccountSchema);
@@ -410,3 +429,4 @@ export const IntegrationModel = mongoose.models.Integration || mongoose.model("I
 export const PdfOtpModel = mongoose.models.PdfOtp || mongoose.model("PdfOtp", PdfOtpSchema);
 export const AuditLogModel = mongoose.models.AuditLog || mongoose.model("AuditLog", AuditLogSchema);
 export const CronLogModel = mongoose.models.CronLog || mongoose.model("CronLog", CronLogSchema);
+export const VisitorLogModel = mongoose.models.VisitorLog || mongoose.model("VisitorLog", VisitorLogSchema);

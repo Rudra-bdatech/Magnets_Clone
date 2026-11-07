@@ -15,6 +15,7 @@ import {
   Activity,
   Menu,
   X,
+  Globe,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import BrandLogo from "@/components/brand";
@@ -29,6 +30,7 @@ const NAV = [
   { href: "/admin/email-health", label: "Email Health", icon: Mail },
   { href: "/admin/system-health", label: "System Health", icon: Activity },
   { href: "/admin/audit-log", label: "Audit Log", icon: Shield },
+  { href: "/admin/live-visitors", label: "Live Visitors", icon: Globe },
 ];
 
 export default function AdminShell({
