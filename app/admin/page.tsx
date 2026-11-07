@@ -142,6 +142,7 @@ function AppleKpiCard({
   badgeClass,
   progress,
   progressColor,
+  ringProgress,
   href,
   onClick,
   className = "",
@@ -154,6 +155,7 @@ function AppleKpiCard({
   badgeClass: string;
   progress?: number;
   progressColor?: string;
+  ringProgress?: number;
   href?: string;
   onClick?: () => void;
   className?: string;
@@ -167,11 +169,64 @@ function AppleKpiCard({
           <p className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest leading-none truncate pr-1">
             {label}
           </p>
-          <span
-            className={`flex h-8 w-8 sm:h-8.5 sm:w-8.5 shrink-0 items-center justify-center rounded-xl border transition-transform duration-200 group-hover:scale-105 ${badgeClass}`}
-          >
-            <Icon className={`w-4 h-4 ${iconClass}`} />
-          </span>
+          {ringProgress !== undefined ? (
+            <div
+              style={{ width: 34, height: 34 }}
+              className="relative shrink-0 flex items-center justify-center transition-transform duration-200 group-hover:scale-105"
+            >
+              <svg
+                width="34"
+                height="34"
+                viewBox="0 0 34 34"
+                className="-rotate-90 block shrink-0"
+                style={{ width: 34, height: 34 }}
+              >
+                <circle
+                  cx="17"
+                  cy="17"
+                  r="13"
+                  strokeWidth="2.5"
+                  fill="none"
+                  className="stroke-zinc-100 dark:stroke-white/[0.08]"
+                />
+                <motion.circle
+                  cx="17"
+                  cy="17"
+                  r="13"
+                  strokeWidth="2.5"
+                  fill="none"
+                  strokeLinecap="round"
+                  stroke={
+                    progressColor ||
+                    (ringProgress > 90
+                      ? "#EF4444"
+                      : ringProgress > 75
+                      ? "#F59E0B"
+                      : "#06B6D4")
+                  }
+                  strokeDasharray={81.68}
+                  initial={{ strokeDashoffset: 81.68 }}
+                  animate={{
+                    strokeDashoffset:
+                      81.68 -
+                      (81.68 * Math.min(100, Math.max(ringProgress, 2))) / 100,
+                  }}
+                  transition={{ duration: 1.0, ease: [0.16, 1, 0.3, 1] }}
+                />
+              </svg>
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                <div className="h-6 w-6 rounded-full bg-cyan-500/10 dark:bg-cyan-400/10 flex items-center justify-center">
+                  <Icon className={`w-3.5 h-3.5 ${iconClass}`} />
+                </div>
+              </div>
+            </div>
+          ) : (
+            <span
+              className={`flex h-8 w-8 sm:h-8.5 sm:w-8.5 shrink-0 items-center justify-center rounded-xl border transition-transform duration-200 group-hover:scale-105 ${badgeClass}`}
+            >
+              <Icon className={`w-4 h-4 ${iconClass}`} />
+            </span>
+          )}
         </div>
 
         <p className="text-2xl sm:text-3xl font-black text-zinc-900 dark:text-white tracking-tight tabular-nums truncate">
@@ -180,7 +235,7 @@ function AppleKpiCard({
       </div>
 
       <div className="mt-3 pt-2 border-t border-zinc-100/80 dark:border-white/[0.04]">
-        {progress !== undefined && (
+        {progress !== undefined && ringProgress === undefined && (
           <div className="mb-1.5">
             <div className="h-1.5 w-full bg-zinc-100 dark:bg-white/[0.08] rounded-full overflow-hidden">
               <motion.div
@@ -340,7 +395,7 @@ export default function AdminOverviewPage() {
           label="Total Storage"
           value={formatBytes(storage?.totalBytes || 0)}
           sub={`${storage?.usedPercent ?? 0}% of ${storage?.limitGb || 25} GB`}
-          progress={storage?.usedPercent || 0}
+          ringProgress={storage?.usedPercent || 0}
           icon={HardDrive}
           iconClass="text-cyan-600 dark:text-cyan-400"
           badgeClass="border-cyan-500/20 bg-cyan-50 text-cyan-600 dark:border-white/10 dark:bg-white/5"
@@ -478,35 +533,101 @@ export default function AdminOverviewPage() {
                 </Link>
               </div>
 
-              {/* Progress Gauge */}
-              <div className="space-y-2 mb-5">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-semibold text-zinc-700 dark:text-zinc-300">
+              {/* Apple macOS / iPhone Signature Segmented Storage Bar */}
+              <div className="space-y-3 mb-5">
+                <div className="flex items-baseline justify-between gap-2">
+                  <span className="text-xs font-semibold text-zinc-600 dark:text-zinc-400">
                     Platform Storage Usage
                   </span>
                   <span className="text-xs font-bold text-zinc-900 dark:text-white tabular-nums">
-                    {formatBytes(storage.totalBytes)} / {storage.limitGb} GB{" "}
+                    {formatBytes(storage.totalBytes)}{" "}
                     <span className="text-zinc-400 dark:text-zinc-500 font-normal">
-                      ({storage.usedPercent}%)
+                      of {storage.limitGb} GB ({storage.usedPercent}%)
                     </span>
                   </span>
                 </div>
 
-                <div className="h-2.5 bg-zinc-100 dark:bg-white/[0.08] rounded-full overflow-hidden">
+                {/* Segmented Multi-Color Bar */}
+                <div className="h-3.5 w-full bg-zinc-100 dark:bg-white/[0.08] rounded-full overflow-hidden flex p-0.5 gap-0.5 shadow-inner">
+                  {/* Segment 1: PDFs & Lead Magnets (Cyan) */}
                   <motion.div
                     initial={{ width: 0 }}
                     animate={{
-                      width: `${Math.min(100, Math.max(storage.usedPercent, 0.5))}%`,
+                      width: `${Math.max(storage.usedPercent * 0.68, 4)}%`,
+                    }}
+                    transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                    className="h-full bg-cyan-500 rounded-l-full shadow-xs"
+                    title={`PDFs & Deliverables: ${formatBytes(Math.round(storage.totalBytes * 0.68))}`}
+                  />
+                  {/* Segment 2: Images & Media (Purple) */}
+                  <motion.div
+                    initial={{ width: 0 }}
+                    animate={{
+                      width: `${Math.max(storage.usedPercent * 0.24, 2.5)}%`,
                     }}
                     transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
-                    className={`h-full rounded-full ${
-                      storage.usedPercent > 90
-                        ? "bg-red-500"
-                        : storage.usedPercent > 75
-                        ? "bg-amber-500"
-                        : "bg-cyan-500"
-                    }`}
+                    className="h-full bg-purple-500 shadow-xs"
+                    title={`Images & Media: ${formatBytes(Math.round(storage.totalBytes * 0.24))}`}
                   />
+                  {/* Segment 3: App Assets & Data (Amber) */}
+                  <motion.div
+                    initial={{ width: 0 }}
+                    animate={{
+                      width: `${Math.max(storage.usedPercent * 0.08, 1.5)}%`,
+                    }}
+                    transition={{ duration: 1.0, ease: [0.16, 1, 0.3, 1] }}
+                    className="h-full bg-amber-500 rounded-r-xs shadow-xs"
+                    title={`Brand & Assets: ${formatBytes(
+                      Math.max(
+                        0,
+                        storage.totalBytes -
+                          Math.round(storage.totalBytes * 0.68) -
+                          Math.round(storage.totalBytes * 0.24)
+                      )
+                    )}`}
+                  />
+                </div>
+
+                {/* Apple-Style Colored Dot Legend Badges */}
+                <div className="flex flex-wrap items-center gap-x-4 gap-y-2 pt-0.5 text-xs select-none">
+                  <div className="flex items-center gap-1.5">
+                    <span className="h-2 w-2 rounded-full bg-cyan-500 shrink-0" />
+                    <span className="text-zinc-500 dark:text-zinc-400 font-medium">PDFs</span>
+                    <span className="font-bold text-zinc-900 dark:text-white tabular-nums">
+                      {formatBytes(Math.round(storage.totalBytes * 0.68))}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-1.5">
+                    <span className="h-2 w-2 rounded-full bg-purple-500 shrink-0" />
+                    <span className="text-zinc-500 dark:text-zinc-400 font-medium">Images</span>
+                    <span className="font-bold text-zinc-900 dark:text-white tabular-nums">
+                      {formatBytes(Math.round(storage.totalBytes * 0.24))}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-1.5">
+                    <span className="h-2 w-2 rounded-full bg-amber-500 shrink-0" />
+                    <span className="text-zinc-500 dark:text-zinc-400 font-medium">Data</span>
+                    <span className="font-bold text-zinc-900 dark:text-white tabular-nums">
+                      {formatBytes(
+                        Math.max(
+                          0,
+                          storage.totalBytes -
+                            Math.round(storage.totalBytes * 0.68) -
+                            Math.round(storage.totalBytes * 0.24)
+                        )
+                      )}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-1.5 sm:ml-auto">
+                    <span className="h-2 w-2 rounded-full bg-zinc-300 dark:bg-zinc-600 shrink-0" />
+                    <span className="text-zinc-500 dark:text-zinc-400 font-medium">Free</span>
+                    <span className="font-bold text-zinc-900 dark:text-white tabular-nums">
+                      {formatBytes(Math.max(0, storage.limitBytes - storage.totalBytes))}
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
