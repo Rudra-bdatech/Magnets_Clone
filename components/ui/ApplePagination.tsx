@@ -150,6 +150,7 @@ export interface ApplePaginationProps {
   hideWhenSinglePage?: boolean;
   scrollToTopOnPageChange?: boolean;
   scrollTargetId?: string;
+  variant?: "card" | "flush";
 }
 
 export function ApplePagination({
@@ -167,6 +168,7 @@ export function ApplePagination({
   hideWhenSinglePage = true,
   scrollToTopOnPageChange = true,
   scrollTargetId,
+  variant = "card",
 }: ApplePaginationProps) {
   const rootRef = useRef<HTMLDivElement>(null);
 
@@ -278,7 +280,11 @@ export function ApplePagination({
   return (
     <div
       ref={rootRef}
-      className={`w-full rounded-2xl border border-zinc-200/80 dark:border-white/[0.06] bg-white/70 dark:bg-[#151515] p-3 sm:px-4 sm:py-2.5 shadow-xs ${className}`}
+      className={
+        variant === "flush"
+          ? `w-full border-t border-[#0066B2]/15 dark:border-white/[0.06] bg-[#F8FBFF]/60 dark:bg-[#151515] p-3 sm:px-4.5 sm:py-3 ${className}`
+          : `w-full rounded-2xl border border-zinc-200/80 dark:border-white/[0.06] bg-white/70 dark:bg-[#151515] p-3 sm:px-4 sm:py-2.5 shadow-xs ${className}`
+      }
     >
       {/* DESKTOP (>= sm): Single Row with Left Summary and Right Controls */}
       <div className="hidden sm:flex items-center justify-between gap-4 text-xs text-zinc-600 dark:text-zinc-400">

@@ -1803,23 +1803,22 @@ function parseCsvLine(line: string): string[] {
             {/* 5. Pagination - Unified Apple-Style Layout & Animation                    */}
             {/* ========================================================================= */}
             {(totalPages > 1 || filtered.length > 10) && (
-              <div className="border-t border-[#0066B2]/20 dark:border-white/[0.06] bg-[#F8FBFF]/50 dark:bg-[#151515] p-2.5 sm:p-3">
-                <ApplePagination
-                  currentPage={currentPage}
-                  totalPages={totalPages}
-                  totalItems={filtered.length}
-                  pageSize={pageSize}
-                  onPageChange={(page) => setCurrentPage(page)}
-                  onPageSizeChange={(newSize) => {
-                    setPageSize(newSize);
-                    setCurrentPage(1);
-                  }}
-                  itemLabel="lead"
-                  itemLabelPlural="leads"
-                  prefixRows="Rows:"
-                  scrollTargetId="leads-list-container"
-                />
-              </div>
+              <ApplePagination
+                variant="flush"
+                currentPage={currentPage}
+                totalPages={totalPages}
+                totalItems={filtered.length}
+                pageSize={pageSize}
+                onPageChange={(page) => setCurrentPage(page)}
+                onPageSizeChange={(newSize) => {
+                  setPageSize(newSize);
+                  setCurrentPage(1);
+                }}
+                itemLabel="lead"
+                itemLabelPlural="leads"
+                prefixRows="Rows:"
+                scrollTargetId="leads-list-container"
+              />
             )}
           </div>
         </div>
