@@ -1,6 +1,28 @@
 "use client";
 
 import { useEffect } from "react";
+import { usePathname } from "next/navigation";
+
+// Private app paths — admin + dashboard + auth pages. We skip these because they're
+// your own users (logged in), not landing-page visitors. Tracking them would mix
+// internal traffic with real lead data.
+const SKIP_PATHS = [
+  "/admin",
+  "/dashboard",
+  "/login",
+  "/register",
+  "/forgot-password",
+  "/reset-password",
+  "/api",
+  "/pdf-viewer",
+  "/checkout",
+  "/stop",
+  "/r/",
+];
+
+function shouldTrackPath(pathname: string): boolean {
+  return !SKIP_PATHS.some((p) => pathname === p || pathname.startsWith(p + "/") || pathname.startsWith(p));
+}
 
 function getSessionId(): string {
   try {
@@ -16,33 +38,39 @@ function getSessionId(): string {
 }
 
 export default function VisitorTracker() {
+  const pathname = usePathname();
+
   useEffect(() => {
+    if (!pathname || !shouldTrackPath(pathname)) return;
+
     const sessionId = getSessionId();
 
-    // Fire once per browsing session
-    try {
-      if (sessionStorage.getItem("_vt")) {
-        // Already logged this session — just start heartbeat
-        startHeartbeat(sessionId);
-        return;
+    // Log every page navigation (so "Last Page" updates as they browse your public site),
+    // but only ONE initial visit log per session for the dashboard "new visitor" alert.
+    const isFirstPageThisSession = (() => {
+      try {
+        if (sessionStorage.getItem("_vt")) return false;
+        sessionStorage.setItem("_vt", "1");
+        return true;
+      } catch {
+        return true;
       }
-      sessionStorage.setItem("_vt", "1");
-    } catch {}
+    })();
 
-    // Initial visit log
     fetch("/api/visitor-log", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         referrer: document.referrer || null,
-        page: window.location.pathname,
+        page: pathname,
         sessionId,
+        isNewSession: isFirstPageThisSession,
       }),
     }).catch(() => {});
 
     const cleanup = startHeartbeat(sessionId);
     return cleanup;
-  }, []);
+  }, [pathname]);
 
   return null;
 }

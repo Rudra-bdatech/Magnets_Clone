@@ -1,7 +1,6 @@
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { ArrowRight } from "lucide-react";
-import VisitorTracker from "@/components/visitor-tracker";
 import SiteFooter from "@/layout/site-footer";
 import SiteHeader from "@/layout/site-header";
 import SectionHeading from "@/components/landing/section-heading";
@@ -63,7 +62,6 @@ export default function Home() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      <VisitorTracker />
       <SiteHeader />
 
       {/* HERO */}

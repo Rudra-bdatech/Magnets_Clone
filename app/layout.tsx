@@ -5,6 +5,7 @@ import "./globals.css";
 import "@/src/shaders/threeui.css";
 
 const SmoothScroll = dynamic(() => import("@/components/smooth-scroll"), { ssr: false });
+const VisitorTracker = dynamic(() => import("@/components/visitor-tracker"), { ssr: false });
 
 const geist = localFont({
   src: "../public/fonts/Geist-Variable.woff2",
@@ -125,6 +126,7 @@ export default function RootLayout({
           zIndex={99999}
         />
         <SmoothScroll />
+        <VisitorTracker />
         <div className="contents app-theme">{children}</div>
       </body>
     </html>
