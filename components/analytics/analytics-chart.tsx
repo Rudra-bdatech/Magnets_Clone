@@ -163,9 +163,6 @@ export default function AnalyticsChart({
           </div>
           <h3 className="text-xs sm:text-sm font-bold text-zinc-900 dark:text-white flex items-center gap-1.5 sm:gap-2 truncate min-w-0">
             <span className="truncate">{title}</span>
-            <span className="text-[10px] font-semibold px-1.5 sm:px-2 py-0.5 rounded-md bg-zinc-100 dark:bg-white/[0.08] text-zinc-600 dark:text-zinc-400 uppercase tracking-wide shrink-0">
-              {range}
-            </span>
             <InfoTooltip
               content={subtitle || "Each bar represents one day. Orange shows conversions from visits."}
               title="Performance Metrics"

@@ -909,11 +909,8 @@ export default function AnalyticsLinearView({
                         }`}
                     >
                       <div className="flex flex-col text-left">
-                        <span className="text-sm font-semibold flex items-center gap-2">
+                        <span className="text-sm font-semibold">
                           {item.label}
-                          <span className="text-[10px] font-mono px-1.5 py-0.5 rounded-md bg-zinc-200/70 dark:bg-white/10 text-zinc-600 dark:text-zinc-300">
-                            {item.short}
-                          </span>
                         </span>
                         <span className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
                           {item.description}
