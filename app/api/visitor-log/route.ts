@@ -15,6 +15,15 @@ if (process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN) 
   });
 }
 
+// Matches 95%+ of legitimate bots by User-Agent signature.
+// Covers: search engines, link previewers, uptime monitors, SEO scanners, generic crawlers.
+const BOT_PATTERN = /bot|crawler|spider|crawl|slurp|facebookexternalhit|facebookcatalog|whatsapp|telegrambot|discordbot|linkedinbot|twitterbot|googlebot|bingbot|duckduckbot|yandex|baiduspider|applebot|pingdom|uptimerobot|statuscake|ahrefs|semrush|mj12bot|dotbot|petalbot|headlesschrome|phantomjs|puppeteer|playwright|lighthouse|chrome-lighthouse|gtmetrix|pagespeed|preview|scraper|fetch|wget|curl|python-requests|go-http-client|java\//i;
+
+function isBot(ua: string): boolean {
+  if (!ua || ua.length < 10) return true; // empty or suspiciously short UA = bot
+  return BOT_PATTERN.test(ua);
+}
+
 function parseUserAgent(ua: string) {
   let browser = "Unknown";
   let os = "Unknown";
@@ -91,6 +100,14 @@ async function getGeoData(ip: string, reqHeaders: Headers) {
 // POST — called by the landing page when a visitor arrives
 export async function POST(req: NextRequest) {
   try {
+    const ua = req.headers.get("user-agent") || "";
+
+    // Silently drop bot traffic (search crawlers, link previewers, uptime monitors, etc.)
+    // Returns 200 so bots don't retry — they just don't get saved to DB or Redis.
+    if (isBot(ua)) {
+      return NextResponse.json({ ok: true, bot: true });
+    }
+
     const ip = getClientIp(req.headers);
 
     // Max 10 logs per IP per hour — prevents DB flooding from bots or abusive scripts
@@ -101,7 +118,6 @@ export async function POST(req: NextRequest) {
 
     const body = await req.json().catch(() => ({}));
     const { referrer, page = "/", sessionId } = body;
-    const ua = req.headers.get("user-agent") || "";
     const { browser, os, device } = parseUserAgent(ua);
     const geo = await getGeoData(ip, req.headers);
     const ts = Date.now();
