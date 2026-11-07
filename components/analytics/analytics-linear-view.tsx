@@ -371,37 +371,31 @@ export default function AnalyticsLinearView({
     socialPct = 15;
   }
 
-  const periodLabel = timeRange === "all" ? "Total" : timeRangeLabels[timeRange].short;
-
   const analyticsKpiCards = [
     {
       id: "signups",
-      label: timeRange === "all" ? "Total Signups" : `Signups (${periodLabel})`,
-      periodBadge: timeRangeLabels[timeRange].short,
+      label: "Total Signups",
       value: signupsInRange.toLocaleString(),
       icon: Users,
       iconBadge: "border border-[#0066B2]/30 bg-[#EFF6FF] text-[#0066B2] dark:border-white/10 dark:bg-white/5 dark:text-zinc-200",
     },
     {
       id: "visits",
-      label: timeRange === "all" ? "Total Visits" : `Visits (${periodLabel})`,
-      periodBadge: timeRangeLabels[timeRange].short,
+      label: "Total Visits",
       value: visitsInRange.toLocaleString(),
       icon: Eye,
       iconBadge: "border border-violet-500/30 bg-violet-50 text-violet-600 dark:border-white/10 dark:bg-white/5 dark:text-zinc-200",
     },
     {
       id: "conversion",
-      label: timeRange === "all" ? "Conversion Rate" : `Conv. Rate (${periodLabel})`,
-      periodBadge: timeRangeLabels[timeRange].short,
+      label: "Conversion Rate",
       value: inRangeConvRate,
       icon: TrendingUp,
       iconBadge: "border border-emerald-500/30 bg-emerald-50 text-emerald-600 dark:border-white/10 dark:bg-white/5 dark:text-emerald-400",
     },
     {
       id: "tracked",
-      label: timeRange === "all" ? "Conversions" : `Conversions (${periodLabel})`,
-      periodBadge: timeRangeLabels[timeRange].short,
+      label: "Conversions",
       value: signupsInRange.toLocaleString(),
       icon: CheckCircle2,
       iconBadge: "border border-amber-500/30 bg-amber-50 text-amber-600 dark:border-white/10 dark:bg-white/5 dark:text-amber-400",
@@ -623,11 +617,6 @@ export default function AnalyticsLinearView({
                   <p className="text-[10px] sm:text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-400 leading-none whitespace-normal sm:truncate">
                     {card.label}
                   </p>
-                  {timeRange !== "all" && (
-                    <span className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded-md bg-zinc-100 dark:bg-white/[0.08] text-zinc-500 dark:text-zinc-400">
-                      {card.periodBadge}
-                    </span>
-                  )}
                 </div>
 
                 <p className="text-xl font-extrabold tabular-nums text-zinc-900 dark:text-white mt-1 leading-none tracking-tight">
@@ -809,7 +798,7 @@ export default function AnalyticsLinearView({
                 <InfoTooltip content="Source Domain Breakdown" title="Traffic Referrers" />
               </div>
               <span className="text-xs font-mono px-2.5 py-0.5 rounded-md bg-zinc-100 dark:bg-white/[0.05] border border-zinc-200 dark:border-white/[0.08] text-zinc-700 dark:text-zinc-300">
-                {timeRangeLabels[timeRange].short}
+                Sources
               </span>
             </div>
 
