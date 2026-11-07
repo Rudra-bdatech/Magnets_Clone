@@ -42,6 +42,8 @@ import {
 import { AppleCheckbox } from "@/components/leads/AppleCheckbox";
 import { useSidebar } from "@/components/dashboard/dashboard-shell";
 import { useIsMobile } from "@/lib/use-mobile";
+import { UploadIcon } from "@/components/icons/upload-icon";
+import type { AnimatedIconHandle } from "@/components/icons/types";
 
 interface Resource {
   id: string;
@@ -83,6 +85,9 @@ export default function ResourcesPage() {
   const activeXhrRef = useRef<XMLHttpRequest | null>(null);
   const isCancelledRef = useRef<boolean>(false);
   const processingTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const uploadIconRef = useRef<AnimatedIconHandle>(null);
+  const mobileUploadIconRef = useRef<AnimatedIconHandle>(null);
+  const emptyUploadIconRef = useRef<AnimatedIconHandle>(null);
 
   const stopProcessingTimer = () => {
     if (processingTimerRef.current) {
@@ -121,6 +126,28 @@ export default function ResourcesPage() {
   const [editingResourceId, setEditingResourceId] = useState<string | null>(null);
   const [editingName, setEditingName] = useState("");
   const [isSavingName, setIsSavingName] = useState(false);
+
+  // Periodic breathing animation on mobile:
+  // Since mobile devices lack hover, trigger the upload animation every ~3 seconds so it stays lively and catches the eye,
+  // pausing automatically when an upload is in progress or when the user switches tabs to save battery.
+  useEffect(() => {
+    if (!isMobile || uploading) return;
+
+    const initialTimer = setTimeout(() => {
+      mobileUploadIconRef.current?.playOnce?.();
+    }, 1000);
+
+    const interval = setInterval(() => {
+      if (typeof document !== "undefined" && document.visibilityState === "visible") {
+        mobileUploadIconRef.current?.playOnce?.();
+      }
+    }, 3200);
+
+    return () => {
+      clearTimeout(initialTimer);
+      clearInterval(interval);
+    };
+  }, [isMobile, uploading]);
 
   // Close popovers on outside click
   useEffect(() => {
@@ -768,7 +795,11 @@ export default function ResourcesPage() {
           </div>
 
           {resources.length > 0 && (
-            <div className="relative group shrink-0">
+            <div
+              className="relative group shrink-0"
+              onMouseEnter={() => uploadIconRef.current?.startAnimation()}
+              onMouseLeave={() => uploadIconRef.current?.stopAnimation()}
+            >
               <input
                 type="file"
                 id="resource-upload-header"
@@ -792,7 +823,7 @@ export default function ResourcesPage() {
                   </>
                 ) : (
                   <>
-                    <Plus className="h-4 w-4 stroke-[2.25] transition-transform duration-300 group-hover:rotate-90" />
+                    <UploadIcon ref={uploadIconRef} size={16} strokeWidth={2.25} />
                     <span className="tracking-tight">Upload Resources</span>
                   </>
                 )}
@@ -811,7 +842,12 @@ export default function ResourcesPage() {
             </h2>
 
             {resources.length > 0 && (
-              <div className="relative shrink-0">
+              <div
+                className="relative shrink-0"
+                onTouchStart={() => mobileUploadIconRef.current?.playOnce?.()}
+                onMouseEnter={() => mobileUploadIconRef.current?.startAnimation()}
+                onMouseLeave={() => mobileUploadIconRef.current?.stopAnimation()}
+              >
                 <input
                   type="file"
                   id="resource-upload-mobile-header"
@@ -831,7 +867,7 @@ export default function ResourcesPage() {
                     </>
                   ) : (
                     <>
-                      <Plus className="h-3.5 w-3.5 stroke-[2.5]" />
+                      <UploadIcon ref={mobileUploadIconRef} size={15} strokeWidth={2.25} />
                       <span>Upload</span>
                     </>
                   )}
@@ -920,7 +956,11 @@ export default function ResourcesPage() {
 
         {/* Option 1: SMART EMPTY STATE DROPZONE (Only rendered when user has NO files) */}
         {resources.length === 0 && (
-          <div className="relative rounded-2xl border-2 border-dashed border-[#0066B2]/40 bg-white/90 p-12 text-center backdrop-blur-sm hover:border-[#0066B2] dark:border-[#0066B2]/40 dark:bg-[#171717]/90 shadow-sm transition-all">
+          <div
+            onMouseEnter={() => emptyUploadIconRef.current?.startAnimation()}
+            onMouseLeave={() => emptyUploadIconRef.current?.stopAnimation()}
+            className="relative rounded-2xl border-2 border-dashed border-[#0066B2]/40 bg-white/90 p-12 text-center backdrop-blur-sm hover:border-[#0066B2] dark:border-[#0066B2]/40 dark:bg-[#171717]/90 shadow-sm transition-all"
+          >
             <input
               type="file"
               multiple
@@ -939,7 +979,7 @@ export default function ResourcesPage() {
                 : "Drag & Drop funnel files here"}
             </h3>
             <button className="mt-5 inline-flex items-center gap-2 rounded-xl bg-[#0066B2] px-5 py-2.5 text-xs font-bold text-white shadow-sm hover:bg-[#005291] transition cursor-pointer">
-              <UploadCloud className="h-4 w-4" /> Browse Files from Device
+              <UploadIcon ref={emptyUploadIconRef} size={16} strokeWidth={2.25} /> Browse Files from Device
             </button>
           </div>
         )}
