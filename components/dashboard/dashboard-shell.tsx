@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
-import { FileText, FolderOpen, Users, Sliders, Palette, User, CircleHelp, Menu, X, Search, ChevronRight, HelpCircle, Sun, Moon, Monitor, Smartphone, Bug, Lightbulb, LogOut, BookOpen, Gift, Compass, Send, GitFork, Calendar, Settings, Globe, Mail, Share2, Cpu, Slack, Zap, Link as LinkIcon, BarChart3, PlayCircle, CheckCircle2, ArrowLeft, Sparkles, Rocket, ExternalLink, ListChecks, Loader2, FileLock, Lock, LayoutDashboard, Linkedin, PanelLeftClose, PanelLeftOpen, PanelLeft, ShieldCheck } from "lucide-react";
+import { FileText, FolderOpen, Users, Sliders, Palette, User, CircleHelp, Menu, X, Search, ChevronRight, HelpCircle, Sun, Moon, Monitor, Smartphone, Bug, Lightbulb, BookOpen, Gift, Compass, Send, GitFork, Calendar, Settings, Globe, Mail, Share2, Cpu, Slack, Zap, Link as LinkIcon, BarChart3, PlayCircle, CheckCircle2, ArrowLeft, Sparkles, Rocket, ExternalLink, ListChecks, Loader2, FileLock, Lock, LayoutDashboard, Linkedin, PanelLeftClose, PanelLeftOpen, PanelLeft, ShieldCheck } from "lucide-react";
 import { useState, useEffect, useRef, useMemo, useCallback, createContext, useContext } from "react";
 import { createPortal } from "react-dom";
 import ThemeToggle from "@/components/theme-toggle";
@@ -19,6 +19,9 @@ import { computeOnboardingStatus, type OnboardingStatus } from "@/lib/onboarding
 import { signOut } from "next-auth/react";
 import { CommandMenu } from "@/components/dashboard/command-menu";
 import GmailSyncTour from "@/components/dashboard/gmail-sync-tour";
+import { LogoutIcon } from "@/components/icons/logout-icon";
+import type { AnimatedIconHandle } from "@/components/icons/types";
+import { useIsMobile } from "@/lib/use-mobile";
 
 export interface SidebarContextType {
   isCollapsed: boolean;
@@ -122,6 +125,9 @@ export default function DashboardShell({
   const profileMenuRef = useRef<HTMLDivElement>(null);
   const tickPlayerRef = useRef<TickPlayer | null>(null);
   const mobileDrawerProfileMenuRef = useRef<HTMLDivElement>(null);
+  const logoutIconRef = useRef<AnimatedIconHandle>(null);
+  const mobileLogoutIconRef = useRef<AnimatedIconHandle>(null);
+  const isMobile = useIsMobile();
 
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isCommandMenuOpen, setIsCommandMenuOpen] = useState(false);
@@ -369,6 +375,32 @@ export default function DashboardShell({
   };
 
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+  // Periodic breathing animation on mobile for Sign out button:
+  // When the mobile drawer or profile menu is open, pulse the logout icon every ~2.5s
+  // so the user sees the animated door & arrow without needing a hover cursor.
+  useEffect(() => {
+    if (!isMobile || isLoggingOut) return;
+    if (!menuOpen && !showProfileMenu) return;
+
+    // Small delay after menu opens so entrance transition settles first
+    const initialTimer = setTimeout(() => {
+      if (menuOpen) mobileLogoutIconRef.current?.startAnimation();
+      if (showProfileMenu) logoutIconRef.current?.startAnimation();
+    }, 600);
+
+    const interval = setInterval(() => {
+      if (typeof document !== "undefined" && document.visibilityState === "visible") {
+        if (menuOpen) mobileLogoutIconRef.current?.startAnimation();
+        if (showProfileMenu) logoutIconRef.current?.startAnimation();
+      }
+    }, 2400);
+
+    return () => {
+      clearTimeout(initialTimer);
+      clearInterval(interval);
+    };
+  }, [isMobile, menuOpen, showProfileMenu, isLoggingOut]);
 
   const dismissSheet = useCallback((callback: () => void) => {
     setShowDrawerProfileMenu(false);
@@ -1080,6 +1112,8 @@ export default function DashboardShell({
                         disabled={isLoggingOut}
                         whileTap={{ scale: 0.97 }}
                         transition={{ type: "spring", stiffness: 600, damping: 28 }}
+                        onMouseEnter={() => logoutIconRef.current?.startAnimation()}
+                        onMouseLeave={() => logoutIconRef.current?.stopAnimation()}
                         onClick={() => {
                           setShowProfileMenu(false);
                           handleLogout();
@@ -1090,7 +1124,7 @@ export default function DashboardShell({
                           {isLoggingOut ? (
                             <Loader2 className="h-4 w-4 animate-spin text-rose-500" />
                           ) : (
-                            <LogOut className="h-4 w-4 text-rose-500 dark:text-rose-400" strokeWidth={1.85} />
+                            <LogoutIcon ref={logoutIconRef} size={16} strokeWidth={1.85} color="currentColor" />
                           )}
                         </span>
                         <span>{isLoggingOut ? "Signing out..." : "Sign out"}</span>
@@ -1432,6 +1466,9 @@ export default function DashboardShell({
                               <button
                                 type="button"
                                 disabled={isLoggingOut}
+                                onTouchStart={() => mobileLogoutIconRef.current?.startAnimation()}
+                                onMouseEnter={() => mobileLogoutIconRef.current?.startAnimation()}
+                                onMouseLeave={() => mobileLogoutIconRef.current?.stopAnimation()}
                                 onClick={() => {
                                   dismissSheet(() => {
                                     setMenuOpen(false);
@@ -1443,7 +1480,7 @@ export default function DashboardShell({
                                 {isLoggingOut ? (
                                   <Loader2 className="h-3.5 w-3.5 animate-spin text-red-500" />
                                 ) : (
-                                  <LogOut className="h-3.5 w-3.5 text-red-500 dark:text-red-400" strokeWidth={2} />
+                                  <LogoutIcon ref={mobileLogoutIconRef} size={15} strokeWidth={2} color="currentColor" />
                                 )}
                                 <span>{isLoggingOut ? "Signing out..." : "Sign out"}</span>
                               </button>
