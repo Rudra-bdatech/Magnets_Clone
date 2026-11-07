@@ -411,6 +411,11 @@ const VisitorLogSchema = new Schema({
 });
 VisitorLogSchema.index({ updatedAt: -1 });
 VisitorLogSchema.index({ country: 1, updatedAt: -1 });
+// Auto-expire inactive visitor logs after 90 days of no activity.
+// MongoDB runs a background job every 60s that deletes docs whose `updatedAt` is >90d old.
+// Active repeat visitors (who return within 90 days) keep their history forever since each
+// visit refreshes updatedAt — only truly dormant records get cleaned.
+VisitorLogSchema.index({ updatedAt: 1 }, { expireAfterSeconds: 90 * 24 * 60 * 60 });
 
 if (process.env.NODE_ENV === "development") {
   delete (mongoose.models as any).Account;

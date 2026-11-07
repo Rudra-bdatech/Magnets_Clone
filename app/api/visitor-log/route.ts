@@ -24,6 +24,26 @@ function isBot(ua: string): boolean {
   return BOT_PATTERN.test(ua);
 }
 
+// GDPR-compliant IP anonymization.
+// IPv4: zeroes the last octet (103.21.45.189 → 103.21.45.0)
+// IPv6: zeroes the last 80 bits (2001:db8:85a3:8d3:1319:8a2e:370:7348 → 2001:db8:85a3::)
+// Keeps city/country accuracy intact since geo databases are subnet-level.
+function anonymizeIp(ip: string): string {
+  if (!ip || ip === "unknown") return ip;
+  // IPv4
+  if (ip.includes(".") && !ip.includes(":")) {
+    const parts = ip.split(".");
+    if (parts.length === 4) return `${parts[0]}.${parts[1]}.${parts[2]}.0`;
+    return ip;
+  }
+  // IPv6 — keep first 3 groups (48 bits = network prefix)
+  if (ip.includes(":")) {
+    const parts = ip.split(":");
+    return `${parts.slice(0, 3).join(":")}::`;
+  }
+  return ip;
+}
+
 function parseUserAgent(ua: string) {
   let browser = "Unknown";
   let os = "Unknown";
@@ -108,10 +128,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ ok: true, bot: true });
     }
 
-    const ip = getClientIp(req.headers);
+    const rawIp = getClientIp(req.headers);
 
-    // Max 10 logs per IP per hour — prevents DB flooding from bots or abusive scripts
-    const rl = await checkRateLimit(ip, "visitor-log", 10, 60 * 60 * 1000);
+    // Max 10 logs per IP per hour — prevents DB flooding. Uses raw IP so attackers on same
+    // subnet can't bypass rate limit through anonymization (raw IP never persists anywhere).
+    const rl = await checkRateLimit(rawIp, "visitor-log", 10, 60 * 60 * 1000);
     if (!rl.success) {
       return NextResponse.json({ ok: false }, { status: 429 });
     }
@@ -119,8 +140,12 @@ export async function POST(req: NextRequest) {
     const body = await req.json().catch(() => ({}));
     const { referrer, page = "/", sessionId } = body;
     const { browser, os, device } = parseUserAgent(ua);
-    const geo = await getGeoData(ip, req.headers);
+    // Geo lookup uses raw IP (needs full IP for ipapi.co accuracy). It never gets stored.
+    const geo = await getGeoData(rawIp, req.headers);
     const ts = Date.now();
+
+    // Anonymized IP is what's stored, used as upsert key, and logged. GDPR-compliant.
+    const ip = anonymizeIp(rawIp);
 
     const visitorData = {
       ts,
@@ -198,12 +223,27 @@ export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const country = searchParams.get("country") || "";
   const device = searchParams.get("device") || "";
+  const range = searchParams.get("range") || ""; // "today" | "7d" | "30d" | "" (all)
   const page = Math.max(1, parseInt(searchParams.get("page") || "1", 10));
   const limit = 50;
 
   const filter: Record<string, any> = {};
   if (country) filter.country = country;
   if (device) filter.device = device;
+  if (range) {
+    const now = new Date();
+    let cutoff: Date;
+    if (range === "today") {
+      cutoff = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    } else if (range === "7d") {
+      cutoff = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+    } else if (range === "30d") {
+      cutoff = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+    } else {
+      cutoff = new Date(0);
+    }
+    filter.updatedAt = { $gte: cutoff };
+  }
 
   await dbConnect();
 

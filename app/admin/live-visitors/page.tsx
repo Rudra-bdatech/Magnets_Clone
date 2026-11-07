@@ -274,6 +274,7 @@ export default function LiveVisitorsPage() {
   const [page, setPage] = useState(1);
   const [countryFilter, setCountryFilter] = useState("");
   const [deviceFilter, setDeviceFilter] = useState("");
+  const [rangeFilter, setRangeFilter] = useState(""); // "", "today", "7d", "30d"
   const [countries, setCountries] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshKey, setRefreshKey] = useState(0);
@@ -290,6 +291,7 @@ export default function LiveVisitorsPage() {
         page: String(page),
         ...(countryFilter && { country: countryFilter }),
         ...(deviceFilter && { device: deviceFilter }),
+        ...(rangeFilter && { range: rangeFilter }),
       });
       const res = await fetch(`/api/visitor-log?${params}`);
       if (!res.ok) throw new Error();
@@ -303,7 +305,7 @@ export default function LiveVisitorsPage() {
     } finally {
       setLoading(false);
     }
-  }, [page, countryFilter, deviceFilter, refreshKey]);
+  }, [page, countryFilter, deviceFilter, rangeFilter, refreshKey]);
 
   useEffect(() => { fetchVisitors(); }, [fetchVisitors]);
 
@@ -396,13 +398,33 @@ export default function LiveVisitorsPage() {
             </div>
           </div>
 
-          <button
-            onClick={() => setRefreshKey((k) => k + 1)}
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-3.5 py-2 text-xs sm:text-sm font-semibold rounded-xl border border-zinc-200/80 dark:border-white/[0.08] bg-white dark:bg-[#171717] text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-white/5 active:scale-95 transition-all shadow-sm cursor-pointer"
-          >
-            <RefreshCw className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`} />
-            Refresh
-          </button>
+          <div className="flex items-center gap-2 w-full sm:w-auto">
+            <FilterSelect
+              value={
+                rangeFilter === "today" ? "Today"
+                : rangeFilter === "7d" ? "Last 7 days"
+                : rangeFilter === "30d" ? "Last 30 days"
+                : ""
+              }
+              placeholder="All time"
+              options={["Today", "Last 7 days", "Last 30 days"]}
+              onChange={(label) => {
+                const map: Record<string, string> = {
+                  "": "", "Today": "today", "Last 7 days": "7d", "Last 30 days": "30d",
+                };
+                setRangeFilter(map[label] ?? "");
+                setPage(1);
+              }}
+            />
+
+            <button
+              onClick={() => setRefreshKey((k) => k + 1)}
+              className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-3.5 py-2 text-xs sm:text-sm font-semibold rounded-xl border border-zinc-200/80 dark:border-white/[0.08] bg-white dark:bg-[#171717] text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-white/5 active:scale-95 transition-all shadow-sm cursor-pointer"
+            >
+              <RefreshCw className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`} />
+              Refresh
+            </button>
+          </div>
         </div>
 
         {/* Live Right Now Panel */}
