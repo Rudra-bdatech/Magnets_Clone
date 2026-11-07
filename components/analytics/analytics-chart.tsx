@@ -4,16 +4,15 @@ import React, { useState, useMemo } from "react";
 import { BarChart2, TrendingUp } from "lucide-react";
 import { type Lead } from "@/lib/data";
 import { InfoTooltip } from "@/components/ui/info-tooltip";
+import {
+  type TimeRange,
+  type DayData,
+  type RangeTimelineData,
+  generateFullTimeline,
+  getTimelineForRange,
+} from "./analytics-timeline";
 
-interface DayData {
-  isoDate: string;
-  label: string;
-  shortLabel: string;
-  visits: number;
-  signups: number;
-}
-
-export type TimeRange = "7d" | "30d" | "90d" | "all";
+export type { TimeRange, DayData, RangeTimelineData };
 
 interface AnalyticsChartProps {
   totalVisits: number;
@@ -23,6 +22,7 @@ interface AnalyticsChartProps {
   subtitle?: string;
   range?: TimeRange;
   onDataCalculated?: (data: { visitsInRange: number; signupsInRange: number }) => void;
+  timelineData?: RangeTimelineData;
 }
 
 function formatYValue(v: number): string {
@@ -85,146 +85,26 @@ export default function AnalyticsChart({
   subtitle = "Each bar is one day. Orange shows conversions.",
   range = "30d",
   onDataCalculated,
+  timelineData,
 }: AnalyticsChartProps) {
   const [chartMode, setChartMode] = useState<"bar" | "line">("bar");
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
-  const numDays = useMemo(() => {
-    switch (range) {
-      case "7d":
-        return 7;
-      case "90d":
-        return 90;
-      case "all":
-        return 180;
-      case "30d":
-      default:
-        return 30;
-    }
-  }, [range]);
+  const fallbackTimeline = useMemo(() => {
+    if (timelineData) return timelineData;
+    const full = generateFullTimeline(totalVisits, totalSignups, leads);
+    return getTimelineForRange(full, range);
+  }, [timelineData, totalVisits, totalSignups, leads, range]);
 
-  const { days, maxVal, visitsInRange, signupsInRange, peakIndex } = useMemo(() => {
-    const dayList: DayData[] = [];
-    const today = new Date();
-
-    for (let i = numDays - 1; i >= 0; i--) {
-      const d = new Date(today);
-      d.setDate(d.getDate() - i);
-      const isoDate = d.toISOString().split("T")[0];
-      const monthStr = d.toLocaleDateString("en-US", { month: "short" });
-      const dayNum = d.getDate();
-      const label = `${monthStr} ${dayNum}`;
-      const shortLabel = `${dayNum}`;
-
-      dayList.push({
-        isoDate,
-        label,
-        shortLabel,
-        visits: 0,
-        signups: 0,
-      });
-    }
-
-    // 1. Map leads to signups by date
-    leads.forEach((lead) => {
-      if (!lead.signedUpAt) return;
-      const leadDate = new Date(lead.signedUpAt);
-      if (isNaN(leadDate.getTime())) return;
-
-      const diffDays = Math.floor(
-        (today.getTime() - leadDate.getTime()) / (1000 * 60 * 60 * 24)
-      );
-      if (diffDays >= 0 && diffDays < numDays) {
-        const targetIndex = numDays - 1 - diffDays;
-        if (dayList[targetIndex]) {
-          dayList[targetIndex].signups += 1;
-        }
-      }
-    });
-
-    const currentSignupsSum = dayList.reduce((acc, d) => acc + d.signups, 0);
-
-    // Distribute remaining signups if totalSignups > currentSignupsSum
-    const remainingSignups = Math.max(0, totalSignups - currentSignupsSum);
-    if (remainingSignups > 0) {
-      // Natural cadence: gradual momentum with organic weekend dips
-      const weights = Array.from({ length: numDays }, (_, i) => {
-        const progress = (i + 1) / numDays;
-        const ramp = 0.4 + 0.6 * progress;
-        const dayMod = i % 7 === 5 || i % 7 === 6 ? 0.75 : 1.1;
-        return ramp * dayMod;
-      });
-      const totalWeight = weights.reduce((a, b) => a + b, 0);
-
-      let allocated = 0;
-      for (let i = 0; i < numDays; i++) {
-        const target = Math.floor((weights[i] / totalWeight) * remainingSignups);
-        dayList[i].signups += target;
-        allocated += target;
-      }
-      // Distribute remaining units evenly across top recent days instead of dumping all on the last day
-      let remainder = remainingSignups - allocated;
-      let dayIdx = numDays - 1;
-      while (remainder > 0 && dayIdx >= 0) {
-        dayList[dayIdx].signups += 1;
-        remainder--;
-        dayIdx = (dayIdx - 1 + numDays) % numDays;
-      }
-    }
-
-    // 2. Distribute totalVisits across days
-    if (totalVisits > 0) {
-      const weights = Array.from({ length: numDays }, (_, i) => {
-        const progress = (i + 1) / numDays;
-        const ramp = 0.45 + 0.55 * progress;
-        const dayMod = i % 7 === 5 || i % 7 === 6 ? 0.8 : 1.1;
-        return ramp * dayMod;
-      });
-      const totalWeight = weights.reduce((a, b) => a + b, 0);
-
-      let allocated = 0;
-      for (let i = 0; i < numDays; i++) {
-        let v = Math.floor((weights[i] / totalWeight) * totalVisits);
-        if (v < dayList[i].signups) {
-          v = dayList[i].signups;
-        }
-        dayList[i].visits = v;
-        allocated += v;
-      }
-
-      let diff = totalVisits - allocated;
-      let dayIdx = numDays - 1;
-      while (diff > 0 && dayIdx >= 0) {
-        dayList[dayIdx].visits += 1;
-        diff--;
-        dayIdx = (dayIdx - 1 + numDays) % numDays;
-      }
-    }
-
-    dayList.forEach((d) => {
-      if (d.visits < d.signups) d.visits = d.signups;
-    });
-
-    const vSum = dayList.reduce((acc, d) => acc + d.visits, 0);
-    const sSum = dayList.reduce((acc, d) => acc + d.signups, 0);
-
-    const highest = Math.max(...dayList.map((d) => Math.max(d.visits, d.signups)), 1);
-    const maxVal = getNiceMax(highest);
-
-    // Peak day = highest-traffic day, used for the always-on peak marker
-    let peakIndex = 0;
-    for (let i = 1; i < dayList.length; i++) {
-      if (dayList[i].visits > dayList[peakIndex].visits) peakIndex = i;
-    }
-
-    return {
-      days: dayList,
-      maxVal,
-      visitsInRange: vSum,
-      signupsInRange: sSum,
-      peakIndex,
-    };
-  }, [totalVisits, totalSignups, leads, numDays]);
+  const {
+    days,
+    maxVal,
+    visitsInRange,
+    signupsInRange,
+    peakIndex,
+    peakDay,
+    avgVisitsPerDay,
+  } = timelineData || fallbackTimeline;
 
   React.useEffect(() => {
     if (onDataCalculated) {
@@ -232,11 +112,8 @@ export default function AnalyticsChart({
     }
   }, [visitsInRange, signupsInRange, onDataCalculated]);
 
-  const hasData = totalVisits > 0 || totalSignups > 0;
-
-  const avgVisitsPerDay = days.length > 0 ? visitsInRange / days.length : 0;
+  const hasData = visitsInRange > 0 || signupsInRange > 0 || totalVisits > 0 || totalSignups > 0;
   const rangeConversionRate = visitsInRange > 0 ? (signupsInRange / visitsInRange) * 100 : 0;
-  const peakDay = days[peakIndex];
 
   const width = 800;
   const height = 180;
@@ -675,12 +552,12 @@ export default function AnalyticsChart({
 
           {/* X-Axis Date Ticks */}
           <div className="flex justify-between text-[10px] sm:text-[11px] text-zinc-500 dark:text-zinc-400 font-medium px-1 pr-7 sm:pr-8">
-            <span>{days[0].label}</span>
-            <span className="hidden sm:inline">{days[Math.floor(numDays * 0.25)].label}</span>
-            <span>{days[Math.floor(numDays * 0.5)].label}</span>
-            <span className="hidden sm:inline">{days[Math.floor(numDays * 0.75)].label}</span>
+            <span>{days[0]?.label || ""}</span>
+            <span className="hidden sm:inline">{days[Math.floor(days.length * 0.25)]?.label || ""}</span>
+            <span>{days[Math.floor(days.length * 0.5)]?.label || ""}</span>
+            <span className="hidden sm:inline">{days[Math.floor(days.length * 0.75)]?.label || ""}</span>
             <span className="font-semibold text-zinc-900 dark:text-white">
-              Today ({days[numDays - 1].shortLabel})
+              Today ({days[days.length - 1]?.shortLabel || ""})
             </span>
           </div>
         </div>

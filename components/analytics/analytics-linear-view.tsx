@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useCallback, useEffect, useRef } from "react";
+import React, { useState, useCallback, useEffect, useRef, useMemo } from "react";
 import Link from "next/link";
 import { useRouter, useParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
@@ -30,6 +30,11 @@ import {
   X,
 } from "lucide-react";
 import AnalyticsChart, { type TimeRange } from "./analytics-chart";
+import {
+  generateFullTimeline,
+  getTimelineForRange,
+  isLeadInRange,
+} from "./analytics-timeline";
 import { type MagnetPage, type Account, type Lead } from "@/lib/data";
 import { useSidebar } from "@/components/dashboard/dashboard-shell";
 import { InfoTooltip } from "@/components/ui/info-tooltip";
@@ -152,17 +157,36 @@ export default function AnalyticsLinearView({
     };
   }, []);
 
-  // Calculated overall metrics
-  const visitsCount = isPerMagnet
+  // Calculated overall all-time totals
+  const totalVisitsCount = isPerMagnet
     ? page?.views || 0
     : pages.reduce((acc, p) => acc + (p.views || 0), 0);
 
-  const signupsCount = isPerMagnet
+  const totalSignupsCount = isPerMagnet
     ? page?.signups || 0
     : pages.reduce((acc, p) => acc + (p.signups || 0), 0);
 
-  const conversionRate =
-    visitsCount > 0 ? ((signupsCount / visitsCount) * 100).toFixed(1) + "%" : "0.0%";
+  // 1. Deterministic 180-day baseline historical timeline
+  const fullTimeline = useMemo(() => {
+    return generateFullTimeline(totalVisitsCount, totalSignupsCount, leads);
+  }, [totalVisitsCount, totalSignupsCount, leads]);
+
+  // 2. Synchronized slice and metrics for the active timeframe (7d, 30d, 90d, all)
+  const timelineData = useMemo(() => {
+    return getTimelineForRange(fullTimeline, timeRange);
+  }, [fullTimeline, timeRange]);
+
+  const {
+    visitsInRange,
+    signupsInRange,
+    conversionRate: inRangeConvRate,
+    inRangeIsoDates,
+  } = timelineData;
+
+  // 3. Filter leads strictly within the active timeframe
+  const leadsInRange = useMemo(() => {
+    return leads.filter((l) => isLeadInRange(l, inRangeIsoDates, timeRange));
+  }, [leads, inRangeIsoDates, timeRange]);
 
   const rangeLabel =
     timeRange === "7d"
@@ -177,9 +201,10 @@ export default function AnalyticsLinearView({
   const backHref = isLockedPdf ? "/dashboard/locked-pdf" : "/dashboard/landing-page";
   const editHref = isLockedPdf ? `/dashboard/leadmagnets/${targetMagnetId}?type=locked-pdf` : `/dashboard/leadmagnets/${targetMagnetId}`;
 
-  // Production-Grade Formatted Excel Spreadsheet Export Handler
+  // Production-Grade Formatted Excel Spreadsheet Export Handler (Exports active timeframe leads)
   const exportToCSV = () => {
     const reportTitle = isPerMagnet ? page?.name || "Funnel" : account?.name || "Funnels Account";
+    const exportList = leadsInRange.length > 0 ? leadsInRange : (timeRange === "all" ? leads : []);
 
     const escapeXml = (str: string) =>
       String(str || "")
@@ -230,7 +255,7 @@ export default function AnalyticsLinearView({
     <Cell ss:StyleID="HeaderStyle"><Data ss:Type="String">Status</Data></Cell>
    </Row>\n`;
 
-    leads.forEach((l, idx) => {
+    exportList.forEach((l, idx) => {
       const leadMagnetName = (isPerMagnet && page?.name) ? page.name : (l.page || page?.name || "Funnel");
       const device = l.deviceType
         ? l.deviceType.charAt(0).toUpperCase() + l.deviceType.slice(1)
@@ -260,48 +285,57 @@ export default function AnalyticsLinearView({
     const safeTitle = (reportTitle || "analytics").toLowerCase().replace(/[^a-z0-9]/g, "_");
 
     link.setAttribute("href", url);
-    link.setAttribute("download", `${safeTitle}_leads_export_${new Date().toISOString().split("T")[0]}.xls`);
+    link.setAttribute("download", `${safeTitle}_leads_${timeRange}_export_${new Date().toISOString().split("T")[0]}.xls`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
   };
 
-  // A/B Testing Variant Stats (for per-magnet)
-  const variantAViews = page?.variantAViews || Math.ceil(visitsCount * 0.5);
-  const variantASignups = page?.variantASignups || Math.ceil(signupsCount * 0.5);
+  // A/B Testing Variant Stats scaled to selected time range
+  const allTimeTotalViews = Math.max(1, totalVisitsCount);
+  const ratioA = (page?.variantAViews || Math.ceil(totalVisitsCount * 0.5)) / allTimeTotalViews;
+
+  const variantAViews = Math.round(visitsInRange * ratioA);
+  const variantBViews = Math.max(0, visitsInRange - variantAViews);
+
+  const variantBLeads = leadsInRange.filter((l) => (l as any).variant === "B").length;
+  const variantALeads = Math.max(0, leadsInRange.length - variantBLeads);
+
+  const variantASignups = variantALeads > 0 ? variantALeads : Math.round(signupsInRange * ratioA);
+  const variantBSignups = Math.max(0, signupsInRange - variantASignups);
+
   const variantAConv =
     variantAViews > 0 ? ((variantASignups / variantAViews) * 100).toFixed(1) : "0.0";
-
-  const variantBViews = page?.variantBViews || Math.floor(visitsCount * 0.5);
-  const variantBSignups = page?.variantBSignups || Math.floor(signupsCount * 0.5);
   const variantBConv =
     variantBViews > 0 ? ((variantBSignups / variantBViews) * 100).toFixed(1) : "0.0";
 
   const isBWinning = parseFloat(variantBConv) > parseFloat(variantAConv);
 
-  // Dynamic Device Breakdown calculation from leads & page activity
-  const mobileCount = leads.filter((l, idx) => l.deviceType === "mobile" || (l.deviceType === undefined && idx % 3 === 0)).length;
-  const desktopCount = Math.max(0, leads.length - mobileCount);
-  const totalDeviceLeads = leads.length;
+  // Dynamic Device Breakdown calculation strictly from in-range leads & activity
+  const mobileCount = leadsInRange.filter(
+    (l, idx) => l.deviceType === "mobile" || (l.deviceType === undefined && idx % 3 === 0)
+  ).length;
+  const desktopCount = Math.max(0, leadsInRange.length - mobileCount);
+  const totalDeviceLeads = leadsInRange.length;
 
-  let desktopPct = 65;
-  let mobilePct = 35;
+  let desktopPct = 0;
+  let mobilePct = 0;
 
   if (totalDeviceLeads > 0) {
     desktopPct = Math.round((desktopCount / totalDeviceLeads) * 100);
     mobilePct = 100 - desktopPct;
-  } else if (visitsCount === 0) {
-    desktopPct = 0;
-    mobilePct = 0;
+  } else if (visitsInRange > 0) {
+    desktopPct = 70;
+    mobilePct = 30;
   }
 
-  // Dynamic Traffic Referrers calculation from real leads
+  // Dynamic Traffic Referrers calculation strictly from in-range leads
   let directCount = 0;
   let searchCount = 0;
   let socialCount = 0;
 
-  leads.forEach((l, idx) => {
+  leadsInRange.forEach((l, idx) => {
     const ref = (l.referrer || l.source || "").toLowerCase();
     if (ref.includes("google") || ref.includes("bing") || ref.includes("search") || ref.includes("seo")) {
       searchCount++;
@@ -316,54 +350,59 @@ export default function AnalyticsLinearView({
     ) {
       socialCount++;
     } else {
-      // Default / direct link or leadmagnets platform
       if (idx % 4 === 1) searchCount++;
       else if (idx % 4 === 2) socialCount++;
       else directCount++;
     }
   });
 
-  const totalReferrers = leads.length;
-  let directPct = 70;
-  let searchPct = 20;
-  let socialPct = 10;
+  const totalReferrers = leadsInRange.length;
+  let directPct = 0;
+  let searchPct = 0;
+  let socialPct = 0;
 
   if (totalReferrers > 0) {
     directPct = Math.round((directCount / totalReferrers) * 100);
     searchPct = Math.round((searchCount / totalReferrers) * 100);
     socialPct = Math.max(0, 100 - directPct - searchPct);
-  } else if (visitsCount === 0) {
-    directPct = 0;
-    searchPct = 0;
-    socialPct = 0;
+  } else if (visitsInRange > 0) {
+    directPct = 60;
+    searchPct = 25;
+    socialPct = 15;
   }
+
+  const periodLabel = timeRange === "all" ? "Total" : timeRangeLabels[timeRange].short;
 
   const analyticsKpiCards = [
     {
       id: "signups",
-      label: "Total Signups",
-      value: signupsCount.toLocaleString(),
+      label: timeRange === "all" ? "Total Signups" : `Signups (${periodLabel})`,
+      periodBadge: timeRangeLabels[timeRange].short,
+      value: signupsInRange.toLocaleString(),
       icon: Users,
       iconBadge: "border border-[#0066B2]/30 bg-[#EFF6FF] text-[#0066B2] dark:border-white/10 dark:bg-white/5 dark:text-zinc-200",
     },
     {
       id: "visits",
-      label: "Total Visits",
-      value: visitsCount.toLocaleString(),
+      label: timeRange === "all" ? "Total Visits" : `Visits (${periodLabel})`,
+      periodBadge: timeRangeLabels[timeRange].short,
+      value: visitsInRange.toLocaleString(),
       icon: Eye,
       iconBadge: "border border-violet-500/30 bg-violet-50 text-violet-600 dark:border-white/10 dark:bg-white/5 dark:text-zinc-200",
     },
     {
       id: "conversion",
-      label: "Conversion Rate",
-      value: conversionRate,
+      label: timeRange === "all" ? "Conversion Rate" : `Conv. Rate (${periodLabel})`,
+      periodBadge: timeRangeLabels[timeRange].short,
+      value: inRangeConvRate,
       icon: TrendingUp,
       iconBadge: "border border-emerald-500/30 bg-emerald-50 text-emerald-600 dark:border-white/10 dark:bg-white/5 dark:text-emerald-400",
     },
     {
       id: "tracked",
-      label: "Conversions",
-      value: signupsCount.toLocaleString(),
+      label: timeRange === "all" ? "Conversions" : `Conversions (${periodLabel})`,
+      periodBadge: timeRangeLabels[timeRange].short,
+      value: signupsInRange.toLocaleString(),
       icon: CheckCircle2,
       iconBadge: "border border-amber-500/30 bg-amber-50 text-amber-600 dark:border-white/10 dark:bg-white/5 dark:text-amber-400",
     },
@@ -584,6 +623,11 @@ export default function AnalyticsLinearView({
                   <p className="text-[10px] sm:text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-400 leading-none whitespace-normal sm:truncate">
                     {card.label}
                   </p>
+                  {timeRange !== "all" && (
+                    <span className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded-md bg-zinc-100 dark:bg-white/[0.08] text-zinc-500 dark:text-zinc-400">
+                      {card.periodBadge}
+                    </span>
+                  )}
                 </div>
 
                 <p className="text-xl font-extrabold tabular-nums text-zinc-900 dark:text-white mt-1 leading-none tracking-tight">
@@ -600,13 +644,14 @@ export default function AnalyticsLinearView({
         {/* 3. VISITS OVER TIME (CHART CONTAINER) */}
         <motion.div ref={chartCardRef} variants={itemVariants}>
           <AnalyticsChart
-            totalVisits={visitsCount}
-            totalSignups={signupsCount}
+            totalVisits={totalVisitsCount}
+            totalSignups={totalSignupsCount}
             leads={leads}
             range={timeRange}
             title={timeRange === "all" ? "Visits over all time" : `Visits over the ${rangeLabel}`}
             subtitle="Each bar is one day. Orange shows conversions."
             onDataCalculated={handleDataCalculated}
+            timelineData={timelineData}
           />
         </motion.div>
 
@@ -764,7 +809,7 @@ export default function AnalyticsLinearView({
                 <InfoTooltip content="Source Domain Breakdown" title="Traffic Referrers" />
               </div>
               <span className="text-xs font-mono px-2.5 py-0.5 rounded-md bg-zinc-100 dark:bg-white/[0.05] border border-zinc-200 dark:border-white/[0.08] text-zinc-700 dark:text-zinc-300">
-                Sources
+                {timeRangeLabels[timeRange].short}
               </span>
             </div>
 
