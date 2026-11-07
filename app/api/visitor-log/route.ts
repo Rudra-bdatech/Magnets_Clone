@@ -108,6 +108,7 @@ export async function POST(req: NextRequest) {
 
     const visitorData = {
       ts,
+      sessionId: sessionId || "",
       ip,
       country: geo.country || "",
       countryCode: geo.countryCode || "",
@@ -121,19 +122,46 @@ export async function POST(req: NextRequest) {
       createdAt: new Date().toISOString(),
     };
 
-    // Fire-and-forget: save to MongoDB + Redis in parallel
+    // 1 document per IP — update if exists, insert if first time (upsert)
+    const dbSave = dbConnect().then(() =>
+      VisitorLogModel.findOneAndUpdate(
+        { ip },
+        {
+          $set: {
+            // Always overwrite with latest visit data
+            ts,
+            sessionId: sessionId || "",
+            country:     visitorData.country,
+            countryCode: visitorData.countryCode,
+            city:        visitorData.city,
+            region:      visitorData.region,
+            browser:     visitorData.browser,
+            os:          visitorData.os,
+            device:      visitorData.device,
+            referrer:    visitorData.referrer,
+            page:        visitorData.page,
+            updatedAt:   new Date(),
+            lastSeenAt:  null, // reset for new session duration tracking
+          },
+          $inc: { visitsCount: 1 },        // increment total visit counter
+          $setOnInsert: { firstSeenAt: new Date(), createdAt: new Date() },
+        },
+        { upsert: true, new: true }
+      )
+    );
+
     await Promise.allSettled([
-      dbConnect().then(() => VisitorLogModel.create(visitorData)),
+      dbSave,
+      // Push to Redis live stream for SSE toast notification
       redis
         ? redis
             .zadd("visitor:log", { score: ts, member: JSON.stringify(visitorData) })
             .then(() => redis!.zremrangebyscore("visitor:log", 0, ts - 24 * 60 * 60 * 1000))
         : Promise.resolve(),
-      // Store session data for "active visitors" tracking (5 min TTL, refreshed by heartbeats)
+      // Store session data for "active right now" tracking
       redis && sessionId
         ? redis.set(`visitor:data:${sessionId}`, JSON.stringify({ ...visitorData, arrivedAt: ts }), { ex: 300 })
         : Promise.resolve(),
-      // Mark session as active in sorted set (score = timestamp for recency queries)
       redis && sessionId
         ? redis.zadd("visitor:active", { score: ts, member: sessionId })
         : Promise.resolve(),
@@ -165,7 +193,7 @@ export async function GET(req: NextRequest) {
 
   const [visitors, total] = await Promise.all([
     VisitorLogModel.find(filter)
-      .sort({ createdAt: -1 })
+      .sort({ updatedAt: -1 })
       .skip((page - 1) * limit)
       .limit(limit)
       .lean(),

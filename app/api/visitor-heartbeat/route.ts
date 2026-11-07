@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Redis } from "@upstash/redis";
 import { getClientIp, checkRateLimit } from "@/lib/rate-limit";
+import { dbConnect } from "@/lib/mongodb";
+import { VisitorLogModel } from "@/lib/models";
 
 export const dynamic = "force-dynamic";
 
@@ -29,15 +31,24 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ ok: false }, { status: 400 });
     }
 
-    if (redis) {
-      const now = Date.now();
-      await Promise.allSettled([
-        // Update "last seen" timestamp in active set
-        redis.zadd("visitor:active", { score: now, member: sessionId }),
-        // Refresh session data TTL so it doesn't expire while they're still browsing
-        redis.expire(`visitor:data:${sessionId}`, 300),
-      ]);
-    }
+    const now = Date.now();
+
+    await Promise.allSettled([
+      // Update Redis active set + refresh session TTL
+      redis
+        ? redis.zadd("visitor:active", { score: now, member: sessionId })
+        : Promise.resolve(),
+      redis
+        ? redis.expire(`visitor:data:${sessionId}`, 300)
+        : Promise.resolve(),
+      // Update lastSeenAt (session duration) + updatedAt/ts (last active time)
+      dbConnect().then(() =>
+        VisitorLogModel.updateOne(
+          { sessionId },
+          { $set: { lastSeenAt: new Date(now), updatedAt: new Date(now), ts: now } }
+        )
+      ),
+    ]);
 
     return NextResponse.json({ ok: true });
   } catch (err: any) {

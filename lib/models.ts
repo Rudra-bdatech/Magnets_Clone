@@ -391,21 +391,26 @@ const CronLogSchema = new Schema({
 
 // VisitorLog Schema — anonymous landing page visitor tracking (IP, geo, browser, referrer)
 const VisitorLogSchema = new Schema({
-  ts:          { type: Number, required: true },
-  ip:          { type: String, default: "" },
-  country:     { type: String, default: "" },
-  countryCode: { type: String, default: "" },
-  city:        { type: String, default: "" },
-  region:      { type: String, default: "" },
-  browser:     { type: String, default: "Unknown" },
-  os:          { type: String, default: "Unknown" },
-  device:      { type: String, default: "Desktop" },
-  referrer:    { type: String, default: "direct" },
-  page:        { type: String, default: "/" },
-  createdAt:   { type: Date, default: Date.now, index: true },
+  ip:           { type: String, default: "", unique: true, index: true },
+  sessionId:    { type: String, default: "" },
+  ts:           { type: Number, default: 0 },          // latest visit timestamp (ms)
+  country:      { type: String, default: "" },
+  countryCode:  { type: String, default: "" },
+  city:         { type: String, default: "" },
+  region:       { type: String, default: "" },
+  browser:      { type: String, default: "Unknown" },
+  os:           { type: String, default: "Unknown" },
+  device:       { type: String, default: "Desktop" },
+  referrer:     { type: String, default: "direct" },   // latest referrer
+  page:         { type: String, default: "/" },        // latest page
+  visitsCount:  { type: Number, default: 1 },          // total times this IP visited
+  firstSeenAt:  { type: Date, default: Date.now },     // very first visit
+  lastSeenAt:   { type: Date, default: null },         // last heartbeat (for session duration)
+  updatedAt:    { type: Date, default: Date.now },     // last visit time
+  createdAt:    { type: Date, default: Date.now },
 });
-VisitorLogSchema.index({ createdAt: -1 });
-VisitorLogSchema.index({ country: 1, createdAt: -1 });
+VisitorLogSchema.index({ updatedAt: -1 });
+VisitorLogSchema.index({ country: 1, updatedAt: -1 });
 
 if (process.env.NODE_ENV === "development") {
   delete (mongoose.models as any).Account;

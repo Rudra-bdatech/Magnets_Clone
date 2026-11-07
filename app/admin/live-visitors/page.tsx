@@ -10,6 +10,7 @@ import { motion, AnimatePresence } from "framer-motion";
 interface Visitor {
   _id?: string;
   ts: number;
+  sessionId?: string;
   ip: string;
   country: string;
   countryCode: string;
@@ -20,6 +21,10 @@ interface Visitor {
   device: string;
   referrer: string;
   page: string;
+  visitsCount?: number;
+  firstSeenAt?: string;
+  lastSeenAt?: string | null;
+  updatedAt?: string;
   createdAt: string;
 }
 
@@ -43,6 +48,16 @@ function timeAgo(ts: number | string): string {
   const hrs = Math.floor(mins / 60);
   if (hrs < 24) return `${hrs}h ago`;
   return `${Math.floor(hrs / 24)}d ago`;
+}
+
+function exactTime(ts: number | string): string {
+  const d = typeof ts === "number" ? new Date(ts) : new Date(ts);
+  return d.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: true });
+}
+
+function exactDate(ts: number | string): string {
+  const d = typeof ts === "number" ? new Date(ts) : new Date(ts);
+  return d.toLocaleDateString("en-IN", { day: "numeric", month: "short" });
 }
 
 function DeviceIcon({ device }: { device: string }) {
@@ -175,6 +190,14 @@ function formatDuration(seconds: number): string {
   const m = Math.floor(seconds / 60);
   const s = seconds % 60;
   return s > 0 ? `${m}m ${s}s` : `${m}m`;
+}
+
+function sessionDuration(v: Visitor): string | null {
+  if (!v.lastSeenAt) return null;
+  const arrived = v.ts || new Date(v.createdAt).getTime();
+  const lastSeen = new Date(v.lastSeenAt).getTime();
+  const secs = Math.max(0, Math.floor((lastSeen - arrived) / 1000));
+  return formatDuration(secs);
 }
 
 // ─── Live Right Now Panel ───────────────────────────────────────────────────
@@ -448,7 +471,7 @@ export default function LiveVisitorsPage() {
                 <table className="w-full text-xs">
                   <thead>
                     <tr className="border-b border-zinc-100 dark:border-white/[0.05]">
-                      {["Time", "Location", "Browser", "OS", "Device", "Referrer", "Page"].map((h) => (
+                      {["Location", "Browser · OS", "Device", "First Seen", "Last Active", "Visits", "Last Page"].map((h) => (
                         <th key={h} className="text-left px-5 py-3 text-[11px] font-semibold text-zinc-400 dark:text-zinc-500 uppercase tracking-wide">
                           {h}
                         </th>
@@ -458,33 +481,69 @@ export default function LiveVisitorsPage() {
                   <tbody className="divide-y divide-zinc-100/80 dark:divide-white/[0.04]">
                     {visitors.map((v, i) => (
                       <tr key={v._id || `${v.ts}-${i}`} className="hover:bg-zinc-50/80 dark:hover:bg-white/[0.02] transition-colors">
-                        <td className="px-5 py-3.5 text-zinc-500 dark:text-zinc-400 tabular-nums whitespace-nowrap">
-                          {timeAgo(v.ts || v.createdAt)}
-                        </td>
+                        {/* Location */}
                         <td className="px-5 py-3.5">
                           <span className="flex items-center gap-1.5">
                             <span className="text-base leading-none shrink-0">
                               {v.countryCode ? countryFlag(v.countryCode) : "🌐"}
                             </span>
-                            <span className="text-zinc-800 dark:text-zinc-200 font-medium truncate max-w-[160px]">
-                              {locationLabel(v)}
-                            </span>
+                            <div className="min-w-0">
+                              <p className="text-xs font-semibold text-zinc-800 dark:text-zinc-200 truncate max-w-[150px]">
+                                {locationLabel(v)}
+                              </p>
+                              {v.referrer && v.referrer !== "direct" && (
+                                <p className="text-[11px] text-blue-600 dark:text-blue-400 truncate max-w-[150px]">
+                                  via {v.referrer}
+                                </p>
+                              )}
+                            </div>
                           </span>
                         </td>
-                        <td className="px-5 py-3.5 text-zinc-700 dark:text-zinc-300">{v.browser}</td>
-                        <td className="px-5 py-3.5 text-zinc-700 dark:text-zinc-300">{v.os}</td>
+                        {/* Browser · OS */}
+                        <td className="px-5 py-3.5 whitespace-nowrap">
+                          <p className="text-xs text-zinc-700 dark:text-zinc-300">{v.browser}</p>
+                          <p className="text-[11px] text-zinc-400 dark:text-zinc-500">{v.os}</p>
+                        </td>
+                        {/* Device */}
                         <td className="px-5 py-3.5">
-                          <span className="inline-flex items-center gap-1.5 text-zinc-600 dark:text-zinc-400">
+                          <span className="inline-flex items-center gap-1.5 text-xs text-zinc-600 dark:text-zinc-400">
                             <DeviceIcon device={v.device} />
                             {v.device}
                           </span>
                         </td>
+                        {/* First Seen */}
+                        <td className="px-5 py-3.5 whitespace-nowrap">
+                          <p className="text-xs text-zinc-700 dark:text-zinc-300 tabular-nums">
+                            {exactDate(v.firstSeenAt || v.createdAt)}
+                          </p>
+                          <p className="text-[11px] text-zinc-400 dark:text-zinc-500 tabular-nums">
+                            {exactTime(v.firstSeenAt || v.createdAt)}
+                          </p>
+                        </td>
+                        {/* Last Active */}
+                        <td className="px-5 py-3.5 whitespace-nowrap">
+                          <p className="text-xs font-medium text-zinc-800 dark:text-zinc-200 tabular-nums">
+                            {timeAgo(v.ts || v.updatedAt || v.createdAt)}
+                          </p>
+                          <p className="text-[11px] text-zinc-400 dark:text-zinc-500 tabular-nums">
+                            {exactTime(v.ts || v.updatedAt || v.createdAt)}
+                          </p>
+                        </td>
+                        {/* Total Visits */}
                         <td className="px-5 py-3.5">
-                          <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium ${v.referrer === "direct" ? "bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400" : "bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400"}`}>
-                            {v.referrer || "direct"}
+                          <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold ${
+                            (v.visitsCount || 1) >= 10
+                              ? "bg-orange-50 dark:bg-orange-500/15 text-orange-600 dark:text-orange-400"
+                              : (v.visitsCount || 1) >= 3
+                              ? "bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400"
+                              : "bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400"
+                          }`}>
+                            {v.visitsCount || 1}
+                            {(v.visitsCount || 1) >= 10 ? " 🔥" : ""}
                           </span>
                         </td>
-                        <td className="px-5 py-3.5 text-zinc-500 dark:text-zinc-500 font-mono">{v.page}</td>
+                        {/* Last Page */}
+                        <td className="px-5 py-3.5 text-xs text-zinc-500 dark:text-zinc-500 font-mono">{v.page}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -504,14 +563,26 @@ export default function LiveVisitorsPage() {
                           {locationLabel(v)}
                         </span>
                       </span>
-                      <span className="text-[11px] text-zinc-400 tabular-nums shrink-0">
-                        {timeAgo(v.ts || v.createdAt)}
-                      </span>
+                      <div className="text-right shrink-0">
+                        <p className="text-[11px] font-medium text-zinc-700 dark:text-zinc-300 tabular-nums">
+                          {timeAgo(v.ts || v.updatedAt || v.createdAt)}
+                        </p>
+                        <p className="text-[10px] text-zinc-400 tabular-nums">
+                          First seen {timeAgo(v.firstSeenAt || v.createdAt)}
+                        </p>
+                      </div>
                     </div>
                     <div className="flex items-center gap-3 flex-wrap text-xs text-zinc-500 dark:text-zinc-400">
                       <span className="flex items-center gap-1"><DeviceIcon device={v.device} />{v.device}</span>
                       <span>{v.browser}</span>
                       <span>{v.os}</span>
+                      <span className={`px-1.5 py-0.5 rounded-md font-bold ${
+                        (v.visitsCount || 1) >= 10
+                          ? "bg-orange-50 dark:bg-orange-500/15 text-orange-600 dark:text-orange-400"
+                          : "bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400"
+                      }`}>
+                        {v.visitsCount || 1} visit{(v.visitsCount || 1) !== 1 ? "s" : ""}{(v.visitsCount || 1) >= 10 ? " 🔥" : ""}
+                      </span>
                       {v.referrer && v.referrer !== "direct" && (
                         <span className="px-1.5 py-0.5 rounded-md bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400">
                           via {v.referrer}
