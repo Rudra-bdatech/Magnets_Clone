@@ -170,6 +170,79 @@ function VisitorToast({ toast, onDismiss }: { toast: Toast; onDismiss: (id: stri
   );
 }
 
+function formatDuration(seconds: number): string {
+  if (seconds < 60) return `${seconds}s`;
+  const m = Math.floor(seconds / 60);
+  const s = seconds % 60;
+  return s > 0 ? `${m}m ${s}s` : `${m}m`;
+}
+
+// ─── Live Right Now Panel ───────────────────────────────────────────────────
+function LiveNowPanel() {
+  const [active, setActive] = useState<Visitor[]>([]);
+  const [count, setCount] = useState(0);
+
+  const fetchActive = useCallback(async () => {
+    try {
+      const res = await fetch("/api/visitor-active");
+      if (!res.ok) return;
+      const data = await res.json();
+      setActive(data.active || []);
+      setCount(data.count || 0);
+    } catch {}
+  }, []);
+
+  useEffect(() => {
+    fetchActive();
+    const t = setInterval(fetchActive, 15_000);
+    return () => clearInterval(t);
+  }, [fetchActive]);
+
+  if (count === 0) return null;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: -6 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="rounded-2xl border border-emerald-200 dark:border-emerald-500/30 bg-emerald-50 dark:bg-emerald-500/10 overflow-hidden"
+    >
+      {/* Header */}
+      <div className="flex items-center gap-2.5 px-4 py-3 border-b border-emerald-200/60 dark:border-emerald-500/20">
+        <span className="relative flex h-2.5 w-2.5 shrink-0">
+          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-60" />
+          <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500" />
+        </span>
+        <p className="text-sm font-bold text-emerald-700 dark:text-emerald-400">
+          {count} {count === 1 ? "person" : "people"} on your page right now
+        </p>
+      </div>
+
+      {/* Active visitors list */}
+      <div className="divide-y divide-emerald-200/50 dark:divide-emerald-500/15">
+        {active.map((v: any, i: number) => (
+          <div key={i} className="flex items-center gap-3 px-4 py-2.5">
+            <span className="text-xl leading-none shrink-0">
+              {v.countryCode ? countryFlag(v.countryCode) : "🌐"}
+            </span>
+            <div className="flex-1 min-w-0">
+              <p className="text-xs font-semibold text-zinc-800 dark:text-zinc-200 truncate">
+                {[v.city, v.country].filter(Boolean).join(", ") || "Unknown location"}
+              </p>
+              <p className="text-[11px] text-zinc-500 dark:text-zinc-400 truncate">
+                {v.browser} on {v.os} · {v.device}
+                {v.referrer && v.referrer !== "direct" && ` · via ${v.referrer}`}
+              </p>
+            </div>
+            <span className="shrink-0 text-[11px] font-medium text-emerald-600 dark:text-emerald-400 tabular-nums">
+              {formatDuration(v.secondsOnPage || 0)}
+            </span>
+          </div>
+        ))}
+      </div>
+    </motion.div>
+  );
+}
+
 // ─── Main Page ──────────────────────────────────────────────────────────────
 export default function LiveVisitorsPage() {
   const [visitors, setVisitors] = useState<Visitor[]>([]);
@@ -308,6 +381,9 @@ export default function LiveVisitorsPage() {
             Refresh
           </button>
         </div>
+
+        {/* Live Right Now Panel */}
+        <LiveNowPanel />
 
         {/* Live-in-last-5-min stat strip */}
         {liveCount > 0 && (

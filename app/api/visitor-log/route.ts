@@ -100,7 +100,7 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json().catch(() => ({}));
-    const { referrer, page = "/" } = body;
+    const { referrer, page = "/", sessionId } = body;
     const ua = req.headers.get("user-agent") || "";
     const { browser, os, device } = parseUserAgent(ua);
     const geo = await getGeoData(ip, req.headers);
@@ -127,9 +127,15 @@ export async function POST(req: NextRequest) {
       redis
         ? redis
             .zadd("visitor:log", { score: ts, member: JSON.stringify(visitorData) })
-            .then(() =>
-              redis!.zremrangebyscore("visitor:log", 0, ts - 24 * 60 * 60 * 1000)
-            )
+            .then(() => redis!.zremrangebyscore("visitor:log", 0, ts - 24 * 60 * 60 * 1000))
+        : Promise.resolve(),
+      // Store session data for "active visitors" tracking (5 min TTL, refreshed by heartbeats)
+      redis && sessionId
+        ? redis.set(`visitor:data:${sessionId}`, JSON.stringify({ ...visitorData, arrivedAt: ts }), { ex: 300 })
+        : Promise.resolve(),
+      // Mark session as active in sorted set (score = timestamp for recency queries)
+      redis && sessionId
+        ? redis.zadd("visitor:active", { score: ts, member: sessionId })
         : Promise.resolve(),
     ]);
 
