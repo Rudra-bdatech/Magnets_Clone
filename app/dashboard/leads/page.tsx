@@ -13,7 +13,6 @@ import {
   Trash2,
   Check,
   X,
-  UserPlus,
   ChevronLeft,
   ChevronRight,
   Lock,
@@ -48,6 +47,8 @@ import { LeadToastContainer, type Toast } from "@/components/leads/LeadToastCont
 import { DeleteLeadModal } from "@/components/leads/DeleteLeadModal";
 import { BulkDeleteModal } from "@/components/leads/BulkDeleteModal";
 import { ApplePagination } from "@/components/ui/ApplePagination";
+import { UserPlusIcon } from "@/components/icons/user-plus-icon";
+import type { AnimatedIconHandle } from "@/components/icons/types";
 
 import { AddLeadModal } from "@/components/leads/AddLeadModal";
 import { ImportCsvModal } from "@/components/leads/ImportCsvModal";
@@ -98,6 +99,9 @@ export default function LeadsPage() {
   const statusFilterRef = useRef<HTMLDivElement>(null);
   const mobileFilterRef = useRef<HTMLDivElement>(null);
   const mobileMoreRef = useRef<HTMLDivElement>(null);
+  const addLeadIconRef = useRef<AnimatedIconHandle>(null);
+  const mobileAddLeadIconRef = useRef<AnimatedIconHandle>(null);
+  const emptyAddLeadIconRef = useRef<AnimatedIconHandle>(null);
 
   const sortOptions = [
     { id: "newest", label: "Most Recent" },
@@ -956,9 +960,13 @@ function parseCsvLine(line: string): string[] {
             <button
               type="button"
               onClick={() => setShowAddModal(true)}
-              className="flex items-center gap-1.5 rounded-xl bg-[#0066B2] px-4 py-2.5 text-xs font-bold text-white hover:bg-[#005291] transition shadow-md cursor-pointer"
+              onMouseEnter={() => addLeadIconRef.current?.startAnimation()}
+              onMouseLeave={() => addLeadIconRef.current?.stopAnimation()}
+              onTouchStart={() => addLeadIconRef.current?.playOnce?.()}
+              className="flex items-center gap-2 rounded-xl bg-[#0066B2] px-4 py-2.5 text-xs font-bold text-white hover:bg-[#005291] active:scale-95 transition shadow-md cursor-pointer group"
             >
-              <UserPlus className="h-4 w-4" /> + Add Lead
+              <UserPlusIcon ref={addLeadIconRef} size={16} strokeWidth={2.2} />
+              <span>Add Lead</span>
             </button>
 
             <label className="flex items-center gap-1.5 rounded-xl border border-zinc-200 bg-white px-4 py-2.5 text-xs font-semibold text-zinc-700 hover:bg-zinc-50 dark:border-white/10 dark:bg-[#171717] dark:text-zinc-200 dark:hover:bg-[#222222] transition cursor-pointer shadow-xs">
@@ -988,9 +996,12 @@ function parseCsvLine(line: string): string[] {
             <button
               type="button"
               onClick={() => setShowAddModal(true)}
+              onTouchStart={() => mobileAddLeadIconRef.current?.playOnce?.()}
+              onMouseEnter={() => mobileAddLeadIconRef.current?.startAnimation()}
+              onMouseLeave={() => mobileAddLeadIconRef.current?.stopAnimation()}
               className="flex items-center gap-1.5 rounded-xl bg-[#0066B2] px-3.5 py-2 text-xs font-bold text-white hover:bg-[#005291] active:scale-95 transition shadow-sm cursor-pointer"
             >
-              <UserPlus className="h-3.5 w-3.5" />
+              <UserPlusIcon ref={mobileAddLeadIconRef} size={15} strokeWidth={2.2} />
               <span>Add</span>
             </button>
 
@@ -1775,10 +1786,13 @@ function parseCsvLine(line: string): string[] {
                     <button
                       type="button"
                       onClick={() => setShowAddModal(true)}
-                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#0066B2] text-xs font-bold text-white shadow-sm cursor-pointer"
+                      onMouseEnter={() => emptyAddLeadIconRef.current?.startAnimation()}
+                      onMouseLeave={() => emptyAddLeadIconRef.current?.stopAnimation()}
+                      onTouchStart={() => emptyAddLeadIconRef.current?.playOnce?.()}
+                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#0066B2] text-xs font-bold text-white shadow-sm cursor-pointer hover:bg-[#005291] active:scale-95 transition"
                     >
-                      <UserPlus className="h-3.5 w-3.5" />
-                      <span>+ Add Lead</span>
+                      <UserPlusIcon ref={emptyAddLeadIconRef} size={15} strokeWidth={2.2} />
+                      <span>Add Lead</span>
                     </button>
                   )}
                 </div>
