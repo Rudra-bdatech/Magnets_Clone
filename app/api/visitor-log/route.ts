@@ -64,6 +64,7 @@ function parseUserAgent(ua: string) {
 
   if (ua.includes("Mobile") || (ua.includes("Android") && !ua.includes("Tablet")) || ua.includes("iPhone")) device = "Mobile";
   else if (ua.includes("iPad") || ua.includes("Tablet")) device = "Tablet";
+  else if (os === "macOS") device = "Mac";
 
   return { browser, os, device };
 }
@@ -229,7 +230,16 @@ export async function GET(req: NextRequest) {
 
   const filter: Record<string, any> = {};
   if (country) filter.country = country;
-  if (device) filter.device = device;
+  if (device) {
+    if (device === "Mac") {
+      filter.$or = [{ device: "Mac" }, { os: "macOS" }];
+    } else if (device === "Desktop") {
+      filter.device = "Desktop";
+      filter.os = { $ne: "macOS" };
+    } else {
+      filter.device = device;
+    }
+  }
   if (range) {
     const now = new Date();
     let cutoff: Date;

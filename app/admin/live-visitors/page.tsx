@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import {
-  Globe, RefreshCw, Monitor, Smartphone, Tablet,
+  Globe, RefreshCw, Monitor, Smartphone, Tablet, Laptop,
   ChevronDown, X, Check, Wifi,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -63,7 +63,13 @@ function exactDate(ts: number | string): string {
 function DeviceIcon({ device }: { device: string }) {
   if (device === "Mobile") return <Smartphone className="w-3.5 h-3.5" />;
   if (device === "Tablet") return <Tablet className="w-3.5 h-3.5" />;
+  if (device === "Mac") return <Laptop className="w-3.5 h-3.5" />;
   return <Monitor className="w-3.5 h-3.5" />;
+}
+
+function getVisitorDevice(v: { device?: string; os?: string }): string {
+  if (v.device === "Mac" || v.os === "macOS") return "Mac";
+  return v.device || "Desktop";
 }
 
 function locationLabel(v: Visitor) {
@@ -252,7 +258,7 @@ function LiveNowPanel() {
                 {[v.city, v.country].filter(Boolean).join(", ") || "Unknown location"}
               </p>
               <p className="text-[11px] text-zinc-500 dark:text-zinc-400 truncate">
-                {v.browser} on {v.os} · {v.device}
+                {v.browser} on {v.os} · {getVisitorDevice(v)}
                 {v.referrer && v.referrer !== "direct" && ` · via ${v.referrer}`}
               </p>
             </div>
@@ -351,7 +357,7 @@ export default function LiveVisitorsPage() {
     setToasts((prev) => prev.filter((t) => t.toastId !== id));
   }, []);
 
-  const DEVICE_OPTIONS = ["Desktop", "Mobile", "Tablet"];
+  const DEVICE_OPTIONS = ["Desktop", "Mac", "Mobile", "Tablet"];
 
   return (
     <>
@@ -528,10 +534,15 @@ export default function LiveVisitorsPage() {
                         </td>
                         {/* Device */}
                         <td className="px-5 py-3.5">
-                          <span className="inline-flex items-center gap-1.5 text-xs text-zinc-600 dark:text-zinc-400">
-                            <DeviceIcon device={v.device} />
-                            {v.device}
-                          </span>
+                          {(() => {
+                            const dev = getVisitorDevice(v);
+                            return (
+                              <span className="inline-flex items-center gap-1.5 text-xs text-zinc-600 dark:text-zinc-400">
+                                <DeviceIcon device={dev} />
+                                {dev}
+                              </span>
+                            );
+                          })()}
                         </td>
                         {/* First Seen */}
                         <td className="px-5 py-3.5 whitespace-nowrap">
@@ -595,7 +606,12 @@ export default function LiveVisitorsPage() {
                       </div>
                     </div>
                     <div className="flex items-center gap-3 flex-wrap text-xs text-zinc-500 dark:text-zinc-400">
-                      <span className="flex items-center gap-1"><DeviceIcon device={v.device} />{v.device}</span>
+                      {(() => {
+                        const dev = getVisitorDevice(v);
+                        return (
+                          <span className="flex items-center gap-1"><DeviceIcon device={dev} />{dev}</span>
+                        );
+                      })()}
                       <span>{v.browser}</span>
                       <span>{v.os}</span>
                       <span className={`px-1.5 py-0.5 rounded-md font-bold ${
