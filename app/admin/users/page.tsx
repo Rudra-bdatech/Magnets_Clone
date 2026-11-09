@@ -812,6 +812,24 @@ export default function AdminUsersPage() {
     adminCount: 0,
   });
   const [mounted, setMounted] = useState(false);
+  const [onlineUsers, setOnlineUsers] = useState<Set<string>>(new Set());
+  const [onlineCount, setOnlineCount] = useState<number>(0);
+
+  const fetchPresence = useCallback(async () => {
+    try {
+      const res = await fetch("/api/user-presence");
+      if (!res.ok) return;
+      const data = await res.json();
+      setOnlineUsers(new Set((data.online || []).map((e: string) => String(e).toLowerCase())));
+      setOnlineCount(data.count || 0);
+    } catch {}
+  }, []);
+
+  useEffect(() => {
+    fetchPresence();
+    const interval = setInterval(fetchPresence, 15_000);
+    return () => clearInterval(interval);
+  }, [fetchPresence]);
 
   useEffect(() => {
     setMounted(true);
@@ -898,8 +916,22 @@ export default function AdminUsersPage() {
     <div className="p-3.5 sm:p-6 md:p-8 max-w-7xl mx-auto touch-pan-y">
       {/* Top Header */}
       <div className="flex items-center justify-between gap-3 mb-4 sm:mb-6">
-        <div>
+        <div className="flex items-center gap-2.5">
           <h1 className="text-xl sm:text-2xl font-bold text-zinc-900 dark:text-white tracking-tight">Users</h1>
+          {onlineCount > 0 ? (
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-500/30">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-60" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+              </span>
+              {onlineCount} active now
+            </span>
+          ) : (
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-zinc-100 dark:bg-zinc-800 text-zinc-500 border border-zinc-200/60 dark:border-zinc-700/30">
+              <span className="h-1.5 w-1.5 rounded-full bg-zinc-400" />
+              0 active
+            </span>
+          )}
         </div>
 
         <button
@@ -1072,14 +1104,27 @@ export default function AdminUsersPage() {
                 {/* Top Row: User Identity Header + Quick Inspect */}
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex items-center gap-2.5 min-w-0">
-                    <div className="w-9 h-9 rounded-full bg-gradient-to-br from-zinc-100 to-zinc-200 dark:from-white/10 dark:to-white/5 text-zinc-700 dark:text-zinc-200 font-bold text-xs flex items-center justify-center shrink-0 border border-zinc-200/60 dark:border-white/10 shadow-xs">
-                      {user.name ? user.name.slice(0, 2).toUpperCase() : "U"}
+                    <div className="relative shrink-0">
+                      <div className="w-9 h-9 rounded-full bg-gradient-to-br from-zinc-100 to-zinc-200 dark:from-white/10 dark:to-white/5 text-zinc-700 dark:text-zinc-200 font-bold text-xs flex items-center justify-center shrink-0 border border-zinc-200/60 dark:border-white/10 shadow-xs">
+                        {user.name ? user.name.slice(0, 2).toUpperCase() : "U"}
+                      </div>
+                      {onlineUsers.has(user.email.toLowerCase()) && (
+                        <span className="absolute -bottom-0.5 -right-0.5 flex h-2.5 w-2.5" title="Active in dashboard right now">
+                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                          <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500 border-2 border-white dark:border-[#171717]" />
+                        </span>
+                      )}
                     </div>
                     <div className="min-w-0">
                       <div className="flex items-center gap-1.5 flex-wrap">
                         <span className="font-semibold text-sm text-zinc-900 dark:text-white truncate">
                           {user.name || "Unnamed"}
                         </span>
+                        {onlineUsers.has(user.email.toLowerCase()) && (
+                          <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-200/60 dark:border-emerald-500/30">
+                            Active
+                          </span>
+                        )}
                         {user.emailVerified ? (
                           <span title="Verified email">
                             <Check className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
@@ -1227,15 +1272,35 @@ export default function AdminUsersPage() {
                     onClick={() => router.push(`/admin/users/${encodeURIComponent(user.email)}`)}
                   >
                     <td className="px-4 py-3">
-                      <div className="flex items-center gap-1.5">
-                        <div className="font-medium text-zinc-900 dark:text-white truncate max-w-48">{user.name}</div>
-                        {user.suspended && (
-                          <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-red-100 text-red-700 dark:bg-red-500/20 dark:text-red-400 shrink-0">
-                            Suspended
-                          </span>
-                        )}
+                      <div className="flex items-center gap-2.5">
+                        <div className="relative shrink-0">
+                          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#0066B2]/15 to-[#0066B2]/5 dark:from-[#38BDF8]/20 dark:to-[#38BDF8]/5 text-[#0066B2] dark:text-[#38BDF8] font-bold text-xs flex items-center justify-center border border-[#0066B2]/20 dark:border-[#38BDF8]/20 shadow-xs">
+                            {user.name ? user.name.slice(0, 2).toUpperCase() : "U"}
+                          </div>
+                          {onlineUsers.has(user.email.toLowerCase()) && (
+                            <span className="absolute -bottom-0.5 -right-0.5 flex h-2.5 w-2.5" title="Active in dashboard right now">
+                              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500 border-2 border-white dark:border-[#171717]" />
+                            </span>
+                          )}
+                        </div>
+                        <div className="min-w-0">
+                          <div className="flex items-center gap-1.5">
+                            <div className="font-medium text-zinc-900 dark:text-white truncate max-w-48">{user.name}</div>
+                            {onlineUsers.has(user.email.toLowerCase()) && (
+                              <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-200/60 dark:border-emerald-500/30">
+                                Active
+                              </span>
+                            )}
+                            {user.suspended && (
+                              <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-red-100 text-red-700 dark:bg-red-500/20 dark:text-red-400 shrink-0">
+                                Suspended
+                              </span>
+                            )}
+                          </div>
+                          <div className="text-xs text-zinc-400 dark:text-zinc-500 truncate max-w-48">{user.email}</div>
+                        </div>
                       </div>
-                      <div className="text-xs text-zinc-400 dark:text-zinc-500 truncate max-w-48">{user.email}</div>
                     </td>
 
                     <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>

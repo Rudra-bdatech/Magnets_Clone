@@ -628,6 +628,24 @@ export default function DashboardShell({
     setAvatarError(false);
   }, [displayAccount.avatar]);
 
+  // Presence heartbeat (100% in-memory Redis, works on both localhost & production)
+  useEffect(() => {
+    if (!pathname || !pathname.startsWith("/dashboard")) return;
+
+    const ping = () => {
+      if (typeof document !== "undefined" && document.visibilityState === "hidden") return;
+      fetch("/api/user-presence", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ page: pathname }),
+      }).catch(() => {});
+    };
+
+    ping();
+    const interval = setInterval(ping, 30_000);
+    return () => clearInterval(interval);
+  }, [pathname]);
+
   const sidebarContextValue = useMemo(
     () => ({ isCollapsed, toggleSidebar, setIsCollapsed }),
     [isCollapsed, toggleSidebar]

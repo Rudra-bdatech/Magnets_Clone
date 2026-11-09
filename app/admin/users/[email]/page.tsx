@@ -172,6 +172,33 @@ export default function AdminUserDetailPage() {
   const [confirmModal, setConfirmModal] = useState<"suspend" | "unsuspend" | "delete" | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
   const [actionMsg, setActionMsg] = useState("");
+  const [presence, setPresence] = useState<{ isOnline: boolean; page: string; secondsAgo: number }>({
+    isOnline: false,
+    page: "",
+    secondsAgo: 0,
+  });
+
+  useEffect(() => {
+    const checkPresence = async () => {
+      try {
+        const res = await fetch("/api/user-presence");
+        if (!res.ok) return;
+        const data = await res.json();
+        const cleanEmail = email.trim().toLowerCase();
+        const isOnline = (data.online || []).map((e: string) => String(e).toLowerCase()).includes(cleanEmail);
+        const info = data.onlineMap?.[cleanEmail];
+        setPresence({
+          isOnline,
+          page: info?.page || "/dashboard",
+          secondsAgo: info?.secondsAgo || 0,
+        });
+      } catch {}
+    };
+
+    checkPresence();
+    const interval = setInterval(checkPresence, 15_000);
+    return () => clearInterval(interval);
+  }, [email]);
 
   useEffect(() => {
     if ((confirmModal || mobileTabSheetOpen) && typeof window !== "undefined" && window.innerWidth < 640) {
@@ -310,14 +337,35 @@ export default function AdminUserDetailPage() {
       <div className="bg-white/90 dark:bg-[#171717] border border-[#0066B2]/15 dark:border-white/[0.08] rounded-2xl p-4 sm:p-5 mb-5 shadow-md dark:shadow-none backdrop-blur-sm">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center gap-3 min-w-0">
-            <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-[#0066B2]/15 to-[#0066B2]/5 dark:from-[#38BDF8]/20 dark:to-[#38BDF8]/5 text-[#0066B2] dark:text-[#38BDF8] flex items-center justify-center font-bold text-base shrink-0 border border-[#0066B2]/20 dark:border-[#38BDF8]/20 shadow-xs">
-              {user.name?.charAt(0)?.toUpperCase() || "?"}
+            <div className="relative shrink-0">
+              <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-[#0066B2]/15 to-[#0066B2]/5 dark:from-[#38BDF8]/20 dark:to-[#38BDF8]/5 text-[#0066B2] dark:text-[#38BDF8] flex items-center justify-center font-bold text-base border border-[#0066B2]/20 dark:border-[#38BDF8]/20 shadow-xs">
+                {user.name?.charAt(0)?.toUpperCase() || "?"}
+              </div>
+              {presence.isOnline && (
+                <span className="absolute -bottom-1 -right-1 flex h-3 w-3" title="Active in dashboard right now">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                  <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500 border-2 border-white dark:border-[#171717]" />
+                </span>
+              )}
             </div>
             <div className="min-w-0">
               <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
                 <h1 className="text-base sm:text-lg font-bold text-zinc-900 dark:text-white tracking-tight truncate">
                   {user.name || "Unnamed"}
                 </h1>
+                {presence.isOnline ? (
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-500/30 shrink-0">
+                    <span className="relative flex h-2 w-2">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+                    </span>
+                    Active Now {presence.page ? `· ${presence.page}` : ""}
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium bg-zinc-100 dark:bg-white/5 text-zinc-500 shrink-0">
+                    <span className="h-1.5 w-1.5 rounded-full bg-zinc-400" /> Offline
+                  </span>
+                )}
                 {user.suspended && (
                   <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-red-100 text-red-700 dark:bg-red-500/20 dark:text-red-400 flex items-center gap-1 shrink-0">
                     <ShieldOff className="w-3 h-3" /> Suspended
@@ -1014,6 +1062,7 @@ export default function AdminUserDetailPage() {
           <div className="bg-white dark:bg-[#171717] border border-zinc-200 dark:border-white/[0.08] rounded-2xl p-4 sm:p-5 shadow-xs">
             <h2 className="text-sm font-semibold text-zinc-900 dark:text-white mb-3">Integrations</h2>
             <div className="flex flex-wrap gap-1.5 sm:gap-2">
+              <Badge label="Online in App" active={presence.isOnline} />
               <Badge label="Gmail" active={Boolean(user.gmailOAuth?.connected)} />
               <Badge label="Custom SMTP" active={Boolean(user.customSmtp?.isVerified)} />
               <Badge label="LinkedIn" active={Boolean(user.linkedinConnected)} />
