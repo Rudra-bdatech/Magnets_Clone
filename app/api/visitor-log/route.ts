@@ -188,7 +188,7 @@ export async function POST(req: NextRequest) {
           $inc: { visitsCount: 1 },        // increment total visit counter
           $setOnInsert: { firstSeenAt: new Date(), createdAt: new Date() },
         },
-        { upsert: true, new: true }
+        { upsert: true, returnDocument: "after" }
       )
     );
 
