@@ -121,10 +121,11 @@ export default function SiteHeader() {
         {/* MOBILE UNIFIED EXPANDING CARD (md:hidden) */}
         <div className="md:hidden relative h-14 sm:h-16">
           <div
-            className={`absolute top-0 inset-x-0 z-50 rounded-2xl transition-[background-color,border-color,box-shadow] duration-200 ${mobileMenuOpen
+            className={`absolute top-0 inset-x-0 z-50 rounded-2xl transition-[background-color,border-color,box-shadow] duration-200 ${
+              mobileMenuOpen
                 ? "bg-white/95 dark:bg-[#0a0a0a]/95 backdrop-blur-md border border-zinc-200/80 dark:border-zinc-800/80 shadow-2xl"
                 : "bg-transparent border border-transparent"
-              }`}
+            }`}
           >
             {/* Mobile Top Row - Constant px-3 sm:px-4 so items NEVER shift inward on click */}
             <div className="flex items-center justify-between h-14 sm:h-16 px-3 sm:px-4">
