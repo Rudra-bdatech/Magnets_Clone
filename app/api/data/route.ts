@@ -188,7 +188,7 @@ export async function POST(req: Request) {
     switch (action) {
       // Account Controller
       case "saveAccount":
-        return handleSaveAccount(data, authEmail);
+        return handleSaveAccount(data, authEmail, req);
       case "checkEmail": {
         // Rate-limit email existence checks to prevent user enumeration attacks.
         const rl = await checkRateLimit(getClientIp(req.headers), "check_email", 10, 60 * 1000, { failClosed: true });
@@ -210,7 +210,7 @@ export async function POST(req: Request) {
             return rateLimitedResponse(accountRl, "Too many login attempts for this account. Please wait 15 minutes or reset your password.");
           }
         }
-        return handleLogin(data);
+        return handleLogin(data, req);
       }
       case "updatePassword":
         return handleUpdatePassword(data, authEmail);

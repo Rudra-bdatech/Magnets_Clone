@@ -4,6 +4,7 @@ import { dbConnect } from "@/lib/mongodb";
 import { AccountModel } from "@/lib/models";
 import { authOptions } from "@/lib/auth-options";
 import { sanitizeRedirect } from "@/lib/redirect";
+import { getGeoFromHeaders } from "@/lib/geo";
 
 /**
  * Post-OAuth landing route. First-time OAuth users (needsOnboarding) are sent to
@@ -27,6 +28,25 @@ export async function GET(request: NextRequest) {
       { needsOnboarding: false }
     );
     if (firstVisit) {
+      if (!firstVisit.signupCountry && !firstVisit.signupCity) {
+        try {
+          const geo = await getGeoFromHeaders(request.headers);
+          if (geo.country || geo.city) {
+            await AccountModel.updateOne(
+              { email },
+              {
+                $set: {
+                  signupCountry: geo.country || "",
+                  signupCountryCode: geo.countryCode || "",
+                  signupCity: geo.city || "",
+                  signupRegion: geo.region || "",
+                  signupIp: geo.ip || "",
+                },
+              }
+            );
+          }
+        } catch {}
+      }
       return NextResponse.redirect(new URL("/register/onboarding", request.url));
     }
   } catch (err) {

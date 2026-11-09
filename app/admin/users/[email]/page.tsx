@@ -5,9 +5,10 @@ import { useParams, useRouter } from "next/navigation";
 import {
   ArrowLeft, Mail, Calendar, Globe, CreditCard, ExternalLink,
   FileText, FolderOpen, Users, Settings, Lock, ShieldOff, ShieldCheck, Trash2, AlertTriangle,
-  ChevronDown, ChevronLeft, ChevronRight, Check, X,
+  ChevronDown, ChevronLeft, ChevronRight, Check, X, MapPin,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { getCountryFlag } from "@/lib/geo";
 
 interface UserDetail {
   email: string;
@@ -40,6 +41,11 @@ interface UserDetail {
   username: string;
   avatar: string | null;
   suspended: boolean;
+  signupCountry?: string;
+  signupCountryCode?: string;
+  signupCity?: string;
+  signupRegion?: string;
+  signupIp?: string;
 }
 
 interface Magnet {
@@ -117,7 +123,7 @@ function StatCard({ label, value }: { label: string; value: number }) {
   );
 }
 
-function Row({ icon, label, value, mono }: { icon: React.ReactNode; label: string; value: string; mono?: boolean }) {
+function Row({ icon, label, value, mono }: { icon: React.ReactNode; label: string; value: React.ReactNode; mono?: boolean }) {
   return (
     <div className="flex items-start gap-2.5 p-2 rounded-xl bg-zinc-50/50 dark:bg-white/[0.02] border border-zinc-100/60 dark:border-white/[0.03]">
       <span className="mt-0.5 text-zinc-400 dark:text-zinc-500 shrink-0">{icon}</span>
@@ -955,6 +961,23 @@ export default function AdminUserDetailPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
               <Row icon={<Calendar className="w-3.5 h-3.5" />} label="Joined" value={user.joinedAt ? new Date(user.joinedAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" }) : "—"} />
               <Row icon={<Calendar className="w-3.5 h-3.5 text-blue-500" />} label="Last Login" value={stats?.lastLoginAt ? new Date(stats.lastLoginAt).toLocaleString("en-IN", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit", hour12: true }) : "Never"} />
+              <Row
+                icon={<MapPin className="w-3.5 h-3.5 text-rose-500" />}
+                label="Signup Location"
+                value={
+                  user.signupCity || user.signupCountry ? (
+                    <span className="flex items-center gap-1.5 font-medium">
+                      <span>{getCountryFlag(user.signupCountryCode)}</span>
+                      <span>{[user.signupCity, user.signupRegion, user.signupCountry].filter(Boolean).join(", ")}</span>
+                    </span>
+                  ) : (
+                    "—"
+                  )
+                }
+              />
+              {user.signupIp ? (
+                <Row icon={<Globe className="w-3.5 h-3.5 text-zinc-400" />} label="Signup IP" value={user.signupIp} mono />
+              ) : null}
               <Row icon={<FileText className="w-3.5 h-3.5 text-violet-500" />} label="Last Funnel Created" value={stats?.lastFunnelCreatedAt ? new Date(stats.lastFunnelCreatedAt).toLocaleString("en-IN", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit", hour12: true }) : "—"} />
               <Row icon={<Users className="w-3.5 h-3.5 text-emerald-500" />} label="Last Lead Received" value={stats?.lastLeadReceivedAt ? new Date(stats.lastLeadReceivedAt).toLocaleString("en-IN", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit", hour12: true }) : "—"} />
               <Row

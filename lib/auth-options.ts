@@ -6,6 +6,7 @@ import { AccountModel } from "@/lib/models";
 import { determineRoleForEmail } from "@/lib/roles";
 import { sanitizeRedirect } from "@/lib/redirect";
 import { isReservedUsername } from "@/lib/reserved-usernames";
+import { getGeoFromHeaders } from "@/lib/geo";
 
 /** True when the OAuth provider itself confirms the user owns this email address. */
 function isProviderEmailVerified(provider: string | undefined, profile: any): boolean {
@@ -88,9 +89,22 @@ export const authOptions: NextAuthOptions = {
           return "/login?error=suspended";
         }
 
-        // Track last login time for existing accounts on every OAuth sign-in
+        // Track last login time for existing accounts on every OAuth sign-in, and backfill location if empty
         if (existing) {
-          await AccountModel.updateOne({ email: cleanEmail }, { $set: { lastLoginAt: new Date() } });
+          const updateFields: Record<string, any> = { lastLoginAt: new Date() };
+          if (!existing.signupCountry && !existing.signupCity) {
+            try {
+              const geo = await getGeoFromHeaders();
+              if (geo.country || geo.city) {
+                updateFields.signupCountry = geo.country || "";
+                updateFields.signupCountryCode = geo.countryCode || "";
+                updateFields.signupCity = geo.city || "";
+                updateFields.signupRegion = geo.region || "";
+                if (geo.ip) updateFields.signupIp = geo.ip;
+              }
+            } catch {}
+          }
+          await AccountModel.updateOne({ email: cleanEmail }, { $set: updateFields });
         }
 
         if (!existing) {
@@ -105,6 +119,13 @@ export const authOptions: NextAuthOptions = {
             while (isReservedUsername(generatedUsername) || (await AccountModel.findOne({ username: generatedUsername }))) {
               generatedUsername = `${prefix}${Math.floor(1000 + Math.random() * 9000)}`;
             }
+          }
+
+          let geo = { country: "", countryCode: "", city: "", region: "", ip: "" };
+          try {
+            geo = await getGeoFromHeaders();
+          } catch (e) {
+            console.error("[auth] Geo lookup failed during OAuth sign-up:", e);
           }
 
           await AccountModel.create({
@@ -122,6 +143,11 @@ export const authOptions: NextAuthOptions = {
             needsOnboarding: true,
             emailVerified: providerVerified ? new Date() : null,
             lastLoginAt: new Date(),
+            signupCountry: geo.country || "",
+            signupCountryCode: geo.countryCode || "",
+            signupCity: geo.city || "",
+            signupRegion: geo.region || "",
+            signupIp: geo.ip || "",
             // If signing up via LinkedIn OAuth, mark their LinkedIn as connected for identity
             ...(isLinkedIn && {
               linkedinConnected: true,

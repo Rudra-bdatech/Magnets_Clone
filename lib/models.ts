@@ -71,6 +71,12 @@ const AccountSchema = new Schema({
   tokenVersion: { type: Number, default: 0 },
   suspended: { type: Boolean, default: false },
   lastLoginAt: { type: Date, default: null },
+  // Signup Geo & Location
+  signupCountry: { type: String, default: "" },
+  signupCountryCode: { type: String, default: "" },
+  signupCity: { type: String, default: "" },
+  signupRegion: { type: String, default: "" },
+  signupIp: { type: String, default: "" },
   // LinkedIn Comment Automation
   linkedinWebhookSecret: { type: String, default: "" },
   linkedinConnected: { type: Boolean, default: false },

@@ -13,6 +13,7 @@ import { createHash, randomBytes } from "crypto";
 import { isMaskedSecret, maskSecret, maskWebhookUrl } from "@/lib/secret-mask";
 import { isValidEmailAddress } from "@/lib/email-guard";
 import { checkRateLimit } from "@/lib/rate-limit";
+import { getGeoFromHeaders } from "@/lib/geo";
 
 /** Generates a cryptographically random 64-char hex webhook secret. */
 function generateWebhookSecret(): string {
@@ -45,6 +46,7 @@ export function sanitizeAccount(accountDoc: any) {
   delete acc.notifyEmailTokenHash;
   delete acc.notifyEmailTokenExpires;
   delete acc.stripeCheckoutSessionId;
+  delete acc.signupIp; // admin-only, private from user-facing store
   // Integration secrets stay on the server; the UI gets a masked placeholder (lib/secret-mask.ts)
   acc.slackWebhookUrl = maskWebhookUrl(acc.slackWebhookUrl);
   acc.zapierWebhookUrl = maskWebhookUrl(acc.zapierWebhookUrl);
@@ -138,7 +140,7 @@ export function isValidZapierWebhookUrl(rawUrl: string): boolean {
   }
 }
 
-export async function handleSaveAccount(data: any, authEmail: string | null) {
+export async function handleSaveAccount(data: any, authEmail: string | null, req?: any) {
   let normalizedEmail = authEmail ? authEmail.trim().toLowerCase() : null;
   if (!normalizedEmail && data?.email && typeof data.email === "string") {
     normalizedEmail = data.email.trim().toLowerCase();
@@ -426,6 +428,13 @@ export async function handleSaveAccount(data: any, authEmail: string | null) {
     // Build new account document from an explicit allowlist of legitimate signup fields.
     // Privileged, server-managed, and lead-routing fields (webhooks, notify email, tokens)
     // are strictly excluded to prevent pre-account takeover attacks.
+    let geo = { country: "", countryCode: "", city: "", region: "", ip: "" };
+    try {
+      geo = await getGeoFromHeaders(req?.headers);
+    } catch (e) {
+      console.error("[account] Geo lookup failed during account creation:", e);
+    }
+
     const newAccountData: Record<string, any> = {
       email: normalizedEmail,
       name: typeof data.name === "string" && data.name.trim() ? data.name.trim().slice(0, 100) : "Subscriber",
@@ -440,6 +449,11 @@ export async function handleSaveAccount(data: any, authEmail: string | null) {
       templateId: typeof data.templateId === "string" && data.templateId.trim() ? data.templateId.trim().slice(0, 50) : "template1",
       joinedAt: data.joinedAt || new Date().toLocaleDateString("en-US", { month: "long", year: "numeric" }),
       role: determineRoleForEmail(data.email || normalizedEmail),
+      signupCountry: geo.country || "",
+      signupCountryCode: geo.countryCode || "",
+      signupCity: geo.city || "",
+      signupRegion: geo.region || "",
+      signupIp: geo.ip || "",
       // Always server-generated: a client-chosen secret would let whoever pre-registers
       // this email post leads into the account after the real owner claims it.
       linkedinWebhookSecret: generateWebhookSecret(),
@@ -572,7 +586,7 @@ export async function handleDeleteAccount(data: any, authEmail: string | null) {
   return res;
 }
 
-export async function handleLogin(data: any) {
+export async function handleLogin(data: any, req?: any) {
   const { email, password } = data || {};
   if (!email || !password || typeof email !== "string" || typeof password !== "string") {
     return NextResponse.json({ error: "Email and password are required." }, { status: 400 });
@@ -595,6 +609,18 @@ export async function handleLogin(data: any) {
     account.password = await hashPassword(password);
   }
   account.lastLoginAt = new Date();
+  if (!account.signupCountry && !account.signupCity) {
+    try {
+      const geo = await getGeoFromHeaders(req?.headers);
+      if (geo.country || geo.city) {
+        account.signupCountry = geo.country || "";
+        account.signupCountryCode = geo.countryCode || "";
+        account.signupCity = geo.city || "";
+        account.signupRegion = geo.region || "";
+        if (geo.ip) account.signupIp = geo.ip;
+      }
+    } catch {}
+  }
   await account.save();
 
   // Set the HttpOnly session cookie right here — identity is verified above.

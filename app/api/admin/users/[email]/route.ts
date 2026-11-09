@@ -38,6 +38,7 @@ export async function GET(
       chargebeeCustomerId: 1, chargebeeSubscriptionId: 1, chargebeeInvoiceId: 1,
       // Account state
       emailVerified: 1, joinedAt: 1, lastLoginAt: 1,
+      signupCountry: 1, signupCountryCode: 1, signupCity: 1, signupRegion: 1, signupIp: 1,
       // Domain
       customDomain: 1, customSubdomain: 1, domainVerified: 1, cnameVerified: 1,
       sslStatus: 1, spfVerified: 1, dkimVerified: 1,
@@ -121,6 +122,11 @@ export async function GET(
     chargebeeInvoiceId: account.chargebeeInvoiceId || "",
     emailVerified: account.emailVerified || null,
     joinedAt: account.joinedAt || "",
+    signupCountry: account.signupCountry || "",
+    signupCountryCode: account.signupCountryCode || "",
+    signupCity: account.signupCity || "",
+    signupRegion: account.signupRegion || "",
+    signupIp: account.signupIp || "",
     customDomain: account.customDomain || "",
     customSubdomain: account.customSubdomain || "get",
     domainVerified: Boolean(account.domainVerified),

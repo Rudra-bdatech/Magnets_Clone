@@ -27,6 +27,8 @@ export async function GET(request: NextRequest) {
     query.$or = [
       { email: { $regex: search, $options: "i" } },
       { name: { $regex: search, $options: "i" } },
+      { signupCity: { $regex: search, $options: "i" } },
+      { signupCountry: { $regex: search, $options: "i" } },
     ];
   }
   if (planFilter) query.plan = planFilter;
@@ -73,6 +75,7 @@ export async function GET(request: NextRequest) {
     emailVerified: 1, joinedAt: 1, customDomain: 1, linkedinConnected: 1,
     "gmailOAuth.connected": 1, "customSmtp.enabled": 1, "customSmtp.isVerified": 1,
     stripeSubscriptionId: 1, chargebeeSubscriptionId: 1, suspended: 1,
+    signupCountry: 1, signupCountryCode: 1, signupCity: 1, signupRegion: 1, signupIp: 1,
   };
 
   const [accounts, total, summaryAgg] = await Promise.all([
@@ -164,6 +167,11 @@ export async function GET(request: NextRequest) {
       smtpConnected: Boolean(a.customSmtp?.enabled && a.customSmtp?.isVerified),
       hasPaidSubscription: Boolean(a.stripeSubscriptionId || a.chargebeeSubscriptionId),
       suspended: Boolean(a.suspended),
+      signupCountry: a.signupCountry || "",
+      signupCountryCode: a.signupCountryCode || "",
+      signupCity: a.signupCity || "",
+      signupRegion: a.signupRegion || "",
+      signupIp: a.signupIp || "",
       magnetCount: magnetMap.get(a.email) || 0,
       leadCount: leadMap.get(a.email) || 0,
       storageBytes: storageMap.get(a.email) || 0,
