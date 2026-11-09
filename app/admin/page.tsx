@@ -29,6 +29,9 @@ interface StorageStats {
   totalFiles: number;
   dbTotalBytes: number;
   dbTotalFiles: number;
+  pdfBytes?: number;
+  imageBytes?: number;
+  dataBytes?: number;
   limitBytes: number;
   limitGb: number;
   usedPercent: number;
@@ -547,88 +550,88 @@ export default function AdminOverviewPage() {
                   </span>
                 </div>
 
-                {/* Segmented Multi-Color Bar */}
-                <div className="h-3.5 w-full bg-zinc-100 dark:bg-white/[0.08] rounded-full overflow-hidden flex p-0.5 gap-0.5 shadow-inner">
-                  {/* Segment 1: PDFs & Lead Magnets (Cyan) */}
-                  <motion.div
-                    initial={{ width: 0 }}
-                    animate={{
-                      width: `${Math.max(storage.usedPercent * 0.68, 4)}%`,
-                    }}
-                    transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-                    className="h-full bg-cyan-500 rounded-l-full shadow-xs"
-                    title={`PDFs & Deliverables: ${formatBytes(Math.round(storage.totalBytes * 0.68))}`}
-                  />
-                  {/* Segment 2: Images & Media (Purple) */}
-                  <motion.div
-                    initial={{ width: 0 }}
-                    animate={{
-                      width: `${Math.max(storage.usedPercent * 0.24, 2.5)}%`,
-                    }}
-                    transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
-                    className="h-full bg-purple-500 shadow-xs"
-                    title={`Images & Media: ${formatBytes(Math.round(storage.totalBytes * 0.24))}`}
-                  />
-                  {/* Segment 3: App Assets & Data (Amber) */}
-                  <motion.div
-                    initial={{ width: 0 }}
-                    animate={{
-                      width: `${Math.max(storage.usedPercent * 0.08, 1.5)}%`,
-                    }}
-                    transition={{ duration: 1.0, ease: [0.16, 1, 0.3, 1] }}
-                    className="h-full bg-amber-500 rounded-r-xs shadow-xs"
-                    title={`Brand & Assets: ${formatBytes(
-                      Math.max(
-                        0,
-                        storage.totalBytes -
-                          Math.round(storage.totalBytes * 0.68) -
-                          Math.round(storage.totalBytes * 0.24)
-                      )
-                    )}`}
-                  />
-                </div>
+                {(() => {
+                  const pdfBytes = storage.pdfBytes ?? Math.round(storage.totalBytes * 0.68);
+                  const imageBytes = storage.imageBytes ?? Math.round(storage.totalBytes * 0.24);
+                  const dataBytes = storage.dataBytes ?? Math.max(0, storage.totalBytes - pdfBytes - imageBytes);
+                  const safeTotal = storage.totalBytes || 1;
+                  const pdfRatio = pdfBytes / safeTotal;
+                  const imageRatio = imageBytes / safeTotal;
+                  const dataRatio = dataBytes / safeTotal;
 
-                {/* Apple-Style Colored Dot Legend Badges */}
-                <div className="flex flex-wrap items-center gap-x-4 gap-y-2 pt-0.5 text-xs select-none">
-                  <div className="flex items-center gap-1.5">
-                    <span className="h-2 w-2 rounded-full bg-cyan-500 shrink-0" />
-                    <span className="text-zinc-500 dark:text-zinc-400 font-medium">PDFs</span>
-                    <span className="font-bold text-zinc-900 dark:text-white tabular-nums">
-                      {formatBytes(Math.round(storage.totalBytes * 0.68))}
-                    </span>
-                  </div>
+                  return (
+                    <>
+                      {/* Segmented Multi-Color Bar */}
+                      <div className="h-3.5 w-full bg-zinc-100 dark:bg-white/[0.08] rounded-full overflow-hidden flex p-0.5 gap-0.5 shadow-inner">
+                        {/* Segment 1: PDFs & Lead Magnets (Cyan) */}
+                        <motion.div
+                          initial={{ width: 0 }}
+                          animate={{
+                            width: `${Math.max(storage.usedPercent * pdfRatio, 2)}%`,
+                          }}
+                          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                          className="h-full bg-cyan-500 rounded-l-full shadow-xs"
+                          title={`PDFs & Deliverables: ${formatBytes(pdfBytes)}`}
+                        />
+                        {/* Segment 2: Images & Media (Purple) */}
+                        <motion.div
+                          initial={{ width: 0 }}
+                          animate={{
+                            width: `${Math.max(storage.usedPercent * imageRatio, 1.5)}%`,
+                          }}
+                          transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
+                          className="h-full bg-purple-500 shadow-xs"
+                          title={`Images & Media: ${formatBytes(imageBytes)}`}
+                        />
+                        {/* Segment 3: App Assets & Data (Amber) */}
+                        <motion.div
+                          initial={{ width: 0 }}
+                          animate={{
+                            width: `${Math.max(storage.usedPercent * dataRatio, 1)}%`,
+                          }}
+                          transition={{ duration: 1.0, ease: [0.16, 1, 0.3, 1] }}
+                          className="h-full bg-amber-500 rounded-r-xs shadow-xs"
+                          title={`Brand & Assets: ${formatBytes(dataBytes)}`}
+                        />
+                      </div>
 
-                  <div className="flex items-center gap-1.5">
-                    <span className="h-2 w-2 rounded-full bg-purple-500 shrink-0" />
-                    <span className="text-zinc-500 dark:text-zinc-400 font-medium">Images</span>
-                    <span className="font-bold text-zinc-900 dark:text-white tabular-nums">
-                      {formatBytes(Math.round(storage.totalBytes * 0.24))}
-                    </span>
-                  </div>
+                      {/* Apple-Style Colored Dot Legend Badges */}
+                      <div className="flex flex-wrap items-center gap-x-4 gap-y-2 pt-0.5 text-xs select-none">
+                        <div className="flex items-center gap-1.5">
+                          <span className="h-2 w-2 rounded-full bg-cyan-500 shrink-0" />
+                          <span className="text-zinc-500 dark:text-zinc-400 font-medium">PDFs</span>
+                          <span className="font-bold text-zinc-900 dark:text-white tabular-nums">
+                            {formatBytes(pdfBytes)}
+                          </span>
+                        </div>
 
-                  <div className="flex items-center gap-1.5">
-                    <span className="h-2 w-2 rounded-full bg-amber-500 shrink-0" />
-                    <span className="text-zinc-500 dark:text-zinc-400 font-medium">Data</span>
-                    <span className="font-bold text-zinc-900 dark:text-white tabular-nums">
-                      {formatBytes(
-                        Math.max(
-                          0,
-                          storage.totalBytes -
-                            Math.round(storage.totalBytes * 0.68) -
-                            Math.round(storage.totalBytes * 0.24)
-                        )
-                      )}
-                    </span>
-                  </div>
+                        <div className="flex items-center gap-1.5">
+                          <span className="h-2 w-2 rounded-full bg-purple-500 shrink-0" />
+                          <span className="text-zinc-500 dark:text-zinc-400 font-medium">Images</span>
+                          <span className="font-bold text-zinc-900 dark:text-white tabular-nums">
+                            {formatBytes(imageBytes)}
+                          </span>
+                        </div>
 
-                  <div className="flex items-center gap-1.5 sm:ml-auto">
-                    <span className="h-2 w-2 rounded-full bg-zinc-300 dark:bg-zinc-600 shrink-0" />
-                    <span className="text-zinc-500 dark:text-zinc-400 font-medium">Free</span>
-                    <span className="font-bold text-zinc-900 dark:text-white tabular-nums">
-                      {formatBytes(Math.max(0, storage.limitBytes - storage.totalBytes))}
-                    </span>
-                  </div>
-                </div>
+                        <div className="flex items-center gap-1.5">
+                          <span className="h-2 w-2 rounded-full bg-amber-500 shrink-0" />
+                          <span className="text-zinc-500 dark:text-zinc-400 font-medium">Data</span>
+                          <span className="font-bold text-zinc-900 dark:text-white tabular-nums">
+                            {formatBytes(dataBytes)}
+                          </span>
+                        </div>
+
+                        <div className="flex items-center gap-1.5 sm:ml-auto">
+                          <span className="h-2 w-2 rounded-full bg-zinc-300 dark:bg-zinc-600 shrink-0" />
+                          <span className="text-zinc-500 dark:text-zinc-400 font-medium">Free</span>
+                          <span className="font-bold text-zinc-900 dark:text-white tabular-nums">
+                            {formatBytes(Math.max(0, storage.limitBytes - storage.totalBytes))}
+                          </span>
+                        </div>
+                      </div>
+                    </>
+                  );
+                })()}
               </div>
             </div>
 

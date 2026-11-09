@@ -56,6 +56,7 @@ export async function GET() {
     byRole,
     dbStorageAgg,
     topUsersAgg,
+    categoryAgg,
     cloudinaryUsage,
   ] = await Promise.all([
     AccountModel.countDocuments(),
@@ -72,6 +73,32 @@ export async function GET() {
       { $group: { _id: "$userEmail", totalBytes: { $sum: "$size" }, totalFiles: { $sum: 1 } } },
       { $sort: { totalBytes: -1 } },
       { $limit: 15 },
+    ]),
+    ResourceModel.aggregate([
+      {
+        $project: {
+          size: 1,
+          ext: { $toLower: { $ifNull: ["$fileExt", ""] } },
+        },
+      },
+      {
+        $group: {
+          _id: {
+            $cond: [
+              { $eq: ["$ext", "pdf"] },
+              "pdf",
+              {
+                $cond: [
+                  { $in: ["$ext", ["jpg", "jpeg", "png", "webp", "gif", "svg", "avif"]] },
+                  "image",
+                  "data",
+                ],
+              },
+            ],
+          },
+          bytes: { $sum: "$size" },
+        },
+      },
     ]),
     getCloudinaryUsageSafe(),
   ]);
@@ -104,15 +131,39 @@ export async function GET() {
     };
   });
 
-  // Calculate storage metrics
-  const limitGb = parseInt(process.env.CLOUDINARY_STORAGE_LIMIT_GB || "25", 10) || 25;
-  const limitBytes = limitGb * 1024 * 1024 * 1024;
+  // Calculate storage metrics: dynamically prioritize live Cloudinary credit/storage limit if available
+  const liveLimitGb =
+    (typeof cloudinaryUsage?.credits?.limit === "number" && cloudinaryUsage.credits.limit > 0)
+      ? cloudinaryUsage.credits.limit
+      : (typeof cloudinaryUsage?.storage?.limit === "number" && cloudinaryUsage.storage.limit > 0)
+        ? Math.round(cloudinaryUsage.storage.limit / (1024 * 1024 * 1024))
+        : (parseInt(process.env.CLOUDINARY_STORAGE_LIMIT_GB || "25", 10) || 25);
+  const limitBytes = liveLimitGb * 1024 * 1024 * 1024;
   const dbBytes = dbStorageAgg[0]?.totalBytes || 0;
   const dbFiles = dbStorageAgg[0]?.totalFiles || 0;
+
+  // Real breakdown from database resources
+  let rawPdfBytes = 0;
+  let rawImageBytes = 0;
+  let rawDataBytes = 0;
+  if (Array.isArray(categoryAgg)) {
+    categoryAgg.forEach((c: any) => {
+      if (c._id === "pdf") rawPdfBytes = c.bytes || 0;
+      else if (c._id === "image") rawImageBytes = c.bytes || 0;
+      else rawDataBytes = (rawDataBytes || 0) + (c.bytes || 0);
+    });
+  }
 
   // Cloudinary storage usage includes derived transformations/thumbnails; DB tracks original uploaded resources
   const totalBytes = cloudinaryUsage?.storage?.usage ?? dbBytes;
   const totalFiles = cloudinaryUsage?.objects?.usage ?? dbFiles;
+
+  // Scale category breakdown proportionally to totalBytes
+  const scale = dbBytes > 0 ? totalBytes / dbBytes : 1;
+  const pdfBytes = Math.round(rawPdfBytes * scale);
+  const imageBytes = Math.round(rawImageBytes * scale);
+  const dataBytes = Math.max(0, totalBytes - pdfBytes - imageBytes);
+
   const usedPercent = limitBytes > 0 ? (totalBytes / limitBytes) * 100 : 0;
 
   return NextResponse.json({
@@ -127,13 +178,16 @@ export async function GET() {
       totalFiles,
       dbTotalBytes: dbBytes,
       dbTotalFiles: dbFiles,
+      pdfBytes,
+      imageBytes,
+      dataBytes,
       limitBytes,
-      limitGb,
+      limitGb: liveLimitGb,
       usedPercent: Number(usedPercent.toFixed(2)),
       provider: "Cloudinary",
       plan: cloudinaryUsage?.plan || "Free",
       creditsUsage: cloudinaryUsage?.credits?.usage ?? null,
-      creditsLimit: cloudinaryUsage?.credits?.limit ?? limitGb,
+      creditsLimit: cloudinaryUsage?.credits?.limit ?? liveLimitGb,
       bandwidthBytes: cloudinaryUsage?.bandwidth?.usage ?? 0,
       topUsers: formattedTopUsers,
     },

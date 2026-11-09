@@ -17,11 +17,9 @@ import {
   CreditCard,
   Shield,
   RefreshCw,
-  MapPin,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ApplePagination } from "@/components/ui/ApplePagination";
-import { getCountryFlag } from "@/lib/geo";
 
 interface AdminUser {
   email: string;
@@ -1100,12 +1098,6 @@ export default function AdminUsersPage() {
                       <div className="text-xs text-zinc-400 dark:text-zinc-500 truncate">
                         {user.email}
                       </div>
-                      {(user.signupCity || user.signupCountry) && (
-                        <div className="flex items-center gap-1 text-[11px] text-zinc-600 dark:text-zinc-400 mt-0.5 truncate">
-                          <span className="text-xs">{getCountryFlag(user.signupCountryCode)}</span>
-                          <span className="truncate">{[user.signupCity, user.signupCountry].filter(Boolean).join(", ")}</span>
-                        </div>
-                      )}
                     </div>
                   </div>
 
@@ -1200,7 +1192,6 @@ export default function AdminUsersPage() {
             <thead>
               <tr className="border-b border-zinc-100 dark:border-white/[0.06] bg-zinc-50/80 dark:bg-white/[0.02]">
                 <th className="text-left px-4 py-3 text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">User</th>
-                <th className="text-left px-4 py-3 text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">Location</th>
                 <th className="text-left px-4 py-3 text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">Plan</th>
                 <th className="text-left px-4 py-3 text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">Role</th>
                 <th className="text-right px-4 py-3 text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">Leads</th>
@@ -1215,7 +1206,7 @@ export default function AdminUsersPage() {
               {loading ? (
                 Array.from({ length: 8 }).map((_, i) => (
                   <tr key={i}>
-                    {Array.from({ length: 10 }).map((_, j) => (
+                    {Array.from({ length: 9 }).map((_, j) => (
                       <td key={j} className="px-4 py-3">
                         <div className="h-4 bg-zinc-100 dark:bg-white/5 rounded animate-pulse" />
                       </td>
@@ -1224,7 +1215,7 @@ export default function AdminUsersPage() {
                 ))
               ) : users.length === 0 ? (
                 <tr>
-                  <td colSpan={10} className="px-4 py-12 text-center text-sm text-zinc-400 dark:text-zinc-500">
+                  <td colSpan={9} className="px-4 py-12 text-center text-sm text-zinc-400 dark:text-zinc-500">
                     No users found
                   </td>
                 </tr>
@@ -1245,22 +1236,6 @@ export default function AdminUsersPage() {
                         )}
                       </div>
                       <div className="text-xs text-zinc-400 dark:text-zinc-500 truncate max-w-48">{user.email}</div>
-                    </td>
-
-                    <td className="px-4 py-3 whitespace-nowrap text-xs">
-                      {user.signupCity || user.signupCountry ? (
-                        <div
-                          className="flex items-center gap-1.5"
-                          title={[user.signupCity, user.signupRegion, user.signupCountry, user.signupIp].filter(Boolean).join(" • ")}
-                        >
-                          <span className="text-sm select-none">{getCountryFlag(user.signupCountryCode)}</span>
-                          <span className="font-medium text-zinc-800 dark:text-zinc-200">
-                            {[user.signupCity, user.signupCountry].filter(Boolean).join(", ")}
-                          </span>
-                        </div>
-                      ) : (
-                        <span className="text-zinc-400 dark:text-zinc-600">—</span>
-                      )}
                     </td>
 
                     <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
