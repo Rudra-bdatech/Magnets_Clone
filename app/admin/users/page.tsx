@@ -203,14 +203,6 @@ function RowSelect({
         <AnimatePresence>
           {open && coords && (
             <div className="hidden sm:block">
-              <div
-                className="fixed inset-0 z-40 bg-transparent"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setOpen(false);
-                }}
-              />
-
               <motion.div
                 ref={popoverRef}
                 initial={{ opacity: 0, scale: 0.95, y: coords.openUpward ? 4 : -4 }}
@@ -224,7 +216,7 @@ function RowSelect({
                   bottom: coords.bottom !== undefined ? coords.bottom : undefined,
                   transformOrigin: coords.openUpward ? "bottom left" : "top left",
                 }}
-                className="z-50 min-w-[130px] rounded-xl border border-zinc-200/90 dark:border-white/10 bg-white/95 dark:bg-[#1C1C1F]/95 p-1 shadow-2xl backdrop-blur-xl"
+                className="z-[100] min-w-[130px] rounded-xl border border-zinc-200/90 dark:border-white/10 bg-white/95 dark:bg-[#1C1C1F]/95 p-1 shadow-2xl backdrop-blur-xl"
                 onClick={(e) => e.stopPropagation()}
               >
                 {options.map((opt) => (
@@ -399,11 +391,6 @@ function FilterSelect({
       <AnimatePresence>
         {open && (
           <div className="hidden sm:block">
-            <div
-              className="fixed inset-0 z-40 bg-transparent"
-              onClick={() => setOpen(false)}
-            />
-
             <motion.div
               initial={{ opacity: 0, scale: 0.96, y: openUpward ? 4 : -4 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -1331,13 +1318,15 @@ export default function AdminUsersPage() {
                 users.map((user) => (
                   <tr
                     key={user.email}
-                    className="hover:bg-[#F0F7FF] dark:hover:bg-white/[0.02] cursor-pointer transition-colors"
-                    onClick={() => router.push(`/admin/users/${encodeURIComponent(user.email)}`)}
+                    className="hover:bg-zinc-50/60 dark:hover:bg-white/[0.02] transition-colors"
                   >
                     <td className="px-4 py-3">
-                      <div className="flex items-center gap-2.5">
+                      <div
+                        onClick={() => router.push(`/admin/users/${encodeURIComponent(user.email)}`)}
+                        className="flex items-center gap-2.5 cursor-pointer group w-fit"
+                      >
                         <div className="relative shrink-0">
-                          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#0066B2]/15 to-[#0066B2]/5 dark:from-[#38BDF8]/20 dark:to-[#38BDF8]/5 text-[#0066B2] dark:text-[#38BDF8] font-bold text-xs flex items-center justify-center border border-[#0066B2]/20 dark:border-[#38BDF8]/20 shadow-xs">
+                          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#0066B2]/15 to-[#0066B2]/5 dark:from-[#38BDF8]/20 dark:to-[#38BDF8]/5 text-[#0066B2] dark:text-[#38BDF8] font-bold text-xs flex items-center justify-center border border-[#0066B2]/20 dark:border-[#38BDF8]/20 shadow-xs group-hover:scale-105 transition-transform">
                             {user.name ? user.name.slice(0, 2).toUpperCase() : "U"}
                           </div>
                           {onlineUsers.has(user.email.toLowerCase()) && (
@@ -1349,7 +1338,7 @@ export default function AdminUsersPage() {
                         </div>
                         <div className="min-w-0">
                           <div className="flex items-center gap-1.5">
-                            <div className="font-medium text-zinc-900 dark:text-white truncate max-w-48">{user.name}</div>
+                            <div className="font-medium text-zinc-900 dark:text-white truncate max-w-48 group-hover:text-[#0066B2] dark:group-hover:text-[#38BDF8] transition-colors">{user.name}</div>
                             {onlineUsers.has(user.email.toLowerCase()) && (
                               <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-200/60 dark:border-emerald-500/30">
                                 Active
@@ -1366,7 +1355,7 @@ export default function AdminUsersPage() {
                       </div>
                     </td>
 
-                    <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
+                    <td className="px-4 py-3">
                       <RowSelect
                         value={user.plan}
                         options={PLANS}
@@ -1377,7 +1366,7 @@ export default function AdminUsersPage() {
                       />
                     </td>
 
-                    <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
+                    <td className="px-4 py-3">
                       <RowSelect
                         value={user.role}
                         options={ROLES}
@@ -1413,10 +1402,10 @@ export default function AdminUsersPage() {
                         <X className="w-4 h-4 text-zinc-300 dark:text-zinc-600" />
                       )}
                     </td>
-                    <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
+                    <td className="px-4 py-3">
                       <button
                         onClick={() => router.push(`/admin/users/${encodeURIComponent(user.email)}`)}
-                        className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-[#0066B2]/10 text-[#0066B2] dark:bg-[#0066B2]/20 dark:text-[#38BDF8] hover:bg-[#0066B2] hover:text-white dark:hover:bg-[#0066B2] dark:hover:text-white transition-colors whitespace-nowrap"
+                        className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-[#0066B2]/10 text-[#0066B2] dark:bg-[#0066B2]/20 dark:text-[#38BDF8] hover:bg-[#0066B2] hover:text-white dark:hover:bg-[#0066B2] dark:hover:text-white transition-colors whitespace-nowrap cursor-pointer"
                       >
                         Inspect →
                       </button>
