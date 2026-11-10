@@ -3,6 +3,9 @@ import { dbConnect } from "@/lib/mongodb";
 import { EmailEventModel, LeadModel } from "@/lib/models";
 import { requireAdmin, isAdminSession } from "@/lib/admin-auth";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export async function GET(request: NextRequest) {
   const auth = await requireAdmin();
   if (!isAdminSession(auth)) return auth;
