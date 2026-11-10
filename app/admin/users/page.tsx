@@ -102,14 +102,71 @@ function RowSelect({
   title?: string;
 }) {
   const [open, setOpen] = useState(false);
-  const [openUpward, setOpenUpward] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [coords, setCoords] = useState<{
+    top?: number;
+    bottom?: number;
+    left: number;
+    openUpward: boolean;
+  } | null>(null);
   const ref = useRef<HTMLDivElement>(null);
-  useClickOutside(ref, () => setOpen(false));
+  const popoverRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  const updatePosition = useCallback(() => {
+    if (!ref.current) return;
+    const rect = ref.current.getBoundingClientRect();
+    const dropdownHeight = options.length * 38 + 16;
+    const spaceBelow = window.innerHeight - rect.bottom;
+    const openUpward = spaceBelow < dropdownHeight && rect.top > dropdownHeight;
+
+    const left = Math.max(8, Math.min(rect.left, window.innerWidth - 150));
+
+    if (openUpward) {
+      setCoords({
+        bottom: window.innerHeight - rect.top + 6,
+        left,
+        openUpward: true,
+      });
+    } else {
+      setCoords({
+        top: rect.bottom + 6,
+        left,
+        openUpward: false,
+      });
+    }
+  }, [options.length]);
+
+  useEffect(() => {
+    if (!open) return;
+    updatePosition();
+
+    const handleScrollOrResize = () => {
+      updatePosition();
+    };
+
+    window.addEventListener("scroll", handleScrollOrResize, true);
+    window.addEventListener("resize", handleScrollOrResize);
+    return () => {
+      window.removeEventListener("scroll", handleScrollOrResize, true);
+      window.removeEventListener("resize", handleScrollOrResize);
+    };
+  }, [open, updatePosition]);
+
+  useEffect(() => {
+    if (!open) return;
+    function handler(e: MouseEvent) {
+      const target = e.target as Node;
+      if (ref.current && ref.current.contains(target)) return;
+      if (popoverRef.current && popoverRef.current.contains(target)) return;
+      setOpen(false);
+    }
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [open]);
 
   useEffect(() => {
     if (open && typeof window !== "undefined" && window.innerWidth < 640) {
@@ -123,10 +180,8 @@ function RowSelect({
 
   const toggleOpen = (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (!open && ref.current) {
-      const rect = ref.current.getBoundingClientRect();
-      const spaceBelow = window.innerHeight - rect.bottom;
-      setOpenUpward(spaceBelow < 150);
+    if (!open) {
+      updatePosition();
     }
     setOpen((v) => !v);
   };
@@ -143,52 +198,60 @@ function RowSelect({
         <ChevronDown className={`w-3 h-3 transition-transform duration-150 ${open ? "rotate-180" : ""}`} />
       </button>
 
-      {/* Desktop Anchored Popover (sm:) */}
-      <AnimatePresence>
-        {open && (
-          <div className="hidden sm:block">
-            <div
-              className="fixed inset-0 z-40 bg-transparent"
-              onClick={(e) => {
-                e.stopPropagation();
-                setOpen(false);
-              }}
-            />
+      {/* Desktop Anchored Popover (sm:) - Portaled to document.body so it NEVER gets clipped by table overflow */}
+      {mounted && typeof document !== "undefined" && createPortal(
+        <AnimatePresence>
+          {open && coords && (
+            <div className="hidden sm:block">
+              <div
+                className="fixed inset-0 z-40 bg-transparent"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setOpen(false);
+                }}
+              />
 
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: openUpward ? 4 : -4 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: openUpward ? 4 : -4 }}
-              transition={{ type: "spring", damping: 28, stiffness: 450 }}
-              style={{ transformOrigin: openUpward ? "bottom left" : "top left" }}
-              className={`absolute left-0 z-50 min-w-[130px] rounded-xl border border-zinc-200/90 dark:border-white/10 bg-white/95 dark:bg-[#1C1C1F]/95 p-1 shadow-2xl backdrop-blur-xl ${
-                openUpward ? "bottom-full mb-1.5" : "top-full mt-1.5"
-              }`}
-              onClick={(e) => e.stopPropagation()}
-            >
-              {options.map((opt) => (
-                <button
-                  key={opt}
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onChange(opt);
-                    setOpen(false);
-                  }}
-                  className={`flex w-full items-center justify-between gap-2 rounded-lg px-2.5 py-2 text-xs font-medium transition-all cursor-pointer ${
-                    value === opt
-                      ? "bg-[#0066B2]/10 text-[#0066B2] font-semibold dark:bg-[#38BDF8]/15 dark:text-[#38BDF8]"
-                      : "text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-white/5 active:bg-zinc-200/60 dark:active:bg-white/10"
-                  }`}
-                >
-                  <span>{opt}</span>
-                  {value === opt && <Check className="w-3.5 h-3.5 text-[#0066B2] dark:text-[#38BDF8] shrink-0" />}
-                </button>
-              ))}
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
+              <motion.div
+                ref={popoverRef}
+                initial={{ opacity: 0, scale: 0.95, y: coords.openUpward ? 4 : -4 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95, y: coords.openUpward ? 4 : -4 }}
+                transition={{ type: "spring", damping: 28, stiffness: 450 }}
+                style={{
+                  position: "fixed",
+                  left: coords.left,
+                  top: coords.top !== undefined ? coords.top : undefined,
+                  bottom: coords.bottom !== undefined ? coords.bottom : undefined,
+                  transformOrigin: coords.openUpward ? "bottom left" : "top left",
+                }}
+                className="z-50 min-w-[130px] rounded-xl border border-zinc-200/90 dark:border-white/10 bg-white/95 dark:bg-[#1C1C1F]/95 p-1 shadow-2xl backdrop-blur-xl"
+                onClick={(e) => e.stopPropagation()}
+              >
+                {options.map((opt) => (
+                  <button
+                    key={opt}
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onChange(opt);
+                      setOpen(false);
+                    }}
+                    className={`flex w-full items-center justify-between gap-2 rounded-lg px-2.5 py-2 text-xs font-medium transition-all cursor-pointer ${
+                      value === opt
+                        ? "bg-[#0066B2]/10 text-[#0066B2] font-semibold dark:bg-[#38BDF8]/15 dark:text-[#38BDF8]"
+                        : "text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-white/5 active:bg-zinc-200/60 dark:active:bg-white/10"
+                    }`}
+                  >
+                    <span>{opt}</span>
+                    {value === opt && <Check className="w-3.5 h-3.5 text-[#0066B2] dark:text-[#38BDF8] shrink-0" />}
+                  </button>
+                ))}
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
 
       {/* Mobile Bottom Sheet (portaled directly to document.body so it pops up from bottom of device screen) */}
       {mounted && typeof document !== "undefined" && createPortal(
