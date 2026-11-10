@@ -41,38 +41,36 @@ export async function GET(req: NextRequest) {
     "127.0.0.1";
   const userAgent = req.headers.get("user-agent") || "";
 
-  // Record click telemetry event in the background
-  (async () => {
-    try {
-      await dbConnect();
-      const eventId = `ev_click_${crypto.randomBytes(8).toString("hex")}`;
-      await EmailEventModel.create({
-        id: eventId,
-        userEmail,
-        leadId,
-        pageId,
-        sequenceId,
-        stepId,
-        eventType: "clicked",
-        recipientEmail: recipient,
-        linkUrl: validatedUrl,
-        userAgent,
-        ip,
-        createdAt: new Date(),
-      });
+  // Record click telemetry event before redirecting
+  try {
+    await dbConnect();
+    const eventId = `ev_click_${crypto.randomBytes(8).toString("hex")}`;
+    await EmailEventModel.create({
+      id: eventId,
+      userEmail,
+      leadId,
+      pageId,
+      sequenceId,
+      stepId,
+      eventType: "clicked",
+      recipientEmail: recipient,
+      linkUrl: validatedUrl,
+      userAgent,
+      ip,
+      createdAt: new Date(),
+    });
 
-      // Update lead status to "opened" if not already opened/completed
-      if (leadId) {
-        const lead = await LeadModel.findOne({ id: leadId });
-        if (lead && (lead.status === "new" || lead.status === "delivered")) {
-          lead.status = "opened";
-          await lead.save();
-        }
+    // Update lead status to "opened" if not already opened/completed
+    if (leadId) {
+      const lead = await LeadModel.findOne({ id: leadId });
+      if (lead && (lead.status === "new" || lead.status === "delivered")) {
+        lead.status = "opened";
+        await lead.save();
       }
-    } catch (err) {
-      console.error("❌ [Email Click Tracking Error]:", err);
     }
-  })();
+  } catch (err) {
+    console.error("❌ [Email Click Tracking Error]:", err);
+  }
 
   return NextResponse.redirect(new URL(validatedUrl, req.url), 302);
 }

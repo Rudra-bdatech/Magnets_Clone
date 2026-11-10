@@ -26,68 +26,66 @@ export async function GET(req: NextRequest) {
     "127.0.0.1";
   const userAgent = req.headers.get("user-agent") || "";
 
-  // Process telemetry asynchronously in background without delaying GIF response
+  // Record telemetry before returning the pixel (ensures DB writes commit even on serverless runtimes)
   if (leadId || sequenceId || pageId || recipient) {
-    (async () => {
-      try {
-        await dbConnect();
+    try {
+      await dbConnect();
 
-        // 1. Record EmailEvent
-        const eventId = `ev_open_${crypto.randomBytes(8).toString("hex")}`;
-        await EmailEventModel.create({
-          id: eventId,
-          userEmail,
-          leadId,
-          pageId,
-          sequenceId,
-          stepId,
-          eventType: "opened",
-          recipientEmail: recipient,
-          userAgent,
-          ip,
-          createdAt: new Date(),
-        });
+      // 1. Record EmailEvent
+      const eventId = `ev_open_${crypto.randomBytes(8).toString("hex")}`;
+      await EmailEventModel.create({
+        id: eventId,
+        userEmail,
+        leadId,
+        pageId,
+        sequenceId,
+        stepId,
+        eventType: "opened",
+        recipientEmail: recipient,
+        userAgent,
+        ip,
+        createdAt: new Date(),
+      });
 
-        // 2. Update Lead opened flag and step telemetry in MongoDB
-        let targetLead = null;
-        if (leadId) {
-          targetLead = await LeadModel.findOne({ id: leadId });
-        }
-        if (!targetLead && recipient && pageId) {
-          targetLead = await LeadModel.findOne({ email: recipient, pageId });
-        }
-        if (!targetLead && recipient) {
-          targetLead = await LeadModel.findOne({ email: recipient }).sort({ _id: -1 });
-        }
-
-        if (targetLead) {
-          targetLead.opened = true;
-          targetLead.openedAt = new Date();
-          if (stepId) {
-            if (!Array.isArray(targetLead.openedSteps)) {
-              targetLead.openedSteps = [];
-            }
-            if (!targetLead.openedSteps.includes(stepId)) {
-              targetLead.openedSteps.push(stepId);
-            }
-          }
-          if (targetLead.status === "new" || targetLead.status === "delivered") {
-            targetLead.status = "opened";
-          }
-          await targetLead.save();
-        }
-
-        // 3. Atomically increment sequence opened stats in MongoDB
-        if (sequenceId) {
-          await SequenceModel.updateOne(
-            { id: sequenceId },
-            { $inc: { "stats.opened": 1 } }
-          );
-        }
-      } catch (err) {
-        console.error("❌ [Email Open Tracking Error]:", err);
+      // 2. Update Lead opened flag and step telemetry in MongoDB
+      let targetLead = null;
+      if (leadId) {
+        targetLead = await LeadModel.findOne({ id: leadId });
       }
-    })();
+      if (!targetLead && recipient && pageId) {
+        targetLead = await LeadModel.findOne({ email: recipient, pageId });
+      }
+      if (!targetLead && recipient) {
+        targetLead = await LeadModel.findOne({ email: recipient }).sort({ _id: -1 });
+      }
+
+      if (targetLead) {
+        targetLead.opened = true;
+        targetLead.openedAt = new Date();
+        if (stepId) {
+          if (!Array.isArray(targetLead.openedSteps)) {
+            targetLead.openedSteps = [];
+          }
+          if (!targetLead.openedSteps.includes(stepId)) {
+            targetLead.openedSteps.push(stepId);
+          }
+        }
+        if (targetLead.status === "new" || targetLead.status === "delivered") {
+          targetLead.status = "opened";
+        }
+        await targetLead.save();
+      }
+
+      // 3. Atomically increment sequence opened stats in MongoDB
+      if (sequenceId) {
+        await SequenceModel.updateOne(
+          { id: sequenceId },
+          { $inc: { "stats.opened": 1 } }
+        );
+      }
+    } catch (err) {
+      console.error("❌ [Email Open Tracking Error]:", err);
+    }
   }
 
   // Return the transparent pixel immediately with aggressive cache-busting headers
