@@ -228,10 +228,11 @@ function RowSelect({
                       onChange(opt);
                       setOpen(false);
                     }}
-                    className={`flex w-full items-center justify-between gap-2 rounded-lg px-2.5 py-2 text-xs font-medium transition-all cursor-pointer ${value === opt
+                    className={`flex w-full items-center justify-between gap-2 rounded-lg px-2.5 py-2 text-xs font-medium transition-all cursor-pointer ${
+                      value === opt
                         ? "bg-[#0066B2]/10 text-[#0066B2] font-semibold dark:bg-[#38BDF8]/15 dark:text-[#38BDF8]"
                         : "text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-white/5 active:bg-zinc-200/60 dark:active:bg-white/10"
-                      }`}
+                    }`}
                   >
                     <span>{opt}</span>
                     {value === opt && <Check className="w-3.5 h-3.5 text-[#0066B2] dark:text-[#38BDF8] shrink-0" />}
@@ -302,10 +303,11 @@ function RowSelect({
                           onChange(opt);
                           setOpen(false);
                         }}
-                        className={`flex w-full items-center justify-between gap-3 rounded-xl p-3 text-sm font-semibold transition-all cursor-pointer border ${isSelected
+                        className={`flex w-full items-center justify-between gap-3 rounded-xl p-3 text-sm font-semibold transition-all cursor-pointer border ${
+                          isSelected
                             ? "bg-[#0066B2]/10 border-[#0066B2]/30 text-[#0066B2] dark:bg-[#38BDF8]/15 dark:border-[#38BDF8]/30 dark:text-[#38BDF8]"
                             : "border-zinc-200/80 dark:border-white/10 text-zinc-800 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-white/5 active:scale-[0.99]"
-                          }`}
+                        }`}
                       >
                         <div className="flex items-center gap-2.5">
                           <span className={`text-xs font-semibold px-2.5 py-0.5 rounded-full ${colorMap[opt] || "bg-zinc-100 text-zinc-600 dark:bg-white/10 dark:text-zinc-400"}`}>
@@ -395,16 +397,18 @@ function FilterSelect({
               exit={{ opacity: 0, scale: 0.96, y: openUpward ? 4 : -4 }}
               transition={{ type: "spring", damping: 28, stiffness: 450 }}
               style={{ transformOrigin: openUpward ? "bottom left" : "top left" }}
-              className={`absolute left-0 sm:left-auto sm:right-0 z-50 min-w-[140px] w-full sm:w-auto rounded-xl border border-zinc-200/90 dark:border-white/10 bg-white/95 dark:bg-[#1C1C1F]/95 p-1 shadow-2xl backdrop-blur-xl ${openUpward ? "bottom-full mb-1.5" : "top-full mt-1.5"
-                }`}
+              className={`absolute left-0 sm:left-auto sm:right-0 z-50 min-w-[140px] w-full sm:w-auto rounded-xl border border-zinc-200/90 dark:border-white/10 bg-white/95 dark:bg-[#1C1C1F]/95 p-1 shadow-2xl backdrop-blur-xl ${
+                openUpward ? "bottom-full mb-1.5" : "top-full mt-1.5"
+              }`}
             >
               <button
                 type="button"
                 onClick={() => { onChange(""); setOpen(false); }}
-                className={`flex w-full items-center justify-between gap-2 rounded-lg px-2.5 py-2 text-xs font-medium transition-all cursor-pointer ${!value
+                className={`flex w-full items-center justify-between gap-2 rounded-lg px-2.5 py-2 text-xs font-medium transition-all cursor-pointer ${
+                  !value
                     ? "bg-[#0066B2]/10 text-[#0066B2] font-semibold dark:bg-[#38BDF8]/15 dark:text-[#38BDF8]"
                     : "text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-white/5 active:bg-zinc-200/60 dark:active:bg-white/10"
-                  }`}
+                }`}
               >
                 <span>{placeholder}</span>
                 {!value && <Check className="w-3.5 h-3.5 text-[#0066B2] dark:text-[#38BDF8] shrink-0" />}
@@ -414,10 +418,11 @@ function FilterSelect({
                   key={opt}
                   type="button"
                   onClick={() => { onChange(opt); setOpen(false); }}
-                  className={`flex w-full items-center justify-between gap-2 rounded-lg px-2.5 py-2 text-xs font-medium transition-all cursor-pointer ${value === opt
+                  className={`flex w-full items-center justify-between gap-2 rounded-lg px-2.5 py-2 text-xs font-medium transition-all cursor-pointer ${
+                    value === opt
                       ? "bg-[#0066B2]/10 text-[#0066B2] font-semibold dark:bg-[#38BDF8]/15 dark:text-[#38BDF8]"
                       : "text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-white/5 active:bg-zinc-200/60 dark:active:bg-white/10"
-                    }`}
+                  }`}
                 >
                   <span>{opt}</span>
                   {value === opt && <Check className="w-3.5 h-3.5 text-[#0066B2] dark:text-[#38BDF8] shrink-0" />}
@@ -467,10 +472,11 @@ function FilterSelect({
                   <button
                     type="button"
                     onClick={() => { onChange(""); setOpen(false); }}
-                    className={`flex w-full items-center justify-between gap-3 rounded-xl p-3 text-sm font-semibold transition-all cursor-pointer border ${!value
+                    className={`flex w-full items-center justify-between gap-3 rounded-xl p-3 text-sm font-semibold transition-all cursor-pointer border ${
+                      !value
                         ? "bg-[#0066B2]/10 border-[#0066B2]/30 text-[#0066B2] dark:bg-[#38BDF8]/15 dark:border-[#38BDF8]/30 dark:text-[#38BDF8]"
                         : "border-zinc-200/80 dark:border-white/10 text-zinc-800 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-white/5"
-                      }`}
+                    }`}
                   >
                     <span>{placeholder}</span>
                     {!value && <Check className="w-4 h-4 text-[#0066B2] dark:text-[#38BDF8] shrink-0" />}
@@ -480,10 +486,11 @@ function FilterSelect({
                       key={opt}
                       type="button"
                       onClick={() => { onChange(opt); setOpen(false); }}
-                      className={`flex w-full items-center justify-between gap-3 rounded-xl p-3 text-sm font-semibold transition-all cursor-pointer border ${value === opt
+                      className={`flex w-full items-center justify-between gap-3 rounded-xl p-3 text-sm font-semibold transition-all cursor-pointer border ${
+                        value === opt
                           ? "bg-[#0066B2]/10 border-[#0066B2]/30 text-[#0066B2] dark:bg-[#38BDF8]/15 dark:border-[#38BDF8]/30 dark:text-[#38BDF8]"
                           : "border-zinc-200/80 dark:border-white/10 text-zinc-800 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-white/5"
-                        }`}
+                      }`}
                     >
                       <span>{opt}</span>
                       {value === opt && <Check className="w-4 h-4 text-[#0066B2] dark:text-[#38BDF8] shrink-0" />}
@@ -564,10 +571,11 @@ function DateRangeFilter({
         type="button"
         onClick={() => setOpen((v) => !v)}
         title={isFiltered ? `Date: ${displayLabel}` : "Filter by date"}
-        className={`flex h-9 items-center justify-center gap-1.5 sm:gap-2 rounded-xl border px-2.5 sm:px-3 text-xs sm:text-sm font-medium transition shadow-xs cursor-pointer select-none shrink-0 ${isFiltered
+        className={`flex h-9 items-center justify-center gap-1.5 sm:gap-2 rounded-xl border px-2.5 sm:px-3 text-xs sm:text-sm font-medium transition shadow-xs cursor-pointer select-none shrink-0 ${
+          isFiltered
             ? "border-[#0066B2]/40 bg-[#0066B2]/10 text-[#0066B2] dark:border-[#38BDF8]/40 dark:bg-[#38BDF8]/15 dark:text-[#38BDF8]"
             : "border-zinc-200 dark:border-white/10 bg-white dark:bg-[#1C1C1F] text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-white/5"
-          }`}
+        }`}
       >
         <Calendar className="w-4 h-4 text-zinc-500 dark:text-zinc-400 shrink-0" />
         {isFiltered && (
@@ -588,8 +596,9 @@ function DateRangeFilter({
           </span>
         ) : (
           <ChevronDown
-            className={`hidden sm:inline-block w-3.5 h-3.5 text-zinc-400 transition-transform duration-150 ${open ? "rotate-180" : ""
-              }`}
+            className={`hidden sm:inline-block w-3.5 h-3.5 text-zinc-400 transition-transform duration-150 ${
+              open ? "rotate-180" : ""
+            }`}
           />
         )}
       </button>
@@ -618,10 +627,11 @@ function DateRangeFilter({
                         onChange(preset.value, "", "");
                         setOpen(false);
                       }}
-                      className={`flex w-full items-center justify-between gap-2 rounded-xl px-2.5 py-2 text-xs font-medium transition-all cursor-pointer ${active
+                      className={`flex w-full items-center justify-between gap-2 rounded-xl px-2.5 py-2 text-xs font-medium transition-all cursor-pointer ${
+                        active
                           ? "bg-[#0066B2]/10 text-[#0066B2] font-semibold dark:bg-[#38BDF8]/15 dark:text-[#38BDF8]"
                           : "text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-white/5"
-                        }`}
+                      }`}
                     >
                       <span>{preset.label}</span>
                       {active && <Check className="w-3.5 h-3.5 shrink-0" />}
@@ -742,10 +752,11 @@ function DateRangeFilter({
                           onChange(preset.value, "", "");
                           setOpen(false);
                         }}
-                        className={`flex w-full items-center justify-between gap-2 rounded-xl px-3.5 py-3 text-sm font-medium transition-colors cursor-pointer ${active
+                        className={`flex w-full items-center justify-between gap-2 rounded-xl px-3.5 py-3 text-sm font-medium transition-colors cursor-pointer ${
+                          active
                             ? "bg-[#0066B2]/10 text-[#0066B2] font-semibold dark:bg-[#38BDF8]/15 dark:text-[#38BDF8]"
                             : "text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-white/5"
-                          }`}
+                        }`}
                       >
                         <span>{preset.label}</span>
                         {active && <Check className="w-4 h-4 shrink-0" />}
@@ -861,7 +872,7 @@ export default function AdminUsersPage() {
       const data = await res.json();
       setOnlineUsers(new Set((data.online || []).map((e: string) => String(e).toLowerCase())));
       setOnlineCount(data.count || 0);
-    } catch { }
+    } catch {}
   }, []);
 
   useEffect(() => {
@@ -1221,12 +1232,13 @@ export default function AdminUsersPage() {
                       Storage
                     </div>
                     <div
-                      className={`text-xs font-bold mt-0.5 ${user.storageBytes > 500 * 1024 * 1024
+                      className={`text-xs font-bold mt-0.5 ${
+                        user.storageBytes > 500 * 1024 * 1024
                           ? "text-red-600 dark:text-red-400"
                           : user.storageBytes > 100 * 1024 * 1024
-                            ? "text-amber-600 dark:text-amber-400"
-                            : "text-zinc-800 dark:text-zinc-200"
-                        }`}
+                          ? "text-amber-600 dark:text-amber-400"
+                          : "text-zinc-800 dark:text-zinc-200"
+                      }`}
                     >
                       {formatBytes(user.storageBytes)}
                     </div>
@@ -1257,10 +1269,10 @@ export default function AdminUsersPage() {
                   <div className="text-[11px] text-zinc-400 dark:text-zinc-500 shrink-0">
                     {user.joinedAt
                       ? new Date(user.joinedAt).toLocaleDateString("en-IN", {
-                        day: "numeric",
-                        month: "short",
-                        year: "2-digit",
-                      })
+                          day: "numeric",
+                          month: "short",
+                          year: "2-digit",
+                        })
                       : "—"}
                   </div>
                 </div>
