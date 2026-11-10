@@ -157,6 +157,11 @@ export async function POST(req: NextRequest) {
               { id: ev.leadId, userEmail: ev.userEmail, status: { $in: ["new", "delivered"] } },
               { $set: { status: "opened" } }
             );
+          } else if (ev.eventType === "delivered") {
+            updateLeadPromise = LeadModel.updateOne(
+              { id: ev.leadId, userEmail: ev.userEmail, status: { $in: ["new", "pending_email"] } },
+              { $set: { status: "delivered" } }
+            );
           } else if (ev.eventType === "bounced") {
             updateLeadPromise = LeadModel.updateOne(
               { id: ev.leadId, userEmail: ev.userEmail },
@@ -171,6 +176,11 @@ export async function POST(req: NextRequest) {
             updateLeadPromise = LeadModel.updateOne(
               { ...query, status: { $in: ["new", "delivered"] } },
               { $set: { status: "opened" } }
+            );
+          } else if (ev.eventType === "delivered") {
+            updateLeadPromise = LeadModel.updateOne(
+              { ...query, status: { $in: ["new", "pending_email"] } },
+              { $set: { status: "delivered" } }
             );
           } else if (ev.eventType === "bounced") {
             updateLeadPromise = LeadModel.updateOne(

@@ -347,14 +347,22 @@ export default function EmailHealthPage() {
                         <FlagBadge flag={flag} />
                       </div>
 
-                      {/* 3-metric snapshot grid */}
-                      <div className="grid grid-cols-3 gap-1.5 py-2 px-2.5 rounded-xl bg-zinc-50/90 dark:bg-white/[0.03] border border-zinc-100 dark:border-white/[0.05] text-center">
+                      {/* 4-metric snapshot grid */}
+                      <div className="grid grid-cols-4 gap-1.5 py-2 px-2.5 rounded-xl bg-zinc-50/90 dark:bg-white/[0.03] border border-zinc-100 dark:border-white/[0.05] text-center">
                         <div>
                           <div className="text-[10px] uppercase font-bold text-zinc-400 dark:text-zinc-500 tracking-wider">
                             Sent
                           </div>
                           <div className="text-xs font-bold text-zinc-800 dark:text-zinc-200 mt-0.5">
                             {fmt(u.sent)}
+                          </div>
+                        </div>
+                        <div className="border-l border-zinc-200/60 dark:border-white/10">
+                          <div className="text-[10px] uppercase font-bold text-zinc-400 dark:text-zinc-500 tracking-wider">
+                            Delivered
+                          </div>
+                          <div className="text-xs font-bold text-zinc-800 dark:text-zinc-200 mt-0.5">
+                            {fmt(u.delivered)}
                           </div>
                         </div>
                         <div className="border-x border-zinc-200/60 dark:border-white/10">
@@ -394,6 +402,7 @@ export default function EmailHealthPage() {
                     <tr className="border-b border-zinc-100 dark:border-white/[0.06] bg-zinc-50 dark:bg-white/[0.02]">
                       <th className="text-left px-4 py-3 text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">User</th>
                       <th className="text-right px-4 py-3 text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">Sent</th>
+                      <th className="text-right px-4 py-3 text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">Delivered</th>
                       <th className="text-right px-4 py-3 text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">Open%</th>
                       <th className="text-right px-4 py-3 text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">Bounced</th>
                       <th className="text-right px-4 py-3 text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">Bounce%</th>
@@ -422,6 +431,7 @@ export default function EmailHealthPage() {
                             </button>
                           </td>
                           <td className="px-4 py-3 text-right font-medium text-zinc-700 dark:text-zinc-300">{fmt(u.sent)}</td>
+                          <td className="px-4 py-3 text-right font-medium text-zinc-700 dark:text-zinc-300">{fmt(u.delivered)}</td>
                           <td className="px-4 py-3 text-right text-zinc-600 dark:text-zinc-400">{pctStr(u.openRate)}</td>
                           <td className="px-4 py-3 text-right text-zinc-700 dark:text-zinc-300">{u.bounced}</td>
                           <td className={`px-4 py-3 text-right font-semibold ${

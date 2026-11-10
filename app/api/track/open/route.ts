@@ -13,12 +13,12 @@ const TRANSPARENT_GIF_BUFFER = Buffer.from(
 
 export async function GET(req: NextRequest) {
   const { searchParams } = req.nextUrl;
-  const leadId = searchParams.get("leadId") || "";
-  const pageId = searchParams.get("pageId") || "";
-  const sequenceId = searchParams.get("sequenceId") || "";
-  const stepId = searchParams.get("stepId") || "";
-  const userEmail = (searchParams.get("userEmail") || "").toLowerCase().trim();
-  const recipient = (searchParams.get("recipient") || "").toLowerCase().trim();
+  const leadId = searchParams.get("leadId") || searchParams.get("lid") || "";
+  const pageId = searchParams.get("pageId") || searchParams.get("pid") || "";
+  const sequenceId = searchParams.get("sequenceId") || searchParams.get("seq") || "";
+  const stepId = searchParams.get("stepId") || searchParams.get("stp") || "";
+  const userEmail = (searchParams.get("userEmail") || searchParams.get("u") || "").toLowerCase().trim();
+  const recipient = (searchParams.get("recipient") || searchParams.get("r") || "").toLowerCase().trim();
 
   const ip =
     req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||

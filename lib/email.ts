@@ -162,16 +162,91 @@ function getBaseUrl(): string {
   return "https://funnels.co.in";
 }
 
+export function injectClickTracking(html: string, tracking: EmailTrackingOptions): string {
+  const baseUrl = getBaseUrl();
+  const secret = process.env.NEXTAUTH_SECRET || process.env.ENCRYPTION_KEY || "funnels-click-secret";
+
+  return html.replace(/<a\b([^>]*?)href=(["'])(.*?)\2([^>]*?)>/gi, (match, prefix, quote, originalUrl, suffix) => {
+    const trimmed = (originalUrl || "").trim();
+
+    // Skip empty, anchors, non-http links, unsubscribes, and already-tracked links
+    if (
+      !trimmed ||
+      trimmed.startsWith("#") ||
+      trimmed.startsWith("mailto:") ||
+      trimmed.startsWith("tel:") ||
+      trimmed.includes("/unsubscribe") ||
+      trimmed.includes("/api/track/click")
+    ) {
+      return match;
+    }
+
+    const params = new URLSearchParams();
+    params.set("url", trimmed);
+
+    // Support both long and short query params for consistency
+    if (tracking.leadId) {
+      params.set("leadId", tracking.leadId);
+      params.set("lid", tracking.leadId);
+    }
+    if (tracking.pageId) {
+      params.set("pageId", tracking.pageId);
+      params.set("pid", tracking.pageId);
+    }
+    if (tracking.sequenceId) {
+      params.set("sequenceId", tracking.sequenceId);
+      params.set("seq", tracking.sequenceId);
+    }
+    if (tracking.stepId) {
+      params.set("stepId", tracking.stepId);
+      params.set("stp", tracking.stepId);
+    }
+    if (tracking.userEmail) {
+      params.set("userEmail", tracking.userEmail);
+      params.set("u", tracking.userEmail);
+    }
+    if (tracking.recipient) {
+      params.set("recipient", tracking.recipient);
+      params.set("r", tracking.recipient);
+    }
+
+    const sig = crypto.createHmac("sha256", secret).update(trimmed).digest("hex").slice(0, 16);
+    params.set("sig", sig);
+
+    const trackingUrl = `${baseUrl}/api/track/click?${params.toString()}`;
+    return `<a${prefix}href=${quote}${trackingUrl}${quote}${suffix}>`;
+  });
+}
+
 export function injectTrackingPixel(html: string, tracking: EmailTrackingOptions): string {
   const baseUrl = getBaseUrl();
   const params = new URLSearchParams();
 
-  if (tracking.leadId) params.set("lid", tracking.leadId);
-  if (tracking.pageId) params.set("pid", tracking.pageId);
-  if (tracking.sequenceId) params.set("seq", tracking.sequenceId);
-  if (tracking.stepId) params.set("stp", tracking.stepId);
-  if (tracking.userEmail) params.set("u", tracking.userEmail);
-  if (tracking.recipient) params.set("r", tracking.recipient);
+  // Populate both long and short parameter keys to ensure complete compatibility
+  if (tracking.leadId) {
+    params.set("leadId", tracking.leadId);
+    params.set("lid", tracking.leadId);
+  }
+  if (tracking.pageId) {
+    params.set("pageId", tracking.pageId);
+    params.set("pid", tracking.pageId);
+  }
+  if (tracking.sequenceId) {
+    params.set("sequenceId", tracking.sequenceId);
+    params.set("seq", tracking.sequenceId);
+  }
+  if (tracking.stepId) {
+    params.set("stepId", tracking.stepId);
+    params.set("stp", tracking.stepId);
+  }
+  if (tracking.userEmail) {
+    params.set("userEmail", tracking.userEmail);
+    params.set("u", tracking.userEmail);
+  }
+  if (tracking.recipient) {
+    params.set("recipient", tracking.recipient);
+    params.set("r", tracking.recipient);
+  }
   params.set("t", Date.now().toString());
 
   const pixelUrl = `${baseUrl}/api/track/open?${params.toString()}`;
@@ -227,10 +302,12 @@ export async function sendMail(
 
     let finalHtml = options.html;
     if (options.tracking) {
-      finalHtml = injectTrackingPixel(options.html, {
+      const trackingOpts: EmailTrackingOptions = {
         ...options.tracking,
         recipient: options.tracking.recipient || recipientClean,
-      });
+      };
+      finalHtml = injectClickTracking(finalHtml, trackingOpts);
+      finalHtml = injectTrackingPixel(finalHtml, trackingOpts);
     }
 
     const extraHeaders: Record<string, string> = {};
@@ -378,21 +455,25 @@ export async function sendMail(
 async function logEmailEvent(options: SendMailOptions, recipientClean: string, messageId?: string) {
   if (!options.tracking) return;
   try {
-    const eventId = `ev_sent_${crypto.randomBytes(8).toString("hex")}`;
-    await EmailEventModel.create({
-      id: eventId,
+    const sentEventId = `ev_sent_${crypto.randomBytes(8).toString("hex")}`;
+    const deliveredEventId = `ev_del_${crypto.randomBytes(8).toString("hex")}`;
+    const now = new Date();
+    const baseEvent = {
       userEmail: options.tracking?.userEmail || "",
       leadId: options.tracking?.leadId || "",
       pageId: options.tracking?.pageId || "",
       sequenceId: options.tracking?.sequenceId || "",
       stepId: options.tracking?.stepId || "",
-      eventType: "sent",
       recipientEmail: recipientClean,
       subject: options.subject,
       messageId: messageId || "",
-      createdAt: new Date(),
-    });
+      createdAt: now,
+    };
+    await EmailEventModel.create([
+      { id: sentEventId, ...baseEvent, eventType: "sent" },
+      { id: deliveredEventId, ...baseEvent, eventType: "delivered" },
+    ]);
   } catch (dbErr) {
-    console.error("Failed to log sent email event:", dbErr);
+    console.error("Failed to log sent/delivered email event:", dbErr);
   }
 }

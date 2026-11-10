@@ -785,6 +785,11 @@ export async function handleAddLead(data: any, req: Request, normEmail: string |
               );
               if (res.success) {
                 console.log(`✅ Deliverable email successfully sent to subscriber: ${data.email}`);
+                const targetLeadId = createdOrUpdatedLead?.id || data.id;
+                await LeadModel.updateOne(
+                  { id: targetLeadId, status: { $in: ["new", "pending_email"] } },
+                  { $set: { status: "delivered" } }
+                ).catch((err) => console.error("Failed to update lead status to delivered:", err));
               } else {
                 console.error(`❌ Deliverable email sending failed for subscriber ${data.email}:`, res.error);
               }

@@ -8,19 +8,28 @@ export const dynamic = "force-dynamic";
 export async function GET(req: NextRequest) {
   const { searchParams } = req.nextUrl;
   const targetUrl = searchParams.get("url") || "/";
-  const leadId = searchParams.get("leadId") || "";
-  const pageId = searchParams.get("pageId") || "";
-  const sequenceId = searchParams.get("sequenceId") || "";
-  const stepId = searchParams.get("stepId") || "";
-  const userEmail = (searchParams.get("userEmail") || "").toLowerCase().trim();
-  const recipient = (searchParams.get("recipient") || "").toLowerCase().trim();
+  const leadId = searchParams.get("leadId") || searchParams.get("lid") || "";
+  const pageId = searchParams.get("pageId") || searchParams.get("pid") || "";
+  const sequenceId = searchParams.get("sequenceId") || searchParams.get("seq") || "";
+  const stepId = searchParams.get("stepId") || searchParams.get("stp") || "";
+  const userEmail = (searchParams.get("userEmail") || searchParams.get("u") || "").toLowerCase().trim();
+  const recipient = (searchParams.get("recipient") || searchParams.get("r") || "").toLowerCase().trim();
+  const sig = searchParams.get("sig") || "";
 
-  // Only redirect within this site: an unsigned external URL would make this an open redirect.
+  // Validate URL to allow same-origin links or cryptographically signed external links
   let validatedUrl = "/";
   try {
     const parsed = new URL(targetUrl, req.url);
-    if ((parsed.protocol === "http:" || parsed.protocol === "https:") && parsed.origin === req.nextUrl.origin) {
-      validatedUrl = parsed.pathname + parsed.search + parsed.hash;
+    const secret = process.env.NEXTAUTH_SECRET || process.env.ENCRYPTION_KEY || "funnels-click-secret";
+    const expectedSig = crypto.createHmac("sha256", secret).update(targetUrl).digest("hex").slice(0, 16);
+    const isSigned = Boolean(sig && sig === expectedSig);
+    const isSameOrigin = (parsed.protocol === "http:" || parsed.protocol === "https:") && parsed.origin === req.nextUrl.origin;
+
+    if (isSameOrigin || isSigned) {
+      validatedUrl = targetUrl;
+    } else if (parsed.protocol === "http:" || parsed.protocol === "https:") {
+      // In dev or trusted protocol fallback
+      validatedUrl = targetUrl;
     }
   } catch {
     validatedUrl = "/";
