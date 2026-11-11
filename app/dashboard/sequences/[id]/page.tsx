@@ -39,8 +39,17 @@ import {
   List,
   Workflow,
   GitFork,
+  X,
+  Sliders,
+  Maximize2,
+  Minimize2,
+  ZoomIn,
+  ZoomOut,
+  RotateCcw,
+  Move,
 } from "lucide-react";
-import { useEffect, useState, useMemo } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { useEffect, useState, useMemo, useRef } from "react";
 import StatusBadge from "@/components/dashboard/status-badge";
 import { type Sequence, type SequenceEmail, type Account, type MagnetPage } from "@/lib/data";
 import { useSidebar } from "@/components/dashboard/dashboard-shell";
@@ -96,6 +105,86 @@ export default function SequenceEditor() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [editorViewMode, setEditorViewMode] = useState<"flow" | "list">("flow");
   const [selectedFlowNodeIndex, setSelectedFlowNodeIndex] = useState<number>(0);
+  const [showCanvasInspector, setShowCanvasInspector] = useState(true);
+  const [canvasZoom, setCanvasZoom] = useState(100);
+  const [isCanvasMaximized, setIsCanvasMaximized] = useState(false);
+  const [inspectorTab, setInspectorTab] = useState<"content" | "timing">("content");
+  const [editingDelayIndex, setEditingDelayIndex] = useState<number | null>(null);
+
+  // Infinite Canvas 2D Pan & Drag State
+  const [canvasPan, setCanvasPan] = useState({ x: 0, y: 20 });
+  const [isDraggingCanvas, setIsDraggingCanvas] = useState(false);
+  const dragStartRef = useRef({ x: 0, y: 0, panX: 0, panY: 0 });
+  const canvasViewportRef = useRef<HTMLDivElement>(null);
+
+  // Wheel listener: natural pan on scroll, zoom on pinch/Ctrl+scroll
+  useEffect(() => {
+    const el = canvasViewportRef.current;
+    if (!el || editorViewMode !== "flow") return;
+    const onWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      if (e.ctrlKey || e.metaKey) {
+        const zoomDelta = e.deltaY < 0 ? 8 : -8;
+        setCanvasZoom((prev) => Math.min(150, Math.max(50, prev + zoomDelta)));
+      } else {
+        setCanvasPan((prev) => ({
+          x: prev.x - e.deltaX * 0.9,
+          y: prev.y - e.deltaY * 0.9,
+        }));
+      }
+    };
+    el.addEventListener("wheel", onWheel, { passive: false });
+    return () => el.removeEventListener("wheel", onWheel);
+  }, [editorViewMode]);
+
+  // Global mousemove & mouseup during canvas drag
+  useEffect(() => {
+    if (!isDraggingCanvas) return;
+    const onGlobalMouseMove = (e: MouseEvent) => {
+      const dx = e.clientX - dragStartRef.current.x;
+      const dy = e.clientY - dragStartRef.current.y;
+      setCanvasPan({
+        x: dragStartRef.current.panX + dx,
+        y: dragStartRef.current.panY + dy,
+      });
+    };
+    const onGlobalMouseUp = () => {
+      setIsDraggingCanvas(false);
+    };
+    window.addEventListener("mousemove", onGlobalMouseMove);
+    window.addEventListener("mouseup", onGlobalMouseUp);
+    return () => {
+      window.removeEventListener("mousemove", onGlobalMouseMove);
+      window.removeEventListener("mouseup", onGlobalMouseUp);
+    };
+  }, [isDraggingCanvas]);
+
+  const handleCanvasMouseDown = (e: React.MouseEvent) => {
+    if (e.button !== 0) return;
+    const target = e.target as HTMLElement;
+    if (
+      target.closest("button") ||
+      target.closest("input") ||
+      target.closest("select") ||
+      target.closest("textarea") ||
+      target.closest("a") ||
+      target.closest("[role='button']")
+    ) {
+      return;
+    }
+    setIsDraggingCanvas(true);
+    dragStartRef.current = {
+      x: e.clientX,
+      y: e.clientY,
+      panX: canvasPan.x,
+      panY: canvasPan.y,
+    };
+  };
+
+  const recenterCanvas = () => {
+    setCanvasPan({ x: 0, y: 20 });
+    setCanvasZoom(100);
+  };
 
   // Inline Sequence Title Editing
   const [isEditingTitle, setIsEditingTitle] = useState(false);
@@ -538,6 +627,30 @@ export default function SequenceEditor() {
     triggerToast("New email step added!");
   }
 
+  function insertEmailAt(index: number) {
+    if (!seq) return;
+    const newId = `e_${Date.now()}`;
+    const delayObj = standardDelays[Math.min(index + 1, standardDelays.length - 1)] || standardDelays[1];
+    const newEmail: ExtendedSequenceEmail = {
+      id: newId,
+      subject: `Follow-up #${attachedPage ? index + 2 : index + 1}: Quick check-in`,
+      delayLabel: delayObj.label,
+      delayMinutes: delayObj.minutes,
+      status: "live",
+      sent: 0,
+      opened: 0,
+      body: "Hi {first_name},\n\nJust following up to share another quick tip to help you get the best results!\n\nBest regards,\n{name}",
+      previewText: "Quick tip to help you get the best results...",
+    };
+    const nextEmails = [...emailsWithBody];
+    nextEmails.splice(index, 0, newEmail);
+    setEmailsWithBody(nextEmails);
+    update({ ...seq, emails: nextEmails }, nextEmails);
+    setSelectedFlowNodeIndex(index);
+    setShowCanvasInspector(true);
+    triggerToast("New step inserted into workflow!");
+  }
+
   function insertVariable(emailId: string, variableStr: string) {
     const targetEmail = emailsWithBody.find((e) => e.id === emailId);
     if (!targetEmail) return;
@@ -808,10 +921,10 @@ export default function SequenceEditor() {
           </div>
 
           {/* Main Grid Content */}
-          <div className="grid gap-5 sm:gap-8 lg:grid-cols-12 items-start">
+          <div className={`grid gap-5 sm:gap-8 items-start ${isCanvasMaximized && editorViewMode === "flow" ? "grid-cols-1" : "lg:grid-cols-12"}`}>
             
-            {/* Left Column: Email Timeline (8 Cols) */}
-            <div className="lg:col-span-8 space-y-4 sm:space-y-6">
+            {/* Left Column: Email Timeline (8 Cols or 12 Cols if Canvas is Maximized) */}
+            <div className={`${isCanvasMaximized && editorViewMode === "flow" ? "col-span-1" : "lg:col-span-8"} space-y-4 sm:space-y-6`}>
               
               {/* Timeline Header */}
               {/* Timeline Header with Flow Canvas / Step List Switcher */}
@@ -862,212 +975,739 @@ export default function SequenceEditor() {
                   VIEW 1: SPATIAL WORKFLOW CANVAS (VISUAL PIPELINE)
               ══════════════════════════════════════════════ */}
               {editorViewMode === "flow" && (
-                <div className="rounded-2xl border border-zinc-200/90 dark:border-white/[0.08] bg-white dark:bg-[#171717] dark:shadow-none p-4 sm:p-6 shadow-sm space-y-6">
-                  {/* Canvas Pipeline Nodes */}
-                  <div className="space-y-4">
-                    {/* Node 0: Entry Trigger */}
-                    <div className="flex items-center gap-3 p-3.5 rounded-xl border border-blue-200/80 dark:border-blue-900/40 bg-blue-50/50 dark:bg-blue-950/20">
-                      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#0066B2] text-white">
-                        <Zap className="h-4 w-4" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-[#0066B2] dark:text-[#38BDF8]">
-                          Trigger Event
-                        </span>
-                        <p className="text-xs font-bold text-zinc-900 dark:text-white truncate">
-                          {attachedPage ? `Subscriber opts into "${attachedPage.name}"` : "User subscribed to sequence"}
-                        </p>
-                      </div>
-                      <div className="text-right shrink-0">
-                        <span className="text-xs font-mono font-bold text-zinc-800 dark:text-zinc-200">
-                          {signedUp.toLocaleString()}
-                        </span>
-                        <span className="block text-[9px] text-zinc-400">Enrolled</span>
-                      </div>
+                <div
+                  className={`relative rounded-3xl border border-zinc-200/90 dark:border-white/[0.08] bg-zinc-950 text-white shadow-2xl overflow-hidden flex flex-col transition-all duration-300 ${
+                    isCanvasMaximized ? "h-[85vh] min-h-[720px]" : "h-[740px] sm:h-[800px]"
+                  }`}
+                >
+                  {/* Soft Radial Vignette */}
+                  <div
+                    aria-hidden="true"
+                    className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_center,transparent_35%,rgba(0,0,0,0.6)_100%)] z-10"
+                  />
+
+                  {/* ─── Canvas HUD Toolbar (Pinned at Top) ─── */}
+                  <div className="relative z-30 flex flex-wrap items-center justify-between gap-3 border-b border-white/[0.08] bg-zinc-900/90 backdrop-blur-md px-4 py-3 sm:px-6 shrink-0">
+                    <div className="flex items-center gap-2.5">
+                      <span className="relative flex h-2 w-2">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                        <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+                      </span>
+                      <span className="text-xs font-bold tracking-wide text-white">Live Workflow Canvas</span>
+                      <span className="rounded-full bg-white/10 px-2 py-0.5 text-[10px] font-semibold text-zinc-300">
+                        {attachedPage ? emailsWithBody.length + 1 : emailsWithBody.length} Nodes
+                      </span>
+                      <span className="hidden xl:inline text-[11px] text-zinc-400">
+                        • Scroll or pan canvas • Hover connectors to insert steps
+                      </span>
                     </div>
 
-                    {/* Step 1 Instant Delivery Node (if attached) */}
-                    {attachedPage && (
-                      <>
-                        <div className="flex justify-center -my-2">
-                          <div className="flex flex-col items-center">
-                            <div className="h-4 w-0.5 bg-zinc-300 dark:bg-zinc-700" />
-                            <span className="text-[9px] font-bold px-1.5 py-0.2 rounded bg-zinc-100 dark:bg-white/10 text-zinc-500">
-                              Instant (0m)
-                            </span>
-                            <div className="h-2 w-0.5 bg-zinc-300 dark:bg-zinc-700" />
-                          </div>
-                        </div>
+                    <div className="flex items-center gap-2">
+                      {/* Zoom Controls */}
+                      <div className="flex items-center rounded-lg border border-white/10 bg-zinc-800/80 p-0.5">
+                        <button
+                          type="button"
+                          onClick={() => setCanvasZoom((z) => Math.max(70, z - 10))}
+                          aria-label="Zoom out"
+                          className="flex h-7 w-7 items-center justify-center rounded text-zinc-400 hover:bg-white/10 hover:text-white transition cursor-pointer"
+                        >
+                          <ZoomOut className="h-3.5 w-3.5" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setCanvasZoom(100)}
+                          className="px-2 text-[10px] font-mono font-bold text-zinc-300 hover:text-white transition cursor-pointer"
+                          title="Reset zoom to 100%"
+                        >
+                          {canvasZoom}%
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setCanvasZoom((z) => Math.min(130, z + 10))}
+                          aria-label="Zoom in"
+                          className="flex h-7 w-7 items-center justify-center rounded text-zinc-400 hover:bg-white/10 hover:text-white transition cursor-pointer"
+                        >
+                          <ZoomIn className="h-3.5 w-3.5" />
+                        </button>
+                      </div>
 
-                        <div className="p-3.5 rounded-xl border border-emerald-300/80 dark:border-emerald-800/40 bg-emerald-50/40 dark:bg-emerald-950/20 flex items-center justify-between gap-3">
-                          <div className="flex items-center gap-3 min-w-0">
-                            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-emerald-600 text-xs font-bold text-white">
-                              1
-                            </span>
-                            <div className="min-w-0">
-                              <span className="text-[10px] font-bold text-emerald-700 dark:text-emerald-400 uppercase">
-                                Immediate Resource Access
-                              </span>
-                              <p className="text-xs font-bold text-zinc-900 dark:text-white truncate">
-                                {attachedPage.deliveryEmail?.subject || "Your requested access is inside"}
-                              </p>
-                            </div>
-                          </div>
+                      {/* Recenter Viewport Button */}
+                      <button
+                        type="button"
+                        onClick={recenterCanvas}
+                        className="flex items-center gap-1.5 rounded-lg border border-white/10 bg-zinc-800/80 px-2.5 py-1.5 text-xs font-bold text-zinc-300 hover:bg-white/10 hover:text-white transition cursor-pointer"
+                        title="Recenter canvas position"
+                      >
+                        <RotateCcw className="h-3.5 w-3.5" />
+                        <span className="hidden sm:inline">Recenter</span>
+                      </button>
 
-                          <div className="flex items-center gap-2 shrink-0">
-                            <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400">
-                              {overallOpenRate}% Open
-                            </span>
-                          </div>
-                        </div>
-                      </>
-                    )}
+                      {/* Maximize / Focus Studio Button */}
+                      <button
+                        type="button"
+                        onClick={() => setIsCanvasMaximized(!isCanvasMaximized)}
+                        className={`flex items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-xs font-bold transition cursor-pointer ${
+                          isCanvasMaximized
+                            ? "border-[#38BDF8]/40 bg-[#38BDF8]/15 text-[#38BDF8]"
+                            : "border-white/10 bg-zinc-800/80 text-zinc-300 hover:bg-white/10 hover:text-white"
+                        }`}
+                        title={isCanvasMaximized ? "Exit full studio" : "Expand to studio mode"}
+                      >
+                        {isCanvasMaximized ? <Minimize2 className="h-3.5 w-3.5" /> : <Maximize2 className="h-3.5 w-3.5" />}
+                        <span className="hidden sm:inline">{isCanvasMaximized ? "Collapse" : "Focus"}</span>
+                      </button>
 
-                    {/* Drip Follow-up Step Nodes */}
-                    {emailsWithBody.map((email, idx) => {
-                      const isSelected = selectedFlowNodeIndex === idx;
-                      const stepNum = attachedPage ? idx + 2 : idx + 1;
-                      const sentCount = email.sent || 0;
-                      const openedCount = email.opened || 0;
-                      const stepOpenRate = sentCount > 0 ? Math.round((openedCount / sentCount) * 100) : 0;
-
-                      return (
-                        <div key={email.id || idx} className="space-y-4">
-                          {/* Flow Delay Connector */}
-                          <div className="flex justify-center -my-2">
-                            <div className="flex flex-col items-center">
-                              <div className="h-4 w-0.5 bg-zinc-300 dark:bg-zinc-700" />
-                              <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950/50 text-[#0066B2] dark:text-[#38BDF8] border border-blue-200/60 dark:border-blue-800/40">
-                                ⏳ {email.delayLabel || "1d delay"}
-                              </span>
-                              <div className="h-2 w-0.5 bg-zinc-300 dark:bg-zinc-700" />
-                            </div>
-                          </div>
-
-                          {/* Step Node Card */}
-                          <div
-                            onClick={() => setSelectedFlowNodeIndex(idx)}
-                            className={`group flex items-center justify-between gap-3 p-3.5 rounded-xl border transition-all cursor-pointer ${
-                              isSelected
-                                ? "border-[#0066B2] bg-[#0066B2]/5 dark:border-[#38BDF8] dark:bg-[#38BDF8]/10 ring-2 ring-[#0066B2]/20"
-                                : "border-zinc-200 dark:border-white/10 bg-zinc-50/60 dark:bg-[#121212] hover:border-[#0066B2]/40"
-                            }`}
-                          >
-                            <div className="flex items-center gap-3 min-w-0">
-                              <span
-                                className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-xs font-bold ${
-                                  isSelected
-                                    ? "bg-[#0066B2] text-white"
-                                    : "bg-zinc-200 dark:bg-white/10 text-zinc-700 dark:text-zinc-300"
-                                }`}
-                              >
-                                {stepNum}
-                              </span>
-                              <div className="min-w-0">
-                                <span className="text-[10px] font-bold text-zinc-400 uppercase">
-                                  Follow-up Step #{stepNum}
-                                </span>
-                                <p className="text-xs font-bold text-zinc-900 dark:text-white truncate">
-                                  {email.subject || `Untitled Step #${stepNum}`}
-                                </p>
-                              </div>
-                            </div>
-
-                            <div className="flex items-center gap-3 shrink-0">
-                              <span className="text-[11px] font-bold text-zinc-600 dark:text-zinc-400">
-                                {sentCount} sent
-                              </span>
-                              <span className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-md">
-                                {stepOpenRate}% open
-                              </span>
-                              <button
-                                type="button"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setEditorViewMode("list");
-                                  setExpandedEmailId(email.id);
-                                }}
-                                className="text-xs font-bold text-[#0066B2] dark:text-[#38BDF8] hover:underline"
-                              >
-                                Edit →
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    })}
-
-                    {/* Final Node: Sequence Complete */}
-                    <div className="flex justify-center -my-2">
-                      <div className="h-4 w-0.5 bg-zinc-300 dark:bg-zinc-700" />
-                    </div>
-                    <div className="flex items-center justify-center gap-2 p-2.5 rounded-xl border border-dashed border-zinc-200 dark:border-white/10 text-xs font-bold text-zinc-400">
-                      <Check className="h-3.5 w-3.5 text-emerald-500" />
-                      <span>Subscriber Sequence Journey Complete</span>
+                      {/* Toggle Inspector Button */}
+                      <button
+                        type="button"
+                        onClick={() => setShowCanvasInspector(!showCanvasInspector)}
+                        className={`flex items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-xs font-bold transition cursor-pointer ${
+                          showCanvasInspector
+                            ? "border-[#38BDF8]/50 bg-[#38BDF8]/20 text-[#38BDF8]"
+                            : "border-white/10 bg-zinc-800/80 text-zinc-300 hover:bg-white/10 hover:text-white"
+                        }`}
+                      >
+                        <Sliders className="h-3.5 w-3.5" />
+                        <span className="hidden sm:inline">Inspector</span>
+                      </button>
                     </div>
                   </div>
 
-                  {/* Flow Canvas Step Inspector (Live Preview & In-place Subject edit) */}
-                  {emailsWithBody[selectedFlowNodeIndex] && (
-                    <div className="mt-6 pt-5 border-t border-zinc-200 dark:border-white/10 space-y-4">
-                      <div className="flex items-center justify-between">
-                        <h3 className="text-xs font-extrabold uppercase tracking-wider text-zinc-900 dark:text-white flex items-center gap-2">
-                          <Eye className="h-3.5 w-3.5 text-[#0066B2] dark:text-[#38BDF8]" />
-                          <span>Step #{selectedFlowNodeIndex + (attachedPage ? 2 : 1)} Live Inspector & Preview</span>
-                        </h3>
-                        <div className="flex items-center gap-2">
-                          <button
-                            type="button"
-                            onClick={() => sendTestEmail(emailsWithBody[selectedFlowNodeIndex].id)}
-                            className="flex items-center gap-1 text-[11px] font-bold text-[#0066B2] dark:text-[#38BDF8] bg-blue-50 dark:bg-blue-950/40 px-2 py-1 rounded-lg hover:bg-blue-100 transition"
-                          >
-                            <Send className="h-3 w-3" />
-                            <span>Test Email</span>
-                          </button>
+                  {/* ─── Canvas Workspace Body (Split Stage) ─── */}
+                  <div className="relative flex-1 flex flex-col lg:flex-row overflow-hidden min-h-0">
+                    
+                    {/* Left: Infinite Interactive Canvas Viewport */}
+                    <div
+                      ref={canvasViewportRef}
+                      onMouseDown={handleCanvasMouseDown}
+                      className={`flex-1 h-full overflow-hidden relative select-none ${
+                        isDraggingCanvas ? "cursor-grabbing" : "cursor-grab"
+                      }`}
+                    >
+                      {/* Infinite Dynamic Dot Matrix Grid */}
+                      <div
+                        aria-hidden="true"
+                        className="absolute inset-0 pointer-events-none opacity-25"
+                        style={{
+                          backgroundImage: "radial-gradient(circle at 1.5px 1.5px, #ffffff 1.2px, transparent 0)",
+                          backgroundSize: `${22 * (canvasZoom / 100)}px ${22 * (canvasZoom / 100)}px`,
+                          backgroundPosition: `${canvasPan.x}px ${canvasPan.y}px`,
+                        }}
+                      />
+
+                      {/* Floating Canvas Navigation Hint Pill */}
+                      <div className="absolute bottom-4 left-4 z-20 pointer-events-none">
+                        <div className="flex items-center gap-2 rounded-full border border-white/10 bg-zinc-900/90 backdrop-blur-md px-3 py-1 text-[11px] font-medium text-zinc-400 shadow-lg">
+                          <Move className="h-3 w-3 text-[#38BDF8]" />
+                          <span>Drag anywhere to pan • Scroll to navigate • Pinch to zoom</span>
                         </div>
                       </div>
 
-                      {/* Subject input */}
-                      <div>
-                        <label className="block text-[10px] font-bold uppercase tracking-wider text-zinc-400 mb-1">
-                          Email Subject
-                        </label>
-                        <input
-                          type="text"
-                          value={emailsWithBody[selectedFlowNodeIndex].subject || ""}
-                          onChange={(e) => patchEmail(emailsWithBody[selectedFlowNodeIndex].id, { subject: e.target.value })}
-                          className="w-full rounded-xl border border-zinc-200 dark:border-white/10 bg-zinc-50 dark:bg-[#121212] p-2.5 text-xs font-semibold text-zinc-900 dark:text-white outline-none focus:border-[#0066B2]"
-                        />
-                      </div>
+                      {/* Pannable & Scalable Nodes Content Stage */}
+                      <div
+                        className="relative p-6 sm:p-10 flex flex-col items-center min-w-[360px] will-change-transform"
+                        style={{
+                          transform: `translate3d(${canvasPan.x}px, ${canvasPan.y}px, 0) scale(${canvasZoom / 100})`,
+                          transformOrigin: "top center",
+                          transition: isDraggingCanvas ? "none" : "transform 0.15s ease-out",
+                        }}
+                      >
+                        {/* ═══ NODE 0: ENTRY TRIGGER ═══ */}
+                        <div className="group relative w-full max-w-[440px]">
+                          {/* Top Port Decorator */}
+                          <div className="flex justify-center -mb-2 relative z-10">
+                            <span className="inline-flex items-center gap-1 rounded-full border border-blue-400/40 bg-blue-950/80 px-2.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-[#38BDF8] shadow-sm">
+                              <Zap className="h-2.5 w-2.5" />
+                              Trigger
+                            </span>
+                          </div>
 
-                      {/* Preview Text input */}
-                      <div>
-                        <label className="block text-[10px] font-bold uppercase tracking-wider text-zinc-400 mb-1">
-                          Preview Text (Preheader)
-                        </label>
-                        <input
-                          type="text"
-                          value={emailsWithBody[selectedFlowNodeIndex].previewText || ""}
-                          onChange={(e) => patchEmail(emailsWithBody[selectedFlowNodeIndex].id, { previewText: e.target.value })}
-                          placeholder="A short teaser shown after the subject in inboxes..."
-                          className="w-full rounded-xl border border-zinc-200 dark:border-white/10 bg-zinc-50 dark:bg-[#121212] p-2.5 text-xs font-semibold text-zinc-900 dark:text-white outline-none focus:border-[#0066B2]"
-                        />
-                      </div>
+                          <div className="relative rounded-2xl border border-blue-500/30 bg-gradient-to-b from-blue-950/40 via-zinc-900/90 to-zinc-900/90 p-4 shadow-xl backdrop-blur-md transition hover:border-blue-500/50">
+                            <div className="flex items-center justify-between gap-3">
+                              <div className="flex items-center gap-3 min-w-0">
+                                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#0066B2] to-[#38BDF8] text-white shadow-md shadow-blue-500/20">
+                                  <Zap className="h-4 w-4" />
+                                </div>
+                                <div className="min-w-0 flex-1">
+                                  <span className="text-[10px] font-bold uppercase tracking-wider text-[#38BDF8]">
+                                    Audience Opt-in
+                                  </span>
+                                  <p className="text-xs sm:text-sm font-bold text-white truncate">
+                                    {attachedPage ? `Via ${attachedPage.name}` : "User Subscribed"}
+                                  </p>
+                                </div>
+                              </div>
+                              <div className="text-right shrink-0">
+                                <span className="block text-sm font-mono font-bold text-white tabular-nums">
+                                  {signedUp.toLocaleString()}
+                                </span>
+                                <span className="block text-[9px] uppercase tracking-wider font-semibold text-zinc-400">
+                                  Enrolled
+                                </span>
+                              </div>
+                            </div>
+                          </div>
 
-                      {/* Live Rendered Email HTML Body Preview Card */}
-                      <div>
-                        <label className="block text-[10px] font-bold uppercase tracking-wider text-zinc-400 mb-1">
-                          Email Body Preview
-                        </label>
-                        <div
-                          className="rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#121212] p-4 text-xs text-zinc-700 dark:text-zinc-300 prose prose-sm dark:prose-invert max-w-none shadow-inner min-h-[100px] email-rendered-content"
-                          dangerouslySetInnerHTML={{
-                            __html: emailsWithBody[selectedFlowNodeIndex].body || "<span class='italic text-zinc-400'>No body text yet. Switch to Step List to write your email content.</span>"
-                          }}
-                        />
+                          {/* Bottom Output Port */}
+                          <div className="flex justify-center -mt-1.5 relative z-10">
+                            <span className="h-3 w-3 rounded-full border-2 border-blue-400 bg-zinc-950 ring-4 ring-zinc-900" />
+                          </div>
+                        </div>
+
+                        {/* ─── CONNECTOR: Trigger to First Step ─── */}
+                        <div className="relative flex flex-col items-center my-1 group">
+                          {/* Vertical Stem */}
+                          <div className="w-0.5 h-12 bg-gradient-to-b from-blue-400 via-zinc-700 to-zinc-700" />
+
+                          {/* Timing Capsule */}
+                          <div className="absolute top-1/2 -translate-y-1/2 flex items-center gap-1 rounded-full border border-white/10 bg-zinc-900/95 px-2.5 py-0.5 text-[10px] font-semibold text-zinc-400 shadow-sm backdrop-blur-sm group-hover:border-[#38BDF8]/40 transition">
+                            <Clock className="h-2.5 w-2.5 text-[#38BDF8]" />
+                            <span>Sends instantly</span>
+                          </div>
+
+                          {/* Quick-Insert + Button on Hover */}
+                          <button
+                            type="button"
+                            onClick={() => insertEmailAt(0)}
+                            className="opacity-0 group-hover:opacity-100 absolute top-1/2 -translate-y-1/2 flex h-6 w-6 items-center justify-center rounded-full bg-[#38BDF8] text-[#06243A] shadow-lg shadow-cyan-500/40 hover:scale-110 active:scale-95 transition cursor-pointer z-10"
+                            title="Insert step here"
+                          >
+                            <Plus className="h-3.5 w-3.5 stroke-[3]" />
+                          </button>
+                        </div>
+
+                        {/* ═══ NODE: Instant Resource Delivery (if attached) ═══ */}
+                        {attachedPage && (
+                          <>
+                            <div className="group relative w-full max-w-[440px]">
+                              {/* Top Input Port */}
+                              <div className="flex justify-center -mb-1.5 relative z-10">
+                                <span className="h-3 w-3 rounded-full border-2 border-emerald-400 bg-zinc-950 ring-4 ring-zinc-900" />
+                              </div>
+
+                              <div className="relative rounded-2xl border border-emerald-500/30 bg-gradient-to-b from-emerald-950/30 via-zinc-900/90 to-zinc-900/90 p-4 shadow-xl backdrop-blur-md transition hover:border-emerald-500/50">
+                                <div className="flex items-center justify-between gap-3">
+                                  <div className="flex items-center gap-3 min-w-0">
+                                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-600 text-white shadow-md shadow-emerald-600/20 font-bold text-xs">
+                                      1
+                                    </div>
+                                    <div className="min-w-0 flex-1">
+                                      <div className="flex items-center gap-2">
+                                        <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-400">
+                                          Resource Delivery
+                                        </span>
+                                        <span className="rounded bg-emerald-500/10 px-1.5 py-0.2 text-[9px] font-semibold text-emerald-300">
+                                          Instant
+                                        </span>
+                                      </div>
+                                      <p className="text-xs sm:text-sm font-bold text-white truncate mt-0.5">
+                                        {attachedPage.deliveryEmail?.subject || "Your requested access is inside"}
+                                      </p>
+                                    </div>
+                                  </div>
+                                  <div className="hidden sm:flex items-center gap-4 shrink-0 text-right">
+                                    <div>
+                                      <span className="block text-xs font-mono font-bold text-white tabular-nums">
+                                        {signedUp.toLocaleString()}
+                                      </span>
+                                      <span className="block text-[9px] uppercase tracking-wider font-semibold text-zinc-400">
+                                        Sent
+                                      </span>
+                                    </div>
+                                    <div>
+                                      <span className="block text-xs font-mono font-bold text-emerald-400 tabular-nums">
+                                        {overallOpenRate}%
+                                      </span>
+                                      <span className="block text-[9px] uppercase tracking-wider font-semibold text-zinc-400">
+                                        Open
+                                      </span>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* Bottom Output Port */}
+                              <div className="flex justify-center -mt-1.5 relative z-10">
+                                <span className="h-3 w-3 rounded-full border-2 border-emerald-400 bg-zinc-950 ring-4 ring-zinc-900" />
+                              </div>
+                            </div>
+
+                            {/* Connector to First Follow-up */}
+                            <div className="relative flex flex-col items-center my-1 group">
+                              <div className="w-0.5 h-12 bg-zinc-700" />
+                              {emailsWithBody[0] && (
+                                <div className="absolute top-1/2 -translate-y-1/2 flex items-center gap-1 rounded-full border border-white/10 bg-zinc-900/95 px-2.5 py-0.5 text-[10px] font-semibold text-zinc-400 shadow-sm group-hover:border-[#38BDF8]/40 transition">
+                                  <Clock className="h-2.5 w-2.5 text-zinc-400" />
+                                  <span>Wait {emailsWithBody[0].delayLabel || "1 day"}</span>
+                                </div>
+                              )}
+                              <button
+                                type="button"
+                                onClick={() => insertEmailAt(0)}
+                                className="opacity-0 group-hover:opacity-100 absolute top-1/2 -translate-y-1/2 flex h-6 w-6 items-center justify-center rounded-full bg-[#38BDF8] text-[#06243A] shadow-lg shadow-cyan-500/40 hover:scale-110 active:scale-95 transition cursor-pointer z-10"
+                                title="Insert step here"
+                              >
+                                <Plus className="h-3.5 w-3.5 stroke-[3]" />
+                              </button>
+                            </div>
+                          </>
+                        )}
+
+                        {/* ═══ NODES: Drip Follow-up Email Steps ═══ */}
+                        {emailsWithBody.map((email, idx) => {
+                          const isSelected = selectedFlowNodeIndex === idx;
+                          const stepNum = attachedPage ? idx + 2 : idx + 1;
+                          const sentCount = email.sent || 0;
+                          const openedCount = email.opened || 0;
+                          const stepOpenRate = sentCount > 0 ? Math.round((openedCount / sentCount) * 100) : 0;
+
+                          const mins = typeof email.delayMinutes === "number" ? email.delayMinutes : null;
+                          const waitLabel =
+                            mins === null
+                              ? (email.delayLabel || "1 day").replace(/\s*(delay|later)$/i, "")
+                              : mins <= 0
+                              ? "Instantly"
+                              : mins < 60
+                              ? `${mins} min`
+                              : mins < 1440
+                              ? `${Math.round(mins / 60)} hr${Math.round(mins / 60) > 1 ? "s" : ""}`
+                              : `${Math.round(mins / 1440)} day${Math.round(mins / 1440) > 1 ? "s" : ""}`;
+
+                          const selectThis = () => {
+                            setSelectedFlowNodeIndex(idx);
+                            setShowCanvasInspector(true);
+                          };
+
+                          return (
+                            <div key={email.id || idx} className="w-full flex flex-col items-center">
+                              {/* Drip Step Card */}
+                              <div className="group relative w-full max-w-[440px]">
+                                {/* Top Input Port */}
+                                <div className="flex justify-center -mb-1.5 relative z-10">
+                                  <span
+                                    className={`h-3 w-3 rounded-full border-2 bg-zinc-950 ring-4 ring-zinc-900 transition-colors ${
+                                      isSelected ? "border-[#38BDF8] ring-cyan-500/20" : "border-zinc-500"
+                                    }`}
+                                  />
+                                </div>
+
+                                <div
+                                  role="button"
+                                  tabIndex={0}
+                                  onClick={selectThis}
+                                  onKeyDown={(e) => {
+                                    if (e.key === "Enter" || e.key === " ") {
+                                      e.preventDefault();
+                                      selectThis();
+                                    }
+                                  }}
+                                  className={`relative rounded-2xl p-4 shadow-xl backdrop-blur-md transition-all duration-200 cursor-pointer overflow-hidden ${
+                                    isSelected
+                                      ? "border-2 border-[#38BDF8] bg-zinc-900/95 shadow-cyan-500/10 scale-[1.01]"
+                                      : "border border-white/10 bg-zinc-900/70 hover:border-white/20 hover:bg-zinc-900/90"
+                                  }`}
+                                >
+                                  {isSelected && (
+                                    <span
+                                      aria-hidden="true"
+                                      className="absolute inset-y-0 left-0 w-1 bg-gradient-to-b from-[#38BDF8] to-[#0066B2]"
+                                    />
+                                  )}
+
+                                  <div className="flex items-center justify-between gap-3">
+                                    <div className="flex items-center gap-3 min-w-0">
+                                      <div
+                                        className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl font-bold text-xs shadow-md transition-colors ${
+                                          isSelected
+                                            ? "bg-[#38BDF8] text-[#06243A] shadow-cyan-500/30"
+                                            : "bg-white/10 text-white"
+                                        }`}
+                                      >
+                                        {stepNum}
+                                      </div>
+                                      <div className="min-w-0 flex-1">
+                                        <div className="flex items-center gap-2">
+                                          <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">
+                                            Follow-up Step
+                                          </span>
+                                          <span className="rounded bg-white/5 px-1.5 py-0.2 text-[9px] font-semibold text-zinc-400">
+                                            {waitLabel}
+                                          </span>
+                                        </div>
+                                        <p className="text-xs sm:text-sm font-bold text-white truncate mt-0.5">
+                                          {email.subject || `Untitled Step ${stepNum}`}
+                                        </p>
+                                        <p className="text-[11px] text-zinc-400 truncate mt-0.5">
+                                          {email.previewText?.trim() || "No preheader set"}
+                                        </p>
+                                      </div>
+                                    </div>
+
+                                    <div className="hidden sm:flex items-center gap-4 shrink-0 text-right">
+                                      <div>
+                                        <span className="block text-xs font-mono font-bold text-white tabular-nums">
+                                          {sentCount.toLocaleString()}
+                                        </span>
+                                        <span className="block text-[9px] uppercase tracking-wider font-semibold text-zinc-400">
+                                          Sent
+                                        </span>
+                                      </div>
+                                      <div>
+                                        <span
+                                          className={`block text-xs font-mono font-bold tabular-nums ${
+                                            sentCount > 0 ? "text-emerald-400" : "text-zinc-500"
+                                          }`}
+                                        >
+                                          {stepOpenRate}%
+                                        </span>
+                                        <span className="block text-[9px] uppercase tracking-wider font-semibold text-zinc-400">
+                                          Open
+                                        </span>
+                                      </div>
+                                    </div>
+
+                                    {/* Quick Edit Action Button */}
+                                    <button
+                                      type="button"
+                                      aria-label={`Open step ${stepNum} in full editor`}
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        setEditorViewMode("list");
+                                        setExpandedEmailId(email.id);
+                                      }}
+                                      className="flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-lg text-zinc-400 outline-none transition-colors hover:bg-white/10 hover:text-[#38BDF8]"
+                                    >
+                                      <Pencil className="h-3.5 w-3.5" />
+                                    </button>
+                                  </div>
+                                </div>
+
+                                {/* Bottom Output Port */}
+                                <div className="flex justify-center -mt-1.5 relative z-10">
+                                  <span
+                                    className={`h-3 w-3 rounded-full border-2 bg-zinc-950 ring-4 ring-zinc-900 transition-colors ${
+                                      isSelected ? "border-[#38BDF8] ring-cyan-500/20" : "border-zinc-500"
+                                    }`}
+                                  />
+                                </div>
+                              </div>
+
+                              {/* Stem to next node */}
+                              <div className="relative flex flex-col items-center my-1 group">
+                                <div className="w-0.5 h-12 bg-zinc-700" />
+                                
+                                {idx < emailsWithBody.length - 1 && (
+                                  <div className="absolute top-1/2 -translate-y-1/2 flex items-center gap-1 rounded-full border border-white/10 bg-zinc-900/95 px-2.5 py-0.5 text-[10px] font-semibold text-zinc-400 shadow-sm group-hover:border-[#38BDF8]/40 transition">
+                                    <Clock className="h-2.5 w-2.5 text-zinc-400" />
+                                    <span>Wait {emailsWithBody[idx + 1]?.delayLabel || "1 day"}</span>
+                                  </div>
+                                )}
+
+                                {/* Quick Insert Button */}
+                                <button
+                                  type="button"
+                                  onClick={() => insertEmailAt(idx + 1)}
+                                  className="opacity-0 group-hover:opacity-100 absolute top-1/2 -translate-y-1/2 flex h-6 w-6 items-center justify-center rounded-full bg-[#38BDF8] text-[#06243A] shadow-lg shadow-cyan-500/40 hover:scale-110 active:scale-95 transition cursor-pointer z-10"
+                                  title="Insert step here"
+                                >
+                                  <Plus className="h-3.5 w-3.5 stroke-[3]" />
+                                </button>
+                              </div>
+                            </div>
+                          );
+                        })}
+
+                        {/* ═══ NODE: TERMINAL JOURNEY COMPLETE ═══ */}
+                        <div className="group relative w-full max-w-[440px]">
+                          {/* Top Input Port */}
+                          <div className="flex justify-center -mb-1.5 relative z-10">
+                            <span className="h-3 w-3 rounded-full border-2 border-emerald-400 bg-zinc-950 ring-4 ring-zinc-900" />
+                          </div>
+
+                          <div className="relative rounded-2xl border border-emerald-500/30 bg-gradient-to-b from-emerald-950/30 via-zinc-900/90 to-zinc-900/90 p-4 shadow-xl backdrop-blur-md">
+                            <div className="flex items-center justify-between gap-3">
+                              <div className="flex items-center gap-3 min-w-0">
+                                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-500 text-white shadow-md shadow-emerald-500/30">
+                                  <Check className="h-4 w-4 stroke-[3]" />
+                                </div>
+                                <div className="min-w-0 flex-1">
+                                  <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-400">
+                                    Sequence Goal
+                                  </span>
+                                  <p className="text-xs sm:text-sm font-bold text-white">Journey Complete</p>
+                                  <p className="text-[11px] text-zinc-400 truncate">
+                                    Subscribers exit or stop upon conversion
+                                  </p>
+                                </div>
+                              </div>
+                              <div className="text-right shrink-0">
+                                <span className="block text-sm font-mono font-bold text-white tabular-nums">
+                                  {(seq.stats.completed || delivered).toLocaleString()}
+                                </span>
+                                <span className="block text-[9px] uppercase tracking-wider font-semibold text-zinc-400">
+                                  Completed
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
                       </div>
                     </div>
-                  )}
+
+                    {/* Right: Docked Inspector Panel */}
+                    <AnimatePresence>
+                      {showCanvasInspector && emailsWithBody[selectedFlowNodeIndex] && (
+                        <motion.aside
+                          initial={{ opacity: 0, width: 0 }}
+                          animate={{ opacity: 1, width: "auto" }}
+                          exit={{ opacity: 0, width: 0 }}
+                          transition={{ duration: 0.2 }}
+                          className="w-full lg:w-[400px] shrink-0 h-full border-t lg:border-t-0 lg:border-l border-white/10 bg-zinc-900/95 backdrop-blur-xl flex flex-col overflow-hidden z-20"
+                        >
+                          <div className="h-full overflow-y-auto p-4 sm:p-5 flex flex-col scrollbar-thin scrollbar-thumb-zinc-700">
+                            {/* Drawer Header */}
+                            <div className="flex items-center justify-between gap-2 border-b border-white/10 pb-3">
+                              <div className="flex items-center gap-2 min-w-0">
+                                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-[#38BDF8] text-xs font-bold text-[#06243A]">
+                                  {selectedFlowNodeIndex + (attachedPage ? 2 : 1)}
+                                </span>
+                                <div className="min-w-0">
+                                  <h3 className="text-xs font-bold uppercase tracking-wider text-white">Step Inspector</h3>
+                                  <p className="text-[11px] text-zinc-400 truncate">
+                                    {emailsWithBody[selectedFlowNodeIndex].subject || "Untitled Step"}
+                                  </p>
+                                </div>
+                              </div>
+
+                              <div className="flex items-center gap-1.5 shrink-0">
+                                <button
+                                  type="button"
+                                  onClick={() => sendTestEmail(emailsWithBody[selectedFlowNodeIndex].id)}
+                                  disabled={sendingTestForId === emailsWithBody[selectedFlowNodeIndex].id}
+                                  className="flex items-center gap-1 rounded-lg bg-[#38BDF8]/15 px-2 py-1 text-[11px] font-bold text-[#38BDF8] hover:bg-[#38BDF8]/25 transition cursor-pointer"
+                                  title="Send test email to your account email"
+                                >
+                                  {sendingTestForId === emailsWithBody[selectedFlowNodeIndex].id ? (
+                                    <Loader2 className="h-3 w-3 animate-spin" />
+                                  ) : (
+                                    <Send className="h-3 w-3" />
+                                  )}
+                                  <span>Test</span>
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => setShowCanvasInspector(false)}
+                                  className="flex h-7 w-7 items-center justify-center rounded-lg text-zinc-400 hover:bg-white/10 hover:text-white transition cursor-pointer"
+                                  title="Close inspector"
+                                >
+                                  <X className="h-4 w-4" />
+                                </button>
+                              </div>
+                            </div>
+
+                            {/* Inspector Tab Switcher */}
+                            <div className="flex rounded-lg bg-zinc-800/80 p-0.5 mt-3 border border-white/5 shrink-0">
+                              <button
+                                type="button"
+                                onClick={() => setInspectorTab("content")}
+                                className={`flex-1 py-1 text-center text-[11px] font-bold rounded transition cursor-pointer ${
+                                  inspectorTab === "content"
+                                    ? "bg-white/15 text-white shadow-xs"
+                                    : "text-zinc-400 hover:text-white"
+                                }`}
+                              >
+                                Content & Preview
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => setInspectorTab("timing")}
+                                className={`flex-1 py-1 text-center text-[11px] font-bold rounded transition cursor-pointer ${
+                                  inspectorTab === "timing"
+                                    ? "bg-white/15 text-white shadow-xs"
+                                    : "text-zinc-400 hover:text-white"
+                                }`}
+                              >
+                                Delay & Timing
+                              </button>
+                            </div>
+
+                            {/* Inspector Tab: Content */}
+                            {inspectorTab === "content" && (
+                              <div className="mt-4 space-y-4 flex-1">
+                                <div>
+                                  <label
+                                    htmlFor="flow-canvas-subject"
+                                    className="mb-1 block text-[10px] font-bold uppercase tracking-wider text-zinc-400"
+                                  >
+                                    Email Subject Line
+                                  </label>
+                                  <input
+                                    id="flow-canvas-subject"
+                                    type="text"
+                                    value={emailsWithBody[selectedFlowNodeIndex].subject || ""}
+                                    onChange={(e) =>
+                                      patchEmail(emailsWithBody[selectedFlowNodeIndex].id, { subject: e.target.value })
+                                    }
+                                    placeholder="Compelling subject line..."
+                                    className="w-full rounded-xl border border-white/10 bg-zinc-800/70 p-2.5 text-xs font-semibold text-white outline-none focus:border-[#38BDF8] transition"
+                                  />
+                                </div>
+
+                                <div>
+                                  <label
+                                    htmlFor="flow-canvas-preheader"
+                                    className="mb-1 block text-[10px] font-bold uppercase tracking-wider text-zinc-400"
+                                  >
+                                    Preheader (Inbox Teaser)
+                                  </label>
+                                  <input
+                                    id="flow-canvas-preheader"
+                                    type="text"
+                                    value={emailsWithBody[selectedFlowNodeIndex].previewText || ""}
+                                    onChange={(e) =>
+                                      patchEmail(emailsWithBody[selectedFlowNodeIndex].id, { previewText: e.target.value })
+                                    }
+                                    placeholder="Teaser visible in inbox before opening..."
+                                    className="w-full rounded-xl border border-white/10 bg-zinc-800/70 p-2.5 text-xs font-semibold text-white outline-none focus:border-[#38BDF8] transition"
+                                  />
+                                </div>
+
+                                {/* Simulated Email Client Preview Frame */}
+                                <div>
+                                  <span className="mb-1.5 block text-[10px] font-bold uppercase tracking-wider text-zinc-400">
+                                    Email Inbox Client Mockup
+                                  </span>
+                                  <div className="rounded-xl border border-white/10 bg-zinc-950 overflow-hidden shadow-inner text-xs">
+                                    {/* Simulated Browser / Inbox Header */}
+                                    <div className="flex items-center justify-between border-b border-white/10 bg-zinc-900/90 px-3 py-2 text-[10px] text-zinc-400">
+                                      <div className="flex items-center gap-1.5">
+                                        <span className="h-2 w-2 rounded-full bg-rose-500/80" />
+                                        <span className="h-2 w-2 rounded-full bg-amber-500/80" />
+                                        <span className="h-2 w-2 rounded-full bg-emerald-500/80" />
+                                      </div>
+                                      <span className="font-mono text-zinc-500 truncate max-w-[180px]">
+                                        {account?.email || "sender@magnets.com"}
+                                      </span>
+                                    </div>
+
+                                    <div className="p-3.5 space-y-2 border-b border-white/5 bg-zinc-900/40 text-[11px]">
+                                      <div className="flex gap-2">
+                                        <span className="text-zinc-500 font-semibold">Subject:</span>
+                                        <span className="font-bold text-white truncate">
+                                          {emailsWithBody[selectedFlowNodeIndex].subject || "Untitled Email"}
+                                        </span>
+                                      </div>
+                                      <div className="flex gap-2">
+                                        <span className="text-zinc-500 font-semibold">To:</span>
+                                        <span className="text-zinc-300">{"{first_name} <lead@example.com>"}</span>
+                                      </div>
+                                    </div>
+
+                                    <div
+                                      className="email-rendered-content prose prose-invert prose-sm max-w-none p-3.5 text-zinc-300 max-h-[180px] overflow-y-auto leading-relaxed"
+                                      dangerouslySetInnerHTML={{
+                                        __html:
+                                          emailsWithBody[selectedFlowNodeIndex].body ||
+                                          "<p className='italic text-zinc-500'>No email body yet. Click full editor below to edit content.</p>",
+                                      }}
+                                    />
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Inspector Tab: Timing */}
+                            {inspectorTab === "timing" && (
+                              <div className="mt-4 space-y-4 flex-1">
+                                <div>
+                                  <label className="mb-1 block text-[10px] font-bold uppercase tracking-wider text-zinc-400">
+                                    Delivery Delay
+                                  </label>
+                                  <select
+                                    value={emailsWithBody[selectedFlowNodeIndex].delayMinutes ?? 1440}
+                                    onChange={(e) => {
+                                      const mins = Number(e.target.value);
+                                      const obj = standardDelays.find((d) => d.minutes === mins);
+                                      patchEmail(emailsWithBody[selectedFlowNodeIndex].id, {
+                                        delayMinutes: mins,
+                                        delayLabel: obj ? obj.label : `${mins} min`,
+                                      });
+                                      triggerToast("Step delay updated!");
+                                    }}
+                                    className="w-full rounded-xl border border-white/10 bg-zinc-800/90 p-2.5 text-xs font-semibold text-white outline-none focus:border-[#38BDF8] transition cursor-pointer"
+                                  >
+                                    {standardDelays.map((del) => (
+                                      <option key={del.minutes} value={del.minutes} className="bg-zinc-900 text-white">
+                                        {del.label}
+                                      </option>
+                                    ))}
+                                  </select>
+                                </div>
+
+                                <div className="rounded-xl border border-white/5 bg-zinc-800/40 p-3 text-xs text-zinc-400 space-y-2">
+                                  <p className="font-bold text-white text-[11px]">Workflow Trigger Rules</p>
+                                  <p className="text-[11px] leading-relaxed">
+                                    This email will be sent automatically once the specified delay elapses after the prior step. If the contact unsubscribes or books a call, sending will halt immediately.
+                                  </p>
+                                </div>
+
+                                <div className="flex items-center gap-2 pt-2">
+                                  <button
+                                    type="button"
+                                    onClick={() => moveEmailUp(selectedFlowNodeIndex)}
+                                    disabled={selectedFlowNodeIndex === 0}
+                                    className="flex-1 flex items-center justify-center gap-1.5 rounded-xl border border-white/10 bg-zinc-800/80 py-2 text-xs font-bold text-zinc-300 hover:bg-white/10 disabled:opacity-40 transition cursor-pointer"
+                                  >
+                                    <ArrowUp className="h-3 w-3" />
+                                    <span>Move Up</span>
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => moveEmailDown(selectedFlowNodeIndex)}
+                                    disabled={selectedFlowNodeIndex === emailsWithBody.length - 1}
+                                    className="flex-1 flex items-center justify-center gap-1.5 rounded-xl border border-white/10 bg-zinc-800/80 py-2 text-xs font-bold text-zinc-300 hover:bg-white/10 disabled:opacity-40 transition cursor-pointer"
+                                  >
+                                    <ArrowDown className="h-3 w-3" />
+                                    <span>Move Down</span>
+                                  </button>
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Inspector Drawer Footer Actions */}
+                            <div className="mt-auto pt-4 border-t border-white/10 flex flex-col gap-2 shrink-0">
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setEditorViewMode("list");
+                                  setExpandedEmailId(emailsWithBody[selectedFlowNodeIndex].id);
+                                }}
+                                className="w-full flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#0066B2] to-[#38BDF8] py-2.5 text-xs font-bold text-white shadow-lg shadow-blue-500/20 hover:opacity-95 transition cursor-pointer"
+                              >
+                                <Pencil className="h-3.5 w-3.5" />
+                                <span>Open in Full Rich Editor</span>
+                              </button>
+
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  if (confirm("Are you sure you want to remove this step from the sequence?")) {
+                                    removeEmail(emailsWithBody[selectedFlowNodeIndex].id, selectedFlowNodeIndex);
+                                    setSelectedFlowNodeIndex(Math.max(0, selectedFlowNodeIndex - 1));
+                                  }
+                                }}
+                                className="w-full flex items-center justify-center gap-1.5 rounded-xl border border-rose-500/20 bg-rose-500/10 py-2 text-xs font-bold text-rose-400 hover:bg-rose-500/20 transition cursor-pointer"
+                              >
+                                <Trash2 className="h-3.5 w-3.5" />
+                                <span>Delete Step</span>
+                              </button>
+                            </div>
+                          </div>
+                        </motion.aside>
+                      )}
+                    </AnimatePresence>
+                  </div>
                 </div>
               )}
 
@@ -1470,6 +2110,7 @@ export default function SequenceEditor() {
           </div>
 
             {/* Right Column: Performance & Settings (4 Cols on Desktop, Stacked on Mobile) */}
+            {!(isCanvasMaximized && editorViewMode === "flow") && (
             <div className="lg:col-span-4 space-y-4 sm:space-y-6">
               
               {/* Performance Metrics Card */}
@@ -1576,6 +2217,7 @@ export default function SequenceEditor() {
               </div>
 
             </div>
+            )}
           </div>
         </div>
       </div>
