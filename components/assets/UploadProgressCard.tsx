@@ -110,13 +110,12 @@ export function UploadProgressCard({
   return (
     <div className="fixed bottom-5 sm:bottom-6 inset-x-3 sm:inset-x-auto sm:right-6 z-[100] flex justify-center sm:justify-end pointer-events-none pb-[env(safe-area-inset-bottom)]">
       <motion.div
-        layout="position"
         initial={{ opacity: 0, y: 24, scale: 0.94 }}
         animate={{
           opacity: 1,
           y: 0,
           scale: 1,
-          borderRadius: isExpanded ? 24 : 9999,
+          borderRadius: isExpanded ? 24 : 28,
         }}
         exit={{ opacity: 0, y: 18, scale: 0.94, transition: { duration: 0.16, ease: "easeIn" } }}
         transition={{
