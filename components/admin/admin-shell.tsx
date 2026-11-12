@@ -71,6 +71,7 @@ export default function AdminShell({
   const mainRef = useRef<HTMLElement>(null);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
+  const [mobileNotifOpen, setMobileNotifOpen] = useState(false);
   const notifRef = useRef<HTMLDivElement>(null);
   const [notifications, setNotifications] = useState([
     {
@@ -155,9 +156,10 @@ export default function AdminShell({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [toggleSidebar]);
 
-  // Close mobile drawer on route change & reset scroll
+  // Close mobile drawer & mobile notifications on route change & reset scroll
   useEffect(() => {
     setMenuOpen(false);
+    setMobileNotifOpen(false);
     if (mainRef.current) {
       mainRef.current.scrollTop = 0;
     }
@@ -221,9 +223,9 @@ export default function AdminShell({
     };
   }, [pathname]);
 
-  // Lock body scroll when mobile drawer is open
+  // Lock body scroll when mobile drawer or mobile notification sheet is open
   useEffect(() => {
-    if (menuOpen) {
+    if (menuOpen || mobileNotifOpen) {
       document.body.style.overflow = "hidden";
     } else {
       document.body.style.overflow = "";
@@ -231,13 +233,14 @@ export default function AdminShell({
     return () => {
       document.body.style.overflow = "";
     };
-  }, [menuOpen]);
+  }, [menuOpen, mobileNotifOpen]);
 
-  // Close drawer on Escape key press
+  // Close drawer or sheet on Escape key press
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         setMenuOpen(false);
+        setMobileNotifOpen(false);
       }
     };
     window.addEventListener("keydown", handleKeyDown);
@@ -579,6 +582,120 @@ export default function AdminShell({
         )}
       </AnimatePresence>
 
+      {/* Mobile Notification Bottom Sheet (md:hidden) */}
+      <AnimatePresence>
+        {mobileNotifOpen && (
+          <div className="fixed inset-0 z-50 md:hidden" aria-modal="true" role="dialog">
+            {/* Backdrop with fade and blur */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.22, ease: "easeInOut" }}
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm cursor-pointer"
+              onClick={() => setMobileNotifOpen(false)}
+            />
+
+            {/* Apple/Android Native-grade Spring Bottom Sheet */}
+            <motion.div
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "100%" }}
+              transition={{ type: "spring", stiffness: 380, damping: 36, mass: 0.9 }}
+              drag="y"
+              dragConstraints={{ top: 0 }}
+              dragElastic={{ top: 0, bottom: 0.55 }}
+              onDragEnd={(e, info) => {
+                if (info.offset.y > 100 || info.velocity.y > 350) {
+                  setMobileNotifOpen(false);
+                }
+              }}
+              className="fixed inset-x-0 bottom-0 z-10 flex max-h-[82vh] flex-col rounded-t-[28px] bg-white dark:bg-[#18181b] border-t border-zinc-200/80 dark:border-white/10 shadow-[0_-12px_40px_rgba(0,0,0,0.3)] overflow-hidden select-none"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Sheet Drag Indicator Pill */}
+              <div className="pt-3 pb-1 flex justify-center shrink-0 cursor-grab active:cursor-grabbing">
+                <div className="w-10 h-1.5 rounded-full bg-zinc-300 dark:bg-zinc-700" />
+              </div>
+
+              {/* Sheet Header */}
+              <div className="flex items-center justify-between px-5 py-3 border-b border-zinc-100 dark:border-white/10 shrink-0">
+                <div className="flex items-center gap-2.5">
+                  <h3 className="text-base font-bold text-zinc-900 dark:text-white">Notifications</h3>
+                  {hasUnread && (
+                    <span className="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-[#0066B2]/10 text-[#0066B2] dark:bg-[#0066B2]/20 dark:text-[#38BDF8]">
+                      {notifications.filter((n) => n.unread).length} New
+                    </span>
+                  )}
+                </div>
+
+                <div className="flex items-center gap-2">
+                  {hasUnread && (
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setNotifications((prev) => prev.map((n) => ({ ...n, unread: false })))
+                      }
+                      className="text-xs font-semibold text-[#0066B2] dark:text-[#38BDF8] px-2.5 py-1 rounded-lg hover:bg-blue-50 dark:hover:bg-white/5 active:scale-95 transition-all cursor-pointer"
+                    >
+                      Mark all read
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    aria-label="Close notifications"
+                    onClick={() => setMobileNotifOpen(false)}
+                    className="flex h-8 w-8 items-center justify-center rounded-full bg-zinc-100 dark:bg-white/10 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-white/20 active:scale-90 transition-all cursor-pointer"
+                  >
+                    <X className="h-4 w-4" strokeWidth={2.2} />
+                  </button>
+                </div>
+              </div>
+
+              {/* Notification List (Touch-friendly & overscroll-contain) */}
+              <div className="flex-1 overflow-y-auto px-4 py-3 divide-y divide-zinc-100 dark:divide-white/5 overscroll-contain">
+                {notifications.map((n) => (
+                  <div
+                    key={n.id}
+                    onClick={() => {
+                      setNotifications((prev) =>
+                        prev.map((item) => (item.id === n.id ? { ...item, unread: false } : item))
+                      );
+                    }}
+                    className={`py-3.5 px-3 rounded-2xl transition-all active:scale-[0.98] cursor-pointer ${
+                      n.unread
+                        ? "bg-[#EFF6FF]/70 dark:bg-white/[0.04]"
+                        : "hover:bg-zinc-50 dark:hover:bg-white/[0.02]"
+                    }`}
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex items-center gap-2 min-w-0">
+                        {n.unread && (
+                          <span className="w-2 h-2 rounded-full bg-[#0066B2] dark:bg-[#38BDF8] shrink-0" />
+                        )}
+                        <h4 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 truncate">
+                          {n.title}
+                        </h4>
+                      </div>
+                      <span className="text-[11px] text-zinc-400 shrink-0">{n.time}</span>
+                    </div>
+                    <p className="text-xs text-zinc-600 dark:text-zinc-400 mt-1 pl-4 leading-relaxed">
+                      {n.desc}
+                    </p>
+                  </div>
+                ))}
+              </div>
+
+              {/* Bottom Safe Area with subtle swipe-down hint */}
+              <div className="pb-8 pt-2.5 px-5 border-t border-zinc-100 dark:border-white/5 bg-zinc-50/70 dark:bg-black/30 shrink-0 flex items-center justify-between text-[11px] text-zinc-400 dark:text-zinc-500">
+                <span>Swipe down to dismiss</span>
+                <span className="font-medium text-zinc-500 dark:text-zinc-400">Admin Console</span>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0 min-h-[100dvh] md:h-screen md:overflow-hidden">
         {/* Mobile Header Bar (md:hidden) — 1:1 identical to Dashboard mobile navbar */}
@@ -615,118 +732,22 @@ export default function AdminShell({
             </AnimatePresence>
           </div>
 
-          <div className="flex items-center gap-2 shrink-0">
-            <ThemeToggle size="sm" />
-          </div>
-        </header>
-
-        {/* Desktop Top Navigation Bar (hidden md:flex) */}
-        <header
-          className="sticky top-0 z-30 hidden md:flex h-14 shrink-0 items-center justify-between px-4 sm:px-5 w-full border-b border-[#E0EDFB] dark:border-white/[0.08] bg-white/80 dark:bg-[#121212]/90 backdrop-blur-md transition-colors select-none"
-        >
-          {/* Left: Sidebar Collapse Toggle [ | ] + Page Title */}
-          <div className="flex items-center gap-3 min-w-0">
+          <div className="flex items-center gap-1.5 shrink-0">
+            {/* Mobile Notification Trigger */}
             <button
               type="button"
-              onClick={toggleSidebar}
-              title={isCollapsed ? "Expand sidebar (⌘B)" : "Collapse sidebar (⌘B)"}
-              className="flex h-8.5 w-8.5 items-center justify-center rounded-lg text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white hover:bg-[#E2F0FD] dark:hover:bg-white/10 active:scale-95 transition-all cursor-pointer shrink-0"
-              aria-label="Toggle sidebar"
+              aria-label="Open notifications"
+              className="relative flex h-9 w-9 items-center justify-center rounded-lg text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100/80 dark:hover:bg-white/10 active:scale-90 transition-all cursor-pointer shrink-0"
+              onClick={() => setMobileNotifOpen(true)}
             >
-              {isCollapsed ? (
-                <PanelLeftOpen className="h-4.5 w-4.5" />
-              ) : (
-                <PanelLeftClose className="h-4.5 w-4.5" />
+              <Bell className="h-5 w-5" strokeWidth={2} />
+              {hasUnread && (
+                <span className="absolute top-1.5 right-1.5 flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#0066B2] dark:bg-[#38BDF8] opacity-75" />
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-[#0066B2] dark:bg-[#38BDF8]" />
+                </span>
               )}
             </button>
-
-            {/* Divider */}
-            <div className="h-4 w-px bg-zinc-200 dark:bg-white/10 shrink-0" />
-
-            {/* Current Page Title */}
-            <div className="flex items-center gap-2.5 min-w-0">
-              <span className="text-sm font-semibold tracking-tight text-zinc-900 dark:text-white truncate">
-                {pageTitle}
-              </span>
-            </div>
-          </div>
-
-          {/* Right: Notifications + Theme Toggle */}
-          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-            {/* Notification Button & Popover */}
-            <div ref={notifRef} className="relative">
-              <button
-                type="button"
-                onClick={() => setNotifOpen((v) => !v)}
-                className="relative flex h-8 w-8 items-center justify-center rounded-lg text-zinc-600 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100/80 dark:hover:bg-white/10 active:scale-90 transition-all cursor-pointer shrink-0"
-                aria-label="Notifications"
-                title="Notifications"
-              >
-                <Bell className="h-4.5 w-4.5" />
-                {hasUnread && (
-                  <span className="absolute top-1.5 right-1.5 flex h-2 w-2">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#0066B2] dark:bg-[#38BDF8] opacity-75" />
-                    <span className="relative inline-flex rounded-full h-2 w-2 bg-[#0066B2] dark:bg-[#38BDF8]" />
-                  </span>
-                )}
-              </button>
-
-              {/* Notification Popover Dropdown */}
-              <AnimatePresence>
-                {notifOpen && (
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.95, y: 6 }}
-                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                    exit={{ opacity: 0, scale: 0.95, y: 6 }}
-                    transition={{ type: "spring", stiffness: 450, damping: 30 }}
-                    className="absolute right-0 top-full mt-2 w-80 sm:w-88 rounded-2xl bg-white dark:bg-[#18181b] border border-zinc-200/90 dark:border-white/10 shadow-2xl p-3 z-50 text-zinc-900 dark:text-white overflow-hidden"
-                  >
-                    <div className="flex items-center justify-between pb-2.5 px-1 border-b border-zinc-100 dark:border-white/10">
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs font-bold">Admin Notifications</span>
-                        {hasUnread && (
-                          <span className="px-1.5 py-0.5 rounded-full text-[10px] font-semibold bg-[#0066B2]/10 text-[#0066B2] dark:bg-[#0066B2]/20 dark:text-[#38BDF8]">
-                            New
-                          </span>
-                        )}
-                      </div>
-                      {hasUnread && (
-                        <button
-                          type="button"
-                          onClick={() =>
-                            setNotifications((prev) => prev.map((n) => ({ ...n, unread: false })))
-                          }
-                          className="text-[11px] text-[#0066B2] dark:text-[#38BDF8] hover:underline cursor-pointer"
-                        >
-                          Mark all as read
-                        </button>
-                      )}
-                    </div>
-
-                    <div className="py-1 divide-y divide-zinc-100 dark:divide-white/5 max-h-72 overflow-y-auto">
-                      {notifications.map((n) => (
-                        <div
-                          key={n.id}
-                          className={`p-2 rounded-xl transition-colors ${
-                            n.unread ? "bg-blue-50/60 dark:bg-white/[0.03]" : ""
-                          }`}
-                        >
-                          <div className="flex items-start justify-between gap-2">
-                            <p className="text-xs font-semibold text-zinc-900 dark:text-zinc-100">
-                              {n.title}
-                            </p>
-                            <span className="text-[10px] text-zinc-400 shrink-0">{n.time}</span>
-                          </div>
-                          <p className="text-[11px] text-zinc-500 dark:text-zinc-400 mt-0.5 leading-snug">
-                            {n.desc}
-                          </p>
-                        </div>
-                      ))}
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
 
             <ThemeToggle size="sm" />
           </div>
@@ -735,9 +756,121 @@ export default function AdminShell({
         {/* Scrollable Page Body */}
         <main
           ref={mainRef}
-          className="flex-1 min-w-0 w-full md:overflow-y-auto md:overflow-x-hidden overscroll-y-contain [-webkit-overflow-scrolling:touch] touch-pan-y bg-gradient-to-b from-[#EFF6FF]/40 via-[#F8FBFF] to-[#F8FBFF] dark:bg-none dark:bg-[#0a0a0a]"
+          className="flex-1 min-w-0 w-full md:overflow-y-auto md:overflow-x-hidden overscroll-y-contain [-webkit-overflow-scrolling:touch] touch-pan-y bg-gradient-to-b from-[#EFF6FF]/40 via-[#F8FBFF] to-[#F8FBFF] dark:bg-none dark:bg-[#0a0a0a] relative"
           data-lenis-prevent
         >
+          {/* Desktop Top Navigation Bar (hidden md:flex) - Sticky inside scroll container so content scrolls transparently underneath */}
+          <header
+            className="sticky top-0 z-30 hidden md:flex h-11 shrink-0 items-center justify-between px-4 sm:px-6 w-full border-b border-black/[0.04] dark:border-white/[0.06] bg-transparent dark:bg-black/20 backdrop-blur-md transition-colors select-none"
+          >
+            {/* Left: Sidebar Collapse Toggle [ | ] + Page Title */}
+            <div className="flex items-center gap-3 min-w-0">
+              <button
+                type="button"
+                onClick={toggleSidebar}
+                title={isCollapsed ? "Expand sidebar (⌘B)" : "Collapse sidebar (⌘B)"}
+                className="flex h-8 w-8 items-center justify-center rounded-lg text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white hover:bg-zinc-100/50 dark:hover:bg-white/10 active:scale-95 transition-all cursor-pointer shrink-0"
+                aria-label="Toggle sidebar"
+              >
+                {isCollapsed ? (
+                  <PanelLeftOpen className="h-4 w-4" />
+                ) : (
+                  <PanelLeftClose className="h-4 w-4" />
+                )}
+              </button>
+
+              {/* Divider */}
+              <div className="h-3.5 w-px bg-zinc-200 dark:bg-white/10 shrink-0" />
+
+              {/* Current Page Title */}
+              <div className="flex items-center gap-2.5 min-w-0">
+                <span className="text-sm font-semibold tracking-tight text-zinc-900 dark:text-white truncate">
+                  {pageTitle}
+                </span>
+              </div>
+            </div>
+
+            {/* Right: Notifications + Theme Toggle */}
+            <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+              {/* Notification Button & Popover */}
+              <div ref={notifRef} className="relative">
+                <button
+                  type="button"
+                  onClick={() => setNotifOpen((v) => !v)}
+                  className="relative flex h-8 w-8 items-center justify-center rounded-lg text-zinc-600 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100/50 dark:hover:bg-white/10 active:scale-90 transition-all cursor-pointer shrink-0"
+                  aria-label="Notifications"
+                  title="Notifications"
+                >
+                  <Bell className="h-4.5 w-4.5" />
+                  {hasUnread && (
+                    <span className="absolute top-1.5 right-1.5 flex h-2 w-2">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#0066B2] dark:bg-[#38BDF8] opacity-75" />
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-[#0066B2] dark:bg-[#38BDF8]" />
+                    </span>
+                  )}
+                </button>
+
+                {/* Notification Popover Dropdown */}
+                <AnimatePresence>
+                  {notifOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.95, y: 6 }}
+                      animate={{ opacity: 1, scale: 1, y: 0 }}
+                      exit={{ opacity: 0, scale: 0.95, y: 6 }}
+                      transition={{ type: "spring", stiffness: 450, damping: 30 }}
+                      className="absolute right-0 top-full mt-2 w-80 sm:w-88 rounded-2xl bg-white dark:bg-[#18181b] border border-zinc-200/90 dark:border-white/10 shadow-2xl p-3 z-50 text-zinc-900 dark:text-white overflow-hidden"
+                    >
+                      <div className="flex items-center justify-between pb-2.5 px-1 border-b border-zinc-100 dark:border-white/10">
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-bold">Admin Notifications</span>
+                          {hasUnread && (
+                            <span className="px-1.5 py-0.5 rounded-full text-[10px] font-semibold bg-[#0066B2]/10 text-[#0066B2] dark:bg-[#0066B2]/20 dark:text-[#38BDF8]">
+                              New
+                            </span>
+                          )}
+                        </div>
+                        {hasUnread && (
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setNotifications((prev) => prev.map((n) => ({ ...n, unread: false })))
+                            }
+                            className="text-[11px] text-[#0066B2] dark:text-[#38BDF8] hover:underline cursor-pointer"
+                          >
+                            Mark all as read
+                          </button>
+                        )}
+                      </div>
+
+                      <div className="py-1 divide-y divide-zinc-100 dark:divide-white/5 max-h-72 overflow-y-auto">
+                        {notifications.map((n) => (
+                          <div
+                            key={n.id}
+                            className={`p-2 rounded-xl transition-colors ${
+                              n.unread ? "bg-blue-50/60 dark:bg-white/[0.03]" : ""
+                            }`}
+                          >
+                            <div className="flex items-start justify-between gap-2">
+                              <p className="text-xs font-semibold text-zinc-900 dark:text-zinc-100">
+                                {n.title}
+                              </p>
+                              <span className="text-[10px] text-zinc-400 shrink-0">{n.time}</span>
+                            </div>
+                            <p className="text-[11px] text-zinc-500 dark:text-zinc-400 mt-0.5 leading-snug">
+                              {n.desc}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+
+              <ThemeToggle size="sm" />
+            </div>
+          </header>
+
           {children}
         </main>
       </div>
