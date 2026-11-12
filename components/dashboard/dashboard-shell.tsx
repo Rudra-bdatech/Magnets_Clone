@@ -1222,7 +1222,7 @@ export default function DashboardShell({
                   </div>
 
                   {/* Navigation links */}
-                  <nav className="flex-1 overflow-y-auto space-y-1.5 pr-1" aria-label="Dashboard">
+                  <nav className="flex-1 overflow-y-auto space-y-1.5 pr-1 no-scrollbar" aria-label="Dashboard">
                     {computedNav.map((item) => {
                       const active = activeNavHref
                         ? item.href === activeNavHref
