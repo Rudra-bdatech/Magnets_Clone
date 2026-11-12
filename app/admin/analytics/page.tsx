@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import {
   Mail, Server, Slack, Zap, BarChart2, RefreshCw,
   Globe, ShieldCheck, Layers, AlertCircle,
-  Users, FileText, HelpCircle, PlayCircle, Sparkles,
+  Users, FileText, HelpCircle, PlayCircle,
   TrendingUp, Link2, Radio,
 } from "lucide-react";
 
@@ -376,15 +376,6 @@ export default function AnalyticsPage() {
             total={totalUsers}
             color="indigo"
             sublabel={`${funnelFeatures.abTestsRunning} tests running`}
-            unit="users"
-          />
-          <IntegrationCard
-            icon={Sparkles}
-            label="AI Personalisation"
-            count={funnelFeatures.aiPersonalizedUsers}
-            total={totalUsers}
-            color="violet"
-            sublabel={`${funnelFeatures.aiPersonalizedFunnels} funnels with AI`}
             unit="users"
           />
           <IntegrationCard
