@@ -165,7 +165,7 @@ export default function AnalyticsPage() {
       try {
         const cached = sessionStorage.getItem("admin_analytics_cache");
         if (cached) return JSON.parse(cached);
-      } catch (_) {}
+      } catch (_) { }
     }
     return null;
   });
@@ -173,7 +173,7 @@ export default function AnalyticsPage() {
     if (typeof window !== "undefined") {
       try {
         return !sessionStorage.getItem("admin_analytics_cache");
-      } catch (_) {}
+      } catch (_) { }
     }
     return true;
   });
@@ -191,7 +191,7 @@ export default function AnalyticsPage() {
       setData(json);
       try {
         sessionStorage.setItem("admin_analytics_cache", JSON.stringify(json));
-      } catch (_) {}
+      } catch (_) { }
     } catch (e: any) {
       setError(e.message || "Unknown error");
     } finally {
@@ -294,7 +294,8 @@ export default function AnalyticsPage() {
         </div>
       </section>
 
-      {/* 4. LinkedIn Automation */}
+      {/* 4. LinkedIn Automation (commented out) */}
+      {/*
       <section>
         <SectionHeader title="LinkedIn Automation" sub="Comment-to-DM automation activity" />
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
@@ -316,6 +317,7 @@ export default function AnalyticsPage() {
           />
         </div>
       </section>
+      */}
 
       {/* 5. Custom Domain */}
       <section>
@@ -333,13 +335,12 @@ export default function AnalyticsPage() {
               ] as { label: string; count: number; icon: React.ElementType; description: string; kind: "neutral" | "good" | "danger" }[]
             ).map(({ label, count, icon: Icon, description, kind }) => (
               <div key={label} className="flex items-center gap-3 px-3.5 sm:px-5 py-3 sm:py-3.5 hover:bg-zinc-50 dark:hover:bg-white/[0.02] transition-colors">
-                <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 ${
-                  kind === "danger"
+                <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 ${kind === "danger"
                     ? "bg-red-50 text-red-500 dark:bg-red-900/25 dark:text-red-400"
                     : kind === "good"
-                    ? "bg-emerald-50 text-emerald-500 dark:bg-emerald-900/25 dark:text-emerald-400"
-                    : "bg-zinc-100 text-zinc-400 dark:bg-white/5 dark:text-zinc-500"
-                }`}>
+                      ? "bg-emerald-50 text-emerald-500 dark:bg-emerald-900/25 dark:text-emerald-400"
+                      : "bg-zinc-100 text-zinc-400 dark:bg-white/5 dark:text-zinc-500"
+                  }`}>
                   <Icon className="w-4 h-4" />
                 </div>
                 <div className="flex-1 min-w-0">
