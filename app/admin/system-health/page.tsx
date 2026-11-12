@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import {
   RefreshCw, CheckCircle, AlertTriangle, XCircle,
@@ -52,9 +52,11 @@ interface SystemHealthData {
 
 function timeAgo(d: string | null): string {
   if (!d) return "never";
-  const diff = Date.now() - new Date(d).getTime();
-  const mins = Math.floor(diff / 60000);
-  if (mins < 1)   return "just now";
+  const diff = Math.max(0, Date.now() - new Date(d).getTime());
+  const secs = Math.floor(diff / 1000);
+  if (secs < 10)  return "just now";
+  if (secs < 60)  return `${secs}s ago`;
+  const mins = Math.floor(secs / 60);
   if (mins < 60)  return `${mins}m ago`;
   const hrs = Math.floor(mins / 60);
   if (hrs < 24)   return `${hrs}h ago`;
@@ -65,7 +67,7 @@ function formatDate(d: string | null): string {
   if (!d) return "—";
   return new Date(d).toLocaleString("en-IN", {
     day: "numeric", month: "short", year: "numeric",
-    hour: "2-digit", minute: "2-digit",
+    hour: "2-digit", minute: "2-digit", second: "2-digit",
   });
 }
 
@@ -116,15 +118,10 @@ function MetricCard({
   return (
     <div className="bg-white/90 dark:bg-[#171717] rounded-2xl border border-[#0066B2]/15 dark:border-white/[0.08] p-3.5 sm:p-4 shadow-md dark:shadow-none backdrop-blur-sm flex flex-col justify-between">
       <div>
-        <div className="flex items-center justify-between gap-2 mb-2 sm:mb-2.5">
+        <div className="flex items-center gap-2 mb-2 sm:mb-2.5">
           <div className={`p-2 rounded-xl shrink-0 ${iconCls[status]}`}>
             <Icon className="w-4 h-4" />
           </div>
-          {status !== "neutral" && (
-            <span className={`inline-block w-2 h-2 rounded-full ${
-              status === "danger" ? "bg-red-500 animate-pulse" : status === "warn" ? "bg-amber-500" : "bg-emerald-500"
-            }`} />
-          )}
         </div>
         <p className="text-[11px] sm:text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider line-clamp-1">{label}</p>
         <p className={`text-xl sm:text-2xl font-bold tracking-tight mt-0.5 ${valueCls[status]}`}>{value}</p>
@@ -181,24 +178,59 @@ export default function SystemHealthPage() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState("");
+  const [, setTick] = useState(0);
 
-  async function load(silent = false) {
+  const load = useCallback(async (silent = false) => {
     if (!silent) setLoading(true);
     else setRefreshing(true);
     setError("");
     try {
-      const res = await fetch("/api/admin/system-health", silent ? { cache: "reload" } : {});
+      const res = await fetch("/api/admin/system-health", { cache: "no-store" });
       if (!res.ok) throw new Error("Failed to load system health");
       setData(await res.json());
     } catch (e: any) {
-      setError(e.message);
+      if (!silent) {
+        setError(e.message);
+      }
     } finally {
       setLoading(false);
       setRefreshing(false);
     }
-  }
+  }, []);
 
-  useEffect(() => { load(); }, []);
+  // Initial load
+  useEffect(() => {
+    load();
+  }, [load]);
+
+  // Tick relative times (timeAgo) every 5s so labels like "just now", "15s ago", "1m ago" advance automatically
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTick((t) => t + 1);
+    }, 5_000);
+    return () => clearInterval(timer);
+  }, []);
+
+  // Auto-refresh health metrics from server every 30 seconds
+  useEffect(() => {
+    const poll = setInterval(() => {
+      if (typeof document === "undefined" || document.visibilityState === "visible") {
+        load(true);
+      }
+    }, 30_000);
+
+    const onVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        load(true);
+      }
+    };
+    document.addEventListener("visibilitychange", onVisibilityChange);
+
+    return () => {
+      clearInterval(poll);
+      document.removeEventListener("visibilitychange", onVisibilityChange);
+    };
+  }, [load]);
 
   if (loading) {
     return (
@@ -262,8 +294,13 @@ export default function SystemHealthPage() {
                 : "Checking…"
               } />
             </div>
-            <p className="text-xs text-zinc-400 dark:text-zinc-500 mt-0.5">
-              Generated {timeAgo(data.generatedAt)} ({formatDate(data.generatedAt)})
+            <p className="text-xs text-zinc-400 dark:text-zinc-500 mt-0.5 flex items-center gap-2 flex-wrap">
+              <span>Generated {timeAgo(data.generatedAt)} ({formatDate(data.generatedAt)})</span>
+              <span className="text-zinc-300 dark:text-zinc-700 hidden sm:inline">•</span>
+              <span className="inline-flex items-center gap-1.5 text-[11px] text-zinc-400 dark:text-zinc-500">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                Auto-refreshes every 30s
+              </span>
             </p>
           </div>
         </div>
@@ -314,7 +351,8 @@ export default function SystemHealthPage() {
             </div>
           </CronCard>
 
-          {/* LinkedIn Cron */}
+          {/* LinkedIn Cron (commented out) */}
+          {/*
           <CronCard
             title="LinkedIn Sync Cron"
             icon={Link2}
@@ -337,6 +375,7 @@ export default function SystemHealthPage() {
               )}
             </div>
           </CronCard>
+          */}
 
         </div>
       </section>
