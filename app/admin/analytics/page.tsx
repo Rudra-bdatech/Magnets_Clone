@@ -160,8 +160,23 @@ function templateDisplayName(t: string): string {
 }
 
 export default function AnalyticsPage() {
-  const [data, setData] = useState<AnalyticsData | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [data, setData] = useState<AnalyticsData | null>(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const cached = sessionStorage.getItem("admin_analytics_cache");
+        if (cached) return JSON.parse(cached);
+      } catch (_) {}
+    }
+    return null;
+  });
+  const [loading, setLoading] = useState(() => {
+    if (typeof window !== "undefined") {
+      try {
+        return !sessionStorage.getItem("admin_analytics_cache");
+      } catch (_) {}
+    }
+    return true;
+  });
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState("");
 
@@ -172,7 +187,11 @@ export default function AnalyticsPage() {
     try {
       const res = await fetch("/api/admin/analytics", silent ? { cache: "reload" } : {});
       if (!res.ok) throw new Error("Failed to load analytics");
-      setData(await res.json());
+      const json = await res.json();
+      setData(json);
+      try {
+        sessionStorage.setItem("admin_analytics_cache", JSON.stringify(json));
+      } catch (_) {}
     } catch (e: any) {
       setError(e.message || "Unknown error");
     } finally {
@@ -181,7 +200,10 @@ export default function AnalyticsPage() {
     }
   }
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => {
+    const hasCache = !!data;
+    load(hasCache);
+  }, []);
 
   if (loading) {
     return (

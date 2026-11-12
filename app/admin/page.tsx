@@ -66,21 +66,24 @@ function formatBytes(bytes: number) {
 // ─────────────────────────────────────────────
 
 function useCountUp(target: number, duration = 800) {
-  const [count, setCount] = useState(0);
+  const [count, setCount] = useState(target);
   const rafRef = useRef<number>(0);
   const startRef = useRef<number>(0);
+  const prevTargetRef = useRef(target);
 
   useEffect(() => {
-    if (target === 0) {
-      setCount(0);
+    if (prevTargetRef.current === target) {
+      setCount(target);
       return;
     }
+    const initial = prevTargetRef.current;
+    prevTargetRef.current = target;
     startRef.current = 0;
     const step = (ts: number) => {
       if (!startRef.current) startRef.current = ts;
       const progress = Math.min((ts - startRef.current) / duration, 1);
       const eased = 1 - Math.pow(1 - progress, 3);
-      setCount(Math.floor(eased * target));
+      setCount(Math.floor(initial + eased * (target - initial)));
       if (progress < 1) rafRef.current = requestAnimationFrame(step);
     };
     rafRef.current = requestAnimationFrame(step);
@@ -206,7 +209,7 @@ function AppleKpiCard({
                     : "#06B6D4")
                 }
                 strokeDasharray={65.97}
-                initial={{ strokeDashoffset: 65.97 }}
+                initial={false}
                 animate={{
                   strokeDashoffset:
                     65.97 -
@@ -242,7 +245,7 @@ function AppleKpiCard({
             <div className="mb-1">
               <div className="h-1 w-full bg-zinc-100 dark:bg-white/[0.08] rounded-full overflow-hidden">
                 <motion.div
-                  initial={{ width: 0 }}
+                  initial={false}
                   animate={{ width: `${Math.min(100, Math.max(progress, 1))}%` }}
                   transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
                   className={`h-full rounded-full ${
@@ -294,13 +297,33 @@ function AppleKpiCard({
 // ─────────────────────────────────────────────
 
 export default function AdminOverviewPage() {
-  const [stats, setStats] = useState<Stats | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState<Stats | null>(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const cached = sessionStorage.getItem("admin_overview_stats");
+        if (cached) return JSON.parse(cached);
+      } catch (_) {}
+    }
+    return null;
+  });
+  const [loading, setLoading] = useState(() => {
+    if (typeof window !== "undefined") {
+      try {
+        return !sessionStorage.getItem("admin_overview_stats");
+      } catch (_) {}
+    }
+    return true;
+  });
 
   useEffect(() => {
     fetch("/api/admin/stats")
       .then((r) => r.json())
-      .then(setStats)
+      .then((data) => {
+        setStats(data);
+        try {
+          sessionStorage.setItem("admin_overview_stats", JSON.stringify(data));
+        } catch (_) {}
+      })
       .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
@@ -440,7 +463,7 @@ export default function AdminOverviewPage() {
                     </div>
                     <div className="h-2 w-full bg-zinc-100 dark:bg-white/[0.06] rounded-full overflow-hidden">
                       <motion.div
-                        initial={{ width: 0 }}
+                        initial={false}
                         animate={{ width: `${pct}%` }}
                         transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
                         className={`h-full rounded-full ${PLAN_BAR[plan]}`}
@@ -484,7 +507,7 @@ export default function AdminOverviewPage() {
                     </div>
                     <div className="h-2 w-full bg-zinc-100 dark:bg-white/[0.06] rounded-full overflow-hidden">
                       <motion.div
-                        initial={{ width: 0 }}
+                        initial={false}
                         animate={{ width: `${pct}%` }}
                         transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
                         className={`h-full rounded-full ${
@@ -568,7 +591,7 @@ export default function AdminOverviewPage() {
                       <div className="h-3.5 w-full bg-zinc-100 dark:bg-white/[0.08] rounded-full overflow-hidden flex p-0.5 gap-0.5 shadow-inner">
                         {/* Segment 1: PDFs & Lead Magnets (Cyan) */}
                         <motion.div
-                          initial={{ width: 0 }}
+                          initial={false}
                           animate={{
                             width: `${Math.max(storage.usedPercent * pdfRatio, 2)}%`,
                           }}
@@ -578,7 +601,7 @@ export default function AdminOverviewPage() {
                         />
                         {/* Segment 2: Images & Media (Purple) */}
                         <motion.div
-                          initial={{ width: 0 }}
+                          initial={false}
                           animate={{
                             width: `${Math.max(storage.usedPercent * imageRatio, 1.5)}%`,
                           }}
@@ -588,7 +611,7 @@ export default function AdminOverviewPage() {
                         />
                         {/* Segment 3: App Assets & Data (Amber) */}
                         <motion.div
-                          initial={{ width: 0 }}
+                          initial={false}
                           animate={{
                             width: `${Math.max(storage.usedPercent * dataRatio, 1)}%`,
                           }}

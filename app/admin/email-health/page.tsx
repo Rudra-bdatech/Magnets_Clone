@@ -172,8 +172,23 @@ function EventTypeBadge({ type }: { type: string }) {
 export default function EmailHealthPage() {
   const router = useRouter();
   const [period, setPeriod] = useState<7 | 30>(7);
-  const [data, setData] = useState<EmailHealthData | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [data, setData] = useState<EmailHealthData | null>(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const cached = sessionStorage.getItem("admin_email_health_cache_7");
+        if (cached) return JSON.parse(cached);
+      } catch (_) {}
+    }
+    return null;
+  });
+  const [loading, setLoading] = useState(() => {
+    if (typeof window !== "undefined") {
+      try {
+        return !sessionStorage.getItem("admin_email_health_cache_7");
+      } catch (_) {}
+    }
+    return true;
+  });
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState("");
   const [showAllUsers, setShowAllUsers] = useState(false);
@@ -185,7 +200,11 @@ export default function EmailHealthPage() {
     try {
       const res = await fetch(`/api/admin/email-health?period=${period}`, silent ? { cache: "reload" } : {});
       if (!res.ok) throw new Error("Failed to load email health data");
-      setData(await res.json());
+      const json = await res.json();
+      setData(json);
+      try {
+        sessionStorage.setItem(`admin_email_health_cache_${period}`, JSON.stringify(json));
+      } catch (_) {}
     } catch (e: any) {
       setError(e.message);
     } finally {
@@ -194,7 +213,10 @@ export default function EmailHealthPage() {
     }
   }, [period]);
 
-  useEffect(() => { load(); }, [load]);
+  useEffect(() => {
+    const hasCache = !!data;
+    load(hasCache);
+  }, [load]);
 
   if (loading) {
     return (

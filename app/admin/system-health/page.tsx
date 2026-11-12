@@ -174,8 +174,23 @@ function CronCard({
 
 export default function SystemHealthPage() {
   const router = useRouter();
-  const [data, setData] = useState<SystemHealthData | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [data, setData] = useState<SystemHealthData | null>(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const cached = sessionStorage.getItem("admin_system_health_cache");
+        if (cached) return JSON.parse(cached);
+      } catch (_) {}
+    }
+    return null;
+  });
+  const [loading, setLoading] = useState(() => {
+    if (typeof window !== "undefined") {
+      try {
+        return !sessionStorage.getItem("admin_system_health_cache");
+      } catch (_) {}
+    }
+    return true;
+  });
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState("");
   const [, setTick] = useState(0);
@@ -187,7 +202,11 @@ export default function SystemHealthPage() {
     try {
       const res = await fetch("/api/admin/system-health", { cache: "no-store" });
       if (!res.ok) throw new Error("Failed to load system health");
-      setData(await res.json());
+      const json = await res.json();
+      setData(json);
+      try {
+        sessionStorage.setItem("admin_system_health_cache", JSON.stringify(json));
+      } catch (_) {}
     } catch (e: any) {
       if (!silent) {
         setError(e.message);
@@ -200,7 +219,8 @@ export default function SystemHealthPage() {
 
   // Initial load
   useEffect(() => {
-    load();
+    const hasCache = !!data;
+    load(hasCache);
   }, [load]);
 
   // Tick relative times (timeAgo) every 5s so labels like "just now", "15s ago", "1m ago" advance automatically

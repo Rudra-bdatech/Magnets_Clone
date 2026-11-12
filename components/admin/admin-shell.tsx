@@ -74,6 +74,7 @@ export default function AdminShell({
   role: string;
 }) {
   const pathname = usePathname();
+  const [mounted, setMounted] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const lastScrollYRef = useRef(0);
@@ -108,6 +109,7 @@ export default function AdminShell({
         setIsCollapsed(saved === "true");
       }
     } catch (_) { }
+    setMounted(true);
   }, []);
 
   const toggleSidebar = useCallback(() => {
@@ -257,12 +259,21 @@ export default function AdminShell({
     PageIcon = Layers;
   }
 
+  if (!mounted) {
+    return (
+      <div className="flex h-screen w-screen items-center justify-center bg-white dark:bg-[#0a0a0a]">
+        <div className="h-6 w-6 animate-spin rounded-full border-2 border-[#0066B2] border-t-transparent" />
+      </div>
+    );
+  }
+
   return (
     <MotionConfig reducedMotion="user">
       <AdminSidebarContext.Provider value={{ isCollapsed, toggleSidebar, setIsCollapsed }}>
         <div className="flex min-h-[100dvh] md:h-screen md:overflow-hidden w-full bg-[#FAFAFA] dark:bg-[#0a0a0a]">
           {/* Desktop Sidebar Spacer (preserves layout flow width) */}
           <motion.div
+            initial={false}
             animate={{ width: isCollapsed ? 68 : 240 }}
             transition={{ type: "spring", stiffness: 520, damping: 38, mass: 0.5 }}
             className="hidden md:block shrink-0"
@@ -271,6 +282,7 @@ export default function AdminShell({
 
           {/* Desktop Fixed Sidebar */}
           <motion.aside
+            initial={false}
             animate={{ width: isCollapsed ? 68 : 240 }}
             transition={{ type: "spring", stiffness: 520, damping: 38, mass: 0.5 }}
             className="shadow-sm hidden h-screen shrink-0 flex-col border-r border-[#E0EDFB] bg-[#F0F7FF] text-zinc-900 fixed left-0 top-0 bottom-0 md:flex z-40 dark:border-white/[0.08] dark:bg-[#171717] dark:text-zinc-400 overflow-visible select-none"
@@ -701,7 +713,21 @@ export default function AdminShell({
                 </div>
               </header>
 
-              {children}
+              <AnimatePresence mode="wait" initial={false}>
+                <motion.div
+                  key={pathname}
+                  initial={{ opacity: 0, y: 4 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, transition: { duration: 0.05, ease: "easeOut" } }}
+                  transition={{
+                    duration: 0.13,
+                    ease: [0.22, 1, 0.36, 1],
+                  }}
+                  className="w-full h-full max-w-full"
+                >
+                  {children}
+                </motion.div>
+              </AnimatePresence>
             </main>
           </div>
         </div>

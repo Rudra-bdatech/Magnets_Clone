@@ -145,8 +145,23 @@ function formatDate(d: string | null) {
 
 export default function RevenuePage() {
   const router = useRouter();
-  const [data, setData] = useState<RevenueData | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [data, setData] = useState<RevenueData | null>(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const cached = sessionStorage.getItem("admin_revenue_cache");
+        if (cached) return JSON.parse(cached);
+      } catch (_) {}
+    }
+    return null;
+  });
+  const [loading, setLoading] = useState(() => {
+    if (typeof window !== "undefined") {
+      try {
+        return !sessionStorage.getItem("admin_revenue_cache");
+      } catch (_) {}
+    }
+    return true;
+  });
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState("");
 
@@ -157,7 +172,11 @@ export default function RevenuePage() {
     try {
       const res = await fetch("/api/admin/revenue", silent ? { cache: "reload" } : {});
       if (!res.ok) throw new Error("Failed to load revenue data");
-      setData(await res.json());
+      const json = await res.json();
+      setData(json);
+      try {
+        sessionStorage.setItem("admin_revenue_cache", JSON.stringify(json));
+      } catch (_) {}
     } catch (e: any) {
       setError(e.message || "Unknown error");
     } finally {
@@ -166,7 +185,10 @@ export default function RevenuePage() {
     }
   }
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => {
+    const hasCache = !!data;
+    load(hasCache);
+  }, []);
 
   if (loading) {
     return (
