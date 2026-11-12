@@ -34,16 +34,18 @@ export interface AdminNotification {
 
 // UIKit spring (response 0.35, dampingRatio 0.86) converted to stiffness/damping.
 const SPRING = { type: "spring", stiffness: 322, damping: 31, mass: 1 } as const;
+// Apple iOS/macOS fluid stack spring: ultra-responsive (mass 0.85), silky damping, zero layout thrashing
+const APPLE_STACK_SPRING = { type: "spring", stiffness: 280, damping: 26, mass: 0.85 } as const;
 // UIKit sheet spring (response 0.5, dampingRatio 0.86).
 const SHEET_SPRING = { type: "spring", stiffness: 158, damping: 21.6, mass: 1 } as const;
 const IOS_EASE = [0.32, 0.72, 0, 1] as const;
 const FLING = { type: "tween", duration: 0.24, ease: IOS_EASE } as const;
 
-// macOS 26 "Liquid Glass": translucent fill, heavy saturated blur, specular top edge.
+// macOS 26 "Liquid Glass": opaque fill with subtle blur, crisp perimeter border, and directional bottom shadow.
 const GLASS_CARD =
-  "bg-white/55 backdrop-blur-[28px] backdrop-saturate-[1.8] shadow-[inset_0_1px_0_rgba(255,255,255,0.7),inset_0_0_0_0.5px_rgba(255,255,255,0.4),0_10px_30px_rgba(0,0,0,0.14)] dark:bg-[#1c1c1e]/55 dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.14),inset_0_0_0_0.5px_rgba(255,255,255,0.10),0_12px_34px_rgba(0,0,0,0.5)]";
+  "bg-white/95 backdrop-blur-2xl border border-black/[0.08] shadow-[0_10px_25px_-4px_rgba(0,0,0,0.12),0_6px_10px_-4px_rgba(0,0,0,0.08),inset_0_1px_0_rgba(255,255,255,0.95),inset_0_-1px_0_rgba(0,0,0,0.04)] dark:bg-[#1c1c1e]/95 dark:border-white/[0.12] dark:shadow-[0_14px_30px_-4px_rgba(0,0,0,0.7),0_6px_12px_-4px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.1),inset_0_-1px_0_rgba(0,0,0,0.3)]";
 const GLASS_PILL =
-  "bg-white/65 backdrop-blur-2xl backdrop-saturate-[1.8] text-zinc-700 shadow-[inset_0_0.5px_0_rgba(255,255,255,0.8),0_2px_10px_rgba(0,0,0,0.14)] hover:bg-white/80 hover:text-zinc-900 dark:bg-[#2c2c2e]/65 dark:text-zinc-200 dark:shadow-[inset_0_0.5px_0_rgba(255,255,255,0.16),0_2px_10px_rgba(0,0,0,0.45)] dark:hover:bg-[#3a3a3c]/75 dark:hover:text-white";
+  "bg-white/92 backdrop-blur-xl text-zinc-700 border border-black/[0.08] shadow-[0_2px_8px_rgba(0,0,0,0.08),inset_0_1px_0_rgba(255,255,255,0.95)] hover:bg-white hover:text-zinc-900 dark:bg-[#2c2c2e]/92 dark:text-zinc-200 dark:border-white/10 dark:shadow-[0_2px_8px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.12)] dark:hover:bg-[#3a3a3c] dark:hover:text-white";
 const APPLE_FONT = '-apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", system-ui, sans-serif';
 
 const ACTION_W = 74;
@@ -53,31 +55,31 @@ const REVEAL = ACTION_W * 2 + ACTION_GAP * 2;
 function haptic(ms = 8) {
   try {
     navigator.vibrate?.(ms);
-  } catch {}
+  } catch { }
 }
 
 // Map API notification type → lucide icon
 const TYPE_ICON: Record<string, LucideIcon> = {
-  signup:      UserPlus,
-  verified:    ShieldCheck,
-  suspended:   ShieldOff,
+  signup: UserPlus,
+  verified: ShieldCheck,
+  suspended: ShieldOff,
   unsuspended: ShieldAlert,
 };
 
 function relativeTime(isoTs: string): string {
   const diff = Date.now() - new Date(isoTs).getTime();
   const s = Math.floor(diff / 1000);
-  if (s < 60)  return "just now";
+  if (s < 60) return "just now";
   const m = Math.floor(s / 60);
-  if (m < 60)  return `${m}m ago`;
+  if (m < 60) return `${m}m ago`;
   const h = Math.floor(m / 60);
-  if (h < 24)  return `${h}h ago`;
+  if (h < 24) return `${h}h ago`;
   const d = Math.floor(h / 24);
   return `${d}d ago`;
 }
 
 const LS_DISMISSED = "admin_notif_dismissed_v1";
-const LS_READ      = "admin_notif_read_v1";
+const LS_READ = "admin_notif_read_v1";
 
 function lsGet(key: string): Set<string> {
   try {
@@ -93,7 +95,7 @@ function lsAdd(key: string, id: string) {
     // Keep at most 500 IDs so localStorage never bloats
     const arr = Array.from(s).slice(-500);
     localStorage.setItem(key, JSON.stringify(arr));
-  } catch {}
+  } catch { }
 }
 
 function lsAddMany(key: string, ids: string[]) {
@@ -102,7 +104,7 @@ function lsAddMany(key: string, ids: string[]) {
     ids.forEach((id) => s.add(id));
     const arr = Array.from(s).slice(-500);
     localStorage.setItem(key, JSON.stringify(arr));
-  } catch {}
+  } catch { }
 }
 
 export function useNotificationCenter(initial: AdminNotification[]) {
@@ -111,7 +113,7 @@ export function useNotificationCenter(initial: AdminNotification[]) {
   const timers = useRef<number[]>([]);
   // Hydrate dismissed & seen sets from localStorage on first render.
   const dismissed = useRef<Set<string>>(lsGet(LS_DISMISSED));
-  const readIds   = useRef<Set<string>>(lsGet(LS_READ));
+  const readIds = useRef<Set<string>>(lsGet(LS_READ));
   // seenIds: superset of dismissed + read — prevents re-marking as unread on poll.
   const seenIds = useRef<Set<string>>(new Set([
     ...Array.from(dismissed.current),
@@ -202,7 +204,7 @@ export function useNotificationCenter(initial: AdminNotification[]) {
         if (!res.ok || !alive) return;
         const data = await res.json();
         if (Array.isArray(data.notifications)) mergeFromApi(data.notifications);
-      } catch {}
+      } catch { }
     };
     poll(); // immediate first load
     const id = window.setInterval(poll, 60_000);
@@ -316,9 +318,8 @@ function ClearAllButton({
           setArmed(true);
         }
       }}
-      className={`flex items-center justify-center overflow-hidden font-semibold cursor-pointer select-none ${
-        size === "sm" ? `h-6 text-[11px] ${armed ? "px-2.5" : "w-6"}` : `h-7 text-[13px] ${armed ? "px-3.5" : "w-7"}`
-      } ${className ?? ""}`}
+      className={`flex items-center justify-center overflow-hidden font-semibold cursor-pointer select-none ${size === "sm" ? `h-6 text-[11px] ${armed ? "px-2.5" : "w-6"}` : `h-7 text-[13px] ${armed ? "px-3.5" : "w-7"}`
+        } ${className ?? ""}`}
     >
       <AnimatePresence mode="popLayout" initial={false}>
         {armed ? (
@@ -353,9 +354,8 @@ function ClearAllButton({
 function AppIcon({ icon: Icon, size }: { icon: AdminNotification["icon"]; size: "sm" | "md" }) {
   return (
     <div
-      className={`flex shrink-0 items-center justify-center bg-gradient-to-b from-[#1A85D6] to-[#0066B2] text-white shadow-[inset_0_0.5px_0_rgba(255,255,255,0.35)] ${
-        size === "md" ? "h-[38px] w-[38px] rounded-[9px]" : "h-8 w-8 rounded-[7px]"
-      }`}
+      className={`flex shrink-0 items-center justify-center bg-gradient-to-b from-[#1A85D6] to-[#0066B2] text-white shadow-[inset_0_0.5px_0_rgba(255,255,255,0.35)] ${size === "md" ? "h-[38px] w-[38px] rounded-[9px]" : "h-8 w-8 rounded-[7px]"
+        }`}
     >
       <Icon className={size === "md" ? "h-5 w-5" : "h-4 w-4"} strokeWidth={2.2} />
     </div>
@@ -382,26 +382,60 @@ const rowExit = {
   exit: (clearing: boolean) =>
     clearing
       ? {
-          opacity: 0,
-          x: 90,
-          scale: 0.92,
-          height: 0,
-          paddingBottom: 0,
-          transition: { ...SPRING, opacity: { duration: 0.2 } },
-        }
+        opacity: 0,
+        x: 90,
+        scale: 0.92,
+        height: 0,
+        marginTop: 0,
+        transition: { ...APPLE_STACK_SPRING, opacity: { duration: 0.2 } },
+      }
       : {
-          opacity: 0,
-          height: 0,
-          paddingBottom: 0,
-          transition: { ...SPRING, opacity: { duration: 0.12 } },
-        },
+        opacity: 0,
+        height: 0,
+        marginTop: 0,
+        transition: { ...APPLE_STACK_SPRING, opacity: { duration: 0.12 } },
+      },
 };
 
 function rowTarget(i: number, stacked: boolean, gap: number) {
-  if (!stacked) return { opacity: 1, height: "auto", scaleX: 1, paddingBottom: gap };
-  if (i === 0) return { opacity: 1, height: "auto", scaleX: 1, paddingBottom: 0 };
-  if (i < 3) return { opacity: i === 1 ? 0.8 : 0.55, height: 9, scaleX: 1 - i * 0.05, paddingBottom: 0 };
-  return { opacity: 0, height: 0, scaleX: 0.85, paddingBottom: 0 };
+  if (!stacked) {
+    return {
+      opacity: 1,
+      scale: 1,
+      marginTop: i === 0 ? 0 : gap,
+      pointerEvents: "auto" as const,
+    };
+  }
+  if (i === 0) {
+    return {
+      opacity: 1,
+      scale: 1,
+      marginTop: 0,
+      pointerEvents: "auto" as const,
+    };
+  }
+  if (i === 1) {
+    return {
+      opacity: 0.88,
+      scale: 0.96,
+      marginTop: -54,
+      pointerEvents: "none" as const,
+    };
+  }
+  if (i === 2) {
+    return {
+      opacity: 0.65,
+      scale: 0.92,
+      marginTop: -54,
+      pointerEvents: "none" as const,
+    };
+  }
+  return {
+    opacity: 0,
+    scale: 0.88,
+    marginTop: -54,
+    pointerEvents: "none" as const,
+  };
 }
 
 function StackList({
@@ -424,17 +458,21 @@ function StackList({
           <motion.li
             key={n.id}
             custom={clearing}
+            layout="position"
             variants={rowExit}
-            initial={{ opacity: 0, height: 0, scaleX: 0.92, paddingBottom: 0 }}
+            initial={{ opacity: 0, scale: 0.95 }}
             animate={rowTarget(i, stacked, gap)}
             exit="exit"
-            transition={SPRING}
+            transition={{
+              ...APPLE_STACK_SPRING,
+              delay: stacked ? 0 : Math.min(i * 0.035, 0.12),
+            }}
             style={{
               zIndex: notifications.length - i,
-              originY: 0,
-              overflow: stacked && i > 0 ? "hidden" : "visible",
+              transformOrigin: "top center",
+              willChange: "transform, opacity",
             }}
-            className="relative flex flex-col justify-end"
+            className="relative"
             aria-hidden={stacked && i > 0 ? true : undefined}
           >
             {renderCard(n, i)}
@@ -551,7 +589,7 @@ function IOSCard({
         style={{ x }}
         whileTap={interactive ? { scale: 0.985 } : undefined}
         transition={SPRING}
-        className="relative cursor-pointer rounded-[22px] border border-white/50 bg-white/75 p-3 shadow-[0_8px_30px_rgba(0,0,0,0.08)] backdrop-blur-2xl backdrop-saturate-150 dark:border-white/[0.06] dark:bg-zinc-800/70 dark:shadow-[0_8px_30px_rgba(0,0,0,0.35)]"
+        className="relative cursor-pointer rounded-[22px] border border-black/[0.08] bg-white/95 p-3 shadow-[0_10px_28px_rgba(0,0,0,0.12),inset_0_1px_0_rgba(255,255,255,0.85)] backdrop-blur-2xl dark:border-white/[0.12] dark:bg-zinc-800/95 dark:shadow-[0_10px_28px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.08)]"
       >
         <div className="flex gap-3">
           <AppIcon icon={n.icon} size="md" />
@@ -875,10 +913,12 @@ export function DesktopNotificationPopover({
   open,
   center,
   anchorRef,
+  onClose,
 }: {
   open: boolean;
   center: NotificationCenter;
   anchorRef?: React.RefObject<HTMLElement | null>;
+  onClose?: () => void;
 }) {
   const [mounted, setMounted] = useState(false);
   const [expanded, setExpanded] = useState(false);
@@ -949,11 +989,11 @@ export function DesktopNotificationPopover({
             className="hidden select-none antialiased md:block pointer-events-auto"
           >
             <motion.div
-              initial={{ opacity: 0, y: -6, scale: 0.94 }}
+              initial={{ opacity: 0, y: -8, scale: 0.93 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -6, scale: 0.94, transition: { duration: 0.15 } }}
-              transition={SPRING}
-              style={{ fontFamily: APPLE_FONT }}
+              exit={{ opacity: 0, y: -6, scale: 0.94, transition: { duration: 0.14, ease: IOS_EASE } }}
+              transition={{ type: "spring", stiffness: 360, damping: 27, mass: 0.8 }}
+              style={{ fontFamily: APPLE_FONT, willChange: "transform, opacity" }}
             >
               <span className={`inline-block whitespace-nowrap rounded-full px-3.5 py-1.5 text-[12px] font-medium shadow-md ${GLASS_PILL}`}>
                 No Notifications
@@ -970,116 +1010,131 @@ export function DesktopNotificationPopover({
   return createPortal(
     <AnimatePresence>
       {open && (
-        <motion.div
-          key="mac-nc"
-          {...{ [NOTIF_PORTAL_ATTR]: "" }}
-          role="dialog"
-          aria-label="Notifications"
-          initial={{ opacity: 0, y: -8, scale: 0.98 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          exit={{ opacity: 0, y: -8, scale: 0.98, transition: { duration: 0.2, ease: IOS_EASE } }}
-          transition={SPRING}
-          onMouseEnter={() => setHover(true)}
-          onMouseLeave={() => setHover(false)}
-          onFocus={() => setHover(true)}
-          style={{
-            fontFamily: APPLE_FONT,
-            overscrollBehaviorX: "contain",
-            transformOrigin: "top right",
-            top: coords ? `${coords.top}px` : "52px",
-            right: coords ? `${Math.max(12, coords.right)}px` : "12px",
-          }}
-          className="fixed z-[60] hidden w-[356px] select-none antialiased md:block"
-        >
-          <div className="flex h-8 items-center justify-between px-0.5 pb-1.5">
-            <AnimatePresence initial={false} mode="popLayout">
-              {showControls && unreadCount > 0 ? (
-                <motion.button
-                  key="mark"
-                  type="button"
-                  initial={{ opacity: 0, scale: 0.85 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.85 }}
-                  transition={SPRING}
-                  onClick={() => {
-                    center.markAllRead();
-                    setJustMarked(true);
-                  }}
-                  className={`h-6 rounded-full px-2.5 text-[11px] font-semibold !text-[#0A84FF] cursor-pointer ${GLASS_PILL}`}
-                >
-                  Mark all as read
-                </motion.button>
-              ) : justMarked ? (
-                <motion.span
-                  key="done"
-                  initial={{ opacity: 0, scale: 0.85 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.85 }}
-                  transition={SPRING}
-                  className={`flex h-6 items-center gap-1 rounded-full px-2.5 text-[11px] font-semibold !text-emerald-600 dark:!text-emerald-400 ${GLASS_PILL}`}
-                >
-                  <Check className="h-3 w-3" strokeWidth={3} />
-                  All read
-                </motion.span>
-              ) : (
-                <span key="none" />
-              )}
-            </AnimatePresence>
+        <>
+          {/* Gentle background blur overlay — softens the dashboard underneath so notifications take focus */}
+          <motion.div
+            key="mac-nc-backdrop"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.18 }}
+            onClick={onClose}
+            className="fixed inset-0 z-[55] hidden bg-black/[0.04] backdrop-blur-[3.5px] dark:bg-black/25 md:block cursor-default"
+            aria-hidden="true"
+          />
 
-            <AnimatePresence initial={false}>
-              {showControls && (
-                <motion.div
-                  key="group-controls"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.15 }}
-                  className="flex items-center gap-1.5"
-                >
-                  <AnimatePresence initial={false}>
-                    {expanded && notifications.length > 1 && (
-                      <motion.button
-                        key="less"
-                        type="button"
-                        initial={{ opacity: 0, scale: 0.85 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.85 }}
-                        transition={SPRING}
-                        onClick={() => setExpanded(false)}
-                        className={`h-6 rounded-full px-2.5 text-[11px] font-semibold cursor-pointer ${GLASS_PILL}`}
-                      >
-                        Show Less
-                      </motion.button>
-                    )}
-                  </AnimatePresence>
-                  <ClearAllButton onClear={center.clearAll} size="sm" className={GLASS_PILL} />
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-
-          <div
-            className="-mx-3 max-h-[calc(100vh-110px)] overflow-y-auto overflow-x-hidden overscroll-contain px-3 pb-6 pt-2 [scrollbar-width:none]"
-            data-lenis-prevent
+          <motion.div
+            key="mac-nc"
+            {...{ [NOTIF_PORTAL_ATTR]: "" }}
+            role="dialog"
+            aria-label="Notifications"
+            initial={{ opacity: 0, y: -10, scale: 0.94 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -8, scale: 0.95, transition: { duration: 0.15, ease: IOS_EASE } }}
+            transition={{ type: "spring", stiffness: 360, damping: 27, mass: 0.8 }}
+            onMouseEnter={() => setHover(true)}
+            onMouseLeave={() => setHover(false)}
+            onFocus={() => setHover(true)}
+            style={{
+              fontFamily: APPLE_FONT,
+              overscrollBehaviorX: "contain",
+              transformOrigin: "top right",
+              willChange: "transform, opacity",
+              top: coords ? `${coords.top}px` : "52px",
+              right: coords ? `${Math.max(12, coords.right)}px` : "12px",
+            }}
+            className="fixed z-[60] hidden w-[356px] select-none antialiased md:block"
           >
-            <StackList
-              notifications={notifications}
-              stacked={stacked}
-              clearing={clearing}
-              gap={8}
-              renderCard={(n, i) => (
-                <MacCard
-                  n={n}
-                  stacked={stacked}
-                  isTop={i === 0}
-                  stackCount={notifications.length}
-                  onTap={() => (stacked ? setExpanded(true) : center.markRead(n.id))}
-                  onDismiss={() => (stacked ? center.clearAll() : center.dismiss(n.id))}
-                />
-              )}
-            />
-          </div>
-        </motion.div>
+            <div className="flex h-8 items-center justify-between px-0.5 pb-1.5">
+              <AnimatePresence initial={false} mode="popLayout">
+                {showControls && unreadCount > 0 ? (
+                  <motion.button
+                    key="mark"
+                    type="button"
+                    initial={{ opacity: 0, scale: 0.85 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.85 }}
+                    transition={SPRING}
+                    onClick={() => {
+                      center.markAllRead();
+                      setJustMarked(true);
+                    }}
+                    className={`h-6 rounded-full px-2.5 text-[11px] font-semibold !text-[#0A84FF] cursor-pointer ${GLASS_PILL}`}
+                  >
+                    Mark all as read
+                  </motion.button>
+                ) : justMarked ? (
+                  <motion.span
+                    key="done"
+                    initial={{ opacity: 0, scale: 0.85 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.85 }}
+                    transition={SPRING}
+                    className={`flex h-6 items-center gap-1 rounded-full px-2.5 text-[11px] font-semibold !text-emerald-600 dark:!text-emerald-400 ${GLASS_PILL}`}
+                  >
+                    <Check className="h-3 w-3" strokeWidth={3} />
+                    All read
+                  </motion.span>
+                ) : (
+                  <span key="none" />
+                )}
+              </AnimatePresence>
+
+              <AnimatePresence initial={false}>
+                {showControls && (
+                  <motion.div
+                    key="group-controls"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.15 }}
+                    className="flex items-center gap-1.5"
+                  >
+                    <AnimatePresence initial={false}>
+                      {expanded && notifications.length > 1 && (
+                        <motion.button
+                          key="less"
+                          type="button"
+                          initial={{ opacity: 0, scale: 0.85 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          exit={{ opacity: 0, scale: 0.85 }}
+                          transition={SPRING}
+                          onClick={() => setExpanded(false)}
+                          className={`h-6 rounded-full px-2.5 text-[11px] font-semibold cursor-pointer ${GLASS_PILL}`}
+                        >
+                          Show Less
+                        </motion.button>
+                      )}
+                    </AnimatePresence>
+                    <ClearAllButton onClear={center.clearAll} size="sm" className={GLASS_PILL} />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
+            <div
+              className="-mx-3 max-h-[calc(100vh-110px)] overflow-y-auto overflow-x-hidden overscroll-contain px-3 pb-6 pt-2 [scrollbar-width:none]"
+              data-lenis-prevent
+            >
+              <StackList
+                notifications={notifications}
+                stacked={stacked}
+                clearing={clearing}
+                gap={10}
+                renderCard={(n, i) => (
+                  <MacCard
+                    n={n}
+                    stacked={stacked}
+                    isTop={i === 0}
+                    stackCount={notifications.length}
+                    onTap={() => (stacked ? setExpanded(true) : center.markRead(n.id))}
+                    onDismiss={() => (stacked ? center.clearAll() : center.dismiss(n.id))}
+                  />
+                )}
+              />
+            </div>
+          </motion.div>
+        </>
       )}
     </AnimatePresence>,
     document.body
