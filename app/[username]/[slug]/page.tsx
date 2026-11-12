@@ -708,7 +708,7 @@ export default async function MagnetPageRoute({
                   username={params.username}
                   isVariantB={isVariantB}
                   layout="editorial"
-                  afterSignupOption={page.afterSignupOption}
+                  afterSignupOption={page.afterSignupOption} isDraftPreview={isDraftMode && isOwner}
                   destinationUrl={page.destinationUrl}
                 />
 
@@ -1019,7 +1019,7 @@ export default async function MagnetPageRoute({
                         username={params.username}
                         isVariantB={isVariantB}
                         layout="forest-newsletter"
-                        afterSignupOption={page.afterSignupOption}
+                        afterSignupOption={page.afterSignupOption} isDraftPreview={isDraftMode && isOwner}
                         destinationUrl={page.destinationUrl}
                       />
                     </div>
@@ -1413,7 +1413,7 @@ export default async function MagnetPageRoute({
                             customFormFields={page.customFormFields}
                             username={params.username}
                             isVariantB={isVariantB}
-                            afterSignupOption={page.afterSignupOption}
+                            afterSignupOption={page.afterSignupOption} isDraftPreview={isDraftMode && isOwner}
                             destinationUrl={page.destinationUrl}
                           />
                         </aside>
@@ -1685,7 +1685,7 @@ export default async function MagnetPageRoute({
                     username={params.username}
                     isVariantB={isVariantB}
                     layout="split-panel"
-                    afterSignupOption={page.afterSignupOption}
+                    afterSignupOption={page.afterSignupOption} isDraftPreview={isDraftMode && isOwner}
                     destinationUrl={page.destinationUrl}
                   />
 
@@ -1984,7 +1984,7 @@ export default async function MagnetPageRoute({
                     customFormFields={page.customFormFields}
                     username={params.username}
                     isVariantB={isVariantB}
-                    afterSignupOption={page.afterSignupOption}
+                    afterSignupOption={page.afterSignupOption} isDraftPreview={isDraftMode && isOwner}
                     destinationUrl={page.destinationUrl}
                   />
 
@@ -2400,7 +2400,7 @@ export default async function MagnetPageRoute({
                           customFormFields={page.customFormFields}
                           username={params.username}
                           isVariantB={isVariantB}
-                          afterSignupOption={page.afterSignupOption}
+                          afterSignupOption={page.afterSignupOption} isDraftPreview={isDraftMode && isOwner}
                           destinationUrl={page.destinationUrl}
                         />
                       </div>
@@ -2834,7 +2834,7 @@ export default async function MagnetPageRoute({
                           customFormFields={page.customFormFields}
                           username={params.username}
                           isVariantB={isVariantB}
-                          afterSignupOption={page.afterSignupOption}
+                          afterSignupOption={page.afterSignupOption} isDraftPreview={isDraftMode && isOwner}
                           destinationUrl={page.destinationUrl}
                         />
                       </div>
@@ -3174,7 +3174,7 @@ export default async function MagnetPageRoute({
                           customFormFields={page.customFormFields}
                           username={params.username}
                           isVariantB={isVariantB}
-                          afterSignupOption={page.afterSignupOption}
+                          afterSignupOption={page.afterSignupOption} isDraftPreview={isDraftMode && isOwner}
                           destinationUrl={page.destinationUrl}
                         />
 

@@ -27,6 +27,7 @@ export default function MagnetSignupForm({
   layout = "standard",
   afterSignupOption = "standard",
   destinationUrl,
+  isDraftPreview = false,
 }: {
   cta: string;
   formTitle?: string;
@@ -50,6 +51,7 @@ export default function MagnetSignupForm({
   layout?: "standard" | "horizontal-glass" | "split-panel" | "editorial" | "monograph" | "brutalist" | "poster" | "collage-zine" | "premium-night" | "forest-newsletter";
   afterSignupOption?: "standard" | "elsewhere" | "custom";
   destinationUrl?: string;
+  isDraftPreview?: boolean;
 }) {
   const [done, setDone] = useState(false);
   const [name, setName] = useState("");
@@ -67,7 +69,7 @@ export default function MagnetSignupForm({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email) return;
+    if (isDraftPreview || !email) return;
 
     setErrorMsg(null);
     setLoading(true);
@@ -241,7 +243,17 @@ export default function MagnetSignupForm({
   };
 
   return (
-    <div className="w-full" suppressHydrationWarning>
+    <div className="w-full relative" suppressHydrationWarning>
+      {isDraftPreview && (
+        <div className="absolute inset-0 z-20 rounded-xl flex flex-col items-center justify-center gap-2 bg-amber-50/90 dark:bg-amber-950/80 border border-amber-300 dark:border-amber-700 backdrop-blur-[2px]">
+          <svg className="w-5 h-5 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+          </svg>
+          <p className="text-xs font-bold text-amber-700 dark:text-amber-400 text-center px-4">
+            Publish this funnel to activate the form
+          </p>
+        </div>
+      )}
       {done ? (
         <div className={`rounded-2xl border p-5 text-left transition-colors duration-300 ${themeMode === "dark"
             ? "bg-[#161619] border-[#252529] text-white"

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback, createContext, useContext } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -16,10 +16,28 @@ import {
   Menu,
   X,
   Globe,
+  PanelLeftClose,
+  PanelLeftOpen,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import BrandLogo from "@/components/brand";
 import ThemeToggle from "@/components/theme-toggle";
+import { createTickPlayer, type TickPlayer } from "@/lib/tick-sound";
+
+export interface AdminSidebarContextType {
+  isCollapsed: boolean;
+  toggleSidebar: () => void;
+  setIsCollapsed: (collapsed: boolean | ((prev: boolean) => boolean)) => void;
+}
+
+export const AdminSidebarContext = createContext<AdminSidebarContextType>({
+  isCollapsed: false,
+  toggleSidebar: () => {},
+  setIsCollapsed: () => {},
+});
+
+export const useAdminSidebar = () => useContext(AdminSidebarContext);
+export const useSidebar = useAdminSidebar;
 
 const NAV = [
   { href: "/admin", label: "Overview", icon: LayoutDashboard, exact: true },
@@ -48,6 +66,51 @@ export default function AdminShell({
   const lastScrollYRef = useRef(0);
   const [hoveredNavHref, setHoveredNavHref] = useState<string | null>(null);
   const mainRef = useRef<HTMLElement>(null);
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  const tickPlayerRef = useRef<TickPlayer | null>(null);
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("admin_sidebar_collapsed");
+      if (saved !== null) {
+        setIsCollapsed(saved === "true");
+      }
+    } catch (_) {}
+  }, []);
+
+  const toggleSidebar = useCallback(() => {
+    try {
+      if (!tickPlayerRef.current) {
+        tickPlayerRef.current = createTickPlayer();
+      }
+      tickPlayerRef.current?.play();
+    } catch (_) {}
+    if (typeof window !== "undefined" && "vibrate" in navigator) {
+      try { navigator.vibrate(8); } catch (_) {}
+    }
+    setIsCollapsed((prev) => {
+      const next = !prev;
+      try {
+        localStorage.setItem("admin_sidebar_collapsed", String(next));
+      } catch (_) {}
+      return next;
+    });
+  }, []);
+
+  // Global Keyboard Shortcut: Cmd+B (Toggle Sidebar)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const tag = (e.target as HTMLElement)?.tagName;
+      const isInput = tag === "INPUT" || tag === "TEXTAREA" || (e.target as HTMLElement)?.isContentEditable;
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "b") {
+        if (isInput) return;
+        e.preventDefault();
+        toggleSidebar();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [toggleSidebar]);
 
   // Close mobile drawer on route change & reset scroll
   useEffect(() => {
@@ -160,113 +223,258 @@ export default function AdminShell({
   }
 
   return (
-    <div className="flex min-h-[100dvh] md:h-screen md:overflow-hidden w-full bg-[#FAFAFA] dark:bg-[#0a0a0a]">
-      {/* Desktop Sidebar (hidden on mobile, visible on md+) */}
-      <aside
-        className="hidden md:flex w-60 h-screen bg-[#F0F7FF] dark:bg-[#171717] border-r border-[#E0EDFB] dark:border-white/[0.08] flex-col shrink-0 overflow-y-auto select-none"
-        data-lenis-prevent
-      >
-        {/* Header */}
-        <div className="p-4 border-b border-[#E0EDFB] dark:border-white/[0.08]">
-          <div className="flex items-center justify-between mb-3.5">
-            <Link href="/admin" aria-label="Admin Overview" className="flex items-center">
-              <BrandLogo height="h-7" />
+    <AdminSidebarContext.Provider value={{ isCollapsed, toggleSidebar, setIsCollapsed }}>
+      <div className="flex min-h-[100dvh] md:h-screen md:overflow-hidden w-full bg-[#FAFAFA] dark:bg-[#0a0a0a]">
+        {/* Desktop Sidebar Spacer (preserves layout flow width) */}
+        <motion.div
+          animate={{ width: isCollapsed ? 68 : 240 }}
+          transition={{ type: "spring", stiffness: 520, damping: 38, mass: 0.5 }}
+          className="hidden md:block shrink-0"
+          aria-hidden="true"
+        />
+
+        {/* Desktop Fixed Sidebar */}
+        <motion.aside
+          animate={{ width: isCollapsed ? 68 : 240 }}
+          transition={{ type: "spring", stiffness: 520, damping: 38, mass: 0.5 }}
+          className="shadow-sm hidden h-screen shrink-0 flex-col border-r border-[#E0EDFB] bg-[#F0F7FF] text-zinc-900 fixed left-0 top-0 bottom-0 md:flex z-40 dark:border-white/[0.08] dark:bg-[#171717] dark:text-zinc-400 overflow-visible select-none"
+          data-lenis-prevent
+        >
+          {/* Header & Logo Area */}
+          <div className={`flex shrink-0 items-center ${isCollapsed ? "justify-center px-2" : "justify-between px-3.5"} pt-3.5 pb-2 h-16 relative border-b border-[#E0EDFB] dark:border-white/[0.08]`}>
+            <Link
+              href="/admin"
+              aria-label="Admin Overview"
+              className={`flex items-center group relative h-9 rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0066B2] ${isCollapsed ? "w-10 justify-center" : ""}`}
+              title={isCollapsed ? "Admin Overview" : undefined}
+            >
+              <AnimatePresence mode="wait" initial={false}>
+                {isCollapsed ? (
+                  <motion.div
+                    key="admin-collapsed-logo"
+                    initial={{ opacity: 0, scale: 0.85 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.85 }}
+                    transition={{ duration: 0.15 }}
+                    className="flex items-center justify-center w-8 h-8"
+                  >
+                    <BrandLogo collapsed={true} height="h-7 w-7" />
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="admin-expanded-logo"
+                    initial={{ opacity: 0, x: -6 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -6 }}
+                    transition={{ duration: 0.15 }}
+                    className="flex items-center h-9 max-w-[140px] overflow-hidden"
+                  >
+                    <BrandLogo collapsed={false} height="h-7" />
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </Link>
-            <ThemeToggle size="sm" />
+
+            {/* Expanded Header Actions: Theme Toggle + Collapse Button */}
+            {!isCollapsed && (
+              <div className="flex items-center gap-1.5">
+                <ThemeToggle size="sm" />
+                <button
+                  type="button"
+                  onClick={toggleSidebar}
+                  title="Collapse sidebar (⌘B)"
+                  className="group flex h-8 w-8 items-center justify-center rounded-lg text-zinc-400 hover:text-zinc-800 hover:bg-[#E2F0FD] dark:text-zinc-400 dark:hover:text-white dark:hover:bg-zinc-800/80 transition-colors duration-150 active:scale-95 cursor-pointer"
+                  aria-label="Collapse sidebar"
+                >
+                  <PanelLeftClose className="h-4 w-4 transition-transform duration-150 group-hover:-translate-x-0.5" />
+                </button>
+              </div>
+            )}
+
+            {/* Collapsed Expand Button floating on right border */}
+            {isCollapsed && (
+              <button
+                type="button"
+                onClick={toggleSidebar}
+                title="Expand sidebar (⌘B)"
+                className="group absolute -right-3.5 top-4.5 z-[70] flex h-7 w-7 items-center justify-center rounded-full bg-white dark:bg-[#171717] border border-zinc-200/90 dark:border-white/10 shadow-[0_2px_8px_rgba(0,0,0,0.12)] dark:shadow-[0_2px_12px_rgba(0,0,0,0.5)] text-zinc-500 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-white hover:bg-[#E2F0FD] dark:hover:bg-white/10 hover:border-zinc-300 dark:hover:border-white/20 hover:shadow-md transition-colors duration-150 cursor-pointer active:scale-95 transform-gpu before:absolute before:-inset-1 before:content-[''] before:rounded-full"
+                aria-label="Expand sidebar"
+              >
+                <PanelLeftOpen className="h-3.5 w-3.5 transition-transform duration-150 group-hover:translate-x-0.5" />
+              </button>
+            )}
           </div>
 
           {/* Account Identity Chip */}
-          <div className="px-3 py-2 rounded-xl bg-white/70 dark:bg-white/[0.03] border border-[#E0EDFB] dark:border-white/[0.06] shadow-xs">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-zinc-900 dark:text-white">Admin Console</span>
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-60" />
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
-              </span>
-            </div>
-            <p className="text-[11px] text-zinc-500 dark:text-zinc-400 truncate mt-0.5" title={email}>
-              {email}
-            </p>
-          </div>
-        </div>
-
-        {/* Nav */}
-        <nav
-          className="flex-1 p-3 space-y-1"
-          aria-label="Admin Navigation"
-          onMouseLeave={() => setHoveredNavHref(null)}
-        >
-          {NAV.map(({ href, label, icon: Icon, exact }) => {
-            const active = isNavActive(href, exact);
-            const isHovered = hoveredNavHref === href;
-            return (
-              <div
-                key={href}
-                className="relative group flex items-center justify-center"
-                onMouseEnter={() => setHoveredNavHref(href)}
-              >
-                <motion.div
-                  className="w-full"
-                  whileTap={{ scale: 0.96 }}
-                  transition={{ type: "spring", stiffness: 600, damping: 28 }}
-                >
-                  <Link
-                    href={href}
-                    className={`relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors cursor-pointer min-h-[40px] select-none ${
-                      active
-                        ? "text-white font-bold dark:text-white"
-                        : "text-zinc-600 dark:text-zinc-400 dark:hover:text-white"
-                    }`}
-                  >
-                    {/* Active Page Solid Pill */}
-                    {active && (
-                      <motion.div
-                        layoutId="adminNavActivePill"
-                        transition={{ type: "spring", stiffness: 600, damping: 34 }}
-                        className="absolute inset-0 rounded-xl bg-[#0066B2] shadow-xs dark:bg-[#0066B2]/20 dark:border dark:border-[#0066B2]/40"
-                      />
-                    )}
-
-                    {/* Hover Morphing Spring Pill */}
-                    {!active && isHovered && (
-                      <motion.div
-                        layoutId="adminNavHoverPill"
-                        transition={{ type: "spring", stiffness: 800, damping: 38, mass: 0.2 }}
-                        className="absolute inset-0 rounded-xl bg-[#E2F0FD] dark:bg-white/5"
-                      />
-                    )}
-
-                    <Icon
-                      className={`w-4 h-4 shrink-0 relative z-10 transition-transform duration-150 ${
-                        active
-                          ? "text-white scale-105"
-                          : "text-zinc-400 dark:text-zinc-400 group-hover:text-zinc-800 dark:group-hover:text-zinc-200 group-hover:scale-105"
-                      }`}
-                    />
-                    <span className="truncate relative z-10">{label}</span>
-                  </Link>
-                </motion.div>
+          {!isCollapsed ? (
+            <div className="p-3 border-b border-[#E0EDFB] dark:border-white/[0.08]">
+              <div className="px-3 py-2 rounded-xl bg-white/70 dark:bg-white/[0.03] border border-[#E0EDFB] dark:border-white/[0.06] shadow-xs">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-zinc-900 dark:text-white">Admin Console</span>
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-60" />
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+                  </span>
+                </div>
+                <p className="text-[11px] text-zinc-500 dark:text-zinc-400 truncate mt-0.5" title={email}>
+                  {email}
+                </p>
               </div>
-            );
-          })}
-        </nav>
+            </div>
+          ) : (
+            <div className="py-2.5 flex justify-center border-b border-[#E0EDFB] dark:border-white/[0.08]">
+              <div
+                className="w-10 h-10 rounded-xl bg-white/70 dark:bg-white/[0.03] border border-[#E0EDFB] dark:border-white/[0.06] flex items-center justify-center relative shadow-xs"
+                title={`Admin Console: ${email}`}
+              >
+                <Shield className="w-4 h-4 text-[#0066B2] dark:text-[#38BDF8]" />
+                <span className="absolute top-1.5 right-1.5 flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-60" />
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+                </span>
+              </div>
+            </div>
+          )}
 
-        {/* Footer */}
-        <div className="p-3 border-t border-[#E0EDFB] dark:border-white/[0.08] mt-auto">
-          <motion.div
-            whileTap={{ scale: 0.96 }}
-            transition={{ type: "spring", stiffness: 600, damping: 28 }}
+          {/* Nav */}
+          <nav
+            className={`flex-1 space-y-1 px-2 py-3 ${
+              isCollapsed ? "overflow-visible" : "overflow-y-auto overflow-x-hidden scrollbar-none"
+            }`}
+            aria-label="Admin Navigation"
+            onMouseLeave={() => setHoveredNavHref(null)}
           >
-            <Link
-              href="/dashboard"
-              className="group flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-medium text-zinc-500 dark:text-zinc-400 hover:bg-[#E2F0FD] dark:hover:bg-white/[0.06] hover:text-zinc-900 dark:hover:text-white transition-all duration-150"
+            {NAV.map(({ href, label, icon: Icon, exact }) => {
+              const active = isNavActive(href, exact);
+              const isHovered = hoveredNavHref === href;
+              return (
+                <div
+                  key={href}
+                  className="relative group flex items-center justify-center"
+                  onMouseEnter={() => setHoveredNavHref(href)}
+                >
+                  <motion.div
+                    className={isCollapsed ? "w-10 h-10 flex items-center justify-center" : "w-full"}
+                    whileTap={{ scale: 0.96 }}
+                    transition={{ type: "spring", stiffness: 600, damping: 28 }}
+                  >
+                    <Link
+                      href={href}
+                      className={`relative flex items-center rounded-xl font-medium transition-colors cursor-pointer min-h-[40px] select-none ${
+                        isCollapsed
+                          ? "h-10 w-10 mx-auto justify-center"
+                          : "w-full gap-3 px-3 py-2.5 text-sm"
+                      } ${
+                        active
+                          ? "text-white font-bold dark:text-white"
+                          : "text-zinc-600 dark:text-zinc-400 dark:hover:text-white"
+                      }`}
+                    >
+                      {/* Active Page Solid Pill */}
+                      {active && (
+                        <motion.div
+                          layoutId="adminNavActivePill"
+                          transition={{ type: "spring", stiffness: 600, damping: 34 }}
+                          className="absolute inset-0 rounded-xl bg-[#0066B2] shadow-xs dark:bg-[#0066B2]/20 dark:border dark:border-[#0066B2]/40"
+                        />
+                      )}
+
+                      {/* Hover Morphing Spring Pill */}
+                      {!active && isHovered && (
+                        <motion.div
+                          layoutId="adminNavHoverPill"
+                          transition={{ type: "spring", stiffness: 800, damping: 38, mass: 0.2 }}
+                          className="absolute inset-0 rounded-xl bg-[#E2F0FD] dark:bg-white/5"
+                        />
+                      )}
+
+                      <Icon
+                        className={`shrink-0 relative z-10 transition-transform duration-150 ${
+                          active
+                            ? "text-white scale-105"
+                            : "text-zinc-400 dark:text-zinc-400 group-hover:text-zinc-800 dark:group-hover:text-zinc-200 group-hover:scale-105"
+                        } ${isCollapsed ? "h-4.5 w-4.5" : "h-4 w-4"}`}
+                      />
+                      {!isCollapsed && <span className="truncate relative z-10">{label}</span>}
+                    </Link>
+                  </motion.div>
+
+                  {/* Collapsed Floating Tooltip */}
+                  <AnimatePresence>
+                    {isCollapsed && isHovered && (
+                      <div className="absolute left-full ml-3.5 top-1/2 -translate-y-1/2 z-[100] pointer-events-none flex items-center">
+                        <motion.div
+                          layoutId="adminCollapsedNavFloatingTooltip"
+                          initial={{ opacity: 0, x: -6, scale: 0.95 }}
+                          animate={{ opacity: 1, x: 0, scale: 1 }}
+                          exit={{ opacity: 0, x: -4, scale: 0.95, transition: { duration: 0.06 } }}
+                          transition={{ type: "spring", stiffness: 850, damping: 38, mass: 0.2 }}
+                          className="relative flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/90 text-zinc-900 text-xs font-semibold border border-zinc-200/90 shadow-[0_10px_25px_-4px_rgba(0,0,0,0.15)] dark:bg-[#171717]/95 dark:text-zinc-100 dark:border-white/10 dark:shadow-[0_12px_32px_-4px_rgba(0,0,0,0.6)] whitespace-nowrap backdrop-blur-xl transform-gpu will-change-transform"
+                        >
+                          {/* Micro Arrow Pointer */}
+                          <div className="absolute -left-1 top-1/2 -translate-y-1/2 w-2 h-2 rotate-45 bg-white/90 border-l border-b border-zinc-200/90 dark:bg-[#171717]/95 dark:border-white/10" />
+                          <span className="relative z-10">{label}</span>
+                        </motion.div>
+                      </div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              );
+            })}
+          </nav>
+
+          {/* Footer */}
+          <div className={`p-3 border-t border-[#E0EDFB] dark:border-white/[0.08] mt-auto space-y-2 ${isCollapsed ? "flex flex-col items-center" : ""}`}>
+            {isCollapsed && (
+              <div className="pb-1">
+                <ThemeToggle size="sm" />
+              </div>
+            )}
+
+            <div
+              className="relative group flex items-center justify-center w-full"
+              onMouseEnter={() => setHoveredNavHref("back-to-dashboard")}
+              onMouseLeave={() => setHoveredNavHref(null)}
             >
-              <ArrowLeft className="w-4 h-4 shrink-0 text-zinc-400 group-hover:text-zinc-700 dark:group-hover:text-zinc-200 transition-transform group-hover:-translate-x-0.5" />
-              <span className="truncate">Back to Dashboard</span>
-            </Link>
-          </motion.div>
-        </div>
-      </aside>
+              <motion.div
+                className={isCollapsed ? "w-10 h-10 flex items-center justify-center" : "w-full"}
+                whileTap={{ scale: 0.96 }}
+                transition={{ type: "spring", stiffness: 600, damping: 28 }}
+              >
+                <Link
+                  href="/dashboard"
+                  className={`group relative flex items-center rounded-xl text-sm font-medium text-zinc-500 dark:text-zinc-400 hover:bg-[#E2F0FD] dark:hover:bg-white/[0.06] hover:text-zinc-900 dark:hover:text-white transition-all duration-150 ${
+                    isCollapsed
+                      ? "h-10 w-10 mx-auto justify-center"
+                      : "gap-2.5 px-3 py-2.5 w-full"
+                  }`}
+                  title={isCollapsed ? "Back to Dashboard" : undefined}
+                >
+                  <ArrowLeft className="w-4 h-4 shrink-0 text-zinc-400 group-hover:text-zinc-700 dark:group-hover:text-zinc-200 transition-transform group-hover:-translate-x-0.5" />
+                  {!isCollapsed && <span className="truncate">Back to Dashboard</span>}
+                </Link>
+              </motion.div>
+
+              {/* Collapsed Back to Dashboard Floating Tooltip */}
+              <AnimatePresence>
+                {isCollapsed && hoveredNavHref === "back-to-dashboard" && (
+                  <div className="absolute left-full ml-3.5 top-1/2 -translate-y-1/2 z-[100] pointer-events-none flex items-center">
+                    <motion.div
+                      initial={{ opacity: 0, x: -6, scale: 0.95 }}
+                      animate={{ opacity: 1, x: 0, scale: 1 }}
+                      exit={{ opacity: 0, x: -4, scale: 0.95, transition: { duration: 0.06 } }}
+                      transition={{ type: "spring", stiffness: 850, damping: 38, mass: 0.2 }}
+                      className="relative flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/90 text-zinc-900 text-xs font-semibold border border-zinc-200/90 shadow-[0_10px_25px_-4px_rgba(0,0,0,0.15)] dark:bg-[#171717]/95 dark:text-zinc-100 dark:border-white/10 dark:shadow-[0_12px_32px_-4px_rgba(0,0,0,0.6)] whitespace-nowrap backdrop-blur-xl transform-gpu will-change-transform"
+                    >
+                      <div className="absolute -left-1 top-1/2 -translate-y-1/2 w-2 h-2 rotate-45 bg-white/90 border-l border-b border-zinc-200/90 dark:bg-[#171717]/95 dark:border-white/10" />
+                      <span className="relative z-10">Back to Dashboard</span>
+                    </motion.div>
+                  </div>
+                )}
+              </AnimatePresence>
+            </div>
+          </div>
+        </motion.aside>
 
       {/* Mobile Drawer (AnimatePresence) */}
       <AnimatePresence>
@@ -414,5 +622,6 @@ export default function AdminShell({
         </main>
       </div>
     </div>
+  </AdminSidebarContext.Provider>
   );
 }
