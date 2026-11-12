@@ -37,8 +37,16 @@ export interface AdminNotification {
 const SPRING = { type: "spring", stiffness: 322, damping: 31, mass: 1 } as const;
 // Apple iOS/macOS fluid rubber-band stack spring: snappy launch with playful, elastic rubber overshoot & settle
 const APPLE_STACK_SPRING = { type: "spring", stiffness: 350, damping: 19, mass: 0.75 } as const;
-// UIKit sheet spring (response 0.5, dampingRatio 0.86).
-const SHEET_SPRING = { type: "spring", stiffness: 158, damping: 21.6, mass: 1 } as const;
+// iOS sheet spring: critically damped (bounce: 0) to glide down and land flush at the bottom with zero overshoot or constraint jitter
+const SHEET_SPRING = {
+  type: "spring",
+  stiffness: 300,
+  damping: 30,
+  mass: 0.8,
+  bounce: 0,
+  restDelta: 0.5,
+  restSpeed: 0.5,
+} as const;
 const IOS_EASE = [0.32, 0.72, 0, 1] as const;
 const FLING = { type: "tween", duration: 0.24, ease: IOS_EASE } as const;
 
@@ -681,12 +689,13 @@ export function MobileNotificationCenter({
           drag="y"
           dragControls={dragControls}
           dragListener={false}
-          dragConstraints={{ top: 0, bottom: 0 }}
-          dragElastic={{ top: 0.9, bottom: 0.04 }}
+          dragConstraints={{ top: -1000, bottom: 0 }}
+          dragElastic={{ top: 0, bottom: 0.04 }}
           onDragEnd={(_, info) => {
             if (info.offset.y < -90 || info.velocity.y < -500) onClose();
           }}
-          className="fixed inset-0 z-50 flex flex-col bg-zinc-100/55 backdrop-blur-3xl backdrop-saturate-150 dark:bg-black/55 md:hidden select-none"
+          style={{ willChange: "transform" }}
+          className="fixed inset-0 z-50 flex flex-col bg-zinc-100/55 backdrop-blur-3xl backdrop-saturate-150 dark:bg-black/55 md:hidden select-none transform-gpu"
         >
           <div className="flex items-end justify-between px-5 pb-3 pt-[max(env(safe-area-inset-top),20px)]">
             <div>
