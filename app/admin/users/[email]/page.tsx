@@ -36,7 +36,6 @@ interface UserDetail {
   zapierConnected: boolean;
   pipedriveConnected: boolean;
   kitConnected: boolean;
-  calendarConnected: boolean;
   brandName: string;
   username: string;
   avatar: string | null;
@@ -1070,7 +1069,6 @@ export default function AdminUserDetailPage() {
               <Badge label="Zapier" active={Boolean(user.zapierConnected)} />
               <Badge label="Pipedrive" active={Boolean(user.pipedriveConnected)} />
               <Badge label="Kit" active={Boolean(user.kitConnected)} />
-              <Badge label="Calendar" active={Boolean(user.calendarConnected)} />
               <Badge label="Custom Domain" active={Boolean(user.customDomain && user.cnameVerified)} />
             </div>
             {user.gmailOAuth?.connected && user.gmailOAuth?.gmailAddress && (

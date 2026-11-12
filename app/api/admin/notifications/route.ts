@@ -55,13 +55,22 @@ export async function GET() {
       .limit(CAP)
       .lean(),
 
-    // Suspend / unsuspend audit entries in window
+    // All sensitive admin audit actions in window
     AuditLogModel.find(
       {
-        action: { $in: ["account_suspend", "account_unsuspend"] },
+        action: {
+          $in: [
+            "account_suspend",
+            "account_unsuspend",
+            "account_delete",
+            "plan_change",
+            "role_change",
+            "funnel_delete",
+          ],
+        },
         createdAt: { $gte: since },
       },
-      { action: 1, targetEmail: 1, targetName: 1, createdAt: 1 }
+      { action: 1, adminEmail: 1, targetEmail: 1, targetName: 1, before: 1, after: 1, createdAt: 1 }
     )
       .sort({ createdAt: -1 })
       .limit(CAP)
@@ -107,7 +116,7 @@ export async function GET() {
 
   type Notif = {
     id: string;
-    type: "signup" | "verified" | "suspended" | "unsuspended" | "upgrade" | "cancelled" | "payment_failed";
+    type: "signup" | "verified" | "suspended" | "unsuspended" | "upgrade" | "cancelled" | "payment_failed" | "account_delete" | "plan_change" | "role_change" | "funnel_delete";
     title: string;
     desc: string;
     ts: string; // ISO
@@ -140,12 +149,58 @@ export async function GET() {
   }
 
   for (const entry of suspendAudit as any[]) {
-    const isSuspend = entry.action === "account_suspend";
+    const target = entry.targetName || entry.targetEmail || "Unknown";
+    const admin  = entry.adminEmail || "Admin";
+    let type: Notif["type"];
+    let title: string;
+    let desc: string;
+
+    switch (entry.action) {
+      case "account_suspend":
+        type  = "suspended";
+        title = "Account suspended";
+        desc  = `${admin} suspended ${target}`;
+        break;
+      case "account_unsuspend":
+        type  = "unsuspended";
+        title = "Account restored";
+        desc  = `${admin} restored ${target}'s access`;
+        break;
+      case "account_delete":
+        type  = "account_delete";
+        title = "Account deleted";
+        desc  = `${admin} permanently deleted ${target}`;
+        break;
+      case "plan_change": {
+        const from = entry.before?.plan || "Free";
+        const to   = entry.after?.plan  || "Pro";
+        type  = "plan_change";
+        title = "Plan changed";
+        desc  = `${admin} changed ${target}'s plan from ${from} → ${to}`;
+        break;
+      }
+      case "role_change": {
+        const fromRole = entry.before?.role || "user";
+        const toRole   = entry.after?.role  || "admin";
+        type  = "role_change";
+        title = "Role changed";
+        desc  = `${admin} changed ${target}'s role from ${fromRole} → ${toRole}`;
+        break;
+      }
+      case "funnel_delete":
+        type  = "funnel_delete";
+        title = "Funnel deleted";
+        desc  = `${admin} deleted a funnel belonging to ${target}`;
+        break;
+      default:
+        continue;
+    }
+
     notifs.push({
       id: `${entry.action}:${entry._id}`,
-      type: isSuspend ? "suspended" : "unsuspended",
-      title: isSuspend ? "Account suspended" : "Account unsuspended",
-      desc: `${entry.targetName || entry.targetEmail} was ${isSuspend ? "suspended" : "restored"}`,
+      type,
+      title,
+      desc,
       ts: new Date(entry.createdAt).toISOString(),
     });
   }

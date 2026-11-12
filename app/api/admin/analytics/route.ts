@@ -21,7 +21,6 @@ export async function GET() {
     pipedriveConnected,
     kitConnected,
     linkedinConnected,
-    calendarConnected,
 
     // Pixel / Analytics
     ga4Connected,
@@ -62,7 +61,6 @@ export async function GET() {
     AccountModel.countDocuments({ pipedriveApiToken: { $nin: ["", null] } }),
     AccountModel.countDocuments({ kitConnected: true }),
     AccountModel.countDocuments({ linkedinConnected: true }),
-    AccountModel.countDocuments({ calendarConnected: true }),
 
     // Pixel / Analytics
     AccountModel.countDocuments({ ga4MeasurementId: { $nin: ["", null] } }),
@@ -149,7 +147,6 @@ export async function GET() {
       pipedrive: pipedriveConnected,
       kit: kitConnected,
       linkedin: linkedinConnected,
-      calendar: calendarConnected,
     },
 
     tracking: {

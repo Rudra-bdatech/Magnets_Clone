@@ -20,7 +20,7 @@ import {
 import { createPortal } from "react-dom";
 import {
   Bell, X, Check, ChevronUp, UserPlus, ShieldCheck, ShieldOff, ShieldAlert,
-  TrendingUp, TrendingDown, AlertCircle,
+  TrendingUp, TrendingDown, AlertCircle, UserX, ArrowLeftRight, Key, Trash2,
   type LucideIcon,
 } from "lucide-react";
 
@@ -68,6 +68,10 @@ const TYPE_ICON: Record<string, LucideIcon> = {
   upgrade:        TrendingUp,
   cancelled:      TrendingDown,
   payment_failed: AlertCircle,
+  account_delete: UserX,
+  plan_change:    ArrowLeftRight,
+  role_change:    Key,
+  funnel_delete:  Trash2,
 };
 
 function relativeTime(isoTs: string): string {

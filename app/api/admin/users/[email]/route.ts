@@ -46,7 +46,6 @@ export async function GET(
       "gmailOAuth.connected": 1, "gmailOAuth.gmailAddress": 1,
       "customSmtp.enabled": 1, "customSmtp.isVerified": 1, "customSmtp.host": 1,
       linkedinConnected: 1, linkedinAccountName: 1,
-      calendarConnected: 1, calendarProvider: 1,
       kitConnected: 1,
       // Fetched only to derive boolean flags — raw values are never forwarded to the response
       slackWebhookUrl: 1, zapierWebhookUrl: 1, pipedriveApiToken: 1, kitApiKey: 1,
@@ -145,8 +144,6 @@ export async function GET(
     },
     linkedinConnected: Boolean(account.linkedinConnected),
     linkedinAccountName: account.linkedinAccountName || "",
-    calendarConnected: Boolean(account.calendarConnected),
-    calendarProvider: account.calendarProvider || "",
     kitConnected: Boolean(account.kitConnected || account.kitApiKey),
     // Derived boolean flags — raw webhook URLs and API tokens are intentionally dropped
     slackConnected: Boolean(account.slackWebhookUrl),

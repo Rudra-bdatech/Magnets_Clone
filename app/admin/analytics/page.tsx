@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import {
   Mail, Server, Slack, Zap, BarChart2, RefreshCw,
-  Globe, ShieldCheck, Layers, Activity, AlertCircle,
+  Globe, ShieldCheck, Layers, AlertCircle,
   Users, FileText, HelpCircle, PlayCircle, Sparkles,
   TrendingUp, Link2, Radio,
 } from "lucide-react";
@@ -19,7 +19,6 @@ interface AnalyticsData {
     pipedrive: number;
     kit: number;
     linkedin: number;
-    calendar: number;
   };
   tracking: {
     ga4: number;
@@ -261,7 +260,6 @@ export default function AnalyticsPage() {
           <IntegrationCard icon={Zap} label="Zapier" count={integrations.zapier} total={totalUsers} color="orange" sublabel="Webhook connected" />
           <IntegrationCard icon={Link2} label="Pipedrive" count={integrations.pipedrive} total={totalUsers} color="green" sublabel="API token saved" />
           <IntegrationCard icon={Radio} label="Kit (ConvertKit)" count={integrations.kit} total={totalUsers} color="teal" sublabel="API connected" />
-          <IntegrationCard icon={Activity} label="Calendar" count={integrations.calendar} total={totalUsers} color="blue" sublabel="Calendly / Cal.com" />
         </div>
       </section>
 

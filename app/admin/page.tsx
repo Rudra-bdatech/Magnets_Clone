@@ -167,109 +167,110 @@ function AppleKpiCard({
 
   const cardContent = (
     <>
-      <div>
-        <div className="flex items-center justify-between mb-2.5 sm:mb-3">
-          <p className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest leading-none truncate pr-1">
-            {label}
-          </p>
-          {ringProgress !== undefined ? (
-            <div
-              style={{ width: 34, height: 34 }}
-              className="relative shrink-0 flex items-center justify-center transition-transform duration-200 group-hover:scale-105"
+      <div className="flex items-center justify-between gap-1.5">
+        <p className="text-[10px] sm:text-[11px] font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider leading-none truncate pr-1">
+          {label}
+        </p>
+        {ringProgress !== undefined ? (
+          <div
+            style={{ width: 28, height: 28 }}
+            className="relative shrink-0 flex items-center justify-center transition-transform duration-200 group-hover:scale-105"
+          >
+            <svg
+              width="28"
+              height="28"
+              viewBox="0 0 28 28"
+              className="-rotate-90 block shrink-0"
             >
-              <svg
-                width="34"
-                height="34"
-                viewBox="0 0 34 34"
-                className="-rotate-90 block shrink-0"
-                style={{ width: 34, height: 34 }}
-              >
-                <circle
-                  cx="17"
-                  cy="17"
-                  r="13"
-                  strokeWidth="2.5"
-                  fill="none"
-                  className="stroke-zinc-100 dark:stroke-white/[0.08]"
-                />
-                <motion.circle
-                  cx="17"
-                  cy="17"
-                  r="13"
-                  strokeWidth="2.5"
-                  fill="none"
-                  strokeLinecap="round"
-                  stroke={
-                    progressColor ||
-                    (ringProgress > 90
-                      ? "#EF4444"
-                      : ringProgress > 75
-                      ? "#F59E0B"
-                      : "#06B6D4")
-                  }
-                  strokeDasharray={81.68}
-                  initial={{ strokeDashoffset: 81.68 }}
-                  animate={{
-                    strokeDashoffset:
-                      81.68 -
-                      (81.68 * Math.min(100, Math.max(ringProgress, 2))) / 100,
-                  }}
-                  transition={{ duration: 1.0, ease: [0.16, 1, 0.3, 1] }}
-                />
-              </svg>
-              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                <div className="h-6 w-6 rounded-full bg-cyan-500/10 dark:bg-cyan-400/10 flex items-center justify-center">
-                  <Icon className={`w-3.5 h-3.5 ${iconClass}`} />
-                </div>
+              <circle
+                cx="14"
+                cy="14"
+                r="10.5"
+                strokeWidth="2.2"
+                fill="none"
+                className="stroke-zinc-100 dark:stroke-white/[0.08]"
+              />
+              <motion.circle
+                cx="14"
+                cy="14"
+                r="10.5"
+                strokeWidth="2.2"
+                fill="none"
+                strokeLinecap="round"
+                stroke={
+                  progressColor ||
+                  (ringProgress > 90
+                    ? "#EF4444"
+                    : ringProgress > 75
+                    ? "#F59E0B"
+                    : "#06B6D4")
+                }
+                strokeDasharray={65.97}
+                initial={{ strokeDashoffset: 65.97 }}
+                animate={{
+                  strokeDashoffset:
+                    65.97 -
+                    (65.97 * Math.min(100, Math.max(ringProgress, 2))) / 100,
+                }}
+                transition={{ duration: 1.0, ease: [0.16, 1, 0.3, 1] }}
+              />
+            </svg>
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+              <div className="h-5 w-5 rounded-full bg-cyan-500/10 dark:bg-cyan-400/10 flex items-center justify-center">
+                <Icon className={`w-3 h-3 ${iconClass}`} />
               </div>
             </div>
-          ) : (
-            <span
-              className={`flex h-8 w-8 sm:h-8.5 sm:w-8.5 shrink-0 items-center justify-center rounded-xl border transition-transform duration-200 group-hover:scale-105 ${badgeClass}`}
-            >
-              <Icon className={`w-4 h-4 ${iconClass}`} />
-            </span>
-          )}
-        </div>
+          </div>
+        ) : (
+          <span
+            className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border transition-transform duration-200 group-hover:scale-105 ${badgeClass}`}
+          >
+            <Icon className={`w-3.5 h-3.5 ${iconClass}`} />
+          </span>
+        )}
+      </div>
 
-        <p className="text-2xl sm:text-3xl font-black text-zinc-900 dark:text-white tracking-tight tabular-nums truncate">
+      <div className="mt-1.5 sm:mt-2">
+        <p className="text-xl sm:text-2xl font-black text-zinc-900 dark:text-white tracking-tight tabular-nums truncate leading-tight">
           {typeof value === "number" ? value.toLocaleString() : value}
         </p>
       </div>
 
-      <div className="mt-3 pt-2 border-t border-zinc-100/80 dark:border-white/[0.04]">
-        {progress !== undefined && ringProgress === undefined && (
-          <div className="mb-1.5">
-            <div className="h-1.5 w-full bg-zinc-100 dark:bg-white/[0.08] rounded-full overflow-hidden">
-              <motion.div
-                initial={{ width: 0 }}
-                animate={{ width: `${Math.min(100, Math.max(progress, 1))}%` }}
-                transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
-                className={`h-full rounded-full ${
-                  progressColor ||
-                  (progress > 90
-                    ? "bg-red-500"
-                    : progress > 75
-                    ? "bg-amber-500"
-                    : "bg-cyan-500 dark:bg-cyan-400")
-                }`}
-              />
+      {(sub || progress !== undefined) && (
+        <div className="mt-1.5">
+          {progress !== undefined && ringProgress === undefined && (
+            <div className="mb-1">
+              <div className="h-1 w-full bg-zinc-100 dark:bg-white/[0.08] rounded-full overflow-hidden">
+                <motion.div
+                  initial={{ width: 0 }}
+                  animate={{ width: `${Math.min(100, Math.max(progress, 1))}%` }}
+                  transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
+                  className={`h-full rounded-full ${
+                    progressColor ||
+                    (progress > 90
+                      ? "bg-red-500"
+                      : progress > 75
+                      ? "bg-amber-500"
+                      : "bg-cyan-500 dark:bg-cyan-400")
+                  }`}
+                />
+              </div>
             </div>
-          </div>
-        )}
-        {sub && (
-          <p className="text-[11px] text-zinc-500 dark:text-zinc-400 truncate flex items-center justify-between">
-            <span>{sub}</span>
-            {isClickable && (
-              <ArrowUpRight className="w-3 h-3 text-zinc-400 group-hover:text-[#0066B2] dark:group-hover:text-[#38BDF8] shrink-0 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-            )}
-          </p>
-        )}
-      </div>
+          )}
+          {sub && (
+            <p className="text-[11px] text-zinc-500 dark:text-zinc-400 truncate flex items-center justify-between leading-tight">
+              <span className="truncate">{sub}</span>
+              {isClickable && (
+                <ArrowUpRight className="w-3 h-3 text-zinc-400 group-hover:text-[#0066B2] dark:group-hover:text-[#38BDF8] shrink-0 ml-1 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+              )}
+            </p>
+          )}
+        </div>
+      )}
     </>
   );
 
-  const baseClasses = `group relative flex flex-col justify-between p-3.5 sm:p-5 rounded-2xl sm:rounded-3xl bg-white/90 dark:bg-[#171717] backdrop-blur-sm border border-[#0066B2]/15 dark:border-white/[0.08] shadow-md dark:shadow-none hover:border-[#0066B2]/30 dark:hover:border-white/20 hover:shadow-lg transition-all duration-200 touch-pan-y ${
+  const baseClasses = `group relative flex flex-col justify-between p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-white/90 dark:bg-[#171717] backdrop-blur-sm border border-[#0066B2]/15 dark:border-white/[0.08] shadow-sm dark:shadow-none hover:border-[#0066B2]/30 dark:hover:border-white/20 hover:shadow-md transition-all duration-200 touch-pan-y ${
     isClickable ? "cursor-pointer active:scale-[0.98]" : ""
   } ${className}`;
 
@@ -311,21 +312,21 @@ export default function AdminOverviewPage() {
 
   if (loading) {
     return (
-      <div className="p-3.5 sm:p-6 lg:p-8 max-w-7xl mx-auto space-y-4 sm:space-y-5 w-full min-w-0 touch-pan-y">
+      <div className="p-3.5 sm:p-6 lg:p-8 max-w-7xl mx-auto space-y-3 sm:space-y-3.5 w-full min-w-0 touch-pan-y">
         <div className="h-7 w-36 bg-zinc-200/70 dark:bg-white/5 rounded-xl animate-pulse" />
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-5">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-3.5">
           {Array.from({ length: 5 }).map((_, i) => (
             <div
               key={i}
-              className={`h-28 sm:h-32 bg-zinc-200/60 dark:bg-white/5 rounded-2xl sm:rounded-3xl animate-pulse ${
+              className={`h-24 sm:h-[102px] bg-zinc-200/60 dark:bg-white/5 rounded-xl sm:rounded-2xl animate-pulse ${
                 i === 4 ? "col-span-2 sm:col-span-1 lg:col-span-1" : ""
               }`}
             />
           ))}
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
-          <div className="h-56 bg-zinc-200/60 dark:bg-white/5 rounded-2xl sm:rounded-3xl animate-pulse" />
-          <div className="h-56 bg-zinc-200/60 dark:bg-white/5 rounded-2xl sm:rounded-3xl animate-pulse" />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-3.5">
+          <div className="h-56 bg-zinc-200/60 dark:bg-white/5 rounded-xl sm:rounded-2xl animate-pulse" />
+          <div className="h-56 bg-zinc-200/60 dark:bg-white/5 rounded-xl sm:rounded-2xl animate-pulse" />
         </div>
       </div>
     );
@@ -344,7 +345,7 @@ export default function AdminOverviewPage() {
   const storage = stats.storage;
 
   return (
-    <div className="p-3.5 sm:p-6 lg:p-8 max-w-7xl mx-auto space-y-4 sm:space-y-5 w-full min-w-0 touch-pan-y">
+    <div className="p-3.5 sm:p-6 lg:p-8 max-w-7xl mx-auto space-y-3 sm:space-y-3.5 w-full min-w-0 touch-pan-y">
       {/* Header section */}
       <div>
         <h1 className="text-xl sm:text-2xl font-bold text-zinc-900 dark:text-white tracking-tight flex items-center gap-2">
@@ -354,7 +355,7 @@ export default function AdminOverviewPage() {
       </div>
 
       {/* KPI Bento Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-5">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-3.5">
         <AppleKpiCard
           label="Total Users"
           value={totalUsersAnimated}
@@ -407,53 +408,55 @@ export default function AdminOverviewPage() {
       </div>
 
       {/* Breakdown Cards Section (By Plan & By Role) */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-3.5 items-stretch">
         {/* By Plan Bento Card */}
-        <div className="p-4 sm:p-5 rounded-2xl sm:rounded-3xl bg-white/90 dark:bg-[#171717] backdrop-blur-sm border border-[#0066B2]/15 dark:border-white/[0.08] shadow-md dark:shadow-none">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest">
-              Users by Plan
-            </h2>
-            <span className="text-[11px] font-semibold text-zinc-400">
-              {stats.totalUsers} total
-            </span>
-          </div>
+        <div className="p-3.5 sm:p-4 rounded-xl sm:rounded-2xl bg-white/90 dark:bg-[#171717] backdrop-blur-sm border border-[#0066B2]/15 dark:border-white/[0.08] shadow-md dark:shadow-none flex flex-col justify-between">
+          <div>
+            <div className="flex items-center justify-between mb-3.5">
+              <h2 className="text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest">
+                Users by Plan
+              </h2>
+              <span className="text-[11px] font-semibold text-zinc-400">
+                {stats.totalUsers} total
+              </span>
+            </div>
 
-          <div className="space-y-3.5">
-            {PLAN_ORDER.map((plan) => {
-              const count = stats.byPlan[plan] || 0;
-              const pct = Math.round((count / totalPlanUsers) * 100);
-              return (
-                <div key={plan} className="space-y-1.5">
-                  <div className="flex items-center justify-between text-xs">
-                    <span className={`font-semibold px-2 py-0.5 rounded-md ${PLAN_COLORS[plan]}`}>
-                      {plan}
-                    </span>
-                    <span className="font-bold text-zinc-800 dark:text-zinc-200 tabular-nums">
-                      {count.toLocaleString()}{" "}
-                      <span className="font-normal text-zinc-400 dark:text-zinc-500">
-                        ({pct}%)
+            <div className="space-y-3">
+              {PLAN_ORDER.map((plan) => {
+                const count = stats.byPlan[plan] || 0;
+                const pct = Math.round((count / totalPlanUsers) * 100);
+                return (
+                  <div key={plan} className="space-y-1.5">
+                    <div className="flex items-center justify-between text-xs">
+                      <span className={`font-semibold px-2 py-0.5 rounded-md ${PLAN_COLORS[plan]}`}>
+                        {plan}
                       </span>
-                    </span>
+                      <span className="font-bold text-zinc-800 dark:text-zinc-200 tabular-nums">
+                        {count.toLocaleString()}{" "}
+                        <span className="font-normal text-zinc-400 dark:text-zinc-500">
+                          ({pct}%)
+                        </span>
+                      </span>
+                    </div>
+                    <div className="h-2 w-full bg-zinc-100 dark:bg-white/[0.06] rounded-full overflow-hidden">
+                      <motion.div
+                        initial={{ width: 0 }}
+                        animate={{ width: `${pct}%` }}
+                        transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                        className={`h-full rounded-full ${PLAN_BAR[plan]}`}
+                      />
+                    </div>
                   </div>
-                  <div className="h-2 w-full bg-zinc-100 dark:bg-white/[0.06] rounded-full overflow-hidden">
-                    <motion.div
-                      initial={{ width: 0 }}
-                      animate={{ width: `${pct}%` }}
-                      transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-                      className={`h-full rounded-full ${PLAN_BAR[plan]}`}
-                    />
-                  </div>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
           </div>
         </div>
 
         {/* By Role Bento Card */}
-        <div className="p-4 sm:p-5 rounded-2xl sm:rounded-3xl bg-white/90 dark:bg-[#171717] backdrop-blur-sm border border-[#0066B2]/15 dark:border-white/[0.08] shadow-md dark:shadow-none flex flex-col justify-between">
+        <div className="p-3.5 sm:p-4 rounded-xl sm:rounded-2xl bg-white/90 dark:bg-[#171717] backdrop-blur-sm border border-[#0066B2]/15 dark:border-white/[0.08] shadow-md dark:shadow-none flex flex-col justify-between">
           <div>
-            <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center justify-between mb-3.5">
               <h2 className="text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest">
                 Users by Role
               </h2>
@@ -462,7 +465,7 @@ export default function AdminOverviewPage() {
               </span>
             </div>
 
-            <div className="space-y-3.5">
+            <div className="space-y-3">
               {["user", "super_admin"].map((role) => {
                 const count = stats.byRole[role] || 0;
                 const pct = Math.round((count / totalRoleUsers) * 100);
@@ -517,9 +520,9 @@ export default function AdminOverviewPage() {
 
       {/* Storage & Top Consumers Section */}
       {storage && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5 items-stretch">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-3.5 items-stretch">
           {/* Storage Usage Bento Card */}
-          <div className="p-4 sm:p-5 rounded-2xl sm:rounded-3xl bg-white/90 dark:bg-[#171717] backdrop-blur-sm border border-[#0066B2]/15 dark:border-white/[0.08] shadow-md dark:shadow-none flex flex-col justify-between">
+          <div className="p-3.5 sm:p-4 rounded-xl sm:rounded-2xl bg-white/90 dark:bg-[#171717] backdrop-blur-sm border border-[#0066B2]/15 dark:border-white/[0.08] shadow-md dark:shadow-none flex flex-col justify-between">
             <div>
               <div className="flex items-center justify-between gap-2.5 mb-4">
                 <div className="flex items-center gap-2">
@@ -665,9 +668,9 @@ export default function AdminOverviewPage() {
           </div>
 
           {/* Top Storage Consumers Bento Card */}
-          <div className="p-4 sm:p-5 rounded-2xl sm:rounded-3xl bg-white/90 dark:bg-[#171717] backdrop-blur-sm border border-[#0066B2]/15 dark:border-white/[0.08] shadow-md dark:shadow-none flex flex-col justify-between">
+          <div className="p-3.5 sm:p-4 rounded-xl sm:rounded-2xl bg-white/90 dark:bg-[#171717] backdrop-blur-sm border border-[#0066B2]/15 dark:border-white/[0.08] shadow-md dark:shadow-none flex flex-col justify-between">
             <div>
-              <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center justify-between mb-3.5">
                 <h2 className="text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest">
                   Top Consumers
                 </h2>
@@ -729,11 +732,11 @@ export default function AdminOverviewPage() {
       )}
 
       {/* Admin Quick Launchpad */}
-      <div className="p-4 sm:p-5 rounded-2xl sm:rounded-3xl bg-white/90 dark:bg-[#171717] backdrop-blur-sm border border-[#0066B2]/15 dark:border-white/[0.08] shadow-md dark:shadow-none">
+      <div className="p-3.5 sm:p-4 rounded-xl sm:rounded-2xl bg-white/90 dark:bg-[#171717] backdrop-blur-sm border border-[#0066B2]/15 dark:border-white/[0.08] shadow-md dark:shadow-none">
         <h2 className="text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest mb-3">
           Quick Launchpad
         </h2>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-3.5">
           {[
             { label: "Users", href: "/admin/users", icon: Users },
             { label: "Funnels", href: "/admin/funnels", icon: FileText },
