@@ -76,25 +76,68 @@ function relativeTime(isoTs: string): string {
   return `${d}d ago`;
 }
 
+const LS_DISMISSED = "admin_notif_dismissed_v1";
+const LS_READ      = "admin_notif_read_v1";
+
+function lsGet(key: string): Set<string> {
+  try {
+    const raw = localStorage.getItem(key);
+    return raw ? new Set(JSON.parse(raw)) : new Set();
+  } catch { return new Set(); }
+}
+
+function lsAdd(key: string, id: string) {
+  try {
+    const s = lsGet(key);
+    s.add(id);
+    // Keep at most 500 IDs so localStorage never bloats
+    const arr = Array.from(s).slice(-500);
+    localStorage.setItem(key, JSON.stringify(arr));
+  } catch {}
+}
+
+function lsAddMany(key: string, ids: string[]) {
+  try {
+    const s = lsGet(key);
+    ids.forEach((id) => s.add(id));
+    const arr = Array.from(s).slice(-500);
+    localStorage.setItem(key, JSON.stringify(arr));
+  } catch {}
+}
+
 export function useNotificationCenter(initial: AdminNotification[]) {
   const [notifications, setNotifications] = useState(initial);
   const [clearing, setClearing] = useState(false);
   const timers = useRef<number[]>([]);
-  // IDs of notifications the user has manually dismissed — never re-add them from the API.
-  const dismissed = useRef<Set<string>>(new Set());
-  // IDs already seen — avoids marking pre-existing ones as unread on each poll.
-  const seenIds = useRef<Set<string>>(new Set(initial.map((n) => n.id)));
+  // Hydrate dismissed & seen sets from localStorage on first render.
+  const dismissed = useRef<Set<string>>(lsGet(LS_DISMISSED));
+  const readIds   = useRef<Set<string>>(lsGet(LS_READ));
+  // seenIds: superset of dismissed + read — prevents re-marking as unread on poll.
+  const seenIds = useRef<Set<string>>(new Set([
+    ...Array.from(dismissed.current),
+    ...Array.from(readIds.current),
+    ...initial.map((n) => n.id),
+  ]));
 
   useEffect(() => () => timers.current.forEach((t) => clearTimeout(t)), []);
 
   const unreadCount = notifications.filter((n) => n.unread).length;
 
   const markAllRead = useCallback(
-    () => setNotifications((p) => p.map((n) => ({ ...n, unread: false }))),
+    () => setNotifications((p) => {
+      const ids = p.map((n) => n.id);
+      lsAddMany(LS_READ, ids);
+      ids.forEach((id) => readIds.current.add(id));
+      return p.map((n) => ({ ...n, unread: false }));
+    }),
     []
   );
   const markRead = useCallback(
-    (id: string) => setNotifications((p) => p.map((n) => (n.id === id ? { ...n, unread: false } : n))),
+    (id: string) => {
+      lsAdd(LS_READ, id);
+      readIds.current.add(id);
+      setNotifications((p) => p.map((n) => (n.id === id ? { ...n, unread: false } : n)));
+    },
     []
   );
   const toggleRead = useCallback(
@@ -103,6 +146,7 @@ export function useNotificationCenter(initial: AdminNotification[]) {
   );
   const dismiss = useCallback((id: string) => {
     dismissed.current.add(id);
+    lsAdd(LS_DISMISSED, id);
     setNotifications((p) => p.filter((n) => n.id !== id));
   }, []);
 
@@ -112,6 +156,7 @@ export function useNotificationCenter(initial: AdminNotification[]) {
     if (!ids.length) return;
     haptic(12);
     ids.forEach((id) => dismissed.current.add(id));
+    lsAddMany(LS_DISMISSED, ids);
     setClearing(true);
     ids.forEach((id, i) => {
       timers.current.push(
@@ -826,23 +871,50 @@ function MacCard({
 
 export const NOTIF_PORTAL_ATTR = "data-notif-portal";
 
-export function DesktopNotificationPopover({ open, center }: { open: boolean; center: NotificationCenter }) {
+export function DesktopNotificationPopover({
+  open,
+  center,
+  anchorRef,
+}: {
+  open: boolean;
+  center: NotificationCenter;
+  anchorRef?: React.RefObject<HTMLElement | null>;
+}) {
   const [mounted, setMounted] = useState(false);
   const [expanded, setExpanded] = useState(false);
   const [hover, setHover] = useState(false);
   const [justMarked, setJustMarked] = useState(false);
+  const [coords, setCoords] = useState<{ top: number; right: number; center: number } | null>(null);
   const { notifications, unreadCount, clearing } = center;
   const stacked = !expanded && notifications.length > 1;
   const showControls = hover && notifications.length > 0;
 
   useEffect(() => setMounted(true), []);
 
+  const updateCoords = useCallback(() => {
+    if (!anchorRef?.current) return;
+    const rect = anchorRef.current.getBoundingClientRect();
+    setCoords({
+      top: Math.round(rect.bottom + 8),
+      right: Math.round(window.innerWidth - rect.right),
+      center: Math.round(rect.left + rect.width / 2),
+    });
+  }, [anchorRef]);
+
   useEffect(() => {
     if (!open) {
       setExpanded(false);
       setHover(false);
+      return;
     }
-  }, [open]);
+    updateCoords();
+    window.addEventListener("resize", updateCoords);
+    window.addEventListener("scroll", updateCoords, true);
+    return () => {
+      window.removeEventListener("resize", updateCoords);
+      window.removeEventListener("scroll", updateCoords, true);
+    };
+  }, [open, updateCoords]);
 
   useEffect(() => {
     if (notifications.length <= 1) setExpanded(false);
@@ -856,6 +928,44 @@ export function DesktopNotificationPopover({ open, center }: { open: boolean; ce
 
   if (!mounted) return null;
 
+  // When empty: anchor the "No Notifications" pill directly below the notification button
+  if (notifications.length === 0 && !clearing) {
+    return createPortal(
+      <AnimatePresence>
+        {open && (
+          <div
+            key="mac-nc-empty"
+            {...{ [NOTIF_PORTAL_ATTR]: "" }}
+            role="dialog"
+            aria-label="Notifications"
+            style={{
+              position: "fixed",
+              top: coords ? `${coords.top}px` : "52px",
+              left: coords ? `${coords.center}px` : undefined,
+              right: coords ? undefined : "12px",
+              transform: coords ? "translateX(-50%)" : undefined,
+              zIndex: 60,
+            }}
+            className="hidden select-none antialiased md:block pointer-events-auto"
+          >
+            <motion.div
+              initial={{ opacity: 0, y: -6, scale: 0.94 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -6, scale: 0.94, transition: { duration: 0.15 } }}
+              transition={SPRING}
+              style={{ fontFamily: APPLE_FONT }}
+            >
+              <span className={`inline-block whitespace-nowrap rounded-full px-3.5 py-1.5 text-[12px] font-medium shadow-md ${GLASS_PILL}`}>
+                No Notifications
+              </span>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>,
+      document.body
+    );
+  }
+
   // Portalled to <body>: a backdrop-filter inside the blurred top bar can only sample the bar, not the page.
   return createPortal(
     <AnimatePresence>
@@ -865,15 +975,21 @@ export function DesktopNotificationPopover({ open, center }: { open: boolean; ce
           {...{ [NOTIF_PORTAL_ATTR]: "" }}
           role="dialog"
           aria-label="Notifications"
-          initial={{ x: "calc(100% + 24px)" }}
-          animate={{ x: 0 }}
-          exit={{ x: "calc(100% + 24px)", transition: { duration: 0.3, ease: IOS_EASE } }}
-          transition={SHEET_SPRING}
+          initial={{ opacity: 0, y: -8, scale: 0.98 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: -8, scale: 0.98, transition: { duration: 0.2, ease: IOS_EASE } }}
+          transition={SPRING}
           onMouseEnter={() => setHover(true)}
           onMouseLeave={() => setHover(false)}
           onFocus={() => setHover(true)}
-          style={{ fontFamily: APPLE_FONT, overscrollBehaviorX: "contain" }}
-          className="fixed right-3 top-[52px] z-[60] hidden w-[356px] select-none antialiased md:block"
+          style={{
+            fontFamily: APPLE_FONT,
+            overscrollBehaviorX: "contain",
+            transformOrigin: "top right",
+            top: coords ? `${coords.top}px` : "52px",
+            right: coords ? `${Math.max(12, coords.right)}px` : "12px",
+          }}
+          className="fixed z-[60] hidden w-[356px] select-none antialiased md:block"
         >
           <div className="flex h-8 items-center justify-between px-0.5 pb-1.5">
             <AnimatePresence initial={false} mode="popLayout">
@@ -962,22 +1078,6 @@ export function DesktopNotificationPopover({ open, center }: { open: boolean; ce
                 />
               )}
             />
-            <AnimatePresence>
-              {notifications.length === 0 && !clearing && (
-                <motion.div
-                  key="empty"
-                  initial={{ opacity: 0, y: -4 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ ...SPRING, delay: 0.15 }}
-                  className="flex justify-end"
-                >
-                  <span className={`rounded-full px-3 py-1.5 text-[12px] font-medium ${GLASS_PILL}`}>
-                    No Notifications
-                  </span>
-                </motion.div>
-              )}
-            </AnimatePresence>
           </div>
         </motion.div>
       )}

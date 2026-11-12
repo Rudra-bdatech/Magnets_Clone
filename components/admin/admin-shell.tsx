@@ -691,7 +691,11 @@ export default function AdminShell({
                   iconClassName="h-4.5 w-4.5"
                 />
 
-                <DesktopNotificationPopover open={notifOpen} center={notificationCenter} />
+                <DesktopNotificationPopover
+                  open={notifOpen}
+                  center={notificationCenter}
+                  anchorRef={notifRef}
+                />
               </div>
 
               <ThemeToggle size="sm" />
