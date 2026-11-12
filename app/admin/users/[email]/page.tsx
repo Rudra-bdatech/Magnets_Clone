@@ -15,6 +15,7 @@ interface UserDetail {
   name: string;
   plan: string;
   role: string;
+  isDesignatedSuperAdmin?: boolean;
   paymentStatus: string;
   paymentProvider: string;
   emailVerified: string | null;
@@ -97,6 +98,10 @@ interface Stats {
 
 const PLANS = ["Free", "Pro"];
 const ROLES = ["user", "super_admin"];
+const ROLE_LABELS: Record<string, string> = {
+  user: "User",
+  super_admin: "Super Admin",
+};
 
 const STATUS_COLORS: Record<string, string> = {
   live: "bg-green-50 text-green-700 dark:bg-green-500/15 dark:text-green-400",
@@ -978,10 +983,19 @@ export default function AdminUserDetailPage() {
                 <select
                   value={role}
                   onChange={(e) => setRole(e.target.value)}
-                  className="w-full text-sm border border-zinc-200 dark:border-white/10 rounded-xl px-3 py-2 bg-zinc-50/50 dark:bg-[#1C1C1F] text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#0066B2]"
+                  disabled={user.isDesignatedSuperAdmin}
+                  className="w-full text-sm border border-zinc-200 dark:border-white/10 rounded-xl px-3 py-2 bg-zinc-50/50 dark:bg-[#1C1C1F] text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#0066B2] disabled:opacity-60 disabled:cursor-not-allowed"
                 >
-                  {ROLES.map((r) => <option key={r} value={r}>{r}</option>)}
+                  {ROLES.map((r) => (
+                    <option key={r} value={r}>
+                      {ROLE_LABELS[r] || r}
+                      {r === "super_admin" && user.isDesignatedSuperAdmin ? " (System Env)" : ""}
+                    </option>
+                  ))}
                 </select>
+                {user.isDesignatedSuperAdmin && (
+                  <p className="text-[11px] text-zinc-400 mt-1">Designated system super admin configured via environment variables.</p>
+                )}
               </div>
             </div>
 

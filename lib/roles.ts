@@ -8,6 +8,11 @@
 
 export type UserRole = "user" | "super_admin";
 
+export const ROLE_LABELS: Record<string, string> = {
+  user: "User",
+  super_admin: "Super Admin",
+};
+
 /**
  * Returns the list of designated super admin emails with full platform bypass privileges.
  * Configured via process.env.SUPER_ADMIN_EMAILS (comma-separated, e.g. "hello@ambesh.com").

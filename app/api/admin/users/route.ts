@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 import { dbConnect } from "@/lib/mongodb";
 import { AccountModel, MagnetPageModel, LeadModel, ResourceModel } from "@/lib/models";
 import { requireAdmin, isAdminSession } from "@/lib/admin-auth";
-import { determineRoleForEmail } from "@/lib/roles";
+import { determineRoleForEmail, getSuperAdminEmails } from "@/lib/roles";
 
 const PAGE_SIZE = 25;
 
@@ -22,17 +22,42 @@ export async function GET(request: NextRequest) {
   const startDateStr = searchParams.get("startDate") || "";
   const endDateStr = searchParams.get("endDate") || "";
 
-  const query: Record<string, any> = {};
-  if (search) {
-    query.$or = [
-      { email: { $regex: search, $options: "i" } },
-      { name: { $regex: search, $options: "i" } },
-      { signupCity: { $regex: search, $options: "i" } },
-      { signupCountry: { $regex: search, $options: "i" } },
-    ];
+  const superAdminEmails = getSuperAdminEmails();
+
+  // Self-heal: ensure designated system super admin accounts have their DB role in sync
+  if (superAdminEmails.length > 0) {
+    AccountModel.updateMany(
+      { email: { $in: superAdminEmails }, role: { $ne: "super_admin" } },
+      { $set: { role: "super_admin" } }
+    ).catch(() => {});
   }
-  if (planFilter) query.plan = planFilter;
-  if (roleFilter) query.role = roleFilter;
+
+  const andConditions: any[] = [];
+  if (search) {
+    andConditions.push({
+      $or: [
+        { email: { $regex: search, $options: "i" } },
+        { name: { $regex: search, $options: "i" } },
+        { signupCity: { $regex: search, $options: "i" } },
+        { signupCountry: { $regex: search, $options: "i" } },
+      ],
+    });
+  }
+  if (planFilter) andConditions.push({ plan: planFilter });
+
+  if (roleFilter === "super_admin") {
+    andConditions.push({
+      $or: [
+        { role: "super_admin" },
+        { email: { $in: superAdminEmails } },
+      ],
+    });
+  } else if (roleFilter === "user") {
+    andConditions.push({
+      role: { $ne: "super_admin" },
+      email: { $nin: superAdminEmails },
+    });
+  }
 
   // Date Range Filtering using ObjectId timestamp encoding
   let startDate: Date | null = null;
@@ -61,14 +86,16 @@ export async function GET(request: NextRequest) {
   if (startDate && endDate) {
     const minId = dateToObjectId(startDate, "0000000000000000");
     const maxId = dateToObjectId(endDate, "ffffffffffffffff");
-    query._id = { $gte: minId, $lte: maxId };
+    andConditions.push({ _id: { $gte: minId, $lte: maxId } });
   } else if (startDate) {
     const minId = dateToObjectId(startDate, "0000000000000000");
-    query._id = { $gte: minId };
+    andConditions.push({ _id: { $gte: minId } });
   } else if (endDate) {
     const maxId = dateToObjectId(endDate, "ffffffffffffffff");
-    query._id = { $lte: maxId };
+    andConditions.push({ _id: { $lte: maxId } });
   }
+
+  const query: Record<string, any> = andConditions.length > 0 ? { $and: andConditions } : {};
 
   const projection = {
     email: 1, name: 1, plan: 1, role: 1, paymentStatus: 1, paymentProvider: 1,
@@ -114,7 +141,7 @@ export async function GET(request: NextRequest) {
                 {
                   $or: [
                     { $eq: ["$role", "super_admin"] },
-                    { $eq: ["$role", "admin"] },
+                    { $in: ["$email", superAdminEmails] },
                   ],
                 },
                 1,
@@ -152,11 +179,13 @@ export async function GET(request: NextRequest) {
     const computedRole = determineRoleForEmail(a.email);
     const effectiveRole =
       computedRole === "super_admin" ? "super_admin" : (a.role || computedRole);
+    const isDesignated = superAdminEmails.includes(a.email ? a.email.toLowerCase().trim() : "");
     return {
       email: a.email,
       name: a.name,
       plan: a.plan || "Free",
       role: effectiveRole,
+      isDesignatedSuperAdmin: isDesignated,
       paymentStatus: a.paymentStatus || "",
       paymentProvider: a.paymentProvider || "",
       emailVerified: Boolean(a.emailVerified),

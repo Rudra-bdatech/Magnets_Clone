@@ -26,6 +26,7 @@ interface AdminUser {
   name: string;
   plan: string;
   role: string;
+  isDesignatedSuperAdmin?: boolean;
   suspended?: boolean;
   paymentStatus: string;
   paymentProvider: string;
@@ -56,6 +57,10 @@ function formatBytes(bytes: number) {
 
 const PLANS = ["Free", "Pro"];
 const ROLES = ["user", "super_admin"];
+const ROLE_LABELS: Record<string, string> = {
+  user: "User",
+  super_admin: "Super Admin",
+};
 
 const PLAN_COLORS: Record<string, string> = {
   Free: "bg-zinc-100 text-zinc-600 dark:bg-white/10 dark:text-zinc-400",
@@ -90,6 +95,7 @@ function RowSelect({
   value,
   options,
   colorMap,
+  labels,
   onChange,
   disabled,
   title = "Select Option",
@@ -97,6 +103,7 @@ function RowSelect({
   value: string;
   options: string[];
   colorMap: Record<string, string>;
+  labels?: Record<string, string>;
   onChange: (v: string) => void;
   disabled?: boolean;
   title?: string;
@@ -192,9 +199,10 @@ function RowSelect({
         type="button"
         disabled={disabled}
         onClick={toggleOpen}
+        title={title}
         className={`flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full transition-opacity disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer select-none active:scale-95 ${colorMap[value] || "bg-zinc-100 text-zinc-600 dark:bg-white/10 dark:text-zinc-400"}`}
       >
-        {value}
+        {labels?.[value] || value}
         <ChevronDown className={`w-3 h-3 transition-transform duration-150 ${open ? "rotate-180" : ""}`} />
       </button>
 
@@ -234,7 +242,7 @@ function RowSelect({
                         : "text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-white/5 active:bg-zinc-200/60 dark:active:bg-white/10"
                     }`}
                   >
-                    <span>{opt}</span>
+                    <span>{labels?.[opt] || opt}</span>
                     {value === opt && <Check className="w-3.5 h-3.5 text-[#0066B2] dark:text-[#38BDF8] shrink-0" />}
                   </button>
                 ))}
@@ -311,7 +319,7 @@ function RowSelect({
                       >
                         <div className="flex items-center gap-2.5">
                           <span className={`text-xs font-semibold px-2.5 py-0.5 rounded-full ${colorMap[opt] || "bg-zinc-100 text-zinc-600 dark:bg-white/10 dark:text-zinc-400"}`}>
-                            {opt}
+                            {labels?.[opt] || opt}
                           </span>
                         </div>
                         {isSelected && (
@@ -338,11 +346,13 @@ function FilterSelect({
   value,
   placeholder,
   options,
+  labels,
   onChange,
 }: {
   value: string;
   placeholder: string;
   options: string[];
+  labels?: Record<string, string>;
   onChange: (v: string) => void;
 }) {
   const [open, setOpen] = useState(false);
@@ -374,7 +384,7 @@ function FilterSelect({
     setOpen((v) => !v);
   };
 
-  const label = value || placeholder;
+  const label = value ? (labels?.[value] || value) : placeholder;
 
   return (
     <div ref={ref} className={`relative shrink-0 w-full sm:w-auto ${open ? "z-50" : "z-10"}`}>
@@ -424,7 +434,7 @@ function FilterSelect({
                       : "text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-white/5 active:bg-zinc-200/60 dark:active:bg-white/10"
                   }`}
                 >
-                  <span>{opt}</span>
+                  <span>{labels?.[opt] || opt}</span>
                   {value === opt && <Check className="w-3.5 h-3.5 text-[#0066B2] dark:text-[#38BDF8] shrink-0" />}
                 </button>
               ))}
@@ -492,7 +502,7 @@ function FilterSelect({
                           : "border-zinc-200/80 dark:border-white/10 text-zinc-800 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-white/5"
                       }`}
                     >
-                      <span>{opt}</span>
+                      <span>{labels?.[opt] || opt}</span>
                       {value === opt && <Check className="w-4 h-4 text-[#0066B2] dark:text-[#38BDF8] shrink-0" />}
                     </button>
                   ))}
@@ -1089,6 +1099,7 @@ export default function AdminUsersPage() {
               value={roleFilter}
               placeholder="All Roles"
               options={ROLES}
+              labels={ROLE_LABELS}
               onChange={(v) => { setRoleFilter(v); setPage(1); }}
             />
           </div>
@@ -1260,8 +1271,9 @@ export default function AdminUsersPage() {
                       value={user.role}
                       options={ROLES}
                       colorMap={ROLE_COLORS}
-                      disabled={updating === user.email}
-                      title={`Change Role for ${user.name || user.email}`}
+                      labels={ROLE_LABELS}
+                      disabled={updating === user.email || user.isDesignatedSuperAdmin}
+                      title={user.isDesignatedSuperAdmin ? "System super admin (cannot be changed)" : `Change Role for ${user.name || user.email}`}
                       onChange={(v) => requestChange(user, "role", v)}
                     />
                   </div>
@@ -1371,8 +1383,9 @@ export default function AdminUsersPage() {
                         value={user.role}
                         options={ROLES}
                         colorMap={ROLE_COLORS}
-                        disabled={updating === user.email}
-                        title="Change Role"
+                        labels={ROLE_LABELS}
+                        disabled={updating === user.email || user.isDesignatedSuperAdmin}
+                        title={user.isDesignatedSuperAdmin ? "System super admin (cannot be changed)" : "Change Role"}
                         onChange={(v) => requestChange(user, "role", v)}
                       />
                     </td>
@@ -1468,9 +1481,13 @@ export default function AdminUsersPage() {
                 </p>
                 <p className="text-sm text-zinc-600 dark:text-zinc-400 mb-5">
                   {pending.field === "plan" ? "Plan" : "Role"}:{" "}
-                  <span className="font-mono text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-500/10 px-1.5 py-0.5 rounded text-xs">{pending.from}</span>
+                  <span className="font-mono text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-500/10 px-1.5 py-0.5 rounded text-xs">
+                    {pending.field === "role" ? (ROLE_LABELS[pending.from] || pending.from) : pending.from}
+                  </span>
                   {" → "}
-                  <span className="font-mono text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-500/10 px-1.5 py-0.5 rounded text-xs">{pending.to}</span>
+                  <span className="font-mono text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-500/10 px-1.5 py-0.5 rounded text-xs">
+                    {pending.field === "role" ? (ROLE_LABELS[pending.to] || pending.to) : pending.to}
+                  </span>
                 </p>
                 <p className="text-xs text-zinc-400 dark:text-zinc-500 mb-5">This action will be recorded in the audit log.</p>
 

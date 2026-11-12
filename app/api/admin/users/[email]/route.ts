@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { dbConnect } from "@/lib/mongodb";
 import { AccountModel, MagnetPageModel, LeadModel, SequenceModel, ResourceModel, IntegrationModel, EmailEventModel, PdfOtpModel } from "@/lib/models";
 import { requireAdmin, isAdminSession } from "@/lib/admin-auth";
-import { determineRoleForEmail } from "@/lib/roles";
+import { determineRoleForEmail, getSuperAdminEmails } from "@/lib/roles";
 import { logAdminAction } from "@/lib/audit-log";
 import { deleteCloudinaryAssets } from "@/lib/cloudinary";
 import { removeDomainFromVercel } from "@/lib/domain-verify";
@@ -96,9 +96,11 @@ export async function GET(
     quizFunnelEnabled: Boolean(m.quizFunnelEnabled),
   }));
 
+  const superAdminEmails = getSuperAdminEmails();
   const computedRole = determineRoleForEmail(account.email);
   const effectiveRole =
     computedRole === "super_admin" || account.role === "super_admin" ? "super_admin" : "user";
+  const isDesignated = superAdminEmails.includes(account.email ? account.email.toLowerCase().trim() : "");
 
   // Build the user object explicitly — never spread the raw account document.
   // Integration existence is surfaced as boolean flags; raw tokens/URLs are dropped here.
@@ -110,6 +112,7 @@ export async function GET(
     avatar: account.avatar || null,
     plan: account.plan || "Free",
     role: effectiveRole,
+    isDesignatedSuperAdmin: isDesignated,
     suspended: Boolean(account.suspended),
     paymentStatus: account.paymentStatus || "",
     paymentProvider: account.paymentProvider || "",
@@ -246,6 +249,14 @@ export async function PATCH(
 
   if (role && targetEmail === auth.email) {
     return NextResponse.json({ error: "You cannot change your own role." }, { status: 400 });
+  }
+
+  const superAdminEmails = getSuperAdminEmails();
+  if (role && role !== "super_admin" && superAdminEmails.includes(targetEmail)) {
+    return NextResponse.json(
+      { error: "Cannot change the role of a system super admin designated in environment variables." },
+      { status: 400 }
+    );
   }
 
   await dbConnect();
