@@ -61,17 +61,17 @@ function haptic(ms = 8) {
 
 // Map API notification type → lucide icon
 const TYPE_ICON: Record<string, LucideIcon> = {
-  signup: UserPlus,
-  verified: ShieldCheck,
-  suspended: ShieldOff,
-  unsuspended: ShieldAlert,
-  upgrade: TrendingUp,
-  cancelled: TrendingDown,
+  signup:         UserPlus,
+  verified:       ShieldCheck,
+  suspended:      ShieldOff,
+  unsuspended:    ShieldAlert,
+  upgrade:        TrendingUp,
+  cancelled:      TrendingDown,
   payment_failed: AlertCircle,
   account_delete: UserX,
-  plan_change: ArrowLeftRight,
-  role_change: Key,
-  funnel_delete: Trash2,
+  plan_change:    ArrowLeftRight,
+  role_change:    Key,
+  funnel_delete:  Trash2,
 };
 
 function relativeTime(isoTs: string): string {
