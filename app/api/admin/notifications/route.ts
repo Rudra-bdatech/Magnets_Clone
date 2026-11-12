@@ -4,9 +4,11 @@ import { dbConnect } from "@/lib/mongodb";
 import { AccountModel, AuditLogModel } from "@/lib/models";
 import { requireAdmin, isAdminSession } from "@/lib/admin-auth";
 
-// Return notifications from the last 7 days, newest first, capped at 40.
+// Signups / verifications / suspensions: last 7 days.
 const WINDOW_MS = 7 * 24 * 60 * 60 * 1000;
-const CAP = 40;
+// Revenue events: last 30 days (payments are less frequent).
+const REVENUE_WINDOW_MS = 30 * 24 * 60 * 60 * 1000;
+const CAP = 60;
 
 function flagEmoji(countryCode: string): string {
   if (!countryCode || countryCode.length !== 2) return "";
@@ -32,7 +34,9 @@ export async function GET() {
       .padStart(8, "0") + "0000000000000000"
   );
 
-  const [newAccounts, verifiedAccounts, suspendAudit] = await Promise.all([
+  const revenueSince = new Date(Date.now() - REVENUE_WINDOW_MS);
+
+  const [newAccounts, verifiedAccounts, suspendAudit, upgradedAccounts, cancelledAccounts, failedAccounts] = await Promise.all([
     // New signups
     AccountModel.find(
       { _id: { $gte: sinceOid } },
@@ -62,11 +66,48 @@ export async function GET() {
       .sort({ createdAt: -1 })
       .limit(CAP)
       .lean(),
+
+    // Upgraded to Pro in revenue window
+    AccountModel.find(
+      {
+        plan: "Pro",
+        paymentStatus: "active",
+        lastPaymentDate: { $gte: revenueSince },
+      },
+      { email: 1, name: 1, paymentProvider: 1, stripeSubscriptionId: 1, chargebeeSubscriptionId: 1, lastPaymentDate: 1 }
+    )
+      .sort({ lastPaymentDate: -1 })
+      .limit(CAP)
+      .lean(),
+
+    // Cancelled in revenue window
+    AccountModel.find(
+      {
+        paymentStatus: "cancelled",
+        lastPaymentDate: { $gte: revenueSince },
+      },
+      { email: 1, name: 1, paymentProvider: 1, lastPaymentDate: 1 }
+    )
+      .sort({ lastPaymentDate: -1 })
+      .limit(CAP)
+      .lean(),
+
+    // Payment failed in revenue window
+    AccountModel.find(
+      {
+        paymentStatus: { $in: ["failed", "past_due"] },
+        lastPaymentDate: { $gte: revenueSince },
+      },
+      { email: 1, name: 1, paymentProvider: 1, paymentStatus: 1, lastPaymentDate: 1 }
+    )
+      .sort({ lastPaymentDate: -1 })
+      .limit(CAP)
+      .lean(),
   ]);
 
   type Notif = {
     id: string;
-    type: "signup" | "verified" | "suspended" | "unsuspended";
+    type: "signup" | "verified" | "suspended" | "unsuspended" | "upgrade" | "cancelled" | "payment_failed";
     title: string;
     desc: string;
     ts: string; // ISO
@@ -109,7 +150,42 @@ export async function GET() {
     });
   }
 
-  // Sort all by ts desc, cap at 40
+  for (const acc of upgradedAccounts as any[]) {
+    const provider = (acc.paymentProvider || "").toLowerCase();
+    const isStripe = provider === "stripe" || Boolean(acc.stripeSubscriptionId);
+    const amount = isStripe ? "$67/mo" : "₹4,999";
+    const via = isStripe ? "Stripe" : "Chargebee";
+    notifs.push({
+      id: `upgrade:${acc._id}`,
+      type: "upgrade",
+      title: "New Pro subscriber",
+      desc: `${acc.name || acc.email} upgraded via ${via} — ${amount}`,
+      ts: new Date(acc.lastPaymentDate).toISOString(),
+    });
+  }
+
+  for (const acc of cancelledAccounts as any[]) {
+    notifs.push({
+      id: `cancelled:${acc._id}`,
+      type: "cancelled",
+      title: "Subscription cancelled",
+      desc: `${acc.name || acc.email} cancelled their Pro plan`,
+      ts: new Date(acc.lastPaymentDate).toISOString(),
+    });
+  }
+
+  for (const acc of failedAccounts as any[]) {
+    const status = (acc.paymentStatus || "failed") === "past_due" ? "past due" : "failed";
+    notifs.push({
+      id: `failed:${acc._id}`,
+      type: "payment_failed",
+      title: "Payment failed",
+      desc: `${acc.name || acc.email}'s payment is ${status}`,
+      ts: new Date(acc.lastPaymentDate).toISOString(),
+    });
+  }
+
+  // Sort all by ts desc, cap at 60
   notifs.sort((a, b) => b.ts.localeCompare(a.ts));
   const result = notifs.slice(0, CAP);
 

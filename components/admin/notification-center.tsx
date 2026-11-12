@@ -20,6 +20,7 @@ import {
 import { createPortal } from "react-dom";
 import {
   Bell, X, Check, ChevronUp, UserPlus, ShieldCheck, ShieldOff, ShieldAlert,
+  TrendingUp, TrendingDown, AlertCircle,
   type LucideIcon,
 } from "lucide-react";
 
@@ -60,10 +61,13 @@ function haptic(ms = 8) {
 
 // Map API notification type → lucide icon
 const TYPE_ICON: Record<string, LucideIcon> = {
-  signup: UserPlus,
-  verified: ShieldCheck,
-  suspended: ShieldOff,
-  unsuspended: ShieldAlert,
+  signup:         UserPlus,
+  verified:       ShieldCheck,
+  suspended:      ShieldOff,
+  unsuspended:    ShieldAlert,
+  upgrade:        TrendingUp,
+  cancelled:      TrendingDown,
+  payment_failed: AlertCircle,
 };
 
 function relativeTime(isoTs: string): string {
@@ -397,7 +401,7 @@ const rowExit = {
       },
 };
 
-function rowTarget(i: number, stacked: boolean, gap: number) {
+function rowTarget(i: number, stacked: boolean, gap: number, stackedMargin: number) {
   if (!stacked) {
     return {
       opacity: 1,
@@ -424,7 +428,7 @@ function rowTarget(i: number, stacked: boolean, gap: number) {
       scaleX: 0.95,
       scaleY: 1,
       y: 0,
-      marginTop: -44,
+      marginTop: stackedMargin,
       pointerEvents: "none" as const,
     };
   }
@@ -434,7 +438,7 @@ function rowTarget(i: number, stacked: boolean, gap: number) {
       scaleX: 0.90,
       scaleY: 1,
       y: 0,
-      marginTop: -46,
+      marginTop: stackedMargin - 2,
       pointerEvents: "none" as const,
     };
   }
@@ -444,7 +448,7 @@ function rowTarget(i: number, stacked: boolean, gap: number) {
       scaleX: 0.85,
       scaleY: 1,
       y: 0,
-      marginTop: -48,
+      marginTop: stackedMargin - 4,
       pointerEvents: "none" as const,
     };
   }
@@ -453,7 +457,7 @@ function rowTarget(i: number, stacked: boolean, gap: number) {
     scaleX: 0.80,
     scaleY: 1,
     y: 0,
-    marginTop: -48,
+    marginTop: stackedMargin - 4,
     pointerEvents: "none" as const,
   };
 }
@@ -463,12 +467,14 @@ function StackList({
   stacked,
   clearing,
   gap,
+  stackedMargin = -44,
   renderCard,
 }: {
   notifications: AdminNotification[];
   stacked: boolean;
   clearing: boolean;
   gap: number;
+  stackedMargin?: number;
   renderCard: (n: AdminNotification, i: number) => ReactNode;
 }) {
   return (
@@ -481,7 +487,7 @@ function StackList({
             layout="position"
             variants={rowExit}
             initial={{ opacity: 0, scale: 0.95 }}
-            animate={rowTarget(i, stacked, gap)}
+            animate={rowTarget(i, stacked, gap, stackedMargin)}
             exit="exit"
             transition={{
               ...APPLE_STACK_SPRING,
@@ -769,6 +775,7 @@ export function MobileNotificationCenter({
               stacked={stacked}
               clearing={clearing}
               gap={8}
+              stackedMargin={-68}
               renderCard={(n, i) => (
                 <IOSCard
                   n={n}
