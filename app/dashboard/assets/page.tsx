@@ -1692,7 +1692,7 @@ export default function ResourcesPage() {
       {/* ========================================================================= */}
       {mounted && typeof document !== "undefined" && createPortal(
         <AnimatePresence>
-          {selectedResourceIds.length > 0 && (
+          {selectedResourceIds.length > 0 && !showBulkDeleteModal && !resourceToDelete && !previewResource && (
             <motion.div
               initial={{ opacity: 0, y: 40, x: "-50%" }}
               animate={{ opacity: 1, y: 0, x: "-50%" }}
@@ -1749,7 +1749,7 @@ export default function ResourcesPage() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.12 }}
-            className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm p-0 sm:p-4 transform-gpu"
+            className="fixed inset-0 z-[120] flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm p-0 sm:p-4 transform-gpu"
             onClick={() => setShowBulkDeleteModal(false)}
           >
             <motion.div
@@ -1813,7 +1813,7 @@ export default function ResourcesPage() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.12 }}
-            className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm p-0 sm:p-4 transform-gpu"
+            className="fixed inset-0 z-[120] flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm p-0 sm:p-4 transform-gpu"
             onClick={closeDeleteModal}
           >
             <motion.div
@@ -1883,13 +1883,21 @@ export default function ResourcesPage() {
         )}
       </AnimatePresence>
 
-      {/* Floating Toast Notification Container */}
-      <div className="fixed bottom-5 inset-x-3 sm:inset-x-auto sm:bottom-6 sm:right-6 z-50 pointer-events-none flex flex-col gap-2 items-center sm:items-end">
+      {/* Floating Toast Notification Container - Apple Live Activity Styling */}
+      <div
+        className={`fixed ${
+          uploading ? "bottom-24" : "bottom-5"
+        } sm:${
+          uploading ? "bottom-24" : "bottom-6"
+        } inset-x-3 sm:inset-x-auto sm:right-6 z-[90] pointer-events-none flex flex-col gap-2 items-center sm:items-end pb-[env(safe-area-inset-bottom)] transition-all duration-300`}
+      >
         {toasts.map((toast, idx) => {
           const reverseIdx = toasts.length - 1 - idx;
           const translateY = -reverseIdx * 8;
           const scale = Math.max(0.9, 1 - reverseIdx * 0.04);
           const isDeleted = toast.type === "deleted";
+          const isSuccess = toast.type === "success";
+          const isError = toast.type === "error";
 
           return (
             <div
@@ -1899,60 +1907,55 @@ export default function ResourcesPage() {
                 transformOrigin: "bottom center",
                 zIndex: 100 - reverseIdx,
               }}
-              className="pointer-events-auto w-full sm:w-auto sm:min-w-[260px] sm:max-w-[340px] animate-in fade-in slide-in-from-bottom-3 duration-200"
+              className="pointer-events-auto w-full sm:w-auto sm:min-w-[280px] sm:max-w-[380px] animate-in fade-in slide-in-from-bottom-3 duration-200"
             >
-              {isDeleted ? (
-                /* ── Delete toast: OLED dark, rose accent ── */
-                <div className="flex items-center gap-3.5 rounded-2xl px-4 py-3.5
-                  shadow-[0_8px_32px_rgba(0,0,0,0.18)] dark:shadow-[0_8px_40px_rgba(0,0,0,0.65)]
-                  backdrop-blur-2xl backdrop-saturate-150
-                  bg-white/70 dark:bg-white/[0.06]
-                  border border-black/[0.08] dark:border-white/[0.09]
-                  ring-1 ring-inset ring-white/60 dark:ring-white/[0.04]">
-                  {/* Rose icon tile */}
-                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl
-                    bg-rose-50 border border-rose-200/80
-                    dark:bg-rose-500/10 dark:border-rose-500/20
-                    shadow-[0_0_12px_rgba(239,68,68,0.08)] dark:shadow-[0_0_14px_rgba(239,68,68,0.14)]">
-                    <Trash2 className="h-4 w-4 text-rose-500 dark:text-rose-400" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <p className="text-[13px] font-semibold leading-5 tracking-[-0.01em]
-                      text-zinc-900 dark:text-white">{toast.message}</p>
-                    {toast.subtitle && (
-                      <p className="truncate text-[11.5px] leading-4 mt-0.5
-                        text-zinc-400 dark:text-zinc-500" title={toast.subtitle}>{toast.subtitle}</p>
-                    )}
-                  </div>
-                  {/* Done check */}
-                  <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full
-                    bg-zinc-100 dark:bg-white/[0.06]">
-                    <Check className="h-3 w-3 text-zinc-400 dark:text-zinc-500" />
-                  </div>
-                </div>
-              ) : (
-                /* ── Generic success / error / info toast ── */
-                <div className={`flex items-center gap-2.5 rounded-xl px-3.5 py-2.5 text-[12.5px] font-semibold shadow-2xl border backdrop-blur-xl
-                  ${toast.type === "success"
-                    ? "bg-emerald-950/60 border-emerald-500/30 text-emerald-100"
-                    : toast.type === "error"
-                      ? "bg-rose-950/60 border-rose-500/30 text-rose-100"
-                      : "bg-zinc-900/80 border-white/10 text-white"
+              <div className="flex items-center gap-3 rounded-full pl-2 pr-3 py-2 bg-white/85 dark:bg-[#000000]/95 text-zinc-900 dark:text-white border border-black/[0.08] dark:border-white/[0.14] backdrop-blur-3xl backdrop-saturate-200 shadow-[0_12px_36px_rgba(0,0,0,0.12),0_0_0_1px_rgba(0,0,0,0.04),inset_0_1px_1px_rgba(255,255,255,0.8)] dark:shadow-[0_16px_40px_rgba(0,0,0,0.85),0_0_0_1px_rgba(255,255,255,0.06),inset_0_1px_1px_rgba(255,255,255,0.18)]">
+                {/* Apple Concentric Circular Accent Badge */}
+                <div
+                  className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full border ${
+                    isDeleted || isError
+                      ? "bg-rose-500/15 border-rose-500/25 text-rose-500 dark:text-rose-400 shadow-[0_0_12px_rgba(244,63,94,0.15)]"
+                      : isSuccess
+                      ? "bg-emerald-500/15 border-emerald-500/25 text-emerald-600 dark:text-emerald-400 shadow-[0_0_12px_rgba(16,185,129,0.15)]"
+                      : "bg-sky-500/15 border-sky-500/25 text-[#0066B2] dark:text-sky-400 shadow-[0_0_12px_rgba(14,165,233,0.15)]"
                   }`}
                 >
-                  {toast.type === "success" && <Check className="h-3.5 w-3.5 shrink-0 text-emerald-400" />}
-                  {toast.type === "error" && <AlertCircle className="h-3.5 w-3.5 shrink-0 text-rose-400" />}
-                  {toast.type === "info" && <Sparkles className="h-3.5 w-3.5 shrink-0 text-amber-400" />}
-                  <span className="flex-1 leading-snug">{toast.message}</span>
-                  <button
-                    type="button"
-                    onClick={() => removeToast(toast.id)}
-                    className="text-zinc-500 hover:text-white transition cursor-pointer p-0.5 rounded hover:bg-white/10 shrink-0 ml-1"
-                  >
-                    <X className="h-3 w-3" />
-                  </button>
+                  {isDeleted ? (
+                    <Trash2 className="h-4 w-4 text-rose-500 dark:text-rose-400" />
+                  ) : isError ? (
+                    <AlertCircle className="h-4 w-4 text-rose-500 dark:text-rose-400" />
+                  ) : isSuccess ? (
+                    <Check className="h-4 w-4 stroke-[3] text-emerald-600 dark:text-emerald-400" />
+                  ) : (
+                    <Sparkles className="h-4 w-4 text-[#0066B2] dark:text-sky-400" />
+                  )}
                 </div>
-              )}
+
+                {/* Toast Details */}
+                <div className="min-w-0 flex-1">
+                  <p className="text-[13px] font-semibold text-zinc-900 dark:text-white tracking-[-0.015em] leading-snug truncate">
+                    {toast.message}
+                  </p>
+                  {toast.subtitle && (
+                    <p
+                      className="truncate text-[11.5px] leading-tight text-zinc-500 dark:text-white/50 mt-0.5"
+                      title={toast.subtitle}
+                    >
+                      {toast.subtitle}
+                    </p>
+                  )}
+                </div>
+
+                {/* Dismiss Button */}
+                <button
+                  type="button"
+                  onClick={() => removeToast(toast.id)}
+                  aria-label="Dismiss"
+                  className="flex h-7 w-7 items-center justify-center rounded-full text-zinc-400 hover:text-zinc-800 hover:bg-black/5 dark:text-white/40 dark:hover:bg-white/15 dark:hover:text-white transition cursor-pointer shrink-0"
+                >
+                  <X className="h-3.5 w-3.5" />
+                </button>
+              </div>
             </div>
           );
         })}
