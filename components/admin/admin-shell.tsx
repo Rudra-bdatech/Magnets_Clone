@@ -21,6 +21,7 @@ import {
   PanelLeft,
   Bell,
   Check,
+  ChevronRight,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import BrandLogo from "@/components/brand";
@@ -782,11 +783,26 @@ export default function AdminShell({
               {/* Divider */}
               <div className="h-3.5 w-px bg-zinc-200 dark:bg-white/10 shrink-0" />
 
-              {/* Current Page Title */}
-              <div className="flex items-center gap-2.5 min-w-0">
-                <span className="text-sm font-semibold tracking-tight text-zinc-900 dark:text-white truncate">
-                  {pageTitle}
-                </span>
+              {/* Breadcrumbs matching LinkAssist style */}
+              <div className="flex items-center gap-1.5 min-w-0 text-sm">
+                {pathname === "/admin" ? (
+                  <span className="font-semibold tracking-tight text-zinc-900 dark:text-white truncate">
+                    Overview
+                  </span>
+                ) : (
+                  <>
+                    <Link
+                      href="/admin"
+                      className="font-medium text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white transition-colors shrink-0"
+                    >
+                      Overview
+                    </Link>
+                    <ChevronRight className="w-3.5 h-3.5 text-zinc-400 dark:text-zinc-500 shrink-0" />
+                    <span className="font-semibold tracking-tight text-zinc-900 dark:text-white truncate">
+                      {pageTitle}
+                    </span>
+                  </>
+                )}
               </div>
             </div>
 
