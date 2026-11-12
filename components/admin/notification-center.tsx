@@ -61,17 +61,17 @@ function haptic(ms = 8) {
 
 // Map API notification type → lucide icon
 const TYPE_ICON: Record<string, LucideIcon> = {
-  signup:         UserPlus,
-  verified:       ShieldCheck,
-  suspended:      ShieldOff,
-  unsuspended:    ShieldAlert,
-  upgrade:        TrendingUp,
-  cancelled:      TrendingDown,
+  signup: UserPlus,
+  verified: ShieldCheck,
+  suspended: ShieldOff,
+  unsuspended: ShieldAlert,
+  upgrade: TrendingUp,
+  cancelled: TrendingDown,
   payment_failed: AlertCircle,
   account_delete: UserX,
-  plan_change:    ArrowLeftRight,
-  role_change:    Key,
-  funnel_delete:  Trash2,
+  plan_change: ArrowLeftRight,
+  role_change: Key,
+  funnel_delete: Trash2,
 };
 
 function relativeTime(isoTs: string): string {
@@ -362,7 +362,7 @@ function ClearAllButton({
 function AppIcon({ icon: Icon, size }: { icon: AdminNotification["icon"]; size: "sm" | "md" }) {
   return (
     <div
-      className={`flex shrink-0 items-center justify-center bg-gradient-to-b from-[#1A85D6] to-[#0066B2] text-white shadow-[inset_0_0.5px_0_rgba(255,255,255,0.35)] ${size === "md" ? "h-[38px] w-[38px] rounded-[9px]" : "h-8 w-8 rounded-[7px]"
+      className={`flex shrink-0 items-center justify-center bg-gradient-to-b from-[#1A85D6] to-[#0066B2] text-white shadow-[inset_0_0.5px_0_rgba(255,255,255,0.35)] ${size === "md" ? "h-[38px] w-[38px] rounded-[11px]" : "h-8 w-8 rounded-[9px]"
         }`}
     >
       <Icon className={size === "md" ? "h-5 w-5" : "h-4 w-4"} strokeWidth={2.2} />
