@@ -118,7 +118,19 @@ export async function GET(request: NextRequest) {
         $group: {
           _id: null,
           verifiedCount: {
-            $sum: { $cond: [{ $eq: ["$emailVerified", true] }, 1, 0] },
+            $sum: {
+              $cond: [
+                {
+                  $and: [
+                    { $ne: ["$emailVerified", null] },
+                    { $ne: ["$emailVerified", false] },
+                    { $ne: ["$emailVerified", ""] },
+                  ],
+                },
+                1,
+                0,
+              ],
+            },
           },
           paidCount: {
             $sum: {
