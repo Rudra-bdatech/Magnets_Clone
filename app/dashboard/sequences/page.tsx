@@ -62,6 +62,7 @@ import {
   saveSequences,
   savePages,
   deleteSequence,
+  deleteSequences,
   syncWithDatabase,
 } from "@/lib/store";
 
@@ -185,6 +186,21 @@ export default function SequencesPage() {
     if (checkedIds.length === 0) return;
     const count = checkedIds.length;
 
+    if (targetStatus === "live") {
+      const draftAttached = checkedIds.some((id) => {
+        const s = sequences.find((item) => item.id === id);
+        if (s?.pageId) {
+          const p = pages.find((pg) => pg.id === s.pageId);
+          return p && p.status !== "live";
+        }
+        return false;
+      });
+      if (draftAttached) {
+        showToast("Cannot activate: Some sequences belong to funnels that are still in Draft.");
+        return;
+      }
+    }
+
     const updated = sequences.map((s) =>
       checkedIds.includes(s.id) ? { ...s, status: targetStatus } : s
     );
@@ -213,23 +229,19 @@ export default function SequencesPage() {
     const count = checkedIds.length;
 
     try {
-      let currentSequences = [...sequences];
-      let currentPages = loadPages();
+      const idsToDelete = [...checkedIds];
+      deleteSequences(idsToDelete);
 
-      for (const id of checkedIds) {
-        currentSequences = currentSequences.filter((s) => s.id !== id);
-        currentPages = currentPages.map((p) => {
-          if (p.id === id || `seq_${p.id}` === id) {
-            return { ...p, sequenceEmails: [], sequenceEnabled: false };
-          }
-          return p;
-        });
-      }
+      setSequences((prev) => prev.filter((s) => !idsToDelete.includes(s.id)));
 
-      setSequences(currentSequences);
-      saveSequences(currentSequences);
-      setPages(currentPages);
-      savePages(currentPages);
+      const currentPages = loadPages();
+      const updatedPages = currentPages.map((p) => {
+        if (idsToDelete.includes(p.id) || idsToDelete.some((id) => id === `seq_${p.id}`)) {
+          return { ...p, sequenceEmails: [], sequenceEnabled: false };
+        }
+        return p;
+      });
+      setPages(updatedPages);
 
       showToast(`Deleted ${count} sequence${count > 1 ? "s" : ""}`);
       setCheckedIds([]);
@@ -308,6 +320,9 @@ export default function SequencesPage() {
           const repliedCount = associatedLeads.filter((l) => l.status === "replied").length;
           const stoppedCount = associatedLeads.filter((l) => l.status === "stopped").length;
 
+          const isPageLive = p.status === "live";
+          const pageSeqStatus: "draft" | "live" = (isPageLive && p.sequenceEnabled !== false) ? "live" : "draft";
+
           const emailsList: SequenceEmail[] =
             p.sequenceEmails && p.sequenceEmails.length > 0
               ? p.sequenceEmails.map((e, idx) => {
@@ -330,7 +345,7 @@ export default function SequencesPage() {
                     subject: e.subject || `Follow-up #${idx + 1}`,
                     delayLabel: lbl,
                     delayMinutes: min,
-                    status: (p.sequenceEnabled === false ? "draft" : "live") as "draft" | "live",
+                    status: pageSeqStatus,
                     sent: deliveredCount,
                     opened: openedCount,
                   };
@@ -341,7 +356,7 @@ export default function SequencesPage() {
                     subject: `${p.name} Follow-up #1`,
                     delayLabel: "1 day delay",
                     delayMinutes: 1440,
-                    status: "live" as const,
+                    status: pageSeqStatus,
                     sent: deliveredCount,
                     opened: openedCount,
                   },
@@ -350,7 +365,7 @@ export default function SequencesPage() {
                     subject: `${p.name} Follow-up #2`,
                     delayLabel: "3 days delay",
                     delayMinutes: 4320,
-                    status: "live" as const,
+                    status: pageSeqStatus,
                     sent: deliveredCount,
                     opened: openedCount,
                   },
@@ -360,7 +375,7 @@ export default function SequencesPage() {
             id: p.id,
             name: `${p.name} Follow-up`,
             pageId: p.id,
-            status: (p.sequenceEnabled === false ? "draft" : "live") as "draft" | "live",
+            status: pageSeqStatus,
             emails: emailsList,
             stopOnBooking: p.stopOnCall || false,
             stats: {
@@ -440,6 +455,13 @@ export default function SequencesPage() {
             });
           }
         }
+        // If attached to a funnel that is currently in Draft, keep the sequence status in Draft as well
+        if (s.pageId) {
+          const parentPage = pagesList.find((p) => p.id === s.pageId);
+          if (parentPage && parentPage.status !== "live") {
+            s.status = "draft";
+          }
+        }
         // Deduplicate: If this sequence belongs to a pageId that was also in pageSequences, replace it with this custom sequence
         if (s.pageId && map.has(s.pageId)) {
           map.delete(s.pageId);
@@ -469,6 +491,16 @@ export default function SequencesPage() {
     e.preventDefault();
     e.stopPropagation();
     const newStatus: "draft" | "live" = seq.status === "live" ? "draft" : "live";
+
+    if (newStatus === "live" && seq.pageId) {
+      const parentPage = pages.find((p) => p.id === seq.pageId);
+      if (parentPage && parentPage.status !== "live") {
+        showToast(`Cannot activate: Funnel "${parentPage.name}" is currently in Draft.`);
+        setActiveMenuId(null);
+        return;
+      }
+    }
+
     const updated: Sequence[] = sequences.map((s) => (s.id === seq.id ? { ...s, status: newStatus } : s));
     setSequences(updated);
     saveSequences(updated);
@@ -521,6 +553,17 @@ export default function SequencesPage() {
     if (!seqToDelete) return;
     deleteSequence(seqToDelete.id);
     setSequences((prev) => prev.filter((item) => item.id !== seqToDelete.id));
+
+    // Also update local pages state to immediately detach and turn off sequence
+    const currentPages = loadPages();
+    const updatedPages = currentPages.map((p) => {
+      if (p.id === seqToDelete.id || p.id === seqToDelete.pageId) {
+        return { ...p, sequenceEmails: [], sequenceEnabled: false };
+      }
+      return p;
+    });
+    setPages(updatedPages);
+
     showToast(`Deleted "${seqToDelete.name}"`);
     setSeqToDelete(null);
   };

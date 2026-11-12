@@ -193,6 +193,12 @@ export async function handleDeletePage(data: any, normEmail: string | null) {
 
   await MagnetPageModel.deleteOne(filter);
 
+  // CASCADE DELETE: Also delete any sequence attached to this page
+  await SequenceModel.deleteMany({
+    userEmail: normEmail,
+    $or: [{ pageId: cleanId }, { id: cleanId }, { id: `seq_${cleanId}` }],
+  });
+
   if (assetsToDelete.length > 0) {
     deleteCloudinaryAssets(assetsToDelete, normEmail, { excludePageIds: [cleanId] }).catch((err) =>
       console.error("Cloudinary cleanup error on deletePage:", err)
@@ -243,23 +249,35 @@ export async function handleSaveSequences(data: any, normEmail: string | null) {
 }
 
 export async function handleDeleteSequence(data: any, normEmail: string | null) {
-  const { id } = data || {};
-  if (typeof id !== "string" || !id.trim()) {
-    return NextResponse.json({ error: "Invalid sequence ID" }, { status: 400 });
-  }
   if (!normEmail) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const cleanId = id.trim();
-  const filter = { id: cleanId, userEmail: normEmail };
-  const targetSeq = (await SequenceModel.findOne(filter).lean()) as unknown as Sequence | null;
-  const pageIdToUpdate = typeof targetSeq?.pageId === "string" ? targetSeq.pageId.trim() : "";
+  const { id, ids } = data || {};
+  const targetIds: string[] = [];
+  if (Array.isArray(ids)) {
+    targetIds.push(...ids.filter((x): x is string => typeof x === "string" && Boolean(x.trim())).map((x) => x.trim()));
+  } else if (typeof id === "string" && id.trim()) {
+    targetIds.push(id.trim());
+  }
 
-  await SequenceModel.deleteOne(filter);
+  if (targetIds.length === 0) {
+    return NextResponse.json({ error: "Invalid sequence ID" }, { status: 400 });
+  }
+
+  const filter = { id: { $in: targetIds }, userEmail: normEmail };
+  const targetSeqs = (await SequenceModel.find(filter).select("id pageId").lean()) as unknown as { id: string; pageId?: string }[];
+  
+  const pageUpdateIds: string[] = [...targetIds];
+  targetSeqs.forEach((s) => {
+    if (typeof s.pageId === "string" && s.pageId.trim()) {
+      pageUpdateIds.push(s.pageId.trim());
+    }
+  });
+
+  await SequenceModel.deleteMany(filter);
 
   // Strictly scope the magnet page updates to this authenticated user's account only
-  const pageUpdateIds = [cleanId, ...(pageIdToUpdate ? [pageIdToUpdate] : [])];
   await MagnetPageModel.updateMany(
     {
       userEmail: normEmail,

@@ -365,12 +365,15 @@ export default function SequenceEditor() {
                   }).length;
                 }
 
+                const isPageLive = pageFound.status === "live";
+                const pageSeqStatus: "draft" | "live" = (isPageLive && pageFound.sequenceEnabled !== false) ? "live" : "draft";
+
                 return {
                   id: e.id || `se_${pageFound.id}_${idx + 1}`,
                   subject: e.subject || `Follow-up #${idx + 1}`,
                   delayLabel,
                   delayMinutes,
-                  status: (pageFound.sequenceEnabled === false ? "draft" : "live") as "draft" | "live",
+                  status: pageSeqStatus,
                   sent: stepDelivered,
                   opened: stepOpened,
                   previewText: e.previewText || "",
@@ -385,7 +388,7 @@ export default function SequenceEditor() {
                   subject: `Your ${pageFound.name} is ready for download!`,
                   delayLabel: "Instantly",
                   delayMinutes: 0,
-                  status: "live" as const,
+                  status: (pageFound.status === "live" && pageFound.sequenceEnabled !== false ? "live" : "draft") as "draft" | "live",
                   sent: liveDelivered,
                   opened: liveOpened,
                   body:
@@ -396,7 +399,7 @@ export default function SequenceEditor() {
                   subject: `Quick follow-up: Did you get a chance to check out the resource?`,
                   delayLabel: "1 day later",
                   delayMinutes: 1440,
-                  status: "live" as const,
+                  status: (pageFound.status === "live" && pageFound.sequenceEnabled !== false ? "live" : "draft") as "draft" | "live",
                   sent: liveDelivered,
                   opened: liveOpened,
                   body:
@@ -404,11 +407,14 @@ export default function SequenceEditor() {
                 },
               ];
 
+        const isPageLive = pageFound.status === "live";
+        const pageSeqStatus: "draft" | "live" = (isPageLive && pageFound.sequenceEnabled !== false) ? "live" : "draft";
+
         return {
           id: pageFound.id,
           name: `${pageFound.name} Sequence`,
           pageId: pageFound.id,
-          status: (pageFound.sequenceEnabled === false ? "draft" : "live") as "draft" | "live",
+          status: pageSeqStatus,
           emails: emailsList,
           stopOnBooking: pageFound.stopOnCall ?? false,
           stats,
@@ -559,6 +565,14 @@ export default function SequenceEditor() {
   function toggleStatus() {
     if (!seq) return;
     const nextStatus = seq.status === "live" ? "draft" : "live";
+    if (nextStatus === "live" && seq.pageId) {
+      const currentPages = loadPages();
+      const pageFound = currentPages.find((p) => p.id === seq.pageId);
+      if (pageFound && pageFound.status !== "live") {
+        triggerToast(`Cannot activate: The funnel "${pageFound.name}" is currently in Draft.`);
+        return;
+      }
+    }
     update({ ...seq, status: nextStatus });
     triggerToast(nextStatus === "live" ? "Sequence is now Live!" : "Sequence paused.");
   }

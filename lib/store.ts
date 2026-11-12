@@ -108,6 +108,11 @@ export function deletePage(id: string) {
   if (typeof window !== "undefined") {
     const current = loadPages().filter((p) => p.id !== id);
     safeSetItem("currentUserPages", JSON.stringify(current));
+
+    // Cascade delete associated sequence from local sequences cache
+    const currentSequences = loadSequences().filter((s) => s.pageId !== id && s.id !== id && s.id !== `seq_${id}`);
+    safeSetItem("currentUserSequences", JSON.stringify(currentSequences));
+
     const email = localStorage.getItem("currentUserEmail");
     fetch("/api/data", {
       method: "POST",
@@ -155,34 +160,52 @@ export function saveSequences(sequences: Sequence[]) {
 }
 
 export function deleteSequence(id: string) {
-  if (typeof window !== "undefined") {
-    const current = loadSequences();
-    const targetSeq = current.find((s) => s.id === id);
-    const targetPageId = targetSeq?.pageId || id;
+  deleteSequences([id]);
+}
 
-    const nextSequences = current.filter((s) => s.id !== id);
+export function deleteSequences(ids: string[]) {
+  if (typeof window !== "undefined" && Array.isArray(ids) && ids.length > 0) {
+    const idsSet = new Set(ids);
+    const current = loadSequences();
+    const pageIdsToUpdate = new Set<string>();
+
+    current.forEach((s) => {
+      if (idsSet.has(s.id)) {
+        if (s.pageId) pageIdsToUpdate.add(s.pageId);
+        pageIdsToUpdate.add(s.id);
+      }
+    });
+
+    const nextSequences = current.filter((s) => !idsSet.has(s.id));
     safeSetItem("currentUserSequences", JSON.stringify(nextSequences));
 
     // Also disable sequence on the associated lead magnet page
     const pages = loadPages();
     let pagesChanged = false;
     const updatedPages = pages.map((p) => {
-      if (p.id === id || p.id === targetPageId) {
+      if (idsSet.has(p.id) || pageIdsToUpdate.has(p.id)) {
         pagesChanged = true;
         return { ...p, sequenceEnabled: false, sequenceEmails: [] };
       }
       return p;
     });
     if (pagesChanged) {
-      savePages(updatedPages);
+      safeSetItem("currentUserPages", JSON.stringify(updatedPages));
+      const email = localStorage.getItem("currentUserEmail");
+      fetch("/api/data", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "savePages", data: updatedPages, email }),
+      }).catch(console.error);
     }
+
+    const email = localStorage.getItem("currentUserEmail");
+    fetch("/api/data", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "deleteSequence", data: { ids }, email }),
+    }).catch(console.error);
   }
-  const email = typeof window !== "undefined" ? localStorage.getItem("currentUserEmail") : null;
-  fetch("/api/data", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ action: "deleteSequence", data: { id }, email }),
-  }).catch(console.error);
 }
 
 export function resetSequences() {
