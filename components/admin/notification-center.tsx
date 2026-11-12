@@ -496,14 +496,13 @@ function StackList({
           <motion.li
             key={n.id}
             custom={clearing}
-            layout="position"
             variants={rowExit}
             initial={{ opacity: 0, scale: 0.95 }}
             animate={rowTarget(i, stacked, gap, stackedMargin)}
             exit="exit"
             transition={{
               ...APPLE_STACK_SPRING,
-              delay: stacked ? 0 : Math.min(i * 0.038, 0.14),
+              delay: stacked ? 0 : Math.min(i * 0.02, 0.08),
             }}
             style={{
               zIndex: notifications.length - i,
@@ -543,6 +542,7 @@ function IOSCard({
   const ref = useRef<HTMLDivElement>(null);
   const x = useMotionValue(0);
   const [open, setOpen] = useState(false);
+  const [swiping, setSwiping] = useState(false);
   const pastThreshold = useRef(false);
 
   const actionsW = useTransform(x, (v) => Math.max(0, -v - 6));
@@ -554,6 +554,7 @@ function IOSCard({
 
   const close = () => {
     setOpen(false);
+    setSwiping(false);
     animate(x, 0, SPRING);
   };
 
@@ -580,6 +581,7 @@ function IOSCard({
       animate(x, -REVEAL, { ...SPRING, velocity: info.velocity.x });
     } else {
       setOpen(false);
+      setSwiping(false);
       animate(x, 0, { ...SPRING, velocity: info.velocity.x });
     }
   };
@@ -588,7 +590,7 @@ function IOSCard({
 
   return (
     <div ref={ref} className="relative">
-      {interactive && (
+      {interactive && (open || swiping) && (
         <motion.div
           style={{ width: actionsW, opacity: actionsOpacity }}
           className="absolute inset-y-0 right-0 flex justify-end gap-2 overflow-hidden"
@@ -600,7 +602,7 @@ function IOSCard({
               onToggleRead();
               close();
             }}
-            className="shrink-0 rounded-[20px] bg-white/70 text-[13px] font-semibold text-zinc-900 backdrop-blur-xl dark:bg-zinc-700/60 dark:text-white cursor-pointer"
+            className="shrink-0 rounded-[20px] bg-white text-[13px] font-semibold text-zinc-900 shadow-md dark:bg-[#3a3a3c] dark:text-white cursor-pointer"
           >
             {n.unread ? "Read" : "Unread"}
           </motion.button>
@@ -608,7 +610,7 @@ function IOSCard({
             type="button"
             style={{ width: clearW }}
             onClick={fling}
-            className="shrink-0 rounded-[20px] bg-white/70 text-[13px] font-semibold text-zinc-900 backdrop-blur-xl dark:bg-zinc-700/60 dark:text-white cursor-pointer"
+            className="shrink-0 rounded-[20px] bg-white text-[13px] font-semibold text-zinc-900 shadow-md dark:bg-[#3a3a3c] dark:text-white cursor-pointer"
           >
             Clear
           </motion.button>
@@ -621,13 +623,14 @@ function IOSCard({
         dragMomentum={false}
         dragConstraints={{ left: -2000, right: 0 }}
         dragElastic={{ left: 0, right: 0.12 }}
+        onDragStart={() => setSwiping(true)}
         onDrag={onDrag}
         onDragEnd={onDragEnd}
         onTap={() => (open ? close() : onTap())}
-        style={{ x }}
+        style={{ x, willChange: "transform" }}
         whileTap={interactive ? { scale: 0.98 } : undefined}
         transition={APPLE_STACK_SPRING}
-        className="relative cursor-pointer rounded-[22px] border border-black/[0.08] bg-white p-3 shadow-[0_10px_28px_rgba(0,0,0,0.12),inset_0_1px_0_rgba(255,255,255,0.85)] dark:border-white/[0.12] dark:bg-zinc-800 dark:shadow-[0_10px_28px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.08)]"
+        className="relative cursor-pointer rounded-[22px] border border-black/[0.08] bg-white p-3 shadow-[0_10px_28px_rgba(0,0,0,0.12),inset_0_1px_0_rgba(255,255,255,0.85)] dark:border-white/[0.12] dark:bg-zinc-800 dark:shadow-[0_10px_28px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.08)] transform-gpu"
       >
         <div className={`flex gap-3 transition-opacity duration-200 ${stacked && !isTop ? "opacity-0" : "opacity-100"}`}>
           <AppIcon icon={n.icon} size="md" />
@@ -663,16 +666,26 @@ export function MobileNotificationCenter({
 }) {
   const dragControls = useDragControls();
   const [expanded, setExpanded] = useState(false);
+  const scrollRef = useRef<HTMLDivElement>(null);
   const { notifications, unreadCount, clearing } = center;
   const stacked = !expanded && notifications.length > 1;
 
   useEffect(() => {
-    if (!open) setExpanded(false);
+    if (!open) {
+      setExpanded(false);
+      if (scrollRef.current) scrollRef.current.scrollTop = 0;
+    }
   }, [open]);
 
   useEffect(() => {
     if (notifications.length <= 1) setExpanded(false);
   }, [notifications.length]);
+
+  useEffect(() => {
+    if (!expanded && scrollRef.current) {
+      scrollRef.current.scrollTop = 0;
+    }
+  }, [expanded]);
 
   return (
     <AnimatePresence>
@@ -725,7 +738,13 @@ export function MobileNotificationCenter({
             </button>
           </div>
 
-          <div className="flex-1 overflow-y-auto overscroll-contain px-3 pb-4" data-lenis-prevent>
+          <div
+            ref={scrollRef}
+            className={`flex-1 overscroll-contain px-3 pb-4 ${
+              stacked ? "overflow-hidden" : "overflow-y-auto"
+            }`}
+            data-lenis-prevent
+          >
             <AnimatePresence initial={false}>
               {notifications.length > 0 && (
                 <motion.div
