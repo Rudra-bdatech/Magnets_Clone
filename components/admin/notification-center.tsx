@@ -35,8 +35,8 @@ export interface AdminNotification {
 
 // UIKit spring (response 0.35, dampingRatio 0.86) converted to stiffness/damping.
 const SPRING = { type: "spring", stiffness: 322, damping: 31, mass: 1 } as const;
-// Apple iOS/macOS fluid stack spring: ultra-responsive (mass 0.85), silky damping, zero layout thrashing
-const APPLE_STACK_SPRING = { type: "spring", stiffness: 280, damping: 26, mass: 0.85 } as const;
+// Apple iOS/macOS fluid rubber-band stack spring: snappy launch with playful, elastic rubber overshoot & settle
+const APPLE_STACK_SPRING = { type: "spring", stiffness: 350, damping: 19, mass: 0.75 } as const;
 // UIKit sheet spring (response 0.5, dampingRatio 0.86).
 const SHEET_SPRING = { type: "spring", stiffness: 158, damping: 21.6, mass: 1 } as const;
 const IOS_EASE = [0.32, 0.72, 0, 1] as const;
@@ -495,7 +495,7 @@ function StackList({
             exit="exit"
             transition={{
               ...APPLE_STACK_SPRING,
-              delay: stacked ? 0 : Math.min(i * 0.035, 0.12),
+              delay: stacked ? 0 : Math.min(i * 0.038, 0.14),
             }}
             style={{
               zIndex: notifications.length - i,
@@ -617,8 +617,8 @@ function IOSCard({
         onDragEnd={onDragEnd}
         onTap={() => (open ? close() : onTap())}
         style={{ x }}
-        whileTap={interactive ? { scale: 0.985 } : undefined}
-        transition={SPRING}
+        whileTap={interactive ? { scale: 0.98 } : undefined}
+        transition={APPLE_STACK_SPRING}
         className="relative cursor-pointer rounded-[22px] border border-black/[0.08] bg-white p-3 shadow-[0_10px_28px_rgba(0,0,0,0.12),inset_0_1px_0_rgba(255,255,255,0.85)] dark:border-white/[0.12] dark:bg-zinc-800 dark:shadow-[0_10px_28px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.08)]"
       >
         <div className={`flex gap-3 transition-opacity duration-200 ${stacked && !isTop ? "opacity-0" : "opacity-100"}`}>
@@ -889,6 +889,8 @@ function MacCard({
       onWheel={onWheel}
       onHoverStart={() => setHover(true)}
       onHoverEnd={() => setHover(false)}
+      whileTap={interactive ? { scale: 0.98 } : undefined}
+      transition={APPLE_STACK_SPRING}
       style={{ x, opacity }}
       className="group relative cursor-default"
     >
