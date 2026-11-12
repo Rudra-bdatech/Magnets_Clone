@@ -18,6 +18,9 @@ import {
   Globe,
   PanelLeftClose,
   PanelLeftOpen,
+  PanelLeft,
+  Bell,
+  Check,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import BrandLogo from "@/components/brand";
@@ -67,6 +70,46 @@ export default function AdminShell({
   const [hoveredNavHref, setHoveredNavHref] = useState<string | null>(null);
   const mainRef = useRef<HTMLElement>(null);
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const [notifOpen, setNotifOpen] = useState(false);
+  const notifRef = useRef<HTMLDivElement>(null);
+  const [notifications, setNotifications] = useState([
+    {
+      id: "1",
+      title: "System Healthy",
+      desc: "All database & cache clusters operational with low latency.",
+      time: "5m ago",
+      unread: true,
+    },
+    {
+      id: "2",
+      title: "Automated Backup Saved",
+      desc: "Daily database snapshot completed successfully.",
+      time: "1h ago",
+      unread: true,
+    },
+    {
+      id: "3",
+      title: "Admin Session",
+      desc: "Privileged console access active.",
+      time: "2h ago",
+      unread: false,
+    },
+  ]);
+
+  const hasUnread = notifications.some((n) => n.unread);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (notifRef.current && !notifRef.current.contains(e.target as Node)) {
+        setNotifOpen(false);
+      }
+    };
+    if (notifOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [notifOpen]);
+
   const tickPlayerRef = useRef<TickPlayer | null>(null);
 
   useEffect(() => {
@@ -241,7 +284,7 @@ export default function AdminShell({
           data-lenis-prevent
         >
           {/* Header & Logo Area */}
-          <div className={`flex shrink-0 items-center ${isCollapsed ? "justify-center px-2" : "justify-between px-3.5"} pt-3.5 pb-2 h-16 relative border-b border-[#E0EDFB] dark:border-white/[0.08]`}>
+          <div className={`flex shrink-0 items-center ${isCollapsed ? "justify-center px-2" : "justify-start px-4"} pt-3.5 pb-2 h-16 relative`}>
             <Link
               href="/admin"
               aria-label="Admin Overview"
@@ -274,40 +317,11 @@ export default function AdminShell({
                 )}
               </AnimatePresence>
             </Link>
-
-            {/* Expanded Header Actions: Theme Toggle + Collapse Button */}
-            {!isCollapsed && (
-              <div className="flex items-center gap-1.5">
-                <ThemeToggle size="sm" />
-                <button
-                  type="button"
-                  onClick={toggleSidebar}
-                  title="Collapse sidebar (⌘B)"
-                  className="group flex h-8 w-8 items-center justify-center rounded-lg text-zinc-400 hover:text-zinc-800 hover:bg-[#E2F0FD] dark:text-zinc-400 dark:hover:text-white dark:hover:bg-zinc-800/80 transition-colors duration-150 active:scale-95 cursor-pointer"
-                  aria-label="Collapse sidebar"
-                >
-                  <PanelLeftClose className="h-4 w-4 transition-transform duration-150 group-hover:-translate-x-0.5" />
-                </button>
-              </div>
-            )}
-
-            {/* Collapsed Expand Button floating on right border */}
-            {isCollapsed && (
-              <button
-                type="button"
-                onClick={toggleSidebar}
-                title="Expand sidebar (⌘B)"
-                className="group absolute -right-3.5 top-4.5 z-[70] flex h-7 w-7 items-center justify-center rounded-full bg-white dark:bg-[#171717] border border-zinc-200/90 dark:border-white/10 shadow-[0_2px_8px_rgba(0,0,0,0.12)] dark:shadow-[0_2px_12px_rgba(0,0,0,0.5)] text-zinc-500 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-white hover:bg-[#E2F0FD] dark:hover:bg-white/10 hover:border-zinc-300 dark:hover:border-white/20 hover:shadow-md transition-colors duration-150 cursor-pointer active:scale-95 transform-gpu before:absolute before:-inset-1 before:content-[''] before:rounded-full"
-                aria-label="Expand sidebar"
-              >
-                <PanelLeftOpen className="h-3.5 w-3.5 transition-transform duration-150 group-hover:translate-x-0.5" />
-              </button>
-            )}
           </div>
 
           {/* Account Identity Chip */}
           {!isCollapsed ? (
-            <div className="p-3 border-b border-[#E0EDFB] dark:border-white/[0.08]">
+            <div className="px-3 pb-2">
               <div className="px-3 py-2 rounded-xl bg-white/70 dark:bg-white/[0.03] border border-[#E0EDFB] dark:border-white/[0.06] shadow-xs">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-bold text-zinc-900 dark:text-white">Admin Console</span>
@@ -322,7 +336,7 @@ export default function AdminShell({
               </div>
             </div>
           ) : (
-            <div className="py-2.5 flex justify-center border-b border-[#E0EDFB] dark:border-white/[0.08]">
+            <div className="py-2 flex justify-center">
               <div
                 className="w-10 h-10 rounded-xl bg-white/70 dark:bg-white/[0.03] border border-[#E0EDFB] dark:border-white/[0.06] flex items-center justify-center relative shadow-xs"
                 title={`Admin Console: ${email}`}
@@ -424,13 +438,7 @@ export default function AdminShell({
           </nav>
 
           {/* Footer */}
-          <div className={`p-3 border-t border-[#E0EDFB] dark:border-white/[0.08] mt-auto space-y-2 ${isCollapsed ? "flex flex-col items-center" : ""}`}>
-            {isCollapsed && (
-              <div className="pb-1">
-                <ThemeToggle size="sm" />
-              </div>
-            )}
-
+          <div className={`p-3 mt-auto space-y-2 ${isCollapsed ? "flex flex-col items-center" : ""}`}>
             <div
               className="relative group flex items-center justify-center w-full"
               onMouseEnter={() => setHoveredNavHref("back-to-dashboard")}
@@ -556,7 +564,7 @@ export default function AdminShell({
               </nav>
 
               {/* Footer */}
-              <div className="pt-3 border-t border-[#E0EDFB] dark:border-white/[0.08] space-y-2 shrink-0">
+              <div className="pt-3 space-y-2 shrink-0">
                 <Link
                   href="/dashboard"
                   onClick={() => setMenuOpen(false)}
@@ -573,7 +581,7 @@ export default function AdminShell({
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0 min-h-[100dvh] md:h-screen md:overflow-hidden">
-        {/* Mobile Header Bar (md:hidden) */}
+        {/* Mobile Header Bar (md:hidden) — 1:1 identical to Dashboard mobile navbar */}
         <header
           className="sticky top-0 z-30 flex h-12 shrink-0 items-center justify-between px-3 sm:px-4 md:hidden w-full max-w-full border-b border-black/[0.04] dark:border-white/[0.05] bg-white/40 dark:bg-black/40 backdrop-blur-md"
         >
@@ -587,7 +595,7 @@ export default function AdminShell({
               <Menu className="h-5.5 w-5.5" aria-hidden="true" strokeWidth={2} />
             </button>
 
-            {/* Scroll-Aware Title (iOS Large Title style: only appears when user scrolls past header) */}
+            {/* Scroll-Aware Title (iOS Large Title style: smoothly appears when user scrolls past header) */}
             <AnimatePresence>
               {isScrolled && (
                 <motion.div
@@ -608,6 +616,118 @@ export default function AdminShell({
           </div>
 
           <div className="flex items-center gap-2 shrink-0">
+            <ThemeToggle size="sm" />
+          </div>
+        </header>
+
+        {/* Desktop Top Navigation Bar (hidden md:flex) */}
+        <header
+          className="sticky top-0 z-30 hidden md:flex h-14 shrink-0 items-center justify-between px-4 sm:px-5 w-full border-b border-[#E0EDFB] dark:border-white/[0.08] bg-white/80 dark:bg-[#121212]/90 backdrop-blur-md transition-colors select-none"
+        >
+          {/* Left: Sidebar Collapse Toggle [ | ] + Page Title */}
+          <div className="flex items-center gap-3 min-w-0">
+            <button
+              type="button"
+              onClick={toggleSidebar}
+              title={isCollapsed ? "Expand sidebar (⌘B)" : "Collapse sidebar (⌘B)"}
+              className="flex h-8.5 w-8.5 items-center justify-center rounded-lg text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white hover:bg-[#E2F0FD] dark:hover:bg-white/10 active:scale-95 transition-all cursor-pointer shrink-0"
+              aria-label="Toggle sidebar"
+            >
+              {isCollapsed ? (
+                <PanelLeftOpen className="h-4.5 w-4.5" />
+              ) : (
+                <PanelLeftClose className="h-4.5 w-4.5" />
+              )}
+            </button>
+
+            {/* Divider */}
+            <div className="h-4 w-px bg-zinc-200 dark:bg-white/10 shrink-0" />
+
+            {/* Current Page Title */}
+            <div className="flex items-center gap-2.5 min-w-0">
+              <span className="text-sm font-semibold tracking-tight text-zinc-900 dark:text-white truncate">
+                {pageTitle}
+              </span>
+            </div>
+          </div>
+
+          {/* Right: Notifications + Theme Toggle */}
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+            {/* Notification Button & Popover */}
+            <div ref={notifRef} className="relative">
+              <button
+                type="button"
+                onClick={() => setNotifOpen((v) => !v)}
+                className="relative flex h-8 w-8 items-center justify-center rounded-lg text-zinc-600 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100/80 dark:hover:bg-white/10 active:scale-90 transition-all cursor-pointer shrink-0"
+                aria-label="Notifications"
+                title="Notifications"
+              >
+                <Bell className="h-4.5 w-4.5" />
+                {hasUnread && (
+                  <span className="absolute top-1.5 right-1.5 flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#0066B2] dark:bg-[#38BDF8] opacity-75" />
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-[#0066B2] dark:bg-[#38BDF8]" />
+                  </span>
+                )}
+              </button>
+
+              {/* Notification Popover Dropdown */}
+              <AnimatePresence>
+                {notifOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.95, y: 6 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.95, y: 6 }}
+                    transition={{ type: "spring", stiffness: 450, damping: 30 }}
+                    className="absolute right-0 top-full mt-2 w-80 sm:w-88 rounded-2xl bg-white dark:bg-[#18181b] border border-zinc-200/90 dark:border-white/10 shadow-2xl p-3 z-50 text-zinc-900 dark:text-white overflow-hidden"
+                  >
+                    <div className="flex items-center justify-between pb-2.5 px-1 border-b border-zinc-100 dark:border-white/10">
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs font-bold">Admin Notifications</span>
+                        {hasUnread && (
+                          <span className="px-1.5 py-0.5 rounded-full text-[10px] font-semibold bg-[#0066B2]/10 text-[#0066B2] dark:bg-[#0066B2]/20 dark:text-[#38BDF8]">
+                            New
+                          </span>
+                        )}
+                      </div>
+                      {hasUnread && (
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setNotifications((prev) => prev.map((n) => ({ ...n, unread: false })))
+                          }
+                          className="text-[11px] text-[#0066B2] dark:text-[#38BDF8] hover:underline cursor-pointer"
+                        >
+                          Mark all as read
+                        </button>
+                      )}
+                    </div>
+
+                    <div className="py-1 divide-y divide-zinc-100 dark:divide-white/5 max-h-72 overflow-y-auto">
+                      {notifications.map((n) => (
+                        <div
+                          key={n.id}
+                          className={`p-2 rounded-xl transition-colors ${
+                            n.unread ? "bg-blue-50/60 dark:bg-white/[0.03]" : ""
+                          }`}
+                        >
+                          <div className="flex items-start justify-between gap-2">
+                            <p className="text-xs font-semibold text-zinc-900 dark:text-zinc-100">
+                              {n.title}
+                            </p>
+                            <span className="text-[10px] text-zinc-400 shrink-0">{n.time}</span>
+                          </div>
+                          <p className="text-[11px] text-zinc-500 dark:text-zinc-400 mt-0.5 leading-snug">
+                            {n.desc}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
             <ThemeToggle size="sm" />
           </div>
         </header>
