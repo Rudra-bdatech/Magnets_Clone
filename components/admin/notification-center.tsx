@@ -61,17 +61,17 @@ function haptic(ms = 8) {
 
 // Map API notification type → lucide icon
 const TYPE_ICON: Record<string, LucideIcon> = {
-  signup:         UserPlus,
-  verified:       ShieldCheck,
-  suspended:      ShieldOff,
-  unsuspended:    ShieldAlert,
-  upgrade:        TrendingUp,
-  cancelled:      TrendingDown,
+  signup: UserPlus,
+  verified: ShieldCheck,
+  suspended: ShieldOff,
+  unsuspended: ShieldAlert,
+  upgrade: TrendingUp,
+  cancelled: TrendingDown,
   payment_failed: AlertCircle,
   account_delete: UserX,
-  plan_change:    ArrowLeftRight,
-  role_change:    Key,
-  funnel_delete:  Trash2,
+  plan_change: ArrowLeftRight,
+  role_change: Key,
+  funnel_delete: Trash2,
 };
 
 function relativeTime(isoTs: string): string {
@@ -631,7 +631,7 @@ function IOSCard({
                 <span className="text-[13px] text-zinc-500 dark:text-zinc-400">{n.time}</span>
               </div>
             </div>
-            <p className="mt-0.5 line-clamp-2 text-[14px] leading-[19px] text-zinc-700 dark:text-zinc-300">{n.desc}</p>
+            <p className={`mt-0.5 text-[14px] leading-[19px] text-zinc-700 dark:text-zinc-300 ${stacked ? "truncate" : "line-clamp-4"}`}>{n.desc}</p>
             {stacked && isTop && stackCount > 1 && (
               <p className="mt-0.5 text-[13px] text-zinc-500 dark:text-zinc-400">
                 {stackCount - 1} more notification{stackCount > 2 ? "s" : ""}
@@ -924,7 +924,7 @@ function MacCard({
                 <span className="text-[11px] text-zinc-500 dark:text-zinc-400">{n.time}</span>
               </div>
             </div>
-            <p className="mt-1 line-clamp-2 text-[12px] leading-snug text-zinc-600 dark:text-zinc-300">{n.desc}</p>
+            <p className={`mt-1 text-[12px] leading-snug text-zinc-600 dark:text-zinc-300 ${stacked ? "truncate" : "line-clamp-4"}`}>{n.desc}</p>
             {stacked && isTop && stackCount > 1 && (
               <p className="mt-1 text-[11px] font-medium text-zinc-400 dark:text-zinc-500">
                 {stackCount - 1} more notification{stackCount > 2 ? "s" : ""}
