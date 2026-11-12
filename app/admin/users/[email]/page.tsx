@@ -636,7 +636,7 @@ export default function AdminUserDetailPage() {
                           </span>
                           {m.status === "live" && (
                             <a
-                              href={`/l/${m.slug}`}
+                              href={`/l/${m.id}`}
                               target="_blank"
                               rel="noopener noreferrer"
                               className="p-1 rounded-lg text-[#0066B2] dark:text-[#38BDF8] hover:bg-zinc-100 dark:hover:bg-white/5 transition-colors"
@@ -724,7 +724,7 @@ export default function AdminUserDetailPage() {
                           <td className="px-4 py-3">
                             {m.status === "live" && (
                               <a
-                                href={`/l/${m.slug}`}
+                                href={`/l/${m.id}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="text-[#0066B2] dark:text-[#38BDF8] hover:opacity-70 transition-opacity"

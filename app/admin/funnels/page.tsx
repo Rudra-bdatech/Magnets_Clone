@@ -446,7 +446,7 @@ export default function FunnelsPage() {
   // Copy slug helper
   function handleCopySlug(e: React.MouseEvent, funnel: Funnel) {
     e.stopPropagation();
-    const url = `${window.location.origin}/l/${funnel.slug}`;
+    const url = `${window.location.origin}/l/${funnel.id}`;
     navigator.clipboard.writeText(url);
     setCopiedId(funnel.id);
     setTimeout(() => setCopiedId(null), 1800);
@@ -837,7 +837,7 @@ export default function FunnelsPage() {
                             </button>
                             {f.status === "live" && (
                               <a
-                                href={`/l/${f.slug}`}
+                                href={`/l/${f.id}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 onClick={(e) => e.stopPropagation()}
@@ -1130,7 +1130,7 @@ export default function FunnelsPage() {
                                 </button>
                                 {f.status === "live" && (
                                   <a
-                                    href={`/l/${f.slug}`}
+                                    href={`/l/${f.id}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     onClick={(e) => e.stopPropagation()}

@@ -211,7 +211,7 @@ export default function FunnelDetailPage() {
                 <span>/{funnel.slug}</span>
                 {funnel.status === "live" && (
                   <a
-                    href={`/l/${funnel.slug}`}
+                    href={`/l/${funnel.id}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-[#0066B2] dark:text-[#38BDF8] hover:opacity-80 transition-opacity"
