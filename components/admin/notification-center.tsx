@@ -18,7 +18,10 @@ import {
   type PanInfo,
 } from "framer-motion";
 import { createPortal } from "react-dom";
-import { Bell, X, Check, ChevronUp, type LucideIcon } from "lucide-react";
+import {
+  Bell, X, Check, ChevronUp, UserPlus, ShieldCheck, ShieldOff, ShieldAlert,
+  type LucideIcon,
+} from "lucide-react";
 
 export interface AdminNotification {
   id: string;
@@ -53,10 +56,34 @@ function haptic(ms = 8) {
   } catch {}
 }
 
+// Map API notification type → lucide icon
+const TYPE_ICON: Record<string, LucideIcon> = {
+  signup:      UserPlus,
+  verified:    ShieldCheck,
+  suspended:   ShieldOff,
+  unsuspended: ShieldAlert,
+};
+
+function relativeTime(isoTs: string): string {
+  const diff = Date.now() - new Date(isoTs).getTime();
+  const s = Math.floor(diff / 1000);
+  if (s < 60)  return "just now";
+  const m = Math.floor(s / 60);
+  if (m < 60)  return `${m}m ago`;
+  const h = Math.floor(m / 60);
+  if (h < 24)  return `${h}h ago`;
+  const d = Math.floor(h / 24);
+  return `${d}d ago`;
+}
+
 export function useNotificationCenter(initial: AdminNotification[]) {
   const [notifications, setNotifications] = useState(initial);
   const [clearing, setClearing] = useState(false);
   const timers = useRef<number[]>([]);
+  // IDs of notifications the user has manually dismissed — never re-add them from the API.
+  const dismissed = useRef<Set<string>>(new Set());
+  // IDs already seen — avoids marking pre-existing ones as unread on each poll.
+  const seenIds = useRef<Set<string>>(new Set(initial.map((n) => n.id)));
 
   useEffect(() => () => timers.current.forEach((t) => clearTimeout(t)), []);
 
@@ -74,25 +101,69 @@ export function useNotificationCenter(initial: AdminNotification[]) {
     (id: string) => setNotifications((p) => p.map((n) => (n.id === id ? { ...n, unread: !n.unread } : n))),
     []
   );
-  const dismiss = useCallback(
-    (id: string) => setNotifications((p) => p.filter((n) => n.id !== id)),
-    []
-  );
+  const dismiss = useCallback((id: string) => {
+    dismissed.current.add(id);
+    setNotifications((p) => p.filter((n) => n.id !== id));
+  }, []);
 
   const clearAll = useCallback(() => {
     if (clearing) return;
     const ids = notifications.map((n) => n.id);
     if (!ids.length) return;
     haptic(12);
+    ids.forEach((id) => dismissed.current.add(id));
     setClearing(true);
     ids.forEach((id, i) => {
       timers.current.push(
         window.setTimeout(() => setNotifications((p) => p.filter((n) => n.id !== id)), i * 55)
       );
     });
-    // Keep the "clearing" exit variant alive until the last card has finished leaving.
     timers.current.push(window.setTimeout(() => setClearing(false), ids.length * 55 + 600));
   }, [clearing, notifications]);
+
+  // Merge fresh notifications from the API without touching dismissed or already-seen ones.
+  const mergeFromApi = useCallback((fresh: Array<{
+    id: string; type: string; title: string; desc: string; ts: string;
+  }>) => {
+    setNotifications((prev) => {
+      const existingIds = new Set(prev.map((n) => n.id));
+      const incoming: AdminNotification[] = [];
+      for (const f of fresh) {
+        if (dismissed.current.has(f.id)) continue;
+        if (existingIds.has(f.id)) continue;
+        const isNew = !seenIds.current.has(f.id);
+        seenIds.current.add(f.id);
+        incoming.push({
+          id: f.id,
+          title: f.title,
+          desc: f.desc,
+          time: relativeTime(f.ts),
+          unread: isNew,
+          icon: TYPE_ICON[f.type] ?? UserPlus,
+        });
+      }
+      if (!incoming.length) return prev;
+      // Prepend newest, keep total ≤ 40
+      return [...incoming, ...prev].slice(0, 40);
+    });
+  }, []);
+
+  // Poll every 60 s.
+  useEffect(() => {
+    let alive = true;
+    const poll = async () => {
+      try {
+        const res = await fetch("/api/admin/notifications");
+        if (!res.ok || !alive) return;
+        const data = await res.json();
+        if (Array.isArray(data.notifications)) mergeFromApi(data.notifications);
+      } catch {}
+    };
+    poll(); // immediate first load
+    const id = window.setInterval(poll, 60_000);
+    return () => { alive = false; clearInterval(id); };
+  }, [mergeFromApi]);
+
 
   return { notifications, unreadCount, clearing, markAllRead, markRead, toggleRead, dismiss, clearAll };
 }

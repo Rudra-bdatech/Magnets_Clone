@@ -20,7 +20,6 @@ import {
   PanelLeftOpen,
   PanelLeft,
   ChevronRight,
-  DatabaseBackup,
 } from "lucide-react";
 import { motion, AnimatePresence, MotionConfig } from "framer-motion";
 import BrandLogo from "@/components/brand";
@@ -35,32 +34,8 @@ import {
   type AdminNotification,
 } from "@/components/admin/notification-center";
 
-const INITIAL_NOTIFICATIONS: AdminNotification[] = [
-  {
-    id: "1",
-    title: "System Healthy",
-    desc: "All database & cache clusters operational with low latency.",
-    time: "5m ago",
-    unread: true,
-    icon: Activity,
-  },
-  {
-    id: "2",
-    title: "Automated Backup Saved",
-    desc: "Daily database snapshot completed successfully.",
-    time: "1h ago",
-    unread: true,
-    icon: DatabaseBackup,
-  },
-  {
-    id: "3",
-    title: "Admin Session",
-    desc: "Privileged console access active.",
-    time: "2h ago",
-    unread: false,
-    icon: Shield,
-  },
-];
+// Start empty — the polling hook fills this from /api/admin/notifications on mount.
+const INITIAL_NOTIFICATIONS: AdminNotification[] = [];
 
 export interface AdminSidebarContextType {
   isCollapsed: boolean;
