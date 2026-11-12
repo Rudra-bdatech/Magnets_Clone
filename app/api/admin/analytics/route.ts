@@ -112,7 +112,18 @@ export async function GET() {
                     $cond: [
                       { $and: [{ $ne: ["$videoUrl", ""] }, { $ne: ["$videoUrl", null] }] },
                       "video",
-                      { $ifNull: ["$template", "classic"] },
+                      {
+                        $let: {
+                          vars: { tmpl: { $ifNull: ["$template", "classic"] } },
+                          in: {
+                            $cond: [
+                              { $eq: ["$$tmpl", "locked-pdf"] },
+                              "classic",
+                              "$$tmpl",
+                            ],
+                          },
+                        },
+                      },
                     ],
                   },
                 ],
