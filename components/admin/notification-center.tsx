@@ -41,11 +41,11 @@ const SHEET_SPRING = { type: "spring", stiffness: 158, damping: 21.6, mass: 1 } 
 const IOS_EASE = [0.32, 0.72, 0, 1] as const;
 const FLING = { type: "tween", duration: 0.24, ease: IOS_EASE } as const;
 
-// macOS 26 "Liquid Glass": opaque fill with subtle blur, crisp perimeter border, and directional bottom shadow.
+// Apple Notification Card: 100% opaque fill, crisp perimeter border, and realistic layered drop shadow.
 const GLASS_CARD =
-  "bg-white/95 backdrop-blur-2xl border border-black/[0.08] shadow-[0_10px_25px_-4px_rgba(0,0,0,0.12),0_6px_10px_-4px_rgba(0,0,0,0.08),inset_0_1px_0_rgba(255,255,255,0.95),inset_0_-1px_0_rgba(0,0,0,0.04)] dark:bg-[#1c1c1e]/95 dark:border-white/[0.12] dark:shadow-[0_14px_30px_-4px_rgba(0,0,0,0.7),0_6px_12px_-4px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.1),inset_0_-1px_0_rgba(0,0,0,0.3)]";
+  "bg-white border border-black/[0.08] shadow-[0_5px_15px_-2px_rgba(0,0,0,0.12),0_2px_5px_-1px_rgba(0,0,0,0.06),inset_0_1px_0_rgba(255,255,255,1)] dark:bg-[#1c1c1e] dark:border-white/[0.12] dark:shadow-[0_8px_20px_-3px_rgba(0,0,0,0.7),0_2px_6px_-1px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.1)]";
 const GLASS_PILL =
-  "bg-white/92 backdrop-blur-xl text-zinc-700 border border-black/[0.08] shadow-[0_2px_8px_rgba(0,0,0,0.08),inset_0_1px_0_rgba(255,255,255,0.95)] hover:bg-white hover:text-zinc-900 dark:bg-[#2c2c2e]/92 dark:text-zinc-200 dark:border-white/10 dark:shadow-[0_2px_8px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.12)] dark:hover:bg-[#3a3a3c] dark:hover:text-white";
+  "bg-white text-zinc-700 border border-black/[0.08] shadow-[0_2px_8px_rgba(0,0,0,0.08),inset_0_1px_0_rgba(255,255,255,0.95)] hover:bg-zinc-50 hover:text-zinc-900 dark:bg-[#2c2c2e] dark:text-zinc-200 dark:border-white/10 dark:shadow-[0_2px_8px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.12)] dark:hover:bg-[#3a3a3c] dark:hover:text-white";
 const APPLE_FONT = '-apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", system-ui, sans-serif';
 
 const ACTION_W = 74;
@@ -401,7 +401,9 @@ function rowTarget(i: number, stacked: boolean, gap: number) {
   if (!stacked) {
     return {
       opacity: 1,
-      scale: 1,
+      scaleX: 1,
+      scaleY: 1,
+      y: 0,
       marginTop: i === 0 ? 0 : gap,
       pointerEvents: "auto" as const,
     };
@@ -409,31 +411,49 @@ function rowTarget(i: number, stacked: boolean, gap: number) {
   if (i === 0) {
     return {
       opacity: 1,
-      scale: 1,
+      scaleX: 1,
+      scaleY: 1,
+      y: 0,
       marginTop: 0,
       pointerEvents: "auto" as const,
     };
   }
   if (i === 1) {
     return {
-      opacity: 0.88,
-      scale: 0.96,
-      marginTop: -54,
+      opacity: 1,
+      scaleX: 0.95,
+      scaleY: 1,
+      y: 0,
+      marginTop: -44,
       pointerEvents: "none" as const,
     };
   }
   if (i === 2) {
     return {
-      opacity: 0.65,
-      scale: 0.92,
-      marginTop: -54,
+      opacity: 0.95,
+      scaleX: 0.90,
+      scaleY: 1,
+      y: 0,
+      marginTop: -46,
+      pointerEvents: "none" as const,
+    };
+  }
+  if (i === 3) {
+    return {
+      opacity: 0.9,
+      scaleX: 0.85,
+      scaleY: 1,
+      y: 0,
+      marginTop: -48,
       pointerEvents: "none" as const,
     };
   }
   return {
     opacity: 0,
-    scale: 0.88,
-    marginTop: -54,
+    scaleX: 0.80,
+    scaleY: 1,
+    y: 0,
+    marginTop: -48,
     pointerEvents: "none" as const,
   };
 }
@@ -589,9 +609,9 @@ function IOSCard({
         style={{ x }}
         whileTap={interactive ? { scale: 0.985 } : undefined}
         transition={SPRING}
-        className="relative cursor-pointer rounded-[22px] border border-black/[0.08] bg-white/95 p-3 shadow-[0_10px_28px_rgba(0,0,0,0.12),inset_0_1px_0_rgba(255,255,255,0.85)] backdrop-blur-2xl dark:border-white/[0.12] dark:bg-zinc-800/95 dark:shadow-[0_10px_28px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.08)]"
+        className="relative cursor-pointer rounded-[22px] border border-black/[0.08] bg-white p-3 shadow-[0_10px_28px_rgba(0,0,0,0.12),inset_0_1px_0_rgba(255,255,255,0.85)] dark:border-white/[0.12] dark:bg-zinc-800 dark:shadow-[0_10px_28px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.08)]"
       >
-        <div className="flex gap-3">
+        <div className={`flex gap-3 transition-opacity duration-200 ${stacked && !isTop ? "opacity-0" : "opacity-100"}`}>
           <AppIcon icon={n.icon} size="md" />
           <div className="min-w-0 flex-1">
             <div className="flex items-baseline justify-between gap-2">
@@ -882,21 +902,20 @@ function MacCard({
         )}
       </AnimatePresence>
 
-      <div className={`relative overflow-hidden rounded-[22px] px-3 py-2.5 ${GLASS_CARD}`}>
-        <div className="pointer-events-none absolute inset-0 rounded-[inherit] bg-gradient-to-b from-white/35 via-white/0 to-white/0 dark:from-white/[0.08]" />
-        <div className="relative flex gap-2.5">
+      <div className={`relative overflow-hidden rounded-[20px] p-3 ${GLASS_CARD}`}>
+        <div className={`relative flex items-start gap-2.5 transition-opacity duration-200 ${stacked && !isTop ? "opacity-0" : "opacity-100"}`}>
           <AppIcon icon={n.icon} size="sm" />
           <div className="min-w-0 flex-1">
-            <div className="flex items-baseline justify-between gap-2">
-              <p className="truncate text-[13px] font-semibold leading-[18px] text-zinc-900 dark:text-white">{n.title}</p>
+            <div className="flex items-center justify-between gap-2">
+              <p className="truncate text-[13px] font-semibold leading-tight text-zinc-900 dark:text-white">{n.title}</p>
               <div className="flex shrink-0 items-center gap-1.5">
                 <UnreadDot show={n.unread} />
                 <span className="text-[11px] text-zinc-500 dark:text-zinc-400">{n.time}</span>
               </div>
             </div>
-            <p className="line-clamp-2 text-[12px] leading-[16px] text-zinc-600 dark:text-zinc-300">{n.desc}</p>
+            <p className="mt-1 line-clamp-2 text-[12px] leading-snug text-zinc-600 dark:text-zinc-300">{n.desc}</p>
             {stacked && isTop && stackCount > 1 && (
-              <p className="mt-0.5 text-[11px] text-zinc-500 dark:text-zinc-400">
+              <p className="mt-1 text-[11px] font-medium text-zinc-400 dark:text-zinc-500">
                 {stackCount - 1} more notification{stackCount > 2 ? "s" : ""}
               </p>
             )}
