@@ -779,7 +779,7 @@ export function MobileNotificationCenter({
               stacked={stacked}
               clearing={clearing}
               gap={8}
-              stackedMargin={-68}
+              stackedMargin={-54}
               renderCard={(n, i) => (
                 <IOSCard
                   n={n}
