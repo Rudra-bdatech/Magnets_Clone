@@ -10,7 +10,8 @@ export type AuditAction =
   | "funnel_delete"
   | "account_suspend"
   | "account_unsuspend"
-  | "account_delete";
+  | "account_delete"
+  | "audit_logs_purged";
 
 interface LogEntry {
   adminEmail: string;

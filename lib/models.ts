@@ -373,6 +373,7 @@ const AuditLogSchema = new Schema({
       "account_suspend",
       "account_unsuspend",
       "account_delete",
+      "audit_logs_purged",
     ],
     required: true,
     index: true,
