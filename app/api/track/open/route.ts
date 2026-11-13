@@ -31,21 +31,59 @@ export async function GET(req: NextRequest) {
     try {
       await dbConnect();
 
-      // 1. Record EmailEvent
-      const eventId = `ev_open_${crypto.randomBytes(8).toString("hex")}`;
-      await EmailEventModel.create({
-        id: eventId,
-        userEmail,
-        leadId,
-        pageId,
-        sequenceId,
-        stepId,
-        eventType: "opened",
-        recipientEmail: recipient,
-        userAgent,
-        ip,
-        createdAt: new Date(),
-      });
+      // 1. Record EmailEvent — atomic upsert deduplicated per lead+step.
+      // Uses updateOne+upsert so concurrent prefetches (Apple Mail, Gmail proxy)
+      // cannot race past an exists() check and both insert duplicate rows.
+      // stepId is intentionally NOT replaced by sequenceId as a fallback: doing so
+      // would cause Step 2's open to match Step 1's existing record and be silently dropped.
+      let isNewOpen = false;
+      const canDedup = !!(leadId || recipient);
+
+      if (canDedup) {
+        const dedupeFilter: Record<string, string> = { eventType: "opened" };
+        if (leadId) dedupeFilter.leadId = leadId;
+        else dedupeFilter.recipientEmail = recipient;
+        if (stepId) dedupeFilter.stepId = stepId;
+
+        const eventId = `ev_open_${crypto.randomBytes(8).toString("hex")}`;
+        const result = await EmailEventModel.updateOne(
+          dedupeFilter,
+          {
+            $setOnInsert: {
+              id: eventId,
+              userEmail,
+              leadId,
+              pageId,
+              sequenceId,
+              stepId,
+              eventType: "opened",
+              recipientEmail: recipient,
+              userAgent,
+              ip,
+              createdAt: new Date(),
+            },
+          },
+          { upsert: true }
+        );
+        isNewOpen = result.upsertedCount > 0;
+      } else {
+        // No identity anchor — cannot dedup, always record
+        const eventId = `ev_open_${crypto.randomBytes(8).toString("hex")}`;
+        await EmailEventModel.create({
+          id: eventId,
+          userEmail,
+          leadId,
+          pageId,
+          sequenceId,
+          stepId,
+          eventType: "opened",
+          recipientEmail: recipient,
+          userAgent,
+          ip,
+          createdAt: new Date(),
+        });
+        isNewOpen = true;
+      }
 
       // 2. Update Lead opened flag and step telemetry in MongoDB
       let targetLead = null;
@@ -76,8 +114,8 @@ export async function GET(req: NextRequest) {
         await targetLead.save();
       }
 
-      // 3. Atomically increment sequence opened stats in MongoDB
-      if (sequenceId) {
+      // 3. Increment sequence stats only for genuinely new opens — not re-opens or prefetches
+      if (isNewOpen && sequenceId) {
         await SequenceModel.updateOne(
           { id: sequenceId },
           { $inc: { "stats.opened": 1 } }

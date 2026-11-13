@@ -41,27 +41,63 @@ export async function GET(req: NextRequest) {
     "127.0.0.1";
   const userAgent = req.headers.get("user-agent") || "";
 
-  // Record click telemetry event before redirecting
+  // Record click telemetry — atomic upsert deduplicated per lead+step so a lead
+  // clicking multiple links in the same email step counts as one click for health metrics.
+  // stepId is NOT replaced by sequenceId as fallback (would merge clicks across different steps).
   try {
     await dbConnect();
-    const eventId = `ev_click_${crypto.randomBytes(8).toString("hex")}`;
-    await EmailEventModel.create({
-      id: eventId,
-      userEmail,
-      leadId,
-      pageId,
-      sequenceId,
-      stepId,
-      eventType: "clicked",
-      recipientEmail: recipient,
-      linkUrl: validatedUrl,
-      userAgent,
-      ip,
-      createdAt: new Date(),
-    });
 
-    // Update lead status to "opened" if not already opened/completed
-    if (leadId) {
+    const canDedup = !!(leadId || recipient);
+    let isNewClick = true;
+
+    if (canDedup) {
+      const dedupeFilter: Record<string, string> = { eventType: "clicked" };
+      if (leadId) dedupeFilter.leadId = leadId;
+      else dedupeFilter.recipientEmail = recipient;
+      if (stepId) dedupeFilter.stepId = stepId;
+
+      const eventId = `ev_click_${crypto.randomBytes(8).toString("hex")}`;
+      const result = await EmailEventModel.updateOne(
+        dedupeFilter,
+        {
+          $setOnInsert: {
+            id: eventId,
+            userEmail,
+            leadId,
+            pageId,
+            sequenceId,
+            stepId,
+            eventType: "clicked",
+            recipientEmail: recipient,
+            linkUrl: validatedUrl,
+            userAgent,
+            ip,
+            createdAt: new Date(),
+          },
+        },
+        { upsert: true }
+      );
+      isNewClick = result.upsertedCount > 0;
+    } else {
+      const eventId = `ev_click_${crypto.randomBytes(8).toString("hex")}`;
+      await EmailEventModel.create({
+        id: eventId,
+        userEmail,
+        leadId,
+        pageId,
+        sequenceId,
+        stepId,
+        eventType: "clicked",
+        recipientEmail: recipient,
+        linkUrl: validatedUrl,
+        userAgent,
+        ip,
+        createdAt: new Date(),
+      });
+    }
+
+    // Update lead status only on the first click — not on repeated clicks
+    if (isNewClick && leadId) {
       const lead = await LeadModel.findOne({ id: leadId });
       if (lead && (lead.status === "new" || lead.status === "delivered")) {
         lead.status = "opened";

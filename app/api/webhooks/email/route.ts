@@ -131,20 +131,60 @@ export async function POST(req: NextRequest) {
     // Process & store all standardized events concurrently; one bad event cannot fail the batch
     await Promise.allSettled(
       validEvents.map(async (ev) => {
-        const eventId = `ev_wh_${crypto.randomBytes(8).toString("hex")}`;
-        const createEventPromise = EmailEventModel.create({
-          id: eventId,
-          userEmail: ev.userEmail,
-          leadId: ev.leadId,
-          pageId: ev.pageId,
-          sequenceId: ev.sequenceId,
-          stepId: ev.stepId,
-          eventType: ev.eventType,
-          recipientEmail: ev.recipientEmail,
-          messageId: ev.messageId,
-          linkUrl: ev.linkUrl,
-          createdAt: new Date(),
-        });
+        // For "opened" and "clicked": atomic upsert deduplication so the tracking pixel and
+        // the ESP webhook don't both insert a row for the same event.
+        // Uses updateOne+upsert ($setOnInsert) which is atomic in MongoDB — no race condition.
+        // stepId is NOT replaced by sequenceId as a fallback: doing so would cause opens of
+        // later steps in a sequence to match the first step's record and be silently dropped.
+        const shouldDedup = (ev.eventType === "opened" || ev.eventType === "clicked")
+          && (ev.leadId || ev.recipientEmail);
+
+        let isNewEvent = true;
+
+        if (shouldDedup) {
+          const dedupeFilter: Record<string, string> = { eventType: ev.eventType };
+          if (ev.leadId) dedupeFilter.leadId = ev.leadId;
+          else dedupeFilter.recipientEmail = ev.recipientEmail;
+          if (ev.stepId) dedupeFilter.stepId = ev.stepId;
+
+          const eventId = `ev_wh_${crypto.randomBytes(8).toString("hex")}`;
+          const result = await EmailEventModel.updateOne(
+            dedupeFilter,
+            {
+              $setOnInsert: {
+                id: eventId,
+                userEmail: ev.userEmail,
+                leadId: ev.leadId,
+                pageId: ev.pageId,
+                sequenceId: ev.sequenceId,
+                stepId: ev.stepId,
+                eventType: ev.eventType,
+                recipientEmail: ev.recipientEmail,
+                messageId: ev.messageId,
+                linkUrl: ev.linkUrl,
+                createdAt: new Date(),
+              },
+            },
+            { upsert: true }
+          );
+          isNewEvent = result.upsertedCount > 0;
+        } else {
+          await EmailEventModel.create({
+            id: `ev_wh_${crypto.randomBytes(8).toString("hex")}`,
+            userEmail: ev.userEmail,
+            leadId: ev.leadId,
+            pageId: ev.pageId,
+            sequenceId: ev.sequenceId,
+            stepId: ev.stepId,
+            eventType: ev.eventType,
+            recipientEmail: ev.recipientEmail,
+            messageId: ev.messageId,
+            linkUrl: ev.linkUrl,
+            createdAt: new Date(),
+          });
+        }
+
+        if (!isNewEvent) return;
 
         // Atomic Lead Status Update — always scoped to the owning account, so an event can only
         // ever touch that owner's leads. Events without an owner are stored but change nothing.
@@ -190,7 +230,7 @@ export async function POST(req: NextRequest) {
           }
         }
 
-        // Atomic Sequence Stats Update
+        // Atomic Sequence Stats Update — only on new events, not duplicates
         let updateSequencePromise: Promise<any> | null = null;
         if (ev.sequenceId && ev.userEmail) {
           if (ev.eventType === "opened") {
@@ -207,7 +247,6 @@ export async function POST(req: NextRequest) {
         }
 
         await Promise.all([
-          createEventPromise,
           updateLeadPromise,
           updateSequencePromise,
         ].filter(Boolean));

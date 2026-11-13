@@ -16,8 +16,6 @@ export async function GET(request: NextRequest) {
   const periodStart = new Date();
   periodStart.setDate(periodStart.getDate() - (days === 30 ? 30 : 7));
 
-  const ALL_EVENT_TYPES = ["sent", "delivered", "opened", "clicked", "bounced", "complained"];
-
   const [
     platformCounts,
     perUserStats,
@@ -25,23 +23,82 @@ export async function GET(request: NextRequest) {
     failedLeadGroups,
     pendingLeads,
   ] = await Promise.all([
-    // 1. Platform-wide counts per event type
-    EmailEventModel.aggregate([
-      { $match: { createdAt: { $gte: periodStart } } },
-      { $group: { _id: "$eventType", count: { $sum: 1 } } },
-    ]),
-
-    // 2. Per-user breakdown — only users who sent at least 1 email
+    // 1. Platform-wide counts — opened and clicked deduplicated per lead+step so historical
+    // duplicate rows (from pre-fix pixel + webhook double-writes) don't inflate rates.
+    // Stage A: collapse duplicates into one row per (eventType, lead, step).
+    // Stage B: count collapsed rows per eventType.
+    // - opened/clicked/delivered: deduplicated per lead+step because:
+    //     • opened/clicked: tracking pixel + ESP webhook both fire for the same event.
+    //     • delivered: logEmailEvent writes one at send time AND the ESP webhook writes another on actual delivery.
+    // - sent/bounced/complained: each raw row counts once (always unique events).
+    // $ifNull is intentionally NOT used for the lead key because MongoDB treats "" as a valid
+    // non-null value — an empty string leadId would never fall back to recipientEmail.
+    // The $cond below explicitly checks for both null and "".
     EmailEventModel.aggregate([
       { $match: { createdAt: { $gte: periodStart } } },
       {
         $group: {
-          _id: "$userEmail",
-          sent:       { $sum: { $cond: [{ $eq: ["$eventType", "sent"] },       1, 0] } },
-          delivered:  { $sum: { $cond: [{ $eq: ["$eventType", "delivered"] },  1, 0] } },
-          opened:     { $sum: { $cond: [{ $eq: ["$eventType", "opened"] },     1, 0] } },
-          bounced:    { $sum: { $cond: [{ $eq: ["$eventType", "bounced"] },    1, 0] } },
-          complained: { $sum: { $cond: [{ $eq: ["$eventType", "complained"] }, 1, 0] } },
+          _id: {
+            eventType: "$eventType",
+            dedupeKey: {
+              $cond: {
+                if: { $in: ["$eventType", ["opened", "clicked", "delivered"]] },
+                then: {
+                  lead: {
+                    $cond: {
+                      if: { $and: [{ $ne: ["$leadId", null] }, { $ne: ["$leadId", ""] }] },
+                      then: "$leadId",
+                      else: "$recipientEmail",
+                    },
+                  },
+                  step: "$stepId",
+                },
+                else: "$_id",
+              },
+            },
+          },
+        },
+      },
+      { $group: { _id: "$_id.eventType", count: { $sum: 1 } } },
+    ]),
+
+    // 2. Per-user breakdown — opened/clicked/delivered deduplicated per lead+step.
+    EmailEventModel.aggregate([
+      { $match: { createdAt: { $gte: periodStart } } },
+      // Stage A: collapse duplicate rows — same dedup logic as platform counts above
+      {
+        $group: {
+          _id: {
+            userEmail: "$userEmail",
+            eventType: "$eventType",
+            dedupeKey: {
+              $cond: {
+                if: { $in: ["$eventType", ["opened", "clicked", "delivered"]] },
+                then: {
+                  lead: {
+                    $cond: {
+                      if: { $and: [{ $ne: ["$leadId", null] }, { $ne: ["$leadId", ""] }] },
+                      then: "$leadId",
+                      else: "$recipientEmail",
+                    },
+                  },
+                  step: "$stepId",
+                },
+                else: "$_id",
+              },
+            },
+          },
+        },
+      },
+      // Stage B: pivot deduplicated rows into per-user counters
+      {
+        $group: {
+          _id: "$_id.userEmail",
+          sent:       { $sum: { $cond: [{ $eq: ["$_id.eventType", "sent"] },       1, 0] } },
+          delivered:  { $sum: { $cond: [{ $eq: ["$_id.eventType", "delivered"] },  1, 0] } },
+          opened:     { $sum: { $cond: [{ $eq: ["$_id.eventType", "opened"] },     1, 0] } },
+          bounced:    { $sum: { $cond: [{ $eq: ["$_id.eventType", "bounced"] },    1, 0] } },
+          complained: { $sum: { $cond: [{ $eq: ["$_id.eventType", "complained"] }, 1, 0] } },
         },
       },
       { $match: { sent: { $gt: 0 } } },
@@ -58,7 +115,6 @@ export async function GET(request: NextRequest) {
           },
         },
       },
-      // Sort by worst bounce rate first, then complaint rate
       { $sort: { bounceRate: -1, complaintRate: -1 } },
       { $limit: 30 },
     ]),
@@ -99,8 +155,10 @@ export async function GET(request: NextRequest) {
       { $limit: 20 },
     ]),
 
-    // 5. Total leads currently stuck in pending_email
-    LeadModel.countDocuments({ status: "pending_email" }),
+    // 5. Leads stuck in pending_email that are genuinely waiting for email delivery.
+    // LinkedIn leads legitimately sit in pending_email while awaiting contact info from the
+    // LinkedIn extension — they are not stuck, so they are excluded from this warning.
+    LeadModel.countDocuments({ status: "pending_email", source: { $ne: "linkedin-comment" } }),
   ]);
 
   // Build platform stats map
