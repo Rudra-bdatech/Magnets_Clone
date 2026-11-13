@@ -169,7 +169,9 @@ export async function GET() {
       case "account_delete":
         type  = "account_delete";
         title = "Account deleted";
-        desc  = `${admin} permanently deleted ${target}`;
+        desc  = entry.adminEmail === entry.targetEmail
+          ? `${target} deleted their own account`
+          : `${admin} permanently deleted ${target}`;
         break;
       case "plan_change": {
         const from = entry.before?.plan || "Free";

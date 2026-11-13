@@ -14,7 +14,7 @@ export type AuditAction =
 
 interface LogEntry {
   adminEmail: string;
-  adminRole: AdminRole;
+  adminRole: AdminRole | string; // "user" for self-initiated actions (e.g. self-deletion)
   action: AuditAction;
   targetEmail: string;
   targetName: string;

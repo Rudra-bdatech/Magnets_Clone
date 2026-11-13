@@ -13,6 +13,7 @@ import { createHash, randomBytes } from "crypto";
 import { isMaskedSecret, maskSecret, maskWebhookUrl } from "@/lib/secret-mask";
 import { isValidEmailAddress } from "@/lib/email-guard";
 import { checkRateLimit } from "@/lib/rate-limit";
+import { logAdminAction } from "@/lib/audit-log";
 import { getGeoFromHeaders } from "@/lib/geo";
 
 /** Generates a cryptographically random 64-char hex webhook secret. */
@@ -580,6 +581,18 @@ export async function handleDeleteAccount(data: any, authEmail: string | null) {
       console.error("Cloudinary cleanup error on deleteAccount:", err)
     );
   }
+
+  // Log self-deletion so admin notification panel captures it.
+  // adminEmail === targetEmail signals a self-initiated deletion (not an admin action).
+  await logAdminAction({
+    adminEmail: normDelEmail,
+    adminRole:  "user",
+    action:     "account_delete",
+    targetEmail: normDelEmail,
+    targetName:  account.name || normDelEmail,
+    before: { plan: account.plan || "Free", role: account.role || "user" },
+    after:  { deleted: "true", initiator: "self" },
+  });
 
   const res = NextResponse.json({ success: true });
   clearAuthCookie(res);
