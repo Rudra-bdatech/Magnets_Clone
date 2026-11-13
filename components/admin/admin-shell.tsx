@@ -32,6 +32,7 @@ import {
   DesktopNotificationPopover,
   NOTIF_PORTAL_ATTR,
   type AdminNotification,
+  dispatchAdminNotificationRefresh,
 } from "@/components/admin/notification-center";
 
 // Start empty — the polling hook fills this from /api/admin/notifications on mount.
@@ -85,6 +86,44 @@ export default function AdminShell({
   const [mobileNotifOpen, setMobileNotifOpen] = useState(false);
   const notifRef = useRef<HTMLDivElement>(null);
   const notificationCenter = useNotificationCenter(INITIAL_NOTIFICATIONS);
+
+  // Automatically re-check notifications when switching admin pages
+  const refreshNotifsRef = useRef(notificationCenter.refresh);
+  useEffect(() => {
+    refreshNotifsRef.current = notificationCenter.refresh;
+  });
+  useEffect(() => {
+    refreshNotifsRef.current();
+  }, [pathname]);
+
+  // Intercept successful admin mutations to trigger instant notification update (no refresh needed)
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const origFetch = window.fetch;
+    window.fetch = async (...args) => {
+      const res = await origFetch(...args);
+      try {
+        const input = args[0];
+        const url =
+          typeof input === "string"
+            ? input
+            : input instanceof URL
+              ? input.href
+              : input instanceof Request
+                ? input.url
+                : String(input || "");
+        const init = args[1];
+        const method = (init?.method || (input instanceof Request ? input.method : "GET")).toUpperCase();
+        if (res.ok && url.includes("/api/admin/") && !url.includes("/api/admin/notifications") && method !== "GET") {
+          dispatchAdminNotificationRefresh();
+        }
+      } catch {}
+      return res;
+    };
+    return () => {
+      window.fetch = origFetch;
+    };
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {

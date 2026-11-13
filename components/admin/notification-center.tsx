@@ -68,6 +68,94 @@ function haptic(ms = 8) {
   } catch { }
 }
 
+// Authentic Apple Tri-Tone notification chime (G#5 → B5 → E6)
+// Physically modeled acoustic marimba: fundamental + 4th harmonic bar overtone + mallet strike transient.
+// Silent-fails if browser blocks autoplay or Web Audio is unavailable.
+export function triggerNotificationSound() {
+  try {
+    const AudioCtx = window.AudioContext ?? (window as any).webkitAudioContext;
+    if (!AudioCtx) return;
+    const ctx = new AudioCtx() as AudioContext;
+
+    // Gentle low-pass filter to give that warm, acoustic Apple speaker warmth (no harsh digital highs)
+    const filter = ctx.createBiquadFilter();
+    filter.type = "lowpass";
+    filter.frequency.setValueAtTime(4600, ctx.currentTime);
+    filter.connect(ctx.destination);
+
+    const master = ctx.createGain();
+    master.gain.setValueAtTime(0.25, ctx.currentTime);
+    master.connect(filter);
+
+    // Synthesizes a single struck marimba bar
+    const strikeMarimba = (freq: number, start: number, duration: number, strikeVol = 1) => {
+      // 1. Fundamental resonant body
+      const osc1 = ctx.createOscillator();
+      const env1 = ctx.createGain();
+      osc1.type = "sine";
+      osc1.frequency.setValueAtTime(freq, start);
+
+      env1.gain.setValueAtTime(0.0001, start);
+      env1.gain.linearRampToValueAtTime(0.7 * strikeVol, start + 0.002);
+      env1.gain.exponentialRampToValueAtTime(0.0001, start + duration);
+
+      osc1.connect(env1);
+      env1.connect(master);
+      osc1.start(start);
+      osc1.stop(start + duration);
+
+      // 2. Marimba bar 4th harmonic overtone (gives the classic woody/glassy marimba ping)
+      const osc2 = ctx.createOscillator();
+      const env2 = ctx.createGain();
+      osc2.type = "sine";
+      osc2.frequency.setValueAtTime(freq * 4, start);
+
+      env2.gain.setValueAtTime(0.0001, start);
+      env2.gain.linearRampToValueAtTime(0.22 * strikeVol, start + 0.0015);
+      env2.gain.exponentialRampToValueAtTime(0.0001, start + 0.05); // decays rapidly like a real bar
+
+      osc2.connect(env2);
+      env2.connect(master);
+      osc2.start(start);
+      osc2.stop(start + 0.06);
+
+      // 3. Mallet strike transient (wood impact click)
+      const osc3 = ctx.createOscillator();
+      const env3 = ctx.createGain();
+      osc3.type = "triangle";
+      osc3.frequency.setValueAtTime(freq * 2.76, start);
+
+      env3.gain.setValueAtTime(0.0001, start);
+      env3.gain.linearRampToValueAtTime(0.12 * strikeVol, start + 0.001);
+      env3.gain.exponentialRampToValueAtTime(0.0001, start + 0.016);
+
+      osc3.connect(env3);
+      env3.connect(master);
+      osc3.start(start);
+      osc3.stop(start + 0.02);
+    };
+
+    const t = ctx.currentTime;
+    // Iconic Apple Tri-tone sequence: G#5 → B5 → E6
+    strikeMarimba(830.61, t,        0.32, 0.9);  // G#5 (Ba)
+    strikeMarimba(987.77, t + 0.11, 0.35, 0.95); // B5  (Da)
+    strikeMarimba(1318.51, t + 0.22, 0.78, 1.0);  // E6  (Ling - rings out)
+
+    setTimeout(() => ctx.close().catch(() => {}), 1400);
+  } catch {}
+}
+
+if (typeof window !== "undefined") {
+  (window as any).__playNotifSound = triggerNotificationSound;
+}
+
+// Helper to immediately notify the Notification Center from anywhere in the app
+export function dispatchAdminNotificationRefresh() {
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(new CustomEvent("admin_notification_refresh"));
+  }
+}
+
 interface TypeConfig {
   icon: LucideIcon;
   gradient: string;
@@ -224,10 +312,39 @@ export function useNotificationCenter(initial: AdminNotification[]) {
   ]));
   // Tracks whether we've attempted the one-time localStorage → DB migration.
   const migrationDone = useRef(false);
+  // Sound coordination across tabs.
+  const soundChannelRef = useRef<BroadcastChannel | null>(null);
+  const lastSoundTsRef = useRef(0);
+  // Skip sound on the initial page-load poll; only play for genuinely new arrivals.
+  const isFirstPollRef = useRef(true);
   // Tracks whether we've synced DB state to localStorage (only needed once per session).
   const dbStateSynced = useRef(false);
 
   useEffect(() => () => timers.current.forEach((t) => clearTimeout(t)), []);
+
+  // BroadcastChannel so only one tab plays the chime when multiple tabs are open.
+  useEffect(() => {
+    let ch: BroadcastChannel | null = null;
+    try {
+      ch = new BroadcastChannel("admin_notif_sound_v1");
+      ch.onmessage = (e: MessageEvent) => {
+        if (e.data?.type === "sound_played") lastSoundTsRef.current = Date.now();
+      };
+      soundChannelRef.current = ch;
+    } catch {}
+    return () => {
+      ch?.close();
+      soundChannelRef.current = null;
+    };
+  }, []);
+
+  const playSound = useCallback(() => {
+    const now = Date.now();
+    if (now - lastSoundTsRef.current < 800) return; // another tab just played
+    lastSoundTsRef.current = now;
+    try { soundChannelRef.current?.postMessage({ type: "sound_played" }); } catch {}
+    triggerNotificationSound();
+  }, []);
 
   const unreadCount = notifications.filter((n) => n.unread).length;
 
@@ -315,6 +432,7 @@ export function useNotificationCenter(initial: AdminNotification[]) {
   const mergeFromApi = useCallback((fresh: Array<{
     id: string; type: string; title: string; desc: string; ts: string;
   }>) => {
+    let shouldPlaySound = false;
     setNotifications((prev) => {
       const existingIds = new Set(prev.map((n) => n.id));
       const incoming: AdminNotification[] = [];
@@ -334,34 +452,71 @@ export function useNotificationCenter(initial: AdminNotification[]) {
         });
       }
       if (!incoming.length) return prev;
+      // Play sound only after the first poll (not on page load) and only for unread arrivals.
+      shouldPlaySound = !isFirstPollRef.current && incoming.some((n) => n.unread);
       // Prepend newest, keep total ≤ 40
       return [...incoming, ...prev].slice(0, 40);
     });
-  }, []);
+    if (shouldPlaySound) playSound();
+  }, [playSound]);
 
-  // Poll every 60 s. First poll also syncs DB state and runs migration.
+  // Polls the server for notifications, DB state, and migrations.
+  const poll = useCallback(async () => {
+    try {
+      const res = await fetch("/api/admin/notifications");
+      if (!res.ok) return;
+      const data = await res.json();
+      const dbRead: string[]      = Array.isArray(data.readIds)      ? data.readIds      : [];
+      const dbDismissed: string[] = Array.isArray(data.dismissedIds) ? data.dismissedIds : [];
+      // Apply DB state before merging notifications so dismissed/read is accurate.
+      applyDbState(dbRead, dbDismissed);
+      migrateIfNeeded(dbRead, dbDismissed);
+      if (Array.isArray(data.notifications)) mergeFromApi(data.notifications);
+    } catch { }
+    // After the first poll completes, subsequent polls are eligible to play sounds.
+    isFirstPollRef.current = false;
+  }, [applyDbState, migrateIfNeeded, mergeFromApi]);
+
+  // Active polling + real-time listeners for instant notification updates
   useEffect(() => {
-    let alive = true;
-    const poll = async () => {
-      try {
-        const res = await fetch("/api/admin/notifications");
-        if (!res.ok || !alive) return;
-        const data = await res.json();
-        const dbRead: string[]      = Array.isArray(data.readIds)      ? data.readIds      : [];
-        const dbDismissed: string[] = Array.isArray(data.dismissedIds) ? data.dismissedIds : [];
-        // Apply DB state before merging notifications so dismissed/read is accurate.
-        applyDbState(dbRead, dbDismissed);
-        migrateIfNeeded(dbRead, dbDismissed);
-        if (Array.isArray(data.notifications)) mergeFromApi(data.notifications);
-      } catch { }
-    };
     poll(); // immediate first load
-    const id = window.setInterval(poll, 60_000);
-    return () => { alive = false; clearInterval(id); };
-  }, [mergeFromApi, applyDbState, migrateIfNeeded]);
+
+    // Responsive 15 s polling while tab is visible (preserves battery when hidden)
+    const intervalId = window.setInterval(() => {
+      if (typeof document !== "undefined" && document.visibilityState === "hidden") return;
+      poll();
+    }, 15_000);
+
+    // Instant re-check on tab focus or visibility change
+    const onVisibilityOrFocus = () => {
+      if (typeof document !== "undefined" && document.visibilityState === "visible") {
+        poll();
+      }
+    };
+    window.addEventListener("focus", onVisibilityOrFocus);
+    document.addEventListener("visibilitychange", onVisibilityOrFocus);
+
+    // Instant re-check when an admin action occurs anywhere in the app
+    const onActionRefresh = () => {
+      // 80ms delay gives MongoDB write operation time to commit
+      window.setTimeout(poll, 80);
+    };
+    window.addEventListener("admin_notification_refresh", onActionRefresh);
+
+    if (typeof window !== "undefined") {
+      (window as any).__refreshNotifications = poll;
+    }
+
+    return () => {
+      window.clearInterval(intervalId);
+      window.removeEventListener("focus", onVisibilityOrFocus);
+      document.removeEventListener("visibilitychange", onVisibilityOrFocus);
+      window.removeEventListener("admin_notification_refresh", onActionRefresh);
+    };
+  }, [poll]);
 
 
-  return { notifications, unreadCount, clearing, markAllRead, markRead, toggleRead, dismiss, clearAll };
+  return { notifications, unreadCount, clearing, markAllRead, markRead, toggleRead, dismiss, clearAll, refresh: poll };
 }
 
 export type NotificationCenter = ReturnType<typeof useNotificationCenter>;
