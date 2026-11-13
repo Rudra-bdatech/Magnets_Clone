@@ -51,9 +51,9 @@ const SHEET_SPRING = {
 const IOS_EASE = [0.32, 0.72, 0, 1] as const;
 const FLING = { type: "tween", duration: 0.24, ease: IOS_EASE } as const;
 
-// Apple Notification Card: 100% opaque fill, crisp perimeter border, and realistic layered drop shadow.
+// Apple Notification Card: Authentic macOS / iOS Frosted Material with Vibrancy
 const GLASS_CARD =
-  "bg-white border border-black/[0.08] shadow-[0_5px_15px_-2px_rgba(0,0,0,0.12),0_2px_5px_-1px_rgba(0,0,0,0.06),inset_0_1px_0_rgba(255,255,255,1)] dark:bg-[#1c1c1e] dark:border-white/[0.12] dark:shadow-[0_8px_20px_-3px_rgba(0,0,0,0.7),0_2px_6px_-1px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.1)]";
+  "bg-white/85 backdrop-blur-2xl backdrop-saturate-[180%] border border-black/[0.08] shadow-[0_4px_16px_-2px_rgba(0,0,0,0.1),0_1px_3px_rgba(0,0,0,0.05),inset_0_1px_0_rgba(255,255,255,0.9)] dark:bg-[#202023]/80 dark:backdrop-blur-2xl dark:backdrop-saturate-[180%] dark:border-white/[0.12] dark:shadow-[0_8px_24px_-4px_rgba(0,0,0,0.5),0_2px_6px_rgba(0,0,0,0.3),inset_0_1px_0_rgba(255,255,255,0.12)]";
 const GLASS_PILL =
   "bg-white text-zinc-700 border border-black/[0.08] shadow-[0_2px_8px_rgba(0,0,0,0.08),inset_0_1px_0_rgba(255,255,255,0.95)] hover:bg-zinc-50 hover:text-zinc-900 dark:bg-[#2c2c2e] dark:text-zinc-200 dark:border-white/10 dark:shadow-[0_2px_8px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.12)] dark:hover:bg-[#3a3a3c] dark:hover:text-white";
 const APPLE_FONT = '-apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", system-ui, sans-serif';
@@ -162,72 +162,75 @@ interface TypeConfig {
   shadow: string;
 }
 
+// Authentic Apple Squircle Icon Shadow: Crisp top inner bevel highlight + natural contact shadow (no neon blur)
+const APPLE_ICON_SHADOW = "shadow-[inset_0_1px_0_rgba(255,255,255,0.4),0_1.5px_3.5px_rgba(0,0,0,0.3)] ring-1 ring-black/[0.06] dark:ring-white/[0.1]";
+
 export const NOTIF_TYPE_CONFIG: Record<string, TypeConfig> = {
   // Destructive (Crimson / Rose)
   account_delete: {
     icon: UserX,
     gradient: "from-rose-500 via-rose-600 to-red-600",
-    shadow: "shadow-[inset_0_1px_0_rgba(255,255,255,0.4),0_3px_10px_rgba(225,29,72,0.35)]",
+    shadow: APPLE_ICON_SHADOW,
   },
   funnel_delete: {
     icon: Trash2,
     gradient: "from-rose-500 via-red-500 to-red-600",
-    shadow: "shadow-[inset_0_1px_0_rgba(255,255,255,0.4),0_3px_10px_rgba(239,68,68,0.35)]",
+    shadow: APPLE_ICON_SHADOW,
   },
   payment_failed: {
     icon: AlertCircle,
     gradient: "from-red-500 via-rose-600 to-pink-600",
-    shadow: "shadow-[inset_0_1px_0_rgba(255,255,255,0.4),0_3px_10px_rgba(225,29,72,0.35)]",
+    shadow: APPLE_ICON_SHADOW,
   },
 
   // Security Hold (Warm Amber / Orange)
   suspended: {
     icon: ShieldOff,
     gradient: "from-amber-400 via-amber-500 to-orange-500",
-    shadow: "shadow-[inset_0_1px_0_rgba(255,255,255,0.4),0_3px_10px_rgba(245,158,11,0.35)]",
+    shadow: APPLE_ICON_SHADOW,
   },
 
   // Recovery / Reactivation (Fresh Emerald / Teal)
   unsuspended: {
-    icon: ShieldCheck, // Restored: Checkmark shield instead of alert shield!
+    icon: ShieldCheck,
     gradient: "from-emerald-400 via-emerald-500 to-teal-600",
-    shadow: "shadow-[inset_0_1px_0_rgba(255,255,255,0.4),0_3px_10px_rgba(16,185,129,0.35)]",
+    shadow: APPLE_ICON_SHADOW,
   },
   verified: {
     icon: ShieldCheck,
     gradient: "from-teal-400 via-emerald-500 to-green-600",
-    shadow: "shadow-[inset_0_1px_0_rgba(255,255,255,0.4),0_3px_10px_rgba(20,184,166,0.35)]",
+    shadow: APPLE_ICON_SHADOW,
   },
 
   // Growth & Upgrades (Royal Violet / Purple)
   upgrade: {
     icon: TrendingUp,
     gradient: "from-violet-500 via-purple-600 to-indigo-600",
-    shadow: "shadow-[inset_0_1px_0_rgba(255,255,255,0.4),0_3px_10px_rgba(139,92,246,0.35)]",
+    shadow: APPLE_ICON_SHADOW,
   },
 
   // Identity & Platform (Signature Blue)
   signup: {
     icon: UserPlus,
     gradient: "from-sky-400 via-[#1A85D6] to-[#0066B2]",
-    shadow: "shadow-[inset_0_1px_0_rgba(255,255,255,0.4),0_3px_10px_rgba(0,102,178,0.35)]",
+    shadow: APPLE_ICON_SHADOW,
   },
   plan_change: {
     icon: ArrowLeftRight,
     gradient: "from-blue-500 via-cyan-600 to-teal-600",
-    shadow: "shadow-[inset_0_1px_0_rgba(255,255,255,0.4),0_3px_10px_rgba(6,182,212,0.35)]",
+    shadow: APPLE_ICON_SHADOW,
   },
   role_change: {
     icon: Key,
     gradient: "from-indigo-500 via-indigo-600 to-blue-700",
-    shadow: "shadow-[inset_0_1px_0_rgba(255,255,255,0.4),0_3px_10px_rgba(99,102,241,0.35)]",
+    shadow: APPLE_ICON_SHADOW,
   },
 
   // Downgrades & Cancellations (Neutral Slate)
   cancelled: {
     icon: TrendingDown,
     gradient: "from-zinc-500 via-zinc-600 to-zinc-700",
-    shadow: "shadow-[inset_0_1px_0_rgba(255,255,255,0.3),0_2px_8px_rgba(0,0,0,0.25)]",
+    shadow: APPLE_ICON_SHADOW,
   },
 };
 
@@ -666,7 +669,7 @@ function AppIcon({
 }) {
   const cfg = (type && NOTIF_TYPE_CONFIG[type]) || {
     gradient: "from-[#1A85D6] to-[#0066B2]",
-    shadow: "shadow-[inset_0_0.5px_0_rgba(255,255,255,0.35),0_2px_6px_rgba(0,102,178,0.25)]",
+    shadow: APPLE_ICON_SHADOW,
   };
   const IconComp = (type && NOTIF_TYPE_CONFIG[type]?.icon) || Icon;
 
@@ -689,7 +692,7 @@ function UnreadDot({ show }: { show: boolean }) {
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0, opacity: 0 }}
           transition={SPRING}
-          className="h-2 w-2 shrink-0 rounded-full bg-[#0A84FF]"
+          className="h-2 w-2 shrink-0 rounded-full bg-[#007AFF] dark:bg-[#0A84FF]"
         />
       )}
     </AnimatePresence>
@@ -932,16 +935,16 @@ function IOSCard({
         style={{ x, willChange: "transform" }}
         whileTap={interactive ? { scale: 0.98 } : undefined}
         transition={APPLE_STACK_SPRING}
-        className="relative cursor-pointer rounded-[22px] border border-black/[0.08] bg-white px-4 py-3.5 shadow-[0_10px_28px_rgba(0,0,0,0.12),inset_0_1px_0_rgba(255,255,255,0.85)] dark:border-white/[0.12] dark:bg-zinc-800 dark:shadow-[0_10px_28px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.08)] transform-gpu"
+        className="relative cursor-pointer rounded-[22px] border border-black/[0.08] bg-white/85 backdrop-blur-2xl backdrop-saturate-[180%] px-4 py-3.5 shadow-[0_8px_24px_-3px_rgba(0,0,0,0.1),inset_0_1px_0_rgba(255,255,255,0.85)] dark:border-white/[0.12] dark:bg-[#202023]/80 dark:backdrop-blur-2xl dark:backdrop-saturate-[180%] dark:shadow-[0_8px_24px_-4px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.12)] transform-gpu"
       >
         <div className={`flex items-start gap-3.5 pt-0.5 transition-opacity duration-200 ${stacked && !isTop ? "opacity-0" : "opacity-100"}`}>
           <AppIcon icon={n.icon} type={n.type} size="md" />
           <div className="min-w-0 flex-1">
             <div className="flex items-baseline justify-between gap-2">
-              <p className="truncate text-[15px] font-semibold leading-5 tracking-tight text-zinc-900 dark:text-white">{n.title}</p>
+              <p className={`truncate text-[15px] leading-5 tracking-tight ${n.unread ? "font-semibold text-zinc-900 dark:text-white" : "font-medium text-zinc-600 dark:text-zinc-300"}`}>{n.title}</p>
               <div className="flex shrink-0 items-center gap-1.5">
                 <UnreadDot show={n.unread} />
-                <span className="text-[12px] text-zinc-500 dark:text-zinc-400">{n.time}</span>
+                <span className="text-[12px] font-normal text-zinc-400 dark:text-zinc-400">{n.time}</span>
               </div>
             </div>
             <p className={`mt-0.5 text-[13.5px] leading-[19px] text-zinc-700 dark:text-zinc-300 ${stacked ? "truncate" : "line-clamp-4"}`}>{n.desc}</p>
@@ -1249,10 +1252,10 @@ function MacCard({
           <AppIcon icon={n.icon} type={n.type} size="md" />
           <div className="min-w-0 flex-1">
             <div className="flex items-baseline justify-between gap-2">
-              <p className="truncate text-[13.5px] font-semibold leading-5 tracking-tight text-zinc-900 dark:text-white">{n.title}</p>
+              <p className={`truncate text-[13.5px] leading-5 tracking-tight ${n.unread ? "font-semibold text-zinc-900 dark:text-white" : "font-medium text-zinc-600 dark:text-zinc-300"}`}>{n.title}</p>
               <div className="flex shrink-0 items-center gap-1.5">
                 <UnreadDot show={n.unread} />
-                <span className="text-[11.5px] text-zinc-400 dark:text-zinc-400">{n.time}</span>
+                <span className="text-[11.5px] font-normal text-zinc-400 dark:text-zinc-400">{n.time}</span>
               </div>
             </div>
             <p className={`mt-0.5 text-[12.5px] leading-[17px] text-zinc-600 dark:text-zinc-300 ${stacked ? "truncate" : "line-clamp-4"}`}>{n.desc}</p>
