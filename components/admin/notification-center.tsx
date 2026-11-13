@@ -31,6 +31,7 @@ export interface AdminNotification {
   time: string;
   unread: boolean;
   icon: LucideIcon;
+  type?: string;
 }
 
 // UIKit spring (response 0.35, dampingRatio 0.86) converted to stiffness/damping.
@@ -67,12 +68,87 @@ function haptic(ms = 8) {
   } catch { }
 }
 
+interface TypeConfig {
+  icon: LucideIcon;
+  gradient: string;
+  shadow: string;
+}
+
+export const NOTIF_TYPE_CONFIG: Record<string, TypeConfig> = {
+  // Destructive (Crimson / Rose)
+  account_delete: {
+    icon: UserX,
+    gradient: "from-rose-500 via-rose-600 to-red-600",
+    shadow: "shadow-[inset_0_1px_0_rgba(255,255,255,0.4),0_3px_10px_rgba(225,29,72,0.35)]",
+  },
+  funnel_delete: {
+    icon: Trash2,
+    gradient: "from-rose-500 via-red-500 to-red-600",
+    shadow: "shadow-[inset_0_1px_0_rgba(255,255,255,0.4),0_3px_10px_rgba(239,68,68,0.35)]",
+  },
+  payment_failed: {
+    icon: AlertCircle,
+    gradient: "from-red-500 via-rose-600 to-pink-600",
+    shadow: "shadow-[inset_0_1px_0_rgba(255,255,255,0.4),0_3px_10px_rgba(225,29,72,0.35)]",
+  },
+
+  // Security Hold (Warm Amber / Orange)
+  suspended: {
+    icon: ShieldOff,
+    gradient: "from-amber-400 via-amber-500 to-orange-500",
+    shadow: "shadow-[inset_0_1px_0_rgba(255,255,255,0.4),0_3px_10px_rgba(245,158,11,0.35)]",
+  },
+
+  // Recovery / Reactivation (Fresh Emerald / Teal)
+  unsuspended: {
+    icon: ShieldCheck, // Restored: Checkmark shield instead of alert shield!
+    gradient: "from-emerald-400 via-emerald-500 to-teal-600",
+    shadow: "shadow-[inset_0_1px_0_rgba(255,255,255,0.4),0_3px_10px_rgba(16,185,129,0.35)]",
+  },
+  verified: {
+    icon: ShieldCheck,
+    gradient: "from-teal-400 via-emerald-500 to-green-600",
+    shadow: "shadow-[inset_0_1px_0_rgba(255,255,255,0.4),0_3px_10px_rgba(20,184,166,0.35)]",
+  },
+
+  // Growth & Upgrades (Royal Violet / Purple)
+  upgrade: {
+    icon: TrendingUp,
+    gradient: "from-violet-500 via-purple-600 to-indigo-600",
+    shadow: "shadow-[inset_0_1px_0_rgba(255,255,255,0.4),0_3px_10px_rgba(139,92,246,0.35)]",
+  },
+
+  // Identity & Platform (Signature Blue)
+  signup: {
+    icon: UserPlus,
+    gradient: "from-sky-400 via-[#1A85D6] to-[#0066B2]",
+    shadow: "shadow-[inset_0_1px_0_rgba(255,255,255,0.4),0_3px_10px_rgba(0,102,178,0.35)]",
+  },
+  plan_change: {
+    icon: ArrowLeftRight,
+    gradient: "from-blue-500 via-cyan-600 to-teal-600",
+    shadow: "shadow-[inset_0_1px_0_rgba(255,255,255,0.4),0_3px_10px_rgba(6,182,212,0.35)]",
+  },
+  role_change: {
+    icon: Key,
+    gradient: "from-indigo-500 via-indigo-600 to-blue-700",
+    shadow: "shadow-[inset_0_1px_0_rgba(255,255,255,0.4),0_3px_10px_rgba(99,102,241,0.35)]",
+  },
+
+  // Downgrades & Cancellations (Neutral Slate)
+  cancelled: {
+    icon: TrendingDown,
+    gradient: "from-zinc-500 via-zinc-600 to-zinc-700",
+    shadow: "shadow-[inset_0_1px_0_rgba(255,255,255,0.3),0_2px_8px_rgba(0,0,0,0.25)]",
+  },
+};
+
 // Map API notification type → lucide icon
 const TYPE_ICON: Record<string, LucideIcon> = {
   signup:         UserPlus,
   verified:       ShieldCheck,
   suspended:      ShieldOff,
-  unsuspended:    ShieldAlert,
+  unsuspended:    ShieldCheck,
   upgrade:        TrendingUp,
   cancelled:      TrendingDown,
   payment_failed: AlertCircle,
@@ -253,7 +329,8 @@ export function useNotificationCenter(initial: AdminNotification[]) {
           desc: f.desc,
           time: relativeTime(f.ts),
           unread: isNew,
-          icon: TYPE_ICON[f.type] ?? UserPlus,
+          icon: NOTIF_TYPE_CONFIG[f.type]?.icon ?? TYPE_ICON[f.type] ?? UserPlus,
+          type: f.type,
         });
       }
       if (!incoming.length) return prev;
@@ -423,13 +500,28 @@ function ClearAllButton({
   );
 }
 
-function AppIcon({ icon: Icon, size }: { icon: AdminNotification["icon"]; size: "sm" | "md" }) {
+function AppIcon({
+  icon: Icon,
+  type,
+  size,
+}: {
+  icon: AdminNotification["icon"];
+  type?: string;
+  size: "sm" | "md";
+}) {
+  const cfg = (type && NOTIF_TYPE_CONFIG[type]) || {
+    gradient: "from-[#1A85D6] to-[#0066B2]",
+    shadow: "shadow-[inset_0_0.5px_0_rgba(255,255,255,0.35),0_2px_6px_rgba(0,102,178,0.25)]",
+  };
+  const IconComp = (type && NOTIF_TYPE_CONFIG[type]?.icon) || Icon;
+
   return (
     <div
-      className={`flex shrink-0 items-center justify-center bg-gradient-to-b from-[#1A85D6] to-[#0066B2] text-white shadow-[inset_0_0.5px_0_rgba(255,255,255,0.35)] ${size === "md" ? "h-[38px] w-[38px] rounded-[11px]" : "h-8 w-8 rounded-[9px]"
-        }`}
+      className={`relative flex shrink-0 items-center justify-center bg-gradient-to-b ${cfg.gradient} text-white ${cfg.shadow} ${
+        size === "md" ? "h-[38px] w-[38px] rounded-[11px]" : "h-8 w-8 rounded-[9px]"
+      } transition-transform duration-200`}
     >
-      <Icon className={size === "md" ? "h-5 w-5" : "h-4 w-4"} strokeWidth={2.2} />
+      <IconComp className={size === "md" ? "h-5 w-5" : "h-4 w-4"} strokeWidth={2.2} />
     </div>
   );
 }
@@ -689,7 +781,7 @@ function IOSCard({
         className="relative cursor-pointer rounded-[22px] border border-black/[0.08] bg-white p-3 shadow-[0_10px_28px_rgba(0,0,0,0.12),inset_0_1px_0_rgba(255,255,255,0.85)] dark:border-white/[0.12] dark:bg-zinc-800 dark:shadow-[0_10px_28px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.08)] transform-gpu"
       >
         <div className={`flex gap-3 transition-opacity duration-200 ${stacked && !isTop ? "opacity-0" : "opacity-100"}`}>
-          <AppIcon icon={n.icon} size="md" />
+          <AppIcon icon={n.icon} type={n.type} size="md" />
           <div className="min-w-0 flex-1">
             <div className="flex items-baseline justify-between gap-2">
               <p className="truncate text-[15px] font-semibold leading-5 text-zinc-900 dark:text-white">{n.title}</p>
@@ -1001,7 +1093,7 @@ function MacCard({
 
       <div className={`relative overflow-hidden rounded-[20px] p-3 ${GLASS_CARD}`}>
         <div className={`relative flex items-start gap-2.5 transition-opacity duration-200 ${stacked && !isTop ? "opacity-0" : "opacity-100"}`}>
-          <AppIcon icon={n.icon} size="sm" />
+          <AppIcon icon={n.icon} type={n.type} size="sm" />
           <div className="min-w-0 flex-1">
             <div className="flex items-center justify-between gap-2">
               <p className="truncate text-[13px] font-semibold leading-tight text-zinc-900 dark:text-white">{n.title}</p>
