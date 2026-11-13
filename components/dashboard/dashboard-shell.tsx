@@ -95,6 +95,27 @@ const getDashboardPageInfo = (pathname: string, defaultTitle?: string) => {
   return { title: defaultTitle || "Dashboard", icon: LayoutDashboard };
 };
 
+function ejectSuspendedOrExpired(suspended = false) {
+  if (typeof window === "undefined") return;
+  try {
+    const lastMethod = localStorage.getItem("leadmagnets_last_auth_method");
+    const lastEmail = localStorage.getItem("leadmagnets_last_auth_email");
+    const themeMode = localStorage.getItem("leadmagnets-theme-mode");
+    const theme = localStorage.getItem("leadmagnets-theme");
+
+    localStorage.clear();
+    sessionStorage.clear();
+
+    if (lastMethod) localStorage.setItem("leadmagnets_last_auth_method", lastMethod);
+    if (lastEmail) localStorage.setItem("leadmagnets_last_auth_email", lastEmail);
+    if (themeMode) localStorage.setItem("leadmagnets-theme-mode", themeMode);
+    if (theme) localStorage.setItem("leadmagnets-theme", theme);
+  } catch (_) {}
+
+  fetch("/api/auth/logout", { method: "POST" }).catch(() => {});
+  window.location.href = suspended ? "/login?error=suspended" : "/login?error=session_expired";
+}
+
 export default function DashboardShell({
   account,
   title = "Dashboard",
@@ -501,7 +522,7 @@ export default function DashboardShell({
         fetch("/api/auth/me")
           .then((res) => res.json())
           .then((data) => {
-            if (data.authenticated && data.email) {
+            if (data.authenticated && data.email && !data.suspended) {
               localStorage.setItem("currentUserEmail", data.email);
               localStorage.setItem("leadmagnets_last_auth_email", data.email);
               setSessionExpiry(7);
@@ -513,22 +534,26 @@ export default function DashboardShell({
               setIsAuthenticated(true);
             } else {
               setIsAuthenticated(false);
-              localStorage.removeItem("currentUserEmail");
-              localStorage.removeItem("currentUserAccount");
-              localStorage.removeItem("sessionExpiry");
-              window.location.href = "/login";
+              ejectSuspendedOrExpired(data.suspended === true);
             }
           })
           .catch(() => {
             setIsAuthenticated(false);
-            localStorage.removeItem("currentUserEmail");
-            localStorage.removeItem("currentUserAccount");
-            localStorage.removeItem("sessionExpiry");
-            window.location.href = "/login";
+            ejectSuspendedOrExpired();
           });
         return;
       } else {
         setIsAuthenticated(true);
+        // Stale-While-Revalidate: verify with server in background on every mount/refresh
+        fetch("/api/auth/me", { cache: "no-store" })
+          .then((res) => res.json())
+          .then((data) => {
+            if (!data.authenticated || data.suspended) {
+              setIsAuthenticated(false);
+              ejectSuspendedOrExpired(data.suspended === true);
+            }
+          })
+          .catch(() => {});
       }
     }
 
@@ -638,12 +663,31 @@ export default function DashboardShell({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ page: pathname }),
-      }).catch(() => {});
+      })
+        .then(async (res) => {
+          if (res.status === 401) {
+            const data = await res.json().catch(() => ({}));
+            setIsAuthenticated(false);
+            ejectSuspendedOrExpired(data.suspended !== false);
+          }
+        })
+        .catch(() => {});
     };
 
     ping();
     const interval = setInterval(ping, 30_000);
-    return () => clearInterval(interval);
+
+    const onVisibilityChange = () => {
+      if (typeof document !== "undefined" && document.visibilityState === "visible") {
+        ping();
+      }
+    };
+    document.addEventListener("visibilitychange", onVisibilityChange);
+
+    return () => {
+      clearInterval(interval);
+      document.removeEventListener("visibilitychange", onVisibilityChange);
+    };
   }, [pathname]);
 
   const sidebarContextValue = useMemo(

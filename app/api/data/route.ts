@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { dbConnect } from "@/lib/mongodb";
 import { AccountModel, MagnetPageModel, LeadModel, SequenceModel, IntegrationModel, ResourceModel } from "@/lib/models";
-import { getAuthenticatedUserEmail, getSessionEmail } from "@/lib/auth";
+import { getAuthenticatedUserEmail, getSessionEmail, clearAuthCookie } from "@/lib/auth";
 import {
   handleSaveAccount,
   handleCheckEmail,
@@ -78,14 +78,12 @@ export async function GET(req: Request) {
     const normEmail = await getAuthenticatedUserEmail();
 
     if (!normEmail) {
-      return NextResponse.json({
-        account: null,
-        pages: [],
-        leads: [],
-        sequences: [],
-        integrations: [],
-        resources: [],
-      });
+      const res = NextResponse.json(
+        { error: "Unauthorized or account suspended", suspended: true },
+        { status: 401 }
+      );
+      clearAuthCookie(res);
+      return res;
     }
 
 // ── Phase 1: Fetch pages first (needed to build pageIds/pageNames for the leads query) ──────
@@ -181,7 +179,12 @@ export async function POST(req: Request) {
     }
 
     if (!normEmail && !isPublic && action !== "saveAccount") {
-      return NextResponse.json({ error: "Unauthorized. Please log in to perform this action." }, { status: 401 });
+      const res = NextResponse.json(
+        { error: "Unauthorized. Please log in to perform this action.", suspended: true },
+        { status: 401 }
+      );
+      clearAuthCookie(res);
+      return res;
     }
 
     // Dispatch to modular controllers (Facade Router)

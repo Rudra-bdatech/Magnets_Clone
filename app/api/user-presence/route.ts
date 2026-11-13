@@ -1,7 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Redis } from "@upstash/redis";
-import { getSessionEmail } from "@/lib/auth";
+import { cookies } from "next/headers";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth-options";
+import { AUTH_COOKIE_NAME, verifySessionToken, clearAuthCookie } from "@/lib/auth";
 import { requireAdmin, isAdminSession } from "@/lib/admin-auth";
+import { dbConnect } from "@/lib/mongodb";
+import { AccountModel } from "@/lib/models";
 
 export const dynamic = "force-dynamic";
 
@@ -16,22 +21,69 @@ if (process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN) 
 // POST — User dashboard heartbeat (called every 30s by logged-in users in /dashboard)
 export async function POST(req: NextRequest) {
   try {
-    const sessionEmail = await getSessionEmail();
+    // 1. Extract email and tokenVersion from custom session cookie or NextAuth
+    const cookieStore = cookies();
+    const token = cookieStore.get(AUTH_COOKIE_NAME)?.value;
+    let email: string | null = null;
+    let tokenVersion: number | undefined = undefined;
 
-    // Strictly authenticate via session cookie — prevents any user spoofing
-    if (!sessionEmail) {
-      return NextResponse.json({ ok: true });
+    if (token) {
+      const decoded = verifySessionToken(token);
+      if (decoded?.email) {
+        email = decoded.email.trim().toLowerCase();
+        tokenVersion = decoded.tokenVersion;
+      }
     }
 
-    const email = sessionEmail.trim().toLowerCase();
+    if (!email) {
+      const nextAuthSession = await getServerSession(authOptions);
+      if (nextAuthSession?.user?.email) {
+        email = nextAuthSession.user.email.trim().toLowerCase();
+        tokenVersion = (nextAuthSession as any).tokenVersion;
+      }
+    }
+
+    // No valid token: clear any residual cookies and return 401
+    if (!email) {
+      const res = NextResponse.json({ ok: false, error: "Unauthorized", suspended: false }, { status: 401 });
+      clearAuthCookie(res);
+      return res;
+    }
+
+    // 2. Query DB to verify the account is active, not suspended, and tokenVersion matches
+    await dbConnect();
+    const account = await AccountModel.findOne(
+      { email },
+      { suspended: 1, tokenVersion: 1 }
+    ).lean() as any;
+
+    if (!account) {
+      // User was deleted: destroy cookies and signal ejection
+      const res = NextResponse.json({ ok: false, error: "Account not found", suspended: true }, { status: 401 });
+      clearAuthCookie(res);
+      return res;
+    }
+
+    if (account.suspended) {
+      // User was suspended: destroy cookies and signal ejection
+      const res = NextResponse.json({ ok: false, error: "Account suspended", suspended: true }, { status: 401 });
+      clearAuthCookie(res);
+      return res;
+    }
+
+    if (tokenVersion !== undefined && (account.tokenVersion ?? 0) > tokenVersion) {
+      // Token invalidated (e.g. password reset or admin revoked session)
+      const res = NextResponse.json({ ok: false, error: "Session expired", suspended: false }, { status: 401 });
+      clearAuthCookie(res);
+      return res;
+    }
+
+    // 3. Authenticated & active — record presence in Redis
     const body = await req.json().catch(() => ({}));
     const page = typeof body?.page === "string" ? body.page.slice(0, 100) : "/dashboard";
     const now = Date.now();
 
     if (redis) {
-      // 100% in-memory Redis:
-      // 1. Add/refresh score in sorted set for fast active user scanning
-      // 2. Set individual presence info with 60-second automatic expiration
       await Promise.allSettled([
         redis.zadd("users:online", { score: now, member: email }),
         redis.set(`user:presence:${email}`, JSON.stringify({ page, ts: now }), { ex: 60 }),
@@ -98,4 +150,3 @@ export async function GET(_req: NextRequest) {
     return NextResponse.json({ online: [], onlineMap: {}, count: 0 });
   }
 }
-

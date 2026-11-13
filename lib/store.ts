@@ -2,6 +2,38 @@
 
 import { pages as seedPages, sequences as seedSequences, type MagnetPage, type Sequence, type Account, type Lead, type Integration, account as seedAccount, leads as seedLeads, integrations as seedIntegrations } from "@/lib/data";
 
+function ejectSuspendedOrExpired(suspended = false) {
+  if (typeof window === "undefined") return;
+  try {
+    const lastMethod = localStorage.getItem("leadmagnets_last_auth_method");
+    const lastEmail = localStorage.getItem("leadmagnets_last_auth_email");
+    const themeMode = localStorage.getItem("leadmagnets-theme-mode");
+    const theme = localStorage.getItem("leadmagnets-theme");
+
+    localStorage.clear();
+    sessionStorage.clear();
+
+    if (lastMethod) localStorage.setItem("leadmagnets_last_auth_method", lastMethod);
+    if (lastEmail) localStorage.setItem("leadmagnets_last_auth_email", lastEmail);
+    if (themeMode) localStorage.setItem("leadmagnets-theme-mode", themeMode);
+    if (theme) localStorage.setItem("leadmagnets-theme", theme);
+  } catch (_) {}
+
+  fetch("/api/auth/logout", { method: "POST" }).catch(() => {});
+  window.location.href = suspended ? "/login?error=suspended" : "/login?error=session_expired";
+}
+
+function fireAndForget(url: string, init: RequestInit) {
+  fetch(url, init)
+    .then(async (res) => {
+      if (res.status === 401 || res.status === 403) {
+        const data = await res.json().catch(() => ({}));
+        ejectSuspendedOrExpired(data.suspended !== false);
+      }
+    })
+    .catch(() => {});
+}
+
 export function safeSetItem(key: string, value: string) {
   if (typeof window !== "undefined") {
     try {
@@ -49,11 +81,11 @@ export function savePages(pages: MagnetPage[]) {
       }
     } catch (_) {}
     const email = localStorage.getItem("currentUserEmail");
-    fetch("/api/data", {
+    fireAndForget("/api/data", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ action: "savePages", data: pages, email }),
-    }).catch(console.error);
+    });
 
     // Keep corresponding sequences in loadSequences() in sync with page sequence updates
     try {
@@ -114,17 +146,17 @@ export function deletePage(id: string) {
     safeSetItem("currentUserSequences", JSON.stringify(currentSequences));
 
     const email = localStorage.getItem("currentUserEmail");
-    fetch("/api/data", {
+    fireAndForget("/api/data", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ action: "deletePage", data: { id }, email }),
-    }).catch(console.error);
+    });
     // Also save the pruned list so savePages won't overwrite with full list
-    fetch("/api/data", {
+    fireAndForget("/api/data", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ action: "savePages", data: current, email }),
-    }).catch(console.error);
+    });
   }
 }
 
@@ -152,11 +184,11 @@ export function saveSequences(sequences: Sequence[]) {
   if (typeof window !== "undefined") {
     safeSetItem("currentUserSequences", JSON.stringify(sequences));
   }
-  fetch("/api/data", {
+  fireAndForget("/api/data", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ action: "saveSequences", data: sequences, email }),
-  }).catch(console.error);
+  });
 }
 
 export function deleteSequence(id: string) {
@@ -192,19 +224,19 @@ export function deleteSequences(ids: string[]) {
     if (pagesChanged) {
       safeSetItem("currentUserPages", JSON.stringify(updatedPages));
       const email = localStorage.getItem("currentUserEmail");
-      fetch("/api/data", {
+      fireAndForget("/api/data", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ action: "savePages", data: updatedPages, email }),
-      }).catch(console.error);
+      });
     }
 
     const email = localStorage.getItem("currentUserEmail");
-    fetch("/api/data", {
+    fireAndForget("/api/data", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ action: "deleteSequence", data: { ids }, email }),
-    }).catch(console.error);
+    });
   }
 }
 
@@ -310,11 +342,11 @@ export function saveIntegrations(integrations: Integration[]) {
   if (typeof window !== "undefined") {
     safeSetItem("currentUserIntegrations", JSON.stringify(integrations));
   }
-  fetch("/api/data", {
+  fireAndForget("/api/data", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ action: "saveIntegrations", data: integrations, email }),
-  }).catch(console.error);
+  });
 }
 
 export function loadLeads(): Lead[] {
@@ -337,11 +369,11 @@ export function saveLeads(leads: Lead[]) {
   if (typeof window !== "undefined") {
     safeSetItem("currentUserLeads", JSON.stringify(leads));
   }
-  fetch("/api/data", {
+  fireAndForget("/api/data", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ action: "saveLeads", data: leads, email }),
-  }).catch(console.error);
+  });
 }
 
 export function deleteLead(leadId: string) {
@@ -350,11 +382,11 @@ export function deleteLead(leadId: string) {
     const current = loadLeads().filter((l) => l.id !== leadId);
     safeSetItem("currentUserLeads", JSON.stringify(current));
   }
-  fetch("/api/data", {
+  fireAndForget("/api/data", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ action: "deleteLead", data: { id: leadId }, email }),
-  }).catch(console.error);
+  });
 }
 
 export function loadResources(): any[] {
@@ -374,11 +406,11 @@ export function saveResources(resources: any[]) {
   if (typeof window !== "undefined") {
     safeSetItem("currentUserResources", JSON.stringify(resources));
   }
-  fetch("/api/data", {
+  fireAndForget("/api/data", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ action: "saveResources", data: resources, email }),
-  }).catch(console.error);
+  });
 }
 let inFlightSyncPromise: Promise<any> | null = null;
 let inFlightSyncEmail: string | null = null;
@@ -417,6 +449,11 @@ export async function syncUserData(): Promise<{
       try {
         const url = `/api/data?email=${encodeURIComponent(email!)}`;
         const res = await fetch(url);
+        if (res.status === 401 || res.status === 403) {
+          const data = await res.json().catch(() => ({}));
+          ejectSuspendedOrExpired(data.suspended !== false);
+          return null;
+        }
         if (!res.ok) return null;
         const data = await res.json();
         if (data && typeof window !== "undefined") {
