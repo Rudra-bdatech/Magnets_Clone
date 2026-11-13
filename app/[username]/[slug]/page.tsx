@@ -211,6 +211,7 @@ export default async function MagnetPageRoute({
   const pageOwnerEmail = pageDoc?.userEmail ? pageDoc.userEmail.trim().toLowerCase() : null;
   const isOwner = Boolean(viewerEmail && pageOwnerEmail && viewerEmail === pageOwnerEmail);
   const isDraftMode = pageDoc?.status === "draft";
+  const isPausedMode = pageDoc?.status === "paused";
 
   // Draft Access Protection: If page is in Draft and viewer is NOT the logged-in owner, block public access
   if (isDraftMode && !isOwner) {
@@ -232,6 +233,25 @@ export default async function MagnetPageRoute({
           >
             Go to Dashboard
           </a>
+        </div>
+      </main>
+    );
+  }
+
+  // Paused Access Protection: If page is Paused and viewer is NOT the logged-in owner, block public access
+  if (isPausedMode && !isOwner) {
+    return (
+      <main className="flex min-h-screen flex-col items-center justify-center bg-[#FAFAFA] dark:bg-[#0E0E10] px-4 text-center">
+        <div className="max-w-md space-y-4 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#18181B] p-8 shadow-xl">
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-amber-500/10 text-amber-500">
+            <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <h1 className="text-xl font-bold text-zinc-900 dark:text-white">Funnel Temporarily Offline</h1>
+          <p className="text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed">
+            This funnel has been temporarily paused by administration and is not accepting visitors or new submissions at this time.
+          </p>
         </div>
       </main>
     );
@@ -380,6 +400,15 @@ export default async function MagnetPageRoute({
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
           </svg>
           <span>Draft Preview Mode — This funnel is not yet published. Only you can view this page.</span>
+        </div>
+      )}
+      {/* Paused Mode Top Banner for Logged-In Owner */}
+      {isPausedMode && isOwner && (
+        <div className="sticky top-0 z-50 flex items-center justify-center gap-2 bg-amber-600 text-white px-4 py-1.5 text-xs font-bold shadow-md border-b border-amber-700 shrink-0">
+          <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span>Paused by Administration — This funnel is currently paused and not visible to public visitors.</span>
         </div>
       )}
       {/* If template is not template1, template2, template3, template4, template5, template6, template7, or template8, show the standard top header */}

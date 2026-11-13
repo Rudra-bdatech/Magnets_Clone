@@ -125,6 +125,12 @@ export async function handleAddLead(data: any, req: Request, normEmail: string |
     } catch (_) {}
 
     if (foundPageDoc) {
+      if (foundPageDoc.status === "paused") {
+        return NextResponse.json(
+          { error: "This funnel is currently paused and cannot accept new submissions." },
+          { status: 403 }
+        );
+      }
       if (foundPageDoc.userEmail) {
         ownerEmail = foundPageDoc.userEmail.trim().replace(/[\r\n]+/g, "").toLowerCase();
         isVerifiedOwner = true;

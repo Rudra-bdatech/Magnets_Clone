@@ -490,19 +490,32 @@ export default function FunnelsPage() {
     setActionLoading(true);
     try {
       const ids = Array.from(selectedIds);
-      await Promise.all(
+      const results = await Promise.all(
         ids.map(async (id) => {
-          if (batchModal === "delete") {
-            return fetch(`/api/admin/funnels/${id}`, { method: "DELETE" });
-          } else {
-            return fetch(`/api/admin/funnels/${id}`, {
-              method: "PATCH",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ action: batchModal }),
-            });
+          try {
+            if (batchModal === "delete") {
+              const res = await fetch(`/api/admin/funnels/${id}`, { method: "DELETE" });
+              return { id, ok: res.ok, status: res.status };
+            } else {
+              const res = await fetch(`/api/admin/funnels/${id}`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ action: batchModal }),
+              });
+              return { id, ok: res.ok, status: res.status };
+            }
+          } catch {
+            return { id, ok: false, status: 500 };
           }
         })
       );
+      const successCount = results.filter((r) => r.ok).length;
+      const failCount = results.length - successCount;
+      if (failCount > 0) {
+        alert(
+          `${batchModal === "pause" ? "Paused" : batchModal === "restore" ? "Resumed" : "Deleted"} ${successCount} funnel(s). ${failCount} could not be updated (ineligible status or permission required).`
+        );
+      }
       setSelectedIds(new Set());
       setIsSelectionMode(false);
       setBatchModal(null);

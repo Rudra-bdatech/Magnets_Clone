@@ -134,11 +134,13 @@ const MagnetCard = React.memo(
             <span
               className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider border backdrop-blur-xs ${page.status === "live"
                 ? "bg-emerald-500 text-white border-emerald-400/30 shadow-xs"
+                : page.status === "paused"
+                ? "bg-amber-500 text-white border-amber-400/30 shadow-xs"
                 : "bg-white/95 text-zinc-600 border-zinc-200/90 dark:bg-zinc-900/80 dark:text-zinc-300 dark:border-white/10 shadow-2xs"
                 }`}
             >
-              <span className={`h-1.5 w-1.5 rounded-full ${page.status === "live" ? "bg-white animate-pulse" : "bg-zinc-400"}`} />
-              {page.status === "live" ? "Published" : "Draft"}
+              <span className={`h-1.5 w-1.5 rounded-full ${page.status === "live" ? "bg-white animate-pulse" : page.status === "paused" ? "bg-amber-100 animate-pulse" : "bg-zinc-400"}`} />
+              {page.status === "live" ? "Published" : page.status === "paused" ? "Paused" : "Draft"}
             </span>
           </div>
 
@@ -1106,10 +1108,12 @@ export default function PagesPage() {
                                   <span
                                     className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase ${page.status === "live"
                                       ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400"
+                                      : page.status === "paused"
+                                      ? "bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400"
                                       : "bg-zinc-100 dark:bg-zinc-800 text-zinc-500"
                                       }`}
                                   >
-                                    {page.status === "live" ? "Published" : "Draft"}
+                                    {page.status === "live" ? "Published" : page.status === "paused" ? "Paused" : "Draft"}
                                   </span>
                                 </td>
                                 <td className="px-6 py-4 text-right font-mono text-zinc-700 dark:text-zinc-300">
@@ -1225,11 +1229,13 @@ export default function PagesPage() {
                                 <span
                                   className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase ${page.status === "live"
                                     ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 border border-emerald-200/60 dark:border-emerald-900/40"
+                                    : page.status === "paused"
+                                    ? "bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 border border-amber-200/60 dark:border-amber-900/40"
                                     : "bg-zinc-100 dark:bg-zinc-800 text-zinc-500 border border-zinc-200/60 dark:border-white/10"
                                     }`}
                                 >
-                                  <span className={`h-1.5 w-1.5 rounded-full ${page.status === "live" ? "bg-emerald-500 animate-pulse" : "bg-zinc-400"}`} />
-                                  {page.status === "live" ? "Published" : "Draft"}
+                                  <span className={`h-1.5 w-1.5 rounded-full ${page.status === "live" ? "bg-emerald-500 animate-pulse" : page.status === "paused" ? "bg-amber-500 animate-pulse" : "bg-zinc-400"}`} />
+                                  {page.status === "live" ? "Published" : page.status === "paused" ? "Paused" : "Draft"}
                                 </span>
                               </div>
                             </div>
@@ -1358,10 +1364,12 @@ export default function PagesPage() {
                           <span
                             className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide ${activePage.status === "live"
                               ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/50"
+                              : activePage.status === "paused"
+                              ? "bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-800/50"
                               : "bg-zinc-100 dark:bg-zinc-800 text-zinc-500"
                               }`}
                           >
-                            {activePage.status === "live" ? "Published" : "Draft"}
+                            {activePage.status === "live" ? "Published" : activePage.status === "paused" ? "Paused" : "Draft"}
                           </span>
                           <button
                             type="button"
@@ -1812,10 +1820,12 @@ export default function PagesPage() {
                   <span
                     className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide ${activePage.status === "live"
                       ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/50"
+                      : activePage.status === "paused"
+                      ? "bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-800/50"
                       : "bg-zinc-100 dark:bg-zinc-800 text-zinc-500"
                       }`}
                   >
-                    {activePage.status === "live" ? "Published" : "Draft"}
+                    {activePage.status === "live" ? "Published" : activePage.status === "paused" ? "Paused" : "Draft"}
                   </span>
                 </div>
               </div>
