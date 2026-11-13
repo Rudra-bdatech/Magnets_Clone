@@ -315,7 +315,7 @@ export async function PATCH(req: NextRequest) {
         },
       },
     ],
-    { upsert: true }
+    { upsert: true, updatePipeline: true }
   );
 
   return NextResponse.json({ ok: true });

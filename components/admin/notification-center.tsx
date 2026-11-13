@@ -137,12 +137,12 @@ export function triggerNotificationSound() {
 
     const t = ctx.currentTime;
     // Iconic Apple Tri-tone sequence: G#5 → B5 → E6
-    strikeMarimba(830.61, t,        0.32, 0.9);  // G#5 (Ba)
+    strikeMarimba(830.61, t, 0.32, 0.9);  // G#5 (Ba)
     strikeMarimba(987.77, t + 0.11, 0.35, 0.95); // B5  (Da)
     strikeMarimba(1318.51, t + 0.22, 0.78, 1.0);  // E6  (Ling - rings out)
 
-    setTimeout(() => ctx.close().catch(() => {}), 1400);
-  } catch {}
+    setTimeout(() => ctx.close().catch(() => { }), 1400);
+  } catch { }
 }
 
 if (typeof window !== "undefined") {
@@ -233,23 +233,23 @@ export const NOTIF_TYPE_CONFIG: Record<string, TypeConfig> = {
 
 // Map API notification type → lucide icon
 const TYPE_ICON: Record<string, LucideIcon> = {
-  signup:         UserPlus,
-  verified:       ShieldCheck,
-  suspended:      ShieldOff,
-  unsuspended:    ShieldCheck,
-  upgrade:        TrendingUp,
-  cancelled:      TrendingDown,
+  signup: UserPlus,
+  verified: ShieldCheck,
+  suspended: ShieldOff,
+  unsuspended: ShieldCheck,
+  upgrade: TrendingUp,
+  cancelled: TrendingDown,
   payment_failed: AlertCircle,
   account_delete: UserX,
-  plan_change:    ArrowLeftRight,
-  role_change:    Key,
-  funnel_delete:  Trash2,
+  plan_change: ArrowLeftRight,
+  role_change: Key,
+  funnel_delete: Trash2,
 };
 
 function relativeTime(isoTs: string): string {
   const diff = Date.now() - new Date(isoTs).getTime();
   const s = Math.floor(diff / 1000);
-  if (s < 60) return "just now";
+  if (s < 60) return "now";
   const m = Math.floor(s / 60);
   if (m < 60) return `${m}m ago`;
   const h = Math.floor(m / 60);
@@ -294,7 +294,7 @@ function persistToServer(readIds: string[], dismissedIds: string[]) {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ readIds, dismissedIds }),
-  }).catch(() => {});
+  }).catch(() => { });
 }
 
 export function useNotificationCenter(initial: AdminNotification[]) {
@@ -331,7 +331,7 @@ export function useNotificationCenter(initial: AdminNotification[]) {
         if (e.data?.type === "sound_played") lastSoundTsRef.current = Date.now();
       };
       soundChannelRef.current = ch;
-    } catch {}
+    } catch { }
     return () => {
       ch?.close();
       soundChannelRef.current = null;
@@ -342,7 +342,7 @@ export function useNotificationCenter(initial: AdminNotification[]) {
     const now = Date.now();
     if (now - lastSoundTsRef.current < 800) return; // another tab just played
     lastSoundTsRef.current = now;
-    try { soundChannelRef.current?.postMessage({ type: "sound_played" }); } catch {}
+    try { soundChannelRef.current?.postMessage({ type: "sound_played" }); } catch { }
     triggerNotificationSound();
   }, []);
 
@@ -413,7 +413,7 @@ export function useNotificationCenter(initial: AdminNotification[]) {
     // Sync to localStorage only once per session — not on every 60s poll — to avoid churn.
     if (!dbStateSynced.current) {
       dbStateSynced.current = true;
-      if (dbRead.length)      lsAddMany(LS_READ, dbRead);
+      if (dbRead.length) lsAddMany(LS_READ, dbRead);
       if (dbDismissed.length) lsAddMany(LS_DISMISSED, dbDismissed);
     }
   }, []);
@@ -466,7 +466,7 @@ export function useNotificationCenter(initial: AdminNotification[]) {
       const res = await fetch("/api/admin/notifications");
       if (!res.ok) return;
       const data = await res.json();
-      const dbRead: string[]      = Array.isArray(data.readIds)      ? data.readIds      : [];
+      const dbRead: string[] = Array.isArray(data.readIds) ? data.readIds : [];
       const dbDismissed: string[] = Array.isArray(data.dismissedIds) ? data.dismissedIds : [];
       // Apply DB state before merging notifications so dismissed/read is accurate.
       applyDbState(dbRead, dbDismissed);
@@ -672,9 +672,8 @@ function AppIcon({
 
   return (
     <div
-      className={`relative flex shrink-0 items-center justify-center bg-gradient-to-b ${cfg.gradient} text-white ${cfg.shadow} ${
-        size === "md" ? "h-[38px] w-[38px] rounded-[11px]" : "h-8 w-8 rounded-[9px]"
-      } transition-transform duration-200`}
+      className={`relative flex shrink-0 items-center justify-center bg-gradient-to-b ${cfg.gradient} text-white ${cfg.shadow} ${size === "md" ? "h-[38px] w-[38px] rounded-[11px]" : "h-8 w-8 rounded-[9px]"
+        } transition-transform duration-200`}
     >
       <IconComp className={size === "md" ? "h-5 w-5" : "h-4 w-4"} strokeWidth={2.2} />
     </div>
@@ -933,19 +932,19 @@ function IOSCard({
         style={{ x, willChange: "transform" }}
         whileTap={interactive ? { scale: 0.98 } : undefined}
         transition={APPLE_STACK_SPRING}
-        className="relative cursor-pointer rounded-[22px] border border-black/[0.08] bg-white p-3 shadow-[0_10px_28px_rgba(0,0,0,0.12),inset_0_1px_0_rgba(255,255,255,0.85)] dark:border-white/[0.12] dark:bg-zinc-800 dark:shadow-[0_10px_28px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.08)] transform-gpu"
+        className="relative cursor-pointer rounded-[22px] border border-black/[0.08] bg-white px-4 py-3.5 shadow-[0_10px_28px_rgba(0,0,0,0.12),inset_0_1px_0_rgba(255,255,255,0.85)] dark:border-white/[0.12] dark:bg-zinc-800 dark:shadow-[0_10px_28px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.08)] transform-gpu"
       >
-        <div className={`flex gap-3 transition-opacity duration-200 ${stacked && !isTop ? "opacity-0" : "opacity-100"}`}>
+        <div className={`flex items-start gap-3.5 pt-0.5 transition-opacity duration-200 ${stacked && !isTop ? "opacity-0" : "opacity-100"}`}>
           <AppIcon icon={n.icon} type={n.type} size="md" />
           <div className="min-w-0 flex-1">
             <div className="flex items-baseline justify-between gap-2">
-              <p className="truncate text-[15px] font-semibold leading-5 text-zinc-900 dark:text-white">{n.title}</p>
+              <p className="truncate text-[15px] font-semibold leading-5 tracking-tight text-zinc-900 dark:text-white">{n.title}</p>
               <div className="flex shrink-0 items-center gap-1.5">
                 <UnreadDot show={n.unread} />
-                <span className="text-[13px] text-zinc-500 dark:text-zinc-400">{n.time}</span>
+                <span className="text-[12px] text-zinc-500 dark:text-zinc-400">{n.time}</span>
               </div>
             </div>
-            <p className={`mt-0.5 text-[14px] leading-[19px] text-zinc-700 dark:text-zinc-300 ${stacked ? "truncate" : "line-clamp-4"}`}>{n.desc}</p>
+            <p className={`mt-0.5 text-[13.5px] leading-[19px] text-zinc-700 dark:text-zinc-300 ${stacked ? "truncate" : "line-clamp-4"}`}>{n.desc}</p>
             {stacked && isTop && stackCount > 1 && (
               <p className="mt-0.5 text-[13px] text-zinc-500 dark:text-zinc-400">
                 {stackCount - 1} more notification{stackCount > 2 ? "s" : ""}
@@ -1043,9 +1042,8 @@ export function MobileNotificationCenter({
 
           <div
             ref={scrollRef}
-            className={`flex-1 overscroll-contain px-3 pb-4 ${
-              stacked ? "overflow-hidden" : "overflow-y-auto"
-            }`}
+            className={`flex-1 overscroll-contain px-3 pb-4 ${stacked ? "overflow-hidden" : "overflow-y-auto"
+              }`}
             data-lenis-prevent
           >
             <AnimatePresence initial={false}>
@@ -1246,18 +1244,18 @@ function MacCard({
         )}
       </AnimatePresence>
 
-      <div className={`relative overflow-hidden rounded-[20px] p-3 ${GLASS_CARD}`}>
-        <div className={`relative flex items-start gap-2.5 transition-opacity duration-200 ${stacked && !isTop ? "opacity-0" : "opacity-100"}`}>
-          <AppIcon icon={n.icon} type={n.type} size="sm" />
+      <div className={`relative overflow-hidden rounded-[20px] px-4 py-3 ${GLASS_CARD}`}>
+        <div className={`relative flex items-start gap-3.5 pt-0.5 transition-opacity duration-200 ${stacked && !isTop ? "opacity-0" : "opacity-100"}`}>
+          <AppIcon icon={n.icon} type={n.type} size="md" />
           <div className="min-w-0 flex-1">
-            <div className="flex items-center justify-between gap-2">
-              <p className="truncate text-[13px] font-semibold leading-tight text-zinc-900 dark:text-white">{n.title}</p>
+            <div className="flex items-baseline justify-between gap-2">
+              <p className="truncate text-[13.5px] font-semibold leading-5 tracking-tight text-zinc-900 dark:text-white">{n.title}</p>
               <div className="flex shrink-0 items-center gap-1.5">
                 <UnreadDot show={n.unread} />
-                <span className="text-[11px] text-zinc-500 dark:text-zinc-400">{n.time}</span>
+                <span className="text-[11.5px] text-zinc-400 dark:text-zinc-400">{n.time}</span>
               </div>
             </div>
-            <p className={`mt-1 text-[12px] leading-snug text-zinc-600 dark:text-zinc-300 ${stacked ? "truncate" : "line-clamp-4"}`}>{n.desc}</p>
+            <p className={`mt-0.5 text-[12.5px] leading-[17px] text-zinc-600 dark:text-zinc-300 ${stacked ? "truncate" : "line-clamp-4"}`}>{n.desc}</p>
             {stacked && isTop && stackCount > 1 && (
               <p className="mt-1 text-[11px] font-medium text-zinc-400 dark:text-zinc-500">
                 {stackCount - 1} more notification{stackCount > 2 ? "s" : ""}
@@ -1406,7 +1404,7 @@ export function DesktopNotificationPopover({
               top: coords ? `${coords.top}px` : "52px",
               right: coords ? `${Math.max(12, coords.right)}px` : "12px",
             }}
-            className="fixed z-[60] hidden w-[356px] select-none antialiased md:block"
+            className="fixed z-[60] hidden w-[372px] select-none antialiased md:block"
           >
             <div className="flex h-8 items-center justify-between px-0.5 pb-1.5">
               <AnimatePresence initial={false} mode="popLayout">
