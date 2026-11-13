@@ -1053,12 +1053,11 @@ export default function AdminUsersPage() {
           </div>
         </div>
 
-        {/* Admins & Staff */}
+        {/* Super Admins */}
         <div className="bg-white/90 dark:bg-[#171717] rounded-2xl border border-[#0066B2]/15 dark:border-white/[0.08] p-3 sm:p-4 shadow-md dark:shadow-none backdrop-blur-sm flex items-center justify-between">
           <div className="min-w-0 pr-1">
             <div className="text-[10px] sm:text-[11px] font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider truncate">
-              <span className="sm:hidden">Super Admins</span>
-              <span className="hidden sm:inline">Admins & Staff</span>
+              Super Admins
             </div>
             <div className="text-base sm:text-lg font-bold text-red-600 dark:text-red-400 font-mono tabular-nums mt-0.5">
               {summary.adminCount.toLocaleString()}
