@@ -992,47 +992,47 @@ export default function SequenceEditor() {
               ══════════════════════════════════════════════ */}
               {editorViewMode === "flow" && (
                 <div
-                  className={`relative rounded-3xl border border-zinc-200/90 dark:border-white/[0.08] bg-zinc-950 text-white shadow-2xl overflow-hidden flex flex-col transition-all duration-300 ${
+                  className={`relative rounded-3xl border border-zinc-200/90 dark:border-white/[0.08] bg-slate-100/70 dark:bg-zinc-950 text-zinc-900 dark:text-white shadow-xl dark:shadow-2xl overflow-hidden flex flex-col transition-all duration-300 ${
                     isCanvasMaximized ? "h-[85vh] min-h-[720px]" : "h-[740px] sm:h-[800px]"
                   }`}
                 >
                   {/* Soft Radial Vignette */}
                   <div
                     aria-hidden="true"
-                    className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_center,transparent_35%,rgba(0,0,0,0.6)_100%)] z-10"
+                    className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_center,transparent_45%,rgba(0,0,0,0.05)_100%)] dark:bg-[radial-gradient(ellipse_at_center,transparent_35%,rgba(0,0,0,0.6)_100%)] z-10"
                   />
 
                   {/* ─── Canvas HUD Toolbar (Pinned at Top) ─── */}
-                  <div className="relative z-30 flex flex-wrap items-center justify-between gap-3 border-b border-white/[0.08] bg-zinc-900/90 backdrop-blur-md px-4 py-3 sm:px-6 shrink-0">
+                  <div className="relative z-30 flex flex-wrap items-center justify-between gap-3 border-b border-zinc-200/90 dark:border-white/[0.08] bg-white/95 dark:bg-zinc-900/90 backdrop-blur-md px-4 py-3 sm:px-6 shrink-0">
                     <div className="flex items-center gap-2.5">
                       <span className="relative flex h-2 w-2">
                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
                         <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
                       </span>
-                      <span className="text-xs font-bold tracking-wide text-white">Live Workflow Canvas</span>
-                      <span className="rounded-full bg-white/10 px-2 py-0.5 text-[10px] font-semibold text-zinc-300">
-                        {attachedPage ? emailsWithBody.length + 1 : emailsWithBody.length} Nodes
+                      <span className="text-xs font-bold tracking-wide text-zinc-900 dark:text-white">Live Workflow Canvas</span>
+                      <span className="rounded-full border border-zinc-200/80 dark:border-transparent bg-zinc-100 dark:bg-white/10 px-2 py-0.5 text-[10px] font-semibold text-zinc-700 dark:text-zinc-300">
+                        {(attachedPage ? 1 : 0) + 1 + emailsWithBody.length} Nodes
                       </span>
-                      <span className="hidden xl:inline text-[11px] text-zinc-400">
+                      <span className="hidden xl:inline text-[11px] text-zinc-500 dark:text-zinc-400">
                         • Scroll or pan canvas • Hover connectors to insert steps
                       </span>
                     </div>
 
                     <div className="flex items-center gap-2">
                       {/* Zoom Controls */}
-                      <div className="flex items-center rounded-lg border border-white/10 bg-zinc-800/80 p-0.5">
+                      <div className="flex items-center rounded-lg border border-zinc-200 dark:border-white/10 bg-zinc-50 dark:bg-zinc-800/80 p-0.5">
                         <button
                           type="button"
                           onClick={() => setCanvasZoom((z) => Math.max(70, z - 10))}
                           aria-label="Zoom out"
-                          className="flex h-7 w-7 items-center justify-center rounded text-zinc-400 hover:bg-white/10 hover:text-white transition cursor-pointer"
+                          className="flex h-7 w-7 items-center justify-center rounded text-zinc-500 dark:text-zinc-400 hover:bg-zinc-200/70 dark:hover:bg-white/10 hover:text-zinc-900 dark:hover:text-white transition cursor-pointer"
                         >
                           <ZoomOut className="h-3.5 w-3.5" />
                         </button>
                         <button
                           type="button"
                           onClick={() => setCanvasZoom(100)}
-                          className="px-2 text-[10px] font-mono font-bold text-zinc-300 hover:text-white transition cursor-pointer"
+                          className="px-2 text-[10px] font-mono font-bold text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white transition cursor-pointer"
                           title="Reset zoom to 100%"
                         >
                           {canvasZoom}%
@@ -1041,7 +1041,7 @@ export default function SequenceEditor() {
                           type="button"
                           onClick={() => setCanvasZoom((z) => Math.min(130, z + 10))}
                           aria-label="Zoom in"
-                          className="flex h-7 w-7 items-center justify-center rounded text-zinc-400 hover:bg-white/10 hover:text-white transition cursor-pointer"
+                          className="flex h-7 w-7 items-center justify-center rounded text-zinc-500 dark:text-zinc-400 hover:bg-zinc-200/70 dark:hover:bg-white/10 hover:text-zinc-900 dark:hover:text-white transition cursor-pointer"
                         >
                           <ZoomIn className="h-3.5 w-3.5" />
                         </button>
@@ -1051,7 +1051,7 @@ export default function SequenceEditor() {
                       <button
                         type="button"
                         onClick={recenterCanvas}
-                        className="flex items-center gap-1.5 rounded-lg border border-white/10 bg-zinc-800/80 px-2.5 py-1.5 text-xs font-bold text-zinc-300 hover:bg-white/10 hover:text-white transition cursor-pointer"
+                        className="flex items-center gap-1.5 rounded-lg border border-zinc-200 dark:border-white/10 bg-zinc-50 dark:bg-zinc-800/80 px-2.5 py-1.5 text-xs font-bold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200/70 dark:hover:bg-white/10 hover:text-zinc-900 dark:hover:text-white transition cursor-pointer"
                         title="Recenter canvas position"
                       >
                         <RotateCcw className="h-3.5 w-3.5" />
@@ -1064,8 +1064,8 @@ export default function SequenceEditor() {
                         onClick={() => setIsCanvasMaximized(!isCanvasMaximized)}
                         className={`flex items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-xs font-bold transition cursor-pointer ${
                           isCanvasMaximized
-                            ? "border-[#38BDF8]/40 bg-[#38BDF8]/15 text-[#38BDF8]"
-                            : "border-white/10 bg-zinc-800/80 text-zinc-300 hover:bg-white/10 hover:text-white"
+                            ? "border-blue-300 dark:border-[#38BDF8]/40 bg-blue-50 dark:bg-[#38BDF8]/15 text-[#0066B2] dark:text-[#38BDF8]"
+                            : "border-zinc-200 dark:border-white/10 bg-zinc-50 dark:bg-zinc-800/80 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200/70 dark:hover:bg-white/10 hover:text-zinc-900 dark:hover:text-white"
                         }`}
                         title={isCanvasMaximized ? "Exit full studio" : "Expand to studio mode"}
                       >
@@ -1079,8 +1079,8 @@ export default function SequenceEditor() {
                         onClick={() => setShowCanvasInspector(!showCanvasInspector)}
                         className={`flex items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-xs font-bold transition cursor-pointer ${
                           showCanvasInspector
-                            ? "border-[#38BDF8]/50 bg-[#38BDF8]/20 text-[#38BDF8]"
-                            : "border-white/10 bg-zinc-800/80 text-zinc-300 hover:bg-white/10 hover:text-white"
+                            ? "border-blue-300 dark:border-[#38BDF8]/50 bg-blue-50 dark:bg-[#38BDF8]/20 text-[#0066B2] dark:text-[#38BDF8]"
+                            : "border-zinc-200 dark:border-white/10 bg-zinc-50 dark:bg-zinc-800/80 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200/70 dark:hover:bg-white/10 hover:text-zinc-900 dark:hover:text-white"
                         }`}
                       >
                         <Sliders className="h-3.5 w-3.5" />
@@ -1103,9 +1103,8 @@ export default function SequenceEditor() {
                       {/* Infinite Dynamic Dot Matrix Grid */}
                       <div
                         aria-hidden="true"
-                        className="absolute inset-0 pointer-events-none opacity-25"
+                        className="absolute inset-0 pointer-events-none opacity-30 dark:opacity-25 [background-image:radial-gradient(circle_at_1.5px_1.5px,#94a3b8_1.2px,transparent_0)] dark:[background-image:radial-gradient(circle_at_1.5px_1.5px,#ffffff_1.2px,transparent_0)]"
                         style={{
-                          backgroundImage: "radial-gradient(circle at 1.5px 1.5px, #ffffff 1.2px, transparent 0)",
                           backgroundSize: `${22 * (canvasZoom / 100)}px ${22 * (canvasZoom / 100)}px`,
                           backgroundPosition: `${canvasPan.x}px ${canvasPan.y}px`,
                         }}
@@ -1113,8 +1112,8 @@ export default function SequenceEditor() {
 
                       {/* Floating Canvas Navigation Hint Pill */}
                       <div className="absolute bottom-4 left-4 z-20 pointer-events-none">
-                        <div className="flex items-center gap-2 rounded-full border border-white/10 bg-zinc-900/90 backdrop-blur-md px-3 py-1 text-[11px] font-medium text-zinc-400 shadow-lg">
-                          <Move className="h-3 w-3 text-[#38BDF8]" />
+                        <div className="flex items-center gap-2 rounded-full border border-zinc-200 dark:border-white/10 bg-white/95 dark:bg-zinc-900/90 backdrop-blur-md px-3 py-1 text-[11px] font-medium text-zinc-600 dark:text-zinc-400 shadow-md dark:shadow-lg">
+                          <Move className="h-3 w-3 text-[#0066B2] dark:text-[#38BDF8]" />
                           <span>Drag anywhere to pan • Scroll to navigate • Pinch to zoom</span>
                         </div>
                       </div>
@@ -1132,32 +1131,32 @@ export default function SequenceEditor() {
                         <div className="group relative w-full max-w-[440px]">
                           {/* Top Port Decorator */}
                           <div className="flex justify-center -mb-2 relative z-10">
-                            <span className="inline-flex items-center gap-1 rounded-full border border-blue-400/40 bg-blue-950/80 px-2.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-[#38BDF8] shadow-sm">
+                            <span className="inline-flex items-center gap-1 rounded-full border border-blue-200 dark:border-blue-400/40 bg-blue-50 dark:bg-blue-950/80 px-2.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-[#0066B2] dark:text-[#38BDF8] shadow-xs">
                               <Zap className="h-2.5 w-2.5" />
                               Trigger
                             </span>
                           </div>
 
-                          <div className="relative rounded-2xl border border-blue-500/30 bg-gradient-to-b from-blue-950/40 via-zinc-900/90 to-zinc-900/90 p-4 shadow-xl backdrop-blur-md transition hover:border-blue-500/50">
+                          <div className="relative rounded-2xl border border-blue-200/80 dark:border-blue-500/30 bg-gradient-to-b from-blue-50/80 via-white to-white dark:from-blue-950/40 dark:via-zinc-900/90 dark:to-zinc-900/90 p-4 shadow-md dark:shadow-xl backdrop-blur-md transition hover:border-blue-300 dark:hover:border-blue-500/50">
                             <div className="flex items-center justify-between gap-3">
                               <div className="flex items-center gap-3 min-w-0">
                                 <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#0066B2] to-[#38BDF8] text-white shadow-md shadow-blue-500/20">
                                   <Zap className="h-4 w-4" />
                                 </div>
                                 <div className="min-w-0 flex-1">
-                                  <span className="text-[10px] font-bold uppercase tracking-wider text-[#38BDF8]">
+                                  <span className="text-[10px] font-bold uppercase tracking-wider text-[#0066B2] dark:text-[#38BDF8]">
                                     Audience Opt-in
                                   </span>
-                                  <p className="text-xs sm:text-sm font-bold text-white truncate">
+                                  <p className="text-xs sm:text-sm font-bold text-zinc-900 dark:text-white truncate">
                                     {attachedPage ? `Via ${attachedPage.name}` : "User Subscribed"}
                                   </p>
                                 </div>
                               </div>
                               <div className="text-right shrink-0">
-                                <span className="block text-sm font-mono font-bold text-white tabular-nums">
+                                <span className="block text-sm font-mono font-bold text-zinc-900 dark:text-white tabular-nums">
                                   {signedUp.toLocaleString()}
                                 </span>
-                                <span className="block text-[9px] uppercase tracking-wider font-semibold text-zinc-400">
+                                <span className="block text-[9px] uppercase tracking-wider font-semibold text-zinc-500 dark:text-zinc-400">
                                   Enrolled
                                 </span>
                               </div>
@@ -1166,18 +1165,18 @@ export default function SequenceEditor() {
 
                           {/* Bottom Output Port */}
                           <div className="flex justify-center -mt-1.5 relative z-10">
-                            <span className="h-3 w-3 rounded-full border-2 border-blue-400 bg-zinc-950 ring-4 ring-zinc-900" />
+                            <span className="h-3 w-3 rounded-full border-2 border-blue-500 dark:border-blue-400 bg-white dark:bg-zinc-950 ring-4 ring-zinc-200 dark:ring-zinc-900" />
                           </div>
                         </div>
 
                         {/* ─── CONNECTOR: Trigger to First Step ─── */}
                         <div className="relative flex flex-col items-center my-1 group">
                           {/* Vertical Stem */}
-                          <div className="w-0.5 h-12 bg-gradient-to-b from-blue-400 via-zinc-700 to-zinc-700" />
+                          <div className="w-0.5 h-12 bg-gradient-to-b from-blue-400 via-zinc-300 dark:via-zinc-700 to-zinc-300 dark:to-zinc-700" />
 
                           {/* Timing Capsule */}
-                          <div className="absolute top-1/2 -translate-y-1/2 flex items-center gap-1 rounded-full border border-white/10 bg-zinc-900/95 px-2.5 py-0.5 text-[10px] font-semibold text-zinc-400 shadow-sm backdrop-blur-sm group-hover:border-[#38BDF8]/40 transition">
-                            <Clock className="h-2.5 w-2.5 text-[#38BDF8]" />
+                          <div className="absolute top-1/2 -translate-y-1/2 flex items-center gap-1 rounded-full border border-zinc-200 dark:border-white/10 bg-white/95 dark:bg-zinc-900/95 px-2.5 py-0.5 text-[10px] font-semibold text-zinc-600 dark:text-zinc-400 shadow-xs backdrop-blur-sm group-hover:border-[#0066B2]/40 dark:group-hover:border-[#38BDF8]/40 transition">
+                            <Clock className="h-2.5 w-2.5 text-[#0066B2] dark:text-[#38BDF8]" />
                             <span>Sends instantly</span>
                           </div>
 
@@ -1185,7 +1184,7 @@ export default function SequenceEditor() {
                           <button
                             type="button"
                             onClick={() => insertEmailAt(0)}
-                            className="opacity-0 group-hover:opacity-100 absolute top-1/2 -translate-y-1/2 flex h-6 w-6 items-center justify-center rounded-full bg-[#38BDF8] text-[#06243A] shadow-lg shadow-cyan-500/40 hover:scale-110 active:scale-95 transition cursor-pointer z-10"
+                            className="opacity-0 group-hover:opacity-100 absolute top-1/2 -translate-y-1/2 flex h-6 w-6 items-center justify-center rounded-full bg-[#0066B2] dark:bg-[#38BDF8] text-white dark:text-[#06243A] shadow-lg shadow-blue-500/30 hover:scale-110 active:scale-95 transition cursor-pointer z-10"
                             title="Insert step here"
                           >
                             <Plus className="h-3.5 w-3.5 stroke-[3]" />
@@ -1198,10 +1197,10 @@ export default function SequenceEditor() {
                             <div className="group relative w-full max-w-[440px]">
                               {/* Top Input Port */}
                               <div className="flex justify-center -mb-1.5 relative z-10">
-                                <span className="h-3 w-3 rounded-full border-2 border-emerald-400 bg-zinc-950 ring-4 ring-zinc-900" />
+                                <span className="h-3 w-3 rounded-full border-2 border-emerald-500 dark:border-emerald-400 bg-white dark:bg-zinc-950 ring-4 ring-zinc-200 dark:ring-zinc-900" />
                               </div>
 
-                              <div className="relative rounded-2xl border border-emerald-500/30 bg-gradient-to-b from-emerald-950/30 via-zinc-900/90 to-zinc-900/90 p-4 shadow-xl backdrop-blur-md transition hover:border-emerald-500/50">
+                              <div className="relative rounded-2xl border border-emerald-200/80 dark:border-emerald-500/30 bg-gradient-to-b from-emerald-50/80 via-white to-white dark:from-emerald-950/30 dark:via-zinc-900/90 dark:to-zinc-900/90 p-4 shadow-md dark:shadow-xl backdrop-blur-md transition hover:border-emerald-300 dark:hover:border-emerald-500/50">
                                 <div className="flex items-center justify-between gap-3">
                                   <div className="flex items-center gap-3 min-w-0">
                                     <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-600 text-white shadow-md shadow-emerald-600/20 font-bold text-xs">
@@ -1209,32 +1208,32 @@ export default function SequenceEditor() {
                                     </div>
                                     <div className="min-w-0 flex-1">
                                       <div className="flex items-center gap-2">
-                                        <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-400">
+                                        <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
                                           Resource Delivery
                                         </span>
-                                        <span className="rounded bg-emerald-500/10 px-1.5 py-0.2 text-[9px] font-semibold text-emerald-300">
+                                        <span className="rounded bg-emerald-100/80 dark:bg-emerald-500/10 px-1.5 py-0.2 text-[9px] font-semibold text-emerald-800 dark:text-emerald-300">
                                           Instant
                                         </span>
                                       </div>
-                                      <p className="text-xs sm:text-sm font-bold text-white truncate mt-0.5">
+                                      <p className="text-xs sm:text-sm font-bold text-zinc-900 dark:text-white truncate mt-0.5">
                                         {attachedPage.deliveryEmail?.subject || "Your requested access is inside"}
                                       </p>
                                     </div>
                                   </div>
                                   <div className="hidden sm:flex items-center gap-4 shrink-0 text-right">
                                     <div>
-                                      <span className="block text-xs font-mono font-bold text-white tabular-nums">
+                                      <span className="block text-xs font-mono font-bold text-zinc-900 dark:text-white tabular-nums">
                                         {signedUp.toLocaleString()}
                                       </span>
-                                      <span className="block text-[9px] uppercase tracking-wider font-semibold text-zinc-400">
+                                      <span className="block text-[9px] uppercase tracking-wider font-semibold text-zinc-500 dark:text-zinc-400">
                                         Sent
                                       </span>
                                     </div>
                                     <div>
-                                      <span className="block text-xs font-mono font-bold text-emerald-400 tabular-nums">
+                                      <span className="block text-xs font-mono font-bold text-emerald-600 dark:text-emerald-400 tabular-nums">
                                         {overallOpenRate}%
                                       </span>
-                                      <span className="block text-[9px] uppercase tracking-wider font-semibold text-zinc-400">
+                                      <span className="block text-[9px] uppercase tracking-wider font-semibold text-zinc-500 dark:text-zinc-400">
                                         Open
                                       </span>
                                     </div>
@@ -1244,15 +1243,15 @@ export default function SequenceEditor() {
 
                               {/* Bottom Output Port */}
                               <div className="flex justify-center -mt-1.5 relative z-10">
-                                <span className="h-3 w-3 rounded-full border-2 border-emerald-400 bg-zinc-950 ring-4 ring-zinc-900" />
+                                <span className="h-3 w-3 rounded-full border-2 border-emerald-500 dark:border-emerald-400 bg-white dark:bg-zinc-950 ring-4 ring-zinc-200 dark:ring-zinc-900" />
                               </div>
                             </div>
 
                             {/* Connector to First Follow-up */}
                             <div className="relative flex flex-col items-center my-1 group">
-                              <div className="w-0.5 h-12 bg-zinc-700" />
+                              <div className="w-0.5 h-12 bg-zinc-300 dark:bg-zinc-700" />
                               {emailsWithBody[0] && (
-                                <div className="absolute top-1/2 -translate-y-1/2 flex items-center gap-1 rounded-full border border-white/10 bg-zinc-900/95 px-2.5 py-0.5 text-[10px] font-semibold text-zinc-400 shadow-sm group-hover:border-[#38BDF8]/40 transition">
+                                <div className="absolute top-1/2 -translate-y-1/2 flex items-center gap-1 rounded-full border border-zinc-200 dark:border-white/10 bg-white/95 dark:bg-zinc-900/95 px-2.5 py-0.5 text-[10px] font-semibold text-zinc-600 dark:text-zinc-400 shadow-xs group-hover:border-[#0066B2]/40 dark:group-hover:border-[#38BDF8]/40 transition">
                                   <Clock className="h-2.5 w-2.5 text-zinc-400" />
                                   <span>Wait {emailsWithBody[0].delayLabel || "1 day"}</span>
                                 </div>
@@ -1260,7 +1259,7 @@ export default function SequenceEditor() {
                               <button
                                 type="button"
                                 onClick={() => insertEmailAt(0)}
-                                className="opacity-0 group-hover:opacity-100 absolute top-1/2 -translate-y-1/2 flex h-6 w-6 items-center justify-center rounded-full bg-[#38BDF8] text-[#06243A] shadow-lg shadow-cyan-500/40 hover:scale-110 active:scale-95 transition cursor-pointer z-10"
+                                className="opacity-0 group-hover:opacity-100 absolute top-1/2 -translate-y-1/2 flex h-6 w-6 items-center justify-center rounded-full bg-[#0066B2] dark:bg-[#38BDF8] text-white dark:text-[#06243A] shadow-lg shadow-blue-500/30 hover:scale-110 active:scale-95 transition cursor-pointer z-10"
                                 title="Insert step here"
                               >
                                 <Plus className="h-3.5 w-3.5 stroke-[3]" />
@@ -1301,8 +1300,8 @@ export default function SequenceEditor() {
                                 {/* Top Input Port */}
                                 <div className="flex justify-center -mb-1.5 relative z-10">
                                   <span
-                                    className={`h-3 w-3 rounded-full border-2 bg-zinc-950 ring-4 ring-zinc-900 transition-colors ${
-                                      isSelected ? "border-[#38BDF8] ring-cyan-500/20" : "border-zinc-500"
+                                    className={`h-3 w-3 rounded-full border-2 bg-white dark:bg-zinc-950 ring-4 ring-zinc-200 dark:ring-zinc-900 transition-colors ${
+                                      isSelected ? "border-[#0066B2] dark:border-[#38BDF8] ring-blue-500/20 dark:ring-cyan-500/20" : "border-zinc-300 dark:border-zinc-500"
                                     }`}
                                   />
                                 </div>
@@ -1317,16 +1316,16 @@ export default function SequenceEditor() {
                                       selectThis();
                                     }
                                   }}
-                                  className={`relative rounded-2xl p-4 shadow-xl backdrop-blur-md transition-all duration-200 cursor-pointer overflow-hidden ${
+                                  className={`relative rounded-2xl p-4 shadow-md dark:shadow-xl backdrop-blur-md transition-all duration-200 cursor-pointer overflow-hidden ${
                                     isSelected
-                                      ? "border-2 border-[#38BDF8] bg-zinc-900/95 shadow-cyan-500/10 scale-[1.01]"
-                                      : "border border-white/10 bg-zinc-900/70 hover:border-white/20 hover:bg-zinc-900/90"
+                                      ? "border-2 border-[#0066B2] dark:border-[#38BDF8] bg-white dark:bg-zinc-900/95 shadow-blue-500/10 dark:shadow-cyan-500/10 scale-[1.01]"
+                                      : "border border-zinc-200/90 dark:border-white/10 bg-white/90 dark:bg-zinc-900/70 hover:border-zinc-300 dark:hover:border-white/20 hover:bg-white dark:hover:bg-zinc-900/90"
                                   }`}
                                 >
                                   {isSelected && (
                                     <span
                                       aria-hidden="true"
-                                      className="absolute inset-y-0 left-0 w-1 bg-gradient-to-b from-[#38BDF8] to-[#0066B2]"
+                                      className="absolute inset-y-0 left-0 w-1 bg-gradient-to-b from-[#0066B2] to-[#38BDF8]"
                                     />
                                   )}
 
@@ -1335,25 +1334,25 @@ export default function SequenceEditor() {
                                       <div
                                         className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl font-bold text-xs shadow-md transition-colors ${
                                           isSelected
-                                            ? "bg-[#38BDF8] text-[#06243A] shadow-cyan-500/30"
-                                            : "bg-white/10 text-white"
+                                            ? "bg-[#0066B2] dark:bg-[#38BDF8] text-white dark:text-[#06243A] shadow-blue-500/30 dark:shadow-cyan-500/30"
+                                            : "bg-zinc-100 dark:bg-white/10 text-zinc-700 dark:text-white"
                                         }`}
                                       >
                                         {stepNum}
                                       </div>
                                       <div className="min-w-0 flex-1">
                                         <div className="flex items-center gap-2">
-                                          <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">
+                                          <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
                                             Follow-up Step
                                           </span>
-                                          <span className="rounded bg-white/5 px-1.5 py-0.2 text-[9px] font-semibold text-zinc-400">
+                                          <span className="rounded bg-zinc-100 dark:bg-white/5 border border-zinc-200/60 dark:border-transparent px-1.5 py-0.2 text-[9px] font-semibold text-zinc-600 dark:text-zinc-400">
                                             {waitLabel}
                                           </span>
                                         </div>
-                                        <p className="text-xs sm:text-sm font-bold text-white truncate mt-0.5">
+                                        <p className="text-xs sm:text-sm font-bold text-zinc-900 dark:text-white truncate mt-0.5">
                                           {email.subject || `Untitled Step ${stepNum}`}
                                         </p>
-                                        <p className="text-[11px] text-zinc-400 truncate mt-0.5">
+                                        <p className="text-[11px] text-zinc-500 dark:text-zinc-400 truncate mt-0.5">
                                           {email.previewText?.trim() || "No preheader set"}
                                         </p>
                                       </div>
@@ -1361,22 +1360,22 @@ export default function SequenceEditor() {
 
                                     <div className="hidden sm:flex items-center gap-4 shrink-0 text-right">
                                       <div>
-                                        <span className="block text-xs font-mono font-bold text-white tabular-nums">
+                                        <span className="block text-xs font-mono font-bold text-zinc-900 dark:text-white tabular-nums">
                                           {sentCount.toLocaleString()}
                                         </span>
-                                        <span className="block text-[9px] uppercase tracking-wider font-semibold text-zinc-400">
+                                        <span className="block text-[9px] uppercase tracking-wider font-semibold text-zinc-500 dark:text-zinc-400">
                                           Sent
                                         </span>
                                       </div>
                                       <div>
                                         <span
                                           className={`block text-xs font-mono font-bold tabular-nums ${
-                                            sentCount > 0 ? "text-emerald-400" : "text-zinc-500"
+                                            sentCount > 0 ? "text-emerald-600 dark:text-emerald-400" : "text-zinc-400 dark:text-zinc-500"
                                           }`}
                                         >
                                           {stepOpenRate}%
                                         </span>
-                                        <span className="block text-[9px] uppercase tracking-wider font-semibold text-zinc-400">
+                                        <span className="block text-[9px] uppercase tracking-wider font-semibold text-zinc-500 dark:text-zinc-400">
                                           Open
                                         </span>
                                       </div>
@@ -1391,7 +1390,7 @@ export default function SequenceEditor() {
                                         setEditorViewMode("list");
                                         setExpandedEmailId(email.id);
                                       }}
-                                      className="flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-lg text-zinc-400 outline-none transition-colors hover:bg-white/10 hover:text-[#38BDF8]"
+                                      className="flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-lg text-zinc-400 outline-none transition-colors hover:bg-zinc-100 dark:hover:bg-white/10 hover:text-[#0066B2] dark:hover:text-[#38BDF8]"
                                     >
                                       <Pencil className="h-3.5 w-3.5" />
                                     </button>
@@ -1401,8 +1400,8 @@ export default function SequenceEditor() {
                                 {/* Bottom Output Port */}
                                 <div className="flex justify-center -mt-1.5 relative z-10">
                                   <span
-                                    className={`h-3 w-3 rounded-full border-2 bg-zinc-950 ring-4 ring-zinc-900 transition-colors ${
-                                      isSelected ? "border-[#38BDF8] ring-cyan-500/20" : "border-zinc-500"
+                                    className={`h-3 w-3 rounded-full border-2 bg-white dark:bg-zinc-950 ring-4 ring-zinc-200 dark:ring-zinc-900 transition-colors ${
+                                      isSelected ? "border-[#0066B2] dark:border-[#38BDF8] ring-blue-500/20 dark:ring-cyan-500/20" : "border-zinc-300 dark:border-zinc-500"
                                     }`}
                                   />
                                 </div>
@@ -1410,10 +1409,10 @@ export default function SequenceEditor() {
 
                               {/* Stem to next node */}
                               <div className="relative flex flex-col items-center my-1 group">
-                                <div className="w-0.5 h-12 bg-zinc-700" />
+                                <div className="w-0.5 h-12 bg-zinc-300 dark:bg-zinc-700" />
                                 
                                 {idx < emailsWithBody.length - 1 && (
-                                  <div className="absolute top-1/2 -translate-y-1/2 flex items-center gap-1 rounded-full border border-white/10 bg-zinc-900/95 px-2.5 py-0.5 text-[10px] font-semibold text-zinc-400 shadow-sm group-hover:border-[#38BDF8]/40 transition">
+                                  <div className="absolute top-1/2 -translate-y-1/2 flex items-center gap-1 rounded-full border border-zinc-200 dark:border-white/10 bg-white/95 dark:bg-zinc-900/95 px-2.5 py-0.5 text-[10px] font-semibold text-zinc-600 dark:text-zinc-400 shadow-xs group-hover:border-[#0066B2]/40 dark:group-hover:border-[#38BDF8]/40 transition">
                                     <Clock className="h-2.5 w-2.5 text-zinc-400" />
                                     <span>Wait {emailsWithBody[idx + 1]?.delayLabel || "1 day"}</span>
                                   </div>
@@ -1423,7 +1422,7 @@ export default function SequenceEditor() {
                                 <button
                                   type="button"
                                   onClick={() => insertEmailAt(idx + 1)}
-                                  className="opacity-0 group-hover:opacity-100 absolute top-1/2 -translate-y-1/2 flex h-6 w-6 items-center justify-center rounded-full bg-[#38BDF8] text-[#06243A] shadow-lg shadow-cyan-500/40 hover:scale-110 active:scale-95 transition cursor-pointer z-10"
+                                  className="opacity-0 group-hover:opacity-100 absolute top-1/2 -translate-y-1/2 flex h-6 w-6 items-center justify-center rounded-full bg-[#0066B2] dark:bg-[#38BDF8] text-white dark:text-[#06243A] shadow-lg shadow-blue-500/30 hover:scale-110 active:scale-95 transition cursor-pointer z-10"
                                   title="Insert step here"
                                 >
                                   <Plus className="h-3.5 w-3.5 stroke-[3]" />
@@ -1437,30 +1436,30 @@ export default function SequenceEditor() {
                         <div className="group relative w-full max-w-[440px]">
                           {/* Top Input Port */}
                           <div className="flex justify-center -mb-1.5 relative z-10">
-                            <span className="h-3 w-3 rounded-full border-2 border-emerald-400 bg-zinc-950 ring-4 ring-zinc-900" />
+                            <span className="h-3 w-3 rounded-full border-2 border-emerald-500 dark:border-emerald-400 bg-white dark:bg-zinc-950 ring-4 ring-zinc-200 dark:ring-zinc-900" />
                           </div>
 
-                          <div className="relative rounded-2xl border border-emerald-500/30 bg-gradient-to-b from-emerald-950/30 via-zinc-900/90 to-zinc-900/90 p-4 shadow-xl backdrop-blur-md">
+                          <div className="relative rounded-2xl border border-emerald-200/80 dark:border-emerald-500/30 bg-gradient-to-b from-emerald-50/60 via-white to-white dark:from-emerald-950/20 dark:via-zinc-900/90 dark:to-zinc-900/90 p-4 shadow-md dark:shadow-xl backdrop-blur-md">
                             <div className="flex items-center justify-between gap-3">
                               <div className="flex items-center gap-3 min-w-0">
-                                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-500 text-white shadow-md shadow-emerald-500/30">
+                                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-600 text-white shadow-md shadow-emerald-600/30">
                                   <Check className="h-4 w-4 stroke-[3]" />
                                 </div>
                                 <div className="min-w-0 flex-1">
-                                  <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-400">
+                                  <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
                                     Sequence Goal
                                   </span>
-                                  <p className="text-xs sm:text-sm font-bold text-white">Journey Complete</p>
-                                  <p className="text-[11px] text-zinc-400 truncate">
+                                  <p className="text-xs sm:text-sm font-bold text-zinc-900 dark:text-white">Journey Complete</p>
+                                  <p className="text-[11px] text-zinc-500 dark:text-zinc-400 truncate">
                                     Subscribers exit or stop upon conversion
                                   </p>
                                 </div>
                               </div>
                               <div className="text-right shrink-0">
-                                <span className="block text-sm font-mono font-bold text-white tabular-nums">
-                                  {(seq.stats.completed || delivered).toLocaleString()}
+                                <span className="block text-sm font-mono font-bold text-zinc-900 dark:text-white tabular-nums">
+                                  {(seq.stats.completed ?? 0).toLocaleString()}
                                 </span>
-                                <span className="block text-[9px] uppercase tracking-wider font-semibold text-zinc-400">
+                                <span className="block text-[9px] uppercase tracking-wider font-semibold text-zinc-500 dark:text-zinc-400">
                                   Completed
                                 </span>
                               </div>
@@ -1479,18 +1478,18 @@ export default function SequenceEditor() {
                           animate={{ opacity: 1, x: 0 }}
                           exit={{ opacity: 0, x: 20 }}
                           transition={{ duration: 0.2 }}
-                          className="w-full sm:w-[380px] lg:w-[380px] max-w-full shrink-0 h-full border-t lg:border-t-0 lg:border-l border-white/10 bg-zinc-900/95 backdrop-blur-xl flex flex-col overflow-hidden z-20"
+                          className="w-full sm:w-[380px] lg:w-[380px] max-w-full shrink-0 h-full border-t lg:border-t-0 lg:border-l border-zinc-200/90 dark:border-white/10 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-xl flex flex-col overflow-hidden z-20 shadow-xl"
                         >
-                          <div className="h-full overflow-y-auto p-4 sm:p-5 flex flex-col scrollbar-thin scrollbar-thumb-zinc-700 box-border">
+                          <div className="h-full overflow-y-auto p-4 sm:p-5 flex flex-col scrollbar-thin scrollbar-thumb-zinc-300 dark:scrollbar-thumb-zinc-700 box-border">
                             {/* Drawer Header */}
-                            <div className="flex items-center justify-between gap-2.5 border-b border-white/10 pb-3 min-w-0">
+                            <div className="flex items-center justify-between gap-2.5 border-b border-zinc-200/80 dark:border-white/10 pb-3 min-w-0">
                               <div className="flex items-center gap-2 min-w-0 flex-1">
-                                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-[#38BDF8] text-xs font-bold text-[#06243A]">
+                                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-[#0066B2] dark:bg-[#38BDF8] text-xs font-bold text-white dark:text-[#06243A]">
                                   {selectedFlowNodeIndex + (attachedPage ? 2 : 1)}
                                 </span>
                                 <div className="min-w-0 flex-1">
-                                  <h3 className="text-xs font-bold uppercase tracking-wider text-white">Step Inspector</h3>
-                                  <p className="text-[11px] text-zinc-400 truncate">
+                                  <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-900 dark:text-white">Step Inspector</h3>
+                                  <p className="text-[11px] text-zinc-500 dark:text-zinc-400 truncate">
                                     {emailsWithBody[selectedFlowNodeIndex].subject || "Untitled Step"}
                                   </p>
                                 </div>
@@ -1501,7 +1500,7 @@ export default function SequenceEditor() {
                                   type="button"
                                   onClick={() => sendTestEmail(emailsWithBody[selectedFlowNodeIndex].id)}
                                   disabled={sendingTestForId === emailsWithBody[selectedFlowNodeIndex].id}
-                                  className="flex items-center gap-1 rounded-lg bg-[#38BDF8]/15 px-2.5 py-1 text-[11px] font-bold text-[#38BDF8] hover:bg-[#38BDF8]/25 transition cursor-pointer whitespace-nowrap"
+                                  className="flex items-center gap-1 rounded-lg bg-[#0066B2]/10 dark:bg-[#38BDF8]/15 px-2.5 py-1 text-[11px] font-bold text-[#0066B2] dark:text-[#38BDF8] hover:bg-[#0066B2]/20 dark:hover:bg-[#38BDF8]/25 transition cursor-pointer whitespace-nowrap"
                                   title="Send test email to your account email"
                                 >
                                   {sendingTestForId === emailsWithBody[selectedFlowNodeIndex].id ? (
@@ -1514,7 +1513,7 @@ export default function SequenceEditor() {
                                 <button
                                   type="button"
                                   onClick={() => setShowCanvasInspector(false)}
-                                  className="flex h-7 w-7 items-center justify-center rounded-lg text-zinc-400 hover:bg-white/10 hover:text-white transition cursor-pointer shrink-0"
+                                  className="flex h-7 w-7 items-center justify-center rounded-lg text-zinc-400 hover:bg-zinc-100 dark:hover:bg-white/10 hover:text-zinc-900 dark:hover:text-white transition cursor-pointer shrink-0"
                                   title="Close inspector"
                                 >
                                   <X className="h-4 w-4" />
@@ -1523,14 +1522,14 @@ export default function SequenceEditor() {
                             </div>
 
                             {/* Inspector Tab Switcher */}
-                            <div className="flex rounded-lg bg-zinc-800/80 p-0.5 mt-3 border border-white/5 shrink-0">
+                            <div className="flex rounded-lg bg-zinc-100 dark:bg-zinc-800/80 p-0.5 mt-3 border border-zinc-200/80 dark:border-white/5 shrink-0">
                               <button
                                 type="button"
                                 onClick={() => setInspectorTab("content")}
                                 className={`flex-1 py-1 text-center text-[11px] font-bold rounded transition cursor-pointer ${
                                   inspectorTab === "content"
-                                    ? "bg-white/15 text-white shadow-xs"
-                                    : "text-zinc-400 hover:text-white"
+                                    ? "bg-white dark:bg-white/15 text-zinc-900 dark:text-white shadow-xs"
+                                    : "text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white"
                                 }`}
                               >
                                 Content & Preview
@@ -1540,8 +1539,8 @@ export default function SequenceEditor() {
                                 onClick={() => setInspectorTab("timing")}
                                 className={`flex-1 py-1 text-center text-[11px] font-bold rounded transition cursor-pointer ${
                                   inspectorTab === "timing"
-                                    ? "bg-white/15 text-white shadow-xs"
-                                    : "text-zinc-400 hover:text-white"
+                                    ? "bg-white dark:bg-white/15 text-zinc-900 dark:text-white shadow-xs"
+                                    : "text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white"
                                 }`}
                               >
                                 Delay & Timing
@@ -1554,7 +1553,7 @@ export default function SequenceEditor() {
                                 <div>
                                   <label
                                     htmlFor="flow-canvas-subject"
-                                    className="mb-1 block text-[10px] font-bold uppercase tracking-wider text-zinc-400"
+                                    className="mb-1 block text-[10px] font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400"
                                   >
                                     Email Subject Line
                                   </label>
@@ -1566,14 +1565,14 @@ export default function SequenceEditor() {
                                       patchEmail(emailsWithBody[selectedFlowNodeIndex].id, { subject: e.target.value })
                                     }
                                     placeholder="Compelling subject line..."
-                                    className="w-full rounded-xl border border-white/10 bg-zinc-800/70 p-2.5 text-xs font-semibold text-white outline-none focus:border-[#38BDF8] transition"
+                                    className="w-full rounded-xl border border-zinc-200 dark:border-white/10 bg-zinc-50/70 dark:bg-zinc-800/70 p-2.5 text-xs font-semibold text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 outline-none focus:border-[#0066B2] dark:focus:border-[#38BDF8] transition"
                                   />
                                 </div>
 
                                 <div>
                                   <label
                                     htmlFor="flow-canvas-preheader"
-                                    className="mb-1 block text-[10px] font-bold uppercase tracking-wider text-zinc-400"
+                                    className="mb-1 block text-[10px] font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400"
                                   >
                                     Preheader (Inbox Teaser)
                                   </label>
@@ -1585,47 +1584,47 @@ export default function SequenceEditor() {
                                       patchEmail(emailsWithBody[selectedFlowNodeIndex].id, { previewText: e.target.value })
                                     }
                                     placeholder="Teaser visible in inbox before opening..."
-                                    className="w-full rounded-xl border border-white/10 bg-zinc-800/70 p-2.5 text-xs font-semibold text-white outline-none focus:border-[#38BDF8] transition"
+                                    className="w-full rounded-xl border border-zinc-200 dark:border-white/10 bg-zinc-50/70 dark:bg-zinc-800/70 p-2.5 text-xs font-semibold text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 outline-none focus:border-[#0066B2] dark:focus:border-[#38BDF8] transition"
                                   />
                                 </div>
 
                                 {/* Simulated Email Client Preview Frame */}
                                 <div>
-                                  <span className="mb-1.5 block text-[10px] font-bold uppercase tracking-wider text-zinc-400">
+                                  <span className="mb-1.5 block text-[10px] font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
                                     Email Inbox Client Mockup
                                   </span>
-                                  <div className="rounded-xl border border-white/10 bg-zinc-950 overflow-hidden shadow-inner text-xs">
+                                  <div className="rounded-xl border border-zinc-200 dark:border-white/10 bg-zinc-50/50 dark:bg-zinc-950 overflow-hidden shadow-xs dark:shadow-inner text-xs">
                                     {/* Simulated Browser / Inbox Header */}
-                                    <div className="flex items-center justify-between border-b border-white/10 bg-zinc-900/90 px-3 py-2 text-[10px] text-zinc-400">
+                                    <div className="flex items-center justify-between border-b border-zinc-200 dark:border-white/10 bg-zinc-100 dark:bg-zinc-900/90 px-3 py-2 text-[10px] text-zinc-500 dark:text-zinc-400">
                                       <div className="flex items-center gap-1.5">
                                         <span className="h-2 w-2 rounded-full bg-rose-500/80" />
                                         <span className="h-2 w-2 rounded-full bg-amber-500/80" />
                                         <span className="h-2 w-2 rounded-full bg-emerald-500/80" />
                                       </div>
-                                      <span className="font-mono text-zinc-500 truncate max-w-[180px]">
+                                      <span className="font-mono text-zinc-500 dark:text-zinc-400 truncate max-w-[180px]">
                                         {account?.email || "sender@magnets.com"}
                                       </span>
                                     </div>
 
-                                    <div className="p-3.5 space-y-2 border-b border-white/5 bg-zinc-900/40 text-[11px]">
+                                    <div className="p-3.5 space-y-2 border-b border-zinc-200/60 dark:border-white/5 bg-white dark:bg-zinc-900/40 text-[11px]">
                                       <div className="flex gap-2">
-                                        <span className="text-zinc-500 font-semibold">Subject:</span>
-                                        <span className="font-bold text-white truncate">
+                                        <span className="text-zinc-500 dark:text-zinc-400 font-semibold">Subject:</span>
+                                        <span className="font-bold text-zinc-900 dark:text-white truncate">
                                           {emailsWithBody[selectedFlowNodeIndex].subject || "Untitled Email"}
                                         </span>
                                       </div>
                                       <div className="flex gap-2">
-                                        <span className="text-zinc-500 font-semibold">To:</span>
-                                        <span className="text-zinc-300">{"{first_name} <lead@example.com>"}</span>
+                                        <span className="text-zinc-500 dark:text-zinc-400 font-semibold">To:</span>
+                                        <span className="text-zinc-700 dark:text-zinc-300">{"{first_name} <lead@example.com>"}</span>
                                       </div>
                                     </div>
 
                                     <div
-                                      className="email-rendered-content prose prose-invert prose-sm max-w-none p-3.5 text-zinc-300 max-h-[180px] overflow-y-auto leading-relaxed"
+                                      className="email-rendered-content prose prose-zinc dark:prose-invert prose-sm max-w-none p-3.5 text-zinc-800 dark:text-zinc-300 max-h-[180px] overflow-y-auto leading-relaxed bg-white dark:bg-transparent"
                                       dangerouslySetInnerHTML={{
                                         __html:
                                           emailsWithBody[selectedFlowNodeIndex].body ||
-                                          "<p className='italic text-zinc-500'>No email body yet. Click full editor below to edit content.</p>",
+                                          "<p className='italic text-zinc-400 dark:text-zinc-500'>No email body yet. Click full editor below to edit content.</p>",
                                       }}
                                     />
                                   </div>
@@ -1637,7 +1636,7 @@ export default function SequenceEditor() {
                             {inspectorTab === "timing" && (
                               <div className="mt-4 space-y-4 flex-1">
                                 <div>
-                                  <label className="mb-1 block text-[10px] font-bold uppercase tracking-wider text-zinc-400">
+                                  <label className="mb-1 block text-[10px] font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
                                     Delivery Delay
                                   </label>
                                   <select
@@ -1651,12 +1650,12 @@ export default function SequenceEditor() {
                                       });
                                       triggerToast("Step delay updated!");
                                     }}
-                                    className="w-full rounded-xl border border-white/10 bg-zinc-800/90 p-2.5 text-xs font-semibold text-white outline-none focus:border-[#38BDF8] transition cursor-pointer"
+                                    className="w-full rounded-xl border border-zinc-200 dark:border-white/10 bg-zinc-50 dark:bg-zinc-800/90 p-2.5 text-xs font-semibold text-zinc-900 dark:text-white outline-none focus:border-[#0066B2] dark:focus:border-[#38BDF8] transition cursor-pointer"
                                   >
                                     {!standardDelays.some((del) => del.minutes === (emailsWithBody[selectedFlowNodeIndex].delayMinutes ?? 1440)) && (
                                       <option
                                         value={emailsWithBody[selectedFlowNodeIndex].delayMinutes}
-                                        className="bg-zinc-900 text-white font-bold"
+                                        className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-white font-bold"
                                       >
                                         {emailsWithBody[selectedFlowNodeIndex].delayLabel ||
                                           (emailsWithBody[selectedFlowNodeIndex].delayMinutes < 60
@@ -1667,15 +1666,15 @@ export default function SequenceEditor() {
                                       </option>
                                     )}
                                     {standardDelays.map((del) => (
-                                      <option key={del.minutes} value={del.minutes} className="bg-zinc-900 text-white">
+                                      <option key={del.minutes} value={del.minutes} className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-white">
                                         {del.label}
                                       </option>
                                     ))}
                                   </select>
                                 </div>
 
-                                <div className="rounded-xl border border-white/5 bg-zinc-800/40 p-3 text-xs text-zinc-400 space-y-2">
-                                  <p className="font-bold text-white text-[11px]">Workflow Trigger Rules</p>
+                                <div className="rounded-xl border border-zinc-200/80 dark:border-white/5 bg-zinc-50 dark:bg-zinc-800/40 p-3 text-xs text-zinc-600 dark:text-zinc-400 space-y-2">
+                                  <p className="font-bold text-zinc-900 dark:text-white text-[11px]">Workflow Trigger Rules</p>
                                   <p className="text-[11px] leading-relaxed">
                                     This email will be sent automatically once the specified delay elapses after the prior step. If the contact unsubscribes or books a call, sending will halt immediately.
                                   </p>
@@ -1686,7 +1685,7 @@ export default function SequenceEditor() {
                                     type="button"
                                     onClick={() => moveEmailUp(selectedFlowNodeIndex)}
                                     disabled={selectedFlowNodeIndex === 0}
-                                    className="flex-1 flex items-center justify-center gap-1.5 rounded-xl border border-white/10 bg-zinc-800/80 py-2 text-xs font-bold text-zinc-300 hover:bg-white/10 disabled:opacity-40 transition cursor-pointer"
+                                    className="flex-1 flex items-center justify-center gap-1.5 rounded-xl border border-zinc-200 dark:border-white/10 bg-zinc-50 dark:bg-zinc-800/80 py-2 text-xs font-bold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-white/10 disabled:opacity-40 transition cursor-pointer"
                                   >
                                     <ArrowUp className="h-3 w-3" />
                                     <span>Move Up</span>
@@ -1695,7 +1694,7 @@ export default function SequenceEditor() {
                                     type="button"
                                     onClick={() => moveEmailDown(selectedFlowNodeIndex)}
                                     disabled={selectedFlowNodeIndex === emailsWithBody.length - 1}
-                                    className="flex-1 flex items-center justify-center gap-1.5 rounded-xl border border-white/10 bg-zinc-800/80 py-2 text-xs font-bold text-zinc-300 hover:bg-white/10 disabled:opacity-40 transition cursor-pointer"
+                                    className="flex-1 flex items-center justify-center gap-1.5 rounded-xl border border-zinc-200 dark:border-white/10 bg-zinc-50 dark:bg-zinc-800/80 py-2 text-xs font-bold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-white/10 disabled:opacity-40 transition cursor-pointer"
                                   >
                                     <ArrowDown className="h-3 w-3" />
                                     <span>Move Down</span>
@@ -1705,7 +1704,7 @@ export default function SequenceEditor() {
                             )}
 
                             {/* Inspector Drawer Footer Actions */}
-                            <div className="mt-auto pt-4 border-t border-white/10 flex flex-col gap-2 shrink-0">
+                            <div className="mt-auto pt-4 border-t border-zinc-200/80 dark:border-white/10 flex flex-col gap-2 shrink-0">
                               <button
                                 type="button"
                                 onClick={() => {
@@ -1726,7 +1725,7 @@ export default function SequenceEditor() {
                                     setSelectedFlowNodeIndex(Math.max(0, selectedFlowNodeIndex - 1));
                                   }
                                 }}
-                                className="w-full flex items-center justify-center gap-1.5 rounded-xl border border-rose-500/20 bg-rose-500/10 py-2 text-xs font-bold text-rose-400 hover:bg-rose-500/20 transition cursor-pointer"
+                                className="w-full flex items-center justify-center gap-1.5 rounded-xl border border-rose-200 dark:border-rose-500/20 bg-rose-50 dark:bg-rose-500/10 py-2 text-xs font-bold text-rose-600 dark:text-rose-400 hover:bg-rose-100 dark:hover:bg-rose-500/20 transition cursor-pointer"
                               >
                                 <Trash2 className="h-3.5 w-3.5" />
                                 <span>Delete Step</span>
@@ -2165,7 +2164,7 @@ export default function SequenceEditor() {
                     <div className="space-y-2 pl-0.5">
                       {[
                         { label: "Signed up", value: signedUp, icon: Users, color: "text-blue-500 bg-blue-500/10" },
-                        { label: "Completed", value: seq.stats.completed || (delivered > 0 ? delivered : 0), icon: Check, color: "text-purple-500 bg-purple-500/10" },
+                        { label: "Completed", value: seq.stats.completed ?? 0, icon: Check, color: "text-purple-500 bg-purple-500/10" },
                         { label: "Replied", value: replied, icon: MessageSquare, color: "text-amber-500 bg-amber-500/10" },
                         { label: "Stopped", value: stopped, icon: StopCircle, color: "text-rose-500 bg-rose-500/10" },
                       ].map((row) => (
