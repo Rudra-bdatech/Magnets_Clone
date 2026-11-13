@@ -43,7 +43,19 @@ export async function GET(request: NextRequest) {
       ],
     });
   }
-  if (planFilter) andConditions.push({ plan: planFilter });
+  if (planFilter === "Free") {
+    andConditions.push({
+      $or: [
+        { plan: "Free" },
+        { plan: "free" },
+        { plan: { $exists: false } },
+        { plan: null },
+        { plan: "" },
+      ],
+    });
+  } else if (planFilter) {
+    andConditions.push({ plan: planFilter });
+  }
 
   if (roleFilter === "super_admin") {
     andConditions.push({
@@ -121,10 +133,10 @@ export async function GET(request: NextRequest) {
             $sum: {
               $cond: [
                 {
-                  $and: [
-                    { $ne: ["$emailVerified", null] },
-                    { $ne: ["$emailVerified", false] },
-                    { $ne: ["$emailVerified", ""] },
+                  $or: [
+                    { $eq: [{ $type: "$emailVerified" }, "date"] },
+                    { $and: [{ $eq: [{ $type: "$emailVerified" }, "bool"] }, { $eq: ["$emailVerified", true] }] },
+                    { $and: [{ $eq: [{ $type: "$emailVerified" }, "string"] }, { $gt: [{ $strLenCP: "$emailVerified" }, 0] }] },
                   ],
                 },
                 1,
@@ -137,9 +149,14 @@ export async function GET(request: NextRequest) {
               $cond: [
                 {
                   $or: [
-                    { $gt: ["$stripeSubscriptionId", null] },
-                    { $gt: ["$chargebeeSubscriptionId", null] },
-                    { $and: [{ $ne: ["$plan", "Free"] }, { $ne: ["$plan", ""] }, { $ne: ["$plan", null] }] },
+                    { $gt: [{ $strLenCP: { $ifNull: ["$stripeSubscriptionId", ""] } }, 0] },
+                    { $gt: [{ $strLenCP: { $ifNull: ["$chargebeeSubscriptionId", ""] } }, 0] },
+                    {
+                      $and: [
+                        { $ne: [{ $toLower: { $ifNull: ["$plan", "free"] } }, "free"] },
+                        { $ne: [{ $ifNull: ["$plan", ""] }, ""] },
+                      ],
+                    },
                   ],
                 },
                 1,
@@ -206,7 +223,11 @@ export async function GET(request: NextRequest) {
       linkedinConnected: Boolean(a.linkedinConnected),
       gmailConnected: Boolean(a.gmailOAuth?.connected),
       smtpConnected: Boolean(a.customSmtp?.enabled && a.customSmtp?.isVerified),
-      hasPaidSubscription: Boolean(a.stripeSubscriptionId || a.chargebeeSubscriptionId),
+      hasPaidSubscription: Boolean(
+        (a.stripeSubscriptionId && a.stripeSubscriptionId.trim()) ||
+        (a.chargebeeSubscriptionId && a.chargebeeSubscriptionId.trim()) ||
+        (a.plan && a.plan.toLowerCase() !== "free")
+      ),
       suspended: Boolean(a.suspended),
       signupCountry: a.signupCountry || "",
       signupCountryCode: a.signupCountryCode || "",
