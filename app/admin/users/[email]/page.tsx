@@ -512,7 +512,7 @@ export default function AdminUserDetailPage() {
                     exit={{ opacity: 0 }}
                     transition={{ duration: 0.2, ease: "easeOut" }}
                     onClick={() => setMobileTabSheetOpen(false)}
-                    className="md:hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-xs cursor-pointer"
+                    className="md:hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm cursor-pointer"
                   />
                   <motion.div
                     initial={{ y: "100%" }}
@@ -1114,7 +1114,7 @@ export default function AdminUserDetailPage() {
                   setActionMsg("");
                 }
               }}
-              className="fixed inset-0 bg-black/60 backdrop-blur-xs cursor-pointer"
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm cursor-pointer"
             />
 
             {/* Modal Content */}
