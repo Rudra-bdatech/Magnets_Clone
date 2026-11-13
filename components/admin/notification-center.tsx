@@ -457,8 +457,8 @@ export function useNotificationCenter(initial: AdminNotification[]) {
       if (!incoming.length) return prev;
       // Play sound only after the first poll (not on page load) and only for unread arrivals.
       shouldPlaySound = !isFirstPollRef.current && incoming.some((n) => n.unread);
-      // Prepend newest, keep total ≤ 40
-      return [...incoming, ...prev].slice(0, 40);
+      // Prepend newest, keep total ≤ 50
+      return [...incoming, ...prev].slice(0, 50);
     });
     if (shouldPlaySound) playSound();
   }, [playSound]);
