@@ -388,6 +388,14 @@ AuditLogSchema.index({ createdAt: -1 });
 AuditLogSchema.index({ adminEmail: 1, createdAt: -1 });
 AuditLogSchema.index({ targetEmail: 1, createdAt: -1 });
 
+// AdminNotifState — persists per-admin read/dismissed notification IDs server-side
+const AdminNotifStateSchema = new Schema({
+  adminEmail:   { type: String, required: true, unique: true, index: true, lowercase: true, trim: true },
+  readIds:      { type: [String], default: [] },
+  dismissedIds: { type: [String], default: [] },
+  updatedAt:    { type: Date, default: Date.now },
+});
+
 // CronLog Schema — one document per cron job, updated by the cron route itself on every run
 const CronLogSchema = new Schema({
   name:       { type: String, required: true, unique: true },
@@ -433,6 +441,7 @@ if (process.env.NODE_ENV === "development") {
   delete (mongoose.models as any).EmailEvent;
   delete (mongoose.models as any).PdfOtp;
   delete (mongoose.models as any).AuditLog;
+  delete (mongoose.models as any).AdminNotifState;
   delete (mongoose.models as any).CronLog;
   delete (mongoose.models as any).VisitorLog;
 }
@@ -444,5 +453,6 @@ export const SequenceModel = mongoose.models.Sequence || mongoose.model("Sequenc
 export const IntegrationModel = mongoose.models.Integration || mongoose.model("Integration", IntegrationSchema);
 export const PdfOtpModel = mongoose.models.PdfOtp || mongoose.model("PdfOtp", PdfOtpSchema);
 export const AuditLogModel = mongoose.models.AuditLog || mongoose.model("AuditLog", AuditLogSchema);
+export const AdminNotifStateModel = mongoose.models.AdminNotifState || mongoose.model("AdminNotifState", AdminNotifStateSchema);
 export const CronLogModel = mongoose.models.CronLog || mongoose.model("CronLog", CronLogSchema);
 export const VisitorLogModel = mongoose.models.VisitorLog || mongoose.model("VisitorLog", VisitorLogSchema);

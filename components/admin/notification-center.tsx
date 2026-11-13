@@ -123,11 +123,21 @@ function lsAddMany(key: string, ids: string[]) {
   } catch { }
 }
 
+// Fire-and-forget: persist read/dismissed IDs to DB via PATCH
+function persistToServer(readIds: string[], dismissedIds: string[]) {
+  if (!readIds.length && !dismissedIds.length) return;
+  fetch("/api/admin/notifications", {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ readIds, dismissedIds }),
+  }).catch(() => {});
+}
+
 export function useNotificationCenter(initial: AdminNotification[]) {
   const [notifications, setNotifications] = useState(initial);
   const [clearing, setClearing] = useState(false);
   const timers = useRef<number[]>([]);
-  // Hydrate dismissed & seen sets from localStorage on first render.
+  // Hydrate dismissed & seen sets from localStorage on first render (fast, optimistic).
   const dismissed = useRef<Set<string>>(lsGet(LS_DISMISSED));
   const readIds = useRef<Set<string>>(lsGet(LS_READ));
   // seenIds: superset of dismissed + read — prevents re-marking as unread on poll.
@@ -136,6 +146,10 @@ export function useNotificationCenter(initial: AdminNotification[]) {
     ...Array.from(readIds.current),
     ...initial.map((n) => n.id),
   ]));
+  // Tracks whether we've attempted the one-time localStorage → DB migration.
+  const migrationDone = useRef(false);
+  // Tracks whether we've synced DB state to localStorage (only needed once per session).
+  const dbStateSynced = useRef(false);
 
   useEffect(() => () => timers.current.forEach((t) => clearTimeout(t)), []);
 
@@ -146,6 +160,7 @@ export function useNotificationCenter(initial: AdminNotification[]) {
       const ids = p.map((n) => n.id);
       lsAddMany(LS_READ, ids);
       ids.forEach((id) => readIds.current.add(id));
+      persistToServer(ids, []);
       return p.map((n) => ({ ...n, unread: false }));
     }),
     []
@@ -154,17 +169,29 @@ export function useNotificationCenter(initial: AdminNotification[]) {
     (id: string) => {
       lsAdd(LS_READ, id);
       readIds.current.add(id);
+      persistToServer([id], []);
       setNotifications((p) => p.map((n) => (n.id === id ? { ...n, unread: false } : n)));
     },
     []
   );
+  // Fix: persist to localStorage (and DB) when toggling to read via iOS swipe action.
   const toggleRead = useCallback(
-    (id: string) => setNotifications((p) => p.map((n) => (n.id === id ? { ...n, unread: !n.unread } : n))),
+    (id: string) => setNotifications((p) => p.map((n) => {
+      if (n.id !== id) return n;
+      if (n.unread) {
+        // Becoming read — persist it.
+        lsAdd(LS_READ, id);
+        readIds.current.add(id);
+        persistToServer([id], []);
+      }
+      return { ...n, unread: !n.unread };
+    })),
     []
   );
   const dismiss = useCallback((id: string) => {
     dismissed.current.add(id);
     lsAdd(LS_DISMISSED, id);
+    persistToServer([], [id]);
     setNotifications((p) => p.filter((n) => n.id !== id));
   }, []);
 
@@ -175,6 +202,7 @@ export function useNotificationCenter(initial: AdminNotification[]) {
     haptic(12);
     ids.forEach((id) => dismissed.current.add(id));
     lsAddMany(LS_DISMISSED, ids);
+    persistToServer([], ids);
     setClearing(true);
     ids.forEach((id, i) => {
       timers.current.push(
@@ -183,6 +211,29 @@ export function useNotificationCenter(initial: AdminNotification[]) {
     });
     timers.current.push(window.setTimeout(() => setClearing(false), ids.length * 55 + 600));
   }, [clearing, notifications]);
+
+  // Apply DB state (readIds + dismissedIds) returned from the API into our in-memory refs.
+  // DB is authoritative; localStorage is the fast optimistic cache.
+  const applyDbState = useCallback((dbRead: string[], dbDismissed: string[]) => {
+    dbRead.forEach((id) => { readIds.current.add(id); seenIds.current.add(id); });
+    dbDismissed.forEach((id) => { dismissed.current.add(id); seenIds.current.add(id); });
+    // Sync to localStorage only once per session — not on every 60s poll — to avoid churn.
+    if (!dbStateSynced.current) {
+      dbStateSynced.current = true;
+      if (dbRead.length)      lsAddMany(LS_READ, dbRead);
+      if (dbDismissed.length) lsAddMany(LS_DISMISSED, dbDismissed);
+    }
+  }, []);
+
+  // One-time migration: if the DB has no state yet but localStorage does, push it up.
+  const migrateIfNeeded = useCallback((dbRead: string[], dbDismissed: string[]) => {
+    if (migrationDone.current) return;
+    migrationDone.current = true;
+    if (dbRead.length > 0 || dbDismissed.length > 0) return; // DB already has data
+    const lsR = Array.from(lsGet(LS_READ));
+    const lsD = Array.from(lsGet(LS_DISMISSED));
+    if (lsR.length || lsD.length) persistToServer(lsR, lsD);
+  }, []);
 
   // Merge fresh notifications from the API without touching dismissed or already-seen ones.
   const mergeFromApi = useCallback((fresh: Array<{
@@ -211,7 +262,7 @@ export function useNotificationCenter(initial: AdminNotification[]) {
     });
   }, []);
 
-  // Poll every 60 s.
+  // Poll every 60 s. First poll also syncs DB state and runs migration.
   useEffect(() => {
     let alive = true;
     const poll = async () => {
@@ -219,13 +270,18 @@ export function useNotificationCenter(initial: AdminNotification[]) {
         const res = await fetch("/api/admin/notifications");
         if (!res.ok || !alive) return;
         const data = await res.json();
+        const dbRead: string[]      = Array.isArray(data.readIds)      ? data.readIds      : [];
+        const dbDismissed: string[] = Array.isArray(data.dismissedIds) ? data.dismissedIds : [];
+        // Apply DB state before merging notifications so dismissed/read is accurate.
+        applyDbState(dbRead, dbDismissed);
+        migrateIfNeeded(dbRead, dbDismissed);
         if (Array.isArray(data.notifications)) mergeFromApi(data.notifications);
       } catch { }
     };
     poll(); // immediate first load
     const id = window.setInterval(poll, 60_000);
     return () => { alive = false; clearInterval(id); };
-  }, [mergeFromApi]);
+  }, [mergeFromApi, applyDbState, migrateIfNeeded]);
 
 
   return { notifications, unreadCount, clearing, markAllRead, markRead, toggleRead, dismiss, clearAll };

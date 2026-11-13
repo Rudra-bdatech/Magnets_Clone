@@ -34,12 +34,14 @@ export async function GET(request: NextRequest) {
 
   const andConditions: any[] = [];
   if (search) {
+    // Escape regex meta-characters to prevent ReDoS attacks.
+    const safeSearch = search.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
     andConditions.push({
       $or: [
-        { email: { $regex: search, $options: "i" } },
-        { name: { $regex: search, $options: "i" } },
-        { signupCity: { $regex: search, $options: "i" } },
-        { signupCountry: { $regex: search, $options: "i" } },
+        { email: { $regex: safeSearch, $options: "i" } },
+        { name: { $regex: safeSearch, $options: "i" } },
+        { signupCity: { $regex: safeSearch, $options: "i" } },
+        { signupCountry: { $regex: safeSearch, $options: "i" } },
       ],
     });
   }

@@ -1,7 +1,7 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import mongoose from "mongoose";
 import { dbConnect } from "@/lib/mongodb";
-import { AccountModel, AuditLogModel } from "@/lib/models";
+import { AccountModel, AuditLogModel, AdminNotifStateModel } from "@/lib/models";
 import { requireAdmin, isAdminSession } from "@/lib/admin-auth";
 
 // Signups / verifications / suspensions: last 7 days.
@@ -244,7 +244,77 @@ export async function GET() {
   notifs.sort((a, b) => b.ts.localeCompare(a.ts));
   const result = notifs.slice(0, CAP);
 
-  return NextResponse.json({ notifications: result }, {
-    headers: { "Cache-Control": "private, max-age=30" },
+  // Fetch this admin's read/dismissed state from DB
+  const notifState = await AdminNotifStateModel.findOne(
+    { adminEmail: auth.email },
+    { readIds: 1, dismissedIds: 1 }
+  ).lean() as any;
+
+  return NextResponse.json({
+    notifications: result,
+    readIds:      notifState?.readIds      ?? [],
+    dismissedIds: notifState?.dismissedIds ?? [],
+  }, {
+    headers: { "Cache-Control": "private, no-store" },
   });
+}
+
+// Persist read/dismissed state to DB (fire-and-forget from client)
+export async function PATCH(req: NextRequest) {
+  const auth = await requireAdmin();
+  if (!isAdminSession(auth)) return auth;
+
+  let body: { readIds?: string[]; dismissedIds?: string[] };
+  try {
+    body = await req.json();
+  } catch {
+    return NextResponse.json({ error: "Invalid JSON." }, { status: 400 });
+  }
+
+  const { readIds = [], dismissedIds = [] } = body;
+  if (!Array.isArray(readIds) || !Array.isArray(dismissedIds)) {
+    return NextResponse.json({ error: "readIds and dismissedIds must be arrays." }, { status: 400 });
+  }
+
+  // Validate every element: must be a plain string ≤ 100 chars (notification IDs are ~40 chars)
+  const cleanReadIds = readIds
+    .filter((id): id is string => typeof id === "string" && id.length <= 100)
+    .slice(0, 300);
+  const cleanDismissedIds = dismissedIds
+    .filter((id): id is string => typeof id === "string" && id.length <= 100)
+    .slice(0, 300);
+
+  if (!cleanReadIds.length && !cleanDismissedIds.length) {
+    return NextResponse.json({ ok: true });
+  }
+
+  await dbConnect();
+
+  // Aggregation pipeline update: $setUnion deduplicates, $slice keeps the latest 300.
+  // Atomic, no separate trim step needed, works in MongoDB 4.2+.
+  await AdminNotifStateModel.findOneAndUpdate(
+    { adminEmail: auth.email },
+    [
+      {
+        $set: {
+          readIds: {
+            $slice: [
+              { $setUnion: [{ $ifNull: ["$readIds", []] }, cleanReadIds] },
+              -300,
+            ],
+          },
+          dismissedIds: {
+            $slice: [
+              { $setUnion: [{ $ifNull: ["$dismissedIds", []] }, cleanDismissedIds] },
+              -300,
+            ],
+          },
+          updatedAt: "$$NOW",
+        },
+      },
+    ],
+    { upsert: true }
+  );
+
+  return NextResponse.json({ ok: true });
 }
