@@ -68,6 +68,8 @@ import SequenceRichEditor from "@/components/sequences/SequenceRichEditor";
 
 const standardDelays = [
   { label: "Instantly", minutes: 0 },
+  { label: "5 minutes later", minutes: 5 },
+  { label: "10 minutes later", minutes: 10 },
   { label: "15 minutes later", minutes: 15 },
   { label: "30 minutes later", minutes: 30 },
   { label: "1 hour later", minutes: 60 },
@@ -1473,20 +1475,20 @@ export default function SequenceEditor() {
                     <AnimatePresence>
                       {showCanvasInspector && emailsWithBody[selectedFlowNodeIndex] && (
                         <motion.aside
-                          initial={{ opacity: 0, width: 0 }}
-                          animate={{ opacity: 1, width: "auto" }}
-                          exit={{ opacity: 0, width: 0 }}
+                          initial={{ opacity: 0, x: 20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          exit={{ opacity: 0, x: 20 }}
                           transition={{ duration: 0.2 }}
-                          className="w-full lg:w-[400px] shrink-0 h-full border-t lg:border-t-0 lg:border-l border-white/10 bg-zinc-900/95 backdrop-blur-xl flex flex-col overflow-hidden z-20"
+                          className="w-full sm:w-[380px] lg:w-[380px] max-w-full shrink-0 h-full border-t lg:border-t-0 lg:border-l border-white/10 bg-zinc-900/95 backdrop-blur-xl flex flex-col overflow-hidden z-20"
                         >
-                          <div className="h-full overflow-y-auto p-4 sm:p-5 flex flex-col scrollbar-thin scrollbar-thumb-zinc-700">
+                          <div className="h-full overflow-y-auto p-4 sm:p-5 flex flex-col scrollbar-thin scrollbar-thumb-zinc-700 box-border">
                             {/* Drawer Header */}
-                            <div className="flex items-center justify-between gap-2 border-b border-white/10 pb-3">
-                              <div className="flex items-center gap-2 min-w-0">
+                            <div className="flex items-center justify-between gap-2.5 border-b border-white/10 pb-3 min-w-0">
+                              <div className="flex items-center gap-2 min-w-0 flex-1">
                                 <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-[#38BDF8] text-xs font-bold text-[#06243A]">
                                   {selectedFlowNodeIndex + (attachedPage ? 2 : 1)}
                                 </span>
-                                <div className="min-w-0">
+                                <div className="min-w-0 flex-1">
                                   <h3 className="text-xs font-bold uppercase tracking-wider text-white">Step Inspector</h3>
                                   <p className="text-[11px] text-zinc-400 truncate">
                                     {emailsWithBody[selectedFlowNodeIndex].subject || "Untitled Step"}
@@ -1499,7 +1501,7 @@ export default function SequenceEditor() {
                                   type="button"
                                   onClick={() => sendTestEmail(emailsWithBody[selectedFlowNodeIndex].id)}
                                   disabled={sendingTestForId === emailsWithBody[selectedFlowNodeIndex].id}
-                                  className="flex items-center gap-1 rounded-lg bg-[#38BDF8]/15 px-2 py-1 text-[11px] font-bold text-[#38BDF8] hover:bg-[#38BDF8]/25 transition cursor-pointer"
+                                  className="flex items-center gap-1 rounded-lg bg-[#38BDF8]/15 px-2.5 py-1 text-[11px] font-bold text-[#38BDF8] hover:bg-[#38BDF8]/25 transition cursor-pointer whitespace-nowrap"
                                   title="Send test email to your account email"
                                 >
                                   {sendingTestForId === emailsWithBody[selectedFlowNodeIndex].id ? (
@@ -1512,7 +1514,7 @@ export default function SequenceEditor() {
                                 <button
                                   type="button"
                                   onClick={() => setShowCanvasInspector(false)}
-                                  className="flex h-7 w-7 items-center justify-center rounded-lg text-zinc-400 hover:bg-white/10 hover:text-white transition cursor-pointer"
+                                  className="flex h-7 w-7 items-center justify-center rounded-lg text-zinc-400 hover:bg-white/10 hover:text-white transition cursor-pointer shrink-0"
                                   title="Close inspector"
                                 >
                                   <X className="h-4 w-4" />
@@ -1651,6 +1653,19 @@ export default function SequenceEditor() {
                                     }}
                                     className="w-full rounded-xl border border-white/10 bg-zinc-800/90 p-2.5 text-xs font-semibold text-white outline-none focus:border-[#38BDF8] transition cursor-pointer"
                                   >
+                                    {!standardDelays.some((del) => del.minutes === (emailsWithBody[selectedFlowNodeIndex].delayMinutes ?? 1440)) && (
+                                      <option
+                                        value={emailsWithBody[selectedFlowNodeIndex].delayMinutes}
+                                        className="bg-zinc-900 text-white font-bold"
+                                      >
+                                        {emailsWithBody[selectedFlowNodeIndex].delayLabel ||
+                                          (emailsWithBody[selectedFlowNodeIndex].delayMinutes < 60
+                                            ? `${emailsWithBody[selectedFlowNodeIndex].delayMinutes} minutes later`
+                                            : emailsWithBody[selectedFlowNodeIndex].delayMinutes < 1440
+                                            ? `${Math.round(emailsWithBody[selectedFlowNodeIndex].delayMinutes / 60)} hours later`
+                                            : `${Math.round(emailsWithBody[selectedFlowNodeIndex].delayMinutes / 1440)} days later`)}
+                                      </option>
+                                    )}
                                     {standardDelays.map((del) => (
                                       <option key={del.minutes} value={del.minutes} className="bg-zinc-900 text-white">
                                         {del.label}
