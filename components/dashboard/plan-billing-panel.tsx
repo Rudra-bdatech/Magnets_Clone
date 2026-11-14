@@ -331,12 +331,10 @@ export default function PlanBillingPanel() {
                     ? CHIP_TONES.green
                     : access.state === "pro"
                       ? CHIP_TONES.amber
-                      : access.state === "trial"
-                        ? CHIP_TONES.blue
-                        : "bg-[#0066B2] text-white dark:bg-[#38BDF8] dark:text-zinc-900"
+                      : CHIP_TONES.blue
               }`}
             >
-              {isStaff ? "Included" : isPaidPro ? "Your plan" : access.state === "pro" ? "Cancelled" : access.state === "trial" ? "On trial" : "Recommended"}
+              {isStaff ? "Included" : isPaidPro ? "Your plan" : access.state === "pro" ? "Cancelled" : "Recommended"}
             </span>
           </div>
 
