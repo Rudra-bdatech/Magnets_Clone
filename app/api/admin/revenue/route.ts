@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { PLAN_PRICING } from "@/lib/billing";
 import { dbConnect } from "@/lib/mongodb";
 import { AccountModel } from "@/lib/models";
 import { requireAdmin, isAdminSession } from "@/lib/admin-auth";
@@ -112,9 +113,12 @@ export async function GET() {
   // Revenue estimates
   // Stripe Pro = $67/month USD recurring
   const mrrUsd = stripeProUsers * 67;
-  // Chargebee Pro: could be INR ₹4,999 one-time or USD $67/month — estimate conservatively
-  // We show estimated totals with a note
-  const estimatedInrLifetime = chargebeeProUsers * 4999; // INR (one-time)
+  // Chargebee Pro = ₹299/month subscription (GST inclusive). Old ₹4,999 lifetime buyers move to
+  // plan "Free" + lifetimeCustomDomain on their next sign-in, so this is an estimate until then.
+  const mrrInr = chargebeeProUsers * PLAN_PRICING.PRO_MONTHLY_INR.amount;
+  // Custom domain = separate one-time ₹4,999 purchase (lifetimeCustomDomain)
+  const lifetimeDomainUsers = await AccountModel.countDocuments({ lifetimeCustomDomain: true });
+  const lifetimeDomainRevenueInr = lifetimeDomainUsers * PLAN_PRICING.PRO_INR.amount;
 
   const conversions = (recentConversions as any[]).map((u) => {
     const isStripe = Boolean(u.stripeSubscriptionId);
@@ -142,7 +146,9 @@ export async function GET() {
     otherProUsers,
 
     mrrUsd,                    // confirmed MRR from Stripe
-    estimatedInrLifetime,      // estimated lifetime INR revenue
+    mrrInr,      // estimated INR monthly recurring revenue
+    lifetimeDomainUsers,
+    lifetimeDomainRevenueInr, // estimated one-time custom domain revenue (INR)
 
     // Payment status among Pro users
     activeProUsers: statusMap["active"] || 0,

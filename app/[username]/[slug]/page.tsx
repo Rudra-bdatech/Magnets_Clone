@@ -9,6 +9,8 @@ import { MagnetPageModel, AccountModel } from "@/lib/models";
 import { verifySessionToken } from "@/lib/session-token";
 import { isReservedUsername } from "@/lib/reserved-usernames";
 import { type MagnetPage } from "@/lib/data";
+import { getAccountAccess } from "@/lib/subscription";
+import PageUnavailable from "@/components/page-unavailable";
 import { Check, Lock, Zap, ShieldCheck, Sparkles } from "lucide-react";
 
 
@@ -276,6 +278,11 @@ export default async function MagnetPageRoute({
 
   if (!pageDoc) {
     notFound();
+  }
+
+  // Owner's trial ended more than the grace period ago without a subscription: page is offline
+  if (cleanUserEmail && accountDoc?.email?.trim().toLowerCase() === cleanUserEmail && !getAccountAccess(accountDoc).publicPagesLive) {
+    return <PageUnavailable isOwner={isOwner} />;
   }
 
   const page = JSON.parse(JSON.stringify(pageDoc)) as MagnetPage;

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { v2 as cloudinary } from "cloudinary";
 import { getAuthenticatedUserEmail } from "@/lib/auth";
+import { requireFullAccess } from "@/lib/subscription-server";
 import { getUserAssetFolder } from "@/lib/cloudinary";
 import { dbConnect } from "@/lib/mongodb";
 import { checkStorageQuota } from "@/lib/plan-usage";
@@ -27,6 +28,9 @@ export async function POST(req: NextRequest) {
     if (!sessionEmail) {
       return NextResponse.json({ error: "Unauthorized access" }, { status: 401 });
     }
+
+    const locked = await requireFullAccess(sessionEmail);
+    if (locked) return locked;
 
     if (!process.env.CLOUDINARY_API_SECRET || !process.env.CLOUDINARY_API_KEY || !process.env.CLOUDINARY_CLOUD_NAME) {
       return NextResponse.json({ error: "Cloudinary credentials not configured" }, { status: 500 });

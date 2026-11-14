@@ -14,6 +14,7 @@ cloudinary.config({
 });
 
 import { getAuthenticatedUserEmail } from "@/lib/auth";
+import { requireFullAccess } from "@/lib/subscription-server";
 import { checkStorageQuota } from "@/lib/plan-usage";
 import { withMagnetAccess } from "@/lib/magnet-access";
 import { getUserAssetFolder } from "@/lib/cloudinary";
@@ -26,6 +27,9 @@ export async function POST(req: NextRequest) {
     if (!sessionEmail) {
       return NextResponse.json({ error: "Unauthorized access" }, { status: 401 });
     }
+
+    const locked = await requireFullAccess(sessionEmail);
+    if (locked) return locked;
     const normSessionEmail = sessionEmail.trim().toLowerCase();
 
     await dbConnect();

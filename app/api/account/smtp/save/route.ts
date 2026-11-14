@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { dbConnect } from "@/lib/mongodb";
 import { AccountModel } from "@/lib/models";
 import { getAuthenticatedUserEmail } from "@/lib/auth";
+import { requireFullAccess } from "@/lib/subscription-server";
 import { encrypt } from "@/lib/encryption";
 import nodemailer from "nodemailer";
 
@@ -34,6 +35,8 @@ export async function POST(req: NextRequest) {
   if (!authEmail) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+  const locked = await requireFullAccess(authEmail);
+  if (locked) return locked;
 
   const body = await req.json();
   const { host, port, secure, user, pass, fromEmail, fromName } = body;

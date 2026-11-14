@@ -57,8 +57,28 @@ import { checkRateLimit, getClientIp, rateLimitMessage, type RateLimitResult } f
 import { parseFlexibleDate } from "@/lib/utils";
 import { withMagnetAccess } from "@/lib/magnet-access";
 import { canonicalInboxKey } from "@/lib/email-guard";
+import { ensureTrialStarted, requireFullAccess } from "@/lib/subscription-server";
+import { getAccountAccess } from "@/lib/subscription";
 
 export const dynamic = "force-dynamic";
+
+// Owner actions that create or change content: they need an active trial or Pro (lib/subscription.ts)
+const OWNER_WRITE_ACTIONS = new Set<string>([
+  "savePages",
+  "addPage",
+  "saveSequences",
+  "sendTestSequenceEmail",
+  "saveLeads",
+  "sendTestLeadAlert",
+  "resendLeadEmail",
+  "saveIntegrations",
+  "saveResources",
+  "updateResource",
+  "sendTestKitAlert",
+  "sendTestPipedriveAlert",
+  "sendTestZapierAlert",
+  "sendTestSlackAlert",
+]);
 
 function rateLimitedResponse(rl: RateLimitResult, limitedMessage: string) {
   const { error, status } = rateLimitMessage(rl, limitedMessage);
@@ -98,7 +118,7 @@ const pageIds = (pages as any[]).map((p) => p.id).filter(Boolean);
 // Strictly tenant-isolated: Leads must have userEmail === normEmail,
 // or be unassigned legacy leads specifically matching this user's pageIds.
 // We never query globally by page title/name, preventing cross-account leaks.
-const [account, rawLeads, sequences, integrations, resources] = await Promise.all([
+const [loadedAccount, rawLeads, sequences, integrations, resources] = await Promise.all([
   AccountModel.findOne({ email: normEmail }).lean(), // password stripped by sanitizeAccount (needed for hasPassword)
   LeadModel.find({
     $or: [
@@ -131,8 +151,13 @@ const leads = Array.isArray(rawLeads)
     })
   : [];
 
+// Starts the 14-day trial on first load and attaches the trial/subscription state for the UI
+const account = await ensureTrialStarted(loadedAccount);
+const safeAccount = sanitizeAccount(account);
+if (safeAccount) safeAccount.access = getAccountAccess(account);
+
 return NextResponse.json({
-  account: sanitizeAccount(account),
+  account: safeAccount,
   pages,
   leads,
   sequences,
@@ -185,6 +210,14 @@ export async function POST(req: Request) {
       );
       clearAuthCookie(res);
       return res;
+    }
+
+    // Trial over and not subscribed: creating or changing content is refused (402, which the
+    // client does not treat as a logout). Viewing, deleting, account settings, password and
+    // account deletion stay available.
+    if (OWNER_WRITE_ACTIONS.has(action)) {
+      const locked = await requireFullAccess(normEmail);
+      if (locked) return locked;
     }
 
     // Dispatch to modular controllers (Facade Router)

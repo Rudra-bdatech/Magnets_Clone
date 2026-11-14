@@ -17,6 +17,7 @@ import {
   Info,
   Mail,
   Sparkles,
+  CreditCard,
 } from "lucide-react";
 import {
   saveAccount,
@@ -32,6 +33,7 @@ import PasswordInputWithStrength, {
   validatePasswordStrength,
 } from "@/components/ui/password-input-with-strength";
 import { EmailSenderSection } from "@/components/integration/EmailSenderSection";
+import PlanBillingPanel from "@/components/dashboard/plan-billing-panel";
 
 // --- Toast Notification Types & Component ---
 interface ToastItem {
@@ -227,7 +229,7 @@ export default function AccountSettingsPage() {
   const hasPassword = account?.hasPassword !== false;
 
   // Tab Navigation State
-  const [activeTab, setActiveTab] = useState<"profile" | "email" | "security" | "notifications" | "danger">("profile");
+  const [activeTab, setActiveTab] = useState<"profile" | "email" | "security" | "notifications" | "billing" | "danger">("profile");
   const [hoveredTab, setHoveredTab] = useState<string | null>(null);
   const tabContainerRef = useRef<HTMLDivElement>(null);
   const tabButtonRefs = useRef<{ [key: string]: HTMLButtonElement | null }>({});
@@ -273,7 +275,7 @@ export default function AccountSettingsPage() {
       const hasGmailParam = urlParams.has("gmail") || urlParams.has("gmailError");
       if (tabParam === "email" || hasGmailParam) {
         setActiveTab("email");
-      } else if (tabParam === "security" || tabParam === "notifications" || tabParam === "danger") {
+      } else if (tabParam === "security" || tabParam === "notifications" || tabParam === "billing" || tabParam === "danger") {
         setActiveTab(tabParam);
       }
     }
@@ -664,6 +666,7 @@ export default function AccountSettingsPage() {
                 { id: "email", label: "Email & Gmail Sync", icon: Mail },
                 { id: "security", label: "Security & Password", icon: KeyRound },
                 { id: "notifications", label: "Instant Lead Alerts", icon: Bell },
+                { id: "billing", label: "Plan & Billing", icon: CreditCard },
                 { id: "danger", label: "Danger Zone", icon: AlertTriangle, danger: true },
               ].map((t) => {
                 const Icon = t.icon;
@@ -1115,6 +1118,19 @@ export default function AccountSettingsPage() {
                   )}
                 </div>
               </motion.section>
+              )}
+
+              {/* Plan & Billing: trial, Pro monthly and the custom domain */}
+              {activeTab === "billing" && (
+                <motion.section
+                  key="billing"
+                  initial={{ opacity: 0, y: 8, scale: 0.99 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -6, scale: 0.99 }}
+                  transition={{ duration: 0.1, ease: [0.16, 1, 0.3, 1] }}
+                >
+                  <PlanBillingPanel />
+                </motion.section>
               )}
 
               {/* TAB 4: Danger Zone */}

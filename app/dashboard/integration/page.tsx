@@ -21,6 +21,7 @@ import { useToast, IntegrationToastContainer } from "@/components/integration/In
 import { isReservedUsername } from "@/lib/reserved-usernames";
 import { InfoTooltip } from "@/components/ui/info-tooltip";
 import { useSidebar } from "@/components/dashboard/dashboard-shell";
+import { hasCustomDomainAccess } from "@/lib/subscription";
 
 export default function WorkspaceSetupPage() {
   const { isCollapsed } = useSidebar();
@@ -152,7 +153,7 @@ export default function WorkspaceSetupPage() {
       const paymentStatus = params.get("payment");
       if (paymentStatus === "success") {
         setShowSuccessModal(true);
-        addToast("🎉 Pro Plan Activated! Custom domains are now unlocked.", "success");
+        addToast("🎉 Custom domain unlocked for life!", "success");
         window.history.replaceState({}, "", window.location.pathname);
         // Force database refresh to immediately unlock the custom domain section
         syncWithDatabase().then((data) => {
@@ -171,11 +172,12 @@ export default function WorkspaceSetupPage() {
           attempts++;
           const data = await syncWithDatabase().catch(() => null);
           if (!isMountedRef.current) return;
-          if (data?.account && ["Pro", "Growth", "Unlimited"].includes(String(data.account.plan))) {
+          // The custom domain is its own one-time purchase: wait for the webhook to unlock it
+          if (data?.account && hasCustomDomainAccess(data.account)) {
             setAccount(data.account);
             accountRef.current = data.account;
             setShowSuccessModal(true);
-            addToast("🎉 Pro Plan Activated! Custom domains are now unlocked.", "success");
+            addToast("🎉 Custom domain unlocked for life!", "success");
           } else if (attempts < 12) {
             setTimeout(poll, 5000);
           } else {
@@ -343,6 +345,7 @@ export default function WorkspaceSetupPage() {
               handleSave={handleSave}
               addToast={addToast}
               userPlan={account?.plan || "Free"}
+              customDomainUnlocked={hasCustomDomainAccess(account)}
               userEmail={account?.email}
               userRole={account?.role}
               onUpgradeClick={() => setShowUpgradeModal(true)}
@@ -496,14 +499,14 @@ export default function WorkspaceSetupPage() {
                 Payment Successful! 🎉
               </h3>
               <p className="mt-1.5 text-xs text-zinc-500 dark:text-zinc-400">
-                Your payment was received and your account has been upgraded to <strong className="text-zinc-900 dark:text-white">Pro Lifetime</strong>!
+                Your payment was received and your account has been unlocked: <strong className="text-zinc-900 dark:text-white">Custom Domain (Lifetime)</strong>!
               </p>
 
               {/* Receipt Summary Box */}
               <div className="mt-5 rounded-xl border border-zinc-200 dark:border-white/10 bg-zinc-50 dark:bg-zinc-900/60 p-3.5 text-left text-xs space-y-2">
                 <div className="flex items-center justify-between">
                   <span className="text-zinc-500 dark:text-zinc-400">Plan</span>
-                  <span className="font-bold text-zinc-900 dark:text-white">Funnels Pro (Lifetime)</span>
+                  <span className="font-bold text-zinc-900 dark:text-white">Custom Domain (Lifetime)</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-zinc-500 dark:text-zinc-400">Payment Status</span>
@@ -533,7 +536,7 @@ export default function WorkspaceSetupPage() {
                   </li>
                   <li className="flex items-center gap-2">
                     <Check className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
-                    <span>Up to 2,500 Leads / month (5x capacity)</span>
+                    <span>Yours for life, no renewal</span>
                   </li>
                 </ul>
               </div>

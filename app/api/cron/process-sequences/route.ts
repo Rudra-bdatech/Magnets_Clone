@@ -6,6 +6,7 @@ import { LeadModel, MagnetPageModel, AccountModel, EmailEventModel, CronLogModel
 import { sendMail } from "@/lib/email";
 import { parseFlexibleDate } from "@/lib/utils";
 import { getPlanLimits } from "@/lib/plan-limits";
+import { getAccountAccess } from "@/lib/subscription";
 import { escapeHtml, isValidEmailAddress, countOwnerLeadEmailsLast24h, LEAD_EMAIL_DAILY_CAP } from "@/lib/email-guard";
 
 export const dynamic = "force-dynamic";
@@ -120,7 +121,11 @@ export async function GET(req: NextRequest) {
     const accountDocs: any[] = uniqueOwnerEmails.length > 0
       ? await AccountModel.find(
           { email: { $in: uniqueOwnerEmails } },
-          { email: 1, plan: 1, role: 1, name: 1, senderDisplayName: 1 }
+          {
+            email: 1, plan: 1, role: 1, name: 1, senderDisplayName: 1,
+            // trial / subscription state (lib/subscription.ts publicPagesLive)
+            trialEndsAt: 1, trialReused: 1, subscriptionStatus: 1, currentPeriodEnd: 1, lifetimeCustomDomain: 1,
+          }
         ).lean()
       : [];
 
@@ -147,6 +152,9 @@ export async function GET(req: NextRequest) {
       const owner = (p.userEmail || "").toLowerCase().trim();
       const acc: any = accountByEmail.get(owner);
       const used = seqCountByOwner.get(owner) || 0;
+      // Trial ended more than the grace period ago without a subscription: sequences wait
+      // (rescheduled below) and resume as soon as the owner subscribes.
+      if (acc && !getAccountAccess(acc).publicPagesLive) continue;
       if (used < getPlanLimits(acc?.plan, owner, acc?.role).sequencesLimit) {
         allowedSeqPageIds.add(p.id);
         seqCountByOwner.set(owner, used + 1);
@@ -229,7 +237,7 @@ export async function GET(req: NextRequest) {
         const ownerAccount: any = accountByEmail.get(ownerEmail) || null;
 
         if (!allowedSeqPageIds.has(pageDoc.id)) {
-          debugLogs.push({ leadId: lead.id, pageId: pageDoc.id, reason: "Sequence paused or over the plan's sequence limit" });
+          debugLogs.push({ leadId: lead.id, pageId: pageDoc.id, reason: "Sequence paused, over the plan's sequence limit, or owner's trial ended" });
           await reschedule(lead, { seqNextAt: new Date(now + PAUSED_RECHECK_MS) });
           continue;
         }

@@ -12,7 +12,8 @@ import {
 import { getAuthenticatedUserEmail } from "@/lib/auth";
 import { dbConnect } from "@/lib/mongodb";
 import { AccountModel } from "@/lib/models";
-import { getPlanLimits } from "@/lib/plan-limits";
+import { hasCustomDomainAccess } from "@/lib/subscription";
+import { requireFullAccess } from "@/lib/subscription-server";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
@@ -307,12 +308,15 @@ export async function POST(req: Request) {
       );
     }
 
-    // Verify user's plan tier allows custom domain
-    const planLimits = getPlanLimits(account.plan, account.email, account.role);
-    if (!planLimits.customDomainAllowed) {
+    // Trial over and not subscribed: no new domain verification (disconnecting stays allowed)
+    const locked = await requireFullAccess(email);
+    if (locked) return locked;
+
+    // The custom domain is a separate one-time purchase (lib/subscription.ts hasCustomDomainAccess)
+    if (!hasCustomDomainAccess(account as any)) {
       return NextResponse.json(
         {
-          error: "Custom domains require a Pro Plan. Please upgrade your account to connect custom domains.",
+          error: "Custom domains need the one-time custom domain unlock (₹4,999). Please unlock it to connect your domain.",
           code: "PLAN_UPGRADE_REQUIRED",
         },
         { status: 403 }

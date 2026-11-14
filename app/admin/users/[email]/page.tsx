@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { getCountryFlag } from "@/lib/geo";
+import type { AccountAccess } from "@/lib/subscription";
 
 interface UserDetail {
   email: string;
@@ -46,6 +47,8 @@ interface UserDetail {
   signupCity?: string;
   signupRegion?: string;
   signupIp?: string;
+  trialStartedAt?: string | null;
+  access?: AccountAccess;
 }
 
 interface Magnet {
@@ -176,6 +179,11 @@ export default function AdminUserDetailPage() {
   const [confirmModal, setConfirmModal] = useState<"suspend" | "unsuspend" | "delete" | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
   const [actionMsg, setActionMsg] = useState("");
+  const [extendDays, setExtendDays] = useState(7);
+  const [extending, setExtending] = useState(false);
+  const [extendMsg, setExtendMsg] = useState("");
+  const [endingTrial, setEndingTrial] = useState(false);
+  const [endSkipGrace, setEndSkipGrace] = useState(false);
   const [presence, setPresence] = useState<{ isOnline: boolean; page: string; secondsAgo: number }>({
     isOnline: false,
     page: "",
@@ -275,6 +283,52 @@ export default function AdminUserDetailPage() {
       setActionMsg(err.message);
     } finally {
       setActionLoading(false);
+    }
+  }
+
+  async function handleExtendTrial() {
+    setExtending(true);
+    setExtendMsg("");
+    try {
+      const res = await fetch(`/api/admin/users/${encodeURIComponent(email)}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "extend_trial", days: extendDays }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Could not extend the trial");
+      setUser((prev) => (prev ? { ...prev, access: data.access } : prev));
+      setExtendMsg(`Trial now ends ${new Date(data.trialEndsAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}.`);
+    } catch (err: any) {
+      setExtendMsg(err.message);
+    } finally {
+      setExtending(false);
+      setTimeout(() => setExtendMsg(""), 5000);
+    }
+  }
+
+  async function handleEndTrial() {
+    const warning = endSkipGrace
+      ? "End this user's trial now AND take their public pages offline immediately? Use Extend trial to undo."
+      : "End this user's trial now? Their dashboard locks at once; public pages stay live for 7 days. Use Extend trial to undo.";
+    if (!window.confirm(warning)) return;
+    setEndingTrial(true);
+    setExtendMsg("");
+    try {
+      const res = await fetch(`/api/admin/users/${encodeURIComponent(email)}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "end_trial", skipGrace: endSkipGrace }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Could not end the trial");
+      setUser((prev) => (prev ? { ...prev, access: data.access } : prev));
+      setExtendMsg(endSkipGrace ? "Trial ended. Public pages are offline." : "Trial ended. Public pages stay live for 7 days.");
+    } catch (err: any) {
+      setExtendMsg(err.message);
+    } finally {
+      setEndingTrial(false);
+      setTimeout(() => setExtendMsg(""), 5000);
     }
   }
 
@@ -1070,6 +1124,112 @@ export default function AdminUserDetailPage() {
               )}
             </div>
           </div>
+
+          {/* Trial & Subscription */}
+          {user.access && (
+            <div className="bg-white dark:bg-[#171717] border border-zinc-200 dark:border-white/[0.08] rounded-2xl p-4 sm:p-5 shadow-xs">
+              <div className="flex items-center justify-between gap-2 mb-3">
+                <h2 className="text-sm font-semibold text-zinc-900 dark:text-white">Trial & Subscription</h2>
+                <span
+                  className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                    user.access.state === "expired"
+                      ? "bg-red-50 text-red-600 dark:bg-red-500/15 dark:text-red-400"
+                      : user.access.state === "trial"
+                        ? "bg-amber-50 text-amber-700 dark:bg-amber-500/15 dark:text-amber-400"
+                        : "bg-emerald-50 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-400"
+                  }`}
+                >
+                  {user.access.state === "staff" ? "Super Admin" : user.access.state === "pro" ? "Pro" : user.access.state === "trial" ? "Trial" : "Expired"}
+                </span>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
+                <Row
+                  icon={<Calendar className="w-3.5 h-3.5 text-amber-500" />}
+                  label="Trial"
+                  value={
+                    user.access.state === "trial"
+                      ? user.access.trialEndsAt
+                        ? `${user.access.trialDaysLeft} day${user.access.trialDaysLeft === 1 ? "" : "s"} left · ends ${new Date(user.access.trialEndsAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}`
+                        : "Starts on next sign-in"
+                      : user.access.state === "expired"
+                        ? `Ended ${user.access.accessEndedAt ? new Date(user.access.accessEndedAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }) : ""}${user.access.trialReused ? " · trial already used on a deleted account" : ""}`
+                        : "—"
+                  }
+                />
+                <Row
+                  icon={<CreditCard className="w-3.5 h-3.5" />}
+                  label="Subscription"
+                  value={
+                    user.access.subscriptionStatus
+                      ? `${user.access.subscriptionStatus}${user.access.currentPeriodEnd ? ` · until ${new Date(user.access.currentPeriodEnd).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}` : ""}`
+                      : "None"
+                  }
+                />
+                <Row
+                  icon={<Globe className="w-3.5 h-3.5" />}
+                  label="Public Pages"
+                  value={
+                    user.access.publicPagesLive
+                      ? user.access.publicPagesOfflineAt
+                        ? `Live until ${new Date(user.access.publicPagesOfflineAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}`
+                        : "Live"
+                      : "Offline (trial ended)"
+                  }
+                />
+                <Row
+                  icon={<Globe className="w-3.5 h-3.5 text-[#0066B2]" />}
+                  label="Lifetime Custom Domain"
+                  value={user.access.lifetimeCustomDomain ? "Yes (bought the old lifetime plan)" : "No"}
+                />
+              </div>
+              {user.access.state !== "staff" && (
+                <div className="mt-4 flex flex-wrap items-center gap-2">
+                  <label htmlFor="extend-trial-days" className="text-xs text-zinc-500 dark:text-zinc-400">Extend trial by</label>
+                  <select
+                    id="extend-trial-days"
+                    value={extendDays}
+                    onChange={(e) => setExtendDays(Number(e.target.value))}
+                    className="h-8 rounded-lg border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#0f0f10] px-2 text-xs text-zinc-900 dark:text-white"
+                  >
+                    {[3, 7, 14, 30].map((d) => (
+                      <option key={d} value={d}>{d} days</option>
+                    ))}
+                  </select>
+                  <button
+                    type="button"
+                    onClick={handleExtendTrial}
+                    disabled={extending}
+                    className="h-8 rounded-lg bg-[#0066B2] hover:bg-[#005799] px-3 text-xs font-semibold text-white transition disabled:opacity-60 cursor-pointer"
+                  >
+                    {extending ? "Extending…" : "Extend trial"}
+                  </button>
+                  {user.access.state === "trial" && (
+                    <>
+                      <span className="mx-1 h-5 w-px bg-zinc-200 dark:bg-white/10" aria-hidden="true" />
+                      <button
+                        type="button"
+                        onClick={handleEndTrial}
+                        disabled={endingTrial}
+                        className="h-8 rounded-lg border border-red-200 dark:border-red-500/30 bg-red-50 dark:bg-red-500/10 hover:bg-red-100 dark:hover:bg-red-500/20 px-3 text-xs font-semibold text-red-600 dark:text-red-400 transition disabled:opacity-60 cursor-pointer"
+                      >
+                        {endingTrial ? "Ending…" : "End trial now"}
+                      </button>
+                      <label className="inline-flex items-center gap-1.5 text-xs text-zinc-500 dark:text-zinc-400 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={endSkipGrace}
+                          onChange={(e) => setEndSkipGrace(e.target.checked)}
+                          className="h-3.5 w-3.5 accent-red-600"
+                        />
+                        also take public pages offline
+                      </label>
+                    </>
+                  )}
+                  {extendMsg && <span className="text-xs text-zinc-500 dark:text-zinc-400">{extendMsg}</span>}
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Integrations */}
           <div className="bg-white dark:bg-[#171717] border border-zinc-200 dark:border-white/[0.08] rounded-2xl p-4 sm:p-5 shadow-xs">

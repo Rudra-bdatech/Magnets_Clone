@@ -71,7 +71,7 @@ export default function FaqAccordion() {
             href="/register"
             className="flex-1 sm:flex-none inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-[#0066B2] hover:bg-[#005799] px-5 text-xs font-bold text-white shadow-md shadow-[#0066B2]/20 transition-all hover:scale-[1.02] active:scale-98"
           >
-            <Sparkles className="h-3.5 w-3.5" aria-hidden="true" /> Start Free Today
+            <Sparkles className="h-3.5 w-3.5" aria-hidden="true" /> Start Your Free Trial
           </Link>
           <Link
             href="mailto:support@funnels.app"

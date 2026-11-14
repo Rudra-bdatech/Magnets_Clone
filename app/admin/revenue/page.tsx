@@ -26,7 +26,9 @@ interface RevenueData {
   otherProUsers: number;
 
   mrrUsd: number;
-  estimatedInrLifetime: number;
+  mrrInr: number;
+  lifetimeDomainUsers: number;
+  lifetimeDomainRevenueInr: number;
 
   activeProUsers: number;
   cancelledProUsers: number;
@@ -256,19 +258,19 @@ export default function RevenuePage() {
       {/* KPI Cards — 2x2 on Mobile, 4 columns on Desktop */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5 sm:gap-4">
         <StatCard
-          label="MRR (USD)"
-          value={`$${data.mrrUsd.toLocaleString()}`}
-          sub={`${data.stripeProUsers} Stripe × $67`}
-          icon={DollarSign}
+          label="Custom Domain (INR est.)"
+          value={`₹${(data.lifetimeDomainRevenueInr ?? 0).toLocaleString()}`}
+          sub={`${data.lifetimeDomainUsers ?? 0} × ₹4,999 one-time`}
+          icon={IndianRupee}
           color="green"
         />
         <StatCard
-          label="Lifetime (INR est.)"
-          value={`₹${data.estimatedInrLifetime.toLocaleString()}`}
-          sub={`${data.chargebeeProUsers} Chargebee × ₹4,999`}
+          label="MRR (INR est.)"
+          value={`₹${data.mrrInr.toLocaleString()}`}
+          sub={`${data.chargebeeProUsers} Chargebee × ₹299`}
           icon={IndianRupee}
           color="indigo"
-          note="Chargebee may include USD"
+          note="Pro monthly subscribers"
         />
         <StatCard
           label="Pro Users"
@@ -296,7 +298,7 @@ export default function RevenuePage() {
           <div className="space-y-3.5">
             {[
               { label: "Stripe (USD recurring)", count: data.stripeProUsers, color: "bg-indigo-500" },
-              { label: "Chargebee (INR / lifetime)", count: data.chargebeeProUsers, color: "bg-orange-500" },
+              { label: "Chargebee (INR monthly)", count: data.chargebeeProUsers, color: "bg-orange-500" },
               { label: "Other / Unknown", count: data.otherProUsers, color: "bg-zinc-400" },
             ].map(({ label, count, color }) => (
               <div key={label}>
@@ -356,7 +358,7 @@ export default function RevenuePage() {
           <div className="space-y-3.5">
             {[
               { label: "Total Users", count: data.totalUsers, color: "bg-[#0066B2]" },
-              { label: "Free Plan", count: data.freeUsers, color: "bg-zinc-300 dark:bg-zinc-600" },
+              { label: "Trial / Expired", count: data.freeUsers, color: "bg-zinc-300 dark:bg-zinc-600" },
               { label: "Pro Plan (Paying)", count: data.proUsers, color: "bg-emerald-500" },
             ].map(({ label, count, color }) => (
               <div key={label}>

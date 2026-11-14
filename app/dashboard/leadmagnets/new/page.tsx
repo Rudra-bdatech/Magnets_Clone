@@ -163,7 +163,7 @@ export default function NewPage() {
 
 
           <div className="flex items-center justify-between gap-3 pt-1">
-            <p className="text-xs text-ink-500 dark:text-ink-400">Free forever. No credit card.</p>
+            <p className="text-xs text-ink-500 dark:text-ink-400">Publish in one click.</p>
             <Button type="submit">
               Create page <ArrowRight className="h-4 w-4" aria-hidden="true" />
             </Button>

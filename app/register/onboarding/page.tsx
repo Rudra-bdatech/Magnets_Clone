@@ -69,6 +69,17 @@ function OnboardingContent() {
     return () => observer.disconnect();
   }, []);
 
+  // An email that already used its free trial (e.g. deleted and re-registered) cannot create
+  // pages, so skip onboarding and show the upgrade screen on the dashboard instead.
+  useEffect(() => {
+    fetch("/api/billing/access", { cache: "no-store" })
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (data?.access?.state === "expired") router.replace("/dashboard");
+      })
+      .catch(() => {});
+  }, [router]);
+
   useEffect(() => {
     if (email) {
       fetch("/api/data", {

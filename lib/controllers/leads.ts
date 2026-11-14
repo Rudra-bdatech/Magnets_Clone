@@ -7,6 +7,7 @@ import { emailLinkBaseUrl, signDownloadLinks, signMagnetAccess, withMagnetAccess
 import { parseFlexibleDate } from "@/lib/utils";
 import { isValidSlackWebhookUrl, isValidZapierWebhookUrl } from "./account";
 import { checkRateLimit } from "@/lib/rate-limit";
+import { isOwnerPublicLive, requireFullAccess } from "@/lib/subscription-server";
 import {
   isValidEmailAddress,
   nameContainsLink,
@@ -134,6 +135,13 @@ export async function handleAddLead(data: any, req: Request, normEmail: string |
       if (foundPageDoc.userEmail) {
         ownerEmail = foundPageDoc.userEmail.trim().replace(/[\r\n]+/g, "").toLowerCase();
         isVerifiedOwner = true;
+        // Owner's trial ended more than the grace period ago without a subscription
+        if (!(await isOwnerPublicLive(ownerEmail))) {
+          return NextResponse.json(
+            { error: "This page is unavailable and cannot accept new submissions." },
+            { status: 403 }
+          );
+        }
       }
       if (foundPageDoc.name) pageTitle = foundPageDoc.name;
       data.pageId = foundPageDoc.id;
@@ -155,6 +163,9 @@ export async function handleAddLead(data: any, req: Request, normEmail: string |
       // ── CALLER 2: Dashboard "Add Lead" / Logged-in User with No Page ──
       // The dashboard can add a lead with no page (e.g. "Direct Manual Add" or "Direct Lead").
       // It MUST fall back to the logged-in user as the verified owner.
+      // A manual add is the owner using the dashboard, so it needs an active trial or Pro.
+      const locked = await requireFullAccess(verifiedSessionEmail);
+      if (locked) return locked;
       ownerEmail = verifiedSessionEmail;
       isVerifiedOwner = true;
       data.pageId = cleanPageId || "";

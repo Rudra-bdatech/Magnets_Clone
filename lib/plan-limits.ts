@@ -18,38 +18,46 @@ export const STAFF_ENTERPRISE_PLAN: PlanTierConfig = {
   customDomainAllowed: true,
 };
 
+// Trial and Pro have no lead or sequence limits (decided Nov 2026). What an account may do is
+// decided by its trial/subscription state in lib/subscription.ts, not by these numbers.
+// "Free" is the plan value of trial and expired accounts: during the trial they get everything,
+// and once expired the dashboard is locked server-side (lib/subscription-server.ts).
+const UNLIMITED_LEADS = 1000000;
+const UNLIMITED_SEQUENCES = 1000;
+
 export const PLAN_LIMITS: Record<string, PlanTierConfig> = {
   Free: {
-    name: "Free Tier",
-    badge: "Free Plan",
-    leadLimit: 500,
+    name: "Free Trial",
+    badge: "Free Trial",
+    leadLimit: UNLIMITED_LEADS,
     storageLimitMb: 999999,
-    sequencesLimit: 2,
+    sequencesLimit: UNLIMITED_SEQUENCES,
+    // The custom domain is a separate one-time purchase (lib/subscription.ts hasCustomDomainAccess)
     customDomainAllowed: false,
   },
   Pro: {
     name: "Pro Plan",
     badge: "Pro Plan Active",
-    leadLimit: 2500,
+    leadLimit: UNLIMITED_LEADS,
     storageLimitMb: 999999,
-    sequencesLimit: 5,
+    sequencesLimit: UNLIMITED_SEQUENCES,
     customDomainAllowed: true,
   },
   // Growth and Unlimited kept for future use but not exposed in UI
   Growth: {
     name: "Growth Plan",
     badge: "Growth Plan Active",
-    leadLimit: 10000,
+    leadLimit: UNLIMITED_LEADS,
     storageLimitMb: 999999,
-    sequencesLimit: 20,
+    sequencesLimit: UNLIMITED_SEQUENCES,
     customDomainAllowed: true,
   },
   Unlimited: {
     name: "Unlimited Enterprise",
     badge: "Enterprise Active",
-    leadLimit: 100000,
+    leadLimit: UNLIMITED_LEADS,
     storageLimitMb: 999999,
-    sequencesLimit: 100,
+    sequencesLimit: UNLIMITED_SEQUENCES,
     customDomainAllowed: true,
   },
 };

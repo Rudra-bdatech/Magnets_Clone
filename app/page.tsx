@@ -99,7 +99,7 @@ export default function Home() {
             </div>
 
             <p className="lm-rise mt-6 text-xs text-zinc-500 dark:text-zinc-500" style={{ animationDelay: "220ms" }}>
-              Free plan · No card needed · Live on a free subdomain
+              14-day free trial · No card needed · Live in minutes
             </p>
           </div>
 
@@ -224,8 +224,8 @@ export default function Home() {
             <SectionHeading
               index="07"
               eyebrow="Pricing"
-              title="Start free."
-              accent="Add your custom domain anytime."
+              title="Try it free for 14 days."
+              accent="Then ₹299/month. Custom domain is a one-time add-on."
             />
           </Reveal>
           <Pricing />

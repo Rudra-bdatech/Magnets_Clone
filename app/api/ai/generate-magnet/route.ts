@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { getAuthenticatedUserEmail } from "@/lib/auth";
+import { requireFullAccess } from "@/lib/subscription-server";
 import { checkRateLimit } from "@/lib/rate-limit";
 
 export const dynamic = "force-dynamic";
@@ -11,6 +12,9 @@ export async function POST(req: Request) {
     if (!sessionEmail) {
       return NextResponse.json({ error: "Unauthorized access" }, { status: 401 });
     }
+
+    const locked = await requireFullAccess(sessionEmail);
+    if (locked) return locked;
 
     // Each request can try several Gemini models, so cap it per user to bound API cost.
     const rl = await checkRateLimit(sessionEmail, "ai_generate_magnet", 10, 60 * 1000);

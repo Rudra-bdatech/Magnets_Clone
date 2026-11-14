@@ -26,7 +26,9 @@ interface AuditEntry {
     | "account_suspend"
     | "account_unsuspend"
     | "account_delete"
-    | "audit_logs_purged";
+    | "audit_logs_purged"
+    | "trial_extend"
+    | "trial_end";
   targetEmail: string;
   targetName: string;
   before: Record<string, string>;
@@ -44,6 +46,8 @@ const ACTION_LABELS: Record<string, string> = {
   account_unsuspend: "Account Restored",
   account_delete: "Account Deleted",
   audit_logs_purged: "Audit Logs Purged",
+  trial_extend: "Trial Extended",
+  trial_end: "Trial Ended",
 };
 
 const ACTION_COLORS: Record<string, string> = {
@@ -56,6 +60,8 @@ const ACTION_COLORS: Record<string, string> = {
   account_unsuspend: "bg-emerald-50 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-400 border border-emerald-200/60 dark:border-emerald-800/30",
   account_delete: "bg-red-50 text-red-600 dark:bg-red-500/15 dark:text-red-400 border border-red-200/60 dark:border-red-800/30",
   audit_logs_purged: "bg-rose-50 text-rose-700 dark:bg-rose-500/15 dark:text-rose-400 border border-rose-200/60 dark:border-rose-800/30",
+  trial_extend: "bg-[#0066B2]/10 text-[#0066B2] dark:bg-[#0066B2]/20 dark:text-[#38BDF8] border border-[#0066B2]/20 dark:border-[#38BDF8]/30",
+  trial_end: "bg-red-50 text-red-600 dark:bg-red-500/15 dark:text-red-400 border border-red-200/60 dark:border-red-800/30",
 };
 
 const ACTION_OPTIONS = [
@@ -68,6 +74,8 @@ const ACTION_OPTIONS = [
   { value: "account_unsuspend", label: "Account Restored" },
   { value: "account_delete", label: "Account Deleted" },
   { value: "audit_logs_purged", label: "Audit Logs Purged" },
+  { value: "trial_extend", label: "Trial Extended" },
+  { value: "trial_end", label: "Trial Ended" },
 ];
 
 const DATE_PRESETS = [
@@ -98,6 +106,9 @@ function getActionIcon(action: string) {
       return <UserX className="w-3 h-3 shrink-0" />;
     case "audit_logs_purged":
       return <ShieldAlert className="w-3 h-3 shrink-0" />;
+    case "trial_extend":
+    case "trial_end":
+      return <CreditCard className="w-3 h-3 shrink-0" />;
     default:
       return <Activity className="w-3 h-3 shrink-0" />;
   }

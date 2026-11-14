@@ -5,7 +5,7 @@ import Link from "next/link";
 import { dbConnect } from "@/lib/mongodb";
 import { AccountModel } from "@/lib/models";
 import { formatFullHost } from "@/lib/domain-verify";
-import { getPlanLimits } from "@/lib/plan-limits";
+import { hasCustomDomainAccess } from "@/lib/subscription";
 import UserProfileRoute from "@/app/[username]/page";
 import MagnetPageRoute, { generateMetadata as generateMagnetMetadata } from "@/app/[username]/[slug]/page";
 
@@ -74,8 +74,10 @@ async function resolveAccountForHost(rawHost: string) {
 
   if (!account) return null;
 
-  // A downgraded account (refund, cancellation) keeps its domain settings but stops serving on it
-  if (!getPlanLimits((account as any).plan, (account as any).email, (account as any).role).customDomainAllowed) {
+  // Only an account with the custom domain unlocked (one-time purchase, staff or admin grant)
+  // serves on it; a refund or downgrade keeps the settings but stops serving.
+  // Whether the pages themselves are live is decided by the page routes (publicPagesLive).
+  if (!hasCustomDomainAccess(account as any)) {
     return null;
   }
 

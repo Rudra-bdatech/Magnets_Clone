@@ -1,12 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 import { dbConnect } from "@/lib/mongodb";
-import { AccountModel, MagnetPageModel, LeadModel, SequenceModel, ResourceModel, IntegrationModel, EmailEventModel, PdfOtpModel } from "@/lib/models";
+import { AccountModel, MagnetPageModel, LeadModel, SequenceModel, ResourceModel, IntegrationModel, EmailEventModel, PdfOtpModel, TrialRegistryModel } from "@/lib/models";
 import { requireAdmin, isAdminSession } from "@/lib/admin-auth";
 import { determineRoleForEmail, getSuperAdminEmails } from "@/lib/roles";
 import { logAdminAction } from "@/lib/audit-log";
 import { deleteCloudinaryAssets } from "@/lib/cloudinary";
 import { removeDomainFromVercel } from "@/lib/domain-verify";
 import { revokeGmailAccess } from "@/lib/gmail-oauth";
+import { getAccountAccess, TRIAL_DAYS, PUBLIC_PAGE_GRACE_DAYS } from "@/lib/subscription";
+import { trialEmailHash } from "@/lib/subscription-server";
+
+const MAX_TRIAL_EXTENSION_DAYS = 90;
+const DAY_MS = 24 * 60 * 60 * 1000;
 
 const ALLOWED_PLANS = ["Free", "Pro", "Growth", "Unlimited"];
 const ALLOWED_ROLES = ["user", "super_admin"];
@@ -34,6 +39,9 @@ export async function GET(
       // Plan, role & billing
       plan: 1, role: 1, suspended: 1,
       paymentStatus: 1, paymentProvider: 1, lastPaymentDate: 1,
+      // Trial & subscription state
+      trialStartedAt: 1, trialEndsAt: 1, trialReused: 1,
+      subscriptionStatus: 1, currentPeriodEnd: 1, lifetimeCustomDomain: 1,
       stripeCustomerId: 1, stripeSubscriptionId: 1,
       chargebeeCustomerId: 1, chargebeeSubscriptionId: 1, chargebeeInvoiceId: 1,
       // Account state
@@ -122,6 +130,8 @@ export async function GET(
     chargebeeCustomerId: account.chargebeeCustomerId || "",
     chargebeeSubscriptionId: account.chargebeeSubscriptionId || "",
     chargebeeInvoiceId: account.chargebeeInvoiceId || "",
+    trialStartedAt: account.trialStartedAt || null,
+    access: getAccountAccess(account),
     emailVerified: account.emailVerified || null,
     joinedAt: account.joinedAt || "",
     signupCountry: account.signupCountry || "",
@@ -197,6 +207,99 @@ export async function PATCH(
 
   if (!plan && !role && !action) {
     return NextResponse.json({ error: "Provide plan, role, or action to update." }, { status: 400 });
+  }
+
+  // Extend the free trial by N days (from today, or from the current trial end if later)
+  // End the free trial now (e.g. to test the paywall). With skipGrace the public pages go offline
+  // immediately too, instead of after PUBLIC_PAGE_GRACE_DAYS. Undo with "extend_trial".
+  if (action === "end_trial") {
+    await dbConnect();
+    const target = await AccountModel.findOne(
+      { email: targetEmail },
+      { _id: 1, email: 1, name: 1, role: 1, plan: 1, trialStartedAt: 1, trialEndsAt: 1, trialReused: 1, subscriptionStatus: 1, currentPeriodEnd: 1, lifetimeCustomDomain: 1 }
+    ).lean() as any;
+    if (!target) return NextResponse.json({ error: "User not found." }, { status: 404 });
+
+    const skipGrace = body?.skipGrace === true;
+    const now = new Date();
+    // A minute in the past so the account is expired at once; with skipGrace, also past the page grace
+    const newEnd = new Date(now.getTime() - 60 * 1000 - (skipGrace ? PUBLIC_PAGE_GRACE_DAYS * DAY_MS : 0));
+
+    await AccountModel.updateOne(
+      { _id: target._id },
+      { $set: { trialEndsAt: newEnd, trialStartedAt: target.trialStartedAt || now } }
+    );
+    await TrialRegistryModel.updateOne(
+      { emailHash: trialEmailHash(target.email) },
+      { $set: { trialEndsAt: newEnd }, $setOnInsert: { accountId: String(target._id), trialStartedAt: now, createdAt: now } },
+      { upsert: true }
+    );
+
+    await logAdminAction({
+      adminEmail: auth.email,
+      adminRole: auth.role,
+      action: "trial_end",
+      targetEmail: target.email,
+      targetName: target.name || "",
+      before: { trialEndsAt: target.trialEndsAt ? new Date(target.trialEndsAt).toISOString() : "not started" },
+      after: { trialEndsAt: newEnd.toISOString(), publicPages: skipGrace ? "offline now" : "7-day grace" },
+    });
+
+    return NextResponse.json({
+      success: true,
+      trialEndsAt: newEnd.toISOString(),
+      access: getAccountAccess({ ...target, trialEndsAt: newEnd }),
+    });
+  }
+
+  if (action === "extend_trial") {
+    const days = Math.floor(Number(body?.days));
+    if (!Number.isFinite(days) || days < 1 || days > MAX_TRIAL_EXTENSION_DAYS) {
+      return NextResponse.json(
+        { error: `Days must be a whole number between 1 and ${MAX_TRIAL_EXTENSION_DAYS}.` },
+        { status: 400 }
+      );
+    }
+    await dbConnect();
+    const target = await AccountModel.findOne(
+      { email: targetEmail },
+      { _id: 1, email: 1, name: 1, role: 1, plan: 1, trialStartedAt: 1, trialEndsAt: 1, trialReused: 1, subscriptionStatus: 1, currentPeriodEnd: 1, lifetimeCustomDomain: 1 }
+    ).lean() as any;
+    if (!target) return NextResponse.json({ error: "User not found." }, { status: 404 });
+
+    const now = new Date();
+    // A trial that has not started yet would have been the full TRIAL_DAYS: extend on top of that
+    const currentEnd = target.trialEndsAt
+      ? new Date(target.trialEndsAt).getTime()
+      : now.getTime() + TRIAL_DAYS * DAY_MS;
+    const newEnd = new Date(Math.max(now.getTime(), currentEnd) + days * DAY_MS);
+
+    await AccountModel.updateOne(
+      { _id: target._id },
+      { $set: { trialEndsAt: newEnd, trialStartedAt: target.trialStartedAt || now } }
+    );
+    // Keep the permanent trial record in step, so the extension survives a delete + re-register
+    await TrialRegistryModel.updateOne(
+      { emailHash: trialEmailHash(target.email) },
+      { $set: { trialEndsAt: newEnd }, $setOnInsert: { accountId: String(target._id), trialStartedAt: now, createdAt: now } },
+      { upsert: true }
+    );
+
+    await logAdminAction({
+      adminEmail: auth.email,
+      adminRole: auth.role,
+      action: "trial_extend",
+      targetEmail: target.email,
+      targetName: target.name || "",
+      before: { trialEndsAt: target.trialEndsAt ? new Date(target.trialEndsAt).toISOString() : "not started" },
+      after: { trialEndsAt: newEnd.toISOString(), days: String(days) },
+    });
+
+    return NextResponse.json({
+      success: true,
+      trialEndsAt: newEnd.toISOString(),
+      access: getAccountAccess({ ...target, trialEndsAt: newEnd }),
+    });
   }
 
   // Suspend / unsuspend — any admin can do this

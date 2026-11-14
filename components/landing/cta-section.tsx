@@ -246,7 +246,7 @@ export default function CtaSection() {
             </Link>
           </div>
 
-          <p className="mt-6 text-xs text-zinc-500">Free plan · No card needed · Live in minutes</p>
+          <p className="mt-6 text-xs text-zinc-500">14-day free trial · No card needed · Live in minutes</p>
         </Reveal>
       </div>
     </section>

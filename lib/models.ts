@@ -22,6 +22,21 @@ const AccountSchema = new Schema({
   // Last Stripe Checkout Session opened for this account, reused while it is still open
   // so repeated clicks never create several payable sessions.
   stripeCheckoutSessionId: { type: String, default: "" },
+  // ── 14-day trial → Pro monthly (lib/subscription.ts) ──
+  // No defaults on purpose: the trial is started once, server-side, for a verified email
+  // (lib/subscription-server.ts ensureTrialStarted). A default would hand every pre-existing
+  // account a trial that restarts on each load, or none at all on .lean() reads.
+  trialStartedAt: { type: Date, default: null },
+  trialEndsAt: { type: Date, default: null },
+  // True when this email had already used its trial on an earlier (deleted) account
+  trialReused: { type: Boolean, default: false },
+  // Chargebee subscription mirror: "active" | "non_renewing" | "cancelled" | "paused" | ""
+  subscriptionStatus: { type: String, default: "" },
+  currentPeriodEnd: { type: Date, default: null },
+  // Chargebee resource_version of the last subscription event applied (out-of-order guard)
+  chargebeeSubVersion: { type: Number, default: 0 },
+  // Bought the old ₹4,999 lifetime plan: the custom domain stays live forever
+  lifetimeCustomDomain: { type: Boolean, default: false },
   brandColor: { type: String, default: "#0066B2" },
   logo: { type: String, default: null },
   joinedAt: { type: String, required: true },
@@ -374,6 +389,8 @@ const AuditLogSchema = new Schema({
       "account_unsuspend",
       "account_delete",
       "audit_logs_purged",
+      "trial_extend",
+      "trial_end",
     ],
     required: true,
     index: true,
@@ -432,6 +449,19 @@ VisitorLogSchema.index({ country: 1, updatedAt: -1 });
 // visit refreshes updatedAt — only truly dormant records get cleaned.
 VisitorLogSchema.index({ updatedAt: 1 }, { expireAfterSeconds: 90 * 24 * 60 * 60 });
 
+// TrialRegistry — one row per email that has ever started a free trial.
+// Deliberately NOT removed when an account is deleted, so deleting and re-registering
+// with the same email cannot claim a second trial. Stores only a SHA-256 of the
+// canonical inbox (lib/email-guard.ts canonicalInboxKey), never the email itself.
+const TrialRegistrySchema = new Schema({
+  emailHash: { type: String, required: true, unique: true },
+  // _id of the account that first claimed the trial (a re-registration has a new _id)
+  accountId: { type: String, default: "" },
+  trialStartedAt: { type: Date, required: true },
+  trialEndsAt: { type: Date, required: true },
+  createdAt: { type: Date, default: Date.now },
+});
+
 if (process.env.NODE_ENV === "development") {
   delete (mongoose.models as any).Account;
   delete (mongoose.models as any).MagnetPage;
@@ -445,6 +475,7 @@ if (process.env.NODE_ENV === "development") {
   delete (mongoose.models as any).AdminNotifState;
   delete (mongoose.models as any).CronLog;
   delete (mongoose.models as any).VisitorLog;
+  delete (mongoose.models as any).TrialRegistry;
 }
 
 export const AccountModel = mongoose.models.Account || mongoose.model("Account", AccountSchema);
@@ -457,3 +488,4 @@ export const AuditLogModel = mongoose.models.AuditLog || mongoose.model("AuditLo
 export const AdminNotifStateModel = mongoose.models.AdminNotifState || mongoose.model("AdminNotifState", AdminNotifStateSchema);
 export const CronLogModel = mongoose.models.CronLog || mongoose.model("CronLog", CronLogSchema);
 export const VisitorLogModel = mongoose.models.VisitorLog || mongoose.model("VisitorLog", VisitorLogSchema);
+export const TrialRegistryModel = mongoose.models.TrialRegistry || mongoose.model("TrialRegistry", TrialRegistrySchema);

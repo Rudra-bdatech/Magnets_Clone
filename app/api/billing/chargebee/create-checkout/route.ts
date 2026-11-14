@@ -11,9 +11,18 @@ import {
   ALREADY_SUBSCRIBED_RESPONSE,
 } from "@/lib/billing";
 import { isCompanyAccount } from "@/lib/roles";
-import crypto from "crypto";
+import { ensureTrialStarted } from "@/lib/subscription-server";
+import { getAccountAccess, hasCustomDomainAccess } from "@/lib/subscription";
 
 export const dynamic = "force-dynamic";
+
+/**
+ * Two separate products:
+ *  - "custom_domain" (default, as the custom-domain upgrade has always called this route):
+ *    one-time ₹4,999 payment that unlocks the custom domain for life.
+ *  - "pro_monthly": ₹299/month Chargebee subscription for dashboard access after the trial.
+ */
+type Product = "custom_domain" | "pro_monthly";
 
 export async function POST(req: Request) {
   try {
@@ -32,14 +41,25 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "User account not found" }, { status: 404 });
     }
 
-    if (hasActivePaidPlan(account)) {
-      return NextResponse.json(ALREADY_SUBSCRIBED_RESPONSE, { status: 409 });
-    }
-
-    // Parse coupon code if provided
     const body = await req.json().catch(() => ({}));
+    const product: Product = body?.product === "pro_monthly" ? "pro_monthly" : "custom_domain";
     const rawCoupon = typeof body?.couponCode === "string" ? body.couponCode : "";
     const cleanCoupon = rawCoupon.trim().toUpperCase();
+
+    // Moves an old lifetime buyer to the trial model first (keeps their custom domain unlocked)
+    const migrated = await ensureTrialStarted(account.toObject());
+
+    if (product === "custom_domain") {
+      if (hasCustomDomainAccess(migrated)) {
+        return NextResponse.json(
+          { error: "Your custom domain is already unlocked. There's nothing more to pay.", code: "ALREADY_UNLOCKED" },
+          { status: 409 }
+        );
+      }
+    } else if (hasActivePaidPlan(migrated) || getAccountAccess(migrated).state === "pro") {
+      // Already paid up: an active subscription, or a cancelled one still inside its paid month
+      return NextResponse.json(ALREADY_SUBSCRIBED_RESPONSE, { status: 409 });
+    }
 
     // Staff coupons are for company accounts only; Chargebee must restrict them too.
     if (isStaffCoupon(cleanCoupon) && !isCompanyAccount(account.email, account.role)) {
@@ -48,6 +68,10 @@ export async function POST(req: Request) {
         { status: 400 }
       );
     }
+
+    const pricing = product === "pro_monthly" ? PLAN_PRICING.PRO_MONTHLY_INR : PLAN_PRICING.PRO_INR;
+    const isCouponApplied = Boolean(cleanCoupon);
+    const couponPlanName = product === "pro_monthly" ? "Pro Plan (₹1 Coupon Applied)" : "Custom Domain (₹1 Coupon Applied)";
 
     // 2. Get Chargebee client & determine dynamic return URL
     const cb = getChargebeeClient();
@@ -70,10 +94,11 @@ export async function POST(req: Request) {
         success: true,
         isSimulated: true,
         checkoutUrl: null, // signals the UI to open the sandbox modal
-        planName: isCoupon ? "Pro Plan (₹1 Coupon Applied)" : "Pro Plan Lifetime (One-Time)",
-        amount: isCoupon ? 1 : PLAN_PRICING.PRO_INR.amount,
-        currency: PLAN_PRICING.PRO_INR.currency,
-        displayPrice: isCoupon ? "₹1" : PLAN_PRICING.PRO_INR.displayPrice,
+        product,
+        planName: isCoupon ? couponPlanName : pricing.name,
+        amount: isCoupon ? 1 : pricing.amount,
+        currency: pricing.currency,
+        displayPrice: isCoupon ? "₹1" : pricing.displayPrice,
         couponApplied: isCoupon ? cleanCoupon : null,
         user: {
           name: account.name || account.username || "Subscriber",
@@ -84,66 +109,76 @@ export async function POST(req: Request) {
       });
     }
 
-    // 4. Create a real Chargebee Hosted Payment Page (Product Catalog 2.0 - One-Time Payment)
-    const rawPriceId = PLAN_PRICING.PRO_INR.itemPriceId || "funnels-custom-domain-INR";
-    const itemPriceId = rawPriceId === "funnels-custom-domain" ? "funnels-custom-domain-INR" : rawPriceId;
-    const customerData = {
-      email: account.email,
-      first_name: (account.name || account.username || "").split(" ")[0] || "",
-      last_name: (account.name || account.username || "").split(" ").slice(1).join(" ") || "",
-    };
     const passThru = JSON.stringify({
       userId: account._id.toString(),
       userEmail: account.email,
-      plan: "Pro",
+      product,
+      plan: product === "pro_monthly" ? "Pro" : "CustomDomain",
       coupon: cleanCoupon || null,
     });
 
     let page: any = null;
 
-    // Try checkoutOneTimeForItems first (for Chargebee one-time Charges)
-    try {
-      const oneTimeParams: any = {
-        item_prices: {
-          item_price_id: [itemPriceId],
-          quantity: [1],
-        },
-        customer: customerData,
-        redirect_url: `${appUrl}/api/billing/chargebee/success`,
-        cancel_url: `${appUrl}/dashboard/integration`,
-        pass_thru_content: passThru,
-      };
-      if (cleanCoupon) {
-        oneTimeParams.coupon_ids = [cleanCoupon];
-      }
-      const res = await (cb as any).hostedPage.checkoutOneTimeForItems(oneTimeParams);
-      page = res.hosted_page;
-    } catch (oneTimeErr: any) {
-      console.warn("[Chargebee Checkout]: checkoutOneTimeForItems fallback to checkoutNewForItems:", oneTimeErr?.message);
+    if (product === "pro_monthly") {
+      // 4a. Pro monthly subscription (Product Catalog 2.0). No billing_cycles: renews until cancelled.
+      // Reuse the Chargebee customer from an earlier purchase so one person stays one customer.
+      const customerData: Record<string, string> = account.chargebeeCustomerId
+        ? { id: account.chargebeeCustomerId }
+        : {
+            email: account.email,
+            first_name: (account.name || account.username || "").split(" ")[0] || "",
+            last_name: (account.name || account.username || "").split(" ").slice(1).join(" ") || "",
+          };
       const subParams: any = {
-        subscription_items: [
-          {
-            item_price_id: itemPriceId,
-            quantity: 1,
-            billing_cycles: 1,
-          },
-        ],
-        billing_cycles: 1,
+        subscription_items: [{ item_price_id: PLAN_PRICING.PRO_MONTHLY_INR.itemPriceId, quantity: 1 }],
         customer: customerData,
         redirect_url: `${appUrl}/api/billing/chargebee/success`,
-        cancel_url: `${appUrl}/dashboard/integration`,
+        cancel_url: `${appUrl}/dashboard`,
         pass_thru_content: passThru,
       };
-      if (cleanCoupon) {
-        subParams.coupon_ids = [cleanCoupon];
-      }
+      if (cleanCoupon) subParams.coupon_ids = [cleanCoupon];
       const res = await (cb as any).hostedPage.checkoutNewForItems(subParams);
       page = res.hosted_page;
-    }
+    } else {
+      // 4b. Custom domain: one-time ₹4,999 Hosted Payment Page (unchanged from before)
+      const rawPriceId = PLAN_PRICING.PRO_INR.itemPriceId || "funnels-custom-domain-INR";
+      const itemPriceId = rawPriceId === "funnels-custom-domain" ? "funnels-custom-domain-INR" : rawPriceId;
+      const customerData = {
+        email: account.email,
+        first_name: (account.name || account.username || "").split(" ")[0] || "",
+        last_name: (account.name || account.username || "").split(" ").slice(1).join(" ") || "",
+      };
 
-    const isCouponApplied = Boolean(cleanCoupon);
-    const chargedAmount = isCouponApplied ? 1 : PLAN_PRICING.PRO_INR.amount;
-    const chargedDisplay = isCouponApplied ? "₹1" : PLAN_PRICING.PRO_INR.displayPrice;
+      // Try checkoutOneTimeForItems first (for Chargebee one-time Charges)
+      try {
+        const oneTimeParams: any = {
+          item_prices: {
+            item_price_id: [itemPriceId],
+            quantity: [1],
+          },
+          customer: customerData,
+          redirect_url: `${appUrl}/api/billing/chargebee/success`,
+          cancel_url: `${appUrl}/dashboard/integration`,
+          pass_thru_content: passThru,
+        };
+        if (cleanCoupon) oneTimeParams.coupon_ids = [cleanCoupon];
+        const res = await (cb as any).hostedPage.checkoutOneTimeForItems(oneTimeParams);
+        page = res.hosted_page;
+      } catch (oneTimeErr: any) {
+        console.warn("[Chargebee Checkout]: checkoutOneTimeForItems fallback to checkoutNewForItems:", oneTimeErr?.message);
+        const subParams: any = {
+          subscription_items: [{ item_price_id: itemPriceId, quantity: 1, billing_cycles: 1 }],
+          billing_cycles: 1,
+          customer: customerData,
+          redirect_url: `${appUrl}/api/billing/chargebee/success`,
+          cancel_url: `${appUrl}/dashboard/integration`,
+          pass_thru_content: passThru,
+        };
+        if (cleanCoupon) subParams.coupon_ids = [cleanCoupon];
+        const res = await (cb as any).hostedPage.checkoutNewForItems(subParams);
+        page = res.hosted_page;
+      }
+    }
 
     return NextResponse.json({
       success: true,
@@ -152,10 +187,11 @@ export async function POST(req: Request) {
       hostedPageId: page.id,
       hostedPage: page,
       hosted_page: page,
-      planName: isCouponApplied ? "Pro Plan (₹1 Coupon Applied)" : "Pro Plan Lifetime (One-Time)",
-      amount: chargedAmount,
-      currency: PLAN_PRICING.PRO_INR.currency,
-      displayPrice: chargedDisplay,
+      product,
+      planName: isCouponApplied ? couponPlanName : pricing.name,
+      amount: isCouponApplied ? 1 : pricing.amount,
+      currency: pricing.currency,
+      displayPrice: isCouponApplied ? "₹1" : pricing.displayPrice,
       couponApplied: cleanCoupon || null,
       user: {
         name: account.name || account.username || "Subscriber",

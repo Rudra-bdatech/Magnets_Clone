@@ -4,6 +4,8 @@ import { dbConnect } from "@/lib/mongodb";
 import { MagnetPageModel, AccountModel } from "@/lib/models";
 import PublicProfileView from "@/components/profile/public-profile-view";
 import { isReservedUsername } from "@/lib/reserved-usernames";
+import { getAccountAccess } from "@/lib/subscription";
+import PageUnavailable from "@/components/page-unavailable";
 import type { Metadata } from "next";
 
 export const dynamic = "force-dynamic";
@@ -62,6 +64,11 @@ export default async function UserProfileRoute({
 
   if (!accountDoc) {
     notFound();
+  }
+
+  // Owner's trial ended more than the grace period ago without a subscription: profile is offline
+  if (!getAccountAccess(accountDoc).publicPagesLive) {
+    return <PageUnavailable />;
   }
 
   let isCustomDomain = false;

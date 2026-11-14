@@ -11,7 +11,9 @@ export type AuditAction =
   | "account_suspend"
   | "account_unsuspend"
   | "account_delete"
-  | "audit_logs_purged";
+  | "audit_logs_purged"
+  | "trial_extend"
+  | "trial_end";
 
 interface LogEntry {
   adminEmail: string;

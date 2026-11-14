@@ -5,10 +5,9 @@ import Link from "next/link";
 import { Check, ArrowRight } from "lucide-react";
 type Currency = "INR" | "USD";
 
-// Mirrors PLAN_PRICING in lib/billing.ts (kept literal so this client file doesn't import the server billing module).
-const PRICES: Record<Currency, { free: string; pro: string; proNote: string }> = {
-  INR: { free: "₹0", pro: "₹4,999", proNote: "one-time · lifetime access" },
-  USD: { free: "$0", pro: "$67", proNote: "per month" },
+const PRICES: Record<Currency, { free: string; freeNote: string; pro: string; proNote: string }> = {
+  INR: { free: "₹0", freeNote: "14-day free trial · then ₹299/month", pro: "₹4,999", proNote: "one-time · lifetime access" },
+  USD: { free: "$0", freeNote: "14-day free trial · then $5/month", pro: "$69", proNote: "one-time · lifetime access" },
 };
 
 // Odometer-style price: each digit is a 0–9 column translated into place.
@@ -89,7 +88,7 @@ export default function Pricing() {
           <p className="mt-4 text-5xl font-extrabold tracking-tight text-zinc-900 dark:text-white">
             <RollingPrice value={p.free} />
           </p>
-          <p className="mt-2 text-sm text-zinc-500">forever, no card needed</p>
+          <p className="mt-2 text-sm text-zinc-500">{p.freeNote}</p>
           <ul className="mt-7 flex-1 space-y-3 text-zinc-700 dark:text-zinc-300">
             <Feature>Create & publish funnels</Feature>
             <Feature>Upload & host locked PDFs</Feature>

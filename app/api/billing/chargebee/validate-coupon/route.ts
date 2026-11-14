@@ -28,7 +28,9 @@ export async function POST(req: Request) {
       );
     }
 
-    const originalAmount = PLAN_PRICING.PRO_INR.amount; // 4999
+    // Pro monthly (₹299) from /checkout; otherwise the one-time custom domain (₹4,999)
+    const originalAmount =
+      body?.product === "pro_monthly" ? PLAN_PRICING.PRO_MONTHLY_INR.amount : PLAN_PRICING.PRO_INR.amount;
 
     const invalidCoupon = () =>
       NextResponse.json(
@@ -49,11 +51,11 @@ export async function POST(req: Request) {
         valid: true,
         couponCode: cleanCode,
         name: cleanCode === "BDA1" ? "BDA Staff Special (₹1 Access)" : "Company Staff Special (₹1 Access)",
-        discountAmount: 4998,
+        discountAmount: originalAmount - 1,
         finalAmount: 1,
-        displayOriginal: "₹4,999",
+        displayOriginal: `₹${originalAmount.toLocaleString("en-IN")}`,
         displayFinal: "₹1",
-        savingsMessage: "You save ₹4,998! Pay only ₹1",
+        savingsMessage: `You save ₹${(originalAmount - 1).toLocaleString("en-IN")}! Pay only ₹1`,
       });
     }
 

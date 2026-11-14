@@ -12,16 +12,15 @@ import {
   ArrowRight,
   ShieldCheck,
   QrCode,
-  Globe2,
 } from "lucide-react";
 import BrandLogo from "@/components/brand";
 import { loadAccount } from "@/lib/store";
 import type { Account } from "@/lib/data";
+import { PRO_MONTHLY_PRICE_INR, TRIAL_DAYS } from "@/lib/subscription";
 
 export default function CheckoutPage() {
   const router = useRouter();
   const [account, setAccount] = useState<Account | null>(null);
-  const [selectedGateway, setSelectedGateway] = useState<"chargebee" | "stripe">("chargebee");
   const [isLoading, setIsLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
@@ -71,7 +70,7 @@ export default function CheckoutPage() {
       const res = await fetch("/api/billing/chargebee/validate-coupon", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ couponCode: code }),
+        body: JSON.stringify({ couponCode: code, product: "pro_monthly" }),
       });
       const data = await res.json();
       if (!res.ok || !data.success) {
@@ -100,40 +99,25 @@ export default function CheckoutPage() {
     setErrorMsg(null);
 
     try {
-      if (selectedGateway === "chargebee") {
-        const res = await fetch("/api/billing/chargebee/create-checkout", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            couponCode: appliedCoupon?.couponCode || "",
-          }),
-        });
+      const res = await fetch("/api/billing/chargebee/create-checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          product: "pro_monthly",
+          couponCode: appliedCoupon?.couponCode || "",
+        }),
+      });
 
-        const data = await res.json();
-        if (!res.ok || !data.success) {
-          throw new Error(data.error || "Failed to initialize payment");
-        }
-
-        if (!data.checkoutUrl) {
-          throw new Error("We couldn't open the payment page. Please try again.");
-        }
-        window.location.href = data.checkoutUrl;
-        return;
-      } else {
-        const res = await fetch("/api/billing/stripe/create-checkout-session", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-        });
-        const data = await res.json();
-        if (!res.ok || !data.success) {
-          throw new Error(data.error || "Failed to initialize Stripe checkout");
-        }
-        if (!data.url) {
-          throw new Error("We couldn't open the payment page. Please try again.");
-        }
-        window.location.href = data.url;
-        return;
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || "Failed to initialize payment");
       }
+
+      if (!data.checkoutUrl) {
+        throw new Error("We couldn't open the payment page. Please try again.");
+      }
+      window.location.href = data.checkoutUrl;
+      return;
     } catch (err: any) {
       console.error("Checkout Error:", err);
       setErrorMsg(err.message || "Something went wrong initiating checkout.");
@@ -142,7 +126,7 @@ export default function CheckoutPage() {
     }
   };
 
-  const originalPrice = 4999;
+  const originalPrice = PRO_MONTHLY_PRICE_INR;
   const finalPrice = appliedCoupon ? appliedCoupon.finalAmount : originalPrice;
   const discountAmount = appliedCoupon ? appliedCoupon.discountAmount : 0;
 
@@ -176,7 +160,7 @@ export default function CheckoutPage() {
           <div className="lg:col-span-6 space-y-8">
             <div>
               <p className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-2">
-                Lifetime License
+                Monthly Plan
               </p>
               <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-zinc-900 dark:text-white">
                 Funnels Pro
@@ -186,18 +170,18 @@ export default function CheckoutPage() {
                   ₹{originalPrice.toLocaleString("en-IN")}
                 </span>
                 <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400">
-                  one-time payment • lifetime access
+                  per month • GST included
                 </span>
               </div>
               <p className="mt-3 text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
-                Connect your custom domain, capture unlimited leads, and remove all platform branding permanently.
+                Keep everything from your {TRIAL_DAYS}-day free trial: unlimited funnels, leads and sequences.
               </p>
             </div>
 
             {/* Clean Feature List — Typography & Checkmarks (No heavy boxes) */}
             <div className="pt-6 border-t border-zinc-200 dark:border-white/5 space-y-4">
               <p className="text-xs font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
-                Included in your license
+                Included in Pro
               </p>
 
               <ul className="space-y-3.5 text-xs sm:text-sm text-zinc-700 dark:text-zinc-300">
@@ -206,7 +190,7 @@ export default function CheckoutPage() {
                     <Check className="h-3 w-3 stroke-[3]" />
                   </div>
                   <span>
-                    <strong className="text-zinc-900 dark:text-white font-semibold">Custom root & subdomains</strong> (e.g. get.yourbrand.com) with automated edge SSL
+                    <strong className="text-zinc-900 dark:text-white font-semibold">Unlimited leads</strong> with CSV export & CRM sync
                   </span>
                 </li>
 
@@ -215,7 +199,7 @@ export default function CheckoutPage() {
                     <Check className="h-3 w-3 stroke-[3]" />
                   </div>
                   <span>
-                    <strong className="text-zinc-900 dark:text-white font-semibold">2,500 leads per month</strong> with automated CSV export & CRM sync
+                    <strong className="text-zinc-900 dark:text-white font-semibold">Unlimited landing pages & locked PDFs</strong> with cloud hosting for your files
                   </span>
                 </li>
 
@@ -224,25 +208,7 @@ export default function CheckoutPage() {
                     <Check className="h-3 w-3 stroke-[3]" />
                   </div>
                   <span>
-                    <strong className="text-zinc-900 dark:text-white font-semibold">1,024 MB cloud asset hosting</strong> for guides, PDFs & templates
-                  </span>
-                </li>
-
-                <li className="flex items-start gap-3">
-                  <div className="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5">
-                    <Check className="h-3 w-3 stroke-[3]" />
-                  </div>
-                  <span>
-                    <strong className="text-zinc-900 dark:text-white font-semibold">100% white-label</strong> — removes all platform badges & watermarks
-                  </span>
-                </li>
-
-                <li className="flex items-start gap-3">
-                  <div className="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5">
-                    <Check className="h-3 w-3 stroke-[3]" />
-                  </div>
-                  <span>
-                    <strong className="text-zinc-900 dark:text-white font-semibold">Automated email sequences</strong> via SMTP or direct Gmail sync
+                    <strong className="text-zinc-900 dark:text-white font-semibold">Unlimited automated email sequences</strong> via your own SMTP
                   </span>
                 </li>
               </ul>
@@ -251,7 +217,7 @@ export default function CheckoutPage() {
             {/* Subtle Guarantee Footer */}
             <div className="pt-6 border-t border-zinc-200 dark:border-white/5 flex items-center gap-2 text-xs text-zinc-500 dark:text-zinc-400">
               <ShieldCheck className="h-4 w-4 text-emerald-500 shrink-0" />
-              <span>Full 14-day money-back guarantee. No questions asked.</span>
+              <span>Cancel anytime. You keep Pro until the end of the month you&apos;ve paid for.</span>
             </div>
           </div>
 
@@ -262,40 +228,16 @@ export default function CheckoutPage() {
                 Payment Details
               </h2>
 
-              {/* Payment Method Switcher */}
-              <div className="mb-6">
-                <div className="grid grid-cols-2 gap-2 p-1 bg-zinc-200/60 dark:bg-zinc-800/60 rounded-xl">
-                  <button
-                    type="button"
-                    onClick={() => setSelectedGateway("chargebee")}
-                    className={`flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-xs font-semibold transition cursor-pointer ${
-                      selectedGateway === "chargebee"
-                        ? "bg-white dark:bg-zinc-900 text-zinc-900 dark:text-white shadow-xs"
-                        : "text-zinc-500 hover:text-zinc-800 dark:text-zinc-400"
-                    }`}
-                  >
-                    <QrCode className="h-3.5 w-3.5" />
-                    <span>UPI & Indian Cards</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setSelectedGateway("stripe")}
-                    className={`flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-xs font-semibold transition cursor-pointer ${
-                      selectedGateway === "stripe"
-                        ? "bg-white dark:bg-zinc-900 text-zinc-900 dark:text-white shadow-xs"
-                        : "text-zinc-500 hover:text-zinc-800 dark:text-zinc-400"
-                    }`}
-                  >
-                    <Globe2 className="h-3.5 w-3.5" />
-                    <span>Global Cards ($67)</span>
-                  </button>
-                </div>
+              {/* Payment method (India: UPI AutoPay, cards & net banking via Chargebee) */}
+              <div className="mb-6 flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-zinc-200/60 dark:bg-zinc-800/60 text-xs font-semibold text-zinc-900 dark:text-white">
+                <QrCode className="h-3.5 w-3.5" />
+                <span>UPI & Indian Cards</span>
               </div>
 
               {/* Order Breakdown */}
               <div className="space-y-3.5 text-xs text-zinc-600 dark:text-zinc-400 pb-5 border-b border-zinc-200 dark:border-white/10">
                 <div className="flex items-center justify-between font-medium text-zinc-900 dark:text-white">
-                  <span>Funnels Pro (Lifetime License)</span>
+                  <span>Funnels Pro (Monthly)</span>
                   <span>₹{originalPrice.toLocaleString("en-IN")}.00</span>
                 </div>
 
@@ -316,7 +258,7 @@ export default function CheckoutPage() {
               </div>
 
               {/* Promo Code Section (Modern Collapsible / Clean Inline) */}
-              {selectedGateway === "chargebee" && (
+              {(
                 <div className="py-4 border-b border-zinc-200 dark:border-white/10">
                   {appliedCoupon ? (
                     <div className="flex items-center justify-between text-xs">
@@ -394,7 +336,7 @@ export default function CheckoutPage() {
                     Total due today
                   </span>
                   <span className="text-[11px] text-zinc-500 dark:text-zinc-400">
-                    One-time payment
+                    Then ₹{originalPrice.toLocaleString("en-IN")} every month · cancel anytime
                   </span>
                 </div>
                 <div className="text-right">
@@ -453,7 +395,7 @@ export default function CheckoutPage() {
               {/* Discreet Trust Footer */}
               <div className="mt-4 text-center">
                 <p className="text-[11px] text-zinc-400 dark:text-zinc-500">
-                  Secured by Chargebee • Instant account upgrade upon completion
+                  Secured by Chargebee • Renews monthly • Instant account upgrade upon completion
                 </p>
               </div>
             </div>

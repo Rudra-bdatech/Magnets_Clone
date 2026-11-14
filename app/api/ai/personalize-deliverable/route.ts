@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getAuthenticatedUserEmail } from "@/lib/auth";
+import { requireFullAccess } from "@/lib/subscription-server";
 import { checkRateLimit } from "@/lib/rate-limit";
 
 export const dynamic = "force-dynamic";
@@ -10,6 +11,9 @@ export async function POST(req: Request) {
     if (!sessionEmail) {
       return NextResponse.json({ error: "Unauthorized access" }, { status: 401 });
     }
+
+    const locked = await requireFullAccess(sessionEmail);
+    if (locked) return locked;
 
     const rl = await checkRateLimit(sessionEmail, "ai_personalize_deliverable", 20, 60 * 1000);
     if (!rl.success) {

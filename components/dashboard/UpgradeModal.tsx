@@ -14,7 +14,6 @@ import {
   Loader2,
   CreditCard,
   QrCode,
-  Globe2,
   CheckCircle2,
   AlertCircle,
   Smartphone,
@@ -38,7 +37,6 @@ export function UpgradeModal({
   currentPlan = "Free",
 }: UpgradeModalProps) {
   const router = useRouter();
-  const [selectedGateway, setSelectedGateway] = useState<"chargebee" | "stripe">("chargebee");
   const [isLoading, setIsLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [paymentSuccess, setPaymentSuccess] = useState(false);
@@ -77,6 +75,7 @@ export function UpgradeModal({
       const res = await fetch("/api/billing/chargebee/create-checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ product: "custom_domain" }),
       });
 
       const data = await res.json();
@@ -114,7 +113,7 @@ export function UpgradeModal({
       const res = await fetch("/api/billing/chargebee/simulate-success", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ isSimulated: true }),
+        body: JSON.stringify({ isSimulated: true, product: "custom_domain" }),
       });
 
       const data = await res.json();
@@ -135,44 +134,8 @@ export function UpgradeModal({
     }
   };
 
-  // ── 2. Handle Stripe Checkout ($67 USD) ───────────────────────────────────
-  const handleStripeCheckout = async () => {
-    if (checkoutInFlight.current) return;
-    checkoutInFlight.current = true;
-    setIsLoading(true);
-    setErrorMsg(null);
-
-    try {
-      const res = await fetch("/api/billing/stripe/create-checkout-session", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-      });
-
-      const data = await res.json();
-      if (!res.ok || !data.success) {
-        throw new Error(data.error || "Failed to initialize Stripe checkout");
-      }
-
-      if (!data.url) {
-        throw new Error("We couldn't open the payment page. Please try again.");
-      }
-      // Keep the button disabled until the browser leaves the page: re-enabling it here
-      // let a second click open another checkout session.
-      window.location.href = data.url;
-    } catch (err: any) {
-      console.error("Stripe Error:", err);
-      setErrorMsg(err.message || "Something went wrong with Stripe checkout.");
-      setIsLoading(false);
-      checkoutInFlight.current = false;
-    }
-  };
-
   const handleCheckout = () => {
-    if (selectedGateway === "chargebee") {
-      handleChargebeeCheckout();
-    } else {
-      handleStripeCheckout();
-    }
+    handleChargebeeCheckout();
   };
 
   return (
@@ -442,12 +405,12 @@ export function UpgradeModal({
                 {/* Pricing Grid - Sleek & Compact */}
                 <div className="p-3.5 sm:p-4 space-y-2.5">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    {/* Free Tier (Current Status) */}
+                    {/* Current plan (trial / Pro monthly) — custom domain is not included */}
                     <div className="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50/60 dark:bg-[#18181C] p-3.5 flex flex-col justify-between">
                       <div>
                         <div className="flex items-center justify-between">
-                          <h4 className="text-xs sm:text-sm font-bold text-zinc-900 dark:text-white">Free Tier</h4>
-                          {currentPlan.toLowerCase() === "free" && (
+                          <h4 className="text-xs sm:text-sm font-bold text-zinc-900 dark:text-white">Your Plan</h4>
+                          {(
                             <span className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-zinc-200 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300">
                               Current Plan
                             </span>
@@ -455,18 +418,18 @@ export function UpgradeModal({
                         </div>
 
                         <div className="my-1.5 flex items-baseline gap-1">
-                          <span className="text-xl font-bold text-zinc-900 dark:text-white">₹0</span>
-                          <span className="text-[11px] text-zinc-500 dark:text-zinc-400"> / forever</span>
+                          <span className="text-xl font-bold text-zinc-900 dark:text-white">{currentPlan === "Pro" ? "₹299" : "₹0"}</span>
+                          <span className="text-[11px] text-zinc-500 dark:text-zinc-400">{currentPlan === "Pro" ? " / month" : " / 14-day trial"}</span>
                         </div>
 
                         <ul className="space-y-1 text-[11px] text-zinc-600 dark:text-zinc-300">
                           <li className="flex items-center gap-2">
                             <Check className="h-3 w-3 text-emerald-500 shrink-0" />
-                            <span>Up to 500 Leads / month</span>
+                            <span>Unlimited leads & sequences</span>
                           </li>
                           <li className="flex items-center gap-2">
                             <Check className="h-3 w-3 text-emerald-500 shrink-0" />
-                            <span>500 MB Asset Storage</span>
+                            <span>Unlimited landing pages & PDFs</span>
                           </li>
                           <li className="flex items-center gap-2">
                             <Check className="h-3 w-3 text-emerald-500 shrink-0" />
@@ -485,71 +448,34 @@ export function UpgradeModal({
                           disabled
                           className="w-full py-1.5 px-3 rounded-lg border border-zinc-300 dark:border-zinc-700 text-[11px] font-semibold text-zinc-400 dark:text-zinc-500 cursor-not-allowed text-center bg-zinc-100 dark:bg-zinc-900"
                         >
-                          Included in Free Tier
+                          Included in your plan
                         </button>
                       </div>
                     </div>
 
-                    {/* Pro Plan (Recommended) */}
+                    {/* Custom domain add-on: ₹4,999 one-time, lifetime */}
                     <div className="relative rounded-xl border-2 border-[#0066B2] dark:border-[#38BDF8] bg-gradient-to-b from-[#0066B2]/[0.04] to-transparent dark:from-[#0066B2]/15 dark:to-transparent p-3.5 flex flex-col justify-between shadow-md shadow-[#0066B2]/10">
                       <div>
-                        {/* Header + Inline Currency Toggle */}
+                        {/* Header */}
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-1.5">
-                            <h4 className="text-xs sm:text-sm font-bold text-zinc-900 dark:text-white">Pro Plan</h4>
+                            <h4 className="text-xs sm:text-sm font-bold text-zinc-900 dark:text-white">Custom Domain</h4>
                             <span className="px-1.5 py-0.5 rounded text-[8px] font-extrabold uppercase bg-blue-100 dark:bg-blue-900/50 text-[#0066B2] dark:text-[#38BDF8]">
                               Recommended
                             </span>
                           </div>
 
-                          {/* Compact Currency Switcher */}
-                          <div className="flex items-center p-0.5 bg-zinc-100 dark:bg-zinc-800 rounded-md border border-zinc-200 dark:border-zinc-700 text-[10px]">
-                            <button
-                              type="button"
-                              onClick={() => setSelectedGateway("chargebee")}
-                              className={`px-1.5 py-0.5 rounded font-bold transition ${
-                                selectedGateway === "chargebee"
-                                  ? "bg-white dark:bg-zinc-900 text-[#0066B2] dark:text-[#38BDF8] shadow-xs"
-                                  : "text-zinc-500 hover:text-zinc-700 dark:text-zinc-400"
-                              }`}
-                            >
-                              ₹ INR
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => setSelectedGateway("stripe")}
-                              className={`px-1.5 py-0.5 rounded font-bold transition ${
-                                selectedGateway === "stripe"
-                                  ? "bg-white dark:bg-zinc-900 text-[#0066B2] dark:text-[#38BDF8] shadow-xs"
-                                  : "text-zinc-500 hover:text-zinc-700 dark:text-zinc-400"
-                              }`}
-                            >
-                              $ USD
-                            </button>
-                          </div>
                         </div>
 
                         {/* Pricing Display */}
                         <div className="my-1.5 flex items-baseline gap-2">
-                          {selectedGateway === "chargebee" ? (
-                            <>
-                              <span className="text-xl font-black text-zinc-900 dark:text-white">₹4,999</span>
-                              <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded">
-                                One-Time • Lifetime
-                              </span>
-                              <span className="text-[10px] text-zinc-400 dark:text-zinc-500 ml-auto hidden sm:inline">
-                                UPI • Cards
-                              </span>
-                            </>
-                          ) : (
-                            <>
-                              <span className="text-xl font-black text-zinc-900 dark:text-white">$67</span>
-                              <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded">One-Time • Lifetime</span>
-                              <span className="text-[10px] text-zinc-400 dark:text-zinc-500 ml-auto hidden sm:inline">
-                                Global Cards
-                              </span>
-                            </>
-                          )}
+                          <span className="text-xl font-black text-zinc-900 dark:text-white">₹4,999</span>
+                          <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded">
+                            One-Time • Lifetime
+                          </span>
+                          <span className="text-[10px] text-zinc-400 dark:text-zinc-500 ml-auto hidden sm:inline">
+                            UPI • Cards
+                          </span>
                         </div>
 
                         <ul className="space-y-1 text-[11px] text-zinc-700 dark:text-zinc-200 font-medium">
@@ -565,13 +491,13 @@ export function UpgradeModal({
                             <div className="flex h-3 w-3 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 shrink-0">
                               <Check className="h-2 w-2 stroke-[3]" />
                             </div>
-                            <span>Up to 2,500 Leads / month (5x capacity)</span>
+                            <span>Pay once, yours for life</span>
                           </li>
                           <li className="flex items-center gap-1.5">
                             <div className="flex h-3 w-3 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 shrink-0">
                               <Check className="h-2 w-2 stroke-[3]" />
                             </div>
-                            <span>1,024 MB High-Speed Asset Storage</span>
+                            <span>Every landing page & PDF on your domain</span>
                           </li>
                           <li className="flex items-center gap-1.5">
                             <div className="flex h-3 w-3 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 shrink-0">
@@ -594,14 +520,9 @@ export function UpgradeModal({
                               <Loader2 className="h-3 w-3 animate-spin" />
                               <span>Processing...</span>
                             </>
-                          ) : selectedGateway === "chargebee" ? (
-                            <>
-                              <span>Proceed to Checkout (₹4,999 One-Time)</span>
-                              <ArrowRight className="h-3 w-3" />
-                            </>
                           ) : (
                             <>
-                              <span>Pay with Global Card ($67 One-Time)</span>
+                              <span>Proceed to Checkout (₹4,999 One-Time)</span>
                               <ArrowRight className="h-3 w-3" />
                             </>
                           )}

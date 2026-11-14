@@ -22,6 +22,7 @@ import GmailSyncTour from "@/components/dashboard/gmail-sync-tour";
 import { LogoutIcon } from "@/components/icons/logout-icon";
 import type { AnimatedIconHandle } from "@/components/icons/types";
 import { useIsMobile } from "@/lib/use-mobile";
+import { SubscriptionGate, TrialBanner, useAccountAccess } from "@/components/dashboard/subscription-gate";
 
 export interface SidebarContextType {
   isCollapsed: boolean;
@@ -129,6 +130,8 @@ export default function DashboardShell({
 }) {
   const [currentAccount, setCurrentAccount] = useState<Account | null>(account || null);
   const pathname = usePathname();
+  // Trial / subscription state for the trial banner and the paywall (lib/subscription.ts)
+  const accountAccess = useAccountAccess(pathname);
   const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
@@ -1598,6 +1601,8 @@ export default function DashboardShell({
               </div>
             </header>
             <main ref={mainRef} className="min-w-0 flex-1 bg-[#FAFAF8] dark:bg-[#0a0a0a] w-full max-w-full">
+              <TrialBanner access={accountAccess} />
+              <SubscriptionGate access={accountAccess} pathname={pathname} onSignOut={handleLogout}>
               <AnimatePresence mode="wait" initial={false}>
                 <motion.div
                   key={pathname}
@@ -1613,6 +1618,7 @@ export default function DashboardShell({
                   {children}
                 </motion.div>
               </AnimatePresence>
+              </SubscriptionGate>
             </main>
           </div>
 

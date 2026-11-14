@@ -59,6 +59,8 @@ interface DomainSectionProps {
   handleSave: (overrides?: Partial<Account>) => Promise<void>;
   addToast: (message: string, type?: "success" | "error" | "info") => void;
   userPlan?: string;
+  /** Custom domain unlocked (one-time ₹4,999 purchase, staff or admin grant): lib/subscription.ts hasCustomDomainAccess */
+  customDomainUnlocked?: boolean;
   userEmail?: string;
   userRole?: string;
   onUpgradeClick?: () => void;
@@ -92,6 +94,7 @@ export const DomainSection = memo(function DomainSection({
   handleSave,
   addToast,
   userPlan = "Free",
+  customDomainUnlocked,
   userEmail,
   userRole,
   onUpgradeClick,
@@ -140,7 +143,8 @@ export const DomainSection = memo(function DomainSection({
 
   // Plan limits & Custom domain lock check (Staff/Admin accounts bypass automatically)
   const planLimits = useMemo(() => getPlanLimits(userPlan, userEmail, userRole), [userPlan, userEmail, userRole]);
-  const isCustomDomainLocked = !planLimits.customDomainAllowed;
+  const isCustomDomainLocked =
+    customDomainUnlocked !== undefined ? !customDomainUnlocked : !planLimits.customDomainAllowed;
 
   // Memoize derived computations
   const cleanDom = useMemo(() => sanitizeDomain(rootDomain), [rootDomain]);
@@ -532,7 +536,7 @@ export const DomainSection = memo(function DomainSection({
                     Connect your custom domain (e.g. get.yourbrand.com)
                   </p>
                   <p className="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed">
-                    Upgrade to the Pro plan to publish funnels on your branded subdomain with automated SSL certificates, high-speed CNAME routing, and zero Funnels branding.
+                    Unlock it once for ₹4,999 (lifetime) to publish funnels on your branded subdomain with automated SSL certificates, high-speed CNAME routing, and zero Funnels branding.
                   </p>
                 </div>
               </div>
@@ -542,12 +546,12 @@ export const DomainSection = memo(function DomainSection({
                   if (onUpgradeClick) {
                     onUpgradeClick();
                   } else {
-                    addToast("Please upgrade to Pro to unlock custom domains.", "info");
+                    addToast("Unlock the custom domain (₹4,999 one-time) to connect your domain.", "info");
                   }
                 }}
                 className="shrink-0 inline-flex items-center justify-center gap-1.5 rounded-md bg-[#0066B2] hover:bg-[#005291] px-4 h-9 text-[13px] font-medium text-white transition-colors cursor-pointer"
               >
-                <span>Upgrade to Pro (₹4,999 One-Time)</span>
+                <span>Unlock Custom Domain (₹4,999 One-Time)</span>
                 <ArrowRight className="h-3.5 w-3.5" />
               </button>
             </div>

@@ -3,6 +3,7 @@ import { getAuthenticatedUserEmail } from "@/lib/auth";
 import { dbConnect } from "@/lib/mongodb";
 import { AccountModel } from "@/lib/models";
 import { hasActivePaidPlan, isSimulatedBillingAllowed, ALREADY_SUBSCRIBED_RESPONSE } from "@/lib/billing";
+import { hasCustomDomainAccess } from "@/lib/subscription";
 
 export const dynamic = "force-dynamic";
 
@@ -15,7 +16,7 @@ export async function POST(req: Request) {
   }
 
   try {
-    const { isSimulated } = await req.json();
+    const { isSimulated, product } = await req.json();
 
     if (!isSimulated) {
       return NextResponse.json({ error: "Invalid simulation request" }, { status: 400 });
@@ -30,23 +31,34 @@ export async function POST(req: Request) {
     }
 
     await dbConnect();
-    const current = await AccountModel.findOne({ email }, { plan: 1 }).lean();
-    if (hasActivePaidPlan(current as any)) {
+    const current = await AccountModel.findOne(
+      { email },
+      { plan: 1, email: 1, role: 1, subscriptionStatus: 1, currentPeriodEnd: 1, lifetimeCustomDomain: 1 }
+    ).lean();
+
+    // Default is the custom domain, as the custom-domain upgrade modal has always called this route
+    const isProMonthly = product === "pro_monthly";
+    if (isProMonthly ? hasActivePaidPlan(current as any) : hasCustomDomainAccess(current as any)) {
       return NextResponse.json(ALREADY_SUBSCRIBED_RESPONSE, { status: 409 });
     }
-    const updatedAccount = await AccountModel.findOneAndUpdate(
-      { email },
-      {
-        $set: {
+    const set: Record<string, unknown> = isProMonthly
+      ? {
           plan: "Pro",
           paymentProvider: "chargebee",
           paymentStatus: "simulated",
           lastPaymentDate: new Date(),
           chargebeeInvoiceId: `sim_${Date.now()}`,
-        },
-      },
-      { new: true }
-    );
+          // Sandbox stand-in for one paid month of the Pro monthly subscription
+          subscriptionStatus: "active",
+          currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+        }
+      : {
+          // Sandbox stand-in for the one-time custom-domain purchase
+          lifetimeCustomDomain: true,
+          lastPaymentDate: new Date(),
+          chargebeeInvoiceId: `sim_${Date.now()}`,
+        };
+    const updatedAccount = await AccountModel.findOneAndUpdate({ email }, { $set: set }, { new: true });
 
     if (!updatedAccount) {
       return NextResponse.json({ error: "Account not found" }, { status: 404 });
