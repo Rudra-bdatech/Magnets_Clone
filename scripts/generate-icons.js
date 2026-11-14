@@ -39,7 +39,7 @@ async function getCleanOriginalMark() {
  */
 async function generateAppleLiquidGlassIcon(canvasSize = 512) {
   const targetH = Math.round(canvasSize * 0.66); // 66% Apple HIG Keyline ratio
-
+  
   // 1. Get the pure, clean original mark (no letter 'u' artifact)
   const cleanMarkBuffer = await getCleanOriginalMark();
 
