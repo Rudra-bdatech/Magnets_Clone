@@ -30,6 +30,17 @@ body {
   position: relative;
 }
 
+/* iOS Safe Area Navigation Utility for standalone PWAs and Home Screen bookmarks */
+.pt-safe-header {
+  padding-top: calc(env(safe-area-inset-top, 0px) + 18px);
+}
+
+@media (min-width: 640px) {
+  .pt-safe-header {
+    padding-top: calc(env(safe-area-inset-top, 0px) + 22px);
+  }
+}
+
 /* Lenis Smooth Scroll CSS */
 html.lenis,
 html.lenis body {

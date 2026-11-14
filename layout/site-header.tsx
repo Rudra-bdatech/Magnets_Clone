@@ -85,7 +85,7 @@ export default function SiteHeader() {
         )}
       </AnimatePresence>
 
-      <header className="relative mx-auto max-w-7xl px-2 sm:px-8 lg:px-10 pt-[max(env(safe-area-inset-top),8px)] sm:pt-[max(env(safe-area-inset-top),14px)] z-40">
+      <header className="relative mx-auto max-w-7xl px-2 sm:px-8 lg:px-10 pt-safe-header z-40">
         {/* DESKTOP NAVBAR (md:flex) */}
         <div className="hidden md:flex items-center justify-between h-17 sm:h-22">
           <a aria-label="Funnels home" href="/" className="shrink-0 flex items-center">
