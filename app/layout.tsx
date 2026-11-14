@@ -66,10 +66,10 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: "/brand/funnels-mark-light.png", media: "(prefers-color-scheme: light)" },
-      { url: "/brand/funnels-mark-dark.png", media: "(prefers-color-scheme: dark)" },
-      { url: "/brand/funnels-mark-dark.png" },
+      { url: "/brand/app-icon-squircle.png", type: "image/png" },
+      { url: "/apple-touch-icon.png" },
     ],
+    shortcut: "/favicon.ico",
     apple: [
       { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
     ],

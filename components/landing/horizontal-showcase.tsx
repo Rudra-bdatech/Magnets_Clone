@@ -1,23 +1,23 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { Linkedin, Database, Video, HelpCircle, Mail, ArrowRight } from "lucide-react";
+import { Sparkles, Database, Video, HelpCircle, Mail, ArrowRight } from "lucide-react";
 import SpotlightCard from "./spotlight-card";
 import { usePrefersReducedMotion } from "./use-in-view";
 
 const SHOWCASE_ITEMS = [
   {
     num: "01",
-    tag: "VIRAL ENGINE",
-    title: "LinkedIn Comment-to-Lead",
-    description: "Post on LinkedIn and tell readers to comment a word. Funnels automatically catches the comment and delivers the link.",
-    badge: "100% Hands-free",
-    icon: Linkedin,
-    accent: "#0077B5",
+    tag: "AI ARCHITECT",
+    title: "Instant AI Funnel Generator",
+    description: "Type your topic or paste your resource notes. Funnels crafts a high-converting opt-in page, persuasive copy, and 3D device mockups in seconds.",
+    badge: "Live in 30s",
+    icon: Sparkles,
+    accent: "#6366F1",
     bullets: [
-      "Custom trigger word detection",
-      "Instant automated DM & email",
-      "Built-in LinkedIn rate safety",
+      "AI-crafted headline & benefit bullets",
+      "Dynamic 3D mockup visualizer",
+      "Zero design or code required",
     ],
   },
   {
