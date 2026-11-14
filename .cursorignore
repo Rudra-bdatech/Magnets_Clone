@@ -1,0 +1,48 @@
+# AI Agent & Codebase Indexing Ignore File
+# Prevents AI tools (Cursor, Claude, Copilot, Roo, Cline, Ripgrep) from indexing massive binaries and minified scripts
+
+# Heavy uploads & binary files
+public/uploads/
+*.pdf
+*.docx
+*.zip
+*.tar.gz
+
+# Minified and single-line vendor scripts
+public/pdf.worker.min.mjs
+
+# Build caches & lockfiles from indexing
+*.tsbuildinfo
+package-lock.json
+
+# Image and media assets (AI doesn't need to read raw PNG/JPG byte streams)
+public/brand/
+public/fonts/
+*.png
+*.jpg
+*.jpeg
+*.webp
+*.gif
+*.svg
+*.ico
+*.ttf
+*.woff
+*.woff2
+
+# Build outputs & dependencies
+.next/
+node_modules/
+out/
+build/
+coverage/
+
+# Scratch & test scripts
+scratch/
+scratch_*
+*.pyc
+__pycache__/
+
+# Heavy AI datasets
+.agents/skills/**/data/
+.claude/skills/**/data/
+
