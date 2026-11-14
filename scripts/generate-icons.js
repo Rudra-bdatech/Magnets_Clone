@@ -2,8 +2,8 @@ const sharp = require('sharp');
 const fs = require('fs');
 const path = require('path');
 
-// Funnel Vector Mark
-const funnelPaths = `
+// Exact Official Funnels Blue Mark Gradient from public/brand/funnels-footer-light.svg
+const exactBrandBlueFunnelPaths = `
   <defs>
     <linearGradient id="lightBlueGrad" x1="0" y1="0" x2="0" y2="540" gradientUnits="userSpaceOnUse">
       <stop offset="0%" stop-color="#0284C7" />
@@ -15,19 +15,24 @@ const funnelPaths = `
   <path d="M 138.994 437.750 C 138.991 438.163, 148.554 461.607, 160.244 489.848 L 181.500 541.197 190.500 540.632 C 206.811 539.608, 223.715 533.931, 237.790 524.752 C 246.967 518.767, 259.514 506.871, 265.595 498.390 C 271.337 490.381, 277.206 478.448, 280.295 468.500 C 282.854 460.257, 285.684 439.917, 284.532 438.051 C 284.087 437.332, 261.018 437, 211.441 437 C 171.598 437, 138.998 437.337, 138.994 437.750" fill="url(#lightBlueGrad)" />
 `;
 
-function createSvg({ size = 512, scale = 0.58, bg = '#ffffff' } = {}) {
-  // Original funnel path bounds: width ~500, height ~541.2
+/**
+ * Creates SVG icon markup with optical centering and consistent proportional scaling across all resolutions
+ */
+function createSvg({ size = 512, targetRatio = 0.66, bg = '#0f0f11' } = {}) {
+  // Glyph native bounds: width = 500, height = 541.2
+  const scale = (size * targetRatio) / 541.2;
   const glyphW = 500 * scale;
   const glyphH = 541.2 * scale;
   const tx = (size - glyphW) / 2;
-  const ty = (size - glyphH) / 2;
+  // Optical vertical centering: shift ~1.6% downwards to balance heavy top bar with tapered point
+  const ty = (size - glyphH) / 2 + (size * 0.016);
 
   const bgRect = bg && bg !== 'none' ? `<rect width="${size}" height="${size}" fill="${bg}" />` : '';
 
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${size} ${size}" width="${size}" height="${size}">
   ${bgRect}
-  <g transform="translate(${tx.toFixed(2)}, ${ty.toFixed(2)}) scale(${scale.toFixed(4)})">
-    ${funnelPaths}
+  <g transform="translate(${tx.toFixed(2)}, ${ty.toFixed(2)}) scale(${scale.toFixed(5)})">
+    ${exactBrandBlueFunnelPaths}
   </g>
 </svg>`;
 }
@@ -36,35 +41,29 @@ async function run() {
   const publicDir = path.join(__dirname, '..', 'public');
   const brandDir = path.join(publicDir, 'brand');
 
-  // 1. Apple Touch Icon (180x180 & 512x512) with solid white background and 58% glyph scale (21% safe-margin)
-  const appleTouchSvg512 = createSvg({ size: 512, scale: 0.58, bg: '#ffffff' });
-  const appleTouchSvg180 = createSvg({ size: 180, scale: 0.58, bg: '#ffffff' });
-  const appleTouchSvg192 = createSvg({ size: 192, scale: 0.58, bg: '#ffffff' });
+  const TARGET_RATIO = 0.66; // 66% canvas height occupancy: Apple HIG optimal keyline scale
+  const BG_DARK = '#0f0f11'; // Funnels brand dark background
 
-  // Generate public/apple-touch-icon.png (512x512)
-  await sharp(Buffer.from(appleTouchSvg512)).png().toFile(path.join(publicDir, 'apple-touch-icon.png'));
-  console.log('Created public/apple-touch-icon.png (512x512)');
+  // 1. Primary Apple Touch Icons with Exact Funnels Blue (#0284C7 -> #0066B2) on Dark (#0f0f11)
+  const darkIconSvg512 = createSvg({ size: 512, targetRatio: TARGET_RATIO, bg: BG_DARK });
 
-  // Generate public/apple-touch-icon-precomposed.png
-  await sharp(Buffer.from(appleTouchSvg512)).png().toFile(path.join(publicDir, 'apple-touch-icon-precomposed.png'));
-  console.log('Created public/apple-touch-icon-precomposed.png');
+  // Generate public/apple-touch-icon.png (Used by iPhone Home Screen)
+  await sharp(Buffer.from(darkIconSvg512)).png().toFile(path.join(publicDir, 'apple-touch-icon.png'));
+  await sharp(Buffer.from(darkIconSvg512)).png().toFile(path.join(publicDir, 'apple-touch-icon-precomposed.png'));
+  console.log('✅ Generated public/apple-touch-icon.png with EXACT brand blue gradient (#0284C7 -> #0066B2)');
 
   // Generate PWA manifest icons
-  await sharp(Buffer.from(appleTouchSvg192)).png().toFile(path.join(brandDir, 'icon-192.png'));
-  await sharp(Buffer.from(appleTouchSvg512)).png().toFile(path.join(brandDir, 'icon-512.png'));
-  console.log('Created brand/icon-192.png & brand/icon-512.png');
+  const icon192Svg = createSvg({ size: 192, targetRatio: TARGET_RATIO, bg: BG_DARK });
+  await sharp(Buffer.from(icon192Svg)).png().toFile(path.join(brandDir, 'icon-192.png'));
+  await sharp(Buffer.from(darkIconSvg512)).png().toFile(path.join(brandDir, 'icon-512.png'));
+  await sharp(Buffer.from(darkIconSvg512)).png().toFile(path.join(brandDir, 'app-icon.png'));
+  console.log('✅ Generated brand/icon-192.png, brand/icon-512.png, brand/app-icon.png');
 
-  // Also update public/brand/funnels-mark-light.png with proper safe margins
-  // Keep background transparent for funnels-mark-light, but give it 68% glyph scale (~16% padding all around)
-  // so it never bleeds or clips even if used unpadded!
-  const markTransparentSvg = createSvg({ size: 512, scale: 0.64, bg: 'none' });
+  // Also update transparent brand marks with matching scale & safe area
+  const markTransparentSvg = createSvg({ size: 512, targetRatio: TARGET_RATIO, bg: 'none' });
   await sharp(Buffer.from(markTransparentSvg)).png().toFile(path.join(brandDir, 'funnels-mark-light.png'));
   await sharp(Buffer.from(markTransparentSvg)).webp().toFile(path.join(brandDir, 'funnels-mark-light.webp'));
-  console.log('Updated public/brand/funnels-mark-light.png & .webp with safe-area padding');
-
-  // Also create an app-icon-white.png in brand for BDA Ecosystem & other launchers
-  await sharp(Buffer.from(appleTouchSvg512)).png().toFile(path.join(brandDir, 'app-icon.png'));
-  console.log('Created public/brand/app-icon.png');
+  console.log('✅ Generated public/brand/funnels-mark-light (.png and .webp)');
 }
 
 run().catch(console.error);

@@ -59,9 +59,16 @@ export const metadata: Metadata = {
       "Create high-converting funnels, capture leads, deliver resources instantly, and follow up automatically.",
     images: ["/og-image.png"],
   },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "Funnels",
+  },
   icons: {
     icon: [
-      { url: "/brand/funnels-mark-light.png" },
+      { url: "/brand/funnels-mark-light.png", media: "(prefers-color-scheme: light)" },
+      { url: "/brand/funnels-mark-dark.png", media: "(prefers-color-scheme: dark)" },
+      { url: "/brand/funnels-mark-dark.png" },
     ],
     apple: [
       { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
