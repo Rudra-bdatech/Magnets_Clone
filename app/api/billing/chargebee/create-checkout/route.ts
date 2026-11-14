@@ -133,7 +133,7 @@ export async function POST(req: Request) {
         subscription_items: [{ item_price_id: PLAN_PRICING.PRO_MONTHLY_INR.itemPriceId, quantity: 1 }],
         customer: customerData,
         redirect_url: `${appUrl}/api/billing/chargebee/success`,
-        cancel_url: `${appUrl}/dashboard`,
+        cancel_url: `${appUrl}/dashboard/settings?tab=billing`,
         pass_thru_content: passThru,
       };
       if (cleanCoupon) subParams.coupon_ids = [cleanCoupon];

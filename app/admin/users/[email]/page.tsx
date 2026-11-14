@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import {
   ArrowLeft, Mail, Calendar, Globe, CreditCard, ExternalLink,
-  FileText, FolderOpen, Users, Settings, Lock, ShieldOff, ShieldCheck, Trash2, AlertTriangle,
+  FileText, FolderOpen, Users, Settings, Lock, ShieldOff, ShieldCheck, Trash2, AlertTriangle, Clock,
   ChevronDown, ChevronLeft, ChevronRight, Check, X, MapPin,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -176,7 +176,7 @@ export default function AdminUserDetailPage() {
   const [saveMsg, setSaveMsg] = useState("");
   const [tab, setTab] = useState<TabKey>("funnels");
   const [mobileTabSheetOpen, setMobileTabSheetOpen] = useState(false);
-  const [confirmModal, setConfirmModal] = useState<"suspend" | "unsuspend" | "delete" | null>(null);
+  const [confirmModal, setConfirmModal] = useState<"suspend" | "unsuspend" | "delete" | "end_trial" | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
   const [actionMsg, setActionMsg] = useState("");
   const [extendDays, setExtendDays] = useState(7);
@@ -308,12 +308,10 @@ export default function AdminUserDetailPage() {
   }
 
   async function handleEndTrial() {
-    const warning = endSkipGrace
-      ? "End this user's trial now AND take their public pages offline immediately? Use Extend trial to undo."
-      : "End this user's trial now? Their dashboard locks at once; public pages stay live for 7 days. Use Extend trial to undo.";
-    if (!window.confirm(warning)) return;
     setEndingTrial(true);
+    setActionLoading(true);
     setExtendMsg("");
+    setActionMsg("");
     try {
       const res = await fetch(`/api/admin/users/${encodeURIComponent(email)}`, {
         method: "PATCH",
@@ -324,10 +322,12 @@ export default function AdminUserDetailPage() {
       if (!res.ok) throw new Error(data.error || "Could not end the trial");
       setUser((prev) => (prev ? { ...prev, access: data.access } : prev));
       setExtendMsg(endSkipGrace ? "Trial ended. Public pages are offline." : "Trial ended. Public pages stay live for 7 days.");
+      setConfirmModal(null);
     } catch (err: any) {
-      setExtendMsg(err.message);
+      setActionMsg(err.message || "Failed to end trial");
     } finally {
       setEndingTrial(false);
+      setActionLoading(false);
       setTimeout(() => setExtendMsg(""), 5000);
     }
   }
@@ -1208,7 +1208,7 @@ export default function AdminUserDetailPage() {
                       <span className="mx-1 h-5 w-px bg-zinc-200 dark:bg-white/10" aria-hidden="true" />
                       <button
                         type="button"
-                        onClick={handleEndTrial}
+                        onClick={() => { setActionMsg(""); setConfirmModal("end_trial"); }}
                         disabled={endingTrial}
                         className="h-8 rounded-lg border border-red-200 dark:border-red-500/30 bg-red-50 dark:bg-red-500/10 hover:bg-red-100 dark:hover:bg-red-500/20 px-3 text-xs font-semibold text-red-600 dark:text-red-400 transition disabled:opacity-60 cursor-pointer"
                       >
@@ -1287,8 +1287,9 @@ export default function AdminUserDetailPage() {
             >
               <div className="sm:hidden w-10 h-1 bg-zinc-300 dark:bg-white/20 rounded-full mx-auto mb-3" />
               <div className="flex items-center gap-3 mb-4">
-                <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${confirmModal === "delete" ? "bg-red-100 dark:bg-red-500/15" : confirmModal === "suspend" ? "bg-amber-100 dark:bg-amber-500/15" : "bg-emerald-100 dark:bg-emerald-500/15"}`}>
+                <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${confirmModal === "delete" || confirmModal === "end_trial" ? "bg-red-100 dark:bg-red-500/15" : confirmModal === "suspend" ? "bg-amber-100 dark:bg-amber-500/15" : "bg-emerald-100 dark:bg-emerald-500/15"}`}>
                   {confirmModal === "delete" && <Trash2 className="w-5 h-5 text-red-600 dark:text-red-400" />}
+                  {confirmModal === "end_trial" && <Clock className="w-5 h-5 text-red-600 dark:text-red-400" />}
                   {confirmModal === "suspend" && <ShieldOff className="w-5 h-5 text-amber-600 dark:text-amber-400" />}
                   {confirmModal === "unsuspend" && <ShieldCheck className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />}
                 </div>
@@ -1297,6 +1298,7 @@ export default function AdminUserDetailPage() {
                     {confirmModal === "suspend" && "Suspend Account"}
                     {confirmModal === "unsuspend" && "Unsuspend Account"}
                     {confirmModal === "delete" && "Delete Account"}
+                    {confirmModal === "end_trial" && "End Free Trial"}
                   </h3>
                   <p className="text-xs text-zinc-400 dark:text-zinc-500 truncate">{user.email}</p>
                 </div>
@@ -1311,6 +1313,16 @@ export default function AdminUserDetailPage() {
                 )}
                 {confirmModal === "delete" && (
                   <>Permanently delete <strong className="text-zinc-900 dark:text-white">{user.name}</strong> and <strong>all their data</strong> — funnels, leads, assets, sequences. <span className="text-red-500 font-semibold">This cannot be undone.</span></>
+                )}
+                {confirmModal === "end_trial" && (
+                  <>
+                    End the 14-day free trial for <strong className="text-zinc-900 dark:text-white">{user.name}</strong> immediately. Their dashboard will be locked behind the upgrade paywall.
+                    {endSkipGrace ? (
+                      <span className="block mt-2 text-red-500 font-semibold">Public landing pages will also go offline immediately.</span>
+                    ) : (
+                      <span className="block mt-2 text-zinc-500 dark:text-zinc-400">Public landing pages will remain live for the 7-day grace period. You can extend or restore their trial anytime.</span>
+                    )}
+                  </>
                 )}
               </p>
 
@@ -1332,16 +1344,21 @@ export default function AdminUserDetailPage() {
                 </button>
                 <button
                   type="button"
-                  onClick={() => confirmModal === "delete" ? handleDelete() : handleSuspend(confirmModal)}
+                  onClick={() => {
+                    if (confirmModal === "delete") handleDelete();
+                    else if (confirmModal === "end_trial") handleEndTrial();
+                    else handleSuspend(confirmModal);
+                  }}
                   disabled={actionLoading}
                   className={`w-full sm:w-auto px-4 py-2.5 text-xs sm:text-sm font-semibold rounded-xl text-white transition-colors disabled:opacity-50 cursor-pointer ${
-                    confirmModal === "delete" ? "bg-red-600 hover:bg-red-700" :
+                    confirmModal === "delete" || confirmModal === "end_trial" ? "bg-red-600 hover:bg-red-700" :
                     confirmModal === "suspend" ? "bg-amber-500 hover:bg-amber-600" :
                     "bg-emerald-600 hover:bg-emerald-700"
                   }`}
                 >
                   {actionLoading ? "Please wait…" :
                     confirmModal === "delete" ? "Yes, Delete Everything" :
+                    confirmModal === "end_trial" ? "Yes, End Trial Now" :
                     confirmModal === "suspend" ? "Yes, Suspend" :
                     "Yes, Restore Access"}
                 </button>

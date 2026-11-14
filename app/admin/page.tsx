@@ -49,6 +49,10 @@ interface Stats {
   totalMagnets: number;
   totalLeads: number;
   byPlan: Record<string, number>;
+  /** Trial / trial ended / Pro monthly / super admin (lib/subscription.ts) */
+  byAccess?: { trial: number; expired: number; pro: number; staff: number };
+  /** Separate ₹4,999 one-time add-on (non-staff accounts) */
+  customDomainUnlocked?: number;
   byRole: Record<string, number>;
   storage?: StorageStats;
 }
@@ -113,19 +117,13 @@ function getAvatarPalette(seed: string): string {
   return AVATAR_PALETTES[Math.abs(hash) % AVATAR_PALETTES.length];
 }
 
-const PLAN_ORDER = ["Free", "Pro", "Growth", "Unlimited"];
-const PLAN_COLORS: Record<string, string> = {
-  Free: "bg-zinc-100 text-zinc-600 dark:bg-white/10 dark:text-zinc-400",
-  Pro: "bg-[#0066B2]/10 text-[#0066B2] dark:bg-[#0066B2]/20 dark:text-[#38BDF8]",
-  Growth: "bg-purple-50 text-purple-700 dark:bg-purple-500/15 dark:text-purple-400",
-  Unlimited: "bg-amber-50 text-amber-700 dark:bg-amber-500/15 dark:text-amber-400",
-};
-const PLAN_BAR: Record<string, string> = {
-  Free: "bg-zinc-300 dark:bg-zinc-600",
-  Pro: "bg-[#0066B2] dark:bg-[#38BDF8]",
-  Growth: "bg-purple-500",
-  Unlimited: "bg-amber-500",
-};
+// Users by plan: the real model is a 14-day trial, then Pro at ₹299/month (lib/subscription.ts)
+const ACCESS_ROWS: { key: "trial" | "expired" | "pro" | "staff"; label: string; chip: string; bar: string }[] = [
+  { key: "trial", label: "Free trial", chip: "bg-zinc-100 text-zinc-600 dark:bg-white/10 dark:text-zinc-300", bar: "bg-zinc-400 dark:bg-zinc-500" },
+  { key: "expired", label: "Trial ended", chip: "bg-red-50 text-red-600 dark:bg-red-500/15 dark:text-red-400", bar: "bg-red-400 dark:bg-red-500" },
+  { key: "pro", label: "Pro · ₹299/month", chip: "bg-[#0066B2]/10 text-[#0066B2] dark:bg-[#0066B2]/20 dark:text-[#38BDF8]", bar: "bg-[#0066B2] dark:bg-[#38BDF8]" },
+  { key: "staff", label: "Super Admin", chip: "bg-purple-50 text-purple-700 dark:bg-purple-500/15 dark:text-purple-400", bar: "bg-purple-500" },
+];
 const ROLE_COLORS: Record<string, string> = {
   user: "bg-zinc-100 text-zinc-600 dark:bg-white/10 dark:text-zinc-400",
   super_admin: "bg-red-50 text-red-700 dark:bg-red-500/15 dark:text-red-400",
@@ -363,7 +361,8 @@ export default function AdminOverviewPage() {
     );
   }
 
-  const totalPlanUsers = Object.values(stats.byPlan).reduce((a, b) => a + b, 0) || 1;
+  const byAccess = stats.byAccess || { trial: 0, expired: 0, pro: 0, staff: 0 };
+  const totalPlanUsers = Object.values(byAccess).reduce((a, b) => a + b, 0) || 1;
   const totalRoleUsers = Object.values(stats.byRole).reduce((a, b) => a + b, 0) || 1;
   const storage = stats.storage;
 
@@ -445,14 +444,14 @@ export default function AdminOverviewPage() {
             </div>
 
             <div className="space-y-3">
-              {PLAN_ORDER.map((plan) => {
-                const count = stats.byPlan[plan] || 0;
+              {ACCESS_ROWS.map((row) => {
+                const count = byAccess[row.key] || 0;
                 const pct = Math.round((count / totalPlanUsers) * 100);
                 return (
-                  <div key={plan} className="space-y-1.5">
+                  <div key={row.key} className="space-y-1.5">
                     <div className="flex items-center justify-between text-xs">
-                      <span className={`font-semibold px-2 py-0.5 rounded-md ${PLAN_COLORS[plan]}`}>
-                        {plan}
+                      <span className={`font-semibold px-2 py-0.5 rounded-md ${row.chip}`}>
+                        {row.label}
                       </span>
                       <span className="font-bold text-zinc-800 dark:text-zinc-200 tabular-nums">
                         {count.toLocaleString()}{" "}
@@ -466,12 +465,22 @@ export default function AdminOverviewPage() {
                         initial={false}
                         animate={{ width: `${pct}%` }}
                         transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-                        className={`h-full rounded-full ${PLAN_BAR[plan]}`}
+                        className={`h-full rounded-full ${row.bar}`}
                       />
                     </div>
                   </div>
                 );
               })}
+              {/* Separate one-time add-on, not a plan: shown on its own line */}
+              <div className="flex items-center justify-between border-t border-zinc-100 dark:border-white/[0.06] pt-3 text-xs">
+                <span className="font-semibold px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-400">
+                  Custom domain · ₹4,999 one-time
+                </span>
+                <span className="font-bold text-zinc-800 dark:text-zinc-200 tabular-nums">
+                  {(stats.customDomainUnlocked || 0).toLocaleString()}{" "}
+                  <span className="font-normal text-zinc-400 dark:text-zinc-500">add-on</span>
+                </span>
+              </div>
             </div>
           </div>
         </div>

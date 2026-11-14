@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Clock, Lock, Check, Settings, LogOut, X } from "lucide-react";
+import UpgradeToProButton from "@/components/dashboard/upgrade-to-pro-button";
 import {
   PRO_MONTHLY_DISPLAY_PRICE,
   TRIAL_DAYS,
@@ -101,9 +102,12 @@ export function TrialBanner({ access }: { access: AccountAccess | null }) {
         <Clock className="h-3.5 w-3.5" aria-hidden="true" />
         {days <= 1 ? "Your free trial ends today" : `Your free trial ends in ${days} days`}
       </span>
-      <Link href="/checkout" className="rounded-md bg-amber-600 px-2.5 py-1 font-semibold text-white transition hover:bg-amber-700">
+      <UpgradeToProButton
+        className="inline-flex items-center gap-1.5 rounded-md bg-amber-600 px-2.5 py-1 font-semibold text-white transition hover:bg-amber-700"
+        errorClassName="mt-1 text-[11px] text-red-700 dark:text-red-300"
+      >
         Upgrade · {PRO_MONTHLY_DISPLAY_PRICE}/month
-      </Link>
+      </UpgradeToProButton>
       <Link href="/dashboard/settings?tab=billing" className="font-medium underline-offset-2 hover:underline">
         View plan
       </Link>
@@ -211,12 +215,11 @@ function PaywallCard({ access, onSignOut }: { access: AccountAccess; onSignOut: 
 
         {pagesNote && <p className="mt-4 text-xs text-zinc-500 dark:text-zinc-400">{pagesNote}</p>}
 
-        <Link
-          href="/checkout"
-          className="mt-5 inline-flex w-full items-center justify-center rounded-xl bg-[#0066B2] hover:bg-[#005799] py-3 text-sm font-semibold text-white transition shadow-md"
-        >
-          Upgrade to Pro · {PRO_MONTHLY_DISPLAY_PRICE}/month
-        </Link>
+        <div className="mt-5 [&>span]:flex [&>span]:w-full">
+          <UpgradeToProButton className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#0066B2] hover:bg-[#005799] py-3 text-sm font-semibold text-white transition shadow-md">
+            Upgrade to Pro · {PRO_MONTHLY_DISPLAY_PRICE}/month
+          </UpgradeToProButton>
+        </div>
         <div className="mt-4 flex items-center justify-center gap-4 text-xs text-zinc-500 dark:text-zinc-400">
           <Link href="/dashboard/settings" className="inline-flex items-center gap-1.5 hover:text-zinc-900 dark:hover:text-white transition">
             <Settings className="h-3.5 w-3.5" aria-hidden="true" />

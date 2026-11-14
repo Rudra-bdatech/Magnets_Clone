@@ -25,16 +25,23 @@ export async function GET(req: NextRequest) {
   const proto = req.headers.get("x-forwarded-proto") || (reqHost.includes("localhost") ? "http" : "https");
   const appUrl = `${proto}://${reqHost}`;
   const domainPage = `${appUrl}/dashboard/integration`;
+  // Pro monthly lands on Account Settings → Plan & Billing, which shows the new status
+  const billingPage = `${appUrl}/dashboard/settings?tab=billing`;
+  const withPayment = (base: string, status: string) => {
+    const url = new URL(base);
+    url.searchParams.set("payment", status);
+    return url.toString();
+  };
 
   if (!hostedPageId) {
-    return NextResponse.redirect(`${domainPage}?payment=error`);
+    return NextResponse.redirect(withPayment(domainPage, "error"));
   }
 
   try {
     const cb = getChargebeeClient();
     if (!cb) {
       // If no keys — still redirect to integration; webhook will handle the upgrade
-      return NextResponse.redirect(`${domainPage}?payment=pending`);
+      return NextResponse.redirect(withPayment(domainPage, "pending"));
     }
 
     // Retrieve and verify the hosted page to confirm payment status
@@ -49,16 +56,16 @@ export async function GET(req: NextRequest) {
 
     const isProMonthly = pageHasItem(content, new Set([PLAN_PRICING.PRO_MONTHLY_INR.itemPriceId]));
     const isCustomDomain = !isProMonthly && pageHasItem(content, new Set(CUSTOM_DOMAIN_ITEM_PRICE_IDS));
-    const returnUrl = isProMonthly || passThru.product === "pro_monthly" ? `${appUrl}/dashboard` : domainPage;
+    const returnUrl = isProMonthly || passThru.product === "pro_monthly" ? billingPage : domainPage;
 
     if (page.state !== "succeeded") {
       console.warn("[Chargebee Success]: Page not in succeeded state:", page.state);
-      return NextResponse.redirect(`${returnUrl}?payment=pending`);
+      return NextResponse.redirect(withPayment(returnUrl, "pending"));
     }
 
     const userEmail: string | null = passThru.userEmail || content.customer?.email || null;
     if (!userEmail) {
-      return NextResponse.redirect(`${returnUrl}?payment=pending`);
+      return NextResponse.redirect(withPayment(returnUrl, "pending"));
     }
     await dbConnect();
     const email = userEmail.trim().toLowerCase();
@@ -73,7 +80,7 @@ export async function GET(req: NextRequest) {
       if (content.invoice?.id) set.chargebeeInvoiceId = content.invoice.id;
       await AccountModel.updateOne({ email }, { $set: set });
       console.log(`[Chargebee Success]: Custom domain unlocked for ${email}`);
-      return NextResponse.redirect(`${domainPage}?payment=success`);
+      return NextResponse.redirect(withPayment(domainPage, "success"));
     }
 
     // ── Pro monthly: only a live subscription grants Pro here ──
@@ -104,15 +111,15 @@ export async function GET(req: NextRequest) {
           ? `[Chargebee Success]: Upgraded ${email} → Pro`
           : `[Chargebee Success]: ${email} already has a newer subscription state`
       );
-      return NextResponse.redirect(`${appUrl}/dashboard?payment=success`);
+      return NextResponse.redirect(withPayment(billingPage, "success"));
     }
 
     console.warn("[Chargebee Success]: hosted page is not a recognised paid product; left to the webhook", {
       hostedPageId,
     });
-    return NextResponse.redirect(`${returnUrl}?payment=pending`);
+    return NextResponse.redirect(withPayment(returnUrl, "pending"));
   } catch (error: any) {
     console.error("[Chargebee Success Error]:", error);
-    return NextResponse.redirect(`${domainPage}?payment=error`);
+    return NextResponse.redirect(withPayment(domainPage, "error"));
   }
 }

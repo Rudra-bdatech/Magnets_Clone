@@ -4,6 +4,7 @@ import { v2 as cloudinary } from "cloudinary";
 import { dbConnect } from "@/lib/mongodb";
 import { AccountModel, MagnetPageModel, LeadModel, ResourceModel } from "@/lib/models";
 import { requireAdmin, isAdminSession } from "@/lib/admin-auth";
+import { getAccountAccess, hasCustomDomainAccess } from "@/lib/subscription";
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -54,6 +55,7 @@ export async function GET() {
     newUsersLast30,
     byPlan,
     byRole,
+    accessDocs,
     dbStorageAgg,
     topUsersAgg,
     categoryAgg,
@@ -65,6 +67,11 @@ export async function GET() {
     AccountModel.countDocuments({ _id: { $gte: minId } }),
     AccountModel.aggregate([{ $group: { _id: "$plan", count: { $sum: 1 } } }]),
     AccountModel.aggregate([{ $group: { _id: "$role", count: { $sum: 1 } } }]),
+    // Only the fields the trial/subscription rules read (lib/subscription.ts)
+    AccountModel.find(
+      {},
+      { _id: 0, email: 1, role: 1, plan: 1, trialEndsAt: 1, trialReused: 1, subscriptionStatus: 1, currentPeriodEnd: 1, lifetimeCustomDomain: 1 }
+    ).lean(),
     ResourceModel.aggregate([
       { $group: { _id: null, totalBytes: { $sum: "$size" }, totalFiles: { $sum: 1 } } },
     ]),
@@ -105,6 +112,16 @@ export async function GET() {
 
   const byPlanMap: Record<string, number> = {};
   byPlan.forEach((p: any) => { byPlanMap[p._id || "Free"] = p.count; });
+
+  // Users by plan, using the same rules as the rest of the app: trial / trial ended / Pro monthly /
+  // super admin. The custom domain is a separate one-time add-on, counted on its own.
+  const byAccess = { trial: 0, expired: 0, pro: 0, staff: 0 };
+  let customDomainUnlocked = 0;
+  for (const acc of accessDocs as any[]) {
+    const state = getAccountAccess(acc).state;
+    byAccess[state] += 1;
+    if (state !== "staff" && hasCustomDomainAccess(acc)) customDomainUnlocked += 1;
+  }
 
   const byRoleMap: Record<string, number> = {};
   byRole.forEach((r: any) => { byRoleMap[r._id || "user"] = r.count; });
@@ -172,6 +189,8 @@ export async function GET() {
     totalMagnets,
     totalLeads,
     byPlan: byPlanMap,
+    byAccess,
+    customDomainUnlocked,
     byRole: byRoleMap,
     storage: {
       totalBytes,

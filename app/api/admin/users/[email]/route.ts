@@ -13,7 +13,8 @@ import { trialEmailHash } from "@/lib/subscription-server";
 const MAX_TRIAL_EXTENSION_DAYS = 90;
 const DAY_MS = 24 * 60 * 60 * 1000;
 
-const ALLOWED_PLANS = ["Free", "Pro", "Growth", "Unlimited"];
+// Growth / Unlimited were never sold; the real model is trial → Pro ₹299/month (lib/subscription.ts)
+const ALLOWED_PLANS = ["Free", "Pro"];
 const ALLOWED_ROLES = ["user", "super_admin"];
 
 export async function GET(

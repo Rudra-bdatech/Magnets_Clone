@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Check, Clock, CreditCard, Globe, Loader2, Lock, ShieldCheck } from "lucide-react";
 import { PRO_MONTHLY_DISPLAY_PRICE, TRIAL_DAYS, type AccountAccess } from "@/lib/subscription";
+import UpgradeToProButton from "@/components/dashboard/upgrade-to-pro-button";
 
 /**
  * Account Settings → Plan & Billing. The one calm place that shows the trial, the Pro monthly
@@ -169,7 +170,7 @@ export default function PlanBillingPanel() {
                 </p>
                 {access.trialEndsAt && <TrialCalendar trialEndsAt={access.trialEndsAt} daysLeft={access.trialDaysLeft} />}
                 <div className="mt-5 flex flex-wrap items-center gap-3">
-                  <Link href="/checkout" className={primaryBtn}>Upgrade to Pro · {PRO_MONTHLY_DISPLAY_PRICE}/month</Link>
+                  <UpgradeToProButton className={primaryBtn}>Upgrade to Pro · {PRO_MONTHLY_DISPLAY_PRICE}/month</UpgradeToProButton>
                   <span className="text-xs text-zinc-500 dark:text-zinc-400">GST included · cancel anytime</span>
                 </div>
               </>
@@ -189,7 +190,7 @@ export default function PlanBillingPanel() {
                 </p>
                 {access.cancelsAtPeriodEnd && (
                   <div className="mt-5">
-                    <Link href="/checkout" className={secondaryBtn}>Subscribe again</Link>
+                    <UpgradeToProButton className={secondaryBtn}>Subscribe again</UpgradeToProButton>
                   </div>
                 )}
               </>
@@ -210,7 +211,7 @@ export default function PlanBillingPanel() {
                       : ""}
                 </p>
                 <div className="mt-5">
-                  <Link href="/checkout" className={primaryBtn}>Upgrade to Pro · {PRO_MONTHLY_DISPLAY_PRICE}/month</Link>
+                  <UpgradeToProButton className={primaryBtn}>Upgrade to Pro · {PRO_MONTHLY_DISPLAY_PRICE}/month</UpgradeToProButton>
                 </div>
               </>
             )}
