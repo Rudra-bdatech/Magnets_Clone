@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { motion, useReducedMotion, type Variants } from "framer-motion";
 import { ArrowRight, Check, CircleCheck, Clock, Globe, Lock, ShieldCheck, Sparkles } from "lucide-react";
 import { PRO_MONTHLY_DISPLAY_PRICE, TRIAL_DAYS, type AccountAccess } from "@/lib/subscription";
 import UpgradeToProButton from "@/components/dashboard/upgrade-to-pro-button";
@@ -28,6 +29,7 @@ const DAY_MS = 24 * 60 * 60 * 1000;
  * the last day flagged. An admin-extended trial simply shows more cells.
  */
 function TrialCalendar({ trialEndsAt, daysLeft, compact = false }: { trialEndsAt: string; daysLeft: number; compact?: boolean }) {
+  const reduceMotion = useReducedMotion();
   // Work in calendar days, so the last cell is the date the trial ends (matches "ends 21 Nov")
   const midnight = (ms: number) => {
     const d = new Date(ms);
@@ -61,7 +63,9 @@ function TrialCalendar({ trialEndsAt, daysLeft, compact = false }: { trialEndsAt
     <div className={compact ? "shrink-0" : "mt-5"}>
       <ol className={`grid grid-cols-7 gap-1.5 ${compact ? "w-full sm:w-[308px]" : "w-full max-w-[460px]"}`} aria-label={`Free trial: ${used} days used, today, ${leftAfterToday} days left, ends ${days[totalDays - 1].day} ${days[totalDays - 1].month}`}>
         {days.map((d) => {
-          const base = `relative flex aspect-square flex-col items-center justify-center border text-center transition-colors ${compact ? "rounded-lg" : "rounded-xl"}`;
+          const base = `relative flex flex-col items-center border text-center transition-colors ${
+            compact ? "h-14 justify-start rounded-lg pt-1.5" : "aspect-square justify-center rounded-xl"
+          }`;
           const tone =
             d.state === "used"
               ? "border-transparent bg-zinc-100/70 text-zinc-400 dark:bg-white/[0.03] dark:text-zinc-600"
@@ -75,7 +79,15 @@ function TrialCalendar({ trialEndsAt, daysLeft, compact = false }: { trialEndsAt
                     : "border-dashed border-zinc-300 text-zinc-900 dark:border-white/20 dark:text-white"
                   : "border-zinc-200 bg-white text-zinc-900 dark:border-white/[0.08] dark:bg-white/[0.02] dark:text-white";
           return (
-            <li key={d.i} className={`${base} ${tone}`} aria-current={d.state === "today" ? "date" : undefined}>
+            <motion.li
+              key={d.i}
+              custom={d.i}
+              variants={dayVariants}
+              initial={reduceMotion ? false : "hidden"}
+              animate="show"
+              className={`${base} ${tone}`}
+              aria-current={d.state === "today" ? "date" : undefined}
+            >
               <span className="text-[9px] font-semibold uppercase leading-none tracking-wide opacity-70">
                 {d.isFirstOfMonth ? d.month : d.weekday}
               </span>
@@ -92,7 +104,7 @@ function TrialCalendar({ trialEndsAt, daysLeft, compact = false }: { trialEndsAt
                   Ends
                 </span>
               )}
-            </li>
+            </motion.li>
           );
         })}
       </ol>
@@ -104,6 +116,22 @@ function TrialCalendar({ trialEndsAt, daysLeft, compact = false }: { trialEndsAt
     </div>
   );
 }
+
+const EASE = [0.16, 1, 0.3, 1] as const;
+/** Cards rise in one after another; their contents follow. */
+const rowVariants: Variants = { hidden: {}, show: { transition: { staggerChildren: 0.08 } } };
+const cardVariants: Variants = {
+  hidden: { opacity: 0, y: 18, scale: 0.985 },
+  show: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.5, ease: EASE, staggerChildren: 0.05, delayChildren: 0.18 } },
+};
+const featureVariants: Variants = {
+  hidden: { opacity: 0, x: -6 },
+  show: { opacity: 1, x: 0, transition: { duration: 0.35, ease: EASE } },
+};
+const dayVariants: Variants = {
+  hidden: { opacity: 0, scale: 0.8 },
+  show: (i: number) => ({ opacity: 1, scale: 1, transition: { delay: 0.25 + i * 0.03, duration: 0.3, ease: EASE } }),
+};
 
 const CHIP_TONES = {
   blue: "bg-[#0066B2]/10 text-[#0066B2] dark:bg-[#38BDF8]/10 dark:text-[#38BDF8]",
@@ -131,10 +159,10 @@ const CUSTOM_DOMAIN_BENEFITS = [
 
 function Feature({ children, dark }: { children: React.ReactNode; dark?: boolean }) {
   return (
-    <li className="flex gap-2.5 text-sm">
+    <motion.li variants={featureVariants} className="flex gap-2.5 text-sm">
       <Check className={`mt-0.5 h-4 w-4 shrink-0 ${dark ? "text-[#38BDF8]" : "text-[#0066B2] dark:text-[#38BDF8]"}`} aria-hidden="true" />
       <span>{children}</span>
-    </li>
+    </motion.li>
   );
 }
 
@@ -149,6 +177,7 @@ const outlineCta =
 export default function PlanBillingPanel() {
   const [status, setStatus] = useState<BillingStatus | null>(null);
   const [failed, setFailed] = useState(false);
+  const reduceMotion = useReducedMotion();
 
   useEffect(() => {
     let alive = true;
@@ -258,9 +287,15 @@ export default function PlanBillingPanel() {
   const highlightPro = !isStaff && !isPaidPro;
 
   return (
-    <div className="grid gap-4 lg:grid-cols-3">
+    <motion.div
+      className="grid gap-4 lg:grid-cols-3"
+      variants={rowVariants}
+      initial={reduceMotion ? false : "hidden"}
+      animate="show"
+    >
       {/* ── 1. Your plan: same structure as the product cards, so the three read as one row ── */}
-      <section
+      <motion.section
+        variants={cardVariants}
         className={`relative flex flex-col overflow-hidden rounded-2xl border bg-white p-6 sm:p-7 dark:bg-[#121215] ${
           access.state === "expired"
             ? "border-red-500/25 bg-gradient-to-b from-red-500/[0.06] to-white dark:to-[#121215]"
@@ -303,11 +338,12 @@ export default function PlanBillingPanel() {
         <p className="mt-7 border-t border-zinc-100 pt-4 text-xs leading-relaxed text-zinc-500 dark:border-white/[0.06] dark:text-zinc-400">
           {footNote}
         </p>
-      </section>
+      </motion.section>
 
       {/* ── 2 & 3. The two products ── */}
         {/* Pro monthly */}
-        <section
+        <motion.section
+          variants={cardVariants}
           className={`relative flex flex-col overflow-hidden rounded-2xl border p-6 sm:p-7 ${
             highlightPro
               ? "border-[#0066B2]/40 bg-gradient-to-b from-[#0066B2]/[0.07] to-white shadow-[0_0_0_1px_rgba(0,102,178,0.08),0_20px_40px_-20px_rgba(0,102,178,0.35)] dark:border-[#38BDF8]/30 dark:from-[#38BDF8]/[0.08] dark:to-[#121215]"
@@ -345,9 +381,9 @@ export default function PlanBillingPanel() {
           <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">GST included · cancel anytime</p>
 
           <div className="my-6 h-px bg-zinc-100 dark:bg-white/[0.06]" />
-          <ul className="flex-1 space-y-3 text-zinc-700 dark:text-zinc-300">
+          <motion.ul variants={rowVariants} className="flex-1 space-y-3 text-zinc-700 dark:text-zinc-300">
             {PRO_BENEFITS.map((f) => <Feature key={f}>{f}</Feature>)}
-          </ul>
+          </motion.ul>
 
           <div className="mt-7 [&>span]:flex [&>span]:w-full">
             {isStaff ? (
@@ -362,10 +398,11 @@ export default function PlanBillingPanel() {
               </UpgradeToProButton>
             )}
           </div>
-        </section>
+        </motion.section>
 
         {/* Custom domain: separate one-time add-on */}
-        <section
+        <motion.section
+          variants={cardVariants}
           className="relative flex flex-col overflow-hidden rounded-2xl bg-zinc-950 p-6 sm:p-7 text-white ring-1 ring-zinc-900 dark:bg-[#0b1a2b] dark:ring-[#38BDF8]/25"
           aria-label="Custom domain add-on"
         >
@@ -392,9 +429,9 @@ export default function PlanBillingPanel() {
           <p className="relative mt-1 text-xs text-zinc-400">Lifetime access · separate from Pro</p>
 
           <div className="relative my-6 h-px bg-white/10" />
-          <ul className="relative flex-1 space-y-3 text-zinc-200">
+          <motion.ul variants={rowVariants} className="relative flex-1 space-y-3 text-zinc-200">
             {CUSTOM_DOMAIN_BENEFITS.map((f) => <Feature key={f} dark>{f}</Feature>)}
-          </ul>
+          </motion.ul>
 
           <Link
             href="/dashboard/integration"
@@ -405,7 +442,7 @@ export default function PlanBillingPanel() {
             {customDomainUnlocked ? "Manage domain" : "Unlock custom domain"}
             <ArrowRight className="h-4 w-4" aria-hidden="true" />
           </Link>
-        </section>
-    </div>
+        </motion.section>
+    </motion.div>
   );
 }
