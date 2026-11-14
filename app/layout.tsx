@@ -60,8 +60,12 @@ export const metadata: Metadata = {
     images: ["/og-image.png"],
   },
   icons: {
-    icon: "/brand/funnels-mark-light.png",
-    apple: "/brand/funnels-mark-light.png",
+    icon: [
+      { url: "/brand/funnels-mark-light.png" },
+    ],
+    apple: [
+      { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
+    ],
   },
 };
 

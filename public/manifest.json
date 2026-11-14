@@ -8,14 +8,16 @@
   "theme_color": "#0f0f11",
   "icons": [
     {
-      "src": "/brand/gemini-logo-dark.webp",
+      "src": "/brand/icon-192.png",
       "sizes": "192x192",
-      "type": "image/webp"
+      "type": "image/png",
+      "purpose": "any maskable"
     },
     {
-      "src": "/brand/gemini-logo-dark.webp",
+      "src": "/brand/icon-512.png",
       "sizes": "512x512",
-      "type": "image/webp"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ]
 }
