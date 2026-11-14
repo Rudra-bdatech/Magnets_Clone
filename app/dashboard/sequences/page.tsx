@@ -2255,7 +2255,7 @@ export default function SequencesPage() {
                     Sequence Name *
                   </label>
                   <input
-                    autoFocus
+                    autoFocus={!isMobile}
                     type="text"
                     value={newSeqName}
                     onChange={(e) => setNewSeqName(e.target.value)}

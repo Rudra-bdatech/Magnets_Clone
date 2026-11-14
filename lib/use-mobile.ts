@@ -2,10 +2,11 @@
 
 import { useState, useEffect } from "react";
 
-export function useIsMobile(breakpoint = 640): boolean {
+export function useIsMobile(breakpoint = 768): boolean {
   const [isMobile, setIsMobile] = useState<boolean>(() => {
     if (typeof window !== "undefined") {
-      return window.innerWidth < breakpoint;
+      const isTouch = window.matchMedia("(pointer: coarse)").matches;
+      return window.innerWidth < breakpoint || isTouch;
     }
     return false;
   });
@@ -13,10 +14,15 @@ export function useIsMobile(breakpoint = 640): boolean {
   useEffect(() => {
     if (typeof window === "undefined") return;
     const mql = window.matchMedia(`(max-width: ${breakpoint - 1}px)`);
-    const onChange = () => setIsMobile(mql.matches);
-    setIsMobile(mql.matches);
+    const mqlTouch = window.matchMedia("(pointer: coarse)");
+    const onChange = () => setIsMobile(mql.matches || mqlTouch.matches);
+    setIsMobile(mql.matches || mqlTouch.matches);
     mql.addEventListener("change", onChange);
-    return () => mql.removeEventListener("change", onChange);
+    mqlTouch.addEventListener("change", onChange);
+    return () => {
+      mql.removeEventListener("change", onChange);
+      mqlTouch.removeEventListener("change", onChange);
+    };
   }, [breakpoint]);
 
   return isMobile;

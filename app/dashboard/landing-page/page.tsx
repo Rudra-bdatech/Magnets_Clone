@@ -1533,7 +1533,7 @@ export default function PagesPage() {
                   <label className="block text-xs font-semibold text-zinc-700 dark:text-zinc-300">Page name</label>
                   <input
                     type="text"
-                    autoFocus
+                    autoFocus={!isMobile}
                     value={newName}
                     onChange={(e) => setNewName(e.target.value)}
                     placeholder="AI Pipeline Playbook"

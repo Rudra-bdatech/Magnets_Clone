@@ -40,6 +40,7 @@ import { getPlanLimits } from "@/lib/plan-limits";
 import type { Account, MagnetPage, Lead, Sequence } from "@/lib/data";
 import { parseFlexibleDate, formatRelativeTime } from "@/lib/utils";
 import { useSidebar } from "@/components/dashboard/dashboard-shell";
+import { useIsMobile } from "@/lib/use-mobile";
 
 // ─────────────────────────────────────────────
 // Sparkline helpers
@@ -289,6 +290,7 @@ export default function DashboardHome({
 }) {
   const { isCollapsed } = useSidebar();
   const router = useRouter();
+  const isMobile = useIsMobile();
   const [account, setAccount] = useState<Account | null>(initialAccount);
   const [pages, setPages] = useState<MagnetPage[]>([]);
   const [leads, setLeads] = useState<Lead[]>([]);
@@ -1159,7 +1161,7 @@ export default function DashboardHome({
                   </label>
                   <input
                     type="text"
-                    autoFocus
+                    autoFocus={!isMobile}
                     value={createMagnetName}
                     onChange={(e) => setCreateMagnetName(e.target.value)}
                     onKeyDown={(e) => {

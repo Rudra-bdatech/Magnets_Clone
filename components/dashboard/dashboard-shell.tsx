@@ -1801,7 +1801,7 @@ export default function DashboardShell({
                     <label className="text-xs font-semibold text-zinc-700 dark:text-[#d4c8bc]">Page name</label>
                     <input
                       type="text"
-                      autoFocus
+                      autoFocus={!isMobile}
                       value={createMagnetName}
                       onChange={(e) => setCreateMagnetName(e.target.value)}
                       placeholder={
