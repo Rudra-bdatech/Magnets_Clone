@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
 import {
   ArrowLeft, Mail, Calendar, Globe, CreditCard, ExternalLink,
@@ -105,6 +105,186 @@ const ROLE_LABELS: Record<string, string> = {
   user: "User",
   super_admin: "Super Admin",
 };
+
+const PLAN_COLORS: Record<string, string> = {
+  Free: "bg-zinc-100 text-zinc-700 dark:bg-white/10 dark:text-zinc-300",
+  Pro: "bg-[#0066B2]/10 text-[#0066B2] dark:bg-[#0066B2]/20 dark:text-[#38BDF8]",
+};
+
+const ROLE_COLORS: Record<string, string> = {
+  user: "bg-zinc-100 text-zinc-700 dark:bg-white/10 dark:text-zinc-300",
+  super_admin: "bg-red-50 text-red-700 dark:bg-red-500/15 dark:text-red-400",
+};
+
+interface AdminSelectOption<T extends string | number> {
+  value: T;
+  label?: string;
+  badgeColor?: string;
+  disabled?: boolean;
+}
+
+function AdminSelect<T extends string | number>({
+  value,
+  onChange,
+  options,
+  disabled = false,
+  labels,
+  colorMap,
+  size = "md",
+  className = "",
+  placement = "auto",
+}: {
+  value: T;
+  onChange: (value: T) => void;
+  options: (T | AdminSelectOption<T>)[];
+  disabled?: boolean;
+  labels?: Record<string, string>;
+  colorMap?: Record<string, string>;
+  size?: "sm" | "md";
+  className?: string;
+  placement?: "top" | "bottom" | "auto";
+}) {
+  const [open, setOpen] = useState(false);
+  const [openUpward, setOpenUpward] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const handleClickOutside = (e: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    };
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [open]);
+
+  const toggleOpen = () => {
+    if (disabled) return;
+    if (!open && containerRef.current) {
+      if (placement === "top") {
+        setOpenUpward(true);
+      } else if (placement === "bottom") {
+        setOpenUpward(false);
+      } else {
+        const rect = containerRef.current.getBoundingClientRect();
+        const spaceBelow = window.innerHeight - rect.bottom;
+        const dropdownHeight = options.length * 40 + 20;
+        setOpenUpward(spaceBelow < dropdownHeight && rect.top > dropdownHeight);
+      }
+    }
+    setOpen((prev) => !prev);
+  };
+
+  const normalizedOptions: AdminSelectOption<T>[] = options.map((opt) => {
+    if (typeof opt === "object" && opt !== null && "value" in opt) {
+      return opt as AdminSelectOption<T>;
+    }
+    const val = opt as T;
+    const strVal = String(val);
+    return {
+      value: val,
+      label: labels?.[strVal] || strVal,
+      badgeColor: colorMap?.[strVal],
+    };
+  });
+
+  const selectedOpt = normalizedOptions.find((o) => o.value === value) || {
+    value,
+    label: labels?.[String(value)] || String(value),
+    badgeColor: colorMap?.[String(value)],
+  };
+
+  const isSm = size === "sm";
+
+  return (
+    <div ref={containerRef} className={`relative ${isSm ? "inline-block" : "block"} ${className} ${open ? "z-40" : "z-10"}`}>
+      <button
+        type="button"
+        disabled={disabled}
+        onClick={toggleOpen}
+        className={`flex w-full items-center justify-between gap-2 border transition-all cursor-pointer select-none active:scale-[0.99] ${
+          isSm
+            ? "h-8 px-2.5 rounded-lg text-xs"
+            : "h-10 px-3 py-2 rounded-xl text-xs sm:text-sm font-medium"
+        } ${
+          disabled
+            ? "opacity-60 cursor-not-allowed border-zinc-200/60 dark:border-white/5 bg-zinc-100/50 dark:bg-white/[0.02] text-zinc-400"
+            : open
+            ? "border-[#0066B2] dark:border-[#38BDF8] ring-2 ring-[#0066B2]/20 dark:ring-[#38BDF8]/20 bg-white dark:bg-[#1E1E22] text-zinc-900 dark:text-white"
+            : "border-zinc-200/90 dark:border-white/10 bg-zinc-50/70 hover:bg-zinc-100/80 dark:bg-[#1C1C1F] dark:hover:bg-[#232328] text-zinc-800 dark:text-zinc-200"
+        }`}
+      >
+        <span className="truncate font-medium text-zinc-900 dark:text-white">
+          {selectedOpt.label}
+        </span>
+        <ChevronDown
+          className={`shrink-0 transition-transform duration-200 text-zinc-400 ${
+            isSm ? "h-3.5 w-3.5" : "h-4 w-4"
+          } ${open ? "rotate-180 text-zinc-700 dark:text-zinc-200" : ""}`}
+        />
+      </button>
+
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: openUpward ? 4 : -4 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: openUpward ? 4 : -4 }}
+            transition={{
+              type: "spring",
+              damping: 26,
+              stiffness: 420,
+              mass: 0.5,
+            }}
+            style={{
+              transformOrigin: openUpward ? "bottom left" : "top left",
+            }}
+            className={`absolute ${openUpward ? "bottom-full mb-1.5" : "top-full mt-1.5"} left-0 z-50 min-w-full overflow-hidden rounded-2xl border border-zinc-200/90 dark:border-white/10 bg-white/95 dark:bg-[#1C1C1F]/95 backdrop-blur-2xl p-1.5 shadow-[0_12px_36px_rgba(0,0,0,0.18)] dark:shadow-[0_16px_40px_rgba(0,0,0,0.7)]`}
+          >
+            <div className="space-y-0.5">
+              {normalizedOptions.map((opt) => {
+                const isSelected = opt.value === value;
+                return (
+                  <button
+                    key={String(opt.value)}
+                    type="button"
+                    disabled={opt.disabled}
+                    onClick={() => {
+                      if (!opt.disabled) {
+                        onChange(opt.value);
+                        setOpen(false);
+                      }
+                    }}
+                    className={`flex w-full items-center justify-between gap-2.5 rounded-xl px-2.5 py-2 text-xs sm:text-sm transition-colors cursor-pointer select-none text-left ${
+                      opt.disabled
+                        ? "opacity-40 cursor-not-allowed"
+                        : isSelected
+                        ? "bg-[#0066B2]/10 dark:bg-[#38BDF8]/15 text-[#0066B2] dark:text-[#38BDF8] font-semibold"
+                        : "text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100/80 dark:hover:bg-white/5 active:bg-zinc-200/60 dark:active:bg-white/10"
+                    }`}
+                  >
+                    <span className="truncate">{opt.label}</span>
+                    {isSelected && (
+                      <Check className="h-4 w-4 text-[#0066B2] dark:text-[#38BDF8] shrink-0 stroke-[2.5px]" />
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
 
 const STATUS_COLORS: Record<string, string> = {
   live: "bg-green-50 text-green-700 dark:bg-green-500/15 dark:text-green-400",
@@ -1023,32 +1203,30 @@ export default function AdminUserDetailPage() {
             <h2 className="text-sm font-semibold text-zinc-900 dark:text-white mb-4">Plan & Role</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
               <div>
-                <label className="block text-xs text-zinc-500 dark:text-zinc-400 mb-1 font-medium">Plan</label>
-                <select
+                <label className="block text-xs text-zinc-500 dark:text-zinc-400 mb-1.5 font-medium">Plan</label>
+                <AdminSelect
                   value={plan}
-                  onChange={(e) => setPlan(e.target.value)}
-                  className="w-full text-sm border border-zinc-200 dark:border-white/10 rounded-xl px-3 py-2 bg-zinc-50/50 dark:bg-[#1C1C1F] text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#0066B2]"
-                >
-                  {PLANS.map((p) => <option key={p} value={p}>{p}</option>)}
-                </select>
+                  onChange={(v) => setPlan(v)}
+                  options={PLANS}
+                  colorMap={PLAN_COLORS}
+                  className="w-full"
+                />
               </div>
               <div>
-                <label className="block text-xs text-zinc-500 dark:text-zinc-400 mb-1 font-medium">Role</label>
-                <select
+                <label className="block text-xs text-zinc-500 dark:text-zinc-400 mb-1.5 font-medium">Role</label>
+                <AdminSelect
                   value={role}
-                  onChange={(e) => setRole(e.target.value)}
+                  onChange={(v) => setRole(v)}
                   disabled={user.isDesignatedSuperAdmin}
-                  className="w-full text-sm border border-zinc-200 dark:border-white/10 rounded-xl px-3 py-2 bg-zinc-50/50 dark:bg-[#1C1C1F] text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#0066B2] disabled:opacity-60 disabled:cursor-not-allowed"
-                >
-                  {ROLES.map((r) => (
-                    <option key={r} value={r}>
-                      {ROLE_LABELS[r] || r}
-                      {r === "super_admin" && user.isDesignatedSuperAdmin ? " (System Env)" : ""}
-                    </option>
-                  ))}
-                </select>
+                  options={ROLES.map((r) => ({
+                    value: r,
+                    label: `${ROLE_LABELS[r] || r}${r === "super_admin" && user.isDesignatedSuperAdmin ? " (System Env)" : ""}`,
+                  }))}
+                  colorMap={ROLE_COLORS}
+                  className="w-full"
+                />
                 {user.isDesignatedSuperAdmin && (
-                  <p className="text-[11px] text-zinc-400 mt-1">Designated system super admin configured via environment variables.</p>
+                  <p className="text-[11px] text-zinc-400 mt-1.5">Designated system super admin configured via environment variables.</p>
                 )}
               </div>
             </div>
@@ -1184,17 +1362,19 @@ export default function AdminUserDetailPage() {
               </div>
               {user.access.state !== "staff" && (
                 <div className="mt-4 flex flex-wrap items-center gap-2">
-                  <label htmlFor="extend-trial-days" className="text-xs text-zinc-500 dark:text-zinc-400">Extend trial by</label>
-                  <select
-                    id="extend-trial-days"
+                  <span className="text-xs text-zinc-500 dark:text-zinc-400 font-medium">Extend trial by</span>
+                  <AdminSelect
                     value={extendDays}
-                    onChange={(e) => setExtendDays(Number(e.target.value))}
-                    className="h-8 rounded-lg border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#0f0f10] px-2 text-xs text-zinc-900 dark:text-white"
-                  >
-                    {[3, 7, 14, 30].map((d) => (
-                      <option key={d} value={d}>{d} days</option>
-                    ))}
-                  </select>
+                    onChange={(v) => setExtendDays(Number(v))}
+                    options={[
+                      { value: 3, label: "3 days" },
+                      { value: 7, label: "7 days" },
+                      { value: 14, label: "14 days" },
+                      { value: 30, label: "30 days" },
+                    ]}
+                    size="sm"
+                    className="w-28"
+                  />
                   <button
                     type="button"
                     onClick={handleExtendTrial}
