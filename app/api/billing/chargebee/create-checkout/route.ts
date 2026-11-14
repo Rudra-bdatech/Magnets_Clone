@@ -199,10 +199,18 @@ export async function POST(req: Request) {
       },
     });
   } catch (error: any) {
-    console.error("[Chargebee Checkout Error]:", error);
+    // Full detail stays in the server log; users get a plain message (never raw Chargebee errors
+    // such as "funnels-pro-INR-Monthly not found" when a plan is not set up yet).
+    console.error("[Chargebee Checkout Error]:", error?.api_error_code || "", error?.message || error);
+    const isCouponError = /coupon/i.test(String(error?.param || error?.message || ""));
     return NextResponse.json(
-      { error: error?.message || "Failed to initialize Chargebee checkout" },
-      { status: 500 }
+      {
+        error: isCouponError
+          ? "That promo code can't be used for this purchase."
+          : "We couldn't open the payment page right now. Please try again in a few minutes.",
+        code: "CHECKOUT_UNAVAILABLE",
+      },
+      { status: 502 }
     );
   }
 }

@@ -624,7 +624,8 @@ export default function AccountSettingsPage() {
   return (
     <>
       <div className="flex flex-col min-h-full bg-gradient-to-b from-[#EFF6FF]/60 via-[#F8FBFF] to-[#F8FBFF] dark:bg-none dark:bg-[#0a0a0a]">
-        <div className="flex-1 px-4 py-5 sm:px-6 sm:py-6 lg:px-8 w-full max-w-5xl">
+        {/* Form tabs stay narrow for readability; Plan & Billing uses the full width for its three cards */}
+        <div className={`flex-1 px-4 py-5 sm:px-6 sm:py-6 lg:px-8 w-full ${activeTab === "billing" ? "max-w-none" : "max-w-5xl"}`}>
           {/* Page heading */}
           <div className="mb-4 sm:mb-6 flex flex-wrap items-center justify-between gap-4">
             <div>
