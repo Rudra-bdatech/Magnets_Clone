@@ -18,7 +18,7 @@ const exactBrandBlueFunnelPaths = `
 /**
  * Creates SVG icon markup with optical centering and consistent proportional scaling across all resolutions
  */
-function createSvg({ size = 512, targetRatio = 0.66, bg = '#0f0f11' } = {}) {
+function createSvg({ size = 512, targetRatio = 0.66, bg = '#ffffff' } = {}) {
   // Glyph native bounds: width = 500, height = 541.2
   const scale = (size * targetRatio) / 541.2;
   const glyphW = 500 * scale;
@@ -41,22 +41,22 @@ async function run() {
   const publicDir = path.join(__dirname, '..', 'public');
   const brandDir = path.join(publicDir, 'brand');
 
-  const TARGET_RATIO = 0.66; // 66% canvas height occupancy: Apple HIG optimal keyline scale
-  const BG_DARK = '#0f0f11'; // Funnels brand dark background
+  const TARGET_RATIO = 0.66; // 66% canvas height occupancy: Apple HIG optimal keyline scale (not small!)
+  const BG_LIGHT = '#ffffff'; // Clean solid white background for Light Mode
 
-  // 1. Primary Apple Touch Icons with Exact Funnels Blue (#0284C7 -> #0066B2) on Dark (#0f0f11)
-  const darkIconSvg512 = createSvg({ size: 512, targetRatio: TARGET_RATIO, bg: BG_DARK });
+  // 1. Primary Apple Touch Icons with Exact Funnels Blue on White (#ffffff)
+  const lightIconSvg512 = createSvg({ size: 512, targetRatio: TARGET_RATIO, bg: BG_LIGHT });
 
   // Generate public/apple-touch-icon.png (Used by iPhone Home Screen)
-  await sharp(Buffer.from(darkIconSvg512)).png().toFile(path.join(publicDir, 'apple-touch-icon.png'));
-  await sharp(Buffer.from(darkIconSvg512)).png().toFile(path.join(publicDir, 'apple-touch-icon-precomposed.png'));
-  console.log('✅ Generated public/apple-touch-icon.png with EXACT brand blue gradient (#0284C7 -> #0066B2)');
+  await sharp(Buffer.from(lightIconSvg512)).png().toFile(path.join(publicDir, 'apple-touch-icon.png'));
+  await sharp(Buffer.from(lightIconSvg512)).png().toFile(path.join(publicDir, 'apple-touch-icon-precomposed.png'));
+  console.log('✅ Generated public/apple-touch-icon.png with Exact Brand Blue on White (#ffffff)');
 
-  // Generate PWA manifest icons
-  const icon192Svg = createSvg({ size: 192, targetRatio: TARGET_RATIO, bg: BG_DARK });
+  // Generate PWA manifest icons (Light theme)
+  const icon192Svg = createSvg({ size: 192, targetRatio: TARGET_RATIO, bg: BG_LIGHT });
   await sharp(Buffer.from(icon192Svg)).png().toFile(path.join(brandDir, 'icon-192.png'));
-  await sharp(Buffer.from(darkIconSvg512)).png().toFile(path.join(brandDir, 'icon-512.png'));
-  await sharp(Buffer.from(darkIconSvg512)).png().toFile(path.join(brandDir, 'app-icon.png'));
+  await sharp(Buffer.from(lightIconSvg512)).png().toFile(path.join(brandDir, 'icon-512.png'));
+  await sharp(Buffer.from(lightIconSvg512)).png().toFile(path.join(brandDir, 'app-icon.png'));
   console.log('✅ Generated brand/icon-192.png, brand/icon-512.png, brand/app-icon.png');
 
   // Also update transparent brand marks with matching scale & safe area
