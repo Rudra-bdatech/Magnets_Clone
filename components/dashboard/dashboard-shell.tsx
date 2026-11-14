@@ -1563,7 +1563,7 @@ export default function DashboardShell({
 
           <div className="flex min-h-screen min-w-0 flex-1 flex-col bg-[#FAFAFA] dark:bg-[#0a0a0a] w-full max-w-full">
             <header
-              className="sticky top-0 z-30 flex h-12 shrink-0 items-center justify-between px-3 sm:px-4 md:hidden w-full max-w-full border-b border-black/[0.04] dark:border-white/[0.05] bg-white/40 dark:bg-black/40 backdrop-blur-md"
+              className="sticky top-0 z-30 flex h-[calc(3rem+env(safe-area-inset-top,0px))] pt-[env(safe-area-inset-top,0px)] shrink-0 items-center justify-between px-3 sm:px-4 md:hidden w-full max-w-full border-b border-black/[0.04] dark:border-white/[0.05] bg-white/40 dark:bg-black/40 backdrop-blur-md"
             >
               <div className="flex items-center gap-2.5 min-w-0">
                 <button
