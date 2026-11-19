@@ -37,24 +37,24 @@ export default function BrandLogo({
 }) {
   if (collapsed) {
     return (
-      <span className={`inline-flex shrink-0 items-center ${className}`}>
-        {/* Light mode mark */}
+      <span className={`inline-flex shrink-0 items-center justify-center ${className}`}>
+        {/* Light mode: EXACT same F mark from uncollapsed custom-logo-light.webp */}
         <Image
           alt="Funnels"
-          src="/brand/funnels-mark-light.png"
-          width={160}
-          height={160}
+          src="/brand/exact-f-logo-light.png"
+          width={500}
+          height={541}
           priority
-          className={`${height || "h-7"} w-auto max-h-9 object-contain dark:hidden`}
+          className={`${height || "h-7"} w-auto object-contain dark:hidden`}
         />
-        {/* Dark mode mark */}
+        {/* Dark mode: EXACT same F mark from uncollapsed custom-logo.webp */}
         <Image
           alt="Funnels"
-          src="/brand/funnels-mark-dark.png"
-          width={160}
-          height={160}
+          src="/brand/exact-f-logo-dark.png"
+          width={457}
+          height={495}
           priority
-          className={`${height || "h-7"} w-auto max-h-9 object-contain hidden dark:block`}
+          className={`${height || "h-7"} w-auto object-contain hidden dark:block`}
         />
       </span>
     );

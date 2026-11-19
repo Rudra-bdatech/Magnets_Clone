@@ -332,7 +332,7 @@ export default function AdminShell({
               <Link
                 href="/admin"
                 aria-label="Admin Overview"
-                className={`flex items-center group relative h-9 rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0066B2] ${isCollapsed ? "w-10 justify-center" : ""}`}
+                className={`flex items-center group relative h-10 rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0066B2] ${isCollapsed ? "w-10 justify-center" : ""}`}
                 title={isCollapsed ? "Admin Overview" : undefined}
               >
                 <AnimatePresence mode="wait" initial={false}>
@@ -343,9 +343,9 @@ export default function AdminShell({
                       animate={{ opacity: 1, scale: 1 }}
                       exit={{ opacity: 0, scale: 0.85 }}
                       transition={{ duration: 0.15 }}
-                      className="flex items-center justify-center w-8 h-8"
+                      className="flex items-center justify-center w-10 h-10"
                     >
-                      <BrandLogo collapsed={true} height="h-7 w-7" />
+                      <BrandLogo collapsed={true} height="h-7" />
                     </motion.div>
                   ) : (
                     <motion.div
