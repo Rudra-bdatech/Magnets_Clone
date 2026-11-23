@@ -1,0 +1,682 @@
+# -*- coding: utf-8 -*-
+"""
+Script to generate help-knowledge-base.yaml from Funnels HelpCenterContent.tsx
+"""
+
+knowledge_base = [
+    # -------------------------------------------------------------
+    # Category: LEARN
+    # -------------------------------------------------------------
+    {
+        "id": "what-is-a-funnel",
+        "topic": "What is a funnel?",
+        "category": "LEARN",
+        "badge": "THE SIMPLE DEFINITION",
+        "questions": [
+            "What is a funnel?",
+            "What is a lead magnet funnel?",
+            "funnel kya hota hai?",
+            "explain funnels in simple terms",
+            "funnel ka matlab kya hai?",
+            "what does a funnel do?",
+            "lead magnet funnel definition",
+            "funnel kya kaam karta hai?"
+        ],
+        "answer": (
+            "A funnel is a useful resource or experience offered in exchange for contact information, usually an email address. "
+            "It gives a potential customer a quick win around a problem you solve, and gives you a relevant reason to follow up with them."
+        ),
+        "details": [
+            "Think of it as a useful preview: A bookkeeper might offer a month-end checklist. The checklist solves a real problem now, demonstrates how the bookkeeper can help, and creates a natural path to a future conversation about managing the reader's finances."
+        ],
+        "source": "components/dashboard/HelpCenterContent.tsx"
+    },
+    {
+        "id": "why-use-a-funnel",
+        "topic": "Why use a funnel?",
+        "category": "LEARN",
+        "badge": "GIVE VALUE FIRST",
+        "questions": [
+            "Why use a funnel?",
+            "Why should I create a lead magnet funnel?",
+            "funnel use karne ke kya fayde hain?",
+            "why do I need a funnel?",
+            "funnel banane se kya benefit hoga?",
+            "benefits of lead magnet funnels",
+            "why use funnels instead of a normal website?",
+            "funnel se leads kaise aati hain?"
+        ],
+        "answer": (
+            "Most people will not buy or book the first time they find you. A funnel asks for a much smaller commitment, so useful attention does not have to disappear when they leave the page. It builds trust by delivering value first."
+        ),
+        "details": [
+            "Capture interest: Give someone a reason to join your audience before they are ready to buy.",
+            "Attract better-fit leads: A focused resource appeals to people who already care about the problem you solve.",
+            "Start conversations on your terms: You gain permission to follow up by email instead of relying on algorithms or repeat visits.",
+            "Demonstrate competence: High-quality resources prove you can deliver results before money ever changes hands."
+        ],
+        "source": "components/dashboard/HelpCenterContent.tsx"
+    },
+    {
+        "id": "how-do-they-work",
+        "topic": "How do they work?",
+        "category": "LEARN",
+        "badge": "FROM VISITOR TO SUBSCRIBER",
+        "questions": [
+            "How do funnels work?",
+            "How does a funnel work from visitor to subscriber?",
+            "funnel kaise kaam karta hai?",
+            "how do lead magnets work in Funnels?",
+            "explain the funnel workflow",
+            "funnel ka flow kya hai?",
+            "visitor se lead kaise banti hai?"
+        ],
+        "answer": (
+            "The resource, page, delivery, and follow-up work together as one simple, cohesive flow to turn anonymous traffic into engaged subscribers."
+        ),
+        "steps": [
+            {"step": 1, "title": "Make the resource", "description": "Create the actual PDF, template, video, course, tool, or other resource people will receive."},
+            {"step": 2, "title": "Publish the page", "description": "Explain what the resource is, who it is for, and why someone should want it right now."},
+            {"step": 3, "title": "Deliver immediately", "description": "When someone signs up, Funnels sends the delivery email with their access link right away."},
+            {"step": 4, "title": "Continue the conversation", "description": "Follow up with a sequence of emails to help them implement the resource and introduce your core services."}
+        ],
+        "source": "components/dashboard/HelpCenterContent.tsx"
+    },
+    {
+        "id": "what-works-best",
+        "topic": "What works best?",
+        "category": "LEARN",
+        "badge": "QUALITY BEATS SIZE",
+        "questions": [
+            "What works best?",
+            "What funnels work best?",
+            "Which lead magnets convert best?",
+            "sabse achha lead magnet kaun sa hota hai?",
+            "what kind of funnel should I create?",
+            "kaun sa funnel format best hai?",
+            "examples of high-converting lead magnets"
+        ],
+        "answer": (
+            "There is no single format that wins for every audience. Quality beats size! The strongest option is the one that solves one specific problem, is easy to consume/use, and naturally connects to what you help people do next. A concise 1-page checklist can often convert much better than a 50-page ebook if it gets someone to a fast result."
+        ),
+        "details": [
+            "Checklist: A repeatable process with clear steps (e.g., 'The 12-point landing-page launch checklist').",
+            "Template / Swipe File: Ready-to-use materials someone can adapt immediately (e.g., '5 cold email templates that get 40%+ reply rates').",
+            "Short Video / Mini-Course: Visual demonstrations of a specific framework (e.g., '10-minute teardown of high-performing pricing pages').",
+            "Calculator / Interactive Tool: Personalized results based on visitor inputs (e.g., 'SaaS churn ROI calculator spreadsheet').",
+            "Resource List / Curated Toolkit: Vetted tools, software, or libraries saving hours of research."
+        ],
+        "source": "components/dashboard/HelpCenterContent.tsx"
+    },
+
+    # -------------------------------------------------------------
+    # Category: BUILD
+    # -------------------------------------------------------------
+    {
+        "id": "create-your-first-funnel",
+        "topic": "Create your first funnel",
+        "category": "BUILD",
+        "badge": "YOUR FIRST LAUNCH",
+        "questions": [
+            "How do I create my first funnel?",
+            "Create your first funnel",
+            "pehla funnel kaise banayein?",
+            "steps to launch a funnel",
+            "naya funnel kaise create karein?",
+            "how to build a funnel in the dashboard?",
+            "how to get started with creating a funnel?"
+        ],
+        "answer": (
+            "Funnels builds the signup, delivery, and follow-up journey. You create the actual resource people receive, then add its download or access link to the Delivery email. Funnels does not automatically generate the finished resource for you; it gives that resource a page, captures signups, emails the link, and manages what happens next."
+        ),
+        "steps": [
+            {"step": 1, "title": "Create the actual resource", "description": "Make the PDF, template, video, email course, or tool before publishing."},
+            {"step": 2, "title": "Add a new funnel", "description": "Click 'New funnel' or 'Create funnel' in your dashboard to open the builder."},
+            {"step": 3, "title": "Upload or host the resource", "description": "Upload files in the Assets tab or host them externally (Google Drive, Notion, Loom, etc.)."},
+            {"step": 4, "title": "Write the landing page", "description": "Add a compelling title, subtitle, benefit bullet points, and choose what fields to collect (email, first name, phone)."},
+            {"step": 5, "title": "Configure the delivery email", "description": "Set the subject line, email body, and attach/link your resource so subscribers get it immediately."},
+            {"step": 6, "title": "Publish and share", "description": "Click Publish to get your live URL (funnels.co.in or your custom domain) and start sharing."}
+        ],
+        "source": "components/dashboard/HelpCenterContent.tsx"
+    },
+    {
+        "id": "edit-and-publish-a-funnel",
+        "topic": "Edit and publish a funnel",
+        "category": "BUILD",
+        "badge": "BUILD THE FULL JOURNEY",
+        "questions": [
+            "How do I edit and publish a funnel?",
+            "Edit and publish a funnel",
+            "funnel edit kaise karein?",
+            "funnel publish kaise karte hain?",
+            "how to edit an existing funnel?",
+            "how does saving and publishing work?",
+            "where are the funnel tabs?"
+        ],
+        "answer": (
+            "Each funnel has one unified editor for the page people visit, the email that delivers the resource, any follow-up emails, and what happens after signup. Changes save automatically while you work."
+        ),
+        "details": [
+            "Landing page tab: Write the promise, explain the value, upload a cover image, and choose form fields.",
+            "Delivery email tab: Set the subject, preview text, and email message that sends the promised resource immediately.",
+            "Follow-up sequence tab: Add automated timed follow-up emails to nurture your new lead over days or weeks.",
+            "After-signup tab: Choose whether to display an on-page thank you message or redirect visitors to an external URL (booking page, website, community).",
+            "Publish toggle: Use the Publish button in the top right corner. You can unpublish or make live changes at any time."
+        ],
+        "source": "components/dashboard/HelpCenterContent.tsx"
+    },
+    {
+        "id": "assets",
+        "topic": "Assets",
+        "category": "BUILD",
+        "badge": "FILES AND DOWNLOADS",
+        "questions": [
+            "How do I host a resource or upload assets?",
+            "How do Assets work?",
+            "files kaise upload karein?",
+            "pdf file kaise host karein?",
+            "where do I upload my lead magnet file?",
+            "how does file hosting work in Funnels?",
+            "asset storage and downloads"
+        ],
+        "answer": (
+            "Hosted resources give you a stable, fast download link for a PDF, image, ZIP file, or other supported resource. The file is stored securely. Only someone with its unique link can download it."
+        ),
+        "steps": [
+            {"step": 1, "title": "Upload the file", "description": "Open Assets from the sidebar and choose 'Upload resource'. Select your PDF, ZIP, audio, or document."},
+            {"step": 2, "title": "Copy the secure link", "description": "Funnels generates a direct, secure URL for the uploaded file."},
+            {"step": 3, "title": "Attach to Delivery Email", "description": "Paste the download link into your Delivery email button or text so subscribers can download it with one click."}
+        ],
+        "notes": "You can also link to resources hosted on Google Drive, Dropbox, Loom, Notion, or YouTube if you prefer external hosting.",
+        "source": "components/dashboard/HelpCenterContent.tsx"
+    },
+    {
+        "id": "brand-colours-and-logo",
+        "topic": "Brand colours and logo",
+        "category": "BUILD",
+        "badge": "PAGE APPEARANCE",
+        "questions": [
+            "How do I update my brand colours and logo?",
+            "Brand colours and logo",
+            "logo kaise add karein?",
+            "brand colour kaise change karein?",
+            "how to customize branding in funnels?",
+            "where to set brand styling?",
+            "can I change font and colors?"
+        ],
+        "answer": (
+            "Brand settings apply across all your public funnels and in the editor preview. They ensure consistent visual identity without re-configuring styling on every single page."
+        ),
+        "steps": [
+            {"step": 1, "title": "Open brand settings", "description": "Open 'Brand' from the dashboard sidebar."},
+            {"step": 2, "title": "Set primary and accent colours", "description": "Pick your primary colour (used for buttons, highlights, accents) using hex codes or the colour picker."},
+            {"step": 3, "title": "Upload your logo", "description": "Upload a clean transparent PNG or SVG logo to show at the top of your funnel pages and emails."},
+            {"step": 4, "title": "Save changes", "description": "All existing and new funnels will automatically adopt your updated brand styles."}
+        ],
+        "source": "components/dashboard/HelpCenterContent.tsx"
+    },
+    {
+        "id": "delivery-emails",
+        "topic": "Delivery emails",
+        "category": "BUILD",
+        "badge": "AUTOMATED DELIVERY",
+        "questions": [
+            "How do delivery emails work?",
+            "Delivery emails",
+            "resource email se kaise deliver hota hai?",
+            "how to setup delivery email?",
+            "delivery email kaise edit karein?",
+            "instant resource delivery setup",
+            "how to send lead magnet by email?"
+        ],
+        "answer": (
+            "The delivery email is sent automatically the instant someone completes your funnel form. It contains the primary promise: the download link, login instructions, or access details for the resource."
+        ),
+        "steps": [
+            {"step": 1, "title": "Open the email editor", "description": "In the funnel builder, switch to the 'Delivery email' tab."},
+            {"step": 2, "title": "Write subject & preview", "description": "Write a clear, recognisable subject line like 'Here is your [Resource Name] template'."},
+            {"step": 3, "title": "Add the resource link", "description": "Insert your asset link (from Assets or an external link like Notion/Drive/Loom) into the primary action button."},
+            {"step": 4, "title": "Test delivery", "description": "Send a test email to your own inbox to preview how it looks on desktop and mobile."}
+        ],
+        "source": "components/dashboard/HelpCenterContent.tsx"
+    },
+    {
+        "id": "follow-up-sequences",
+        "topic": "Follow-up sequences",
+        "category": "BUILD",
+        "badge": "CONTINUE THE CONVERSATION",
+        "questions": [
+            "How do follow-up sequences work?",
+            "Follow-up sequences",
+            "email sequence kaise banayein?",
+            "automated follow up emails kaise set karein?",
+            "how to set up email drip campaign?",
+            "can I send automated follow-up emails?",
+            "email sequence timing and delays"
+        ],
+        "answer": (
+            "A follow-up sequence is an optional automated series of emails sent after the resource has been delivered. Use it to help someone apply what they downloaded, answer frequently asked questions, overcome objections, and introduce a relevant paid next step."
+        ),
+        "steps": [
+            {"step": 1, "title": "Turn on follow-up", "description": "Open the 'Sequence' tab in the funnel editor and toggle on the sequence."},
+            {"step": 2, "title": "Add emails and delays", "description": "Add emails with specific timing (e.g., Email 1: 1 day later, Email 2: 3 days later, Email 3: 5 days later)."},
+            {"step": 3, "title": "Focus each email on one idea", "description": "Keep each email short and focused on one tip, case study, or actionable advice."},
+            {"step": 4, "title": "Activate", "description": "Once enabled, anyone who signs up will automatically progress through the sequence."}
+        ],
+        "source": "components/dashboard/HelpCenterContent.tsx"
+    },
+    {
+        "id": "after-signup-experience",
+        "topic": "After-signup experience",
+        "category": "BUILD",
+        "badge": "WHAT HAPPENS NEXT",
+        "questions": [
+            "How do I set up the after-signup experience?",
+            "After-signup experience",
+            "signup ke baad kya dikhega?",
+            "how to redirect after signup?",
+            "thank you page kaise setup karein?",
+            "what happens after visitor submits the form?",
+            "custom redirect vs standard confirmation"
+        ],
+        "answer": (
+            "Control what someone sees on screen immediately after filling out your funnel form. You can choose between an on-page confirmation message or an immediate redirect."
+        ),
+        "details": [
+            "Standard confirmation: Shows a clean, reassuring thank-you modal or banner right on the page informing them to check their inbox.",
+            "Send them elsewhere (Redirect): Redirects signups immediately to an external URL — such as your Calendly/Cal.com booking link, your main website, a WhatsApp group, or a custom thank-you page."
+        ],
+        "source": "components/dashboard/HelpCenterContent.tsx"
+    },
+
+    # -------------------------------------------------------------
+    # Category: SET UP
+    # -------------------------------------------------------------
+    {
+        "id": "integration",
+        "topic": "Integration",
+        "category": "SET UP",
+        "badge": "WORKSPACE SETUP",
+        "questions": [
+            "How do I set up workspace integrations?",
+            "Integration and Workspace setup",
+            "integrations kaise setup karein?",
+            "workspace setup guide",
+            "how to connect tools to Funnels?",
+            "where are settings and integrations located?"
+        ],
+        "answer": (
+            "Workspace setup is the central command center for your account. From here, you can configure your sending email domain, custom web domains, legal policies, and integrations with third-party tools like CRMs and email marketing software."
+        ),
+        "steps": [
+            {"step": 1, "title": "Open Workspace Setup", "description": "Navigate to 'Settings' or 'Workspace Setup' from the dashboard sidebar."},
+            {"step": 2, "title": "Choose connection", "description": "Select from Custom Domains, Email Sending, Legal Links, or Optional Connections (Zapier, Kit, Slack, Pipedrive, Substack)."},
+            {"step": 3, "title": "Authenticate and save", "description": "Follow the on-screen steps to authorize or paste required API credentials."}
+        ],
+        "source": "components/dashboard/HelpCenterContent.tsx"
+    },
+    {
+        "id": "custom-domains",
+        "topic": "Custom domains",
+        "category": "SET UP",
+        "badge": "OPTIONAL SETUP",
+        "questions": [
+            "How do I connect a custom domain?",
+            "Custom domains",
+            "apna domain kaise connect karein?",
+            "custom domain setup CNAME record",
+            "can I use my own domain name?",
+            "funnel me domain kaise add karein?",
+            "is custom domain mandatory?"
+        ],
+        "answer": (
+            "Using your own domain is completely optional! Every published funnel automatically includes a fast, secure funnels.co.in link. A custom domain gives you a recognisable branded address (like get.yourbrand.com), but is not required to create, publish, deliver, or collect signups."
+        ),
+        "steps": [
+            {"step": 1, "title": "Choose your subdomain", "description": "We recommend a subdomain such as resources.yourdomain.com or get.yourdomain.com."},
+            {"step": 2, "title": "Add CNAME record", "description": "Log into your DNS provider (Cloudflare, GoDaddy, Namecheap) and create a CNAME record pointing your subdomain to host.funnels.co.in."},
+            {"step": 3, "title": "Verify in Funnels", "description": "Enter the subdomain in Workspace Setup > Custom Domains and click Verify. SSL certificates are provisioned automatically."}
+        ],
+        "notes": "Custom domains are purely optional. You can launch your funnel immediately using your default link without waiting for DNS propagation.",
+        "source": "components/dashboard/HelpCenterContent.tsx"
+    },
+    {
+        "id": "send-from-my-email",
+        "topic": "Send from my email",
+        "category": "SET UP",
+        "badge": "EMAIL DELIVERY",
+        "questions": [
+            "How do I send from my own email domain?",
+            "Send from my email",
+            "apni email id se emails kaise bhejein?",
+            "how to set custom sender email?",
+            "DKIM SPF DNS records for email",
+            "can I send from my business email?",
+            "is custom email domain compulsory?"
+        ],
+        "answer": (
+            "Sending from your own email domain is optional. If default Funnels sending is active, you can publish and deliver resources immediately. However, setting up a recognisable From address (e.g., hello@yourbrand.com) improves open rates, builds brand consistency, and avoids spam filters."
+        ),
+        "steps": [
+            {"step": 1, "title": "Add your domain", "description": "In Workspace setup > Send from my email, enter your root domain (e.g., yourbrand.com)."},
+            {"step": 2, "title": "Add DNS records", "description": "Add the provided DNS records (TXT/CNAME for SPF and DKIM authentication) in your DNS manager."},
+            {"step": 3, "title": "Verify and set sender name", "description": "Once verified, specify your sender name (e.g., 'Alex from Brand') and sender address."}
+        ],
+        "source": "components/dashboard/HelpCenterContent.tsx"
+    },
+    {
+        "id": "legal-links",
+        "topic": "Legal links",
+        "category": "SET UP",
+        "badge": "PUBLIC PAGE FOOTER",
+        "questions": [
+            "How do I add legal links (Privacy Policy & Terms)?",
+            "Legal links",
+            "privacy policy aur terms kaise add karein?",
+            "footer links setup",
+            "how to add terms of service in funnel?",
+            "GDPR and privacy policy links"
+        ],
+        "answer": (
+            "Add links to your own Privacy Policy and Terms of Service so visitors understand how your business handles their data and what rules apply. These appear cleanly in the footer of all your public funnel pages."
+        ),
+        "steps": [
+            {"step": 1, "title": "Open legal settings", "description": "Open Workspace setup and expand 'Legal links'."},
+            {"step": 2, "title": "Enter URLs", "description": "Paste the links to your existing Privacy Policy and Terms of Service pages."},
+            {"step": 3, "title": "Save", "description": "The links will immediately render in the footer of all published funnels."}
+        ],
+        "source": "components/dashboard/HelpCenterContent.tsx"
+    },
+
+    # -------------------------------------------------------------
+    # Category: CONNECTIONS
+    # -------------------------------------------------------------
+    {
+        "id": "connect-zapier",
+        "topic": "Connect Zapier",
+        "category": "CONNECTIONS",
+        "badge": "AUTOMATIONS",
+        "questions": [
+            "How do I connect Zapier?",
+            "Connect Zapier",
+            "zapier integration kaise karein?",
+            "how to send leads to Zapier?",
+            "webhook setup for Zapier",
+            "zapier se lead auto-sync kaise karein?",
+            "trigger workflows on new signup"
+        ],
+        "answer": (
+            "Connect Zapier to use each new funnel signup as a trigger for workflows in thousands of other apps — such as adding rows to Google Sheets/Airtable, creating CRM deals, or sending Slack/Telegram alerts."
+        ),
+        "steps": [
+            {"step": 1, "title": "Create the trigger", "description": "In Zapier, create a new Zap and choose 'Webhooks by Zapier' as the trigger event (Catch Hook)."},
+            {"step": 2, "title": "Copy the webhook URL", "description": "Copy the Catch Hook URL generated by Zapier."},
+            {"step": 3, "title": "Paste in Funnels", "description": "In Funnels Workspace Setup > Connections > Zapier, paste the webhook URL and save."},
+            {"step": 4, "title": "Test trigger", "description": "Submit a test lead on your funnel and verify the data payload in Zapier."}
+        ],
+        "source": "components/dashboard/HelpCenterContent.tsx"
+    },
+    {
+        "id": "connect-kit",
+        "topic": "Connect Kit",
+        "category": "CONNECTIONS",
+        "badge": "AUDIENCE SYNC",
+        "questions": [
+            "How do I connect Kit (ConvertKit)?",
+            "Connect Kit",
+            "convertkit kaise connect karein?",
+            "how to sync subscribers to Kit?",
+            "kit integration setup",
+            "auto tag subscribers in Kit"
+        ],
+        "answer": (
+            "Kit (formerly ConvertKit) connection automatically syncs every new funnel signup directly into your Kit subscriber list and tags them with the specific funnel they opted into."
+        ),
+        "steps": [
+            {"step": 1, "title": "Start the connection", "description": "In Workspace setup > Optional connections > Kit, click 'Connect Kit'."},
+            {"step": 2, "title": "Authorize", "description": "Funnels redirects you to Kit's secure OAuth authorization screen. Grant permission."},
+            {"step": 3, "title": "Auto-tagging", "description": "Every new subscriber is automatically added and tagged in Kit with the funnel title."}
+        ],
+        "source": "components/dashboard/HelpCenterContent.tsx"
+    },
+    {
+        "id": "connect-pipedrive",
+        "topic": "Connect Pipedrive",
+        "category": "CONNECTIONS",
+        "badge": "CRM SYNC",
+        "questions": [
+            "How do I connect Pipedrive CRM?",
+            "Connect Pipedrive",
+            "pipedrive CRM kaise connect karein?",
+            "how to send leads to Pipedrive?",
+            "pipedrive API token setup",
+            "create contacts in Pipedrive automatically"
+        ],
+        "answer": (
+            "Connect Pipedrive CRM to automatically push new leads and contacts into your sales pipeline without entering names and email addresses manually."
+        ),
+        "steps": [
+            {"step": 1, "title": "Find your API token", "description": "In Pipedrive, go to Personal preferences > API and copy your personal API token."},
+            {"step": 2, "title": "Paste token in Funnels", "description": "Open Workspace setup > Connections > Pipedrive, enter your API token and company domain."},
+            {"step": 3, "title": "Verify connection", "description": "Save settings. All new signups will now automatically create or update People records in Pipedrive."}
+        ],
+        "source": "components/dashboard/HelpCenterContent.tsx"
+    },
+    {
+        "id": "connect-slack",
+        "topic": "Connect Slack",
+        "category": "CONNECTIONS",
+        "badge": "SIGNUP NOTIFICATIONS",
+        "questions": [
+            "How do I connect Slack for lead alerts?",
+            "Connect Slack",
+            "slack pe signup notification kaise paayein?",
+            "how to get real-time lead alerts in Slack?",
+            "slack webhook integration",
+            "notify team on new subscriber"
+        ],
+        "answer": (
+            "Send instant, real-time signup notifications directly to a dedicated Slack channel so your sales or marketing team can celebrate new leads and act immediately."
+        ),
+        "steps": [
+            {"step": 1, "title": "Create an Incoming Webhook", "description": "In Slack App directory, create an app or select 'Incoming Webhooks' and click 'Add New Webhook to Workspace'."},
+            {"step": 2, "title": "Pick a channel", "description": "Choose the channel where notifications should post (e.g., #leads or #funnel-alerts)."},
+            {"step": 3, "title": "Paste URL in Funnels", "description": "In Workspace setup > Connections > Slack, paste the Incoming Webhook URL and click 'Save & Send Test'."}
+        ],
+        "source": "components/dashboard/HelpCenterContent.tsx"
+    },
+    {
+        "id": "substack-and-kit",
+        "topic": "Substack and Kit",
+        "category": "CONNECTIONS",
+        "badge": "AUDIENCE SYNC",
+        "questions": [
+            "How do I connect Substack or free newsletter tools?",
+            "Substack and Kit",
+            "substack kaise connect karein?",
+            "how to sync funnel leads to Substack newsletter?",
+            "send signups to free newsletter",
+            "substack integration setup"
+        ],
+        "answer": (
+            "Send new signups directly to your free newsletter or audience platform. Funnels allows integration with Substack and Kit so you can grow your publication list seamlessly."
+        ),
+        "steps": [
+            {"step": 1, "title": "Find your publication subdomain", "description": "Get your Substack publication name (e.g., yourname.substack.com)."},
+            {"step": 2, "title": "Configure in Funnels", "description": "Open Workspace setup > Connections > Substack and input your publication handle."},
+            {"step": 3, "title": "Transparency note", "description": "Make sure your funnel signup page clearly states that requesting the resource also subscribes them to your newsletter."}
+        ],
+        "source": "components/dashboard/HelpCenterContent.tsx"
+    },
+
+    # -------------------------------------------------------------
+    # Category: MANAGE
+    # -------------------------------------------------------------
+    {
+        "id": "manage-leads",
+        "topic": "Manage leads",
+        "category": "MANAGE",
+        "badge": "LEAD MANAGEMENT",
+        "questions": [
+            "How do I manage my leads?",
+            "Manage leads",
+            "leads ko kaise manage karein?",
+            "where can I see all subscribers?",
+            "how to export leads to CSV?",
+            "can I import existing contacts into Funnels?",
+            "leads list and filters"
+        ],
+        "answer": (
+            "The Leads section contains everyone who has requested one of your funnels. You can inspect contact details, monitor their automated email status, and export or import data."
+        ),
+        "details": [
+            "Review contacts: View which funnel a lead opted into, their signup date, and their current position in your follow-up sequence.",
+            "Export to CSV: Download your entire lead list or filter by specific funnels anytime for backups or external marketing.",
+            "Add or import: Add individual contacts manually or bulk import up to 5,000 rows at a time from a standard CSV file.",
+            "Unsubscribe & Data control: Manage unsubscribe requests and ensure full GDPR / data privacy compliance."
+        ],
+        "source": "components/dashboard/HelpCenterContent.tsx"
+    },
+    {
+        "id": "analytics-and-ab-tests",
+        "topic": "Analytics and A/B tests",
+        "category": "MANAGE",
+        "badge": "MEASURE RESULTS",
+        "questions": [
+            "How do analytics and A/B tests work?",
+            "Analytics and A/B tests",
+            "funnel analytics kaise dekhein?",
+            "conversion rate kaise check karein?",
+            "A/B test kaise karein?",
+            "how to track visits and conversions?",
+            "split testing in funnels"
+        ],
+        "answer": (
+            "Funnels provides built-in privacy-friendly analytics and effortless A/B split testing without needing third-party tracking scripts."
+        ),
+        "details": [
+            "Analytics dashboard: See total signups, unique visitors, conversion rate, and completion rate for the after-signup experience. Conversion rate uses signups matched to tracked unique visits.",
+            "A/B Testing: Test an alternate headline, description, or cover image against your current live page. Funnels evenly splits new visitors between Version A and Version B.",
+            "Sticky visitor sessions: Returning visitors always see the same version they were originally assigned to prevent confusing experiences.",
+            "Pick a winner: When one variation clearly outperforms the other, promote it to 100% traffic with one click."
+        ],
+        "source": "components/dashboard/HelpCenterContent.tsx"
+    },
+    {
+        "id": "account-settings",
+        "topic": "Account settings",
+        "category": "MANAGE",
+        "badge": "IDENTITY AND SECURITY",
+        "questions": [
+            "What can I change in Account settings?",
+            "Account settings",
+            "account settings me kya options hain?",
+            "password kaise change karein?",
+            "profile photo avatar update",
+            "instant lead alerts notification setup",
+            "account delete kaise karein?",
+            "usage and plan limits"
+        ],
+        "answer": (
+            "Account settings manages your user profile, security credentials, email alert preferences, and active subscription limits."
+        ),
+        "details": [
+            "Profile & Identity: Update your display name, upload/change profile avatar photo, and view your registered email address.",
+            "Security & Password: Update your login password (requires your current password and a new 8+ character password).",
+            "Instant Lead Alerts: Enable real-time email notifications for every new lead, set recipient inboxes, and send test alerts.",
+            "Usage & Limits: Monitor active plan metrics in real-time — total leads captured, asset storage usage, and sequence limits.",
+            "Permanent Deletion Warning: Deleting an account permanently wipes all funnels, leads, domains, and integrations. Requires entering your password and the confirmation word 'DELETE'."
+        ],
+        "source": "components/dashboard/HelpCenterContent.tsx"
+    },
+    {
+        "id": "video-walkthrough",
+        "topic": "Video walkthrough",
+        "category": "MANAGE",
+        "badge": "WATCH THE FULL FLOW",
+        "questions": [
+            "Where can I watch the video walkthrough?",
+            "Video walkthrough",
+            "video demo kahan hai?",
+            "platform walkthrough video",
+            "how to use funnels full demo video",
+            "loom walkthrough link"
+        ],
+        "answer": (
+            "You can watch a complete, step-by-step video demonstration of the Funnels platform on Loom. It covers creating a resource, configuring the funnel page, setting up delivery emails, and reviewing captured leads."
+        ),
+        "details": [
+            "Loom Video Link: https://www.loom.com/share/ebb8dded5142439d8a97e338a49cb104",
+            "Embed URL: https://www.loom.com/embed/ebb8dded5142439d8a97e338a49cb104",
+            "Watch full flow: Shows the complete end-to-end journey from empty dashboard to published funnel and real-time lead capture."
+        ],
+        "source": "components/dashboard/HelpCenterContent.tsx"
+    }
+]
+
+def dump_yaml():
+    import os
+    lines = []
+    lines.append("# =============================================================================")
+    lines.append("# Funnels Help Center Knowledge Base")
+    lines.append("# Extracted and structured from components/dashboard/HelpCenterContent.tsx")
+    lines.append("# Ready for Chatbots, AI Agents, Semantic Search & RAG")
+    lines.append("# =============================================================================")
+    lines.append("")
+    lines.append("version: '1.0'")
+    lines.append("project: 'Funnels'")
+    lines.append("total_topics: 24")
+    lines.append("categories:")
+    lines.append("  - LEARN")
+    lines.append("  - BUILD")
+    lines.append("  - SET UP")
+    lines.append("  - CONNECTIONS")
+    lines.append("  - MANAGE")
+    lines.append("")
+    lines.append("topics:")
+
+    for item in knowledge_base:
+        lines.append(f"  - id: \"{item['id']}\"")
+        lines.append(f"    topic: \"{item['topic']}\"")
+        lines.append(f"    category: \"{item['category']}\"")
+        lines.append(f"    badge: \"{item['badge']}\"")
+        lines.append("    questions:")
+        for q in item["questions"]:
+            # escape double quotes if any
+            q_clean = q.replace('"', '\\"')
+            lines.append(f"      - \"{q_clean}\"")
+        
+        # answer block
+        lines.append("    answer: >")
+        for chunk in item["answer"].split(". "):
+            if chunk.strip():
+                period = "." if not chunk.strip().endswith(".") else ""
+                lines.append(f"      {chunk.strip()}{period}")
+        
+        if "steps" in item:
+            lines.append("    steps:")
+            for s in item["steps"]:
+                lines.append(f"      - step: {s['step']}")
+                lines.append(f"        title: \"{s['title']}\"")
+                lines.append(f"        description: \"{s['description']}\"")
+        
+        if "details" in item:
+            lines.append("    details:")
+            for d in item["details"]:
+                d_clean = d.replace('"', '\\"')
+                lines.append(f"      - \"{d_clean}\"")
+
+        if "notes" in item:
+            lines.append(f"    notes: \"{item['notes']}\"")
+
+        lines.append(f"    source: \"{item['source']}\"")
+        lines.append("")
+
+    content = "\n".join(lines)
+    output_path = "help-knowledge-base.yaml"
+    with open(output_path, "w", encoding="utf-8") as f:
+        f.write(content)
+    print(f"Successfully generated {output_path} with {len(knowledge_base)} topics!")
+
+if __name__ == "__main__":
+    dump_yaml()

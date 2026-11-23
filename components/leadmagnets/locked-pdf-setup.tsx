@@ -28,7 +28,7 @@ import { loadPdfJs } from "@/lib/pdfjs-client";
 import DeleteModal from "@/components/leadmagnets/edit/DeleteModal";
 import PdfPageThumbnail from "@/components/pdf/PdfPageThumbnail";
 
-const MAX_PDF_MB = 60;
+const MAX_PDF_MB = 10;
 
 function settingsKey(freePages: number, name: string, slug: string) {
   return JSON.stringify([freePages, name.trim(), slug.trim()]);
@@ -425,7 +425,7 @@ export default function LockedPdfSetup({
       return;
     }
     if (file.size > MAX_PDF_MB * 1024 * 1024) {
-      setError(`PDF must be under ${MAX_PDF_MB} MB.`);
+      setError(`PDF exceeds ${MAX_PDF_MB} MB limit. If file size exceeds, compress it then upload.`);
       return;
     }
 
@@ -661,8 +661,8 @@ export default function LockedPdfSetup({
                 <p className="text-sm font-bold text-zinc-800 dark:text-zinc-200 group-hover:text-[#0066B2] dark:group-hover:text-[#38BDF8] transition-colors">
                   Click to upload PDF from device
                 </p>
-                <p className="text-xs text-zinc-400 dark:text-zinc-500 mt-1 max-w-[220px]">
-                  Max {MAX_PDF_MB} MB · Pages after the free preview stay locked
+                <p className="text-xs text-zinc-400 dark:text-zinc-500 mt-1 max-w-[280px]">
+                  Max {MAX_PDF_MB} MB · If file size exceeds, compress it then upload
                 </p>
               </div>
             </button>
