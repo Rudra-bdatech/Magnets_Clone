@@ -74,7 +74,7 @@ export default function FaqAccordion() {
             <Sparkles className="h-3.5 w-3.5" aria-hidden="true" /> Start Your Free Trial
           </Link>
           <Link
-            href="mailto:support@funnels.app"
+            href="mailto:info@bdatechnologies.com"
             className="flex-1 sm:flex-none inline-flex h-10 items-center justify-center gap-2 rounded-xl border border-zinc-200/80 dark:border-white/10 bg-white/80 dark:bg-[#20202A]/80 backdrop-blur-md px-4 text-xs font-bold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-all"
           >
             <MailIcon className="h-3.5 w-3.5" aria-hidden="true" /> Contact Support
