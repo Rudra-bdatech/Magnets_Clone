@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import dynamic from "next/dynamic";
+import Script from "next/script";
 import "./globals.css";
 import "@/src/shaders/threeui.css";
 
@@ -112,6 +113,10 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const supportWidgetEnabled = process.env.NEXT_PUBLIC_SUPPORT_WIDGET_ENABLED === "true";
+  const supportBaseUrl = process.env.NEXT_PUBLIC_SUPPORT_BASE_URL?.replace(/\/+$/, "");
+  const supportInboxId = process.env.NEXT_PUBLIC_SUPPORT_INBOX_ID;
+
   return (
     <html lang="en" className={`${geist.variable} ${geistMono.variable}`} suppressHydrationWarning>
       <head>
@@ -142,6 +147,27 @@ export default function RootLayout({
         <SmoothScroll />
         <VisitorTracker />
         <div className="contents app-theme">{children}</div>
+        {supportWidgetEnabled && supportBaseUrl && supportInboxId && (
+          <>
+            <Script
+              id="libredesk-settings"
+              strategy="afterInteractive"
+              dangerouslySetInnerHTML={{
+                __html: `
+                  window.LibredeskSettings = {
+                    baseURL: ${JSON.stringify(supportBaseUrl)},
+                    inboxID: ${JSON.stringify(supportInboxId)}
+                  };
+                `,
+              }}
+            />
+            <Script
+              id="libredesk-widget"
+              src={`${supportBaseUrl}/widget.js`}
+              strategy="afterInteractive"
+            />
+          </>
+        )}
       </body>
     </html>
   );
