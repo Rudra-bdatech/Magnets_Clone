@@ -29,6 +29,7 @@ interface PublicMagnetPage {
   pdfPageCount?: number;
   deliverable?: string;
   views?: number;
+  template?: string;
 }
 
 interface PublicAccount {
@@ -338,8 +339,12 @@ export default function PublicProfileView({
           <div className="grid gap-4 sm:grid-cols-2">
             {filteredPages.map((page) => {
               const slug = page.slug || page.id;
-              const pageUrl = isCustomDomain ? `/${slug}` : `/${account.username}/${slug}`;
-              const isPdf = Boolean(page.isPdf);
+              const isPdf = Boolean(page.isPdf) || page.template === "locked-pdf";
+              const pageUrl = isPdf
+                ? `/pdf-viewer/${page.id}`
+                : isCustomDomain
+                ? `/${slug}`
+                : `/${account.username}/${slug}`;
 
               return (
                 <Link
