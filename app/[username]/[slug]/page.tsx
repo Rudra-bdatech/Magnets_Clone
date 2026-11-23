@@ -12,6 +12,7 @@ import { type MagnetPage } from "@/lib/data";
 import { getAccountAccess } from "@/lib/subscription";
 import PageUnavailable from "@/components/page-unavailable";
 import { Check, Lock, Zap, ShieldCheck, Sparkles } from "lucide-react";
+import LockedPdfView from "@/app/pdf-viewer/[magnetId]/locked-pdf-view";
 
 
 export const dynamic = "force-dynamic";
@@ -37,13 +38,16 @@ export async function generateMetadata({
       escapedUsername ? { username: { $regex: new RegExp(`^${escapedUsername}$`, "i") } } : {}
     ).lean();
 
-    // Only this user's own landing pages — locked PDFs live at /pdf-viewer/<id>
+    // This user's landing pages win; otherwise a locked PDF with this slug/id
     if (accountDoc && accountDoc.email) {
       pageDoc = await MagnetPageModel.findOne({
         userEmail: accountDoc.email.trim().toLowerCase(),
         template: { $ne: "locked-pdf" },
         $or: [{ id: params.slug }, { slug: params.slug }]
       }).lean();
+      if (!pageDoc) {
+        pageDoc = await findLockedPdf(accountDoc.email, params.slug);
+      }
     }
   } catch (err) {
     console.warn("MongoDB metadata query fallback in generateMetadata:", err);
@@ -60,14 +64,19 @@ export async function generateMetadata({
     };
   }
 
-  const title = pageDoc.headline || pageDoc.name || "Free Resource";
-  const rawDescription = pageDoc.subheadline || pageDoc.pitch || `Download ${title} instantly.`;
+  const isLockedPdf = pageDoc.template === "locked-pdf";
+  const title = isLockedPdf
+    ? pageDoc.pdfTitle || pageDoc.name || "Document"
+    : pageDoc.headline || pageDoc.name || "Free Resource";
+  const rawDescription = isLockedPdf
+    ? `Read ${title} — preview the first pages free, then unlock the full PDF.`
+    : pageDoc.subheadline || pageDoc.pitch || `Download ${title} instantly.`;
   const description = rawDescription.replace(/<[^>]*>/g, "").trim().slice(0, 200);
   const authorName = accountDoc?.name || username;
   let customHost = "";
   try {
     customHost = headers().get("x-custom-domain") || "";
-  } catch {}
+  } catch { }
   const canonicalUrl = customHost
     ? `https://${customHost}/${encodeURIComponent(slug)}`
     : `${appUrl}/${encodeURIComponent(username)}/${encodeURIComponent(slug)}`;
@@ -101,6 +110,17 @@ export async function generateMetadata({
       images: [ogImageUrl],
     },
   };
+}
+
+/** Newest locked PDF of this owner whose slug or id matches (see lib/locked-pdf-url.ts). */
+async function findLockedPdf(ownerEmail: string, slugOrId: string) {
+  return MagnetPageModel.findOne({
+    userEmail: ownerEmail.trim().toLowerCase(),
+    template: "locked-pdf",
+    $or: [{ id: slugOrId }, { slug: slugOrId }],
+  })
+    .sort({ _id: -1 })
+    .lean();
 }
 
 function Icon({ children, className }: { children: React.ReactNode; className?: string }) {
@@ -160,11 +180,14 @@ function MoveRightIcon({ className }: { className?: string }) {
 
 export default async function MagnetPageRoute({
   params,
+  searchParams,
 }: {
   params: { username: string; slug: string };
+  searchParams?: { token?: string | string[]; reset?: string | string[] };
 }) {
   let accountDoc: any = null;
   let pageDoc: any = null;
+  let lockedPdfDoc: any = null;
 
   const rawUser = params.username || "";
   if (rawUser.includes(".") || rawUser.startsWith("_") || isReservedUsername(rawUser)) {
@@ -180,16 +203,33 @@ export default async function MagnetPageRoute({
       escapedUsername ? { username: { $regex: new RegExp(`^${escapedUsername}$`, "i") } } : {}
     ).lean();
 
-    // Only this user's own landing pages — locked PDFs live at /pdf-viewer/<id>
+    // This user's landing pages win (unchanged); otherwise a locked PDF with this slug/id
     if (accountDoc && accountDoc.email) {
       pageDoc = await MagnetPageModel.findOne({
         userEmail: accountDoc.email.trim().toLowerCase(),
         template: { $ne: "locked-pdf" },
         $or: [{ id: params.slug }, { slug: params.slug }]
       }).sort({ _id: -1 }).lean();
+      if (!pageDoc) {
+        lockedPdfDoc = await findLockedPdf(accountDoc.email, params.slug);
+      }
     }
   } catch (err) {
     console.warn("MongoDB connection fallback in MagnetPageRoute:", err);
+  }
+
+  // Locked PDF on its branded URL. Rendered exactly like /pdf-viewer/<id>: readers keep
+  // access regardless of the owner's draft status or trial (see trial rules).
+  if (lockedPdfDoc) {
+    const first = (v?: string | string[]) => (Array.isArray(v) ? v[0] : v);
+    return (
+      <LockedPdfView
+        magnetId={lockedPdfDoc.id}
+        pageDoc={lockedPdfDoc}
+        accountDoc={accountDoc}
+        searchParams={{ token: first(searchParams?.token), reset: first(searchParams?.reset) }}
+      />
+    );
   }
 
   // Identify whether the current viewer is the actual owner of this page.
@@ -285,6 +325,7 @@ export default async function MagnetPageRoute({
     return <PageUnavailable isOwner={isOwner} />;
   }
 
+
   const page = JSON.parse(JSON.stringify(pageDoc)) as MagnetPage;
 
   // A/B Split Test Variant Selection
@@ -351,37 +392,37 @@ export default async function MagnetPageRoute({
         backgroundColor: isTemplate8
           ? (themeMode === "dark" ? "#0d0e12" : "#eee9df")
           : isTemplate7
-          ? (themeMode === "dark" ? "#0d0d0f" : "#f4ff3c")
-          : isTemplate3
-          ? (themeMode === "dark" ? "#0c120a" : "#f4f6f0")
-          : isTemplate2
-          ? (themeMode === "dark" ? "#141416" : "#f3f0e8")
-          : isTemplate4
-          ? (themeMode === "dark" ? "#0b0d12" : "#f5f1e8")
-          : isTemplate1
-          ? (themeMode === "dark" ? "#0c0d11" : "#f8f9fa")
-          : (themeMode === "dark" ? "#0E0E10" : "#FAFAFA"),
+            ? (themeMode === "dark" ? "#0d0d0f" : "#f4ff3c")
+            : isTemplate3
+              ? (themeMode === "dark" ? "#0c120a" : "#f4f6f0")
+              : isTemplate2
+                ? (themeMode === "dark" ? "#141416" : "#f3f0e8")
+                : isTemplate4
+                  ? (themeMode === "dark" ? "#0b0d12" : "#f5f1e8")
+                  : isTemplate1
+                    ? (themeMode === "dark" ? "#0c0d11" : "#f8f9fa")
+                    : (themeMode === "dark" ? "#0E0E10" : "#FAFAFA"),
         color: isTemplate8
           ? (themeMode === "dark" ? "#f4f4f5" : "#141414")
           : isTemplate7
-          ? (themeMode === "dark" ? (brandColor || "#f4ff3c") : "#101010")
-          : isTemplate3
-          ? (themeMode === "dark" ? "#edf0e8" : "#141c10")
-          : isTemplate2
-          ? (themeMode === "dark" ? "#eae8e3" : "#151515")
-          : isTemplate4
-          ? (themeMode === "dark" ? "#f5f1e8" : "#0b0d12")
-          : isTemplate1
-          ? (themeMode === "dark" ? "#f2f3f7" : "#111217")
-          : (themeMode === "dark" ? "#ffffff" : "#18181b"),
+            ? (themeMode === "dark" ? (brandColor || "#f4ff3c") : "#101010")
+            : isTemplate3
+              ? (themeMode === "dark" ? "#edf0e8" : "#141c10")
+              : isTemplate2
+                ? (themeMode === "dark" ? "#eae8e3" : "#151515")
+                : isTemplate4
+                  ? (themeMode === "dark" ? "#f5f1e8" : "#0b0d12")
+                  : isTemplate1
+                    ? (themeMode === "dark" ? "#f2f3f7" : "#111217")
+                    : (themeMode === "dark" ? "#ffffff" : "#18181b"),
         backgroundImage: (isTemplate2 || isTemplate3 || isTemplate7 || isTemplate4 || isTemplate8 || isTemplate1)
           ? (isTemplate8
             ? (themeMode === "dark"
               ? "radial-gradient(rgba(255, 255, 255, 0.15) 1px, transparent 1px)"
               : "radial-gradient(rgba(20, 20, 20, 0.18) 1px, transparent 1px)")
             : isTemplate1
-            ? `radial-gradient(620px 380px at 18% 0%, ${accentColor}1c, transparent 70%), radial-gradient(520px 320px at 88% 96%, ${accentColor}10, transparent 70%)`
-            : "none")
+              ? `radial-gradient(620px 380px at 18% 0%, ${accentColor}1c, transparent 70%), radial-gradient(520px 320px at 88% 96%, ${accentColor}10, transparent 70%)`
+              : "none")
           : (themeMode === "light"
             ? `radial-gradient(circle at 0% 0%, ${brandColor}10 0%, transparent 40%), radial-gradient(circle at 100% 100%, ${brandColor}08 0%, transparent 40%)`
             : `radial-gradient(circle at 0% 0%, ${brandColor}15 0%, transparent 40%), radial-gradient(circle at 100% 100%, ${brandColor}0c 0%, transparent 40%)`),
@@ -442,11 +483,10 @@ export default async function MagnetPageRoute({
         {isTemplate2 ? (
           /* TEMPLATE 2: Signal / Noise Editorial Edition (Full-Screen) */
           <div
-            className={`w-full min-h-screen flex flex-col font-sans selection:bg-[#ef3d25] selection:text-white transition-colors duration-200 ${
-              isDark
-                ? "bg-[#141416] text-[#eae8e3]"
-                : "bg-[#f3f0e8] text-[#151515]"
-            }`}
+            className={`w-full min-h-screen flex flex-col font-sans selection:bg-[#ef3d25] selection:text-white transition-colors duration-200 ${isDark
+              ? "bg-[#141416] text-[#eae8e3]"
+              : "bg-[#f3f0e8] text-[#151515]"
+              }`}
             style={
               {
                 "--paper": isDark ? "#141416" : "#f3f0e8",
@@ -501,9 +541,8 @@ export default async function MagnetPageRoute({
               const rightLine2 = rightParts[1] || defaultRight2;
 
               return (
-                <header className={`w-full border-b px-6 sm:px-10 py-5 grid grid-cols-1 md:grid-cols-3 items-end gap-4 ${
-                  isDark ? "border-white/20" : "border-[#151515]"
-                }`}>
+                <header className={`w-full border-b px-6 sm:px-10 py-5 grid grid-cols-1 md:grid-cols-3 items-end gap-4 ${isDark ? "border-white/20" : "border-[#151515]"
+                  }`}>
                   {/* Left: Vol & Issue */}
                   <div className="text-left font-sans text-[10px] sm:text-[11px] font-bold uppercase tracking-[0.18em] leading-tight opacity-90 min-h-[34px] flex items-end">
                     {!isLeftHidden ? (
@@ -519,15 +558,13 @@ export default async function MagnetPageRoute({
                   {/* Center: Brand Logo + Brand Title */}
                   <div className="flex items-center justify-center gap-2.5 sm:gap-3.5 text-center">
                     {logo && (
-                      <div className={`h-8 w-8 sm:h-10 sm:w-10 rounded-xl overflow-hidden shadow-sm border shrink-0 bg-transparent ${
-                        isDark ? "border-white/20" : "border-[#151515]/20"
-                      }`}>
+                      <div className={`h-8 w-8 sm:h-10 sm:w-10 rounded-xl overflow-hidden shadow-sm border shrink-0 bg-transparent ${isDark ? "border-white/20" : "border-[#151515]/20"
+                        }`}>
                         <img src={logo} alt={businessName} className="h-full w-full object-cover" />
                       </div>
                     )}
-                    <h1 className={`text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black tracking-[-0.02em] uppercase font-sans leading-none ${
-                      isDark ? "text-[#eae8e3]" : "text-[#151515]"
-                    }`}>
+                    <h1 className={`text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black tracking-[-0.02em] uppercase font-sans leading-none ${isDark ? "text-[#eae8e3]" : "text-[#151515]"
+                      }`}>
                       {businessName || "EDITORIAL BOARD"}
                     </h1>
                   </div>
@@ -564,9 +601,8 @@ export default async function MagnetPageRoute({
 
             {/* 3. HERO SECTION (FEATURE STORY WITH WATERMARK & HEADLINE) */}
             <div
-              className={`relative min-h-[480px] sm:min-h-[540px] md:min-h-[580px] flex flex-col justify-between p-6 sm:p-10 md:p-14 border-b overflow-hidden ${
-                isDark ? "border-white/20" : "border-[#151515]"
-              }`}
+              className={`relative min-h-[480px] sm:min-h-[540px] md:min-h-[580px] flex flex-col justify-between p-6 sm:p-10 md:p-14 border-b overflow-hidden ${isDark ? "border-white/20" : "border-[#151515]"
+                }`}
               style={{
                 backgroundImage: `linear-gradient(90deg, rgba(12,12,12,0.92) 0%, rgba(12,12,12,0.6) 55%, rgba(12,12,12,0.15) 100%), url(${activeImageUrl && activeImageUrl.trim() !== "" ? activeImageUrl : "https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=1600&q=80"})`,
                 backgroundSize: "cover",
@@ -607,19 +643,18 @@ export default async function MagnetPageRoute({
                   const displayBullets: string[] = hasCustomBullets
                     ? page.bullets!
                     : [
-                        "The first seven seconds ::: Seven opening structures that create curiosity without manufacturing noise.",
-                        "Build a visual memory ::: How contrast, rhythm, and restraint turn information into recognition.",
-                        "Anatomy of the share ::: Twelve remarkable posts, dismantled to reveal the ideas underneath.",
-                      ];
+                      "The first seven seconds ::: Seven opening structures that create curiosity without manufacturing noise.",
+                      "Build a visual memory ::: How contrast, rhythm, and restraint turn information into recognition.",
+                      "Anatomy of the share ::: Twelve remarkable posts, dismantled to reveal the ideas underneath.",
+                    ];
 
                   if (displayBullets.length === 0) return null;
 
                   return (
                     <div className="space-y-6">
                       {/* Header: INSIDE THIS ISSUE | CONTENTS 01-03 */}
-                      <div className={`flex items-center justify-between pb-2.5 border-b text-[10px] sm:text-[11px] font-sans font-bold uppercase tracking-[0.18em] ${
-                        isDark ? "border-white/20" : "border-[#151515]"
-                      }`}>
+                      <div className={`flex items-center justify-between pb-2.5 border-b text-[10px] sm:text-[11px] font-sans font-bold uppercase tracking-[0.18em] ${isDark ? "border-white/20" : "border-[#151515]"
+                        }`}>
                         <span>{page.bulletsTitle || "INSIDE THIS ISSUE"}</span>
                         <span>CONTENTS 01—0{displayBullets.length}</span>
                       </div>
@@ -635,30 +670,26 @@ export default async function MagnetPageRoute({
                           return (
                             <div key={idx} className="py-5 sm:py-6 flex items-start justify-between gap-4 group">
                               <div className="flex items-start gap-4 sm:gap-6 flex-1">
-                                <span className={`font-serif italic text-2xl sm:text-3xl font-normal shrink-0 w-8 ${
-                                  isDark ? "text-[#eae8e3]" : "text-[#151515]"
-                                }`}>
+                                <span className={`font-serif italic text-2xl sm:text-3xl font-normal shrink-0 w-8 ${isDark ? "text-[#eae8e3]" : "text-[#151515]"
+                                  }`}>
                                   {numStr}
                                 </span>
                                 <div className="space-y-1 flex-1">
-                                  <h3 className={`font-serif font-bold text-xl sm:text-2xl leading-snug ${
-                                    isDark ? "text-[#eae8e3]" : "text-[#151515]"
-                                  }`}>
+                                  <h3 className={`font-serif font-bold text-xl sm:text-2xl leading-snug ${isDark ? "text-[#eae8e3]" : "text-[#151515]"
+                                    }`}>
                                     {itemTitle}
                                   </h3>
                                   {itemDesc && (
-                                    <p className={`text-xs sm:text-sm font-sans leading-relaxed ${
-                                      isDark ? "text-[#eae8e3]/80" : "text-[#151515]/80"
-                                    }`}>
+                                    <p className={`text-xs sm:text-sm font-sans leading-relaxed ${isDark ? "text-[#eae8e3]/80" : "text-[#151515]/80"
+                                      }`}>
                                       {itemDesc}
                                     </p>
                                   )}
                                 </div>
                               </div>
                               <div className="pt-1">
-                                <svg className={`w-5 h-5 opacity-60 group-hover:opacity-100 transition-opacity ${
-                                  isDark ? "text-[#eae8e3]" : "text-[#151515]"
-                                }`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <svg className={`w-5 h-5 opacity-60 group-hover:opacity-100 transition-opacity ${isDark ? "text-[#eae8e3]" : "text-[#151515]"
+                                  }`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 17L17 7M17 7H7M17 7V17" />
                                 </svg>
                               </div>
@@ -672,9 +703,8 @@ export default async function MagnetPageRoute({
 
                 {/* Pull Quote Box with Blue Top Bar */}
                 {page.pitch !== "__hidden__" && page.pitch !== "__none__" && (
-                  <div className={`w-full overflow-hidden border-t-4 border-[#2544d8] p-6 sm:p-8 space-y-3 ${
-                    isDark ? "bg-[#1e1e24]" : "bg-[#e7e2d7]"
-                  }`}>
+                  <div className={`w-full overflow-hidden border-t-4 border-[#2544d8] p-6 sm:p-8 space-y-3 ${isDark ? "bg-[#1e1e24]" : "bg-[#e7e2d7]"
+                    }`}>
                     {(() => {
                       const defaultQuotePlaceholder = "“Good work earns attention once. A distinct point of view earns it again.”";
                       const defaultAuthorPlaceholder = `— ${businessName || "EDITORIAL BOARD"}, EDITOR AT LARGE`;
@@ -683,14 +713,12 @@ export default async function MagnetPageRoute({
                       const quoteAuthor = pitchParts[1]?.trim() || "";
                       return (
                         <>
-                          <blockquote className={`font-serif italic text-lg sm:text-xl leading-snug ${
-                            isDark ? "text-[#eae8e3]" : "text-[#151515]"
-                          }`}>
+                          <blockquote className={`font-serif italic text-lg sm:text-xl leading-snug ${isDark ? "text-[#eae8e3]" : "text-[#151515]"
+                            }`}>
                             {quoteText || defaultQuotePlaceholder}
                           </blockquote>
-                          <div className={`text-[10px] sm:text-[11px] font-sans font-bold uppercase tracking-[0.18em] ${
-                            isDark ? "text-[#eae8e3]/80" : "text-[#151515]/80"
-                          }`}>
+                          <div className={`text-[10px] sm:text-[11px] font-sans font-bold uppercase tracking-[0.18em] ${isDark ? "text-[#eae8e3]/80" : "text-[#151515]/80"
+                            }`}>
                             {quoteAuthor || defaultAuthorPlaceholder}
                           </div>
                         </>
@@ -701,19 +729,16 @@ export default async function MagnetPageRoute({
               </div>
 
               {/* RIGHT COLUMN: Digital Edition Form Panel (~35% width) */}
-              <div className={`lg:col-span-4 border-t lg:border-t-0 lg:border-l p-6 sm:p-10 flex flex-col justify-start space-y-6 ${
-                isDark ? "border-white/20" : "border-[#151515]"
-              }`}>
-                <div className={`text-[10px] sm:text-[11px] font-sans font-bold uppercase tracking-[0.18em] ${
-                  isDark ? "text-blue-400" : "text-[#2544d8]"
+              <div className={`lg:col-span-4 border-t lg:border-t-0 lg:border-l p-6 sm:p-10 flex flex-col justify-start space-y-6 ${isDark ? "border-white/20" : "border-[#151515]"
                 }`}>
+                <div className={`text-[10px] sm:text-[11px] font-sans font-bold uppercase tracking-[0.18em] ${isDark ? "text-blue-400" : "text-[#2544d8]"
+                  }`}>
                   DIGITAL EDITION
                 </div>
 
                 <div className="space-y-2">
-                  <h3 className={`font-serif text-3xl sm:text-4xl font-normal leading-tight ${
-                    isDark ? "text-[#eae8e3]" : "text-[#151515]"
-                  }`}>
+                  <h3 className={`font-serif text-3xl sm:text-4xl font-normal leading-tight ${isDark ? "text-[#eae8e3]" : "text-[#151515]"
+                    }`}>
                     {page.formTitle || "Keep the issue."}
                   </h3>
                   {page.formSubtitle && (
@@ -828,7 +853,7 @@ export default async function MagnetPageRoute({
                 <>
                   {parts.map((part, i) => {
                     if ((part.startsWith("*") && part.endsWith("*") && part.length > 2) ||
-                        (part.startsWith("_") && part.endsWith("_") && part.length > 2)) {
+                      (part.startsWith("_") && part.endsWith("_") && part.length > 2)) {
                       return (
                         <em key={i} style={{ color: accent, fontFamily: "Georgia, 'Times New Roman', serif", fontStyle: "italic", display: "inline" }}>
                           {part.slice(1, -1)}
@@ -876,8 +901,8 @@ export default async function MagnetPageRoute({
             const defaultProofPoints = ["3-minute read", "No technical jargon", "No AI noise"];
             const proofPoints = !isProofHidden
               ? (page.mastheadRight && page.mastheadRight.trim()
-                  ? page.mastheadRight.split(":::").map((p: string) => p.trim()).filter(Boolean)
-                  : defaultProofPoints)
+                ? page.mastheadRight.split(":::").map((p: string) => p.trim()).filter(Boolean)
+                : defaultProofPoints)
               : [];
 
             return (
@@ -1468,9 +1493,8 @@ export default async function MagnetPageRoute({
                         return (
                           <article
                             key={idx}
-                            className={`p-6 sm:py-7 sm:px-8 flex flex-col justify-between ${
-                              idx < trackItems.length - 1 ? "md:border-r border-b md:border-b-0" : ""
-                            }`}
+                            className={`p-6 sm:py-7 sm:px-8 flex flex-col justify-between ${idx < trackItems.length - 1 ? "md:border-r border-b md:border-b-0" : ""
+                              }`}
                             style={{ borderColor }}
                           >
                             <div className="space-y-2">
@@ -1539,9 +1563,8 @@ export default async function MagnetPageRoute({
                       <img
                         src={logo}
                         alt={businessName}
-                        className={`w-11 h-11 rounded-full border object-cover shrink-0 shadow-xs ${
-                          themeMode === "dark" ? "border-zinc-700" : "border-zinc-200"
-                        }`}
+                        className={`w-11 h-11 rounded-full border object-cover shrink-0 shadow-xs ${themeMode === "dark" ? "border-zinc-700" : "border-zinc-200"
+                          }`}
                       />
                     ) : (
                       <div
@@ -1628,9 +1651,9 @@ export default async function MagnetPageRoute({
                           style={{ backgroundColor: `${brandColor}22` }}
                         >
                           <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke={brandColor} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/>
-                            <path d="M6 6h10"/>
-                            <path d="M6 10h10"/>
+                            <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z" />
+                            <path d="M6 6h10" />
+                            <path d="M6 10h10" />
                           </svg>
                         </div>
                         <div>
@@ -1727,7 +1750,7 @@ export default async function MagnetPageRoute({
 
                   <p className="text-center text-[11px] leading-5 text-zinc-500 dark:text-zinc-400 flex items-center justify-center gap-1.5 pt-1">
                     <svg className="w-3.5 h-3.5 text-emerald-500 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
                     </svg>
                     <span>Zero spam. You’ll receive the PDF immediately and high-value insights.</span>
                   </p>
@@ -1752,16 +1775,14 @@ export default async function MagnetPageRoute({
         ) : isTemplate6 ? (
           /* TEMPLATE 6: Monograph Editorial Publication */
           <div
-            className={`w-full flex-1 flex flex-col justify-center py-4 sm:py-8 max-w-[1160px] mx-auto transition-colors ${
-              themeMode === "dark" ? "text-[#fcfaf8]" : "text-[#1c1917]"
-            }`}
+            className={`w-full flex-1 flex flex-col justify-center py-4 sm:py-8 max-w-[1160px] mx-auto transition-colors ${themeMode === "dark" ? "text-[#fcfaf8]" : "text-[#1c1917]"
+              }`}
             style={{ fontFamily: "'Manrope', -apple-system, BlinkMacSystemFont, sans-serif" }}
           >
             {/* Masthead Header */}
             <header
-              className={`flex justify-between items-end pb-5 border-b transition-colors ${
-                themeMode === "dark" ? "border-[#33302c]" : "border-[#d9d4cf]"
-              }`}
+              className={`flex justify-between items-end pb-5 border-b transition-colors ${themeMode === "dark" ? "border-[#33302c]" : "border-[#d9d4cf]"
+                }`}
             >
               <div>
                 <div
@@ -1796,9 +1817,8 @@ export default async function MagnetPageRoute({
               <section className="space-y-7 min-w-0">
                 {/* Visual Cover */}
                 <div
-                  className={`relative w-full aspect-[3/2] rounded-xs overflow-hidden border transition-all ${
-                    themeMode === "dark" ? "border-[#33302c] bg-[#1a1918]" : "border-[#ded9d4] bg-[#f5efe9]"
-                  }`}
+                  className={`relative w-full aspect-[3/2] rounded-xs overflow-hidden border transition-all ${themeMode === "dark" ? "border-[#33302c] bg-[#1a1918]" : "border-[#ded9d4] bg-[#f5efe9]"
+                    }`}
                 >
                   {activeImageUrl && activeImageUrl.trim() !== "" ? (
                     <img
@@ -1879,9 +1899,8 @@ export default async function MagnetPageRoute({
                 {/* Chapters */}
                 {page.bullets && page.bullets.length > 0 && page.bullets.some((b: string) => b && b.trim().length > 0) && (
                   <div
-                    className={`pt-7 border-t transition-colors ${
-                      themeMode === "dark" ? "border-[#33302c]" : "border-[#ded9d4]"
-                    }`}
+                    className={`pt-7 border-t transition-colors ${themeMode === "dark" ? "border-[#33302c]" : "border-[#ded9d4]"
+                      }`}
                   >
                     <div
                       className="text-[10px] font-bold tracking-[0.16em] uppercase mb-3"
@@ -2036,9 +2055,8 @@ export default async function MagnetPageRoute({
 
             {/* Footer */}
             <footer
-              className={`border-t mt-14 pt-6 pb-4 text-[9px] font-bold tracking-[0.14em] uppercase transition-colors text-center sm:text-left ${
-                themeMode === "dark" ? "border-[#33302c] text-[#8a817a]" : "border-[#ded9d4] text-[#8a817a]"
-              }`}
+              className={`border-t mt-14 pt-6 pb-4 text-[9px] font-bold tracking-[0.14em] uppercase transition-colors text-center sm:text-left ${themeMode === "dark" ? "border-[#33302c] text-[#8a817a]" : "border-[#ded9d4] text-[#8a817a]"
+                }`}
             >
               © {new Date().getFullYear()} {businessName || "Vane Strategic Partners"} · Private circulation
             </footer>
@@ -2139,41 +2157,36 @@ export default async function MagnetPageRoute({
 
                 {/* Sheet Container - Expanded to 92-96% Desktop Width */}
                 <div
-                  className={`w-full max-w-[96%] sm:max-w-[94%] xl:max-w-[92%] 2xl:max-w-[1700px] mx-auto transition-all duration-200 border-2 overflow-hidden ${
-                    themeMode === "dark"
-                      ? "bg-[#15161d] border-[#2e303d] shadow-[10px_10px_0px_#000000] text-[#f4f4f5]"
-                      : "bg-[#f8f4e9] border-[#141414] shadow-[10px_10px_0px_#141414] text-[#141414]"
-                  }`}
+                  className={`w-full max-w-[96%] sm:max-w-[94%] xl:max-w-[92%] 2xl:max-w-[1700px] mx-auto transition-all duration-200 border-2 overflow-hidden ${themeMode === "dark"
+                    ? "bg-[#15161d] border-[#2e303d] shadow-[10px_10px_0px_#000000] text-[#f4f4f5]"
+                    : "bg-[#f8f4e9] border-[#141414] shadow-[10px_10px_0px_#141414] text-[#141414]"
+                    }`}
                 >
                   {/* Masthead Header */}
                   <header
-                    className={`flex flex-wrap justify-between items-center px-5 py-4 sm:px-8 sm:py-5 border-b-2 transition-colors ${
-                      themeMode === "dark" ? "border-[#2e303d] bg-[#121319]" : "border-[#141414] bg-[#f8f4e9]"
-                    }`}
+                    className={`flex flex-wrap justify-between items-center px-5 py-4 sm:px-8 sm:py-5 border-b-2 transition-colors ${themeMode === "dark" ? "border-[#2e303d] bg-[#121319]" : "border-[#141414] bg-[#f8f4e9]"
+                      }`}
                   >
                     <div className="flex items-center gap-3">
                       {logo && (
                         <img
                           src={logo}
                           alt="Logo"
-                          className={`h-9 w-9 object-cover border-2 shrink-0 ${
-                            themeMode === "dark" ? "border-[#2e303d]" : "border-[#141414]"
-                          }`}
+                          className={`h-9 w-9 object-cover border-2 shrink-0 ${themeMode === "dark" ? "border-[#2e303d]" : "border-[#141414]"
+                            }`}
                         />
                       )}
                       <div
-                        className={`font-shrikhand text-2xl sm:text-3xl tracking-wide ${
-                          themeMode === "dark" ? "text-white" : "text-[#141414]"
-                        }`}
+                        className={`font-shrikhand text-2xl sm:text-3xl tracking-wide ${themeMode === "dark" ? "text-white" : "text-[#141414]"
+                          }`}
                       >
                         {(page as any).mastheadLeft || businessName || "Odd Hours"}
                       </div>
                     </div>
 
                     <div
-                      className={`font-dm-sans text-[11px] sm:text-xs font-bold tracking-[0.14em] uppercase ${
-                        themeMode === "dark" ? "text-zinc-400" : "text-[#141414]"
-                      }`}
+                      className={`font-dm-sans text-[11px] sm:text-xs font-bold tracking-[0.14em] uppercase ${themeMode === "dark" ? "text-zinc-400" : "text-[#141414]"
+                        }`}
                     >
                       {(page as any).mastheadRight || "CREATIVE FIELD NOTES · #07"}
                     </div>
@@ -2183,9 +2196,8 @@ export default async function MagnetPageRoute({
                   <section className="grid grid-cols-1 lg:grid-cols-[0.95fr_1.05fr] min-h-[520px] xl:min-h-[580px]">
                     {/* Left Poster Column */}
                     <div
-                      className={`relative min-h-[380px] sm:min-h-[460px] lg:min-h-[540px] xl:min-h-[580px] border-b-2 lg:border-b-0 lg:border-r-2 overflow-hidden flex items-center justify-center ${
-                        themeMode === "dark" ? "border-[#2e303d] bg-[#1a1b24]" : "border-[#141414] bg-[#f5ed21]"
-                      }`}
+                      className={`relative min-h-[380px] sm:min-h-[460px] lg:min-h-[540px] xl:min-h-[580px] border-b-2 lg:border-b-0 lg:border-r-2 overflow-hidden flex items-center justify-center ${themeMode === "dark" ? "border-[#2e303d] bg-[#1a1b24]" : "border-[#141414] bg-[#f5ed21]"
+                        }`}
                     >
                       {activeImageUrl && activeImageUrl.trim() !== "" ? (
                         <img
@@ -2208,18 +2220,16 @@ export default async function MagnetPageRoute({
 
                           <div className="relative z-10 flex justify-between items-start">
                             <span
-                              className={`font-dm-sans text-[10px] sm:text-xs font-black uppercase px-2.5 py-1 border-2 tracking-wider ${
-                                themeMode === "dark"
-                                  ? "bg-black text-[#f5ed21] border-[#f5ed21]"
-                                  : "bg-[#141414] text-white border-[#141414]"
-                              }`}
+                              className={`font-dm-sans text-[10px] sm:text-xs font-black uppercase px-2.5 py-1 border-2 tracking-wider ${themeMode === "dark"
+                                ? "bg-black text-[#f5ed21] border-[#f5ed21]"
+                                : "bg-[#141414] text-white border-[#141414]"
+                                }`}
                             >
                               VOL. {new Date().getFullYear()}
                             </span>
                             <span
-                              className={`font-shrikhand text-sm uppercase px-2 py-0.5 ${
-                                themeMode === "dark" ? "text-zinc-400" : "text-[#141414]"
-                              }`}
+                              className={`font-shrikhand text-sm uppercase px-2 py-0.5 ${themeMode === "dark" ? "text-zinc-400" : "text-[#141414]"
+                                }`}
                             >
                               #07
                             </span>
@@ -2227,11 +2237,10 @@ export default async function MagnetPageRoute({
 
                           <div className="relative z-10 my-auto text-center py-6">
                             <div
-                              className={`inline-block font-shrikhand text-4xl sm:text-6xl lg:text-7xl leading-[0.9] tracking-tight uppercase p-5 sm:p-7 border-2 ${
-                                themeMode === "dark"
-                                  ? "bg-[#121319]/90 text-white border-[#2e303d] shadow-[4px_4px_0px_#000000]"
-                                  : "bg-white text-[#1554db] border-[#141414] shadow-[4px_4px_0px_#141414]"
-                              }`}
+                              className={`inline-block font-shrikhand text-4xl sm:text-6xl lg:text-7xl leading-[0.9] tracking-tight uppercase p-5 sm:p-7 border-2 ${themeMode === "dark"
+                                ? "bg-[#121319]/90 text-white border-[#2e303d] shadow-[4px_4px_0px_#000000]"
+                                : "bg-white text-[#1554db] border-[#141414] shadow-[4px_4px_0px_#141414]"
+                                }`}
                             >
                               <span style={{ color: accentColor }}>
                                 CREATIVE
@@ -2243,11 +2252,10 @@ export default async function MagnetPageRoute({
 
                           <div className="relative z-10 text-center">
                             <span
-                              className={`inline-block font-dm-sans text-[11px] font-bold uppercase tracking-widest px-3 py-1 border-2 ${
-                                themeMode === "dark"
-                                  ? "bg-[#252836] text-white border-[#2e303d]"
-                                  : "bg-[#f8f4e9] text-[#141414] border-[#141414]"
-                              }`}
+                              className={`inline-block font-dm-sans text-[11px] font-bold uppercase tracking-widest px-3 py-1 border-2 ${themeMode === "dark"
+                                ? "bg-[#252836] text-white border-[#2e303d]"
+                                : "bg-[#f8f4e9] text-[#141414] border-[#141414]"
+                                }`}
                             >
                               ★ ARCHIVE EDITION ★
                             </span>
@@ -2257,11 +2265,10 @@ export default async function MagnetPageRoute({
 
                       {/* Circular Sticker Badge */}
                       <div
-                        className={`absolute top-6 left-6 rounded-full w-[100px] h-[100px] sm:w-[115px] sm:h-[115px] flex flex-col items-center justify-center text-center font-dm-sans font-black text-[11px] sm:text-[12px] leading-tight select-none border-2 transition-transform duration-300 hover:scale-105 ${
-                          themeMode === "dark"
-                            ? "bg-[#ff3366] text-white border-[#2e303d] shadow-[4px_4px_0px_#000000]"
-                            : "bg-[#ff4d73] text-white border-[#141414] shadow-[4px_4px_0px_#141414]"
-                        }`}
+                        className={`absolute top-6 left-6 rounded-full w-[100px] h-[100px] sm:w-[115px] sm:h-[115px] flex flex-col items-center justify-center text-center font-dm-sans font-black text-[11px] sm:text-[12px] leading-tight select-none border-2 transition-transform duration-300 hover:scale-105 ${themeMode === "dark"
+                          ? "bg-[#ff3366] text-white border-[#2e303d] shadow-[4px_4px_0px_#000000]"
+                          : "bg-[#ff4d73] text-white border-[#141414] shadow-[4px_4px_0px_#141414]"
+                          }`}
                         style={{
                           transform: "rotate(-10deg)",
                         }}
@@ -2274,9 +2281,8 @@ export default async function MagnetPageRoute({
 
                     {/* Right Copy Column */}
                     <div
-                      className={`p-6 sm:p-10 lg:p-12 xl:p-14 flex flex-col justify-between transition-colors ${
-                        themeMode === "dark" ? "bg-[#15161d]" : "bg-[#f8f4e9]"
-                      }`}
+                      className={`p-6 sm:p-10 lg:p-12 xl:p-14 flex flex-col justify-between transition-colors ${themeMode === "dark" ? "bg-[#15161d]" : "bg-[#f8f4e9]"
+                        }`}
                     >
                       <div>
                         {/* Taped Category Badge */}
@@ -2318,9 +2324,8 @@ export default async function MagnetPageRoute({
 
                         {/* Subheadline & Pitch Paragraph */}
                         <p
-                          className={`font-dm-sans text-base sm:text-lg leading-relaxed max-w-[560px] font-medium ${
-                            themeMode === "dark" ? "text-zinc-300" : "text-[#141414]"
-                          }`}
+                          className={`font-dm-sans text-base sm:text-lg leading-relaxed max-w-[560px] font-medium ${themeMode === "dark" ? "text-zinc-300" : "text-[#141414]"
+                            }`}
                         >
                           {page.subheadline ||
                             page.pitch ||
@@ -2330,9 +2335,8 @@ export default async function MagnetPageRoute({
 
                       {/* Micro Badge */}
                       <div
-                        className={`pt-6 mt-6 border-t-2 text-[10px] font-dm-sans font-bold uppercase tracking-widest flex items-center justify-between ${
-                          themeMode === "dark" ? "border-[#2e303d] text-zinc-500" : "border-[#141414]/15 text-[#141414]/60"
-                        }`}
+                        className={`pt-6 mt-6 border-t-2 text-[10px] font-dm-sans font-bold uppercase tracking-widest flex items-center justify-between ${themeMode === "dark" ? "border-[#2e303d] text-zinc-500" : "border-[#141414]/15 text-[#141414]/60"
+                          }`}
                       >
                         <span>ZINE DISPATCH · UNRESTRICTED ACCESS</span>
                         <span>EST. {new Date().getFullYear()}</span>
@@ -2342,21 +2346,18 @@ export default async function MagnetPageRoute({
 
                   {/* Bottom Section: 3 Bits + Signup Box */}
                   <section
-                    className={`grid grid-cols-1 lg:grid-cols-[1.2fr_0.8fr] border-t-2 transition-colors ${
-                      themeMode === "dark" ? "border-[#2e303d]" : "border-[#141414]"
-                    }`}
+                    className={`grid grid-cols-1 lg:grid-cols-[1.2fr_0.8fr] border-t-2 transition-colors ${themeMode === "dark" ? "border-[#2e303d]" : "border-[#141414]"
+                      }`}
                   >
                     {/* Left Column: 3 Bits */}
                     <div
-                      className={`border-b-2 lg:border-b-0 lg:border-r-2 grid grid-cols-1 ${
-                        currentBullets.length === 1
-                          ? "md:grid-cols-1"
-                          : currentBullets.length === 2
+                      className={`border-b-2 lg:border-b-0 lg:border-r-2 grid grid-cols-1 ${currentBullets.length === 1
+                        ? "md:grid-cols-1"
+                        : currentBullets.length === 2
                           ? "md:grid-cols-2"
                           : "md:grid-cols-3"
-                      } transition-colors ${
-                        themeMode === "dark" ? "border-[#2e303d] bg-[#121319]" : "border-[#141414] bg-[#f8f4e9]"
-                      }`}
+                        } transition-colors ${themeMode === "dark" ? "border-[#2e303d] bg-[#121319]" : "border-[#141414] bg-[#f8f4e9]"
+                        }`}
                     >
                       {currentBullets.map((bullet, idx) => {
                         const parsed = parseBullet(bullet, idx);
@@ -2366,9 +2367,8 @@ export default async function MagnetPageRoute({
                         return (
                           <article
                             key={idx}
-                            className={`p-6 sm:p-7 flex flex-col justify-between border-b-2 md:border-b-0 md:border-r-2 last:border-r-0 transition-colors ${
-                              themeMode === "dark" ? "border-[#2e303d]" : "border-[#141414]"
-                            }`}
+                            className={`p-6 sm:p-7 flex flex-col justify-between border-b-2 md:border-b-0 md:border-r-2 last:border-r-0 transition-colors ${themeMode === "dark" ? "border-[#2e303d]" : "border-[#141414]"
+                              }`}
                           >
                             <div>
                               {!isNumHidden && displayNum && (
@@ -2378,17 +2378,15 @@ export default async function MagnetPageRoute({
                               )}
 
                               <h3
-                                className={`font-dm-sans text-sm sm:text-base font-bold mb-1.5 ${
-                                  themeMode === "dark" ? "text-white" : "text-[#141414]"
-                                }`}
+                                className={`font-dm-sans text-sm sm:text-base font-bold mb-1.5 ${themeMode === "dark" ? "text-white" : "text-[#141414]"
+                                  }`}
                               >
                                 {parsed.title || `Framework ${(idx + 1).toString().padStart(2, "0")}`}
                               </h3>
 
                               <p
-                                className={`font-dm-sans text-xs leading-relaxed ${
-                                  themeMode === "dark" ? "text-zinc-400" : "text-[#141414]/80"
-                                }`}
+                                className={`font-dm-sans text-xs leading-relaxed ${themeMode === "dark" ? "text-zinc-400" : "text-[#141414]/80"
+                                  }`}
                               >
                                 {parsed.desc || "A tactical framework designed to deliver instant clarity and execution momentum."}
                               </p>
@@ -2483,11 +2481,10 @@ export default async function MagnetPageRoute({
 
             return (
               <div
-                className={`w-full flex-1 flex flex-col justify-between transition-colors duration-200 border-4 ${
-                  themeMode === "dark"
-                    ? "bg-[#0d0d0f] border-[#2a2a2e]"
-                    : "bg-[#f4ff3c] text-[#101010] border-[#101010]"
-                }`}
+                className={`w-full flex-1 flex flex-col justify-between transition-colors duration-200 border-4 ${themeMode === "dark"
+                  ? "bg-[#0d0d0f] border-[#2a2a2e]"
+                  : "bg-[#f4ff3c] text-[#101010] border-[#101010]"
+                  }`}
                 style={{
                   fontFamily: "'IBM Plex Mono', monospace, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas",
                   color: themeMode === "dark" ? "#ffffff" : "#101010",
@@ -2521,9 +2518,8 @@ export default async function MagnetPageRoute({
                 <div className="w-full flex-1 flex flex-col">
                   {/* Masthead Header */}
                   <header
-                    className={`grid grid-cols-1 sm:grid-cols-[1fr_auto] gap-3 px-5 py-4 sm:px-7 sm:py-5 border-b-4 items-center transition-colors ${
-                      themeMode === "dark" ? "border-[#2a2a2e] bg-[#121215]" : "border-[#101010] bg-[#f4ff3c]"
-                    }`}
+                    className={`grid grid-cols-1 sm:grid-cols-[1fr_auto] gap-3 px-5 py-4 sm:px-7 sm:py-5 border-b-4 items-center transition-colors ${themeMode === "dark" ? "border-[#2a2a2e] bg-[#121215]" : "border-[#101010] bg-[#f4ff3c]"
+                      }`}
                   >
                     <div className="flex items-center gap-3">
                       {logo && (
@@ -2534,18 +2530,16 @@ export default async function MagnetPageRoute({
                         />
                       )}
                       <div
-                        className={`font-archivo text-xl sm:text-2xl tracking-tight uppercase ${
-                          themeMode === "dark" ? "text-white" : "text-[#101010]"
-                        }`}
+                        className={`font-archivo text-xl sm:text-2xl tracking-tight uppercase ${themeMode === "dark" ? "text-white" : "text-[#101010]"
+                          }`}
                       >
                         {(page as any).mastheadLeft || businessName || "OUTPUT/INDEX"}
                       </div>
                     </div>
 
                     <div
-                      className={`font-ibm text-xs sm:text-[11px] font-semibold tracking-wider uppercase sm:text-right ${
-                        themeMode === "dark" ? "text-[#a1a1aa]" : "text-[#101010]"
-                      }`}
+                      className={`font-ibm text-xs sm:text-[11px] font-semibold tracking-wider uppercase sm:text-right ${themeMode === "dark" ? "text-[#a1a1aa]" : "text-[#101010]"
+                        }`}
                     >
                       {(page as any).mastheadRight || "FIELD MANUAL 009 · FREE PDF · 48 PAGES"}
                     </div>
@@ -2553,15 +2547,13 @@ export default async function MagnetPageRoute({
 
                   {/* Hero Section: Copy & Image */}
                   <section
-                    className={`grid grid-cols-1 lg:grid-cols-[52%_48%] border-b-4 transition-colors ${
-                      themeMode === "dark" ? "border-[#2a2a2e]" : "border-[#101010]"
-                    }`}
+                    className={`grid grid-cols-1 lg:grid-cols-[52%_48%] border-b-4 transition-colors ${themeMode === "dark" ? "border-[#2a2a2e]" : "border-[#101010]"
+                      }`}
                   >
                     {/* Left Column: Copy */}
                     <div
-                      className={`p-6 sm:p-10 lg:p-11 border-b-4 lg:border-b-0 lg:border-r-4 flex flex-col justify-between transition-colors ${
-                        themeMode === "dark" ? "border-[#2a2a2e] bg-[#0d0d0f]" : "border-[#101010] bg-[#f4ff3c]"
-                      }`}
+                      className={`p-6 sm:p-10 lg:p-11 border-b-4 lg:border-b-0 lg:border-r-4 flex flex-col justify-between transition-colors ${themeMode === "dark" ? "border-[#2a2a2e] bg-[#0d0d0f]" : "border-[#101010] bg-[#f4ff3c]"
+                        }`}
                     >
                       <div>
                         {/* Eyebrow badge */}
@@ -2580,9 +2572,8 @@ export default async function MagnetPageRoute({
 
                         {/* Headline */}
                         <h1
-                          className={`font-archivo text-4xl sm:text-6xl md:text-7xl lg:text-[76px] xl:text-[88px] leading-[0.88] tracking-tight uppercase mb-6 ${
-                            themeMode === "dark" ? "text-white" : "text-[#101010]"
-                          }`}
+                          className={`font-archivo text-4xl sm:text-6xl md:text-7xl lg:text-[76px] xl:text-[88px] leading-[0.88] tracking-tight uppercase mb-6 ${themeMode === "dark" ? "text-white" : "text-[#101010]"
+                            }`}
                           style={{ overflowWrap: "anywhere" }}
                         >
                           {activeHeadline || "Make Better Work. Faster."}
@@ -2590,9 +2581,8 @@ export default async function MagnetPageRoute({
 
                         {/* Paragraph / Pitch */}
                         <p
-                          className={`font-ibm text-sm sm:text-base leading-relaxed max-w-[570px] ${
-                            themeMode === "dark" ? "text-zinc-300" : "text-[#101010]"
-                          }`}
+                          className={`font-ibm text-sm sm:text-base leading-relaxed max-w-[570px] ${themeMode === "dark" ? "text-zinc-300" : "text-[#101010]"
+                            }`}
                         >
                           {page.subheadline ||
                             page.pitch ||
@@ -2601,9 +2591,8 @@ export default async function MagnetPageRoute({
                       </div>
 
                       <div
-                        className={`pt-8 mt-8 border-t-2 text-[10px] font-ibm font-semibold uppercase tracking-widest ${
-                          themeMode === "dark" ? "border-zinc-800 text-zinc-400" : "border-black/20 text-black/60"
-                        }`}
+                        className={`pt-8 mt-8 border-t-2 text-[10px] font-ibm font-semibold uppercase tracking-widest ${themeMode === "dark" ? "border-zinc-800 text-zinc-400" : "border-black/20 text-black/60"
+                          }`}
                       >
                         LEDGER REF: LM-{new Date().getFullYear()}-007 · VERIFIED OUTPUT
                       </div>
@@ -2611,9 +2600,8 @@ export default async function MagnetPageRoute({
 
                     {/* Right Column: Hero Cover Image & Stamp */}
                     <div
-                      className={`relative min-h-[380px] sm:min-h-[480px] lg:min-h-[560px] flex items-center justify-center overflow-hidden ${
-                        themeMode === "dark" ? "bg-[#151518]" : "bg-[#e5ef35]"
-                      }`}
+                      className={`relative min-h-[380px] sm:min-h-[480px] lg:min-h-[560px] flex items-center justify-center overflow-hidden ${themeMode === "dark" ? "bg-[#151518]" : "bg-[#e5ef35]"
+                        }`}
                     >
                       {activeImageUrl && activeImageUrl.trim() !== "" ? (
                         <img
@@ -2645,9 +2633,8 @@ export default async function MagnetPageRoute({
                               FIG. 07 / SCHEMATIC
                             </span>
                             <span
-                              className={`font-archivo text-xs px-2 py-1 uppercase ${
-                                themeMode === "dark" ? "text-zinc-400" : "text-black"
-                              }`}
+                              className={`font-archivo text-xs px-2 py-1 uppercase ${themeMode === "dark" ? "text-zinc-400" : "text-black"
+                                }`}
                             >
                               INDEX // {new Date().getFullYear()}
                             </span>
@@ -2659,25 +2646,24 @@ export default async function MagnetPageRoute({
                               style={
                                 themeMode === "dark"
                                   ? {
-                                      borderColor: darkAccent,
-                                      color: darkAccent,
-                                      backgroundColor: "rgba(0,0,0,0.7)",
-                                      boxShadow: `6px 6px 0px ${darkAccent}`,
-                                    }
+                                    borderColor: darkAccent,
+                                    color: darkAccent,
+                                    backgroundColor: "rgba(0,0,0,0.7)",
+                                    boxShadow: `6px 6px 0px ${darkAccent}`,
+                                  }
                                   : {
-                                      borderColor: "#101010",
-                                      color: "#101010",
-                                      backgroundColor: "rgba(255,255,255,0.7)",
-                                      boxShadow: "6px 6px 0px #101010",
-                                    }
+                                    borderColor: "#101010",
+                                    color: "#101010",
+                                    backgroundColor: "rgba(255,255,255,0.7)",
+                                    boxShadow: "6px 6px 0px #101010",
+                                  }
                               }
                             >
                               MANUAL
                             </div>
                             <p
-                              className={`font-ibm text-xs sm:text-sm font-bold uppercase tracking-widest mt-4 ${
-                                themeMode === "dark" ? "text-zinc-300" : "text-black"
-                              }`}
+                              className={`font-ibm text-xs sm:text-sm font-bold uppercase tracking-widest mt-4 ${themeMode === "dark" ? "text-zinc-300" : "text-black"
+                                }`}
                             >
                               {(page as any).mastheadLeft || businessName || "CORE SYSTEMS INDEX"}
                             </p>
@@ -2696,19 +2682,19 @@ export default async function MagnetPageRoute({
                         style={
                           themeMode === "dark"
                             ? {
-                                backgroundColor: "#18181b",
-                                color: darkAccent,
-                                borderColor: darkAccent,
-                                boxShadow: `4px 4px 0px ${darkAccent}`,
-                                transform: "rotate(-3deg)",
-                              }
+                              backgroundColor: "#18181b",
+                              color: darkAccent,
+                              borderColor: darkAccent,
+                              boxShadow: `4px 4px 0px ${darkAccent}`,
+                              transform: "rotate(-3deg)",
+                            }
                             : {
-                                backgroundColor: accentColor,
-                                color: contrastOnAccent,
-                                borderColor: "#101010",
-                                boxShadow: "4px 4px 0px rgba(0,0,0,1)",
-                                transform: "rotate(-3deg)",
-                              }
+                              backgroundColor: accentColor,
+                              color: contrastOnAccent,
+                              borderColor: "#101010",
+                              boxShadow: "4px 4px 0px rgba(0,0,0,1)",
+                              transform: "rotate(-3deg)",
+                            }
                         }
                       >
                         12,000+ READERS
@@ -2718,15 +2704,13 @@ export default async function MagnetPageRoute({
 
                   {/* Lower Section: Index & Form */}
                   <section
-                    className={`grid grid-cols-1 lg:grid-cols-2 transition-colors ${
-                      themeMode === "dark" ? "bg-[#0d0d0f]" : "bg-[#f4ff3c]"
-                    }`}
+                    className={`grid grid-cols-1 lg:grid-cols-2 transition-colors ${themeMode === "dark" ? "bg-[#0d0d0f]" : "bg-[#f4ff3c]"
+                      }`}
                   >
                     {/* Left Column: Chapters / Index */}
                     <div
-                      className={`border-b-4 lg:border-b-0 lg:border-r-4 transition-colors flex flex-col justify-between ${
-                        themeMode === "dark" ? "border-[#2a2a2e]" : "border-[#101010]"
-                      }`}
+                      className={`border-b-4 lg:border-b-0 lg:border-r-4 transition-colors flex flex-col justify-between ${themeMode === "dark" ? "border-[#2a2a2e]" : "border-[#101010]"
+                        }`}
                     >
                       <div>
                         <div
@@ -2747,10 +2731,10 @@ export default async function MagnetPageRoute({
                           const displayBullets = Array.isArray(page.bullets)
                             ? page.bullets
                             : [
-                                "THE FRICTION AUDIT — Find where good ideas go to die.",
-                                "DECISION VELOCITY — Stop waiting for perfect information.",
-                                "THE WEEKLY RESET — A 20-minute operating ritual.",
-                              ];
+                              "THE FRICTION AUDIT — Find where good ideas go to die.",
+                              "DECISION VELOCITY — Stop waiting for perfect information.",
+                              "THE WEEKLY RESET — A 20-minute operating ritual.",
+                            ];
 
                           if (displayBullets.length === 0) {
                             return null;
@@ -2779,11 +2763,10 @@ export default async function MagnetPageRoute({
                                 return (
                                   <div
                                     key={idx}
-                                    className={`grid grid-cols-[70px_1fr] sm:grid-cols-[90px_1fr] p-5 sm:p-6 items-start gap-4 border-b-2 transition-colors ${
-                                      themeMode === "dark"
-                                        ? "border-[#2a2a2e] hover:bg-[#15151a]"
-                                        : "border-[#101010] hover:bg-[#ebf533]"
-                                    }`}
+                                    className={`grid grid-cols-[70px_1fr] sm:grid-cols-[90px_1fr] p-5 sm:p-6 items-start gap-4 border-b-2 transition-colors ${themeMode === "dark"
+                                      ? "border-[#2a2a2e] hover:bg-[#15151a]"
+                                      : "border-[#101010] hover:bg-[#ebf533]"
+                                      }`}
                                   >
                                     <strong
                                       className="font-archivo text-2xl sm:text-3xl leading-none"
@@ -2793,17 +2776,15 @@ export default async function MagnetPageRoute({
                                     </strong>
                                     <div className="min-w-0 space-y-1">
                                       <div
-                                        className={`font-archivo text-base sm:text-lg uppercase tracking-tight ${
-                                          themeMode === "dark" ? "text-white" : "text-[#101010]"
-                                        }`}
+                                        className={`font-archivo text-base sm:text-lg uppercase tracking-tight ${themeMode === "dark" ? "text-white" : "text-[#101010]"
+                                          }`}
                                       >
                                         {title || `CHAPTER ${numStr}`}
                                       </div>
                                       {desc && (
                                         <div
-                                          className={`font-ibm text-xs sm:text-[13px] leading-relaxed ${
-                                            themeMode === "dark" ? "text-zinc-400" : "text-black/80"
-                                          }`}
+                                          className={`font-ibm text-xs sm:text-[13px] leading-relaxed ${themeMode === "dark" ? "text-zinc-400" : "text-black/80"
+                                            }`}
                                         >
                                           {desc}
                                         </div>
@@ -2820,11 +2801,10 @@ export default async function MagnetPageRoute({
 
                     {/* Right Column: Brutalist Form */}
                     <div
-                      className={`p-6 sm:p-10 lg:p-12 flex flex-col justify-between transition-colors ${
-                        themeMode === "dark"
-                          ? "bg-[#18181b] border-t-4 lg:border-t-0 border-[#2a2a2e]"
-                          : "text-[#101010]"
-                      }`}
+                      className={`p-6 sm:p-10 lg:p-12 flex flex-col justify-between transition-colors ${themeMode === "dark"
+                        ? "bg-[#18181b] border-t-4 lg:border-t-0 border-[#2a2a2e]"
+                        : "text-[#101010]"
+                        }`}
                       style={
                         themeMode !== "dark"
                           ? { backgroundColor: accentColor !== "#f4ff3c" ? accentColor : "#ff5a36", color: contrastOnAccent }
@@ -2841,9 +2821,8 @@ export default async function MagnetPageRoute({
 
                         {page.formSubtitle && (
                           <p
-                            className={`font-ibm text-xs sm:text-sm leading-relaxed mb-6 ${
-                              themeMode === "dark" ? "text-zinc-300" : (contrastOnAccent === "#ffffff" ? "text-white/90" : "text-[#101010]/90")
-                            }`}
+                            className={`font-ibm text-xs sm:text-sm leading-relaxed mb-6 ${themeMode === "dark" ? "text-zinc-300" : (contrastOnAccent === "#ffffff" ? "text-white/90" : "text-[#101010]/90")
+                              }`}
                           >
                             {page.formSubtitle}
                           </p>
@@ -2876,9 +2855,8 @@ export default async function MagnetPageRoute({
                       </div>
 
                       <div
-                        className={`pt-6 mt-6 border-t-2 text-[9px] sm:text-[10px] font-ibm font-bold uppercase tracking-wider flex justify-between items-center ${
-                          themeMode === "dark" ? "border-zinc-800 text-zinc-400" : (contrastOnAccent === "#ffffff" ? "border-white/20 text-white/80" : "border-black/20 text-black/70")
-                        }`}
+                        className={`pt-6 mt-6 border-t-2 text-[9px] sm:text-[10px] font-ibm font-bold uppercase tracking-wider flex justify-between items-center ${themeMode === "dark" ? "border-zinc-800 text-zinc-400" : (contrastOnAccent === "#ffffff" ? "border-white/20 text-white/80" : "border-black/20 text-black/70")
+                          }`}
                       >
                         <span className="flex items-center gap-1.5"><Lock className="h-3 w-3" /> ZERO SPAM PROMISE</span>
                         <span>INSTANT DISPATCH</span>
@@ -2889,9 +2867,8 @@ export default async function MagnetPageRoute({
 
                 {/* Bottom Ticker Marquee */}
                 <footer
-                  className={`w-full py-3 px-4 border-t-4 overflow-hidden font-ibm text-[11px] sm:text-xs font-bold uppercase tracking-widest transition-colors ${
-                    themeMode === "dark" ? "border-[#2a2a2e] bg-[#000000]" : "border-[#101010] bg-[#101010]"
-                  }`}
+                  className={`w-full py-3 px-4 border-t-4 overflow-hidden font-ibm text-[11px] sm:text-xs font-bold uppercase tracking-widest transition-colors ${themeMode === "dark" ? "border-[#2a2a2e] bg-[#000000]" : "border-[#101010] bg-[#101010]"
+                    }`}
                   style={{ color: themeMode === "dark" ? darkAccent : "#ffffff" }}
                 >
                   <div className="overflow-hidden whitespace-nowrap">
@@ -2931,8 +2908,8 @@ export default async function MagnetPageRoute({
             const displayBullets = isBulletsHidden
               ? []
               : Array.isArray(page.bullets) && page.bullets.length > 0
-              ? page.bullets
-              : defaultBullets;
+                ? page.bullets
+                : defaultBullets;
 
             const parseBullet = (item: string) => {
               if (!item) return { title: "", desc: "" };
@@ -2995,7 +2972,7 @@ export default async function MagnetPageRoute({
                 <>
                   {parts.map((part, i) => {
                     if ((part.startsWith("*") && part.endsWith("*") && part.length > 2) ||
-                        (part.startsWith("_") && part.endsWith("_") && part.length > 2)) {
+                      (part.startsWith("_") && part.endsWith("_") && part.length > 2)) {
                       return (
                         <em key={i} style={{ fontStyle: "normal", color: accentColor }}>
                           {part.slice(1, -1)}
@@ -3050,9 +3027,8 @@ export default async function MagnetPageRoute({
                     <section className="space-y-0 min-w-0">
                       {/* Headline */}
                       <h1
-                        className={`text-3xl sm:text-4xl lg:text-[46px] leading-[1.08] font-extrabold tracking-[-0.02em] mb-6 sm:mb-7 break-words [overflow-wrap:anywhere] ${
-                          isDark ? "text-white" : "text-[#111217]"
-                        }`}
+                        className={`text-3xl sm:text-4xl lg:text-[46px] leading-[1.08] font-extrabold tracking-[-0.02em] mb-6 sm:mb-7 break-words [overflow-wrap:anywhere] ${isDark ? "text-white" : "text-[#111217]"
+                          }`}
                       >
                         {renderHighlightedHeadline(activeHeadline)}
                       </h1>
@@ -3060,9 +3036,8 @@ export default async function MagnetPageRoute({
                       {/* Subheadline */}
                       {(page.subheadline || !activeHeadline) && (
                         <p
-                          className={`text-[16.5px] leading-[1.85] max-w-[620px] ${
-                            isDark ? "text-[#a9acb8]" : "text-[#4b5563]"
-                          }`}
+                          className={`text-[16.5px] leading-[1.85] max-w-[620px] ${isDark ? "text-[#a9acb8]" : "text-[#4b5563]"
+                            }`}
                         >
                           {page.subheadline ||
                             "A 42-page field guide to the organizational systems used by ambitious teams to maintain velocity without burning out."}
@@ -3106,17 +3081,15 @@ export default async function MagnetPageRoute({
                                   </span>
                                   <div className="min-w-0">
                                     <h3
-                                      className={`text-[15px] font-bold mb-1 leading-snug ${
-                                        isDark ? "text-white" : "text-[#111217]"
-                                      }`}
+                                      className={`text-[15px] font-bold mb-1 leading-snug ${isDark ? "text-white" : "text-[#111217]"
+                                        }`}
                                     >
                                       {parsed.title}
                                     </h3>
                                     {parsed.desc && (
                                       <p
-                                        className={`text-[13px] leading-[1.65] ${
-                                          isDark ? "text-[#9a9da9]" : "text-[#6b7280]"
-                                        }`}
+                                        className={`text-[13px] leading-[1.65] ${isDark ? "text-[#9a9da9]" : "text-[#6b7280]"
+                                          }`}
                                       >
                                         {parsed.desc}
                                       </p>
@@ -3136,16 +3109,14 @@ export default async function MagnetPageRoute({
                           style={{ borderLeft: `3px solid ${accentColor}` }}
                         >
                           <p
-                            className={`italic text-[14px] leading-[1.7] ${
-                              isDark ? "text-[#c9ccd6]" : "text-[#374151]"
-                            }`}
+                            className={`italic text-[14px] leading-[1.7] ${isDark ? "text-[#c9ccd6]" : "text-[#374151]"
+                              }`}
                           >
                             {parsedQuote}
                           </p>
                           <small
-                            className={`block text-[10px] font-bold tracking-[0.16em] uppercase mt-2 ${
-                              isDark ? "text-[#8b8e99]" : "text-[#9ca3af]"
-                            }`}
+                            className={`block text-[10px] font-bold tracking-[0.16em] uppercase mt-2 ${isDark ? "text-[#8b8e99]" : "text-[#9ca3af]"
+                              }`}
                           >
                             {parsedAuthor}
                           </small>
@@ -3166,24 +3137,21 @@ export default async function MagnetPageRoute({
 
                       {/* Sign-up Card */}
                       <div
-                        className={`rounded-[22px] p-7 sm:p-8 lg:p-9 border transition-all ${
-                          isDark
-                            ? "bg-[#14151b] border-[#26272f] shadow-2xl"
-                            : "bg-white border-[#e5e7eb] shadow-xl"
-                        }`}
+                        className={`rounded-[22px] p-7 sm:p-8 lg:p-9 border transition-all ${isDark
+                          ? "bg-[#14151b] border-[#26272f] shadow-2xl"
+                          : "bg-white border-[#e5e7eb] shadow-xl"
+                          }`}
                       >
                         <h2
-                          className={`text-[21px] font-extrabold mb-2 ${
-                            isDark ? "text-white" : "text-[#111217]"
-                          }`}
+                          className={`text-[21px] font-extrabold mb-2 ${isDark ? "text-white" : "text-[#111217]"
+                            }`}
                         >
                           {page.formTitle || "Get the full report"}
                         </h2>
 
                         <p
-                          className={`text-[12.5px] leading-[1.6] mb-5 ${
-                            isDark ? "text-[#9a9da9]" : "text-[#6b7280]"
-                          }`}
+                          className={`text-[12.5px] leading-[1.6] mb-5 ${isDark ? "text-[#9a9da9]" : "text-[#6b7280]"
+                            }`}
                         >
                           {page.formSubtitle ||
                             "The PDF and supplemental worksheets will arrive directly in your inbox."}
@@ -3216,9 +3184,8 @@ export default async function MagnetPageRoute({
 
                         {/* Fine Print Note */}
                         <p
-                          className={`text-center text-[10.5px] mt-4 ${
-                            isDark ? "text-[#7d8090]" : "text-[#9ca3af]"
-                          }`}
+                          className={`text-center text-[10.5px] mt-4 ${isDark ? "text-[#7d8090]" : "text-[#9ca3af]"
+                            }`}
                         >
                           No noise. Only occasional, high-signal notes.
                         </p>
@@ -3279,7 +3246,7 @@ export default async function MagnetPageRoute({
           let onCustomDomain = false;
           try {
             onCustomDomain = Boolean(headers().get("x-custom-domain"));
-          } catch {}
+          } catch { }
           if (onCustomDomain) return null;
           return (
             <>

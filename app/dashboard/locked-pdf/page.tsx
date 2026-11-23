@@ -50,6 +50,7 @@ import {
 } from "@/lib/store";
 import type { Account, MagnetPage } from "@/lib/data";
 import { getMagnetSortTimestamp } from "@/lib/utils";
+import { lockedPdfPath, uniqueSlug } from "@/lib/locked-pdf-url";
 import { AppleCheckbox } from "@/components/leads/AppleCheckbox";
 import { ApplePagination } from "@/components/ui/ApplePagination";
 
@@ -110,6 +111,11 @@ export default function LockedPdfPage() {
   const router = useRouter();
   const [account, setAccount] = useState<Account | null>(null);
   const [pages, setPages] = useState<MagnetPage[]>([]);
+  // Branded public path (/<username>/<slug>) that resolves to exactly this PDF
+  const pdfPath = useCallback(
+    (pdf: MagnetPage) => lockedPdfPath(account?.username, pdf, pages),
+    [account?.username, pages]
+  );
   const [selectedPageId, setSelectedPageId] = useState<string | null>(null);
   const [mobileInspectorOpen, setMobileInspectorOpen] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -767,10 +773,14 @@ export default function LockedPdfPage() {
   const handleCreateLockedPdf = () => {
     const name = createMagnetName.trim() || "Locked PDF Document";
     const rawSlug = (isCustomSlugEdited ? customSlug : (customSlug || derivedSlug)).trim();
-    const cleanSlug = rawSlug
-      .toLowerCase()
-      .replace(/[^a-z0-9\s-]/g, "")
-      .replace(/\s+/g, "-") || "locked-pdf";
+    // Unique among all this user's pages so /<username>/<slug> always opens this PDF
+    const cleanSlug = uniqueSlug(
+      rawSlug
+        .toLowerCase()
+        .replace(/[^a-z0-9\s-]/g, "")
+        .replace(/\s+/g, "-") || "locked-pdf",
+      pages
+    );
     const newId = `page-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
 
     const newMagnet: MagnetPage = {
@@ -1022,244 +1032,89 @@ export default function LockedPdfPage() {
               id="locked-pdf-list-container"
               layout
               transition={{ layout: { type: "spring", stiffness: 450, damping: 32, mass: 0.6 } }}
-              className={`flex flex-col space-y-4 min-w-0 max-w-full ${
-                activePage ? "w-full lg:w-[65%]" : "w-full"
-              }`}
+              className={`flex flex-col space-y-4 min-w-0 max-w-full ${activePage ? "w-full lg:w-[65%]" : "w-full"
+                }`}
             >
               {/* Search & Filter Bar */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3 w-full max-w-full min-w-0">
-              <div className="flex items-center gap-2 flex-1 rounded-xl bg-zinc-50 dark:bg-[#1a1a1a] px-3.5 py-2 border border-zinc-200/60 dark:border-white/[0.08] focus-within:border-[#0066B2] dark:focus-within:border-[#0066B2] min-w-0">
-                <Search className="h-4 w-4 text-zinc-400 shrink-0" />
-                <input
-                  type="text"
-                  placeholder="Filter locked PDFs by title or slug..."
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  className="bg-transparent text-xs text-zinc-900 dark:text-white outline-none placeholder:text-zinc-400 w-full min-w-0"
-                />
-                {search && (
-                  <button onClick={() => setSearch("")} className="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 shrink-0">
-                    <X className="h-3.5 w-3.5" />
-                  </button>
-                )}
-              </div>
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3 w-full max-w-full min-w-0">
+                <div className="flex items-center gap-2 flex-1 rounded-xl bg-zinc-50 dark:bg-[#1a1a1a] px-3.5 py-2 border border-zinc-200/60 dark:border-white/[0.08] focus-within:border-[#0066B2] dark:focus-within:border-[#0066B2] min-w-0">
+                  <Search className="h-4 w-4 text-zinc-400 shrink-0" />
+                  <input
+                    type="text"
+                    placeholder="Filter locked PDFs by title or slug..."
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    className="bg-transparent text-xs text-zinc-900 dark:text-white outline-none placeholder:text-zinc-400 w-full min-w-0"
+                  />
+                  {search && (
+                    <button onClick={() => setSearch("")} className="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 shrink-0">
+                      <X className="h-3.5 w-3.5" />
+                    </button>
+                  )}
+                </div>
 
-              <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 justify-between sm:justify-end w-full sm:w-auto min-w-0">
-                {/* Desktop Status Tabs Pod (Preserved untouched) */}
-                <div className="hidden sm:flex items-center p-1 bg-zinc-100 dark:bg-[#1a1a1a] dark:border dark:border-white/[0.06] rounded-xl text-xs min-w-0">
-                  {[
-                    { id: "all", label: `All (${total})` },
-                    { id: "live", label: `Live (${liveCount})` },
-                    { id: "draft", label: `Draft (${draftCount})` },
-                  ].map((tab) => (
-                    <button
-                      key={tab.id}
-                      onClick={() => setStatusFilter(tab.id as any)}
-                      className={`relative px-2.5 sm:px-3 py-1 font-semibold rounded-lg transition-colors duration-150 cursor-pointer text-[11px] sm:text-xs ${
-                        statusFilter === tab.id
+                <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 justify-between sm:justify-end w-full sm:w-auto min-w-0">
+                  {/* Desktop Status Tabs Pod (Preserved untouched) */}
+                  <div className="hidden sm:flex items-center p-1 bg-zinc-100 dark:bg-[#1a1a1a] dark:border dark:border-white/[0.06] rounded-xl text-xs min-w-0">
+                    {[
+                      { id: "all", label: `All (${total})` },
+                      { id: "live", label: `Live (${liveCount})` },
+                      { id: "draft", label: `Draft (${draftCount})` },
+                    ].map((tab) => (
+                      <button
+                        key={tab.id}
+                        onClick={() => setStatusFilter(tab.id as any)}
+                        className={`relative px-2.5 sm:px-3 py-1 font-semibold rounded-lg transition-colors duration-150 cursor-pointer text-[11px] sm:text-xs ${statusFilter === tab.id
                           ? "text-zinc-900 dark:text-white"
                           : "text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200"
-                      }`}
+                          }`}
+                      >
+                        {statusFilter === tab.id && (
+                          <motion.div
+                            layoutId="activeStatusFilterTabLockedPdf"
+                            className="absolute inset-0 bg-white dark:bg-white/10 rounded-lg shadow-xs"
+                            transition={{ type: "spring", stiffness: 500, damping: 32 }}
+                          />
+                        )}
+                        <span className="relative z-10">{tab.label}</span>
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Mobile Filter Dropdown Button */}
+                  <div className="sm:hidden relative shrink-0">
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setIsSortOpen(false);
+                        setIsStatusFilterOpen((v) => !v);
+                      }}
+                      className="flex h-8 items-center gap-1.5 rounded-xl border border-zinc-200 dark:border-white/[0.08] bg-white dark:bg-[#1a1a1a] px-2.5 text-[11px] font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-white/10 transition shadow-2xs cursor-pointer select-none"
                     >
-                      {statusFilter === tab.id && (
-                        <motion.div
-                          layoutId="activeStatusFilterTabLockedPdf"
-                          className="absolute inset-0 bg-white dark:bg-white/10 rounded-lg shadow-xs"
-                          transition={{ type: "spring", stiffness: 500, damping: 32 }}
-                        />
-                      )}
-                      <span className="relative z-10">{tab.label}</span>
+                      <Filter className="h-3 w-3 text-zinc-400 shrink-0" />
+                      <span className="truncate">
+                        {statusFilter === "all"
+                          ? `Filter (${total})`
+                          : statusFilter === "live"
+                            ? `Live (${liveCount})`
+                            : `Draft (${draftCount})`}
+                      </span>
+                      <ChevronDown
+                        className={`h-3.5 w-3.5 text-zinc-400 shrink-0 transition-transform duration-200 ${isStatusFilterOpen ? "rotate-180" : ""
+                          }`}
+                      />
                     </button>
-                  ))}
-                </div>
 
-                {/* Mobile Filter Dropdown Button */}
-                <div className="sm:hidden relative shrink-0">
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setIsSortOpen(false);
-                      setIsStatusFilterOpen((v) => !v);
-                    }}
-                    className="flex h-8 items-center gap-1.5 rounded-xl border border-zinc-200 dark:border-white/[0.08] bg-white dark:bg-[#1a1a1a] px-2.5 text-[11px] font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-white/10 transition shadow-2xs cursor-pointer select-none"
-                  >
-                    <Filter className="h-3 w-3 text-zinc-400 shrink-0" />
-                    <span className="truncate">
-                      {statusFilter === "all"
-                        ? `Filter (${total})`
-                        : statusFilter === "live"
-                        ? `Live (${liveCount})`
-                        : `Draft (${draftCount})`}
-                    </span>
-                    <ChevronDown
-                      className={`h-3.5 w-3.5 text-zinc-400 shrink-0 transition-transform duration-200 ${
-                        isStatusFilterOpen ? "rotate-180" : ""
-                      }`}
-                    />
-                  </button>
-
-                  {/* Mobile Filter Bottom Sheet */}
-                  <AnimatePresence>
-                    {isStatusFilterOpen && (
-                      <div className="fixed inset-0 z-50 sm:hidden flex flex-col justify-end">
-                        <motion.div
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
-                          exit={{ opacity: 0 }}
-                          onClick={() => setIsStatusFilterOpen(false)}
-                          className="fixed inset-0 bg-black/60 backdrop-blur-sm"
-                        />
-                        <motion.div
-                          drag="y"
-                          dragConstraints={{ top: 0 }}
-                          dragElastic={0.2}
-                          onDragEnd={(_, { offset, velocity }) => {
-                            if (offset.y > 80 || velocity.y > 350) {
-                              setIsStatusFilterOpen(false);
-                            }
-                          }}
-                          initial={{ y: "100%" }}
-                          animate={{ y: 0 }}
-                          exit={{ y: "100%" }}
-                          transition={{ type: "spring", damping: 32, stiffness: 380 }}
-                          className="relative z-10 w-full rounded-t-3xl bg-white dark:bg-[#161619] border-t border-zinc-200 dark:border-white/10 p-5 pb-8 shadow-2xl safe-area-bottom select-none"
-                        >
-                          {/* Interactive Drag Handle */}
-                          <div className="w-10 h-1.5 bg-zinc-300 dark:bg-zinc-700 rounded-full mx-auto mb-4 cursor-grab active:cursor-grabbing touch-none" />
-
-                          <div className="flex items-center justify-between mb-4">
-                            <div className="flex items-center gap-2">
-                              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-900/60">
-                                <Filter className="h-4 w-4 text-[#0066B2] dark:text-sky-400" />
-                              </div>
-                              <div>
-                                <h3 className="text-base font-bold text-zinc-900 dark:text-white">Filter Locked PDFs</h3>
-                                <p className="text-xs text-zinc-500 dark:text-zinc-400">Filter by publication status</p>
-                              </div>
-                            </div>
-                            <button
-                              type="button"
-                              onClick={() => setIsStatusFilterOpen(false)}
-                              className="p-1.5 rounded-full text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-white/10 cursor-pointer"
-                            >
-                              <X className="h-5 w-5" />
-                            </button>
-                          </div>
-
-                          <div className="space-y-2">
-                            {[
-                              { id: "all", label: "All Locked PDFs", count: total, desc: "Show all PDFs in your workspace" },
-                              { id: "live", label: "Live PDFs", count: liveCount, desc: "Active & currently accepting signups" },
-                              { id: "draft", label: "Drafts", count: draftCount, desc: "Unpublished and work-in-progress" },
-                            ].map((item) => {
-                              const isSelected = statusFilter === item.id;
-                              return (
-                                <motion.button
-                                  key={item.id}
-                                  whileTap={{ scale: 0.98 }}
-                                  type="button"
-                                  onClick={() => {
-                                    setStatusFilter(item.id as any);
-                                    if (typeof window !== "undefined" && "vibrate" in navigator) {
-                                      navigator.vibrate?.(10);
-                                    }
-                                    setIsStatusFilterOpen(false);
-                                  }}
-                                  className={`w-full flex items-center justify-between p-3.5 rounded-2xl border transition-all cursor-pointer ${
-                                    isSelected
-                                      ? "bg-blue-50/80 border-[#0066B2]/40 dark:bg-blue-950/40 dark:border-blue-500/40 text-zinc-900 dark:text-white"
-                                      : "bg-zinc-50/80 dark:bg-white/[0.03] border-transparent text-zinc-700 dark:text-zinc-300"
-                                  }`}
-                                >
-                                  <div className="flex flex-col text-left">
-                                    <span className="text-sm font-semibold flex items-center gap-2">
-                                      {item.label}
-                                      <span className="text-xs font-mono px-2 py-0.5 rounded-md bg-zinc-200/70 dark:bg-white/10 text-zinc-600 dark:text-zinc-300">
-                                        {item.count}
-                                      </span>
-                                    </span>
-                                    <span className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">{item.desc}</span>
-                                  </div>
-                                  {isSelected && (
-                                    <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[#0066B2] text-white">
-                                      <Check className="h-3.5 w-3.5 stroke-[2.5]" />
-                                    </div>
-                                  )}
-                                </motion.button>
-                              );
-                            })}
-                          </div>
-                        </motion.div>
-                      </div>
-                    )}
-                  </AnimatePresence>
-                </div>
-
-                {/* Custom Animated Sort Dropdown */}
-                <div className="relative shrink-0">
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setIsSortOpen((v) => !v);
-                    }}
-                    className="flex h-8 items-center gap-1 sm:gap-2 rounded-xl border border-zinc-200 dark:border-white/[0.08] bg-white dark:bg-[#1a1a1a] px-2 sm:px-3 text-[11px] sm:text-xs font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-white/10 transition shadow-2xs cursor-pointer select-none"
-                  >
-                    <SlidersHorizontal className="h-3 w-3 text-zinc-400 shrink-0" />
-                    <span className="truncate max-w-[76px] sm:max-w-none">{sortOptions.find((o) => o.id === sortBy)?.label || "Sort"}</span>
-                    <ChevronDown
-                      className={`h-3.5 w-3.5 text-zinc-400 shrink-0 transition-transform duration-200 ${
-                        isSortOpen ? "rotate-180" : ""
-                      }`}
-                    />
-                  </button>
-
-                  <AnimatePresence>
-                    {isSortOpen && (
-                      <>
-                        {/* Desktop Popover */}
-                        <motion.div
-                          initial={{ opacity: 0, scale: 0.96, y: -6 }}
-                          animate={{ opacity: 1, scale: 1, y: 0 }}
-                          exit={{ opacity: 0, scale: 0.96, y: -4 }}
-                          transition={{ type: "spring", damping: 28, stiffness: 400 }}
-                          onClick={(e) => e.stopPropagation()}
-                          className="hidden sm:block absolute right-0 top-full z-40 mt-1.5 w-48 rounded-xl border border-zinc-200/90 dark:border-white/10 bg-white/95 dark:bg-[#171717]/95 p-1.5 shadow-xl backdrop-blur-xl dark:text-white"
-                        >
-                          <div className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
-                            Sort by
-                          </div>
-                          {sortOptions.map((opt) => {
-                            const isSelected = sortBy === opt.id;
-                            return (
-                              <button
-                                key={opt.id}
-                                type="button"
-                                onClick={() => {
-                                  setSortBy(opt.id);
-                                  setIsSortOpen(false);
-                                }}
-                                className={`flex w-full items-center justify-between rounded-lg px-2.5 py-1.5 text-xs transition cursor-pointer text-left ${
-                                  isSelected
-                                    ? "bg-[#0066B2]/10 text-[#0066B2] font-bold dark:bg-[#38BDF8]/20 dark:text-[#38BDF8]"
-                                    : "text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-white/5 font-medium"
-                                }`}
-                              >
-                                <span>{opt.label}</span>
-                                {isSelected && <Check className="h-3.5 w-3.5" />}
-                              </button>
-                            );
-                          })}
-                        </motion.div>
-
-                        {/* Mobile Sort Bottom Sheet with Drag Handle */}
+                    {/* Mobile Filter Bottom Sheet */}
+                    <AnimatePresence>
+                      {isStatusFilterOpen && (
                         <div className="fixed inset-0 z-50 sm:hidden flex flex-col justify-end">
                           <motion.div
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
-                            onClick={() => setIsSortOpen(false)}
+                            onClick={() => setIsStatusFilterOpen(false)}
                             className="fixed inset-0 bg-black/60 backdrop-blur-sm"
                           />
                           <motion.div
@@ -1268,7 +1123,7 @@ export default function LockedPdfPage() {
                             dragElastic={0.2}
                             onDragEnd={(_, { offset, velocity }) => {
                               if (offset.y > 80 || velocity.y > 350) {
-                                setIsSortOpen(false);
+                                setIsStatusFilterOpen(false);
                               }
                             }}
                             initial={{ y: "100%" }}
@@ -1277,21 +1132,22 @@ export default function LockedPdfPage() {
                             transition={{ type: "spring", damping: 32, stiffness: 380 }}
                             className="relative z-10 w-full rounded-t-3xl bg-white dark:bg-[#161619] border-t border-zinc-200 dark:border-white/10 p-5 pb-8 shadow-2xl safe-area-bottom select-none"
                           >
+                            {/* Interactive Drag Handle */}
                             <div className="w-10 h-1.5 bg-zinc-300 dark:bg-zinc-700 rounded-full mx-auto mb-4 cursor-grab active:cursor-grabbing touch-none" />
 
                             <div className="flex items-center justify-between mb-4">
                               <div className="flex items-center gap-2">
                                 <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-900/60">
-                                  <SlidersHorizontal className="h-4 w-4 text-[#0066B2] dark:text-sky-400" />
+                                  <Filter className="h-4 w-4 text-[#0066B2] dark:text-sky-400" />
                                 </div>
                                 <div>
-                                  <h3 className="text-base font-bold text-zinc-900 dark:text-white">Sort By</h3>
-                                  <p className="text-xs text-zinc-500 dark:text-zinc-400">Reorder your locked PDFs</p>
+                                  <h3 className="text-base font-bold text-zinc-900 dark:text-white">Filter Locked PDFs</h3>
+                                  <p className="text-xs text-zinc-500 dark:text-zinc-400">Filter by publication status</p>
                                 </div>
                               </div>
                               <button
                                 type="button"
-                                onClick={() => setIsSortOpen(false)}
+                                onClick={() => setIsStatusFilterOpen(false)}
                                 className="p-1.5 rounded-full text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-white/10 cursor-pointer"
                               >
                                 <X className="h-5 w-5" />
@@ -1299,27 +1155,38 @@ export default function LockedPdfPage() {
                             </div>
 
                             <div className="space-y-2">
-                              {sortOptions.map((opt) => {
-                                const isSelected = sortBy === opt.id;
+                              {[
+                                { id: "all", label: "All Locked PDFs", count: total, desc: "Show all PDFs in your workspace" },
+                                { id: "live", label: "Live PDFs", count: liveCount, desc: "Active & currently accepting signups" },
+                                { id: "draft", label: "Drafts", count: draftCount, desc: "Unpublished and work-in-progress" },
+                              ].map((item) => {
+                                const isSelected = statusFilter === item.id;
                                 return (
                                   <motion.button
-                                    key={opt.id}
+                                    key={item.id}
                                     whileTap={{ scale: 0.98 }}
                                     type="button"
                                     onClick={() => {
-                                      setSortBy(opt.id);
+                                      setStatusFilter(item.id as any);
                                       if (typeof window !== "undefined" && "vibrate" in navigator) {
                                         navigator.vibrate?.(10);
                                       }
-                                      setIsSortOpen(false);
+                                      setIsStatusFilterOpen(false);
                                     }}
-                                    className={`w-full flex items-center justify-between p-3.5 rounded-2xl border transition-all cursor-pointer ${
-                                      isSelected
-                                        ? "bg-blue-50/80 border-[#0066B2]/40 dark:bg-blue-950/40 dark:border-blue-500/40 text-zinc-900 dark:text-white"
-                                        : "bg-zinc-50/80 dark:bg-white/[0.03] border-transparent text-zinc-700 dark:text-zinc-300"
-                                    }`}
+                                    className={`w-full flex items-center justify-between p-3.5 rounded-2xl border transition-all cursor-pointer ${isSelected
+                                      ? "bg-blue-50/80 border-[#0066B2]/40 dark:bg-blue-950/40 dark:border-blue-500/40 text-zinc-900 dark:text-white"
+                                      : "bg-zinc-50/80 dark:bg-white/[0.03] border-transparent text-zinc-700 dark:text-zinc-300"
+                                      }`}
                                   >
-                                    <span className="text-sm font-semibold">{opt.label}</span>
+                                    <div className="flex flex-col text-left">
+                                      <span className="text-sm font-semibold flex items-center gap-2">
+                                        {item.label}
+                                        <span className="text-xs font-mono px-2 py-0.5 rounded-md bg-zinc-200/70 dark:bg-white/10 text-zinc-600 dark:text-zinc-300">
+                                          {item.count}
+                                        </span>
+                                      </span>
+                                      <span className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">{item.desc}</span>
+                                    </div>
                                     {isSelected && (
                                       <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[#0066B2] text-white">
                                         <Check className="h-3.5 w-3.5 stroke-[2.5]" />
@@ -1331,821 +1198,948 @@ export default function LockedPdfPage() {
                             </div>
                           </motion.div>
                         </div>
-                      </>
-                    )}
-                  </AnimatePresence>
-                </div>
+                      )}
+                    </AnimatePresence>
+                  </div>
 
-                <div className="flex items-center p-1 bg-zinc-100 dark:bg-[#171717] rounded-xl">
-                  <button
-                    onClick={() => setViewMode("grid")}
-                    className={`relative p-1.5 rounded-lg transition-colors duration-150 cursor-pointer ${
-                      viewMode === "grid" ? "text-[#0066B2] dark:text-[#38BDF8]" : "text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200"
-                    }`}
-                    title="Grid View"
-                  >
-                    {viewMode === "grid" && (
-                      <motion.div
-                        layoutId="activeViewModeTabLockedPdf"
-                        className="absolute inset-0 bg-white dark:bg-white/10 rounded-lg shadow-xs"
-                        transition={{ type: "spring", stiffness: 500, damping: 32 }}
+                  {/* Custom Animated Sort Dropdown */}
+                  <div className="relative shrink-0">
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setIsSortOpen((v) => !v);
+                      }}
+                      className="flex h-8 items-center gap-1 sm:gap-2 rounded-xl border border-zinc-200 dark:border-white/[0.08] bg-white dark:bg-[#1a1a1a] px-2 sm:px-3 text-[11px] sm:text-xs font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-white/10 transition shadow-2xs cursor-pointer select-none"
+                    >
+                      <SlidersHorizontal className="h-3 w-3 text-zinc-400 shrink-0" />
+                      <span className="truncate max-w-[76px] sm:max-w-none">{sortOptions.find((o) => o.id === sortBy)?.label || "Sort"}</span>
+                      <ChevronDown
+                        className={`h-3.5 w-3.5 text-zinc-400 shrink-0 transition-transform duration-200 ${isSortOpen ? "rotate-180" : ""
+                          }`}
                       />
-                    )}
-                    <LayoutGrid className="relative z-10 h-4 w-4" />
-                  </button>
+                    </button>
 
-                  <button
-                    onClick={() => setViewMode("table")}
-                    className={`relative p-1.5 rounded-lg transition-colors duration-150 cursor-pointer ${
-                      viewMode === "table" ? "text-[#0066B2] dark:text-[#38BDF8]" : "text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200"
-                    }`}
-                    title="Table View"
-                  >
-                    {viewMode === "table" && (
-                      <motion.div
-                        layoutId="activeViewModeTabLockedPdf"
-                        className="absolute inset-0 bg-white dark:bg-white/10 rounded-lg shadow-xs"
-                        transition={{ type: "spring", stiffness: 500, damping: 32 }}
-                      />
-                    )}
-                    <List className="relative z-10 h-4 w-4" />
-                  </button>
+                    <AnimatePresence>
+                      {isSortOpen && (
+                        <>
+                          {/* Desktop Popover */}
+                          <motion.div
+                            initial={{ opacity: 0, scale: 0.96, y: -6 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.96, y: -4 }}
+                            transition={{ type: "spring", damping: 28, stiffness: 400 }}
+                            onClick={(e) => e.stopPropagation()}
+                            className="hidden sm:block absolute right-0 top-full z-40 mt-1.5 w-48 rounded-xl border border-zinc-200/90 dark:border-white/10 bg-white/95 dark:bg-[#171717]/95 p-1.5 shadow-xl backdrop-blur-xl dark:text-white"
+                          >
+                            <div className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
+                              Sort by
+                            </div>
+                            {sortOptions.map((opt) => {
+                              const isSelected = sortBy === opt.id;
+                              return (
+                                <button
+                                  key={opt.id}
+                                  type="button"
+                                  onClick={() => {
+                                    setSortBy(opt.id);
+                                    setIsSortOpen(false);
+                                  }}
+                                  className={`flex w-full items-center justify-between rounded-lg px-2.5 py-1.5 text-xs transition cursor-pointer text-left ${isSelected
+                                    ? "bg-[#0066B2]/10 text-[#0066B2] font-bold dark:bg-[#38BDF8]/20 dark:text-[#38BDF8]"
+                                    : "text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-white/5 font-medium"
+                                    }`}
+                                >
+                                  <span>{opt.label}</span>
+                                  {isSelected && <Check className="h-3.5 w-3.5" />}
+                                </button>
+                              );
+                            })}
+                          </motion.div>
 
-                  <div className="h-3.5 w-px bg-zinc-200 dark:bg-zinc-700 mx-0.5" />
+                          {/* Mobile Sort Bottom Sheet with Drag Handle */}
+                          <div className="fixed inset-0 z-50 sm:hidden flex flex-col justify-end">
+                            <motion.div
+                              initial={{ opacity: 0 }}
+                              animate={{ opacity: 1 }}
+                              exit={{ opacity: 0 }}
+                              onClick={() => setIsSortOpen(false)}
+                              className="fixed inset-0 bg-black/60 backdrop-blur-sm"
+                            />
+                            <motion.div
+                              drag="y"
+                              dragConstraints={{ top: 0 }}
+                              dragElastic={0.2}
+                              onDragEnd={(_, { offset, velocity }) => {
+                                if (offset.y > 80 || velocity.y > 350) {
+                                  setIsSortOpen(false);
+                                }
+                              }}
+                              initial={{ y: "100%" }}
+                              animate={{ y: 0 }}
+                              exit={{ y: "100%" }}
+                              transition={{ type: "spring", damping: 32, stiffness: 380 }}
+                              className="relative z-10 w-full rounded-t-3xl bg-white dark:bg-[#161619] border-t border-zinc-200 dark:border-white/10 p-5 pb-8 shadow-2xl safe-area-bottom select-none"
+                            >
+                              <div className="w-10 h-1.5 bg-zinc-300 dark:bg-zinc-700 rounded-full mx-auto mb-4 cursor-grab active:cursor-grabbing touch-none" />
 
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setIsSelectMode((prev) => {
-                        const next = !prev;
-                        if (!next) setCheckedIds([]);
-                        return next;
-                      });
-                    }}
-                    className={`relative p-1.5 rounded-lg transition-colors duration-150 cursor-pointer ${
-                      isSelectMode || checkedIds.length > 0
+                              <div className="flex items-center justify-between mb-4">
+                                <div className="flex items-center gap-2">
+                                  <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-900/60">
+                                    <SlidersHorizontal className="h-4 w-4 text-[#0066B2] dark:text-sky-400" />
+                                  </div>
+                                  <div>
+                                    <h3 className="text-base font-bold text-zinc-900 dark:text-white">Sort By</h3>
+                                    <p className="text-xs text-zinc-500 dark:text-zinc-400">Reorder your locked PDFs</p>
+                                  </div>
+                                </div>
+                                <button
+                                  type="button"
+                                  onClick={() => setIsSortOpen(false)}
+                                  className="p-1.5 rounded-full text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-white/10 cursor-pointer"
+                                >
+                                  <X className="h-5 w-5" />
+                                </button>
+                              </div>
+
+                              <div className="space-y-2">
+                                {sortOptions.map((opt) => {
+                                  const isSelected = sortBy === opt.id;
+                                  return (
+                                    <motion.button
+                                      key={opt.id}
+                                      whileTap={{ scale: 0.98 }}
+                                      type="button"
+                                      onClick={() => {
+                                        setSortBy(opt.id);
+                                        if (typeof window !== "undefined" && "vibrate" in navigator) {
+                                          navigator.vibrate?.(10);
+                                        }
+                                        setIsSortOpen(false);
+                                      }}
+                                      className={`w-full flex items-center justify-between p-3.5 rounded-2xl border transition-all cursor-pointer ${isSelected
+                                        ? "bg-blue-50/80 border-[#0066B2]/40 dark:bg-blue-950/40 dark:border-blue-500/40 text-zinc-900 dark:text-white"
+                                        : "bg-zinc-50/80 dark:bg-white/[0.03] border-transparent text-zinc-700 dark:text-zinc-300"
+                                        }`}
+                                    >
+                                      <span className="text-sm font-semibold">{opt.label}</span>
+                                      {isSelected && (
+                                        <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[#0066B2] text-white">
+                                          <Check className="h-3.5 w-3.5 stroke-[2.5]" />
+                                        </div>
+                                      )}
+                                    </motion.button>
+                                  );
+                                })}
+                              </div>
+                            </motion.div>
+                          </div>
+                        </>
+                      )}
+                    </AnimatePresence>
+                  </div>
+
+                  <div className="flex items-center p-1 bg-zinc-100 dark:bg-[#171717] rounded-xl">
+                    <button
+                      onClick={() => setViewMode("grid")}
+                      className={`relative p-1.5 rounded-lg transition-colors duration-150 cursor-pointer ${viewMode === "grid" ? "text-[#0066B2] dark:text-[#38BDF8]" : "text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200"
+                        }`}
+                      title="Grid View"
+                    >
+                      {viewMode === "grid" && (
+                        <motion.div
+                          layoutId="activeViewModeTabLockedPdf"
+                          className="absolute inset-0 bg-white dark:bg-white/10 rounded-lg shadow-xs"
+                          transition={{ type: "spring", stiffness: 500, damping: 32 }}
+                        />
+                      )}
+                      <LayoutGrid className="relative z-10 h-4 w-4" />
+                    </button>
+
+                    <button
+                      onClick={() => setViewMode("table")}
+                      className={`relative p-1.5 rounded-lg transition-colors duration-150 cursor-pointer ${viewMode === "table" ? "text-[#0066B2] dark:text-[#38BDF8]" : "text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200"
+                        }`}
+                      title="Table View"
+                    >
+                      {viewMode === "table" && (
+                        <motion.div
+                          layoutId="activeViewModeTabLockedPdf"
+                          className="absolute inset-0 bg-white dark:bg-white/10 rounded-lg shadow-xs"
+                          transition={{ type: "spring", stiffness: 500, damping: 32 }}
+                        />
+                      )}
+                      <List className="relative z-10 h-4 w-4" />
+                    </button>
+
+                    <div className="h-3.5 w-px bg-zinc-200 dark:bg-zinc-700 mx-0.5" />
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsSelectMode((prev) => {
+                          const next = !prev;
+                          if (!next) setCheckedIds([]);
+                          return next;
+                        });
+                      }}
+                      className={`relative p-1.5 rounded-lg transition-colors duration-150 cursor-pointer ${isSelectMode || checkedIds.length > 0
                         ? "bg-white dark:bg-white/10 text-[#0066B2] dark:text-[#38BDF8] shadow-xs"
                         : "text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200"
-                    }`}
-                    title={isSelectMode || checkedIds.length > 0 ? "Exit Select Mode" : "Select Locked PDFs"}
-                  >
-                    <CheckSquare className="relative z-10 h-4 w-4" />
-                  </button>
+                        }`}
+                      title={isSelectMode || checkedIds.length > 0 ? "Exit Select Mode" : "Select Locked PDFs"}
+                    >
+                      <CheckSquare className="relative z-10 h-4 w-4" />
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            {/* Cards Library Grid */}
-            <AnimatePresence mode="wait">
-              {filtered.length === 0 ? (
-                <motion.div
-                  key="empty-state"
-                  initial={{ opacity: 0, y: 8, scale: 0.99 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.98 }}
-                  transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
-                  className="rounded-2xl border border-dashed border-zinc-300 dark:border-white/10 bg-white dark:bg-[#171717] p-12 text-center flex flex-col items-center justify-center"
-                >
-                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#EFF6FF] dark:bg-[#0066B2]/20 text-[#0066B2] dark:text-[#38BDF8] mb-3">
-                    <Lock className="h-6 w-6" />
-                  </div>
-                  <h3 className="text-base font-bold text-zinc-900 dark:text-white">No locked PDFs found</h3>
-                  <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1 max-w-xs">
-                    {search ? "Try adjusting your search query or clear filters." : "Create your first locked PDF document to start collecting leads."}
-                  </p>
-                  <button
-                    onClick={() => {
-                      setCreateMagnetName("");
-                      setCustomSlug("");
-                      setIsCustomSlugEdited(false);
-                      setShowCreateModal(true);
-                    }}
-                    className="mt-4 flex items-center gap-1.5 rounded-xl bg-[#0066B2] px-4 py-2 text-xs font-bold text-white hover:bg-[#005799] transition cursor-pointer"
+              {/* Cards Library Grid */}
+              <AnimatePresence mode="wait">
+                {filtered.length === 0 ? (
+                  <motion.div
+                    key="empty-state"
+                    initial={{ opacity: 0, y: 8, scale: 0.99 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.98 }}
+                    transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
+                    className="rounded-2xl border border-dashed border-zinc-300 dark:border-white/10 bg-white dark:bg-[#171717] p-12 text-center flex flex-col items-center justify-center"
                   >
-                    <Plus className="h-4 w-4" /> Create Locked PDF
-                  </button>
-                </motion.div>
-              ) : viewMode === "grid" ? (
-                <motion.div
-                  key="grid-view"
-                  data-pagination-container="locked-pdf-grid"
-                  initial={{ opacity: 0, y: 6, scale: 0.995 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: -6, scale: 0.995 }}
-                  transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-                  className="flex flex-col space-y-4"
-                >
-                  <div
-                    className={`grid gap-4 w-full ${
-                      activePage
+                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#EFF6FF] dark:bg-[#0066B2]/20 text-[#0066B2] dark:text-[#38BDF8] mb-3">
+                      <Lock className="h-6 w-6" />
+                    </div>
+                    <h3 className="text-base font-bold text-zinc-900 dark:text-white">No locked PDFs found</h3>
+                    <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1 max-w-xs">
+                      {search ? "Try adjusting your search query or clear filters." : "Create your first locked PDF document to start collecting leads."}
+                    </p>
+                    <button
+                      onClick={() => {
+                        setCreateMagnetName("");
+                        setCustomSlug("");
+                        setIsCustomSlugEdited(false);
+                        setShowCreateModal(true);
+                      }}
+                      className="mt-4 flex items-center gap-1.5 rounded-xl bg-[#0066B2] px-4 py-2 text-xs font-bold text-white hover:bg-[#005799] transition cursor-pointer"
+                    >
+                      <Plus className="h-4 w-4" /> Create Locked PDF
+                    </button>
+                  </motion.div>
+                ) : viewMode === "grid" ? (
+                  <motion.div
+                    key="grid-view"
+                    data-pagination-container="locked-pdf-grid"
+                    initial={{ opacity: 0, y: 6, scale: 0.995 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -6, scale: 0.995 }}
+                    transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+                    className="flex flex-col space-y-4"
+                  >
+                    <div
+                      className={`grid gap-4 w-full ${activePage
                         ? "grid-cols-1 md:grid-cols-2"
                         : "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
-                    }`}
-                  >
-                    {paginatedItems.map((pdf) => {
-                      const isSelected = activePage?.id === pdf.id;
-                      const isChecked = checkedIds.includes(pdf.id);
-                      const shareUrl = typeof window !== "undefined"
-                        ? `${window.location.origin}/pdf-viewer/${pdf.id}`
-                        : `/pdf-viewer/${pdf.id}`;
+                        }`}
+                    >
+                      {paginatedItems.map((pdf) => {
+                        const isSelected = activePage?.id === pdf.id;
+                        const isChecked = checkedIds.includes(pdf.id);
+                        const shareUrl = typeof window !== "undefined"
+                          ? `${window.location.origin}${pdfPath(pdf)}`
+                          : pdfPath(pdf);
 
-                      return (
-                        <motion.div
-                          key={pdf.id}
-                          whileTap={{ scale: 0.985 }}
-                          onClick={() => {
-                            setSelectedPageId((prev) => (prev === pdf.id ? null : pdf.id));
-                          }}
-                          className={`group relative rounded-2xl border cursor-pointer overflow-hidden flex flex-col justify-between will-change-transform transition-all duration-200 ${
-                            isChecked
+                        return (
+                          <motion.div
+                            key={pdf.id}
+                            whileTap={{ scale: 0.985 }}
+                            onClick={() => {
+                              setSelectedPageId((prev) => (prev === pdf.id ? null : pdf.id));
+                            }}
+                            className={`group relative rounded-2xl border cursor-pointer overflow-hidden flex flex-col justify-between will-change-transform transition-all duration-200 ${isChecked
                               ? "border-[#0066B2] dark:border-blue-500 bg-white dark:bg-[#171717] ring-2 ring-[#0066B2]/40 dark:ring-blue-500/40 shadow-[0_8px_30px_rgba(0,102,178,0.12)]"
                               : isSelected
                                 ? "border-[#0066B2] dark:border-white/20 bg-gradient-to-b from-[#0066B2]/[0.08] via-[#0066B2]/[0.02] to-transparent dark:from-white/[0.04] dark:via-transparent dark:to-transparent ring-1 ring-[#0066B2]/30 dark:ring-white/10 shadow-[0_8px_30px_rgba(0,102,178,0.15)]"
                                 : "border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#171717] shadow-md dark:shadow-none backdrop-blur-sm hover:border-[#0066B2]/30 dark:hover:border-white/20 hover:shadow-lg"
-                          }`}
-                        >
-
-
-                        {/* PDF Canvas Preview Box */}
-                        <div className="relative h-[136px] sm:h-[142px] w-full bg-gradient-to-b from-zinc-100 via-zinc-100/80 to-zinc-200/50 dark:from-[#131316] dark:via-[#131316] dark:to-[#101013] rounded-b-2xl border-b border-zinc-200/70 dark:border-white/[0.06] overflow-hidden flex flex-col items-center justify-center select-none">
-                          {/* Selection Checkbox */}
-                          <button
-                            type="button"
-                            onClick={(e) => handleToggleCheck(pdf.id, e)}
-                            className={`absolute top-2.5 right-2.5 z-10 flex h-6 w-6 items-center justify-center rounded-lg border transition-all cursor-pointer ${
-                              isChecked
-                                ? "bg-[#0066B2] border-[#0066B2] text-white shadow-md scale-105 opacity-100"
-                                : isSelectMode || checkedIds.length > 0
-                                  ? "bg-white/90 dark:bg-[#171717]/90 border-zinc-300 dark:border-white/10 text-transparent hover:border-[#0066B2] dark:hover:border-[#38BDF8] opacity-100 shadow-xs active:scale-95"
-                                  : "bg-white/90 dark:bg-[#171717]/90 border-zinc-300 dark:border-white/10 text-transparent hover:border-[#0066B2] dark:hover:border-[#38BDF8] opacity-0 md:group-hover:opacity-100 shadow-xs"
-                            }`}
-                            title={isChecked ? "Deselect PDF" : "Select PDF"}
+                              }`}
                           >
-                            <Check className={`h-3.5 w-3.5 stroke-[3px] ${isChecked ? "opacity-100 text-white" : "opacity-0"}`} />
-                          </button>
 
-                          {/* Stacked Paper Pages Background (depth effect) */}
-                          <div className="absolute inset-x-10 top-2.5 h-[102px] bg-zinc-200/70 dark:bg-zinc-800/50 rounded-t-lg transform scale-95 border border-zinc-300/40 dark:border-white/10 shadow-xs pointer-events-none" />
-                          <div className="absolute inset-x-8 top-3 h-[104px] bg-zinc-100/90 dark:bg-zinc-800/80 rounded-t-lg transform scale-[0.98] border border-zinc-300/60 dark:border-white/10 shadow-xs pointer-events-none" />
 
-                          {/* Main PDF Paper Document Sheet */}
-                          <div className="relative z-0 w-full max-w-[94px] sm:max-w-[100px] aspect-[1/1.24] bg-white dark:bg-[#171717] rounded-t-lg rounded-b-sm border border-zinc-300/80 dark:border-white/10 shadow-[0_8px_18px_rgba(0,0,0,0.13)] dark:shadow-[0_10px_22px_rgba(0,0,0,0.58)] group-hover:scale-[1.03] transition-transform duration-300 overflow-hidden flex flex-col pointer-events-none">
-                            {pdf.pdfPages && pdf.pdfPages.length > 0 ? (
-                              <div className="relative flex-1 w-full h-full bg-white dark:bg-[#171717]">
-                                <Image
-                                  src={pdf.pdfPages[0]}
-                                  alt={pdf.name}
-                                  fill
-                                  sizes="(max-width: 768px) 105px, 100px"
-                                  unoptimized
-                                  className="object-cover object-top"
-                                />
-                              </div>
-                            ) : (
-                              <div className="p-2.5 flex-1 flex flex-col justify-between bg-zinc-50/90 dark:bg-[#151515]/90">
-                                <div className="flex items-center justify-between">
-                                  <div className="flex items-center gap-1">
-                                    <div className="w-3.5 h-3.5 rounded bg-[#0066B2]/10 text-[#0066B2] dark:text-[#38BDF8] flex items-center justify-center">
-                                      <FileText className="h-2 w-2" />
-                                    </div>
-                                    <span className="text-[7px] font-black uppercase tracking-wider text-[#0066B2] dark:text-[#38BDF8] font-mono">
-                                      PDF
-                                    </span>
-                                  </div>
-                                  <Lock className="h-2.5 w-2.5 text-[#0066B2] dark:text-[#38BDF8]" />
-                                </div>
+                            {/* PDF Canvas Preview Box */}
+                            <div className="relative h-[136px] sm:h-[142px] w-full bg-gradient-to-b from-zinc-100 via-zinc-100/80 to-zinc-200/50 dark:from-[#131316] dark:via-[#131316] dark:to-[#101013] rounded-b-2xl border-b border-zinc-200/70 dark:border-white/[0.06] overflow-hidden flex flex-col items-center justify-center select-none">
+                              {/* Selection Checkbox */}
+                              <button
+                                type="button"
+                                onClick={(e) => handleToggleCheck(pdf.id, e)}
+                                className={`absolute top-2.5 right-2.5 z-10 flex h-6 w-6 items-center justify-center rounded-lg border transition-all cursor-pointer ${isChecked
+                                  ? "bg-[#0066B2] border-[#0066B2] text-white shadow-md scale-105 opacity-100"
+                                  : isSelectMode || checkedIds.length > 0
+                                    ? "bg-white/90 dark:bg-[#171717]/90 border-zinc-300 dark:border-white/10 text-transparent hover:border-[#0066B2] dark:hover:border-[#38BDF8] opacity-100 shadow-xs active:scale-95"
+                                    : "bg-white/90 dark:bg-[#171717]/90 border-zinc-300 dark:border-white/10 text-transparent hover:border-[#0066B2] dark:hover:border-[#38BDF8] opacity-0 md:group-hover:opacity-100 shadow-xs"
+                                  }`}
+                                title={isChecked ? "Deselect PDF" : "Select PDF"}
+                              >
+                                <Check className={`h-3.5 w-3.5 stroke-[3px] ${isChecked ? "opacity-100 text-white" : "opacity-0"}`} />
+                              </button>
 
-                                <div className="space-y-1.5 my-auto">
-                                  <div className="h-1.5 w-3/4 bg-zinc-300 dark:bg-zinc-700 rounded-full" />
-                                  <div className="h-1 w-full bg-zinc-200 dark:bg-zinc-800 rounded-full" />
-                                  <div className="h-1 w-5/6 bg-zinc-200 dark:bg-zinc-800 rounded-full" />
-                                  <div className="h-1 w-2/3 bg-zinc-200 dark:bg-zinc-800 rounded-full" />
-                                </div>
+                              {/* Stacked Paper Pages Background (depth effect) */}
+                              <div className="absolute inset-x-10 top-2.5 h-[102px] bg-zinc-200/70 dark:bg-zinc-800/50 rounded-t-lg transform scale-95 border border-zinc-300/40 dark:border-white/10 shadow-xs pointer-events-none" />
+                              <div className="absolute inset-x-8 top-3 h-[104px] bg-zinc-100/90 dark:bg-zinc-800/80 rounded-t-lg transform scale-[0.98] border border-zinc-300/60 dark:border-white/10 shadow-xs pointer-events-none" />
 
-                                <div className="text-[7.5px] font-mono font-bold text-zinc-400 dark:text-zinc-500 text-center pt-1 border-t border-zinc-200/50 dark:border-white/10">
-                                  {pdf.pdfPageCount || 1} {pdf.pdfPageCount === 1 ? "Page" : "Pages"}
-                                </div>
-                              </div>
-                            )}
-                          </div>
-
-                          {/* Page Count Tag */}
-                          <div className="absolute bottom-2 right-2.5 z-10">
-                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-mono font-semibold bg-zinc-900/80 text-zinc-200 border border-zinc-700/60 backdrop-blur-md shadow-xs">
-                              <FileText className="h-2.5 w-2.5 text-[#0066B2] dark:text-[#38BDF8]" />
-                              {pdf.pdfPageCount || (pdf.pdfPages ? pdf.pdfPages.length : 1)}P
-                            </span>
-                          </div>
-                        </div>
-
-                        {/* PDF Info & Actions Footer */}
-                        <div className="p-3 sm:p-3.5 flex-1 flex flex-col justify-between gap-2.5 sm:space-y-2">
-                          <div className="space-y-1.5">
-                            {/* Header: Title + Lock Badge */}
-                            <div className="flex items-center gap-2 min-w-0">
-                              <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-lg bg-[#0066B2]/10 text-[#0066B2] dark:text-[#38BDF8] border border-[#0066B2]/20">
-                                <Lock className="h-2.5 w-2.5" />
-                              </div>
-                              <h3 className="text-[13px] sm:text-xs font-bold text-zinc-900 dark:text-zinc-100 truncate group-hover:text-[#0066B2] dark:group-hover:text-[#38BDF8] transition-colors">
-                                {pdf.name}
-                              </h3>
-                            </div>
-                          </div>
-
-                          {/* Mobile Action Bar (< lg) */}
-                          <div className="flex lg:hidden items-center justify-between gap-1.5 pt-0.5">
-                            {/* Details Inspector Button */}
-                            <button
-                              type="button"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setSelectedPageId(pdf.id);
-                                setMobileInspectorOpen(true);
-                              }}
-                              className="flex-1 inline-flex items-center justify-center gap-1.5 h-[30px] rounded-[10px] border border-zinc-200 bg-zinc-50 hover:bg-zinc-100 dark:border-white/10 dark:bg-white/5 dark:hover:bg-white/10 px-2 text-[10.5px] font-semibold text-zinc-700 dark:text-zinc-200 transition cursor-pointer active:scale-95 shadow-2xs"
-                              title="View Details"
-                            >
-                              <Eye className="h-3 w-3 text-[#0066B2] dark:text-[#38BDF8]" />
-                              <span>Details</span>
-                            </button>
-
-                            {/* Edit Button */}
-                            <Link
-                              href={`/dashboard/leadmagnets/${pdf.id}?type=locked-pdf`}
-                              prefetch={true}
-                              onClick={(e) => e.stopPropagation()}
-                              className="flex-1 inline-flex items-center justify-center gap-1.5 h-[30px] rounded-[10px] bg-[#0066B2] hover:bg-[#005799] text-white font-bold text-[10.5px] shadow-xs hover:shadow-[#0066B2]/20 active:scale-95 transition-all cursor-pointer"
-                              title="Edit Locked PDF"
-                            >
-                              <Pencil className="h-3 w-3" />
-                              <span>Edit</span>
-                            </Link>
-
-                            {/* Open External Viewer Link */}
-                            <a
-                              href={shareUrl}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              onClick={(e) => e.stopPropagation()}
-                              className="flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-[10px] border border-zinc-200/80 bg-zinc-50 dark:border-white/10 dark:bg-white/5 text-zinc-600 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white transition-all cursor-pointer active:scale-95 shadow-2xs"
-                              title="Open Viewer in New Tab"
-                            >
-                              <ExternalLink className="h-3.5 w-3.5" />
-                            </a>
-
-                            {/* Delete Button */}
-                            <button
-                              type="button"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setPageToDeleteId(pdf.id);
-                                setShowDeleteModal(true);
-                              }}
-                              className="flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-[10px] border border-rose-200/60 dark:border-rose-900/40 bg-rose-50/50 dark:bg-rose-950/20 text-rose-500 hover:bg-rose-100 dark:hover:bg-rose-950/50 transition-all cursor-pointer active:scale-95 shadow-2xs"
-                              title="Delete Locked PDF"
-                            >
-                              <Trash2 className="h-3.5 w-3.5" />
-                            </button>
-                          </div>
-
-                          {/* Desktop Action Row (lg:flex) */}
-                          <div className="hidden lg:flex pt-0.5 items-center justify-between gap-1.5">
-                            <button
-                              type="button"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                navigator.clipboard.writeText(shareUrl);
-                                setCopiedId(pdf.id);
-                                setTimeout(() => setCopiedId(null), 2000);
-                              }}
-                              className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#0066B2] hover:bg-[#005799] text-white font-extrabold text-[11px] shadow-xs hover:shadow-[#0066B2]/20 active:scale-95 transition-all cursor-pointer"
-                            >
-                              {copiedId === pdf.id ? <Check className="h-3 w-3 text-emerald-300" /> : <Copy className="h-3 w-3" />}
-                              <span>{copiedId === pdf.id ? "Copied!" : "Share Link"}</span>
-                            </button>
-
-                            <Link
-                              href={`/dashboard/leadmagnets/${pdf.id}?type=locked-pdf`}
-                              prefetch={true}
-                              onClick={(e) => e.stopPropagation()}
-                              className="p-1.5 rounded-lg text-zinc-400 hover:text-[#0066B2] dark:hover:text-[#38BDF8] hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all cursor-pointer"
-                              title="Edit Locked PDF"
-                            >
-                              <Pencil className="h-3.5 w-3.5" />
-                            </Link>
-
-                            <a
-                              href={shareUrl}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              onClick={(e) => e.stopPropagation()}
-                              className="p-1.5 rounded-lg text-zinc-400 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all cursor-pointer"
-                              title="Open Viewer in New Tab"
-                            >
-                              <ExternalLink className="h-3.5 w-3.5" />
-                            </a>
-
-                            <button
-                              type="button"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setPageToDeleteId(pdf.id);
-                                setShowDeleteModal(true);
-                              }}
-                              className="p-1.5 rounded-lg text-zinc-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-all cursor-pointer"
-                              title="Delete Locked PDF"
-                            >
-                              <Trash2 className="h-3.5 w-3.5" />
-                            </button>
-                          </div>
-                        </div>
-                      </motion.div>
-                    );
-                  })}
-                  </div>
-                </motion.div>
-              ) : (
-                /* Table View */
-                <motion.div
-                  key="table-view"
-                  data-pagination-container="locked-pdf-table"
-                  initial={{ opacity: 0, y: 6, scale: 0.995 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: -6, scale: 0.995 }}
-                  transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-                  className="rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#171717] overflow-hidden shadow-md dark:shadow-none backdrop-blur-sm"
-                >
-                  {/* DESKTOP Table View (hidden md:block) - Preserved exactly as original */}
-                  <div className="hidden md:block overflow-x-auto">
-                    <table className="w-full text-left text-xs">
-                      <thead className="bg-[#F8FBFF] dark:bg-[#151515] text-zinc-500 dark:text-zinc-400 uppercase text-[11px] font-semibold tracking-wider border-b border-[#0066B2]/10 dark:border-[#38BDF8]/20">
-                        <tr>
-                          <th className="px-6 py-3.5 text-left">
-                            <div className="flex items-center">
-                              <AnimatePresence initial={false}>
-                                {(checkedIds.length > 0 || isSelectMode) && (
-                                  <motion.div
-                                    initial={{ opacity: 0, width: 0, marginRight: 0 }}
-                                    animate={{ opacity: 1, width: 22, marginRight: 10 }}
-                                    exit={{ opacity: 0, width: 0, marginRight: 0 }}
-                                    transition={{ type: "spring", stiffness: 450, damping: 35 }}
-                                    className="flex items-center justify-center shrink-0 overflow-hidden"
-                                  >
-                                    <AppleCheckbox
-                                      checked={filtered.length > 0 && checkedIds.length === filtered.length}
-                                      indeterminate={checkedIds.length > 0 && checkedIds.length < filtered.length}
-                                      onChange={handleToggleSelectAll}
-                                      title={
-                                        checkedIds.length === filtered.length && filtered.length > 0
-                                          ? "Deselect all"
-                                          : "Select all"
-                                      }
+                              {/* Main PDF Paper Document Sheet */}
+                              <div className="relative z-0 w-full max-w-[94px] sm:max-w-[100px] aspect-[1/1.24] bg-white dark:bg-[#171717] rounded-t-lg rounded-b-sm border border-zinc-300/80 dark:border-white/10 shadow-[0_8px_18px_rgba(0,0,0,0.13)] dark:shadow-[0_10px_22px_rgba(0,0,0,0.58)] group-hover:scale-[1.03] transition-transform duration-300 overflow-hidden flex flex-col pointer-events-none">
+                                {pdf.pdfPages && pdf.pdfPages.length > 0 ? (
+                                  <div className="relative flex-1 w-full h-full bg-white dark:bg-[#171717]">
+                                    <Image
+                                      src={pdf.pdfPages[0]}
+                                      alt={pdf.name}
+                                      fill
+                                      sizes="(max-width: 768px) 105px, 100px"
+                                      unoptimized
+                                      className="object-cover object-top"
                                     />
-                                  </motion.div>
+                                  </div>
+                                ) : (
+                                  <div className="p-2.5 flex-1 flex flex-col justify-between bg-zinc-50/90 dark:bg-[#151515]/90">
+                                    <div className="flex items-center justify-between">
+                                      <div className="flex items-center gap-1">
+                                        <div className="w-3.5 h-3.5 rounded bg-[#0066B2]/10 text-[#0066B2] dark:text-[#38BDF8] flex items-center justify-center">
+                                          <FileText className="h-2 w-2" />
+                                        </div>
+                                        <span className="text-[7px] font-black uppercase tracking-wider text-[#0066B2] dark:text-[#38BDF8] font-mono">
+                                          PDF
+                                        </span>
+                                      </div>
+                                      <Lock className="h-2.5 w-2.5 text-[#0066B2] dark:text-[#38BDF8]" />
+                                    </div>
+
+                                    <div className="space-y-1.5 my-auto">
+                                      <div className="h-1.5 w-3/4 bg-zinc-300 dark:bg-zinc-700 rounded-full" />
+                                      <div className="h-1 w-full bg-zinc-200 dark:bg-zinc-800 rounded-full" />
+                                      <div className="h-1 w-5/6 bg-zinc-200 dark:bg-zinc-800 rounded-full" />
+                                      <div className="h-1 w-2/3 bg-zinc-200 dark:bg-zinc-800 rounded-full" />
+                                    </div>
+
+                                    <div className="text-[7.5px] font-mono font-bold text-zinc-400 dark:text-zinc-500 text-center pt-1 border-t border-zinc-200/50 dark:border-white/10">
+                                      {pdf.pdfPageCount || 1} {pdf.pdfPageCount === 1 ? "Page" : "Pages"}
+                                    </div>
+                                  </div>
                                 )}
-                              </AnimatePresence>
-                              <span>Document</span>
+                              </div>
+
+                              {/* Page Count Tag */}
+                              <div className="absolute bottom-2 right-2.5 z-10">
+                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-mono font-semibold bg-zinc-900/80 text-zinc-200 border border-zinc-700/60 backdrop-blur-md shadow-xs">
+                                  <FileText className="h-2.5 w-2.5 text-[#0066B2] dark:text-[#38BDF8]" />
+                                  {pdf.pdfPageCount || (pdf.pdfPages ? pdf.pdfPages.length : 1)}P
+                                </span>
+                              </div>
                             </div>
-                          </th>
-                          <th className="px-6 py-3.5 text-right">Pages</th>
-                          <th className="px-6 py-3.5 text-right">Views</th>
-                          <th className="px-6 py-3.5 text-right">Unlocks</th>
-                          <th className="px-6 py-3.5 text-right">Actions</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-[#0066B2]/8 bg-white dark:divide-white/[0.05] dark:bg-[#171717]">
-                        {paginatedItems.map((pdf) => {
-                          const isSelected = activePage?.id === pdf.id;
-                          const isChecked = checkedIds.includes(pdf.id);
-                          const shareUrl = typeof window !== "undefined"
-                            ? `${window.location.origin}/pdf-viewer/${pdf.id}`
-                            : `/pdf-viewer/${pdf.id}`;
-                          return (
-                            <tr
-                              key={pdf.id}
-                              onClick={() => {
-                                setSelectedPageId(pdf.id);
-                              }}
-                              className={`group transition-all duration-200 ${
-                                isChecked
+
+                            {/* PDF Info & Actions Footer */}
+                            <div className="p-3 sm:p-3.5 flex-1 flex flex-col justify-between gap-2.5 sm:space-y-2">
+                              <div className="space-y-1.5">
+                                {/* Header: Title + Lock Badge */}
+                                <div className="flex items-center gap-2 min-w-0">
+                                  <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-lg bg-[#0066B2]/10 text-[#0066B2] dark:text-[#38BDF8] border border-[#0066B2]/20">
+                                    <Lock className="h-2.5 w-2.5" />
+                                  </div>
+                                  <h3 className="text-[13px] sm:text-xs font-bold text-zinc-900 dark:text-zinc-100 truncate group-hover:text-[#0066B2] dark:group-hover:text-[#38BDF8] transition-colors">
+                                    {pdf.name}
+                                  </h3>
+                                </div>
+                              </div>
+
+                              {/* Mobile Action Bar (< lg) */}
+                              <div className="flex lg:hidden items-center justify-between gap-1.5 pt-0.5">
+                                {/* Details Inspector Button */}
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setSelectedPageId(pdf.id);
+                                    setMobileInspectorOpen(true);
+                                  }}
+                                  className="flex-1 inline-flex items-center justify-center gap-1.5 h-[30px] rounded-[10px] border border-zinc-200 bg-zinc-50 hover:bg-zinc-100 dark:border-white/10 dark:bg-white/5 dark:hover:bg-white/10 px-2 text-[10.5px] font-semibold text-zinc-700 dark:text-zinc-200 transition cursor-pointer active:scale-95 shadow-2xs"
+                                  title="View Details"
+                                >
+                                  <Eye className="h-3 w-3 text-[#0066B2] dark:text-[#38BDF8]" />
+                                  <span>Details</span>
+                                </button>
+
+                                {/* Edit Button */}
+                                <Link
+                                  href={`/dashboard/leadmagnets/${pdf.id}?type=locked-pdf`}
+                                  prefetch={true}
+                                  onClick={(e) => e.stopPropagation()}
+                                  className="flex-1 inline-flex items-center justify-center gap-1.5 h-[30px] rounded-[10px] bg-[#0066B2] hover:bg-[#005799] text-white font-bold text-[10.5px] shadow-xs hover:shadow-[#0066B2]/20 active:scale-95 transition-all cursor-pointer"
+                                  title="Edit Locked PDF"
+                                >
+                                  <Pencil className="h-3 w-3" />
+                                  <span>Edit</span>
+                                </Link>
+
+                                {/* Open External Viewer Link */}
+                                <a
+                                  href={shareUrl}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  onClick={(e) => e.stopPropagation()}
+                                  className="flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-[10px] border border-zinc-200/80 bg-zinc-50 dark:border-white/10 dark:bg-white/5 text-zinc-600 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white transition-all cursor-pointer active:scale-95 shadow-2xs"
+                                  title="Open Viewer in New Tab"
+                                >
+                                  <ExternalLink className="h-3.5 w-3.5" />
+                                </a>
+
+                                {/* Delete Button */}
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setPageToDeleteId(pdf.id);
+                                    setShowDeleteModal(true);
+                                  }}
+                                  className="flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-[10px] border border-rose-200/60 dark:border-rose-900/40 bg-rose-50/50 dark:bg-rose-950/20 text-rose-500 hover:bg-rose-100 dark:hover:bg-rose-950/50 transition-all cursor-pointer active:scale-95 shadow-2xs"
+                                  title="Delete Locked PDF"
+                                >
+                                  <Trash2 className="h-3.5 w-3.5" />
+                                </button>
+                              </div>
+
+                              {/* Desktop Action Row (lg:flex) */}
+                              <div className="hidden lg:flex pt-0.5 items-center justify-between gap-1.5">
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    navigator.clipboard.writeText(shareUrl);
+                                    setCopiedId(pdf.id);
+                                    setTimeout(() => setCopiedId(null), 2000);
+                                  }}
+                                  className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#0066B2] hover:bg-[#005799] text-white font-extrabold text-[11px] shadow-xs hover:shadow-[#0066B2]/20 active:scale-95 transition-all cursor-pointer"
+                                >
+                                  {copiedId === pdf.id ? <Check className="h-3 w-3 text-emerald-300" /> : <Copy className="h-3 w-3" />}
+                                  <span>{copiedId === pdf.id ? "Copied!" : "Share Link"}</span>
+                                </button>
+
+                                <Link
+                                  href={`/dashboard/leadmagnets/${pdf.id}?type=locked-pdf`}
+                                  prefetch={true}
+                                  onClick={(e) => e.stopPropagation()}
+                                  className="p-1.5 rounded-lg text-zinc-400 hover:text-[#0066B2] dark:hover:text-[#38BDF8] hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all cursor-pointer"
+                                  title="Edit Locked PDF"
+                                >
+                                  <Pencil className="h-3.5 w-3.5" />
+                                </Link>
+
+                                <a
+                                  href={shareUrl}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  onClick={(e) => e.stopPropagation()}
+                                  className="p-1.5 rounded-lg text-zinc-400 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all cursor-pointer"
+                                  title="Open Viewer in New Tab"
+                                >
+                                  <ExternalLink className="h-3.5 w-3.5" />
+                                </a>
+
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setPageToDeleteId(pdf.id);
+                                    setShowDeleteModal(true);
+                                  }}
+                                  className="p-1.5 rounded-lg text-zinc-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-all cursor-pointer"
+                                  title="Delete Locked PDF"
+                                >
+                                  <Trash2 className="h-3.5 w-3.5" />
+                                </button>
+                              </div>
+                            </div>
+                          </motion.div>
+                        );
+                      })}
+                    </div>
+                  </motion.div>
+                ) : (
+                  /* Table View */
+                  <motion.div
+                    key="table-view"
+                    data-pagination-container="locked-pdf-table"
+                    initial={{ opacity: 0, y: 6, scale: 0.995 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -6, scale: 0.995 }}
+                    transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+                    className="rounded-2xl border border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#171717] overflow-hidden shadow-md dark:shadow-none backdrop-blur-sm"
+                  >
+                    {/* DESKTOP Table View (hidden md:block) - Preserved exactly as original */}
+                    <div className="hidden md:block overflow-x-auto">
+                      <table className="w-full text-left text-xs">
+                        <thead className="bg-[#F8FBFF] dark:bg-[#151515] text-zinc-500 dark:text-zinc-400 uppercase text-[11px] font-semibold tracking-wider border-b border-[#0066B2]/10 dark:border-[#38BDF8]/20">
+                          <tr>
+                            <th className="px-6 py-3.5 text-left">
+                              <div className="flex items-center">
+                                <AnimatePresence initial={false}>
+                                  {(checkedIds.length > 0 || isSelectMode) && (
+                                    <motion.div
+                                      initial={{ opacity: 0, width: 0, marginRight: 0 }}
+                                      animate={{ opacity: 1, width: 22, marginRight: 10 }}
+                                      exit={{ opacity: 0, width: 0, marginRight: 0 }}
+                                      transition={{ type: "spring", stiffness: 450, damping: 35 }}
+                                      className="flex items-center justify-center shrink-0 overflow-hidden"
+                                    >
+                                      <AppleCheckbox
+                                        checked={filtered.length > 0 && checkedIds.length === filtered.length}
+                                        indeterminate={checkedIds.length > 0 && checkedIds.length < filtered.length}
+                                        onChange={handleToggleSelectAll}
+                                        title={
+                                          checkedIds.length === filtered.length && filtered.length > 0
+                                            ? "Deselect all"
+                                            : "Select all"
+                                        }
+                                      />
+                                    </motion.div>
+                                  )}
+                                </AnimatePresence>
+                                <span>Document</span>
+                              </div>
+                            </th>
+                            <th className="px-6 py-3.5 text-right">Pages</th>
+                            <th className="px-6 py-3.5 text-right">Views</th>
+                            <th className="px-6 py-3.5 text-right">Unlocks</th>
+                            <th className="px-6 py-3.5 text-right">Actions</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-[#0066B2]/8 bg-white dark:divide-white/[0.05] dark:bg-[#171717]">
+                          {paginatedItems.map((pdf) => {
+                            const isSelected = activePage?.id === pdf.id;
+                            const isChecked = checkedIds.includes(pdf.id);
+                            const shareUrl = typeof window !== "undefined"
+                              ? `${window.location.origin}${pdfPath(pdf)}`
+                              : pdfPath(pdf);
+                            return (
+                              <tr
+                                key={pdf.id}
+                                onClick={() => {
+                                  setSelectedPageId(pdf.id);
+                                }}
+                                className={`group transition-all duration-200 ${isChecked
                                   ? "bg-gradient-to-r from-[#0066B2]/[0.08] via-[#0066B2]/[0.04] to-transparent dark:from-[#38BDF8]/15 dark:via-[#38BDF8]/[0.06] dark:to-transparent"
                                   : isSelected
                                     ? "bg-gradient-to-r from-[#0066B2]/[0.06] via-[#0066B2]/[0.02] to-transparent dark:from-[#38BDF8]/10 dark:via-[#38BDF8]/[0.04] dark:to-transparent"
                                     : "hover:bg-zinc-50/80 dark:hover:bg-white/[0.02]"
-                              }`}
-                            >
-                              <td className="px-6 py-4 font-semibold text-zinc-900 dark:text-white">
-                                <div className="flex items-center min-w-0">
-                                  <AnimatePresence initial={false}>
-                                    {(checkedIds.length > 0 || isChecked || isSelectMode) && (
-                                      <motion.div
-                                        initial={{ opacity: 0, width: 0, marginRight: 0 }}
-                                        animate={{ opacity: 1, width: 22, marginRight: 12 }}
-                                        exit={{ opacity: 0, width: 0, marginRight: 0 }}
-                                        transition={{ type: "spring", stiffness: 450, damping: 35 }}
-                                        onClick={(e) => {
-                                          e.stopPropagation();
-                                          handleToggleCheck(pdf.id, e);
-                                        }}
-                                        className="flex items-center justify-center shrink-0 overflow-hidden cursor-pointer"
-                                      >
-                                        <AppleCheckbox
-                                          checked={isChecked}
-                                          onChange={() => handleToggleCheck(pdf.id)}
-                                          title={isChecked ? "Deselect PDF" : "Select PDF"}
-                                        />
-                                      </motion.div>
-                                    )}
-                                  </AnimatePresence>
-
-                                  <div className="flex items-center gap-3 min-w-0 flex-1">
-                                    <div className="relative h-9 w-9 rounded-lg bg-zinc-100 dark:bg-zinc-800 shrink-0 overflow-hidden flex items-center justify-center">
-                                      {pdf.pdfPages && pdf.pdfPages.length > 0 ? (
-                                        <Image
-                                          src={pdf.pdfPages[0]}
-                                          alt=""
-                                          fill
-                                          sizes="36px"
-                                          unoptimized
-                                          className="object-cover"
-                                        />
-                                      ) : (
-                                        <FileText className="h-4 w-4 text-zinc-400" />
+                                  }`}
+                              >
+                                <td className="px-6 py-4 font-semibold text-zinc-900 dark:text-white">
+                                  <div className="flex items-center min-w-0">
+                                    <AnimatePresence initial={false}>
+                                      {(checkedIds.length > 0 || isChecked || isSelectMode) && (
+                                        <motion.div
+                                          initial={{ opacity: 0, width: 0, marginRight: 0 }}
+                                          animate={{ opacity: 1, width: 22, marginRight: 12 }}
+                                          exit={{ opacity: 0, width: 0, marginRight: 0 }}
+                                          transition={{ type: "spring", stiffness: 450, damping: 35 }}
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleToggleCheck(pdf.id, e);
+                                          }}
+                                          className="flex items-center justify-center shrink-0 overflow-hidden cursor-pointer"
+                                        >
+                                          <AppleCheckbox
+                                            checked={isChecked}
+                                            onChange={() => handleToggleCheck(pdf.id)}
+                                            title={isChecked ? "Deselect PDF" : "Select PDF"}
+                                          />
+                                        </motion.div>
                                       )}
-                                    </div>
-                                    <div className="min-w-0 flex-1">
-                                      <p className="font-bold text-zinc-900 dark:text-white line-clamp-1 truncate">{pdf.name}</p>
-                                      <p className="text-[11px] font-mono text-zinc-400 truncate">/pdf-viewer/{pdf.id}</p>
+                                    </AnimatePresence>
+
+                                    <div className="flex items-center gap-3 min-w-0 flex-1">
+                                      <div className="relative h-9 w-9 rounded-lg bg-zinc-100 dark:bg-zinc-800 shrink-0 overflow-hidden flex items-center justify-center">
+                                        {pdf.pdfPages && pdf.pdfPages.length > 0 ? (
+                                          <Image
+                                            src={pdf.pdfPages[0]}
+                                            alt=""
+                                            fill
+                                            sizes="36px"
+                                            unoptimized
+                                            className="object-cover"
+                                          />
+                                        ) : (
+                                          <FileText className="h-4 w-4 text-zinc-400" />
+                                        )}
+                                      </div>
+                                      <div className="min-w-0 flex-1">
+                                        <p className="font-bold text-zinc-900 dark:text-white line-clamp-1 truncate">{pdf.name}</p>
+                                        <p className="text-[11px] font-mono text-zinc-400 truncate">{pdfPath(pdf)}</p>
+                                      </div>
                                     </div>
                                   </div>
-                                </div>
-                              </td>
-                              <td className="px-6 py-4 text-right font-mono text-zinc-700 dark:text-zinc-300">
-                                {pdf.pdfPageCount || (pdf.pdfPages ? pdf.pdfPages.length : 1)}P
-                              </td>
-                              <td className="px-6 py-4 text-right font-mono text-zinc-700 dark:text-zinc-300">
-                                {pdf.views || 0}
-                              </td>
-                              <td className="px-6 py-4 text-right font-mono font-bold text-zinc-900 dark:text-white">
-                                {pdf.signups || 0}
-                              </td>
-                              <td className="px-6 py-4 text-right" onClick={(e) => e.stopPropagation()}>
-                                <div className="flex items-center justify-end gap-1">
-                                  <button
-                                    type="button"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      navigator.clipboard.writeText(shareUrl);
-                                      setCopiedId(pdf.id);
-                                      setTimeout(() => setCopiedId(null), 2000);
-                                    }}
-                                    className="p-1.5 rounded-lg text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-white/5 transition cursor-pointer"
-                                    title={copiedId === pdf.id ? "Copied!" : "Copy URL"}
-                                  >
-                                    {copiedId === pdf.id ? <Check className="h-3.5 w-3.5 text-emerald-500" /> : <Copy className="h-3.5 w-3.5" />}
-                                  </button>
-                                  <Link
-                                    href={`/dashboard/leadmagnets/${pdf.id}?type=locked-pdf`}
-                                    prefetch={true}
-                                    className="p-1.5 rounded-lg text-zinc-400 hover:text-[#0066B2] dark:hover:text-[#38BDF8] hover:bg-zinc-100 dark:hover:bg-white/5 transition cursor-pointer"
-                                    title="Edit"
-                                  >
-                                    <Pencil className="h-3.5 w-3.5" />
-                                  </Link>
-                                  <button
-                                    type="button"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      setPageToDeleteId(pdf.id);
-                                      setShowDeleteModal(true);
-                                    }}
-                                    className="p-1.5 rounded-lg text-zinc-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition cursor-pointer"
-                                    title="Delete"
-                                  >
-                                    <Trash2 className="h-3.5 w-3.5" />
-                                  </button>
-                                </div>
-                              </td>
-                            </tr>
-                          );
-                        })}
-                      </tbody>
-                    </table>
-                  </div>
+                                </td>
+                                <td className="px-6 py-4 text-right font-mono text-zinc-700 dark:text-zinc-300">
+                                  {pdf.pdfPageCount || (pdf.pdfPages ? pdf.pdfPages.length : 1)}P
+                                </td>
+                                <td className="px-6 py-4 text-right font-mono text-zinc-700 dark:text-zinc-300">
+                                  {pdf.views || 0}
+                                </td>
+                                <td className="px-6 py-4 text-right font-mono font-bold text-zinc-900 dark:text-white">
+                                  {pdf.signups || 0}
+                                </td>
+                                <td className="px-6 py-4 text-right" onClick={(e) => e.stopPropagation()}>
+                                  <div className="flex items-center justify-end gap-1">
+                                    <button
+                                      type="button"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        navigator.clipboard.writeText(shareUrl);
+                                        setCopiedId(pdf.id);
+                                        setTimeout(() => setCopiedId(null), 2000);
+                                      }}
+                                      className="p-1.5 rounded-lg text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-white/5 transition cursor-pointer"
+                                      title={copiedId === pdf.id ? "Copied!" : "Copy URL"}
+                                    >
+                                      {copiedId === pdf.id ? <Check className="h-3.5 w-3.5 text-emerald-500" /> : <Copy className="h-3.5 w-3.5" />}
+                                    </button>
+                                    <Link
+                                      href={`/dashboard/leadmagnets/${pdf.id}?type=locked-pdf`}
+                                      prefetch={true}
+                                      className="p-1.5 rounded-lg text-zinc-400 hover:text-[#0066B2] dark:hover:text-[#38BDF8] hover:bg-zinc-100 dark:hover:bg-white/5 transition cursor-pointer"
+                                      title="Edit"
+                                    >
+                                      <Pencil className="h-3.5 w-3.5" />
+                                    </Link>
+                                    <button
+                                      type="button"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        setPageToDeleteId(pdf.id);
+                                        setShowDeleteModal(true);
+                                      }}
+                                      className="p-1.5 rounded-lg text-zinc-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition cursor-pointer"
+                                      title="Delete"
+                                    >
+                                      <Trash2 className="h-3.5 w-3.5" />
+                                    </button>
+                                  </div>
+                                </td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
 
-                  {/* MOBILE Stream List View (block md:hidden) - Senior Responsive Architecture */}
-                  <div className="block md:hidden p-3 space-y-2.5">
-                    {paginatedItems.map((pdf) => {
-                      const isSelected = activePage?.id === pdf.id;
-                      const isChecked = checkedIds.includes(pdf.id);
-                      const shareUrl = typeof window !== "undefined"
-                        ? `${window.location.origin}/pdf-viewer/${pdf.id}`
-                        : `/pdf-viewer/${pdf.id}`;
-                      const pagesCount = pdf.pdfPageCount || (pdf.pdfPages ? pdf.pdfPages.length : 1);
+                    {/* MOBILE Stream List View (block md:hidden) - Senior Responsive Architecture */}
+                    <div className="block md:hidden p-3 space-y-2.5">
+                      {paginatedItems.map((pdf) => {
+                        const isSelected = activePage?.id === pdf.id;
+                        const isChecked = checkedIds.includes(pdf.id);
+                        const shareUrl = typeof window !== "undefined"
+                          ? `${window.location.origin}${pdfPath(pdf)}`
+                          : pdfPath(pdf);
+                        const pagesCount = pdf.pdfPageCount || (pdf.pdfPages ? pdf.pdfPages.length : 1);
 
-                      return (
-                        <div
-                          key={pdf.id}
-                          onClick={() => {
-                            if (isSelectMode || checkedIds.length > 0) {
-                              handleToggleCheck(pdf.id);
-                            } else {
-                              setSelectedPageId(pdf.id);
-                              setMobileInspectorOpen(true);
-                            }
-                          }}
-                          className={`group relative rounded-2xl border p-3.5 transition-all duration-200 cursor-pointer active:scale-[0.99] select-none ${
-                            isChecked
+                        return (
+                          <div
+                            key={pdf.id}
+                            onClick={() => {
+                              if (isSelectMode || checkedIds.length > 0) {
+                                handleToggleCheck(pdf.id);
+                              } else {
+                                setSelectedPageId(pdf.id);
+                                setMobileInspectorOpen(true);
+                              }
+                            }}
+                            className={`group relative rounded-2xl border p-3.5 transition-all duration-200 cursor-pointer active:scale-[0.99] select-none ${isChecked
                               ? "border-[#0066B2] dark:border-[#38BDF8] bg-blue-50/50 dark:bg-[#0066B2]/15 ring-2 ring-[#0066B2]/30 shadow-sm"
                               : isSelected
-                              ? "border-[#0066B2] dark:border-white/20 bg-white dark:bg-[#171717] ring-1 ring-[#0066B2]/30 shadow-xs"
-                              : "border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#171717] shadow-sm dark:shadow-none backdrop-blur-sm"
-                          }`}
-                        >
-                          {/* Top Row: Checkbox, Thumbnail, Title/Slug, Page Count & Status Badge */}
-                          <div className="flex items-start justify-between gap-2.5">
-                            <div className="flex items-start min-w-0 flex-1">
-                              {/* Animated Checkbox */}
-                              <AnimatePresence initial={false}>
-                                {(checkedIds.length > 0 || isChecked || isSelectMode) && (
-                                  <motion.div
-                                    initial={{ opacity: 0, width: 0, marginRight: 0 }}
-                                    animate={{ opacity: 1, width: 22, marginRight: 10 }}
-                                    exit={{ opacity: 0, width: 0, marginRight: 0 }}
-                                    transition={{ type: "spring", stiffness: 450, damping: 35 }}
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      handleToggleCheck(pdf.id, e);
-                                    }}
-                                    className="flex h-9 items-center justify-center shrink-0 overflow-hidden cursor-pointer"
-                                  >
-                                    <AppleCheckbox
-                                      checked={isChecked}
-                                      onChange={() => handleToggleCheck(pdf.id)}
-                                      title={isChecked ? "Deselect PDF" : "Select PDF"}
+                                ? "border-[#0066B2] dark:border-white/20 bg-white dark:bg-[#171717] ring-1 ring-[#0066B2]/30 shadow-xs"
+                                : "border-[#0066B2]/15 bg-white/90 dark:border-white/[0.08] dark:bg-[#171717] shadow-sm dark:shadow-none backdrop-blur-sm"
+                              }`}
+                          >
+                            {/* Top Row: Checkbox, Thumbnail, Title/Slug, Page Count & Status Badge */}
+                            <div className="flex items-start justify-between gap-2.5">
+                              <div className="flex items-start min-w-0 flex-1">
+                                {/* Animated Checkbox */}
+                                <AnimatePresence initial={false}>
+                                  {(checkedIds.length > 0 || isChecked || isSelectMode) && (
+                                    <motion.div
+                                      initial={{ opacity: 0, width: 0, marginRight: 0 }}
+                                      animate={{ opacity: 1, width: 22, marginRight: 10 }}
+                                      exit={{ opacity: 0, width: 0, marginRight: 0 }}
+                                      transition={{ type: "spring", stiffness: 450, damping: 35 }}
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleToggleCheck(pdf.id, e);
+                                      }}
+                                      className="flex h-9 items-center justify-center shrink-0 overflow-hidden cursor-pointer"
+                                    >
+                                      <AppleCheckbox
+                                        checked={isChecked}
+                                        onChange={() => handleToggleCheck(pdf.id)}
+                                        title={isChecked ? "Deselect PDF" : "Select PDF"}
+                                      />
+                                    </motion.div>
+                                  )}
+                                </AnimatePresence>
+
+                                {/* Thumbnail */}
+                                <div className="relative h-9 w-9 rounded-xl bg-zinc-100 dark:bg-zinc-800 shrink-0 overflow-hidden flex items-center justify-center border border-zinc-200/70 dark:border-white/10">
+                                  {pdf.pdfPages && pdf.pdfPages.length > 0 ? (
+                                    <Image
+                                      src={pdf.pdfPages[0]}
+                                      alt=""
+                                      fill
+                                      sizes="36px"
+                                      unoptimized
+                                      className="object-cover"
                                     />
-                                  </motion.div>
-                                )}
-                              </AnimatePresence>
+                                  ) : (
+                                    <FileText className="h-4 w-4 text-zinc-400" />
+                                  )}
+                                </div>
 
-                              {/* Thumbnail */}
-                              <div className="relative h-9 w-9 rounded-xl bg-zinc-100 dark:bg-zinc-800 shrink-0 overflow-hidden flex items-center justify-center border border-zinc-200/70 dark:border-white/10">
-                                {pdf.pdfPages && pdf.pdfPages.length > 0 ? (
-                                  <Image
-                                    src={pdf.pdfPages[0]}
-                                    alt=""
-                                    fill
-                                    sizes="36px"
-                                    unoptimized
-                                    className="object-cover"
-                                  />
-                                ) : (
-                                  <FileText className="h-4 w-4 text-zinc-400" />
-                                )}
+                                {/* Name and URL */}
+                                <div className="min-w-0 flex-1 ml-2.5">
+                                  <h3 className="font-bold text-xs text-zinc-900 dark:text-white truncate">
+                                    {pdf.name}
+                                  </h3>
+                                  <p className="text-[11px] font-mono text-zinc-400 truncate mt-0.5">
+                                    {pdfPath(pdf)}
+                                  </p>
+                                </div>
                               </div>
 
-                              {/* Name and URL */}
-                              <div className="min-w-0 flex-1 ml-2.5">
-                                <h3 className="font-bold text-xs text-zinc-900 dark:text-white truncate">
-                                  {pdf.name}
-                                </h3>
-                                <p className="text-[11px] font-mono text-zinc-400 truncate mt-0.5">
-                                  /pdf-viewer/{pdf.id}
-                                </p>
-                              </div>
-                            </div>
-
-                            {/* Page count & Status */}
-                            <div className="shrink-0 flex items-center gap-1.5">
-                              <span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold bg-[#0066B2]/10 text-[#0066B2] dark:bg-[#38BDF8]/15 dark:text-[#38BDF8] border border-[#0066B2]/20 dark:border-[#38BDF8]/25">
-                                <Lock className="h-2.5 w-2.5" />
-                                {pagesCount}P
-                              </span>
-                              <span
-                                className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase ${
-                                  pdf.status === "live"
+                              {/* Page count & Status */}
+                              <div className="shrink-0 flex items-center gap-1.5">
+                                <span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold bg-[#0066B2]/10 text-[#0066B2] dark:bg-[#38BDF8]/15 dark:text-[#38BDF8] border border-[#0066B2]/20 dark:border-[#38BDF8]/25">
+                                  <Lock className="h-2.5 w-2.5" />
+                                  {pagesCount}P
+                                </span>
+                                <span
+                                  className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase ${pdf.status === "live"
                                     ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 border border-emerald-200/60 dark:border-emerald-900/40"
                                     : "bg-zinc-100 dark:bg-zinc-800 text-zinc-500 border border-zinc-200/60 dark:border-white/10"
-                                }`}
-                              >
-                                <span className={`h-1.5 w-1.5 rounded-full ${pdf.status === "live" ? "bg-emerald-500 animate-pulse" : "bg-zinc-400"}`} />
-                                {pdf.status === "live" ? "Published" : "Draft"}
-                              </span>
+                                    }`}
+                                >
+                                  <span className={`h-1.5 w-1.5 rounded-full ${pdf.status === "live" ? "bg-emerald-500 animate-pulse" : "bg-zinc-400"}`} />
+                                  {pdf.status === "live" ? "Published" : "Draft"}
+                                </span>
+                              </div>
+                            </div>
+
+                            {/* Bottom Row: Stats & Action Buttons */}
+                            <div className="mt-3 flex items-center justify-between text-xs">
+                              {/* Stats: Views & Unlocks */}
+                              <div className="flex items-center gap-2 text-[11px] text-zinc-500 dark:text-zinc-400">
+                                <span className="flex items-center gap-1 font-mono">
+                                  <strong className="font-bold text-zinc-800 dark:text-zinc-200">{pdf.views || 0}</strong> views
+                                </span>
+                                <span>·</span>
+                                <span className="flex items-center gap-1 font-mono">
+                                  <strong className="font-bold text-[#0066B2] dark:text-[#38BDF8]">{pdf.signups || 0}</strong> unlocks
+                                </span>
+                              </div>
+
+                              {/* Quick Actions (Icon-only on mobile: Details, Copy, Edit) */}
+                              <div className="flex items-center gap-1.5 shrink-0" onClick={(e) => e.stopPropagation()}>
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setSelectedPageId(pdf.id);
+                                    setMobileInspectorOpen(true);
+                                  }}
+                                  className="inline-flex h-8 w-8 items-center justify-center rounded-xl border border-zinc-200/90 bg-white dark:border-white/10 dark:bg-[#121212] text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-[#282830] hover:text-[#0066B2] dark:hover:text-[#38BDF8] transition-all duration-150 cursor-pointer shadow-2xs active:scale-95"
+                                  title="Open details"
+                                >
+                                  <Eye className="h-3.5 w-3.5" />
+                                </button>
+
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    navigator.clipboard.writeText(shareUrl);
+                                    setCopiedId(pdf.id);
+                                    setTimeout(() => setCopiedId(null), 2000);
+                                  }}
+                                  className="inline-flex h-8 w-8 items-center justify-center rounded-xl border border-zinc-200/90 bg-white dark:border-white/10 dark:bg-[#121212] text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-[#282830] hover:text-[#0066B2] dark:hover:text-[#38BDF8] transition-all duration-150 cursor-pointer shadow-2xs active:scale-95"
+                                  title={copiedId === pdf.id ? "Copied!" : "Copy URL"}
+                                >
+                                  {copiedId === pdf.id ? <Check className="h-3.5 w-3.5 text-emerald-500" /> : <Copy className="h-3.5 w-3.5" />}
+                                </button>
+
+                                <Link
+                                  href={`/dashboard/leadmagnets/${pdf.id}?type=locked-pdf`}
+                                  prefetch={true}
+                                  className="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-[#0066B2]/10 hover:bg-[#0066B2] text-[#0066B2] hover:text-white dark:bg-[#0066B2]/20 dark:text-[#38BDF8] dark:hover:bg-[#0066B2] dark:hover:text-white transition-all duration-150 shadow-2xs active:scale-95"
+                                  title="Edit"
+                                >
+                                  <Pencil className="h-3.5 w-3.5" />
+                                </Link>
+                              </div>
                             </div>
                           </div>
+                        );
+                      })}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
 
-                          {/* Bottom Row: Stats & Action Buttons */}
-                          <div className="mt-3 flex items-center justify-between text-xs">
-                            {/* Stats: Views & Unlocks */}
-                            <div className="flex items-center gap-2 text-[11px] text-zinc-500 dark:text-zinc-400">
-                              <span className="flex items-center gap-1 font-mono">
-                                <strong className="font-bold text-zinc-800 dark:text-zinc-200">{pdf.views || 0}</strong> views
-                              </span>
-                              <span>·</span>
-                              <span className="flex items-center gap-1 font-mono">
-                                <strong className="font-bold text-[#0066B2] dark:text-[#38BDF8]">{pdf.signups || 0}</strong> unlocks
-                              </span>
-                            </div>
+              {(totalPages > 1 || filtered.length > 10) && (
+                <div className="mt-2">
+                  <ApplePagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    totalItems={filtered.length}
+                    pageSize={pageSize}
+                    onPageChange={(page) => setCurrentPage(page)}
+                    onPageSizeChange={(newSize) => {
+                      setPageSize(newSize);
+                      setCurrentPage(1);
+                    }}
+                    pageSizeOptions={[10, 25, 50]}
+                    itemLabel="locked PDF"
+                    itemLabelPlural="locked PDFs"
+                    prefixRows="Rows:"
+                    scrollTargetId="locked-pdf-list-container"
+                  />
+                </div>
+              )}
+            </motion.div>
 
-                            {/* Quick Actions (Icon-only on mobile: Details, Copy, Edit) */}
-                            <div className="flex items-center gap-1.5 shrink-0" onClick={(e) => e.stopPropagation()}>
-                              <button
-                                type="button"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setSelectedPageId(pdf.id);
-                                  setMobileInspectorOpen(true);
-                                }}
-                                className="inline-flex h-8 w-8 items-center justify-center rounded-xl border border-zinc-200/90 bg-white dark:border-white/10 dark:bg-[#121212] text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-[#282830] hover:text-[#0066B2] dark:hover:text-[#38BDF8] transition-all duration-150 cursor-pointer shadow-2xs active:scale-95"
-                                title="Open details"
-                              >
-                                <Eye className="h-3.5 w-3.5" />
-                              </button>
+            {/* Right Fixed Sticky Inspector Card (Only rendered when a PDF is selected) */}
+            <AnimatePresence mode="popLayout">
+              {activePage && (
+                <motion.div
+                  layout
+                  initial={{ opacity: 0, x: 20, scale: 0.98 }}
+                  animate={{ opacity: 1, x: 0, scale: 1 }}
+                  exit={{
+                    opacity: 0,
+                    x: 16,
+                    scale: 0.98,
+                    transition: { duration: 0.14, ease: [0.16, 1, 0.3, 1] }
+                  }}
+                  transition={{
+                    layout: { type: "spring", stiffness: 450, damping: 32, mass: 0.6 },
+                    type: "spring",
+                    stiffness: 450,
+                    damping: 32,
+                    mass: 0.6,
+                    opacity: { duration: 0.16, ease: [0.16, 1, 0.3, 1] },
+                  }}
+                  className="hidden lg:block lg:w-[35%] sticky top-6 z-20 space-y-4 shrink-0"
+                >
+                  <div className="rounded-2xl border border-[#0066B2]/15 dark:border-white/[0.08] bg-white/90 dark:bg-[#171717] dark:shadow-none p-5 shadow-md backdrop-blur-sm space-y-5">
+                    <motion.div
+                      key={activePage.id}
+                      initial={{ opacity: 0, y: 3 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.14, ease: "easeOut" }}
+                      className="space-y-5"
+                    >
+                      <div className="flex items-start justify-between">
+                        <div className="min-w-0 flex-1 mr-2">
+                          <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#0066B2] dark:text-[#38BDF8]">
+                            SELECTED INSPECTOR
+                          </span>
+                          <h3 className="text-lg font-black text-zinc-900 dark:text-white mt-0.5 line-clamp-1">
+                            {activePage.name}
+                          </h3>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => setSelectedPageId(null)}
+                          className="rounded-lg p-1.5 text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white transition cursor-pointer shrink-0"
+                          title="Close inspector"
+                        >
+                          <X className="h-4 w-4" />
+                        </button>
+                      </div>
 
-                              <button
-                                type="button"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  navigator.clipboard.writeText(shareUrl);
-                                  setCopiedId(pdf.id);
-                                  setTimeout(() => setCopiedId(null), 2000);
-                                }}
-                                className="inline-flex h-8 w-8 items-center justify-center rounded-xl border border-zinc-200/90 bg-white dark:border-white/10 dark:bg-[#121212] text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-[#282830] hover:text-[#0066B2] dark:hover:text-[#38BDF8] transition-all duration-150 cursor-pointer shadow-2xs active:scale-95"
-                                title={copiedId === pdf.id ? "Copied!" : "Copy URL"}
-                              >
-                                {copiedId === pdf.id ? <Check className="h-3.5 w-3.5 text-emerald-500" /> : <Copy className="h-3.5 w-3.5" />}
-                              </button>
+                      <div className="rounded-xl bg-zinc-50 dark:bg-[#1a1a1a] p-3 border border-zinc-200/60 dark:border-white/[0.06] space-y-2">
+                        <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Public Share URL</p>
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="text-xs font-mono text-zinc-800 dark:text-zinc-200 truncate">
+                            {pdfPath(activePage)}
+                          </span>
+                          <button
+                            onClick={() => {
+                              const fullUrl = `${window.location.origin}${pdfPath(activePage)}`;
+                              navigator.clipboard.writeText(fullUrl);
+                              setCopiedId(activePage.id);
+                              setTimeout(() => setCopiedId(null), 2000);
+                            }}
+                            className="flex items-center gap-1 rounded-lg bg-white dark:bg-white/5 px-2.5 py-1 text-xs font-bold text-zinc-700 dark:text-zinc-200 border border-zinc-200 dark:border-white/10 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition shrink-0 cursor-pointer"
+                          >
+                            {copiedId === activePage.id ? <Check className="h-3 w-3 text-emerald-500" /> : <Copy className="h-3 w-3" />}
+                            <span>{copiedId === activePage.id ? "Copied" : "Copy"}</span>
+                          </button>
+                        </div>
+                      </div>
 
-                              <Link
-                                href={`/dashboard/leadmagnets/${pdf.id}?type=locked-pdf`}
-                                prefetch={true}
-                                className="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-[#0066B2]/10 hover:bg-[#0066B2] text-[#0066B2] hover:text-white dark:bg-[#0066B2]/20 dark:text-[#38BDF8] dark:hover:bg-[#0066B2] dark:hover:text-white transition-all duration-150 shadow-2xs active:scale-95"
-                                title="Edit"
-                              >
-                                <Pencil className="h-3.5 w-3.5" />
-                              </Link>
-                            </div>
+                      <div className="space-y-2">
+                        <p className="text-xs font-bold text-zinc-900 dark:text-white flex items-center gap-1.5">
+                          <TrendingUp className="h-3.5 w-3.5 text-[#0066B2] dark:text-[#38BDF8]" /> Funnel Conversion Metrics
+                        </p>
+                        <div className="grid grid-cols-2 gap-2">
+                          <div className="rounded-xl border border-zinc-100 dark:border-white/[0.06] p-3 bg-zinc-50/50 dark:bg-white/[0.02]">
+                            <p className="text-[10px] text-zinc-400 font-semibold uppercase">Total Views</p>
+                            <p className="text-lg font-bold text-zinc-900 dark:text-white mt-1">{activePage.views || 0}</p>
+                          </div>
+                          <div className="rounded-xl border border-zinc-100 dark:border-white/[0.06] p-3 bg-zinc-50/50 dark:bg-white/[0.02]">
+                            <p className="text-[10px] text-zinc-400 font-semibold uppercase">Leads Captured</p>
+                            <p className="text-lg font-bold text-[#0066B2] dark:text-[#38BDF8] mt-1">{activePage.signups || 0}</p>
                           </div>
                         </div>
-                      );
-                    })}
+                      </div>
+
+                      <div className="space-y-2">
+                        <Link
+                          href={`/dashboard/leadmagnets/${activePage.id}?type=locked-pdf`}
+                          prefetch={true}
+                          className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#0066B2] px-4 py-2.5 text-xs font-bold text-white hover:bg-[#005799] transition shadow-sm cursor-pointer active:scale-95"
+                        >
+                          <Pencil className="h-4 w-4" /> Open Full Editor
+                        </Link>
+
+                        <div className="grid grid-cols-2 gap-2">
+                          <Link
+                            href={`/dashboard/leadmagnets/${activePage.id}/analytics`}
+                            className="flex items-center justify-center gap-1.5 rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#171717] px-3 py-2 text-xs font-bold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition"
+                          >
+                            <BarChart2 className="h-3.5 w-3.5 text-[#0066B2] dark:text-[#38BDF8]" /> Analytics
+                          </Link>
+
+                          <a
+                            href={pdfPath(activePage)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center justify-center gap-1.5 rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#171717] px-3 py-2 text-xs font-bold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition"
+                          >
+                            <ExternalLink className="h-3.5 w-3.5 text-zinc-400" /> Preview
+                          </a>
+                        </div>
+                      </div>
+
+                      <div className="flex justify-end pt-1">
+                        <button
+                          onClick={() => setShowDeleteModal(true)}
+                          className="flex items-center gap-1 text-[11px] font-bold text-red-500 hover:text-red-600 dark:hover:text-red-400 transition cursor-pointer"
+                        >
+                          <Trash2 className="h-3.5 w-3.5" /> Delete Funnel
+                        </button>
+                      </div>
+                    </motion.div>
                   </div>
                 </motion.div>
               )}
             </AnimatePresence>
-
-            {(totalPages > 1 || filtered.length > 10) && (
-              <div className="mt-2">
-                <ApplePagination
-                  currentPage={currentPage}
-                  totalPages={totalPages}
-                  totalItems={filtered.length}
-                  pageSize={pageSize}
-                  onPageChange={(page) => setCurrentPage(page)}
-                  onPageSizeChange={(newSize) => {
-                    setPageSize(newSize);
-                    setCurrentPage(1);
-                  }}
-                  pageSizeOptions={[10, 25, 50]}
-                  itemLabel="locked PDF"
-                  itemLabelPlural="locked PDFs"
-                  prefixRows="Rows:"
-                  scrollTargetId="locked-pdf-list-container"
-                />
-              </div>
-            )}
-          </motion.div>
-
-          {/* Right Fixed Sticky Inspector Card (Only rendered when a PDF is selected) */}
-          <AnimatePresence mode="popLayout">
-            {activePage && (
-              <motion.div
-                layout
-                initial={{ opacity: 0, x: 20, scale: 0.98 }}
-                animate={{ opacity: 1, x: 0, scale: 1 }}
-                exit={{
-                  opacity: 0,
-                  x: 16,
-                  scale: 0.98,
-                  transition: { duration: 0.14, ease: [0.16, 1, 0.3, 1] }
-                }}
-                transition={{
-                  layout: { type: "spring", stiffness: 450, damping: 32, mass: 0.6 },
-                  type: "spring",
-                  stiffness: 450,
-                  damping: 32,
-                  mass: 0.6,
-                  opacity: { duration: 0.16, ease: [0.16, 1, 0.3, 1] },
-                }}
-                className="hidden lg:block lg:w-[35%] sticky top-6 z-20 space-y-4 shrink-0"
-              >
-                <div className="rounded-2xl border border-[#0066B2]/15 dark:border-white/[0.08] bg-white/90 dark:bg-[#171717] dark:shadow-none p-5 shadow-md backdrop-blur-sm space-y-5">
-                  <motion.div
-                    key={activePage.id}
-                    initial={{ opacity: 0, y: 3 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.14, ease: "easeOut" }}
-                    className="space-y-5"
-                  >
-                    <div className="flex items-start justify-between">
-                      <div className="min-w-0 flex-1 mr-2">
-                        <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#0066B2] dark:text-[#38BDF8]">
-                          SELECTED INSPECTOR
-                        </span>
-                        <h3 className="text-lg font-black text-zinc-900 dark:text-white mt-0.5 line-clamp-1">
-                          {activePage.name}
-                        </h3>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => setSelectedPageId(null)}
-                        className="rounded-lg p-1.5 text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white transition cursor-pointer shrink-0"
-                        title="Close inspector"
-                      >
-                        <X className="h-4 w-4" />
-                      </button>
-                    </div>
-
-                    <div className="rounded-xl bg-zinc-50 dark:bg-[#1a1a1a] p-3 border border-zinc-200/60 dark:border-white/[0.06] space-y-2">
-                      <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Public Share URL</p>
-                      <div className="flex items-center justify-between gap-2">
-                        <span className="text-xs font-mono text-zinc-800 dark:text-zinc-200 truncate">
-                          /pdf-viewer/{activePage.id}
-                        </span>
-                        <button
-                          onClick={() => {
-                            const fullUrl = `${window.location.origin}/pdf-viewer/${activePage.id}`;
-                            navigator.clipboard.writeText(fullUrl);
-                            setCopiedId(activePage.id);
-                            setTimeout(() => setCopiedId(null), 2000);
-                          }}
-                          className="flex items-center gap-1 rounded-lg bg-white dark:bg-white/5 px-2.5 py-1 text-xs font-bold text-zinc-700 dark:text-zinc-200 border border-zinc-200 dark:border-white/10 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition shrink-0 cursor-pointer"
-                        >
-                          {copiedId === activePage.id ? <Check className="h-3 w-3 text-emerald-500" /> : <Copy className="h-3 w-3" />}
-                          <span>{copiedId === activePage.id ? "Copied" : "Copy"}</span>
-                        </button>
-                      </div>
-                    </div>
-
-                    <div className="space-y-2">
-                      <p className="text-xs font-bold text-zinc-900 dark:text-white flex items-center gap-1.5">
-                        <TrendingUp className="h-3.5 w-3.5 text-[#0066B2] dark:text-[#38BDF8]" /> Funnel Conversion Metrics
-                      </p>
-                      <div className="grid grid-cols-2 gap-2">
-                        <div className="rounded-xl border border-zinc-100 dark:border-white/[0.06] p-3 bg-zinc-50/50 dark:bg-white/[0.02]">
-                          <p className="text-[10px] text-zinc-400 font-semibold uppercase">Total Views</p>
-                          <p className="text-lg font-bold text-zinc-900 dark:text-white mt-1">{activePage.views || 0}</p>
-                        </div>
-                        <div className="rounded-xl border border-zinc-100 dark:border-white/[0.06] p-3 bg-zinc-50/50 dark:bg-white/[0.02]">
-                          <p className="text-[10px] text-zinc-400 font-semibold uppercase">Leads Captured</p>
-                          <p className="text-lg font-bold text-[#0066B2] dark:text-[#38BDF8] mt-1">{activePage.signups || 0}</p>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Link
-                        href={`/dashboard/leadmagnets/${activePage.id}?type=locked-pdf`}
-                        prefetch={true}
-                        className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#0066B2] px-4 py-2.5 text-xs font-bold text-white hover:bg-[#005799] transition shadow-sm cursor-pointer active:scale-95"
-                      >
-                        <Pencil className="h-4 w-4" /> Open Full Editor
-                      </Link>
-
-                      <div className="grid grid-cols-2 gap-2">
-                        <Link
-                          href={`/dashboard/leadmagnets/${activePage.id}/analytics`}
-                          className="flex items-center justify-center gap-1.5 rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#171717] px-3 py-2 text-xs font-bold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition"
-                        >
-                          <BarChart2 className="h-3.5 w-3.5 text-[#0066B2] dark:text-[#38BDF8]" /> Analytics
-                        </Link>
-
-                        <a
-                          href={`/pdf-viewer/${activePage.id}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex items-center justify-center gap-1.5 rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#171717] px-3 py-2 text-xs font-bold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition"
-                        >
-                          <ExternalLink className="h-3.5 w-3.5 text-zinc-400" /> Preview
-                        </a>
-                      </div>
-                    </div>
-
-                    <div className="flex justify-end pt-1">
-                      <button
-                        onClick={() => setShowDeleteModal(true)}
-                        className="flex items-center gap-1 text-[11px] font-bold text-red-500 hover:text-red-600 dark:hover:text-red-400 transition cursor-pointer"
-                      >
-                        <Trash2 className="h-3.5 w-3.5" /> Delete Funnel
-                      </button>
-                    </div>
-                  </motion.div>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-      </LayoutGroup>
+          </div>
+        </LayoutGroup>
       </div>
 
       {/* Email Preview Modal */}
@@ -2670,11 +2664,10 @@ export default function LockedPdfPage() {
                 </div>
                 <div className="flex items-center shrink-0">
                   <span
-                    className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide ${
-                      activePage.status === "live"
-                        ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/50"
-                        : "bg-zinc-100 dark:bg-zinc-800 text-zinc-500"
-                    }`}
+                    className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide ${activePage.status === "live"
+                      ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/50"
+                      : "bg-zinc-100 dark:bg-zinc-800 text-zinc-500"
+                      }`}
                   >
                     {activePage.status === "live" ? "Published" : "Draft"}
                   </span>
@@ -2686,12 +2679,12 @@ export default function LockedPdfPage() {
                 <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Public Share URL</p>
                 <div className="flex items-center justify-between gap-2">
                   <span className="text-xs font-mono text-zinc-800 dark:text-zinc-200 truncate">
-                    /pdf-viewer/{activePage.id}
+                    {pdfPath(activePage)}
                   </span>
                   <button
                     type="button"
                     onClick={() => {
-                      const fullUrl = `${window.location.origin}/pdf-viewer/${activePage.id}`;
+                      const fullUrl = `${window.location.origin}${pdfPath(activePage)}`;
                       navigator.clipboard.writeText(fullUrl);
                       setCopiedId(activePage.id);
                       setTimeout(() => setCopiedId(null), 2000);
@@ -2740,7 +2733,7 @@ export default function LockedPdfPage() {
                   </Link>
 
                   <a
-                    href={`/pdf-viewer/${activePage.id}`}
+                    href={pdfPath(activePage)}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center justify-center gap-1.5 rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#171717] px-3 py-2.5 text-xs font-bold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition"

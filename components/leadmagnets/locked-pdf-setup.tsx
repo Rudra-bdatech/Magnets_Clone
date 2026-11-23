@@ -44,6 +44,8 @@ interface Props {
   pdfUrl?: string;
   pageName?: string;
   pageSlug?: string;
+  /** Branded public path of this PDF (/<username>/<slug>); falls back to /pdf-viewer/<id> */
+  publicPath?: string;
   onSave: (updates: {
     pdfPages: string[];
     pdfFreePages: number;
@@ -163,6 +165,7 @@ export default function LockedPdfSetup({
   pdfUrl: initialPdfUrl,
   pageName = "",
   pageSlug = "",
+  publicPath,
   onSave,
   appUrl,
   hostedResources = [],
@@ -313,7 +316,7 @@ export default function LockedPdfSetup({
     typeof window !== "undefined"
       ? window.location.origin
       : appUrl || "https://funnels.co.in";
-  const viewerUrl = `${effectiveAppUrl}/pdf-viewer/${magnetId}`;
+  const viewerUrl = `${effectiveAppUrl}${publicPath || `/pdf-viewer/${magnetId}`}`;
 
   useEffect(() => {
     if (pageName) setName(pageName);

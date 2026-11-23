@@ -15,6 +15,9 @@ interface DomainPageProps {
   searchParams: {
     host?: string;
     path?: string;
+    // Original query of the visitor's URL (middleware keeps it on the rewrite)
+    token?: string | string[];
+    reset?: string | string[];
   };
 }
 
@@ -223,5 +226,10 @@ export default async function CustomDomainResolverPage({ searchParams }: DomainP
   }
 
   // Render the specific lead magnet requested
-  return <MagnetPageRoute params={{ username: account.username, slug }} />;
+  return (
+    <MagnetPageRoute
+      params={{ username: account.username, slug }}
+      searchParams={{ token: searchParams?.token, reset: searchParams?.reset }}
+    />
+  );
 }

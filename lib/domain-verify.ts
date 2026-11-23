@@ -150,3 +150,19 @@ export function isPlatformHost(host: string, apex: string): boolean {
   if (!normalizedHost || !normalizedApex) return false;
   return normalizedHost === normalizedApex || normalizedHost.endsWith(`.${normalizedApex}`);
 }
+
+/** True for our own app hosts (same list as middleware's isPrimaryDomain), false for custom domains. */
+export function isPrimaryAppHost(host: string): boolean {
+  const configuredHost = process.env.NEXT_PUBLIC_APP_URL
+    ? process.env.NEXT_PUBLIC_APP_URL.replace(/^https?:\/\//i, "").split("/")[0].split(":")[0].toLowerCase()
+    : "";
+  return (
+    isPlatformHost(host, "localhost") ||
+    host === "127.0.0.1" ||
+    isPlatformHost(host, "vercel.app") ||
+    isPlatformHost(host, "funnels.co.in") ||
+    isPlatformHost(host, "leadmagnets.so") ||
+    isPlatformHost(host, "magnets.bdatech.in") ||
+    (configuredHost ? isPlatformHost(host, configuredHost) : false)
+  );
+}

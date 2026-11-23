@@ -14,6 +14,7 @@ import { savePages, loadPages } from "@/lib/store";
 import TemplateRenderer from "@/components/templates/TemplateRenderer";
 import CustomFieldsBuilder from "@/components/leadmagnets/edit/CustomFieldsBuilder";
 import LockedPdfSetup from "@/components/leadmagnets/locked-pdf-setup";
+import { lockedPdfPath, uniqueSlug } from "@/lib/locked-pdf-url";
 
 export interface LandingPageTabProps {
   account: Account | null;
@@ -169,6 +170,7 @@ export default function LandingPageTab({
           pdfUrl={lockedPdfUrl || page.pdfUrl}
           pageName={page.name}
           pageSlug={page.slug}
+          publicPath={lockedPdfPath(account?.username, page, loadPages())}
           appUrl={typeof window !== "undefined" ? window.location.origin : (process.env.NEXT_PUBLIC_APP_URL || "https://funnels.co.in")}
           onSave={async (updates) => {
             setLockedPdfPages(updates.pdfPages);
@@ -180,7 +182,8 @@ export default function LandingPageTab({
             const next = {
               ...page,
               name: updates.name?.trim() || updates.pdfTitle?.trim() || page.name,
-              slug: updates.slug?.trim() || page.slug,
+              // Keep the slug unique so /<username>/<slug> keeps opening this PDF
+              slug: updates.slug?.trim() ? uniqueSlug(updates.slug.trim(), loadPages(), page.id) : page.slug,
               pdfPages: updates.pdfPages,
               pdfFreePages: updates.pdfFreePages,
               pdfTitle: updates.pdfTitle,

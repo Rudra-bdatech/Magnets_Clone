@@ -64,6 +64,7 @@ import DeleteModal from "@/components/leadmagnets/edit/DeleteModal";
 import SequencePreviewModal from "@/components/leadmagnets/edit/SequencePreviewModal";
 import EmailPreviewModal from "@/components/leadmagnets/edit/EmailPreviewModal";
 import QRCodeDropdown from "@/components/leadmagnets/QRCodeDropdown";
+import { lockedPdfPath } from "@/lib/locked-pdf-url";
 import LandingPageTab from "@/components/leadmagnets/edit/LandingPageTab";
 import DeliveryEmailTab from "@/components/leadmagnets/edit/DeliveryEmailTab";
 import SequenceTab from "@/components/leadmagnets/edit/SequenceTab";
@@ -1151,7 +1152,7 @@ export default function EditLeadMagnetPage() {
               data: next,
               email: userEmail,
             }),
-          }).catch(() => {});
+          }).catch(() => { });
         }
       }
       setSaveStatus("autosaved");
@@ -1230,7 +1231,7 @@ export default function EditLeadMagnetPage() {
             data: next,
             email: userEmail,
           }),
-        }).catch(() => {});
+        }).catch(() => { });
       }
     }
   };
@@ -1316,7 +1317,7 @@ export default function EditLeadMagnetPage() {
           data: next,
           email: userEmail,
         }),
-      }).catch(() => {});
+      }).catch(() => { });
     }
   }
 
@@ -1382,7 +1383,7 @@ export default function EditLeadMagnetPage() {
             data: next,
             email: userEmail,
           }),
-        }).catch(() => {});
+        }).catch(() => { });
       }
       setSaving(false);
     }, 400);
@@ -1613,11 +1614,10 @@ export default function EditLeadMagnetPage() {
                       <button
                         type="button"
                         onClick={() => update({ status: live ? "draft" : "live", publishedAt: live ? page?.publishedAt : new Date().toISOString() })}
-                        className={`inline-flex items-center gap-1 rounded-lg px-2 py-1 text-[11px] font-bold transition cursor-pointer shadow-xs ${
-                          live
-                            ? "bg-emerald-50 text-emerald-700 border border-emerald-300 dark:bg-emerald-950/80 dark:text-emerald-300 dark:border-emerald-700/60"
-                            : "bg-zinc-100 text-zinc-700 border border-zinc-300 dark:bg-[#1E1E24] dark:text-zinc-300 dark:border-[#27272A]"
-                        }`}
+                        className={`inline-flex items-center gap-1 rounded-lg px-2 py-1 text-[11px] font-bold transition cursor-pointer shadow-xs ${live
+                          ? "bg-emerald-50 text-emerald-700 border border-emerald-300 dark:bg-emerald-950/80 dark:text-emerald-300 dark:border-emerald-700/60"
+                          : "bg-zinc-100 text-zinc-700 border border-zinc-300 dark:bg-[#1E1E24] dark:text-zinc-300 dark:border-[#27272A]"
+                          }`}
                       >
                         <span className={`h-1.5 w-1.5 rounded-full ${live ? "bg-emerald-500" : "bg-zinc-400"}`} />
                         <span>{live ? "Live" : "Draft"}</span>
@@ -1625,7 +1625,7 @@ export default function EditLeadMagnetPage() {
                     )}
 
                     <a
-                      href={isLockedPdf ? (page ? `/pdf-viewer/${page.id}` : "/dashboard/locked-pdf") : (page ? `/${account?.username || "user"}/${page.slug}` : "/dashboard/landing-page")}
+                      href={isLockedPdf ? (page ? lockedPdfPath(account?.username, page, allPages) : "/dashboard/locked-pdf") : (page ? `/${account?.username || "user"}/${page.slug}` : "/dashboard/landing-page")}
                       target="_blank"
                       rel="noopener noreferrer"
                       className={`p-1.5 rounded-lg transition cursor-pointer ${isDarkMode
@@ -1655,6 +1655,7 @@ export default function EditLeadMagnetPage() {
                           page={page}
                           account={account}
                           isLockedPdf={isLockedPdf}
+                          allPages={allPages}
                           onAnalytics={() => {
                             setShowMenu(false);
                             handleAnalytics();
@@ -1748,7 +1749,7 @@ export default function EditLeadMagnetPage() {
                     {/* Desktop-only: Copy Link / Open Preview, Overflow menu, and Status Pill */}
                     <div className="hidden sm:flex items-center gap-1.5">
                       <a
-                        href={isLockedPdf ? (page ? `/pdf-viewer/${page.id}` : "/dashboard/locked-pdf") : (page ? `/${account?.username || "user"}/${page.slug}` : "/dashboard/landing-page")}
+                        href={isLockedPdf ? (page ? lockedPdfPath(account?.username, page, allPages) : "/dashboard/locked-pdf") : (page ? `/${account?.username || "user"}/${page.slug}` : "/dashboard/landing-page")}
                         target="_blank"
                         rel="noopener noreferrer"
                         className={`p-1.5 rounded-lg transition cursor-pointer ${isDarkMode
@@ -1779,6 +1780,7 @@ export default function EditLeadMagnetPage() {
                             page={page}
                             account={effectiveAccount}
                             isLockedPdf={isLockedPdf}
+                            allPages={allPages}
                             onAnalytics={() => {
                               setShowMenu(false);
                               handleAnalytics();
@@ -1797,11 +1799,10 @@ export default function EditLeadMagnetPage() {
                         <button
                           type="button"
                           onClick={() => update({ status: live ? "draft" : "live", publishedAt: live ? page?.publishedAt : new Date().toISOString() })}
-                          className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-bold transition cursor-pointer shadow-xs ${
-                            live
-                              ? "bg-emerald-50 text-emerald-700 border border-emerald-300 hover:bg-emerald-100 dark:bg-emerald-950/80 dark:text-emerald-300 dark:border-emerald-700/60"
-                              : "bg-zinc-100 text-zinc-700 border border-zinc-300 hover:bg-zinc-200 dark:bg-white/5 dark:text-zinc-300 dark:border-white/10 dark:hover:bg-white/10"
-                          }`}
+                          className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-bold transition cursor-pointer shadow-xs ${live
+                            ? "bg-emerald-50 text-emerald-700 border border-emerald-300 hover:bg-emerald-100 dark:bg-emerald-950/80 dark:text-emerald-300 dark:border-emerald-700/60"
+                            : "bg-zinc-100 text-zinc-700 border border-zinc-300 hover:bg-zinc-200 dark:bg-white/5 dark:text-zinc-300 dark:border-white/10 dark:hover:bg-white/10"
+                            }`}
                         >
                           <span className={`h-2 w-2 rounded-full ${live ? "bg-emerald-500" : "bg-zinc-400"}`} />
                           <span>{live ? "Published" : "Draft"}</span>
@@ -1841,11 +1842,10 @@ export default function EditLeadMagnetPage() {
                     transition={{ type: "spring", stiffness: 600, damping: 28 }}
                     onMouseEnter={() => setHoveredTab(tab.id)}
                     onClick={() => setActiveTab(tab.id as any)}
-                    className={`relative flex items-center justify-center gap-3 px-4 py-2 sm:py-2.5 rounded-xl text-xs font-bold transition-colors w-full cursor-pointer border ${
-                      isActive
-                        ? "border-zinc-200/80 dark:border-white/10 text-zinc-900 dark:text-white shadow-sm"
-                        : "border-transparent text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white"
-                    }`}
+                    className={`relative flex items-center justify-center gap-3 px-4 py-2 sm:py-2.5 rounded-xl text-xs font-bold transition-colors w-full cursor-pointer border ${isActive
+                      ? "border-zinc-200/80 dark:border-white/10 text-zinc-900 dark:text-white shadow-sm"
+                      : "border-transparent text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white"
+                      }`}
                   >
                     {/* Active Tab Solid Pill */}
                     {isActive && (
@@ -1863,11 +1863,10 @@ export default function EditLeadMagnetPage() {
                         className="absolute inset-0 rounded-xl bg-zinc-200/70 dark:bg-white/5"
                       />
                     )}
-                    <div className={`relative z-10 flex h-7 w-7 items-center justify-center rounded-lg transition-colors ${
-                      isActive
-                        ? "bg-[#0066B2]/10 text-[#0066B2] dark:bg-[#0066B2]/20 dark:text-[#38BDF8]"
-                        : "bg-zinc-200/60 text-zinc-600 dark:bg-white/10 dark:text-zinc-400"
-                    }`}>
+                    <div className={`relative z-10 flex h-7 w-7 items-center justify-center rounded-lg transition-colors ${isActive
+                      ? "bg-[#0066B2]/10 text-[#0066B2] dark:bg-[#0066B2]/20 dark:text-[#38BDF8]"
+                      : "bg-zinc-200/60 text-zinc-600 dark:bg-white/10 dark:text-zinc-400"
+                      }`}>
                       <Icon className="h-4 w-4" />
                     </div>
                     <div className="relative z-10 text-left leading-tight">

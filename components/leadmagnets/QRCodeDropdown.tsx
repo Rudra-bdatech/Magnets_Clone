@@ -16,11 +16,14 @@ import {
 } from "lucide-react";
 import QRCode from "qrcode";
 import { type MagnetPage, type Account } from "@/lib/data";
+import { lockedPdfPath } from "@/lib/locked-pdf-url";
 
 interface QRCodeDropdownProps {
   page: MagnetPage;
   account: Account | null;
   isLockedPdf?: boolean;
+  /** All of the owner's pages — needed to build a locked PDF's branded link */
+  allPages?: MagnetPage[];
   onAnalytics: () => void;
   onDelete: () => void;
   onClose: () => void;
@@ -92,6 +95,7 @@ export default function QRCodeDropdown({
   page,
   account,
   isLockedPdf = false,
+  allPages,
   onAnalytics,
   onDelete,
   onClose,
@@ -109,13 +113,13 @@ export default function QRCodeDropdown({
       ? window.location.origin
       : process.env.NEXT_PUBLIC_APP_URL || "https://funnels.co.in";
 
-  const publicUrl = isLockedPdf
-    ? `${origin}/pdf-viewer/${page.id}`
-    : `${origin}/${account?.username || "user"}/${page.slug}`;
+  const publicPath = isLockedPdf
+    ? lockedPdfPath(account?.username, page, allPages || [page])
+    : `/${account?.username || "user"}/${page.slug}`;
 
-  const cleanDisplayUrl = isLockedPdf
-    ? `${origin.replace(/^https?:\/\//, "")}/pdf-viewer/${page.id}`
-    : `${origin.replace(/^https?:\/\//, "")}/${account?.username || "user"}/${page.slug}`;
+  const publicUrl = `${origin}${publicPath}`;
+
+  const cleanDisplayUrl = `${origin.replace(/^https?:\/\//, "")}${publicPath}`;
 
   // Generate clean, high-contrast QR Code data URL
   useEffect(() => {

@@ -42,6 +42,8 @@ export default function VisitorTracker() {
 
   useEffect(() => {
     if (!pathname || !shouldTrackPath(pathname)) return;
+    // Locked PDFs also live on /<username>/<slug>; their reader marks the page as not tracked
+    if (document.querySelector('[data-visitor-tracking="off"]')) return;
 
     const sessionId = getSessionId();
 

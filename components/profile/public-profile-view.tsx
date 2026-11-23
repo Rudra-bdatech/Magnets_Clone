@@ -30,6 +30,7 @@ interface PublicMagnetPage {
   deliverable?: string;
   views?: number;
   template?: string;
+  pdfSegment?: string;
 }
 
 interface PublicAccount {
@@ -340,7 +341,11 @@ export default function PublicProfileView({
             {filteredPages.map((page) => {
               const slug = page.slug || page.id;
               const isPdf = Boolean(page.isPdf) || page.template === "locked-pdf";
-              const pageUrl = isPdf
+              // Branded PDF links on our own domain only. On custom domains the middleware
+              // skips paths like /r…, /stop…, /privacy…, so /pdf-viewer/<id> stays the safe link there.
+              const pageUrl = page.pdfSegment && !isCustomDomain
+                ? `/${encodeURIComponent(account.username)}/${encodeURIComponent(page.pdfSegment)}`
+                : isPdf
                 ? `/pdf-viewer/${page.id}`
                 : isCustomDomain
                 ? `/${slug}`

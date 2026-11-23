@@ -6,6 +6,7 @@ import PublicProfileView from "@/components/profile/public-profile-view";
 import { isReservedUsername } from "@/lib/reserved-usernames";
 import { getAccountAccess } from "@/lib/subscription";
 import PageUnavailable from "@/components/page-unavailable";
+import { lockedPdfSegment } from "@/lib/locked-pdf-url";
 import type { Metadata } from "next";
 
 export const dynamic = "force-dynamic";
@@ -18,6 +19,8 @@ export default async function UserProfileRoute({
 }) {
   let accountDoc: any = null;
   let pages: any[] = [];
+  // Every page's id/slug (any status) — decides which locked PDFs can use their slug in links
+  let slugOwners: Array<{ id?: string; slug?: string }> = [];
 
   try {
     const rawUser = params.username || "";
@@ -56,6 +59,12 @@ export default async function UserProfileRoute({
         userEmail: accountDoc.email.trim().toLowerCase(),
         status: "live",
       }).lean();
+      if (pages.some((p: any) => p.template === "locked-pdf")) {
+        slugOwners = (await MagnetPageModel.find(
+          { userEmail: accountDoc.email.trim().toLowerCase() },
+          { id: 1, slug: 1 }
+        ).lean()) as any[];
+      }
     }
   } catch (err: any) {
     if (err?.digest?.startsWith("NEXT_REDIRECT")) throw err;
@@ -107,6 +116,9 @@ export default async function UserProfileRoute({
     pdfPageCount: typeof page.pdfPageCount === "number" ? page.pdfPageCount : 0,
     deliverable: page.deliverable || "Instant Access",
     views: page.views || 0,
+    // Branded path segment for locked PDFs (/<username>/<segment>)
+    pdfSegment:
+      page.template === "locked-pdf" && page.id ? lockedPdfSegment(page, slugOwners) : undefined,
   }));
 
   return (

@@ -31,7 +31,7 @@ export default async function ThankYouPage({
       ? await AccountModel.findOne({ username: { $regex: new RegExp(`^${escapedUsername}$`, "i") } }).lean()
       : null;
 
-    // Only this user's own landing pages — locked PDFs live at /pdf-viewer/<id>
+    // Only this user's own landing pages — locked PDFs have no thank-you page
     if (accountDoc && accountDoc.email) {
       pageDoc = await MagnetPageModel.findOne({
         userEmail: accountDoc.email.trim().toLowerCase(),
