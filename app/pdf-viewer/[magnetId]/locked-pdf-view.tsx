@@ -2,7 +2,7 @@ import { cookies } from "next/headers";
 import { FileText } from "lucide-react";
 import { type MagnetPage } from "@/lib/data";
 import { verifyPdfUnlockToken } from "@/lib/session-token";
-import { pdfGateCopyFromAccount } from "@/lib/pdf-gate-copy";
+import { pdfGateCopyFromAccount, pdfGateShowsBrand } from "@/lib/pdf-gate-copy";
 import PdfViewerClient from "./pdf-viewer-client";
 
 interface LockedPdfViewProps {
@@ -125,6 +125,7 @@ export default async function LockedPdfView({ magnetId, pageDoc, accountDoc, sea
         businessName={businessName}
         brandColor={brandColor}
         gateCopy={pdfGateCopyFromAccount(accountDoc)}
+        showBrand={pdfGateShowsBrand(accountDoc)}
         customFormFields={customFormFields}
       />
     </>

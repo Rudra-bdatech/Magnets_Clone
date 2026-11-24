@@ -166,6 +166,8 @@ export interface Account {
   pdfGateCodeSubtext?: string;
   pdfGateUnlockText?: string;
   pdfGateResendText?: string;
+  /** Show the business name on the locked-PDF popup (unset = shown) */
+  pdfGateShowBrand?: boolean;
   slackWebhookUrl?: string;
   zapierWebhookUrl?: string;
   pipedriveApiToken?: string;

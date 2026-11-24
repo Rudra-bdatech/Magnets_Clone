@@ -62,6 +62,11 @@ export function cleanGateText(value: unknown, max: number): string {
   return typeof value === "string" ? value.trim().slice(0, max) : "";
 }
 
+/** Whether the popup shows the brand bar (dot + business name). Missing/unset → shown, as before. */
+export function pdfGateShowsBrand(account: any): boolean {
+  return account?.pdfGateShowBrand !== false;
+}
+
 /** Reads the saved wording off an account document (missing fields → ""). */
 export function pdfGateCopyFromAccount(account: any): Required<PdfGateCopy> {
   const out = {} as Required<PdfGateCopy>;

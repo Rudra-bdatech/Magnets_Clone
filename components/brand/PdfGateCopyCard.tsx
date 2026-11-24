@@ -11,6 +11,7 @@ import {
   PDF_GATE_KEYS,
   PDF_GATE_LIMITS,
   pdfGateCopyFromAccount,
+  pdfGateShowsBrand,
   resolvePdfGateCopy,
   type PdfGateCopy,
   type PdfGateKey,
@@ -61,18 +62,24 @@ export default function PdfGateCopyCard({ account, businessName, brandColor, onS
   const saved = useMemo(() => pdfGateCopyFromAccount(account), [account]);
   const savedKey = PDF_GATE_KEYS.map((k) => saved[k]).join("\u0000");
 
+  const savedShowBrand = pdfGateShowsBrand(account);
+
   const [copy, setCopy] = useState<Required<PdfGateCopy>>(saved);
+  const [showBrand, setShowBrand] = useState(savedShowBrand);
   const [previewStep, setPreviewStep] = useState<Step>("details");
   const [saving, setSaving] = useState(false);
 
-  // Load the saved wording (also after the background database sync)
+  // Load the saved settings (also after the background database sync)
   useEffect(() => {
     setCopy(saved);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [savedKey]);
+  useEffect(() => {
+    setShowBrand(savedShowBrand);
+  }, [savedShowBrand]);
 
-  const dirty = PDF_GATE_KEYS.some((k) => copy[k] !== saved[k]);
-  const hasAnyText = PDF_GATE_KEYS.some((k) => copy[k] !== "");
+  const dirty = PDF_GATE_KEYS.some((k) => copy[k] !== saved[k]) || showBrand !== savedShowBrand;
+  const isDefault = PDF_GATE_KEYS.every((k) => copy[k] === "") && showBrand;
 
   const preview = useMemo(() => resolvePdfGateCopy(copy, PREVIEW_PAGES, true), [copy]);
   const color = /^#([0-9a-f]{3}|[0-9a-f]{4}|[0-9a-f]{6}|[0-9a-f]{8})$/i.test(brandColor) ? brandColor : "#0066B2";
@@ -80,7 +87,7 @@ export default function PdfGateCopyCard({ account, businessName, brandColor, onS
   const handleSave = async () => {
     if (!account) return;
     setSaving(true);
-    const updated: Account = { ...account };
+    const updated: Account = { ...account, pdfGateShowBrand: showBrand };
     for (const k of PDF_GATE_KEYS) {
       (updated as any)[PDF_GATE_ACCOUNT_FIELDS[k]] = copy[k].trim();
     }
@@ -122,6 +129,29 @@ export default function PdfGateCopyCard({ account, businessName, brandColor, onS
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
         {/* Fields */}
         <div className="lg:col-span-5 space-y-6">
+          {/* Brand bar on/off */}
+          <div className="flex items-center justify-between gap-3 rounded-lg border border-[#E2E8F0] dark:border-white/10 bg-zinc-50 dark:bg-[#121212] px-3.5 py-3">
+            <span className="text-xs sm:text-sm font-semibold text-zinc-700 dark:text-[#a1a1aa]">
+              Show workspace name
+            </span>
+            <button
+              type="button"
+              role="switch"
+              aria-checked={showBrand}
+              aria-label="Show workspace name"
+              onClick={() => setShowBrand((v) => !v)}
+              className={`relative h-5 w-9 shrink-0 rounded-full transition-colors cursor-pointer ${
+                showBrand ? "bg-[#0066B2]" : "bg-zinc-300 dark:bg-zinc-700"
+              }`}
+            >
+              <span
+                className={`absolute top-0.5 left-0.5 h-4 w-4 rounded-full bg-white shadow transition-transform ${
+                  showBrand ? "translate-x-4" : "translate-x-0"
+                }`}
+              />
+            </button>
+          </div>
+
           {STEPS.map((step) => (
             <div key={step.id} className="space-y-4">
               <div className="flex items-baseline justify-between gap-2 border-b border-[#0066B2]/10 dark:border-white/[0.06] pb-1.5">
@@ -161,8 +191,11 @@ export default function PdfGateCopyCard({ account, businessName, brandColor, onS
           <div className="border-t border-[#0066B2]/10 dark:border-white/[0.06] pt-4 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
             <button
               type="button"
-              onClick={() => setCopy(EMPTY_COPY)}
-              disabled={!hasAnyText}
+              onClick={() => {
+                setCopy(EMPTY_COPY);
+                setShowBrand(true);
+              }}
+              disabled={isDefault}
               className="flex items-center justify-center gap-1.5 text-xs font-semibold text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white disabled:opacity-40 disabled:cursor-not-allowed transition cursor-pointer"
             >
               <RotateCcw className="h-3.5 w-3.5" />
@@ -201,10 +234,12 @@ export default function PdfGateCopyCard({ account, businessName, brandColor, onS
 
           <div className="rounded-xl bg-zinc-800/90 dark:bg-black/60 p-4 sm:p-8 flex items-center justify-center">
             <div className="w-full max-w-[440px] rounded-2xl bg-white p-5 sm:p-6 shadow-2xl text-left">
-              <div className="flex items-center gap-1.5 mb-3">
-                <span className="h-2 w-2 rounded-full" style={{ background: color }} />
-                <span className="text-xs font-medium text-zinc-500 truncate">{businessName || "Your workspace"}</span>
-              </div>
+              {showBrand && (
+                <div className="flex items-center gap-1.5 mb-3">
+                  <span className="h-2 w-2 rounded-full" style={{ background: color }} />
+                  <span className="text-xs font-medium text-zinc-500 truncate">{businessName || "Your workspace"}</span>
+                </div>
+              )}
 
               {previewStep === "details" ? (
                 <>

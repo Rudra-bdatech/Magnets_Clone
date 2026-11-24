@@ -273,6 +273,7 @@ export async function handleSaveAccount(data: any, authEmail: string | null, req
       const field = PDF_GATE_ACCOUNT_FIELDS[key];
       if (data[field] !== undefined) existing[field] = cleanGateText(data[field], PDF_GATE_LIMITS[key]);
     }
+    if (typeof data.pdfGateShowBrand === "boolean") existing.pdfGateShowBrand = data.pdfGateShowBrand;
     if (data.slackWebhookUrl !== undefined && data.slackWebhookUrl !== null && !isMaskedSecret(data.slackWebhookUrl)) {
       const rawSlack = String(data.slackWebhookUrl).trim();
       if (rawSlack && !isValidSlackWebhookUrl(rawSlack)) {

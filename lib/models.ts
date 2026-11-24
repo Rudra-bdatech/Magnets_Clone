@@ -55,6 +55,8 @@ const AccountSchema = new Schema({
   pdfGateCodeSubtext: { type: String, default: "" },
   pdfGateUnlockText: { type: String, default: "" },
   pdfGateResendText: { type: String, default: "" },
+  // Show the brand bar (dot + business name) on the locked-PDF popup
+  pdfGateShowBrand: { type: Boolean, default: true },
   slackWebhookUrl: { type: String, default: "" },
   zapierWebhookUrl: { type: String, default: "" },
   pipedriveApiToken: { type: String, default: "" },

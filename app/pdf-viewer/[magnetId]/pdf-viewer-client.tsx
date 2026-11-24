@@ -247,6 +247,8 @@ interface Props {
   brandColor: string;
   /** Account's custom popup wording; empty fields use the defaults */
   gateCopy?: PdfGateCopy;
+  /** Show the dot + business name at the top of the popup (default true) */
+  showBrand?: boolean;
   customFormFields?: import("@/lib/data").CustomFormField[];
 }
 
@@ -262,6 +264,7 @@ export default function PdfViewerClient({
   businessName,
   brandColor,
   gateCopy,
+  showBrand = true,
   customFormFields = [],
 }: Props) {
   const isStreamingPdf = hasPdfFile;
@@ -967,12 +970,14 @@ export default function PdfViewerClient({
       {/* ── Gate Modal Overlay ──────────────────────────────────────────────── */}
       <div className={`pdf-gate ${gateVisible ? "is-visible" : "is-hidden"}`}>
         <div className="pdf-gate-card" data-lenis-prevent>
-          <div className="pdf-brand-bar">
-            <span className="pdf-brand-dot" style={{ background: brandColor }} />
-            <span style={{ fontSize: 12, color: "#71717a", fontWeight: 500 }}>
-              {businessName}
-            </span>
-          </div>
+          {showBrand && (
+            <div className="pdf-brand-bar">
+              <span className="pdf-brand-dot" style={{ background: brandColor }} />
+              <span style={{ fontSize: 12, color: "#71717a", fontWeight: 500 }}>
+                {businessName}
+              </span>
+            </div>
+          )}
 
           {step === "email" ? (
             <>
