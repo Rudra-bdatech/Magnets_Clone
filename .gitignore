@@ -48,3 +48,4 @@ scratch_*
 # AI agent configuration and skills
 .agents/
 .claude/
+certificates
