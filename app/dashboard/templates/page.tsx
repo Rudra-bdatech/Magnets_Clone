@@ -9,6 +9,7 @@ import type { Account, MagnetPage } from "@/lib/data";
 import BrandSettingsForm from "@/components/brand/BrandSettingsForm";
 import BrandTemplatePreview from "@/components/brand/BrandTemplatePreview";
 import BrandHelpModal from "@/components/brand/BrandHelpModal";
+import PdfGateCopyCard from "@/components/brand/PdfGateCopyCard";
 import { PRESET_COLORS, compressLogoImage, hexWithAlpha } from "@/components/brand/brand-utils";
 import { useSidebar } from "@/components/dashboard/dashboard-shell";
 
@@ -553,6 +554,15 @@ export default function TemplatesPage() {
             </div>
 
           </div>
+
+          {/* Locked PDF unlock popup wording */}
+          <PdfGateCopyCard
+            account={account}
+            businessName={businessName}
+            brandColor={brandColor}
+            onSaved={setAccount}
+            toast={triggerToast}
+          />
         </div>
       </div>
 

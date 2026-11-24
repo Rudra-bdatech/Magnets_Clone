@@ -15,6 +15,7 @@ import { isValidEmailAddress } from "@/lib/email-guard";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { logAdminAction } from "@/lib/audit-log";
 import { getGeoFromHeaders } from "@/lib/geo";
+import { cleanGateText, PDF_GATE_ACCOUNT_FIELDS, PDF_GATE_KEYS, PDF_GATE_LIMITS } from "@/lib/pdf-gate-copy";
 
 /** Generates a cryptographically random 64-char hex webhook secret. */
 function generateWebhookSecret(): string {
@@ -267,6 +268,11 @@ export async function handleSaveAccount(data: any, authEmail: string | null, req
     existing.themeMode = data.themeMode || existing.themeMode;
     existing.highlightIntensity = data.highlightIntensity ?? existing.highlightIntensity;
     existing.templateId = data.templateId || existing.templateId;
+    // Locked-PDF popup wording: only fields the client actually sent are changed
+    for (const key of PDF_GATE_KEYS) {
+      const field = PDF_GATE_ACCOUNT_FIELDS[key];
+      if (data[field] !== undefined) existing[field] = cleanGateText(data[field], PDF_GATE_LIMITS[key]);
+    }
     if (data.slackWebhookUrl !== undefined && data.slackWebhookUrl !== null && !isMaskedSecret(data.slackWebhookUrl)) {
       const rawSlack = String(data.slackWebhookUrl).trim();
       if (rawSlack && !isValidSlackWebhookUrl(rawSlack)) {

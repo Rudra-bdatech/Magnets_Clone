@@ -158,6 +158,14 @@ export interface Account {
   themeMode?: "light" | "dark" | "sync";
   highlightIntensity?: number;
   templateId?: "template1" | "template2" | "template3" | "template4" | "template5" | "template6" | "template7" | string;
+  /** Locked-PDF unlock popup wording; empty = default text (lib/pdf-gate-copy.ts) */
+  pdfGateHeadline?: string;
+  pdfGateSubtext?: string;
+  pdfGateButtonText?: string;
+  pdfGateCodeHeadline?: string;
+  pdfGateCodeSubtext?: string;
+  pdfGateUnlockText?: string;
+  pdfGateResendText?: string;
   slackWebhookUrl?: string;
   zapierWebhookUrl?: string;
   pipedriveApiToken?: string;

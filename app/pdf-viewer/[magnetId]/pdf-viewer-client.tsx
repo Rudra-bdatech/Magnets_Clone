@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { getScrollParent, loadPdfJs } from "@/lib/pdfjs-client";
 import PdfPageThumbnail from "@/components/pdf/PdfPageThumbnail";
+import { resolvePdfGateCopy, type PdfGateCopy } from "@/lib/pdf-gate-copy";
 import "./pdf-viewer.css";
 
 // ─── Unlock token saved by an earlier visit (or passed as ?token=) ────────────
@@ -244,6 +245,8 @@ interface Props {
   initiallyUnlocked?: boolean;
   businessName: string;
   brandColor: string;
+  /** Account's custom popup wording; empty fields use the defaults */
+  gateCopy?: PdfGateCopy;
   customFormFields?: import("@/lib/data").CustomFormField[];
 }
 
@@ -258,6 +261,7 @@ export default function PdfViewerClient({
   initiallyUnlocked = false,
   businessName,
   brandColor,
+  gateCopy,
   customFormFields = [],
 }: Props) {
   const isStreamingPdf = hasPdfFile;
@@ -280,6 +284,7 @@ export default function PdfViewerClient({
   const totalPages = isStreamingPdf
     ? (pdfDoc && pdfDocIsFull ? pdfDoc.numPages : (pdfPageCount || pdfDoc?.numPages || pdfPages.length || 1))
     : Math.max(pdfPages.length, pageImageCount || 0);
+  const gateText = resolvePdfGateCopy(gateCopy, totalPages, pdfFreePages !== 0);
 
   // Load the preview while locked, then the full file once unlocked. The server
   // decides which one to send based on the unlock token.
@@ -971,12 +976,8 @@ export default function PdfViewerClient({
 
           {step === "email" ? (
             <>
-              <h2>
-                {pdfFreePages === 0
-                  ? "Enter your details to read this guide."
-                  : `You've read the preview. Enter your details to unlock all ${totalPages} pages.`}
-              </h2>
-              <p className="sub">Free — no credit card required.</p>
+              <h2>{gateText.headline}</h2>
+              <p className="sub">{gateText.subtext}</p>
               <form className="pdf-gate-form" onSubmit={handleSendCode}>
                 <div style={{ display: "flex", flexDirection: "column", gap: "10px", width: "100%" }}>
                   <div className="pdf-gate-row">
@@ -1073,15 +1074,15 @@ export default function PdfViewerClient({
                     disabled={sending}
                     style={{ background: brandColor, marginTop: "4px" }}
                   >
-                    {sending ? "Sending code…" : "Send code →"}
+                    {sending ? gateText.sendingText : gateText.buttonText}
                   </button>
                 </div>
               </form>
             </>
           ) : (
             <>
-              <h2>Enter the 6-digit code we just sent you.</h2>
-              <p className="sub">Check your spam folder if it isn't there in a minute.</p>
+              <h2>{gateText.codeHeadline}</h2>
+              <p className="sub">{gateText.codeSubtext}</p>
               <form className="pdf-gate-form" onSubmit={handleVerifyCode}>
                 <input
                   type="text"
@@ -1101,7 +1102,7 @@ export default function PdfViewerClient({
                   disabled={verifying}
                   style={{ background: brandColor, marginTop: "10px" }}
                 >
-                  {verifying ? "Verifying…" : "Unlock guide →"}
+                  {verifying ? "Verifying…" : gateText.unlockText}
                 </button>
               </form>
               <p className="pdf-gate-hint" style={{ marginTop: "14px", textAlign: "center" }}>
@@ -1112,7 +1113,7 @@ export default function PdfViewerClient({
                   disabled={sending}
                   onClick={() => handleSendCode()}
                 >
-                  Resend code
+                  {gateText.resendText}
                 </button>
               </p>
             </>
