@@ -99,6 +99,9 @@ const getDashboardPageInfo = (pathname: string, defaultTitle?: string) => {
 function ejectSuspendedOrExpired(suspended = false) {
   if (typeof window === "undefined") return;
   try {
+    window.Libredesk?.logout?.();
+  } catch (_) {}
+  try {
     const lastMethod = localStorage.getItem("leadmagnets_last_auth_method");
     const lastEmail = localStorage.getItem("leadmagnets_last_auth_email");
     const themeMode = localStorage.getItem("leadmagnets-theme-mode");
@@ -434,6 +437,10 @@ export default function DashboardShell({
   const handleLogout = async () => {
     if (isLoggingOut) return;
     setIsLoggingOut(true);
+
+    try {
+      window.Libredesk?.logout?.();
+    } catch (_) {}
 
     if (typeof window !== "undefined") {
       try {

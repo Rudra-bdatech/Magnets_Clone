@@ -1,5 +1,5 @@
-import Script from "next/script";
 import DashboardShell from "@/components/dashboard/dashboard-shell";
+import { SupportWidget } from "./support-widget";
 
 export default function DashboardLayout({
   children,
@@ -14,25 +14,7 @@ export default function DashboardLayout({
     <>
       <DashboardShell>{children}</DashboardShell>
       {supportWidgetEnabled && supportBaseUrl && supportInboxId && (
-        <>
-          <Script
-            id="libredesk-settings"
-            strategy="afterInteractive"
-            dangerouslySetInnerHTML={{
-              __html: `
-                window.LibredeskSettings = {
-                  baseURL: ${JSON.stringify(supportBaseUrl)},
-                  inboxID: ${JSON.stringify(supportInboxId)}
-                };
-              `,
-            }}
-          />
-          <Script
-            id="libredesk-widget"
-            src={`${supportBaseUrl}/widget.js`}
-            strategy="afterInteractive"
-          />
-        </>
+        <SupportWidget baseURL={supportBaseUrl} inboxID={supportInboxId} />
       )}
     </>
   );

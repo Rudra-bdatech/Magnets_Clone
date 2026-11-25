@@ -5,6 +5,9 @@ import { pages as seedPages, sequences as seedSequences, type MagnetPage, type S
 function ejectSuspendedOrExpired(suspended = false) {
   if (typeof window === "undefined") return;
   try {
+    window.Libredesk?.logout?.();
+  } catch (_) {}
+  try {
     const lastMethod = localStorage.getItem("leadmagnets_last_auth_method");
     const lastEmail = localStorage.getItem("leadmagnets_last_auth_email");
     const themeMode = localStorage.getItem("leadmagnets-theme-mode");
